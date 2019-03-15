@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28711.60
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Darl.GraphQL", "Darl.GraphQL\Darl.GraphQL.csproj", "{88E5A55B-7ADD-4DB2-AFEB-D332C0E6285F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Darl.GraphQL.Models", "Darl.GraphQL.Models\Darl.GraphQL.Models.csproj", "{B827A695-1464-4655-8339-3786064CCB28}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{88E5A55B-7ADD-4DB2-AFEB-D332C0E6285F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88E5A55B-7ADD-4DB2-AFEB-D332C0E6285F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88E5A55B-7ADD-4DB2-AFEB-D332C0E6285F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88E5A55B-7ADD-4DB2-AFEB-D332C0E6285F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B827A695-1464-4655-8339-3786064CCB28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B827A695-1464-4655-8339-3786064CCB28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B827A695-1464-4655-8339-3786064CCB28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B827A695-1464-4655-8339-3786064CCB28}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {762061E2-E70B-459D-86F8-D91A7471E3A1}
+	EndGlobalSection
+EndGlobal

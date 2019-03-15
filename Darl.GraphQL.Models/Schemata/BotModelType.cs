@@ -1,0 +1,20 @@
+﻿using Darl.GraphQL.Models.Models;
+using Darl.GraphQL.Models.Services;
+using Darl.Lineage;
+using GraphQL.Types;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Darl.GraphQL.Models.Schemata
+{
+    public class BotModelType : ObjectGraphType<BotModel>
+    {
+        public BotModelType(ILineageModelService models)
+        {
+            Field(c => c.Name).Description("The the unique name of the Bot model");
+            Field(c => c.LastModified).Description("The time the model was last modified.");
+            Field<LineageModeType>("model", resolve: context => models.GetLineageModelAsync(context.Source.Name));
+        }
+    }
+}
