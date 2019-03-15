@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Darl.Lineage;
+using DarlCommon;
 
 namespace Darl.GraphQL.Models.Services
 {
-    class LineageModelService : ILineageModelService
+    public class MLModelService : IMLModelService
     {
-        public async Task<LineageModel> GetLineageModelAsync(string name)
+        public async Task<MLModel> GetMlModelAsync(string name)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<List<LineageModel>> GetLineageModelsAsync()
+        public async Task<List<MLModel>> GetMlModelsAsync(string name)
         {
             throw new NotImplementedException();
         }

@@ -6,7 +6,7 @@ namespace Darl.GraphQL.Models.Models
 {
     public class MLModel
     {
-        public MLModel(DateTime lastModified, string name, int size, MLModel mlModel)
+        public MLModel(DateTime lastModified, string name, int size, DarlCommon.MLModel mlModel)
         {
             LastModified = lastModified;
             Name = name;
@@ -15,6 +15,6 @@ namespace Darl.GraphQL.Models.Models
 
         public DateTime LastModified { get; }
         public string Name { get; }
-        public MLModel MlModel { get; }
+        public DarlCommon.MLModel MlModel { get; }
     }
 }
