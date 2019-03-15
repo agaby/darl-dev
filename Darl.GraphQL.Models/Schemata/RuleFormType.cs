@@ -1,4 +1,5 @@
-﻿using DarlCommon;
+﻿using Darl.GraphQL.Models.Services;
+using DarlCommon;
 using GraphQL.Types;
 using System;
 using System.Collections.Generic;
@@ -8,14 +9,14 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class RuleFormType : ObjectGraphType<RuleForm>
     {
-        public RuleFormType()
+        public RuleFormType(ILanguageFormatService languageformats)
         {
             Field(c => c.author);
             Field(c => c.copyright);
             Field(c => c.currency);
             Field(c => c.darl);
             Field(c => c.description);
-            //Field(c => c.language);
+            Field<LanguageFormatType>("languageFormat", resolve: context => languageformats.GetLanguageFormatAsync(context.Source.name));
             Field(c => c.license);
             Field(c => c.name);
             Field(c => c.price);
