@@ -1,4 +1,5 @@
-﻿using DarlCommon;
+﻿using Darl.GraphQL.Models.Services;
+using DarlCommon;
 using GraphQL.Types;
 using System;
 using System.Collections.Generic;
@@ -9,9 +10,10 @@ namespace Darl.GraphQL.Models.Schemata
     public class LanguageFormatType : ObjectGraphType<LanguageFormat>
     {
 
-        public LanguageFormatType()
+        public LanguageFormatType(ILanguageTextService languagetexts)
         {
-
+            Field(c => c.DefaultLanguage);
+            Field<ListGraphType<LanguageTextType>>("languageList", resolve: context => languagetexts.GetLanguageTextsAsync());
         }
     }
 }
