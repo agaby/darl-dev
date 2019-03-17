@@ -9,11 +9,11 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class MLModelType : ObjectGraphType<MLModel>
     {
-        public MLModelType(IMLModelService mlmodels)
+        public MLModelType()
         {
             Field(c => c.LastModified);
             Field(c => c.Name);
-            Field<MLModelType>("mlmodel", resolve: context => mlmodels.GetMlModelAsync(context.Source.Name));
+            Field<MLSpecType>("mlmodel", resolve: context => context.Source.MlModel);
         }
     }
 }

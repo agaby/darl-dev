@@ -9,11 +9,11 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class LanguageTextType : ObjectGraphType<LanguageText>
     {
-        public LanguageTextType(IVariantTextService varianttexts)
+        public LanguageTextType()
         {
             Field(c => c.Name);
             Field(c => c.Text);
-            Field<ListGraphType<VariantTextType>>("variantlist", resolve: context => varianttexts.GetVariantTextsAsync());
+            Field<ListGraphType<VariantTextType>>("variantlist", resolve: context => context.Source.VariantList);
         }
     }
 }

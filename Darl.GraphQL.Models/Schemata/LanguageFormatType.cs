@@ -10,10 +10,10 @@ namespace Darl.GraphQL.Models.Schemata
     public class LanguageFormatType : ObjectGraphType<LanguageFormat>
     {
 
-        public LanguageFormatType(ILanguageTextService languagetexts)
+        public LanguageFormatType()
         {
             Field(c => c.DefaultLanguage);
-            Field<ListGraphType<LanguageTextType>>("languageList", resolve: context => languagetexts.GetLanguageTextsAsync());
+            Field<ListGraphType<LanguageTextType>>("languageList", resolve: context => context.Source.LanguageList);
         }
     }
 }

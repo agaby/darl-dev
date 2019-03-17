@@ -14,7 +14,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Field(c => c.Name).Description("The the unique name of the Bot model");
             Field(c => c.LastModified).Description("The time the model was last modified.");
-            Field<LineageModeType>("model", resolve: context => models.GetLineageModelAsync(context.Source.Name));
+            Field<LineageModelType>("model", resolve: context => models.GetLineageModelAsync(context.Source.Name));
         }
     }
 }
