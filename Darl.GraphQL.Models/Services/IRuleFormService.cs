@@ -9,5 +9,6 @@ namespace Darl.GraphQL.Models.Services
     public interface IRuleFormService
     {
         Task<RuleForm> GetRuleFormAsync(string name);
+        Task<List<MLModel>> GetRuleFormsAsync(string name);
     }
 }

@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using DarlCommon;
+using Darl.GraphQL.Models.Models;
 
 namespace Darl.GraphQL.Models.Services
 {
-    public class RuleFormService : IRuleFormService
+    public class BotModelService : IBotModelService
     {
-        public Task<RuleForm> GetRuleFormAsync(string name)
+        public Task<BotModel> GetBotModelAsync(string name)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<List<MLModel>> GetRuleFormsAsync(string name)
+        public Task<List<BotModel>> GetMlBotModelsAsync(string name)
         {
             throw new NotImplementedException();
         }

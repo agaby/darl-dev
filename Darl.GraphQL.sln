@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28711.60
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Darl.GraphQL", "Darl.GraphQL\Darl.GraphQL.csproj", "{88E5A55B-7ADD-4DB2-AFEB-D332C0E6285F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL", "Darl.GraphQL\Darl.GraphQL.csproj", "{88E5A55B-7ADD-4DB2-AFEB-D332C0E6285F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Darl.GraphQL.Models", "Darl.GraphQL.Models\Darl.GraphQL.Models.csproj", "{B827A695-1464-4655-8339-3786064CCB28}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Models", "Darl.GraphQL.Models\Darl.GraphQL.Models.csproj", "{B827A695-1464-4655-8339-3786064CCB28}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
