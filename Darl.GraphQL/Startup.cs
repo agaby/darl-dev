@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,6 +11,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using GraphQL.Server.Ui.GraphiQL;
+using GraphQL.Server.Ui.Playground;
+using GraphQL.Server.Ui.Voyager;
+using GraphQL;
 
 namespace Darl.GraphQL
 {
@@ -28,7 +33,14 @@ namespace Darl.GraphQL
             services.AddMvc()
                 .AddNewtonsoftJson();
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-
+            services.AddSingleton<IDependencyResolver>(
+                c => new FuncDependencyResolver(type => c.GetRequiredService(type)));
+            services.AddGraphQL(options => {
+                options.EnableMetrics = true;
+                options.ExposeExceptions = Environment.IsDevelopment();
+            })
+            .AddWebSockets()
+            .AddDataLoader();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,17 +55,26 @@ namespace Darl.GraphQL
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseDefaultFiles();
             app.UseStaticFiles();
-
-            app.UseRouting(routes =>
+            app.UseWebSockets();
+            app.UseGraphQLWebSockets<OrdersSchema>("/graphql");
+            app.UseGraphQL<OrdersSchema>("/graphql");
+            app.UseGraphQLPlayground(new GraphQLPlaygroundOptions()
             {
-                routes.MapApplication();
+                Path = "/ui/playground"
             });
-
-            //app.UseAuthorization();
+            app.UseGraphiQLServer(new GraphiQLOptions
+            {
+                GraphiQLPath = "/ui/graphiql",
+                GraphQLEndPoint = "/graphql"
+            });
+            app.UseGraphQLVoyager(new GraphQLVoyagerOptions()
+            { 
+                GraphQLEndPoint = "/graphql",
+                Path = "/ui/voyager"
+            });
         }
     }
 }
