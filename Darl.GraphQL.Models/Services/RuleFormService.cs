@@ -13,7 +13,7 @@ namespace Darl.GraphQL.Models.Services
             throw new NotImplementedException();
         }
 
-        public async Task<List<MLModel>> GetRuleFormsAsync(string name)
+        public async Task<List<RuleForm>> GetRuleFormsAsync(string name)
         {
             throw new NotImplementedException();
         }

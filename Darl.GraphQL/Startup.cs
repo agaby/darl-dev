@@ -1,20 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Darl.GraphQL.Models.Schemata;
+using GraphQL;
 using GraphQL.Server;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using GraphQL.Server.Ui.GraphiQL;
 using GraphQL.Server.Ui.Playground;
 using GraphQL.Server.Ui.Voyager;
-using GraphQL;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 
@@ -64,8 +57,8 @@ namespace Darl.GraphQL
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseWebSockets();
-            app.UseGraphQLWebSockets<OrdersSchema>("/graphql");
-            app.UseGraphQL<OrdersSchema>("/graphql");
+            app.UseGraphQLWebSockets<DarlSchema>("/graphql");
+            app.UseGraphQL<DarlSchema>("/graphql");
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions()
             {
                 Path = "/ui/playground"

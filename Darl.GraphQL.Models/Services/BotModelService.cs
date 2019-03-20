@@ -13,7 +13,7 @@ namespace Darl.GraphQL.Models.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<BotModel>> GetMlBotModelsAsync(string name)
+        public Task<List<BotModel>> GetBotModelsAsync()
         {
             throw new NotImplementedException();
         }

@@ -8,6 +8,6 @@ namespace Darl.GraphQL.Models.Services
     public interface IMLModelService
     {
         Task<DarlCommon.MLModel> GetMlModelAsync(string name);
-        Task<List<DarlCommon.MLModel>> GetMlModelsAsync(string name);
+        Task<List<DarlCommon.MLModel>> GetMlModelsAsync();
     }
 }

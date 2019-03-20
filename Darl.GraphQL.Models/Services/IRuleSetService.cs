@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Services
 {
-    public interface IBotModelService
+    public interface IRuleSetService
     {
-        Task<BotModel> GetBotModelAsync(string name);
-        Task<List<BotModel>> GetBotModelsAsync();
+        Task<RuleSet> GetRuleSetAsync(string name);
+        Task<List<RuleSet>> GetRuleSetsAsync();
     }
 }
