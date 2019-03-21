@@ -2,20 +2,29 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Darl.GraphQL.Models.Connectivity;
 using DarlCommon;
 
 namespace Darl.GraphQL.Models.Services
 {
     public class RuleFormService : IRuleFormService
     {
-        public Task<RuleForm> GetRuleFormAsync(string name)
+
+        IConnectivity Connectivity;
+
+        public RuleFormService(IConnectivity connectivity)
         {
-            throw new NotImplementedException();
+            Connectivity = connectivity;
+        }
+
+        public async Task<RuleForm> GetRuleFormAsync(string name)
+        {
+            return await Connectivity.GetRuleFormAsync(name);
         }
 
         public async Task<List<RuleForm>> GetRuleFormsAsync(string name)
         {
-            throw new NotImplementedException();
+            return await Connectivity.GetRuleFormsAsync();
         }
     }
 }

@@ -14,32 +14,32 @@ namespace Darl.GraphQL.Models.Connectivity
                 
         }
 
-        public Task<BotModel> GetBotModelAsync(string name)
+        public async Task<BotModel> GetBotModelAsync(string name)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<BotModel>> GetMlBotModelsAsync(string name)
+        public async Task<List<BotModel>> GetBotModelsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<DarlCommon.MLModel> GetMlModelAsync(string name)
+        public async Task<DarlCommon.MLModel> GetMlModelAsync(string name)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<DarlCommon.MLModel>> GetMlModelsAsync(string name)
+        public async Task<List<DarlCommon.MLModel>> GetMlModelsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<RuleForm> GetRuleFormAsync(string name)
+        public async Task<RuleForm> GetRuleFormAsync(string name)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<Models.MLModel>> GetRuleFormsAsync(string name)
+        public async Task<List<Models.MLModel>> GetRuleFormsAsync()
         {
             throw new NotImplementedException();
         }

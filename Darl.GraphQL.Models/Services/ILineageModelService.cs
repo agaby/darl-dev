@@ -9,6 +9,5 @@ namespace Darl.GraphQL.Models.Services
     public interface ILineageModelService
     {
         Task<LineageModel> GetLineageModelAsync(string name);
-        Task<List<LineageModel>> GetLineageModelsAsync();
     }
 }

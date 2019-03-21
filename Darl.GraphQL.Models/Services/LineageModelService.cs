@@ -2,20 +2,24 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Darl.GraphQL.Models.Connectivity;
 using Darl.Lineage;
 
 namespace Darl.GraphQL.Models.Services
 {
     class LineageModelService : ILineageModelService
     {
-        public async Task<LineageModel> GetLineageModelAsync(string name)
+        IConnectivity Connectivity;
+
+        public LineageModelService(IConnectivity connectivity)
         {
-            throw new NotImplementedException();
+            Connectivity = connectivity;
         }
 
-        public async Task<List<LineageModel>> GetLineageModelsAsync()
+        public async Task<LineageModel> GetLineageModelAsync(string name)
         {
-            throw new NotImplementedException();
+            return await Connectivity.GetLineageModelAsync(name);
         }
+
     }
 }
