@@ -3,7 +3,7 @@ using GraphQL.Types;
 
 namespace Darl.GraphQL.Models.Schemata
 {
-    internal class InputFormatType : ObjectGraphType<InputFormat>
+    public  class InputFormatType : ObjectGraphType<InputFormat>
     {
 
         public InputFormatType()

@@ -7,7 +7,7 @@ using Darl.Lineage;
 
 namespace Darl.GraphQL.Models.Services
 {
-    class LineageModelService : ILineageModelService
+    public class LineageModelService : ILineageModelService
     {
         IConnectivity Connectivity;
 

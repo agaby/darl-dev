@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Darl.GraphQL.Models.Services
 {
-    class LineageMatchNodePairSevice : ILineageMatchNodePairService
+    public class LineageMatchNodePairSevice : ILineageMatchNodePairService
     {
         public async Task<List<LineageMatchNodePair>> GetChildrenAsPairs(SortedList<string, LineageMatchNode> children)
         {

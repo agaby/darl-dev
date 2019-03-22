@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Darl.GraphQL.Models.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ namespace Darl.GraphQL.Models.Services
 {
     public interface IMLModelService
     {
-        Task<DarlCommon.MLModel> GetMlModelAsync(string name);
-        Task<List<DarlCommon.MLModel>> GetMlModelsAsync();
+        Task<List<MLModel>> GetMLModelsAsync();
+        Task<MLModel> GetMLModelAsync(string name);
     }
 }

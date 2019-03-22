@@ -8,7 +8,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class MLSpecType : ObjectGraphType<DarlCommon.MLModel>
     {
-        public MLSpecType(IMLModelService mlmodels)
+        public MLSpecType()
         {
             Field(c => c.author);
             Field(c => c.copyright);

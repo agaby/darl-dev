@@ -7,20 +7,20 @@ using DarlCommon;
 
 namespace Darl.GraphQL.Models.Services
 {
-    public class RuleFormService : IRuleFormService
+    public class MLSpecTypeService : IMLSpecTypeService
     {
-
         IConnectivity Connectivity;
 
-        public RuleFormService(IConnectivity connectivity)
+        public MLSpecTypeService(IConnectivity connectivity)
         {
             Connectivity = connectivity;
         }
 
-        public async Task<RuleForm> GetRuleFormAsync(string name)
+        public async Task<DarlCommon.MLModel> GetMlModelAsync(string name)
         {
-            return await Connectivity.GetRuleFormAsync(name);
+            return await Connectivity.GetMlInternalModelAsync(name);
         }
+
 
     }
 }

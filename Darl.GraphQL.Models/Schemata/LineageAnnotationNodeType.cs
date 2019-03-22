@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
-    class LineageAnnotationNodeType : ObjectGraphType<LineageAnnotationNode>
+    public class LineageAnnotationNodeType : ObjectGraphType<LineageAnnotationNode>
     {
         public LineageAnnotationNodeType()
         {

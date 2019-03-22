@@ -15,14 +15,16 @@ namespace Darl.GraphQL.Models.Services
         {
             Connectivity = connectivity;
         }
-        public Task<RuleSet> GetRuleSetAsync(string name)
+
+        public async Task<RuleSet> GetRuleSetAsync(string name)
         {
-            throw new NotImplementedException();
+            return await Connectivity.GetRuleSetAsync(name);
         }
 
-        public Task<List<RuleSet>> GetRuleSetsAsync()
+        public async Task<List<RuleSet>> GetRuleSetsAsync()
         {
-            throw new NotImplementedException();
+            return await Connectivity.GetRuleSetsAsync();
         }
+
     }
 }

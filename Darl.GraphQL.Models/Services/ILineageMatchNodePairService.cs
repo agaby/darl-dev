@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Services
 {
-    interface ILineageMatchNodePairService
+    public interface ILineageMatchNodePairService
     {
         Task<List<LineageMatchNodePair>> GetChildrenAsPairs(SortedList<string, LineageMatchNode> children);
     }

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
-    class BotOutputFormatType : ObjectGraphType<BotOutputFormat>
+    public class BotOutputFormatType : ObjectGraphType<BotOutputFormat>
     {
         public BotOutputFormatType()
         {

@@ -18,11 +18,11 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             );
 
-            FieldAsync<ListGraphType<RuleSetType>>(
+            FieldAsync<ListGraphType<MLModelType>>(
                "mlmodels",
                resolve: async context => {
                    return await context.TryAsyncResolve(
-                       async c => await mlmodels.GetMlModelsAsync());
+                       async c => await mlmodels.GetMLModelsAsync());
                }
             );
 
@@ -49,7 +49,7 @@ namespace Darl.GraphQL.Models.Schemata
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
                 resolve: async context => {
                     return await context.TryAsyncResolve(
-                        async c => await mlmodels.GetMlModelAsync(c.GetArgument<String>("name"))
+                        async c => await mlmodels.GetMLModelAsync(c.GetArgument<String>("name"))
                     );
                 }
             );

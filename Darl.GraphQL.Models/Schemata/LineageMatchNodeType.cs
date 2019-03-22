@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
-    class LineageMatchNodeType : ObjectGraphType<LineageMatchNode>
+    public class LineageMatchNodeType : ObjectGraphType<LineageMatchNode>
     {
         public LineageMatchNodeType(ILineageMatchNodePairService pairs
             )

@@ -12,10 +12,12 @@ namespace Darl.GraphQL.Models.Connectivity
     {
         Task<BotModel> GetBotModelAsync(string name);
         Task<List<BotModel>> GetBotModelsAsync();
-        Task<DarlCommon.MLModel> GetMlModelAsync(string name);
-        Task<List<DarlCommon.MLModel>> GetMlModelsAsync();
+        Task<Models.MLModel> GetMlModelAsync(string name);
+        Task<List<Models.MLModel>> GetMlModelsAsync();
+        Task<DarlCommon.MLModel> GetMlInternalModelAsync(string name);
         Task<RuleForm> GetRuleFormAsync(string name);
-        Task<List<RuleForm>> GetRuleFormsAsync();
+        Task<RuleSet> GetRuleSetAsync(string name);
+        Task<List<RuleSet>> GetRuleSetsAsync();
         Task<LineageModel> GetLineageModelAsync(string name);
     }
 }

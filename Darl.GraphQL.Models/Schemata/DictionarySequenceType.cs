@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
-    class DictionarySequenceType : ObjectGraphType<StringSequencePair>
+    public class DictionarySequenceType : ObjectGraphType<StringSequencePair>
     {
         public DictionarySequenceType()
         {

@@ -1,13 +1,12 @@
-﻿using DarlCommon;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Services
 {
-    public interface IRuleFormService
+    public interface IMLSpecTypeService
     {
-        Task<RuleForm> GetRuleFormAsync(string name);
+        Task<DarlCommon.MLModel> GetMlModelAsync(string name);
     }
 }
