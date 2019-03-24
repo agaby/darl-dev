@@ -1,0 +1,27 @@
+﻿using Darl.Connectivity.Models;
+using GraphQL.Types;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Darl.GraphQL.Models.Schemata
+{
+    public class ContactType : ObjectGraphType<Contact>
+    {
+        public ContactType()
+        {
+            Field(c => c.Company,true);
+            Field(c => c.Country, true);
+            Field(c => c.Created, true);
+            Field(c => c.Email);
+            Field(c => c.FirstName, true);
+            Field(c => c.IntroSent, true);
+            Field(c => c.LastName, true);
+            Field(c => c.Notes, true);
+            Field(c => c.Phone, true);
+            Field(c => c.Sector, true);
+            Field(c => c.Source, true);
+            Field(c => c.Title, true);
+        }
+    }
+}

@@ -14,6 +14,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Field(C => C.Name);
             Field(c => c.LastModified);
+            Field(c => c.Size);
             Field<RuleFormType>("ruleform", resolve: context => ruleforms.GetRuleFormAsync(context.Source.Name));
         }
     }

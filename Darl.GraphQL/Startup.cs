@@ -1,3 +1,4 @@
+using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Schemata;
 using Darl.GraphQL.Models.Services;
 using GraphQL;
@@ -29,21 +30,26 @@ namespace Darl.GraphQL
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+
             services.AddMvc()
                 .AddNewtonsoftJson();
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             //services
             services.AddSingleton<IBotFormatService, BotFormatService>();
             services.AddSingleton<IBotModelService, BotModelService>();
-            services.AddSingleton<IDictionaryStringDoublePairService, IDictionaryStringDoublePairService>();
-            services.AddSingleton<IDictionaryStringSequencePairService, IDictionaryStringSequencePairService>();
-            services.AddSingleton<IDictionaryStringStringPairService, DictionaryStringStringPairService>();
             services.AddSingleton<ILineageMatchNodePairService, LineageMatchNodePairSevice>();
             services.AddSingleton<ILineageModelService, LineageModelService>();
             services.AddSingleton<IMLModelService, MLModelService>();
             services.AddSingleton<IMLSpecTypeService, MLSpecTypeService>();
             services.AddSingleton<IRuleFormService, RuleFormService>();
             services.AddSingleton<IRuleSetService, RuleSetService>();
+            services.AddSingleton<IConnectivity, AzureStorageConnectivity>();
+
             //types
             services.AddTransient<BotFormatType>();
             services.AddTransient<BotInputFormatType>();
@@ -75,6 +81,25 @@ namespace Darl.GraphQL
             services.AddTransient<StringStringPairType>();
             services.AddTransient<TriggerViewType>();
             services.AddTransient<VariantTextType>();
+            services.AddTransient<SetDefinitionType>();
+            services.AddTransient<ServiceConnectivityType>();
+            services.AddTransient<AzureCredentialsType>();
+            services.AddTransient<SellerCenterCredentialsType>();
+            services.AddTransient<ZendeskCredentialsType>();
+            services.AddTransient<SendGridCredentialsType>();
+            services.AddTransient<TwilioCredentialsType>();
+            services.AddTransient<ConnectivityViewType>();
+            services.AddTransient<BotUsageType>();
+            services.AddTransient<ContactType>();
+            services.AddTransient<AuthorizationsType>();
+            services.AddTransient<DefaultType>();
+
+            //root
+            services.AddTransient<DarlSchema>();
+            services.AddTransient<DarlMutation>();
+            services.AddTransient<DarlSubscription>();
+            services.AddTransient<DarlQuery>();
+
 
             services.AddSingleton<IDependencyResolver>(
                 c => new FuncDependencyResolver(type => c.GetRequiredService(type)));

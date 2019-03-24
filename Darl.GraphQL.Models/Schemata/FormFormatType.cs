@@ -11,8 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public FormFormatType()
         {
-            Field(c => c.DefaultQuestions);
-            Field(c => c.Edited);
+            Field(c => c.DefaultQuestions).DefaultValue(1); 
             Field<ListGraphType<InputFormatType>>("inputFormatList", resolve: context => context.Source.InputFormatList);
             Field<ListGraphType<InputFormatType>>("outputFormatList", resolve: context => context.Source.OutputFormatList);
         }

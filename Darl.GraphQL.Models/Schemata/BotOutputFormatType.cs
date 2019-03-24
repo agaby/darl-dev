@@ -14,8 +14,8 @@ namespace Darl.GraphQL.Models.Schemata
             Field<DisplayTypeEnum>("displayType", resolve: context => context.Source.displayType);
             Field(c => c.Name);
             Field<OutputTypeEnum>("outputType", resolve: context => context.Source.OutputType);
-            Field(c => c.Sets);
-            Field(c => c.ValueFormat);
+            Field<ListGraphType<SetDefinitionType>>("sets", resolve: context => context.Source.Sets);
+            Field(c => c.ValueFormat,true);
         }
     }
 }

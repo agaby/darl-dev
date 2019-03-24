@@ -1,25 +1,20 @@
-﻿using Darl.Connectivity.Models;
-using Darl.Lineage;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Darl.GraphQL.Models.Models
 {
-    public class BotModel
+    public class Document
     {
-        public BotModel(DateTime lastModified, string name, int size, LineageModel model = null)
+        public Document(DateTime lastModified, string name, int size)
         {
             LastModified = lastModified;
             Name = name;
             Size = size;
-            Model = model;
         }
 
         public DateTime LastModified { get; }
         public string Name { get; }
         public int Size { get; }
-        public LineageModel Model { get; }
-        public List<ConnectivityView> botconnections { get; }
     }
 }

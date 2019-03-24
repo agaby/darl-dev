@@ -10,11 +10,13 @@ namespace Darl.GraphQL.Models.Models
         {
             LastModified = lastModified;
             Name = name;
+            Size = size;
             MlModel = mlModel;
         }
 
         public DateTime LastModified { get; }
         public string Name { get; }
+        public int Size { get; }
         public DarlCommon.MLModel MlModel { get; }
     }
 }

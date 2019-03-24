@@ -10,7 +10,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Field<BotFormatType>("form", resolve: context => botFormat.GetConvertedBotFormat(context.Source.form));
             Field(c => c.ruleSkeleton);
-            Field(c => c.texts);
+            Field(c => c.texts,true);
             Field<LineageMatchTreeType>("tree", resolve: context => context.Source.tree);//
         }
     }

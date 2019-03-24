@@ -12,7 +12,7 @@ namespace Darl.GraphQL.Models.Schemata
 
         public LanguageFormatType()
         {
-            Field(c => c.DefaultLanguage);
+            Field(c => c.DefaultLanguage).DefaultValue("En");
             Field<ListGraphType<LanguageTextType>>("languageList", resolve: context => context.Source.LanguageList);
         }
     }

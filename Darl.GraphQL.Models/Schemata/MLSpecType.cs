@@ -10,18 +10,18 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public MLSpecType()
         {
-            Field(c => c.author);
-            Field(c => c.copyright);
+            Field(c => c.author,true);
+            Field(c => c.copyright, true);
             Field(c => c.darl);
-            Field(c => c.dataSchema);
-            Field(c => c.description);
-            Field(c => c.destinationRulesetName);
-            Field(c => c.license);
+            Field(c => c.dataSchema, true);
+            Field(c => c.description, true);
+            Field(c => c.destinationRulesetName, true);
+            Field(c => c.license, true);
             Field(c => c.name);
-            Field(c => c.percentTest);
-            Field(c => c.sets);
-            Field(c => c.trainData);
-            Field(c => c.version);
+            Field(c => c.percentTest).DefaultValue(0);
+            Field(c => c.sets).DefaultValue(3);
+            Field(c => c.trainData, true);
+            Field(c => c.version, true);
         }
     }
 }

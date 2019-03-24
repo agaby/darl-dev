@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Darl.Connectivity" Version="1.0.39" />
     <PackageReference Include="Darl_standard" Version="1.2.6" />
     <PackageReference Include="GraphQL" Version="2.4.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />

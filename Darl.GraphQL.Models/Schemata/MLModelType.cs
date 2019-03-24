@@ -1,4 +1,5 @@
-﻿using Darl.GraphQL.Models.Models;
+﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Services;
 using GraphQL.Types;
 using System;
@@ -9,11 +10,12 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class MLModelType : ObjectGraphType<MLModel>
     {
-        public MLModelType()
+        public MLModelType(IConnectivity connectivity)
         {
             Field(c => c.LastModified);
             Field(c => c.Name);
-            Field<MLSpecType>("mlmodel", resolve: context => context.Source.MlModel);
+            Field(c => c.Size);
+            Field<MLSpecType>("mlmodel", resolve: context => connectivity.GetMlInternalModelAsync(context.Source.Name));
         }
     }
 }

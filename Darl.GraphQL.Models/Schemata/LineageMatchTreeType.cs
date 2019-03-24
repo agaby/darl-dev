@@ -11,7 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
         public LineageMatchTreeType()
         {
             Field(c => c.changed);
-            Field(c => c.root);
+            Field<LineageMatchNodeType>("root", resolve: context => context.Source.root);
         }
     }
 }
