@@ -16,9 +16,9 @@ namespace Darl.GraphQL.Models.Services
         }
 
         IConnectivity Connectivity;
-        public async Task<BotModel> GetBotModelAsync(string name)
+        public Task<BotModel> GetBotModel(string name)
         {
-            return await Connectivity.GetBotModelAsync(name);
+            return Task.FromResult(Connectivity.GetBotModel(name));
         }
 
         public async Task<List<BotModel>> GetBotModelsAsync()

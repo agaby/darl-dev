@@ -1,4 +1,5 @@
-﻿using Darl.GraphQL.Models.Services;
+﻿using Darl.GraphQL.Models.Models;
+using Darl.GraphQL.Models.Services;
 using Darl.Lineage;
 using GraphQL.Types;
 using System;
@@ -9,12 +10,21 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class LineageMatchNodeType : ObjectGraphType<LineageMatchNode>
     {
-        public LineageMatchNodeType(ILineageMatchNodePairService pairs
-            )
+        public LineageMatchNodeType()
         {
             Field<LineageAnnotationNodeType>("annotation", resolve: context => context.Source.annotation); //
-            Field<ListGraphType<LineageMatchNodePairType>>("children", resolve: context => pairs.GetChildrenAsPairs(context.Source.children));//
+            Field<ListGraphType<LineageMatchNodePairType>>("children", resolve: context => GetChildrenAsPairs(context.Source.children));//
             Field<LineageElementType>("element", resolve: context => context.Source.element); // nullable
+        }
+
+        private List<LineageMatchNodePair> GetChildrenAsPairs(SortedList<string, LineageMatchNode> children)
+        {
+            var list = new List<LineageMatchNodePair>();
+            foreach (var k in children.Keys)
+            {
+                list.Add(new LineageMatchNodePair(k, children[k]));
+            }
+            return list;
         }
     }
 }

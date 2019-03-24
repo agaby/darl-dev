@@ -19,9 +19,9 @@ namespace Darl.GraphQL.Models.Services
         }
 
 
-        public async Task<MLModel> GetMLModelAsync(string name)
+        public Task<MLModel> GetMLModel(string name)
         {
-            return await Connectivity.GetMlModelAsync(name);
+            return Task.FromResult(Connectivity.GetMlModel(name));
         }
 
 

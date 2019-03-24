@@ -8,7 +8,7 @@ namespace Darl.GraphQL.Models.Services
 {
     public interface IBotModelService
     {
-        Task<BotModel> GetBotModelAsync(string name);
+        Task<BotModel> GetBotModel(string name);
         Task<List<BotModel>> GetBotModelsAsync();
     }
 }

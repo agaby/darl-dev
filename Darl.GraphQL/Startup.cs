@@ -40,9 +40,7 @@ namespace Darl.GraphQL
                 .AddNewtonsoftJson();
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             //services
-            services.AddSingleton<IBotFormatService, BotFormatService>();
             services.AddSingleton<IBotModelService, BotModelService>();
-            services.AddSingleton<ILineageMatchNodePairService, LineageMatchNodePairSevice>();
             services.AddSingleton<ILineageModelService, LineageModelService>();
             services.AddSingleton<IMLModelService, MLModelService>();
             services.AddSingleton<IMLSpecTypeService, MLSpecTypeService>();

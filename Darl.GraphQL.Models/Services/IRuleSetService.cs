@@ -8,7 +8,7 @@ namespace Darl.GraphQL.Models.Services
 {
     public interface IRuleSetService
     {
-        Task<RuleSet> GetRuleSetAsync(string name);
+        Task<RuleSet> GetRuleSet(string name);
         Task<List<RuleSet>> GetRuleSetsAsync();
     }
 }

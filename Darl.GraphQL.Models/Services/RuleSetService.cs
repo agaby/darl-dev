@@ -16,9 +16,9 @@ namespace Darl.GraphQL.Models.Services
             Connectivity = connectivity;
         }
 
-        public async Task<RuleSet> GetRuleSetAsync(string name)
+        public Task<RuleSet> GetRuleSet(string name)
         {
-            return await Connectivity.GetRuleSetAsync(name);
+            return Task.FromResult(Connectivity.GetRuleSet(name)); ;
         }
 
         public async Task<List<RuleSet>> GetRuleSetsAsync()

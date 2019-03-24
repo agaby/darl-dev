@@ -63,8 +63,8 @@ namespace Darl.GraphQL.Models.Schemata
                 resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetDefaults()); });
 
             FieldAsync<ListGraphType<StringGraphType>>("defaultValue",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
-                resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetDefaultValue(c.GetArgument<String>("name"))); });
+            arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
+            resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetDefaultValue(c.GetArgument<String>("name"))); });
 
 
             FieldAsync<RuleSetType>(
@@ -72,7 +72,7 @@ namespace Darl.GraphQL.Models.Schemata
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
                 resolve: async context => {
                     return await context.TryAsyncResolve(
-                        async c => await rulesets.GetRuleSetAsync(c.GetArgument<String>("name"))
+                        async c => await rulesets.GetRuleSet(c.GetArgument<String>("name"))
                     );
                 }
             );
@@ -82,7 +82,7 @@ namespace Darl.GraphQL.Models.Schemata
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
                 resolve: async context => {
                     return await context.TryAsyncResolve(
-                        async c => await mlmodels.GetMLModelAsync(c.GetArgument<String>("name"))
+                        async c => await mlmodels.GetMLModel(c.GetArgument<String>("name"))
                     );
                 }
             );
@@ -92,7 +92,7 @@ namespace Darl.GraphQL.Models.Schemata
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
                 resolve: async context => {
                     return await context.TryAsyncResolve(
-                        async c => await botmodels.GetBotModelAsync(c.GetArgument<String>("name"))
+                        async c => await botmodels.GetBotModel(c.GetArgument<String>("name"))
                     );
                 }
             );

@@ -77,9 +77,22 @@ namespace Darl.GraphQL.Models.Connectivity
             userId = _opt.Value.boaiuserid;
         }
 
-        public async Task<BotModel> GetBotModelAsync(string name)
+        public BotModel GetBotModel(string name)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var b = mlmodelsBlob.GetBlockBlobReference(WebUtility.HtmlEncode($"{userId}/{name}.model"));
+                if (b is CloudBlockBlob)
+                {
+                    var c = b as CloudBlockBlob;
+                    return new BotModel((c.Properties.Created ?? DateTime.MinValue).DateTime, RemovePath(c.Name), (int)c.Properties.Length);
+                }
+            }
+            catch
+            {
+                return null;
+            }
+            return null;
         }
 
         public async Task<List<BotModel>> GetBotModelsAsync()
@@ -161,9 +174,22 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
 
-        public async Task<RuleSet> GetRuleSetAsync(string name)
+        public RuleSet GetRuleSet(string name)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var b = mlmodelsBlob.GetBlockBlobReference(WebUtility.HtmlEncode($"{userId}/{name}.model"));
+                if (b is CloudBlockBlob)
+                {
+                    var c = b as CloudBlockBlob;
+                    return new RuleSet((c.Properties.Created ?? DateTime.MinValue).DateTime, RemovePath(c.Name), (int)c.Properties.Length);
+                }
+            }
+            catch
+            {
+                return null;
+            }
+            return null;
         }
 
         public async Task<List<RuleSet>> GetRuleSetsAsync()
@@ -182,9 +208,22 @@ namespace Darl.GraphQL.Models.Connectivity
             return list;
         }
 
-        public async Task<Models.MLModel> GetMlModelAsync(string name)
+        public Models.MLModel GetMlModel(string name)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var b = mlmodelsBlob.GetBlockBlobReference(WebUtility.HtmlEncode($"{userId}/{name}.model"));
+                if (b is CloudBlockBlob)
+                {
+                    var c = b as CloudBlockBlob;
+                    return new Models.MLModel((c.Properties.Created ?? DateTime.MinValue).DateTime, RemovePath(c.Name), (int)c.Properties.Length);
+                }                
+            }
+            catch
+            {
+                return null;
+            }
+            return null;
         }
 
         public async Task<List<Models.MLModel>> GetMlModelsAsync()
