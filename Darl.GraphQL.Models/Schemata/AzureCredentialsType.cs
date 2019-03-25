@@ -10,6 +10,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public AzureCredentialsType()
         {
+            Name = "AzureCredentials";
+            Description = "The user's credentials for accessing Azure storage.";
             Field(c => c.AzureAPIKey);
         }
     }

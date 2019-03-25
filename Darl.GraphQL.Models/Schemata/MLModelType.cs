@@ -12,6 +12,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public MLModelType(IConnectivity connectivity)
         {
+            Name = "MLModel";
+            Description = "A Machine learning model and record data";
             Field(c => c.LastModified);
             Field(c => c.Name);
             Field(c => c.Size);

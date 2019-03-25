@@ -11,6 +11,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public BotInputFormatType()
         {
+            Name = "BotInputFormat";
+            Description = "Format of a question presented to a bot user";
             Field<ListGraphType<StringGraphType>>("categories", resolve: context => context.Source.Categories);
             Field(c => c.EnforceCrisp).DefaultValue(false);
             Field(c => c.Increment).DefaultValue(0.0);

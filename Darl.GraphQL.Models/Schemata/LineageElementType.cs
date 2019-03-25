@@ -10,6 +10,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public LineageElementType()
         {
+            Name = "LineageElement";
+            Description = "A node of a hypernymy tree";
             Field(c => c.description);
             Field(c => c.lineage);
             Field<LineageTypeEnum>("lineageType", resolve: c => c.Source.type);

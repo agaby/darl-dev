@@ -10,6 +10,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public MLSpecType()
         {
+            Name = "MLSpec";
+            Description = "Machine learning model detail";
             Field(c => c.author,true);
             Field(c => c.copyright, true);
             Field(c => c.darl);

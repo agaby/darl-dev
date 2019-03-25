@@ -11,6 +11,8 @@ namespace Darl.GraphQL.Models.Schemata
 
         public TriggerViewType()
         {
+            Name = "Trigger";
+            Description = "Definitions of the actions triggered by a questionnaire being completed..";
             Field(c => c.addressText,true);
             Field<SourceTypeEnum>("addressSource", resolve: context => context.Source.addressSource);
             Field(c => c.attachmentName, true);

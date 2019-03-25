@@ -11,6 +11,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public RuleFormType()
         {
+            Name = "RuleForm";
+            Description = "Questionnaire detail";
             Field(c => c.author,true).DefaultValue(string.Empty);
             Field(c => c.copyright,true).DefaultValue(string.Empty);
             Field(c => c.currency, true).DefaultValue(string.Empty);

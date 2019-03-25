@@ -10,6 +10,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public SellerCenterCredentialsType()
         {
+            Name = "SellerCenterCredentials";
+            Description = "Credentials to access the Microsoft Seller Centre.";
             Field(c => c.LiveMode);
             Field(c => c.MerchantId);
             Field(c => c.StripeApiKey);

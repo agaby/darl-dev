@@ -11,6 +11,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public OutputFormatType()
         {
+            Name = "OutputFormat";
+            Description = "Questionnare output format data";
             Field<DisplayTypeEnum>("displayType", resolve: context => context.Source.displayType);
             Field(c => c.Hide).DefaultValue(false);
             Field(c => c.Name);

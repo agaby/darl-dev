@@ -10,6 +10,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public SendGridCredentialsType()
         {
+            Name = "SendGridCredentials";
+            Description = "Credentials to access SendGrid.";
             Field(c => c.SendGridAPIKey);
         }
     }

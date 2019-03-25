@@ -10,6 +10,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public StringStringPairType()
         {
+            Name = "StringStringPair";
+            Description = "a name value pair where the value is a string.";
             Field(c => c.Name);
             Field(c => c.Value);
         }

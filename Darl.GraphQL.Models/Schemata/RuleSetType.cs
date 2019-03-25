@@ -12,6 +12,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public RuleSetType(IRuleFormService ruleforms)
         {
+            Name = "Ruleset";
+            Description = "Top level ruleset description";
             Field(C => C.Name);
             Field(c => c.LastModified);
             Field(c => c.Size);

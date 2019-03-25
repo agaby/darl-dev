@@ -10,6 +10,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public BotOutputFormatType()
         {
+            Name = "BotOutputFormat";
+            Description = "Format of a response presented to a bot user";
             Field<ListGraphType<StringGraphType>>("categories", resolve: context => context.Source.Categories);
             Field<DisplayTypeEnum>("displayType", resolve: context => context.Source.displayType);
             Field(c => c.Name);

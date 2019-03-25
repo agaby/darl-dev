@@ -10,6 +10,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public VariantTextType()
         {
+            Name = "VariantText";
+            Description = "An alternate text in the given language.";
             Field(c => c.Language);
             Field(c => c.Text);
         }

@@ -10,6 +10,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public BotUsageType()
         {
+            Name = "BotUsage";
+            Description = "A day of bot usage and the count of interactions.";
             Field(c => c.Date);
             Field(c => c.Count);
         }

@@ -10,6 +10,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public ZendeskCredentialsType()
         {
+            Name = "ZendeskCredentials";
+            Description = "Credentials to access Zendesk.";
             Field(c => c.ZendeskApiKey);
             Field(c => c.ZendeskURL);
             Field(c => c.ZendeskUser);

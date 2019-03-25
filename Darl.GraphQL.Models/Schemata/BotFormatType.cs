@@ -12,6 +12,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public BotFormatType()
         {
+            Name = "BotFormat";
+            Description = "Input, output and constant items accessible from DARL fragments in the lineage tree.";
             Field<ListGraphType<BotInputFormatType>>("inputformatList", resolve: context => context.Source.InputFormatList);//
             Field<ListGraphType<StringDoublePairType>>("constants", resolve: context => GetSDPairsFromDictionary(context.Source.Constants));
             Field<ListGraphType<BotOutputFormatType>>("outputformatList", resolve: context => context.Source.OutputFormatList);//

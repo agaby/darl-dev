@@ -10,6 +10,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public ContactType()
         {
+            Name = "Contact";
+            Description = "A contact that has requested to be informed about DARL.ai";
             Field(c => c.Company,true);
             Field(c => c.Country, true);
             Field(c => c.Created, true);

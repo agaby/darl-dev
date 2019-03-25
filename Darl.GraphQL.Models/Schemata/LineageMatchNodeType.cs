@@ -12,6 +12,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public LineageMatchNodeType()
         {
+            Name = "LineageMatchNode";
+            Description = "A node in a text recognition tree";
             Field<LineageAnnotationNodeType>("annotation", resolve: context => context.Source.annotation); //
             Field<ListGraphType<LineageMatchNodePairType>>("children", resolve: context => GetChildrenAsPairs(context.Source.children));//
             Field<LineageElementType>("element", resolve: context => context.Source.element); // nullable

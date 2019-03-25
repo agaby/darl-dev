@@ -10,6 +10,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public LineageModelType()
         {
+            Name = "LineageModel";
+            Description = "A bot model";
             Field<BotFormatType>("form", resolve: context => GetConvertedBotFormat(context.Source.form));
             Field(c => c.ruleSkeleton);
             Field(c => c.texts,true);

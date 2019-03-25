@@ -11,6 +11,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public AuthorizationsType()
         {
+            Name = "Authorization";
+            Description = "An authorization type granting access to some responses.";
             Field(c => c.name);
             Field<StringGraphType>("id", resolve: context => context.Source.PartitionKey);
         }

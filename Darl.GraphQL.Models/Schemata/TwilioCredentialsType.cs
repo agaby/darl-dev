@@ -10,6 +10,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public TwilioCredentialsType()
         {
+            Name = "TwilioCredentials";
+            Description = "Credentials to access Twilio.";
             Field(c => c.SMSAccountFrom);
             Field(c => c.SMSAccountIdentification);
             Field(c => c.SMSAccountPassword);

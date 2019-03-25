@@ -10,6 +10,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public StringDoublePairType()
         {
+            Name = "StringDoublePair";
+            Description = "a name value pair where the value is a double.";
             Field(c => c.name);
             Field(c => c.value);
         }
