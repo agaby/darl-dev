@@ -23,12 +23,16 @@ namespace Darl.GraphQL.Models.Connectivity
         RuleSet GetRuleSet(string name);
         Task<List<RuleSet>> GetRuleSetsAsync();
         Task<LineageModel> GetLineageModelAsync(string name);
+        Task DeleteBotModel(string name);
+
         string userId { get; set; }
         Task<ServiceConnectivity> GetServiceConnectivity();
+        Task<BotModel> CreateEmptyModel(string name);
         Task<List<Contact>> GetContacts();
         Task<List<Contact>> GetContactsByLastName(string lastName);
         Task<List<Contact>> GetContactsByEmail(string email);
         Task<List<Default>> GetDefaults();
         Task<string> GetDefaultValue(string name);
+        Task SaveModel(string userId, string modelName, LineageModel model);
     }
 }

@@ -15,6 +15,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -393,6 +394,28 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var r =  await defaults.Get<TableDefaults>(userId, name);
             return r == null ? "" : r.Value;
+        }
+
+        public async Task DeleteBotModel(string name)
+        {
+            await botBlob.GetBlockBlobReference($"{userId}/{name}").DeleteAsync();
+        }
+
+        public async Task SaveModel(string userId, string modelName, LineageModel model)
+        {
+            using (var ms = new MemoryStream())
+            {
+                model.Store(ms);
+                ms.Position = 0;
+                await botBlob.GetBlockBlobReference($"{userId}/{modelName}").UploadFromStreamAsync(ms);
+            }
+        }
+
+        public async Task<BotModel> CreateEmptyModel(string name)
+        {
+            var lm = new LineageModel() { tree = new LineageMatchTree() };
+            await SaveModel(userId, name, lm);
+            return GetBotModel(name);
         }
     }
 }
