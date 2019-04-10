@@ -1,10 +1,11 @@
-﻿using GraphQL.Types;
+﻿using Darl.GraphQL.Models.Services;
+using GraphQL.Types;
 
 namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlMutation : ObjectGraphType<object>
     {
-        public DarlMutation()
+        public DarlMutation(IBotModelService botmodels)
         {
             Name = "Mutation";
 
