@@ -37,6 +37,7 @@ namespace Darl.GraphQL.Models.Schemata
                     async c => await botmodels.CreateDefaultModel(name));
             });
 
+            //                Delete
             FieldAsync<BotModelType>("deleteBotModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
             {
                 var name = context.GetArgument<string>("name");
@@ -44,7 +45,6 @@ namespace Darl.GraphQL.Models.Schemata
                     async c => await botmodels.DeleteModel(name));
             });
 
-            //                Delete
             //            Authorization
             //                Create
             //                Update
