@@ -91,6 +91,8 @@ namespace Darl.GraphQL
             services.AddTransient<ContactType>();
             services.AddTransient<AuthorizationsType>();
             services.AddTransient<DefaultType>();
+            services.AddTransient<ContactInputType>();
+            services.AddTransient<ContactUpdateType>();
 
             //root
             services.AddTransient<DarlSchema>();

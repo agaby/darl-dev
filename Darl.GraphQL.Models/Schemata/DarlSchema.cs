@@ -11,7 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
         public DarlSchema(DarlQuery query, DarlMutation mutation, DarlSubscription subscription, IDependencyResolver resolver)
         {
             Query = query;
- //           Mutation = mutation;
+            Mutation = mutation;
 //            Subscription = subscription;
             DependencyResolver = resolver;
         }

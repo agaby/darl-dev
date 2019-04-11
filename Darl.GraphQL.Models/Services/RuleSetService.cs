@@ -16,6 +16,19 @@ namespace Darl.GraphQL.Models.Services
             Connectivity = connectivity;
         }
 
+        public async Task<RuleSet> CreateEmptyRuleSet(string name)
+        {
+            return await Connectivity.CreateEmptyRuleSet(name);
+        }
+
+        public async Task<RuleSet> DeleteRuleSet(string name)
+        {
+            var res = Connectivity.GetRuleSet(name);
+            if (res != null)
+                await Connectivity.DeleteRuleSet(name);
+            return res;
+        }
+
         public Task<RuleSet> GetRuleSet(string name)
         {
             return Task.FromResult(Connectivity.GetRuleSet(name)); ;

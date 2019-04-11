@@ -10,5 +10,11 @@ namespace Darl.GraphQL.Models.Services
     {
         Task<BotModel> GetBotModel(string name);
         Task<List<BotModel>> GetBotModelsAsync();
+
+        Task<BotModel> DeleteModel(String name);
+
+        Task<BotModel> CreateEmptyModel(string name);
+
+        Task<BotModel> CreateDefaultModel(string name);
     }
 }

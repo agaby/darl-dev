@@ -10,5 +10,9 @@ namespace Darl.GraphQL.Models.Services
     {
         Task<List<MLModel>> GetMLModelsAsync();
         Task<MLModel> GetMLModel(string name);
+
+        Task<MLModel> DeleteModel(String name);
+
+        Task<MLModel> CreateEmptyModel(string name);
     }
 }

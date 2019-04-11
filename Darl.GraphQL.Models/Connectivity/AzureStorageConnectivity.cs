@@ -15,6 +15,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -358,6 +359,12 @@ namespace Darl.GraphQL.Models.Connectivity
             return list;
         }
 
+        public async Task<Contact> GetContactById(string Id)
+        {
+            var tc = await contacts.Get<TableContacts>(userId, Id);
+            return new Contact { RowKey = tc.RowKey, Company = tc.Company, Country = tc.Country, Created = tc.Created.ToString(), Email = tc.Email, FirstName = tc.FirstName, IntroSent = tc.InfoSent, LastName = tc.LastName, Notes = tc.Notes, Phone = tc.Phone, Sector = tc.Sector, Source = tc.Source, Title = tc.Title };
+        }
+
         public async Task<List<TableAuthorizations>> GetAuthorizations(string name)
         {
             var list = new List<TableAuthorizations>();
@@ -393,6 +400,113 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var r =  await defaults.Get<TableDefaults>(userId, name);
             return r == null ? "" : r.Value;
+        }
+
+        public async Task DeleteBotModel(string name)
+        {
+            await botBlob.GetBlockBlobReference($"{userId}/{name}").DeleteAsync();
+        }
+
+        public async Task SaveModel(string userId, string modelName, LineageModel model)
+        {
+            using (var ms = new MemoryStream())
+            {
+                model.Store(ms);
+                ms.Position = 0;
+                await botBlob.GetBlockBlobReference($"{userId}/{modelName}").UploadFromStreamAsync(ms);
+            }
+        }
+
+        public async Task<BotModel> CreateEmptyModel(string name)
+        {
+            var lm = new LineageModel() { tree = new LineageMatchTree() };
+            await SaveModel(userId, name, lm);
+            return GetBotModel(name);
+        }
+
+        public async Task<Models.MLModel> CreateEmptyMLModel(string name)
+        {
+            var ml = new DarlCommon.MLModel() { name = name, sets = 3, percentTest = 0, version = "0.0" };
+            await SaveMLModel(userId, name, ml);
+            return GetMlModel(name);
+        }
+
+        private async Task SaveMLModel(string userId, string name, DarlCommon.MLModel mlm)
+        {
+            var json = JsonConvert.SerializeObject(mlm, Formatting.Indented, new StringEnumConverter());
+            using (var stream = new MemoryStream())
+            {
+                StreamWriter writer = new StreamWriter(stream);
+                writer.Write(json);
+                writer.Flush();
+                stream.Position = 0;
+                var blockBlob = mlmodelsBlob.GetBlockBlobReference(WebUtility.HtmlEncode($"{userId}/{name}"));
+                await blockBlob.UploadFromStreamAsync(stream);
+            }
+        }
+
+        public async Task DeleteMLModel(string name)
+        {
+            await mlmodelsBlob.GetBlockBlobReference($"{userId}/{name}").DeleteAsync();
+        }
+
+        public async Task<RuleSet> CreateEmptyRuleSet(string name)
+        {
+            var rf = new RuleForm { name = name, darl = "ruleset new_ruleset/n{/n}/n" };
+            await SaveRuleSet(userId, name, rf);
+            return GetRuleSet(name);
+        }
+
+        public async Task DeleteRuleSet(string name)
+        {
+            await ruleBlob.GetBlockBlobReference($"{userId}/{name}").DeleteAsync();
+        }
+
+        public async Task SaveRuleSet(string userId, string rulesetName, RuleForm rf)
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(rf, Formatting.Indented, new StringEnumConverter());
+                using (var stream = new MemoryStream())
+                {
+                    StreamWriter writer = new StreamWriter(stream);
+                    writer.Write(json);
+                    writer.Flush();
+                    stream.Position = 0;
+                    var blockBlob = ruleBlob.GetBlockBlobReference(WebUtility.HtmlEncode($"{userId}/{rulesetName}"));
+                    await blockBlob.UploadFromStreamAsync(stream);
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
+        public async Task<Contact> CreateContactAsync(Contact contact)
+        {
+            var tc = new TableContacts { PartitionKey = userId, RowKey = contact.RowKey, Company = contact.Company, FirstName = contact.FirstName, LastName = contact.LastName, Email = contact.Email, InfoSent = contact.IntroSent, Country = contact.Country, Notes = contact.Notes, Phone = contact.Phone, Sector = contact.Sector, Source = contact.Source, Title = contact.Title };
+            var insertOperation = TableOperation.InsertOrReplace(tc);
+            await contacts.ExecuteAsync(insertOperation);
+            return await GetContactById(contact.RowKey);
+        }
+
+        public async Task<Contact> UpdateContactAsync(Contact contact)
+        {
+            var tc = new TableContacts { PartitionKey = userId, RowKey = contact.RowKey, Company = contact.Company, FirstName = contact.FirstName, LastName = contact.LastName, Email = contact.Email, InfoSent = contact.IntroSent, Country = contact.Country, Notes = contact.Notes, Phone = contact.Phone, Sector = contact.Sector, Source = contact.Source, Title = contact.Title };
+            var insertOperation = TableOperation.Merge(tc);
+            await contacts.ExecuteAsync(insertOperation);
+            return await GetContactById(contact.RowKey);
+        }
+
+        public async Task DeleteContactAsync(string id)
+        {
+            var contact = await contacts.Get<TableContacts>(userId, id);
+            if (contact != null)
+            {
+                var deleteOperation = TableOperation.Delete(contact);
+                await contacts.ExecuteAsync(deleteOperation);
+            }
         }
     }
 }

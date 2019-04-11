@@ -18,6 +18,18 @@ namespace Darl.GraphQL.Models.Services
             Connectivity = connectivity;
         }
 
+        public async Task<MLModel> CreateEmptyModel(string name)
+        {
+            return await Connectivity.CreateEmptyMLModel(name);
+        }
+
+        public async Task<MLModel> DeleteModel(string name)
+        {
+            var res = Connectivity.GetMlModel(name);
+            if (res != null)
+                await Connectivity.DeleteMLModel(name);
+            return res;
+        }
 
         public Task<MLModel> GetMLModel(string name)
         {

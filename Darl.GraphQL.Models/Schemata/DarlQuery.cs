@@ -77,7 +77,7 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             );
 
-            FieldAsync<RuleSetType>(
+            FieldAsync<MLModelType>(
                 "mlmodelByName",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
                 resolve: async context => {
@@ -87,7 +87,7 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             );
 
-            FieldAsync<RuleSetType>(
+            FieldAsync<BotModelType>(
                 "botmodelByName",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
                 resolve: async context => {

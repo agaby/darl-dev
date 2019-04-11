@@ -25,5 +25,23 @@ namespace Darl.GraphQL.Models.Services
         {
             return await Connectivity.GetBotModelsAsync();
         }
+
+        public async Task<BotModel> DeleteModel(string name)
+        {
+            var res =  Connectivity.GetBotModel(name);
+            if(res != null)
+                await Connectivity.DeleteBotModel(name);
+            return res;
+        }
+
+        public async Task<BotModel> CreateEmptyModel(string name)
+        {
+            return await Connectivity.CreateEmptyModel(name);
+        }
+
+        public async Task<BotModel> CreateDefaultModel(string name)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
