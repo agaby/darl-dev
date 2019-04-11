@@ -68,7 +68,7 @@ namespace Darl.GraphQL.Models.Schemata
                            }
                        );
             //                Update
-            /*             Field<ContactType>(
+                         Field<ContactType>(
                             "updateContact",
                             arguments: new QueryArguments(
                                 new QueryArgument<NonNullGraphType<ContactUpdateType>> { Name = "contact" }),
@@ -78,9 +78,9 @@ namespace Darl.GraphQL.Models.Schemata
                                 var contact = new Contact { Company = contactUpdate.Company, Country = contactUpdate.Country, Created = DateTime.Now.ToString(), Email = contactUpdate.Email, FirstName = contactUpdate.FirstName, IntroSent = contactUpdate.IntroSent, LastName = contactUpdate.LastName, Notes = contactUpdate.Notes, Phone = contactUpdate.Phone, RowKey = contactUpdate.Id, Sector = contactUpdate.Sector, Source = contactUpdate.Source, Title = contactUpdate.Title };
                                 return connectivity.UpdateContactAsync(contact);
                             }
-                        );*/
+                        );
             //                Delete
-            Field<ContactType>(
+                        Field<ContactType>(
                            "deleteContact",
                            arguments: new QueryArguments(
                                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" }),

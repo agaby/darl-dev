@@ -31,10 +31,10 @@ namespace Darl.GraphQL
         public void ConfigureServices(IServiceCollection services)
         {
 
-   /*         services.Configure<IISServerOptions>(options =>
+            services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;
-            });*/
+            });
 
             services.AddMvc()
                 .AddNewtonsoftJson();

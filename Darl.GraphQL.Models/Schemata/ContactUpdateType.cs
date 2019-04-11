@@ -10,7 +10,7 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public ContactUpdateType()
         {
-            Name = "Contact";
+            Name = "ContactUpdate";
             Description = "A contact that has requested to be informed about DARL.ai";
             Field<NonNullGraphType<StringGraphType>>("company");
             Field<NonNullGraphType<StringGraphType>>("firstName");
