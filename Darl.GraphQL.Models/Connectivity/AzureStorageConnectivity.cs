@@ -359,6 +359,12 @@ namespace Darl.GraphQL.Models.Connectivity
             return list;
         }
 
+        public async Task<Contact> GetContactById(string Id)
+        {
+            var tc = await contacts.Get<TableContacts>(userId, Id);
+            return new Contact { RowKey = tc.RowKey, Company = tc.Company, Country = tc.Country, Created = tc.Created.ToString(), Email = tc.Email, FirstName = tc.FirstName, IntroSent = tc.InfoSent, LastName = tc.LastName, Notes = tc.Notes, Phone = tc.Phone, Sector = tc.Sector, Source = tc.Source, Title = tc.Title };
+        }
+
         public async Task<List<TableAuthorizations>> GetAuthorizations(string name)
         {
             var list = new List<TableAuthorizations>();
@@ -442,6 +448,65 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task DeleteMLModel(string name)
         {
             await mlmodelsBlob.GetBlockBlobReference($"{userId}/{name}").DeleteAsync();
+        }
+
+        public async Task<RuleSet> CreateEmptyRuleSet(string name)
+        {
+            var rf = new RuleForm { name = name, darl = "ruleset new_ruleset/n{/n}/n" };
+            await SaveRuleSet(userId, name, rf);
+            return GetRuleSet(name);
+        }
+
+        public async Task DeleteRuleSet(string name)
+        {
+            await ruleBlob.GetBlockBlobReference($"{userId}/{name}").DeleteAsync();
+        }
+
+        public async Task SaveRuleSet(string userId, string rulesetName, RuleForm rf)
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(rf, Formatting.Indented, new StringEnumConverter());
+                using (var stream = new MemoryStream())
+                {
+                    StreamWriter writer = new StreamWriter(stream);
+                    writer.Write(json);
+                    writer.Flush();
+                    stream.Position = 0;
+                    var blockBlob = ruleBlob.GetBlockBlobReference(WebUtility.HtmlEncode($"{userId}/{rulesetName}"));
+                    await blockBlob.UploadFromStreamAsync(stream);
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
+        public async Task<Contact> CreateContactAsync(Contact contact)
+        {
+            var tc = new TableContacts { PartitionKey = userId, RowKey = contact.RowKey, Company = contact.Company, FirstName = contact.FirstName, LastName = contact.LastName, Email = contact.Email, InfoSent = contact.IntroSent, Country = contact.Country, Notes = contact.Notes, Phone = contact.Phone, Sector = contact.Sector, Source = contact.Source, Title = contact.Title };
+            var insertOperation = TableOperation.InsertOrReplace(tc);
+            await contacts.ExecuteAsync(insertOperation);
+            return await GetContactById(contact.RowKey);
+        }
+
+        public async Task<Contact> UpdateContactAsync(Contact contact)
+        {
+            var tc = new TableContacts { PartitionKey = userId, RowKey = contact.RowKey, Company = contact.Company, FirstName = contact.FirstName, LastName = contact.LastName, Email = contact.Email, InfoSent = contact.IntroSent, Country = contact.Country, Notes = contact.Notes, Phone = contact.Phone, Sector = contact.Sector, Source = contact.Source, Title = contact.Title };
+            var insertOperation = TableOperation.Merge(tc);
+            await contacts.ExecuteAsync(insertOperation);
+            return await GetContactById(contact.RowKey);
+        }
+
+        public async Task DeleteContactAsync(string id)
+        {
+            var contact = await contacts.Get<TableContacts>(userId, id);
+            if (contact != null)
+            {
+                var deleteOperation = TableOperation.Delete(contact);
+                await contacts.ExecuteAsync(deleteOperation);
+            }
         }
     }
 }

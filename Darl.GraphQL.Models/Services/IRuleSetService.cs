@@ -10,5 +10,9 @@ namespace Darl.GraphQL.Models.Services
     {
         Task<RuleSet> GetRuleSet(string name);
         Task<List<RuleSet>> GetRuleSetsAsync();
+
+        Task<RuleSet> DeleteRuleSet(String name);
+
+        Task<RuleSet> CreateEmptyRuleSet(string name);
     }
 }
