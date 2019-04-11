@@ -417,5 +417,31 @@ namespace Darl.GraphQL.Models.Connectivity
             await SaveModel(userId, name, lm);
             return GetBotModel(name);
         }
+
+        public async Task<Models.MLModel> CreateEmptyMLModel(string name)
+        {
+            var ml = new DarlCommon.MLModel() { name = name, sets = 3, percentTest = 0, version = "0.0" };
+            await SaveMLModel(userId, name, ml);
+            return GetMlModel(name);
+        }
+
+        private async Task SaveMLModel(string userId, string name, DarlCommon.MLModel mlm)
+        {
+            var json = JsonConvert.SerializeObject(mlm, Formatting.Indented, new StringEnumConverter());
+            using (var stream = new MemoryStream())
+            {
+                StreamWriter writer = new StreamWriter(stream);
+                writer.Write(json);
+                writer.Flush();
+                stream.Position = 0;
+                var blockBlob = mlmodelsBlob.GetBlockBlobReference(WebUtility.HtmlEncode($"{userId}/{name}"));
+                await blockBlob.UploadFromStreamAsync(stream);
+            }
+        }
+
+        public async Task DeleteMLModel(string name)
+        {
+            await mlmodelsBlob.GetBlockBlobReference($"{userId}/{name}").DeleteAsync();
+        }
     }
 }

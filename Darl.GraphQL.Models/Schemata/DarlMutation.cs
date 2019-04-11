@@ -5,7 +5,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlMutation : ObjectGraphType<object>
     {
-        public DarlMutation(IBotModelService botmodels)
+        public DarlMutation(IBotModelService botmodels, IMLModelService mlmodels)
         {
             Name = "Mutation";
 
@@ -70,8 +70,20 @@ namespace Darl.GraphQL.Models.Schemata
             //                Delete
             //            MLModel
             //                Create MLSpec as an object
-            //                Update as an object
+            FieldAsync<MLModelType>("createEmptyMLModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
+            {
+                var name = context.GetArgument<string>("name");
+                return await context.TryAsyncResolve(
+                    async c => await mlmodels.CreateEmptyModel(name));
+            });
             //                Delete
+            FieldAsync<MLModelType>("deleteMLModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
+            {
+                var name = context.GetArgument<string>("name");
+                return await context.TryAsyncResolve(
+                    async c => await mlmodels.DeleteModel(name));
+            });
+
             //            BotFormat
             //                Create as object
             //                Add, update Delete constants
@@ -86,6 +98,15 @@ namespace Darl.GraphQL.Models.Schemata
             //                Create as object
             //                Update as object
             //                delete
+            //            RuleForm
+            //                create from DARL
+            //                Update DARL
+            //            FormFormat
+            //                Update Input
+            //                Update Output
+            //            Language
+            //                update text
+            //                update variant
 
 
 
