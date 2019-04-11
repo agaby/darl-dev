@@ -30,11 +30,18 @@ namespace Darl.GraphQL.Models.Schemata
             });
 
             //                create a default model
-            FieldAsync<BotModelType>("createEmptyBotModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
+            FieldAsync<BotModelType>("createDefaultBotModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
             {
                 var name = context.GetArgument<string>("name");
                 return await context.TryAsyncResolve(
                     async c => await botmodels.CreateDefaultModel(name));
+            });
+
+            FieldAsync<BotModelType>("deleteBotModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
+            {
+                var name = context.GetArgument<string>("name");
+                return await context.TryAsyncResolve(
+                    async c => await botmodels.DeleteModel(name));
             });
 
             //                Delete
