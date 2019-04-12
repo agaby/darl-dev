@@ -2,6 +2,7 @@
 using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Services;
+using DarlCommon;
 using GraphQL.Types;
 using System;
 
@@ -39,12 +40,62 @@ namespace Darl.GraphQL.Models.Schemata
 
             //            Authorization
             //                Create
-            //                Update
+            FieldAsync<AuthorizationsType>("createAuthorization", 
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
+
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var name = context.GetArgument<string>("name");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreateAuthorization(botModelName,name));
+                });
             //                Delete
+            FieldAsync<AuthorizationsType>("deleteAuthorization", 
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
+                    ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var name = context.GetArgument<string>("name");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.DeleteAuthorization(botModelName,name));
+                });
+
             //            BotConnection
             //                Create
-            //                Update 
+            FieldAsync<ConnectivityViewType>("createBotConnection",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "appId" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "password" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var appId = context.GetArgument<string>("appId");
+                    var password = context.GetArgument<string>("password");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreateBotConnection(botModelName, appId, password));
+                });
+
             //                Delete
+            FieldAsync<ConnectivityViewType>("deleteBotConnection",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "appId" }
+                    ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var appId = context.GetArgument<string>("appId");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.DeleteBotConnection(botModelName, appId));
+                });
             //            LineageModel
             //                Create from default
             //                Delete
@@ -55,7 +106,7 @@ namespace Darl.GraphQL.Models.Schemata
             //            Contact
             //                Create
 
-                      Field<ContactType>(
+            Field<ContactType>(
                            "createContact",
                            arguments: new QueryArguments(
                                new QueryArgument<NonNullGraphType<ContactInputType>> { Name = "contact" }),
@@ -94,8 +145,22 @@ namespace Darl.GraphQL.Models.Schemata
                        );
             //            Default
             //                Create
-            //                Update
+            FieldAsync<DefaultType>("createUpdateDefault", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }, new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "value" }), 
+                resolve: async context =>
+            {
+                var name = context.GetArgument<string>("name");
+                var value = context.GetArgument<string>("value");
+                return await context.TryAsyncResolve(
+                    async c => await connectivity.CreateUpdateDefault(name, value));
+            });
             //                Delete
+            FieldAsync<DefaultType>("deleteDefault", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.DeleteDefault(name));
+                });
             //            MLModel
             //                Create MLSpec as an object
             FieldAsync<MLModelType>("createEmptyMLModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
@@ -127,14 +192,76 @@ namespace Darl.GraphQL.Models.Schemata
             //                Update as object
             //                delete
             //            RuleForm
-            //                create from DARL
-            //                Update DARL
+            //                create/update from DARL
+            FieldAsync<RuleFormType>("createRuleFormFromDarl", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }, new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "darl" }), resolve: async context =>
+            {
+                var name = context.GetArgument<string>("name");
+                var darl = context.GetArgument<string>("darl");
+                return await context.TryAsyncResolve(
+                    async c => await connectivity.CreateRuleFormFromDarl(name, darl));
+            });
             //            FormFormat
             //                Update Input
+            FieldAsync<InputFormatType>("updateRuleFormInputFormat", 
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" }, 
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "inputName" },
+                new QueryArgument<NonNullGraphType<InputFormatUpdateType>> { Name = "inputUpdate" }
+                ), 
+                resolve: async context =>
+            {
+                var ruleSetName = context.GetArgument<string>("ruleSetName");
+                var inputName = context.GetArgument<string>("inputName");
+                var inputUpdate = context.GetArgument<InputFormatUpdate>("inputUpdate");
+                return await context.TryAsyncResolve(
+                    async c => await connectivity.UpdateRuleFormInputFormat(ruleSetName, inputName, inputUpdate));
+            });
+
             //                Update Output
+            FieldAsync<OutputFormatType>("updateRuleFormOutputFormat",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "outputName" },
+                new QueryArgument<NonNullGraphType<InputFormatUpdateType>> { Name = "outputUpdate" }
+                ),
+                resolve: async context =>
+                {
+                    var ruleSetName = context.GetArgument<string>("ruleSetName");
+                    var outputName = context.GetArgument<string>("outputName");
+                    var outputUpdate = context.GetArgument<OutputFormatUpdate>("outputUpdate");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.UpdateRuleFormOutputFormat(ruleSetName, outputName, outputUpdate));
+                });
+
             //            Language
             //                update text
+            FieldAsync<LanguageTextType>("updateRuleFormLanguageText",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "languageName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "languageText" }
+                ),
+                resolve: async context =>
+                {
+                    var ruleSetName = context.GetArgument<string>("ruleSetName");
+                    var languageName = context.GetArgument<string>("languageName");
+                    var languageText = context.GetArgument<string>("languageText");
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.UpdateRuleFormLanguageText(ruleSetName, languageName, languageText));
+                });
             //                update variant
+            FieldAsync<VariantTextType>("updateRuleFormVariantText",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "languageName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "isoLanguageName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "variantText" }
+                ),
+                resolve: async context =>
+                {
+                    var ruleSetName = context.GetArgument<string>("ruleSetName");
+                    var languageName = context.GetArgument<string>("languageName");
+                    var isoLanguageName = context.GetArgument<string>("isoLanguageName");
+                    var variantText = context.GetArgument<string>("variantText");
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.UpdateRuleFormVariantText(ruleSetName, languageName, isoLanguageName, variantText));
+                });
             //            RuleSet
             //                Create Empty
             FieldAsync<MLModelType>("createEmptyRuleSet", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>

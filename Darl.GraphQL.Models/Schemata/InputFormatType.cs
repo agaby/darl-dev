@@ -9,7 +9,7 @@ namespace Darl.GraphQL.Models.Schemata
         public InputFormatType()
         {
             Name = "InputFormat";
-            Description = "Formatfor an input used in a questionnaire";
+            Description = "Format for an input used in a questionnaire";
             Field(c => c.Name);
             Field<ListGraphType<StringGraphType>>("categories", resolve: context => context.Source.Categories);
             Field(c => c.EnforceCrisp).DefaultValue(false);

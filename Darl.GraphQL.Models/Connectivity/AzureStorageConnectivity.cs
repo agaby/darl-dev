@@ -508,5 +508,60 @@ namespace Darl.GraphQL.Models.Connectivity
                 await contacts.ExecuteAsync(deleteOperation);
             }
         }
+
+        public Task<RuleForm> CreateRuleFormFromDarl(string name, string darl)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<InputFormat> UpdateRuleFormInputFormat(string name, string inputName, InputFormatUpdate inputUpdate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OutputFormat> UpdateRuleFormOutputFormat(string ruleSetName, string outputName, OutputFormatUpdate outputUpdate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<LanguageText> UpdateRuleFormLanguageText(string ruleSetName, string languageName, string languageText)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<VariantText> UpdateRuleFormVariantText(string ruleSetName, string languageName, string isoLanguageName, string variantText)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Default> CreateUpdateDefault(string name, string value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Default> DeleteDefault(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<TableAuthorizations> CreateAuthorization(string name, string name1)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<TableAuthorizations> DeleteAuthorization(string name, string name1)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ConnectivityView> CreateBotConnection(string botModelName, string appId, string password)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ConnectivityView> DeleteBotConnection(string botModelName, string appId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

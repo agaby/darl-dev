@@ -42,5 +42,16 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<Contact> UpdateContactAsync(Contact contact);
         Task<Contact> GetContactById(string Id);
         Task DeleteContactAsync(string id);
+        Task<RuleForm> CreateRuleFormFromDarl(string name, string darl);
+        Task<InputFormat> UpdateRuleFormInputFormat(string name, string inputName, InputFormatUpdate inputUpdate);
+        Task<OutputFormat> UpdateRuleFormOutputFormat(string ruleSetName, string outputName, OutputFormatUpdate outputUpdate);
+        Task<LanguageText> UpdateRuleFormLanguageText(string ruleSetName, string languageName, string languageText);
+        Task<VariantText> UpdateRuleFormVariantText(string ruleSetName, string languageName, string isoLanguageName, string variantText);
+        Task<TableAuthorizations> CreateAuthorization(string name, string name1);
+        Task<Default> CreateUpdateDefault(string name, string value);
+        Task<Default> DeleteDefault(string name);
+        Task<TableAuthorizations> DeleteAuthorization(string name, string name1);
+        Task<ConnectivityView> CreateBotConnection(string botModelName, string appId, string password);
+        Task<ConnectivityView> DeleteBotConnection(string botModelName, string appId);
     }
 }
