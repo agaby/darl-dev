@@ -95,6 +95,10 @@ namespace Darl.GraphQL
             services.AddTransient<ContactUpdateType>();
             services.AddTransient<InputFormatUpdateType>();
             services.AddTransient<OutputFormatUpdateType>();
+            services.AddTransient<BotOutputFormatUpdateType>();
+            services.AddTransient<LineageNodeDefinitionType>();
+            services.AddTransient<LineageRecordType>();
+            services.AddTransient<LineageNodeDefinitionUpdateType>();
 
             //root
             services.AddTransient<DarlSchema>();

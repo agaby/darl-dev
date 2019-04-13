@@ -13,6 +13,7 @@ namespace Darl.GraphQL.Models.Schemata
         public DarlMutation(IBotModelService botmodels, IMLModelService mlmodels, IRuleSetService rules, IConnectivity connectivity)
         {
             Name = "Mutation";
+            Description = "Make changes to the contents of your account.";
             //           BotModel
             //                create an empty model
             FieldAsync<BotModelType>("createEmptyBotModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
@@ -96,28 +97,45 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await connectivity.DeleteBotConnection(botModelName, appId));
                 });
-            //            LineageModel
-            //                Create from default
-            //                Delete
+            //            LineageTree
+
+            //                CreateNode
+            //                RenameNode
+            //                DeleteNode
+            //                PasteNode 
+            //                CreatePhrase
+            //                DeletePhrase
+            //                SaveAttributes
+            FieldAsync<LineageNodeDefinitionUpdateType>("updateAttribute",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                new QueryArgument<NonNullGraphType<LineageNodeDefinitionUpdateType>> { Name = "attribute" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var attribute = context.GetArgument<LineageNodeDefinitionUpdate>("attribute");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.UpdateAttribute(botModelName, attribute));
+                });
+            //                
             //            ServiceConnectivity
             //                Edit AzureCredentials
             //                Edit SellerCenter
             //                Etc..
             //            Contact
             //                Create
-
             Field<ContactType>(
-                           "createContact",
-                           arguments: new QueryArguments(
-                               new QueryArgument<NonNullGraphType<ContactInputType>> { Name = "contact" }),
-                           resolve: context =>
-                           {
-                               var contactInput = context.GetArgument<ContactInput>("contact");
-                               var id = Guid.NewGuid().ToString();
-                               var contact = new Contact { Company = contactInput.Company, Country = contactInput.Country, Created = DateTime.Now.ToString(), Email = contactInput.Email, FirstName = contactInput.FirstName, IntroSent = contactInput.IntroSent, LastName = contactInput.LastName, Notes = contactInput.Notes, Phone = contactInput.Phone, RowKey = id, Sector = contactInput.Sector, Source = contactInput.Source, Title = contactInput.Title };
-                               return connectivity.CreateContactAsync(contact);
-                           }
-                       );
+                "createContact",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<ContactInputType>> { Name = "contact" }),
+                resolve: context =>
+                {
+                    var contactInput = context.GetArgument<ContactInput>("contact");
+                    var id = Guid.NewGuid().ToString();
+                    var contact = new Contact { Company = contactInput.Company, Country = contactInput.Country, Created = DateTime.Now.ToString(), Email = contactInput.Email, FirstName = contactInput.FirstName, IntroSent = contactInput.IntroSent, LastName = contactInput.LastName, Notes = contactInput.Notes, Phone = contactInput.Phone, RowKey = id, Sector = contactInput.Sector, Source = contactInput.Source, Title = contactInput.Title };
+                    return connectivity.CreateContactAsync(contact);
+                }
+            );
             //                Update
                          Field<ContactType>(
                             "updateContact",
@@ -178,19 +196,120 @@ namespace Darl.GraphQL.Models.Schemata
             });
 
             //            BotFormat
-            //                Create as object
-            //                Add, update Delete constants
-            //                Add, update Delete stores
+            //                CreateUpdateConstant
+            FieldAsync<StringDoublePairType>("createUpdateConstant", 
+                arguments: 
+                new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" }, 
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" },
+                    new QueryArgument<NonNullGraphType<FloatGraphType>> { Name = "value" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var name = context.GetArgument<string>("name");
+                    var value = context.GetArgument<double>("value");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreateUpdateConstant(botModelName, name, value));
+                });
+            //                Delete constant
+            FieldAsync<StringDoublePairType>("deleteConstant", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var name = context.GetArgument<string>("name");
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.DeleteConstant(botModelName, name));
+                });
+
+            //                CreateUpdateStore
+            FieldAsync<StringGraphType>("createUpdateStore",
+                arguments:
+                new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var name = context.GetArgument<string>("name");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreateUpdateStore(botModelName, name));
+                });
+            //                Delete store
+            FieldAsync<StringDoublePairType>("deleteStore", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var name = context.GetArgument<string>("name");
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.DeleteStore(botModelName, name));
+                });
             //                Add, update Delete sequences
             //                Add, update Delete strings
+            FieldAsync<StringStringPairType>("createUpdateString",
+                arguments:
+                new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "value" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var name = context.GetArgument<string>("name");
+                    var value = context.GetArgument<string>("value");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreateUpdateString(botModelName, name, value));
+                });
+            //                Delete constant
+            FieldAsync<StringStringPairType>("deleteString", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var name = context.GetArgument<string>("name");
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.DeleteString(botModelName, name));
+                });
             //            BotInputFormat
-            //                Create as object
-            //                Update as object
-            //                Delete
+            //                Update
+            FieldAsync<BotInputFormatType>("updateBotFormInputFormat",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "inputName" },
+                new QueryArgument<NonNullGraphType<InputFormatUpdateType>> { Name = "inputUpdate" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var inputName = context.GetArgument<string>("inputName");
+                    var inputUpdate = context.GetArgument<InputFormatUpdate>("inputUpdate");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.UpdateBotModelInputFormat(botModelName, inputName, inputUpdate));
+                });
+
             //            BotOutputFormat
-            //                Create as object
-            //                Update as object
-            //                delete
+            FieldAsync<BotOutputFormatType>("updateBotFormOutputFormat",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "outputName" },
+                new QueryArgument<NonNullGraphType<BotOutputFormatUpdateType>> { Name = "outputUpdate" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var outputName = context.GetArgument<string>("outputName");
+                    var outputUpdate = context.GetArgument<BotOutputFormatUpdate>("outputUpdate");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.UpdateBotModelOutputFormat(botModelName, outputName, outputUpdate));
+                });
             //            RuleForm
             //                create/update from DARL
             FieldAsync<RuleFormType>("createRuleFormFromDarl", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }, new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "darl" }), resolve: async context =>

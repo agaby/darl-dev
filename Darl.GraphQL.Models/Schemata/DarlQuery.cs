@@ -11,6 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
         public DarlQuery(IBotModelService botmodels, IMLModelService mlmodels, IRuleSetService rulesets, IConnectivity connectivity)
         {
             Name = "Query";
+            Description = "View the contents of your account.";
             FieldAsync<ListGraphType<RuleSetType>>(
                 "rulesets",
                 resolve: async context => {
@@ -96,6 +97,60 @@ namespace Darl.GraphQL.Models.Schemata
                     );
                 }
             );
+
+            FieldAsync< ListGraphType<LineageNodeDefinitionType>>("getChildrenLineageNodes",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "path" },
+                    new QueryArgument<NonNullGraphType<BooleanGraphType>> { Name = "isRoot" }
+                    ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var path = context.GetArgument<string>("path");
+                    var isRoot = context.GetArgument<bool>("isRoot");
+                    return await context.TryAsyncResolve(
+                         async c => await connectivity.GetChildrenLineageNodes(botModelName, path, isRoot));
+                });
+
+            FieldAsync<ListGraphType<LineageRecordType>>("getLineagesForWord",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "isoLanguage" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "word" }
+                    ),
+                resolve: async context =>
+                {
+                    var isoLanguage = context.GetArgument<string>("isoLanguage");
+                    var word = context.GetArgument<string>("word");
+                    return await context.TryAsyncResolve(
+                         async c => await connectivity.GetLineagesForWord(isoLanguage, word));
+                });
+
+            FieldAsync<ListGraphType<LineageNodeDefinitionType>>("getAttribute",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "phrase" }
+                    ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var phrase = context.GetArgument<string>("phrase");
+                    return await context.TryAsyncResolve(
+                         async c => await connectivity.GetAttribute(botModelName,phrase));
+                });
+
+            FieldAsync<ListGraphType<LineageNodeDefinitionType>>("getAttributeFromPath",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "path" }
+                    ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var path = context.GetArgument<string>("path");
+                    return await context.TryAsyncResolve(
+                         async c => await connectivity.GetAttributeFromPath(botModelName, path));
+                });
         }
     }
 }

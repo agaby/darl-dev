@@ -563,5 +563,70 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             throw new NotImplementedException();
         }
+
+        public Task<BotInputFormat> UpdateBotModelInputFormat(string botModelName, string inputName, InputFormatUpdate inputUpdate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<BotOutputFormat> UpdateBotModelOutputFormat(string botModelName, string outputName, BotOutputFormatUpdate outputUpdate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<StringDoublePair> CreateUpdateConstant(string botModelName, string name, double value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<StringDoublePair> DeleteConstant(string botModelName, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> CreateUpdateStore(string botModelName, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> DeleteStore(string botModelName, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<StringStringPair> CreateUpdateString(string botModelName, string name, string value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<StringStringPair> DeleteString(string botModelName, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<LineageNodeDefinition>> GetChildrenLineageNodes(string botModelName, string path, bool isRoot)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<LineageRecord>> GetLineagesForWord(string isoLanguage, string word)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<LineageNodeDefinition>> GetAttribute(string botModelName, string phrase)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<LineageNodeDefinition>> GetAttributeFromPath(string botModelName, string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<LineageNodeDefinitionUpdate> UpdateAttribute(string botModelName, LineageNodeDefinitionUpdate attribute)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

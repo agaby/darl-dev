@@ -28,7 +28,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<RuleSet>> GetRuleSetsAsync();
         Task<LineageModel> GetLineageModelAsync(string name);
         Task DeleteBotModel(string name);
-
         string userId { get; set; }
         Task<ServiceConnectivity> GetServiceConnectivity();
         Task<BotModel> CreateEmptyModel(string name);
@@ -53,5 +52,18 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<TableAuthorizations> DeleteAuthorization(string name, string name1);
         Task<ConnectivityView> CreateBotConnection(string botModelName, string appId, string password);
         Task<ConnectivityView> DeleteBotConnection(string botModelName, string appId);
+        Task<BotInputFormat> UpdateBotModelInputFormat(string botModelName, string inputName, InputFormatUpdate inputUpdate);
+        Task<BotOutputFormat> UpdateBotModelOutputFormat(string botModelName, string outputName, BotOutputFormatUpdate outputUpdate);
+        Task<StringDoublePair> CreateUpdateConstant(string botModelName, string name, double value);
+        Task<StringDoublePair> DeleteConstant(string botModelName, string name);
+        Task<string> CreateUpdateStore(string botModelName, string name);
+        Task<string> DeleteStore(string botModelName, string name);
+        Task<StringStringPair> CreateUpdateString(string botModelName, string name, string value);
+        Task<StringStringPair> DeleteString(string botModelName, string name);
+        Task<List<LineageNodeDefinition>> GetChildrenLineageNodes(string botModelName, string path, bool isRoot);
+        Task<List<LineageRecord>> GetLineagesForWord(string isoLanguage, string word);
+        Task<List<LineageNodeDefinition>> GetAttribute(string botModelName, string phrase);
+        Task<List<LineageNodeDefinition>> GetAttributeFromPath(string botModelName, string path);
+        Task<LineageNodeDefinitionUpdate> UpdateAttribute(string botModelName, LineageNodeDefinitionUpdate attribute);
     }
 }

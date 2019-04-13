@@ -1,0 +1,21 @@
+﻿using Darl.Lineage;
+using GraphQL.Types;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Darl.GraphQL.Models.Schemata
+{
+    public class LineageRecordType :  ObjectGraphType<LineageRecord>
+    {
+        public LineageRecordType()
+        {
+            Name = "lineageRecord";
+            Description = "A concept and it's associated typeWord";
+            Field(c => c.description);
+            Field(c => c.lineage);
+            Field<LineageTypeEnum>("lineageType", resolve: c => c.Source.type);
+            Field(c => c.typeWord);
+        }
+    }
+}
