@@ -633,5 +633,30 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             throw new NotImplementedException();
         }
+
+        public Task<LineageNodeDefinition> RenameLineageNode(string botModelName, string id, string newName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<LineageNodeDefinition> DeleteLineageNode(string botModelName, string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<LineageNodeDefinition> PasteLineageNode(string botModelName, string parent, List<string> nodes, string mode)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<LineageNodeDefinition> CreatePhrase(string botModelName, string path, object LineageNodeDefinition)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<LineageNodeDefinition> DeletePhrase(string botModelName, string phrase)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

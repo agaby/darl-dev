@@ -5,6 +5,7 @@ using Darl.GraphQL.Models.Services;
 using DarlCommon;
 using GraphQL.Types;
 using System;
+using System.Collections.Generic;
 
 namespace Darl.GraphQL.Models.Schemata
 {
@@ -114,10 +115,77 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.CreateLineageNode(botModelName, parent, newName));
                 });
             //                RenameNode
+            FieldAsync<LineageNodeDefinitionType>("createLineageNode",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "newName" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var id = context.GetArgument<string>("id");
+                    var newName = context.GetArgument<string>("newName");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.RenameLineageNode(botModelName, id, newName));
+                });
+
             //                DeleteNode
+            FieldAsync<LineageNodeDefinitionType>("createLineageNode",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var id = context.GetArgument<string>("id");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.DeleteLineageNode(botModelName, id));
+                });
+
             //                PasteNode 
+            FieldAsync<LineageNodeDefinitionType>("pasteLineageNode",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "parent" },
+                new QueryArgument<NonNullGraphType<ListGraphType<StringGraphType>>> { Name = "nodes" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "mode" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var parent = context.GetArgument<string>("parent");
+                    var nodes = context.GetArgument<List<string>>("nodes");
+                    var mode = context.GetArgument<string>("mode");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.PasteLineageNode(botModelName, parent, nodes, mode));
+                });
+
             //                CreatePhrase
+            FieldAsync<LineageNodeDefinitionType>("createPhrase",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "path" },
+                new QueryArgument<NonNullGraphType<LineageNodeDefinitionType>> { Name = "attribute" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var path = context.GetArgument<string>("path");
+                    var attribute = context.GetArgument<LineageNodeDefinition>("attribute");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreatePhrase(botModelName, path, attribute));
+                });
             //                DeletePhrase
+            FieldAsync<LineageNodeDefinitionType>("deletePhrase",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "phrase" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var phrase = context.GetArgument<string>("phrase");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.DeletePhrase(botModelName, phrase));
+                });
+
 
             //                SaveAttributes
             FieldAsync<LineageNodeDefinitionUpdateType>("updateAttribute",
@@ -410,6 +478,13 @@ namespace Darl.GraphQL.Models.Schemata
                 return await context.TryAsyncResolve(
                     async c => await rules.DeleteRuleSet(name));
             });
+            //            Actions
+            //                Whole ruleset inference
+            //                Test ruleset
+            //                Ruleset step inference
+            //                BotModel step inference
+            //                Machine learning run
+
 
 
 
