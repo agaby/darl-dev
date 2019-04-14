@@ -628,5 +628,10 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             throw new NotImplementedException();
         }
+
+        public Task<LineageNodeDefinition> CreateLineageNode(string botModelName, string parent, string newName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

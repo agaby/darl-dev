@@ -100,11 +100,25 @@ namespace Darl.GraphQL.Models.Schemata
             //            LineageTree
 
             //                CreateNode
+            FieldAsync<LineageNodeDefinitionType>("createLineageNode",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "parent" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "newName" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var parent = context.GetArgument<string>("parent");
+                    var newName = context.GetArgument<string>("newName");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreateLineageNode(botModelName, parent, newName));
+                });
             //                RenameNode
             //                DeleteNode
             //                PasteNode 
             //                CreatePhrase
             //                DeletePhrase
+
             //                SaveAttributes
             FieldAsync<LineageNodeDefinitionUpdateType>("updateAttribute",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
