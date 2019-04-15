@@ -115,7 +115,7 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.CreateLineageNode(botModelName, parent, newName));
                 });
             //                RenameNode
-            FieldAsync<LineageNodeDefinitionType>("createLineageNode",
+            FieldAsync<LineageNodeDefinitionType>("renameLineageNode",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" },
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "newName" }
@@ -130,7 +130,7 @@ namespace Darl.GraphQL.Models.Schemata
                 });
 
             //                DeleteNode
-            FieldAsync<LineageNodeDefinitionType>("createLineageNode",
+            FieldAsync<LineageNodeDefinitionType>("deleteLineageNode",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" }
                 ),
@@ -160,7 +160,7 @@ namespace Darl.GraphQL.Models.Schemata
                 });
 
             //                CreatePhrase
-            FieldAsync<LineageNodeDefinitionType>("createPhrase",
+            FieldAsync<LineageNodeAttributeType>("createPhrase",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "path" },
                 new QueryArgument<NonNullGraphType<LineageNodeDefinitionType>> { Name = "attribute" }
@@ -174,7 +174,7 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.CreatePhrase(botModelName, path, attribute));
                 });
             //                DeletePhrase
-            FieldAsync<LineageNodeDefinitionType>("deletePhrase",
+            FieldAsync<LineageNodeAttributeType>("deletePhrase",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "phrase" }
                 ),
@@ -188,14 +188,14 @@ namespace Darl.GraphQL.Models.Schemata
 
 
             //                SaveAttributes
-            FieldAsync<LineageNodeDefinitionUpdateType>("updateAttribute",
+            FieldAsync<LineageNodeAttributeUpdateType>("updateAttribute",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
-                new QueryArgument<NonNullGraphType<LineageNodeDefinitionUpdateType>> { Name = "attribute" }
+                new QueryArgument<NonNullGraphType<LineageNodeAttributeUpdateType>> { Name = "attribute" }
                 ),
                 resolve: async context =>
                 {
                     var botModelName = context.GetArgument<string>("botModelName");
-                    var attribute = context.GetArgument<LineageNodeDefinitionUpdate>("attribute");
+                    var attribute = context.GetArgument<LineageNodeAttributeUpdate>("attribute");
                     return await context.TryAsyncResolve(
                         async c => await connectivity.UpdateAttribute(botModelName, attribute));
                 });
@@ -219,30 +219,30 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             );
             //                Update
-                        Field<ContactType>(
-                        "updateContact",
-                        arguments: new QueryArguments(
-                            new QueryArgument<NonNullGraphType<ContactUpdateType>> { Name = "contact" }),
-                        resolve: context =>
-                        {
-                            var contactUpdate = context.GetArgument<ContactUpdate>("contact");
-                            var contact = new Contact { Company = contactUpdate.Company, Country = contactUpdate.Country, Created = DateTime.Now.ToString(), Email = contactUpdate.Email, FirstName = contactUpdate.FirstName, IntroSent = contactUpdate.IntroSent, LastName = contactUpdate.LastName, Notes = contactUpdate.Notes, Phone = contactUpdate.Phone, RowKey = contactUpdate.Id, Sector = contactUpdate.Sector, Source = contactUpdate.Source, Title = contactUpdate.Title };
-                            return connectivity.UpdateContactAsync(contact);
-                        }
-                    );
+            Field<ContactType>(
+                    "updateContact",
+                    arguments: new QueryArguments(
+                        new QueryArgument<NonNullGraphType<ContactUpdateType>> { Name = "contact" }),
+                    resolve: context =>
+                    {
+                        var contactUpdate = context.GetArgument<ContactUpdate>("contact");
+                        var contact = new Contact { Company = contactUpdate.Company, Country = contactUpdate.Country, Created = DateTime.Now.ToString(), Email = contactUpdate.Email, FirstName = contactUpdate.FirstName, IntroSent = contactUpdate.IntroSent, LastName = contactUpdate.LastName, Notes = contactUpdate.Notes, Phone = contactUpdate.Phone, RowKey = contactUpdate.Id, Sector = contactUpdate.Sector, Source = contactUpdate.Source, Title = contactUpdate.Title };
+                        return connectivity.UpdateContactAsync(contact);
+                    }
+                );
             //                Delete
-                        Field<ContactType>(
-                           "deleteContact",
-                           arguments: new QueryArguments(
-                               new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" }),
-                           resolve: context =>
-                           {
-                               var id = context.GetArgument<string>("id");
-                               var contact = connectivity.GetContactById(id);
-                               connectivity.DeleteContactAsync(id);
-                               return contact;
-                           }
-                       );
+            Field<ContactType>(
+                "deleteContact",
+                arguments: new QueryArguments(
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" }),
+                    resolve: context =>
+                    {
+                        var id = context.GetArgument<string>("id");
+                        var contact = connectivity.GetContactById(id);
+                        connectivity.DeleteContactAsync(id);
+                        return contact;
+                    }
+               );
             //            Default
             //                Create
             FieldAsync<DefaultType>("createUpdateDefault", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }, new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "value" }), 

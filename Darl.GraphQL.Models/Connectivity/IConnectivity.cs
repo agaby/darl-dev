@@ -64,7 +64,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<LineageRecord>> GetLineagesForWord(string isoLanguage, string word);
         Task<List<LineageNodeDefinition>> GetAttribute(string botModelName, string phrase);
         Task<List<LineageNodeDefinition>> GetAttributeFromPath(string botModelName, string path);
-        Task<LineageNodeDefinitionUpdate> UpdateAttribute(string botModelName, LineageNodeDefinitionUpdate attribute);
+        Task<LineageNodeAttributeUpdate> UpdateAttribute(string botModelName, LineageNodeAttributeUpdate attribute);
         Task<LineageNodeDefinition> CreateLineageNode(string botModelName, string parent, string newName);
         Task<LineageNodeDefinition> RenameLineageNode(string botModelName, string id, string newName);
         Task<LineageNodeDefinition> DeleteLineageNode(string botModelName, string id);

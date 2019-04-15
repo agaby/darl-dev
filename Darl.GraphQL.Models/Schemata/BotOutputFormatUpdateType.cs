@@ -13,6 +13,7 @@ namespace Darl.GraphQL.Models.Schemata
             Name = "botOutputFormatUpdate";
             Field<NonNullGraphType<StringGraphType>>("valueFormat");
             Field<NonNullGraphType<DisplayTypeEnum>>("displayType");
+
         }
     }
 }

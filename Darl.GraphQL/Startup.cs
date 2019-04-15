@@ -98,7 +98,8 @@ namespace Darl.GraphQL
             services.AddTransient<BotOutputFormatUpdateType>();
             services.AddTransient<LineageNodeDefinitionType>();
             services.AddTransient<LineageRecordType>();
-            services.AddTransient<LineageNodeDefinitionUpdateType>();
+            services.AddTransient<LineageNodeAttributeUpdateType>();
+            services.AddTransient<LineageNodeAttributeType>();
 
             //root
             services.AddTransient<DarlSchema>();
