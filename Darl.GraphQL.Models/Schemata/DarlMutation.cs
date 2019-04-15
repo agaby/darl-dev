@@ -596,8 +596,32 @@ namespace Darl.GraphQL.Models.Schemata
             });
             //            Actions
             //                Whole ruleset inference
+            FieldAsync<ListGraphType<StringStringPairType>>("inferFromRuleSetSimple",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" },
+                new QueryArgument<NonNullGraphType<ListGraphType<StringStringPairType>>> { Name = "inputs" }
+                ),
+                resolve: async context =>
+                {
+                    var ruleSetName = context.GetArgument<string>("ruleSetName");
+                    var inputs = context.GetArgument<List<StringStringPair>>("inputs");
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.InferFromRulesetSimple(ruleSetName, inputs));
+                });
+            FieldAsync<ListGraphType<DarlVarType>>("inferFromRuleSetDarlVar",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" },
+                new QueryArgument<NonNullGraphType<ListGraphType<DarlVarType>>> { Name = "inputs" }
+                ),
+                resolve: async context =>
+                {
+                    var ruleSetName = context.GetArgument<string>("ruleSetName");
+                    var inputs = context.GetArgument<List<DarlVar>>("inputs");
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.InferFromRuleSetDarlVar(ruleSetName, inputs));
+                });
             //                Test ruleset
+
             //                Ruleset step inference
+
             //                BotModel step inference
             //                Machine learning run
 

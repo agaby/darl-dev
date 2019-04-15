@@ -100,6 +100,7 @@ namespace Darl.GraphQL
             services.AddTransient<LineageRecordType>();
             services.AddTransient<LineageNodeAttributeUpdateType>();
             services.AddTransient<LineageNodeAttributeType>();
+            services.AddTransient<DarlVarType>();
 
             //root
             services.AddTransient<DarlSchema>();

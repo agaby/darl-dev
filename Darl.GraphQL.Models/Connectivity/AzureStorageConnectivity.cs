@@ -708,5 +708,15 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             throw new NotImplementedException();
         }
+
+        public Task<List<StringStringPair>> InferFromRulesetSimple(string ruleSetName, List<StringStringPair> inputs)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<DarlVar>> InferFromRuleSetDarlVar(string ruleSetName, List<DarlVar> inputs)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
