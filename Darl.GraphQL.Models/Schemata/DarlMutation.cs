@@ -202,8 +202,124 @@ namespace Darl.GraphQL.Models.Schemata
             //                
             //            ServiceConnectivity
             //                Edit AzureCredentials
+            FieldAsync<AzureCredentialsType>("updateAzureCredentials",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "apiKey" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var apiKey = context.GetArgument<string>("apiKey");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.UpdateAzureCredentials(botModelName, apiKey));
+                });
+            FieldAsync<AzureCredentialsType>("deleteAzureCredentials",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" }
+               ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.DeleteAzureCredentials(botModelName));
+                });
             //                Edit SellerCenter
-            //                Etc..
+            FieldAsync<SellerCenterCredentialsType>("updateSellereCenterCredentials",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "liveMode" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "merchantId" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "stripeApiKey" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var liveMode = context.GetArgument<string>("liveMode");
+                    var merchantId = context.GetArgument<string>("merchantId");
+                    var stripeApiKey = context.GetArgument<string>("stripeApiKey");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.UpdateSellereCenterCredentials(botModelName, liveMode, merchantId, stripeApiKey));
+                });
+            FieldAsync<SellerCenterCredentialsType>("deleteSellereCenterCredentials",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" }
+               ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.DeleteSellereCenterCredentials(botModelName));
+                });
+            //                Twilio
+            FieldAsync<TwilioCredentialsType>("updateTwilioCredentials",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "sMSAccountFrom" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "sMSAccountIdentification" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "sMSAccountPassword" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var sMSAccountFrom = context.GetArgument<string>("sMSAccountFrom");
+                    var sMSAccountIdentification = context.GetArgument<string>("sMSAccountIdentification");
+                    var sMSAccountPassword = context.GetArgument<string>("sMSAccountPassword");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.UpdateTwilioCredentials(botModelName, sMSAccountFrom, sMSAccountIdentification, sMSAccountPassword));
+                });
+            FieldAsync<TwilioCredentialsType>("deleteTwilioCredentials",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" }
+               ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.DeleteTwilioCredentials(botModelName));
+                });
+            //                SendGrid
+            FieldAsync<SendGridCredentialsType>("updateSendgridCredentials",
+                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "sendGridAPIKey" }
+                 ),
+                 resolve: async context =>
+                 {
+                     var botModelName = context.GetArgument<string>("botModelName");
+                     var sendGridAPIKey = context.GetArgument<string>("sendGridAPIKey");
+                     return await context.TryAsyncResolve(
+                         async c => await connectivity.UpdateSendgridCredentials(botModelName, sendGridAPIKey));
+                 });
+            FieldAsync<SendGridCredentialsType>("deleteSendgridCredentials",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" }
+               ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.DeleteSendgridCredentials(botModelName));
+                });
+            //                Zendesk
+            FieldAsync<ZendeskCredentialsType>("updateZendeskCredentials",
+                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "zendeskApiKey" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "zendeskURL" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "zendeskUser" }
+                 ),
+                 resolve: async context =>
+                 {
+                     var botModelName = context.GetArgument<string>("botModelName");
+                     var zendeskApiKey = context.GetArgument<string>("zendeskApiKey");
+                     var zendeskURL = context.GetArgument<string>("zendeskURL");
+                     var zendeskUser = context.GetArgument<string>("zendeskUser");
+                     return await context.TryAsyncResolve(
+                         async c => await connectivity.UpdateZendeskCredentials(botModelName, zendeskApiKey, zendeskURL, zendeskUser));
+                 });
+            FieldAsync<ZendeskCredentialsType>("deleteZendeskCredentials",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" }
+               ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.DeleteZendeskCredentials(botModelName));
+                });
+
+
             //            Contact
             //                Create
             Field<ContactType>(

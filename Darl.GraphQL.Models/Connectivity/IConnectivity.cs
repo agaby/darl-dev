@@ -71,5 +71,15 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<LineageNodeDefinition> PasteLineageNode(string botModelName, string parent, List<string> nodes, string mode);
         Task<LineageNodeDefinition> CreatePhrase(string botModelName, string path, object LineageNodeDefinition);
         Task<LineageNodeDefinition> DeletePhrase(string botModelName, string phrase);
+        Task<AzureCredentials> UpdateAzureCredentials(string botModelName, string apiKey);
+        Task<AzureCredentials> DeleteAzureCredentials(string botModelName);
+        Task<SellerCenterCredentials> UpdateSellereCenterCredentials(string botModelName, string liveMode, string merchantId, string stripeApiKey);
+        Task<SellerCenterCredentials> DeleteSellereCenterCredentials(string botModelName);
+        Task<TwilioCredentials> UpdateTwilioCredentials(string botModelName, string sMSAccountFrom, string sMSAccountIdentification, string sMSAccountPassword);
+        Task<TwilioCredentials> DeleteTwilioCredentials(string botModelName);
+        Task<SendGridCredentials> UpdateSendgridCredentials(string botModelName, string sendGridAPIKey);
+        Task<SendGridCredentials> DeleteSendgridCredentials(string botModelName);
+        Task<ZendeskCredentials> UpdateZendeskCredentials(string botModelName, string zendeskApiKey, string zendeskURL, string zendeskUser);
+        Task<ZendeskCredentials> DeleteZendeskCredentials(string botModelName);
     }
 }

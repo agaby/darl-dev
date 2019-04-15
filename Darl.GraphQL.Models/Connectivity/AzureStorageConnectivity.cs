@@ -658,5 +658,55 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             throw new NotImplementedException();
         }
+
+        public Task<AzureCredentials> UpdateAzureCredentials(string botModelName, string apiKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<AzureCredentials> DeleteAzureCredentials(string botModelName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<SellerCenterCredentials> UpdateSellereCenterCredentials(string botModelName, string liveMode, string merchantId, string stripeApiKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<SellerCenterCredentials> DeleteSellereCenterCredentials(string botModelName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<TwilioCredentials> UpdateTwilioCredentials(string botModelName, string sMSAccountFrom, string sMSAccountIdentification, string sMSAccountPassword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<TwilioCredentials> DeleteTwilioCredentials(string botModelName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<SendGridCredentials> UpdateSendgridCredentials(string botModelName, string sendGridAPIKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<SendGridCredentials> DeleteSendgridCredentials(string botModelName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ZendeskCredentials> UpdateZendeskCredentials(string botModelName, string zendeskApiKey, string zendeskURL, string zendeskUser)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ZendeskCredentials> DeleteZendeskCredentials(string botModelName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
