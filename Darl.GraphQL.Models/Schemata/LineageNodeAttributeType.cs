@@ -10,10 +10,10 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public LineageNodeAttributeType()
         {
-            Name = "lineageNodeAttribute";
+            Name = "lineageNodeAttributes";
             Field(c => c.darl);
             Field(c => c.call);
-            Field(c => c.path);
+//            Field(c => c.path);
             Field(c => c.randomResponse);
             Field(c => c.response);
             Field<ListGraphType<StringGraphType>>("accessRoles", resolve: context => context.Source.accessRoles);

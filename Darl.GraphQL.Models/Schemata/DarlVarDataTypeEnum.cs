@@ -5,11 +5,11 @@ using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
-    class DarlVarDataTypeEnum : EnumerationGraphType
+    public class DarlVarDataTypeEnum : EnumerationGraphType
     {
         public DarlVarDataTypeEnum()
         {
-            Name = "darlVarDataType";
+            Name = "darlVarDataTypes";
             Description = "The different types of data represented by a darlVar";
             AddValue("numeric", "numeric data", 0);
             AddValue("categorical", "categorical data", 1);

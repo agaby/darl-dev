@@ -11,7 +11,7 @@ namespace Darl.GraphQL.Models.Models
 
         public List<string> accessRoles { get; set; }
 
-        public string path { get; set; }
+//        public string path { get; set; }
 
         public bool randomResponse { get; set; }
 
