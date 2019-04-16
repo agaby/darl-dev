@@ -126,7 +126,7 @@ namespace Darl.GraphQL.Models.Schemata
                          async c => await connectivity.GetLineagesForWord(isoLanguage, word));
                 });
 
-            FieldAsync<ListGraphType<LineageNodeDefinitionType>>("getAttribute",
+            FieldAsync<ListGraphType<LineageNodeAttributeType>>("getAttribute",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "phrase" }
@@ -139,7 +139,7 @@ namespace Darl.GraphQL.Models.Schemata
                          async c => await connectivity.GetAttribute(botModelName,phrase));
                 });
 
-            FieldAsync<ListGraphType<LineageNodeDefinitionType>>("getAttributeFromPath",
+            FieldAsync<ListGraphType<LineageNodeAttributeType>>("getAttributeFromPath",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "path" }
