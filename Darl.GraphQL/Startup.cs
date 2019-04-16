@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
+using System;
 
 namespace Darl.GraphQL
 {
@@ -38,6 +38,15 @@ namespace Darl.GraphQL
 
             services.AddMvc()
                 .AddNewtonsoftJson();
+
+
+            services.AddHsts(options =>
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(60);
+            });
+
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             //services
             services.AddSingleton<IBotModelService, BotModelService>();
