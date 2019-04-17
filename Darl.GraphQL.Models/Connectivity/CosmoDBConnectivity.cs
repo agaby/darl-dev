@@ -17,6 +17,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public string userId { get; set; }
 
         MongoClient mongoClient;
+        IMongoDatabase db;
 
         IOptions<AppSettings> _opt;
 
@@ -24,7 +25,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             _opt = optionsAccessor;
 
-            string connectionString =  @"mongodb://darlai:Elaqax8TfDwxvtlS2A9NzIgEMZ4F8A1OXoKVVBb9TrR0x6glGXaWT4UHelifvYvjyk16TdybB0oBT9FZiNeJJQ==@darlai.documents.azure.com:10255/?ssl=true&replicaSet=globaldb";
+            string connectionString =  _opt.Value.MongoConnectionString;
             MongoClientSettings settings = MongoClientSettings.FromUrl(
               new MongoUrl(connectionString)
             );
@@ -32,9 +33,10 @@ namespace Darl.GraphQL.Models.Connectivity
               new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
             mongoClient = new MongoClient(settings);
             userId = _opt.Value.boaiuserid;
+            db = mongoClient.GetDatabase(_opt.Value.MongoDatabase);
         }
 
-        public Task<TableAuthorizations> CreateAuthorization(string name, string name1)
+        public Task<TableAuthorizations> CreateAuthorization(string botModelName, string authorizationName)
         {
             throw new NotImplementedException();
         }

@@ -16,5 +16,7 @@ namespace Darl.GraphQL
         public string mlmodelcontainer { get; set; }
         public string newscontentcontainer { get; set; }
         public string mailcontentcontainer { get; set; }
+        public string MongoConnectionString { get; set; }
+        public string MongoDatabase { get; set; }
     }
 }
