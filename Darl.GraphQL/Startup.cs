@@ -55,7 +55,7 @@ namespace Darl.GraphQL
             services.AddSingleton<IMLSpecTypeService, MLSpecTypeService>();
             services.AddSingleton<IRuleFormService, RuleFormService>();
             services.AddSingleton<IRuleSetService, RuleSetService>();
-            services.AddSingleton<IConnectivity, AzureStorageConnectivity>();
+            services.AddSingleton<IConnectivity, CosmosDBConnectivity>();
 
             //types
             services.AddTransient<BotFormatType>();

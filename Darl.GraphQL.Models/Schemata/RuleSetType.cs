@@ -15,7 +15,8 @@ namespace Darl.GraphQL.Models.Schemata
             Name = "Ruleset";
             Description = "Top level ruleset description";
             Field(C => C.Name);
-            Field<RuleFormType>("ruleform", resolve: context => ruleforms.GetRuleFormAsync(context.Source.Name));
+            Field<RuleFormType>("ruleform", resolve: context => context.Source.Contents);
+            Field<ServiceConnectivityType>("serviceConnectivity", resolve: context => context.Source.serviceConnectivity);
         }
     }
 }

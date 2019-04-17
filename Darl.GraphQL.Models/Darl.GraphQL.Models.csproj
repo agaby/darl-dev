@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Connectivity\AzureStorageConnectivity.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Darl.Connectivity" Version="1.0.44" />
     <PackageReference Include="Darl_standard" Version="1.2.6" />
     <PackageReference Include="GraphQL" Version="2.4.0" />

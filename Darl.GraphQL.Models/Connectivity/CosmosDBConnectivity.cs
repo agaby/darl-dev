@@ -13,7 +13,7 @@ using MongoDB.Driver.Linq;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
-    public class CosmoDBConnectivity : IConnectivity
+    public class CosmosDBConnectivity : IConnectivity
     {
         public string userId { get; set; }
 
@@ -22,7 +22,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         IOptions<AppSettings> _opt;
 
-        public CosmoDBConnectivity(IOptions<AppSettings> optionsAccessor)
+        public CosmosDBConnectivity(IOptions<AppSettings> optionsAccessor)
         {
             _opt = optionsAccessor;
 
