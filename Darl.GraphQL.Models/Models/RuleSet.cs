@@ -7,17 +7,17 @@ namespace Darl.GraphQL.Models.Models
 {
     public class RuleSet
     {
-        public RuleSet(DateTime lastModified, string name, int size, RuleForm contents = null)
+        public RuleSet(string name, RuleForm contents = null)
         {
-            LastModified = lastModified;
             Name = name;
-            Size = size;
             Contents = contents;
         }
 
-        public DateTime LastModified { get; }
         public string Name { get; }
-        public int Size { get; }
         public RuleForm Contents { get; }
+        public string userId { get; set; }
+        public ServiceConnectivity serviceConnectivity { get; set; }
+
+
     }
 }

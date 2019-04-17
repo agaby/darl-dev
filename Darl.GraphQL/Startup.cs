@@ -113,6 +113,7 @@ namespace Darl.GraphQL
             services.AddTransient<DarlVarDataTypeEnum>();
             services.AddTransient<StringStringPairInputType>();
             services.AddTransient<DarlVarInputType>();
+            services.AddTransient<MLResultType>();
 
 
             //root

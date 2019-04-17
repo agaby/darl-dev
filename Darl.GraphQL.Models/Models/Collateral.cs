@@ -18,5 +18,6 @@ namespace Darl.GraphQL.Models.Models
         public string Name { get; }
         public int Size { get; }
         public string Content { get; }
+        public string userId { get; set; }
     }
 }

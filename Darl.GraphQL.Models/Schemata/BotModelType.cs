@@ -16,11 +16,10 @@ namespace Darl.GraphQL.Models.Schemata
             Description = "A bot model and its status.";
 
             Field(c => c.Name).Description("The the unique name of the Bot model");
-            Field(c => c.LastModified).Description("The time the model was last modified.");
-            Field(c => c.Size).Description("The size of the botmodel in bytes.");
-            Field<LineageModelType>("model", resolve: context => models.GetLineageModelAsync(context.Source.Name));
-            Field<ListGraphType<ConnectivityViewType>>("connections", resolve: context => models.GetBotConnectivity(context.Source.Name));
-            Field<ListGraphType<AuthorizationsType>>("authorizations", resolve: context => models.GetAuthorizations(context.Source.Name));
+            Field<LineageModelType>("model", resolve: context => context.Source.Model);
+            Field<ListGraphType<ConnectivityViewType>>("connections", resolve: context => context.Source.botconnections);
+            Field<ListGraphType<StringGraphType>>("authorizations", resolve: context =>context.Source.Authorizations);
+            Field<ServiceConnectivityType>("serviceConnectivity", resolve: context => context.Source.serviceConnectivity);
         }
     }
 }

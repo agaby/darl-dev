@@ -9,6 +9,7 @@ using Darl.Lineage;
 using DarlCommon;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -208,12 +209,18 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public BotModel GetBotModel(string name)
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<BotModel>("botmodel");
+            var query = mc.AsQueryable()
+            .Where(p => p.userId == userId && p.Name == name);
+            return query.FirstOrDefault();
         }
 
         public Task<List<BotModel>> GetBotModelsAsync()
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<BotModel>("botmodel");
+            var query = mc.AsQueryable()
+            .Where(p => p.userId == userId);
+            return query.ToListAsync();
         }
 
         public Task<List<BotUsage>> GetBotUsage(string appId)

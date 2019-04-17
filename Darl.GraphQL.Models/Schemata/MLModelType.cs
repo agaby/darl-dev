@@ -14,10 +14,9 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "MLModel";
             Description = "A Machine learning model and record data";
-            Field(c => c.LastModified);
             Field(c => c.Name);
-            Field(c => c.Size);
-            Field<MLSpecType>("mlmodel", resolve: context => connectivity.GetMlInternalModelAsync(context.Source.Name));
+            Field<MLSpecType>("mlmodel", resolve: context => context.Source.MlModel);
+            Field<ListGraphType<MLResultType>>("results", resolve: context => context.Source.results);
         }
     }
 }
