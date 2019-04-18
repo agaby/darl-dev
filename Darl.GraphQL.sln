@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL", "Darl.GraphQ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Models", "Darl.GraphQL.Models\Darl.GraphQL.Models.csproj", "{B827A695-1464-4655-8339-3786064CCB28}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Darl.GraphQL.Test", "Darl.GraphQL.Test\Darl.GraphQL.Test.csproj", "{13DF51B0-9234-43F9-9DAC-75BD8CCB0C85}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{B827A695-1464-4655-8339-3786064CCB28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B827A695-1464-4655-8339-3786064CCB28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B827A695-1464-4655-8339-3786064CCB28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13DF51B0-9234-43F9-9DAC-75BD8CCB0C85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13DF51B0-9234-43F9-9DAC-75BD8CCB0C85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13DF51B0-9234-43F9-9DAC-75BD8CCB0C85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13DF51B0-9234-43F9-9DAC-75BD8CCB0C85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
