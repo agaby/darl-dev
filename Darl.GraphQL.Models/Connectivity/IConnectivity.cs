@@ -16,18 +16,15 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<BotModel>> GetBotModelsAsync();
         Task<Models.MLModel> GetMlModel(string name);
         Task<List<Models.MLModel>> GetMlModelsAsync();
-        Task<DarlCommon.MLModel> GetMlInternalModelAsync(string name);
         Task<Models.RuleSet> CreateEmptyRuleSet(string name);
         Task<Models.MLModel> CreateEmptyMLModel(string name);
         Task<List<BotUsage>> GetBotUsage(string appId);
         Task<RuleSet> DeleteRuleSet(string name);
         Task<List<string>> GetAuthorizations(string name);
         Task<Models.MLModel> DeleteMLModel(string name);
-        Task<RuleForm> GetRuleFormAsync(string name);
         Task<List<BotConnection>> GetBotConnectivity(string name);
         Task<RuleSet> GetRuleSet(string name);
         Task<List<RuleSet>> GetRuleSetsAsync();
-        Task<LineageModel> GetLineageModelAsync(string name);
         Task<BotModel> DeleteBotModel(string name);
         string userId { get; set; }
         Task<ServiceConnectivity> GetServiceConnectivity();
@@ -38,7 +35,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<Contact> GetContactsByEmail(string email);
         Task<List<Default>> GetDefaults();
         Task<string> GetDefaultValue(string name);
-        Task SaveModel(string userId, string modelName, LineageModel model);
         Task<Contact> CreateContactAsync(Contact contact);
         Task<Contact> UpdateContactAsync(Contact contact);
         Task<Contact> GetContactById(string Id);

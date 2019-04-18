@@ -303,44 +303,42 @@ namespace Darl.GraphQL.Models.Connectivity
             return def == null ? string.Empty : def.Value;
         }
 
-        public Task<LineageModel> GetLineageModelAsync(string name)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<List<LineageRecord>> GetLineagesForWord(string isoLanguage, string word)
         {
             throw new NotImplementedException();
         }
 
-        public Task<DarlCommon.MLModel> GetMlInternalModelAsync(string name)
+
+        public async Task<Models.MLModel> GetMlModel(string name)
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<MLModel>("mlmodel");
+            var query = mc.AsQueryable()
+            .Where(p => p.Name == name && p.userId == userId);
+            return await query.FirstOrDefaultAsync(); 
         }
 
-        public Task<Models.MLModel> GetMlModel(string name)
+        public async Task<List<Models.MLModel>> GetMlModelsAsync()
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<MLModel>("mlmodel");
+            var query = mc.AsQueryable()
+            .Where(p => p.userId == userId);
+            return await query.ToListAsync();
         }
 
-        public Task<List<Models.MLModel>> GetMlModelsAsync()
+        public async Task<RuleSet> GetRuleSet(string name)
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<RuleSet>("ruleset");
+            var query = mc.AsQueryable()
+            .Where(p => p.Name == name && p.userId == userId);
+            return await query.FirstOrDefaultAsync();
         }
 
-        public Task<RuleForm> GetRuleFormAsync(string name)
+        public async Task<List<RuleSet>> GetRuleSetsAsync()
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<RuleSet> GetRuleSet(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<RuleSet>> GetRuleSetsAsync()
-        {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<RuleSet>("ruleset");
+            var query = mc.AsQueryable()
+            .Where(p => p.userId == userId);
+            return await query.ToListAsync();
         }
 
         public Task<ServiceConnectivity> GetServiceConnectivity()
@@ -364,11 +362,6 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
         public Task<LineageNodeDefinition> RenameLineageNode(string botModelName, string id, string newName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SaveModel(string userId, string modelName, LineageModel model)
         {
             throw new NotImplementedException();
         }
