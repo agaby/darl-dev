@@ -6,14 +6,8 @@ namespace Darl.GraphQL.Models.Models
 {
     public class MLModel
     {
-        public MLModel(string name, DarlCommon.MLModel mlModel = null)
-        {
-            Name = name;
-            MlModel = mlModel;
-        }
-
-        public string Name { get; }
-        public DarlCommon.MLModel MlModel { get; }
+        public string Name { get; set; }
+        public DarlCommon.MLModel MlModel { get; set; }
         public string userId { get; set; }
         public List<MLResult> results { get; set; }
 

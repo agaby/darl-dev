@@ -1,7 +1,6 @@
 ﻿using Darl.Connectivity.Models;
 using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
-using Darl.GraphQL.Models.Services;
 using DarlCommon;
 using GraphQL.Types;
 using System;
@@ -11,7 +10,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlMutation : ObjectGraphType<object>
     {
-        public DarlMutation(IBotModelService botmodels, IMLModelService mlmodels, IRuleSetService rules, IConnectivity connectivity)
+        public DarlMutation(IConnectivity connectivity)
         {
             Name = "Mutation";
             Description = "Make changes to the contents of your account.";
@@ -21,7 +20,7 @@ namespace Darl.GraphQL.Models.Schemata
              {
                  var name = context.GetArgument<string>("name");
                  return await context.TryAsyncResolve(
-                     async c => await botmodels.CreateEmptyModel(name));
+                     async c => await connectivity.CreateEmptyModel(name));
              });
 
             // create a default model
@@ -29,7 +28,7 @@ namespace Darl.GraphQL.Models.Schemata
             {
                 var name = context.GetArgument<string>("name");
                 return await context.TryAsyncResolve(
-                    async c => await botmodels.CreateDefaultModel(name));
+                    async c => await connectivity.CreateDefaultModel(name));
             });
 
             // Delete
@@ -37,7 +36,7 @@ namespace Darl.GraphQL.Models.Schemata
             {
                 var name = context.GetArgument<string>("name");
                 return await context.TryAsyncResolve(
-                    async c => await botmodels.DeleteModel(name));
+                    async c => await connectivity.DeleteBotModel(name));
             });
 
             // Authorization
@@ -383,14 +382,14 @@ namespace Darl.GraphQL.Models.Schemata
             {
                 var name = context.GetArgument<string>("name");
                 return await context.TryAsyncResolve(
-                    async c => await mlmodels.CreateEmptyModel(name));
+                    async c => await connectivity.CreateEmptyMLModel(name));
             });
             //  Delete
             FieldAsync<MLModelType>("deleteMLModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
             {
                 var name = context.GetArgument<string>("name");
                 return await context.TryAsyncResolve(
-                    async c => await mlmodels.DeleteModel(name));
+                    async c => await connectivity.DeleteMLModel(name));
             });
 
             // BotFormat
@@ -585,14 +584,14 @@ namespace Darl.GraphQL.Models.Schemata
             {
                 var name = context.GetArgument<string>("name");
                 return await context.TryAsyncResolve(
-                    async c => await rules.CreateEmptyRuleSet(name));
+                    async c => await connectivity.CreateEmptyRuleSet(name));
             });
             //  Delete
             FieldAsync<MLModelType>("deleteRuleSet", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
             {
                 var name = context.GetArgument<string>("name");
                 return await context.TryAsyncResolve(
-                    async c => await rules.DeleteRuleSet(name));
+                    async c => await connectivity.DeleteRuleSet(name));
             });
             // Actions
             //  Whole ruleset inference

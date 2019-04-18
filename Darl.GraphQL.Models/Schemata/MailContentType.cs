@@ -12,9 +12,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "MailContent";
             Description = "Text used for emailing";
-            Field(c => c.LastModified);
             Field(c => c.Name);
-            Field(c => c.Size);
             Field(c => c.Content);
         }
     }

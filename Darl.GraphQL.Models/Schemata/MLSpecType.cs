@@ -1,8 +1,4 @@
-﻿using Darl.GraphQL.Models.Services;
-using GraphQL.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using GraphQL.Types;
 
 namespace Darl.GraphQL.Models.Schemata
 {

@@ -1,6 +1,5 @@
 using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Schemata;
-using Darl.GraphQL.Models.Services;
 using GraphQL;
 using GraphQL.Server;
 using GraphQL.Server.Ui.GraphiQL;
@@ -49,12 +48,6 @@ namespace Darl.GraphQL
 
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             //services
-            services.AddSingleton<IBotModelService, BotModelService>();
-            services.AddSingleton<ILineageModelService, LineageModelService>();
-            services.AddSingleton<IMLModelService, MLModelService>();
-            services.AddSingleton<IMLSpecTypeService, MLSpecTypeService>();
-            services.AddSingleton<IRuleFormService, RuleFormService>();
-            services.AddSingleton<IRuleSetService, RuleSetService>();
             services.AddSingleton<IConnectivity, CosmosDBConnectivity>();
 
             //types

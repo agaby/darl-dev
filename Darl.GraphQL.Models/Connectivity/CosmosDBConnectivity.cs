@@ -10,6 +10,8 @@ using DarlCommon;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
+using Default = Darl.GraphQL.Models.Models.Default;
+using MLModel = Darl.GraphQL.Models.Models.MLModel;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -47,24 +49,35 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<Contact> CreateContactAsync(Contact contact)
+        public async Task<Contact> CreateContactAsync(Contact contact)
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<Contact>("contact");
+            await mc.InsertOneAsync(contact);
+            return contact;
         }
 
-        public Task<Models.MLModel> CreateEmptyMLModel(string name)
+        public async Task<Models.MLModel> CreateEmptyMLModel(string name)
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<MLModel>("mlmodel");
+            var model = new MLModel { Name = name, MlModel = new DarlCommon.MLModel { name = name, percentTest = 0, sets = 3, darl = "ruleset newRuleSet supervised\n{\n}\n"}, results = new List<MLResult>(), userId = userId };
+            await mc.InsertOneAsync(model);
+            return model;
         }
 
-        public Task<BotModel> CreateEmptyModel(string name)
+        public async Task<BotModel> CreateEmptyModel(string name)
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<BotModel>("botmodel");
+            var model = new BotModel { Name = name, userId = userId };
+            await mc.InsertOneAsync(model);
+            return model;
         }
 
-        public Task<RuleSet> CreateEmptyRuleSet(string name)
+        public async Task<RuleSet> CreateEmptyRuleSet(string name)
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<RuleSet>("ruleset");
+            var model = new RuleSet {  Name = name, userId = userId };
+            await mc.InsertOneAsync(model);
+            return model;
         }
 
         public Task<LineageNodeDefinition> CreateLineageNode(string botModelName, string parent, string newName)
@@ -87,9 +100,12 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<Default> CreateUpdateDefault(string name, string value)
+        public async Task<Default> CreateUpdateDefault(string name, string value)
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<Default>("default");
+            var model = new Default { Name = name, Value = value };
+            await mc.ReplaceOneAsync(Builders<Default>.Filter.Eq(r => r.Name, "name"), model, new UpdateOptions() { IsUpsert = true });
+            return model;
         }
 
         public Task<string> CreateUpdateStore(string botModelName, string name)
@@ -117,9 +133,13 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task DeleteBotModel(string name)
+        public async Task<BotModel> DeleteBotModel(string name)
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<BotModel>("botmodel");
+            var query = mc.AsQueryable().Where(p => p.userId == userId && p.Name == name);
+            var old =  await query.FirstOrDefaultAsync();
+            await mc.DeleteOneAsync(Builders<BotModel>.Filter.Eq(r => r.userId, userId) & Builders<BotModel>.Filter.Eq(r => r.Name, name));
+            return old;
         }
 
         public Task<StringDoublePair> DeleteConstant(string botModelName, string name)
@@ -127,9 +147,13 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task DeleteContactAsync(string id)
+        public async Task<Contact> DeleteContactAsync(string id)
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<Contact>("contact");
+            var query = mc.AsQueryable().Where(p => p.RowKey == id);
+            var old = await query.FirstOrDefaultAsync();
+            await mc.DeleteOneAsync(Builders<Contact>.Filter.Eq(r => r.RowKey, id));
+            return old;
         }
 
         public Task<Default> DeleteDefault(string name)
@@ -142,7 +166,7 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task DeleteMLModel(string name)
+        public Task<MLModel> DeleteMLModel(string name)
         {
             throw new NotImplementedException();
         }
@@ -152,7 +176,7 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task DeleteRuleSet(string name)
+        public Task<RuleSet> DeleteRuleSet(string name)
         {
             throw new NotImplementedException();
         }
@@ -207,20 +231,20 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public BotModel GetBotModel(string name)
+        public async Task<BotModel> GetBotModel(string name)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
             var query = mc.AsQueryable()
             .Where(p => p.userId == userId && p.Name == name);
-            return query.FirstOrDefault();
+            return await query.FirstOrDefaultAsync();
         }
 
-        public Task<List<BotModel>> GetBotModelsAsync()
+        public async Task<List<BotModel>> GetBotModelsAsync()
         {
             var mc = db.GetCollection<BotModel>("botmodel");
             var query = mc.AsQueryable()
             .Where(p => p.userId == userId);
-            return query.ToListAsync();
+            return await query.ToListAsync();
         }
 
         public Task<List<BotUsage>> GetBotUsage(string appId)
@@ -233,34 +257,51 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<Contact> GetContactById(string Id)
+        public async Task<Contact> GetContactById(string Id)
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<Contact>("contact");
+            var query = mc.AsQueryable()
+            .Where(p => p.RowKey == Id);
+            return await query.FirstOrDefaultAsync();
         }
 
-        public Task<List<Contact>> GetContacts()
+        public async Task<List<Contact>> GetContacts()
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<Contact>("contact");
+            var query = mc.AsQueryable();
+            return await query.ToListAsync();
         }
 
-        public Task<List<Contact>> GetContactsByEmail(string email)
+        public async Task<Contact> GetContactsByEmail(string email)
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<Contact>("contact");
+            var query = mc.AsQueryable()
+            .Where(p => p.Email == email);
+            return await query.FirstOrDefaultAsync();
         }
 
-        public Task<List<Contact>> GetContactsByLastName(string lastName)
+        public async Task<List<Contact>> GetContactsByLastName(string lastName)
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<Contact>("contact");
+            var query = mc.AsQueryable()
+            .Where(p => p.LastName == lastName);
+            return await query.ToListAsync();
         }
 
-        public Task<List<Default>> GetDefaults()
+        public async Task<List<Default>> GetDefaults()
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<Default>("default");
+            var query = mc.AsQueryable();
+            return await query.ToListAsync();
         }
 
-        public Task<string> GetDefaultValue(string name)
+        public async Task<string> GetDefaultValue(string name)
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<Default>("default");
+            var query = mc.AsQueryable()
+            .Where(p => p.Name == name);
+            var def = await query.FirstOrDefaultAsync();
+            return def == null ? string.Empty : def.Value;
         }
 
         public Task<LineageModel> GetLineageModelAsync(string name)
@@ -278,7 +319,7 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Models.MLModel GetMlModel(string name)
+        public Task<Models.MLModel> GetMlModel(string name)
         {
             throw new NotImplementedException();
         }
@@ -293,7 +334,7 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public RuleSet GetRuleSet(string name)
+        public Task<RuleSet> GetRuleSet(string name)
         {
             throw new NotImplementedException();
         }
@@ -394,6 +435,11 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
         public Task<ZendeskCredentials> UpdateZendeskCredentials(string botModelName, string zendeskApiKey, string zendeskURL, string zendeskUser)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<object> CreateDefaultModel(string name)
         {
             throw new NotImplementedException();
         }

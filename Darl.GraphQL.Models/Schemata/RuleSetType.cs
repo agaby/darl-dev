@@ -1,5 +1,4 @@
 ﻿using Darl.GraphQL.Models.Models;
-using Darl.GraphQL.Models.Services;
 using DarlCommon;
 using GraphQL.Types;
 using System;
@@ -10,7 +9,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class RuleSetType : ObjectGraphType<RuleSet>
     {
-        public RuleSetType(IRuleFormService ruleforms)
+        public RuleSetType()
         {
             Name = "Ruleset";
             Description = "Top level ruleset description";

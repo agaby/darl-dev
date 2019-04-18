@@ -1,16 +1,11 @@
 ﻿using Darl.GraphQL.Models.Models;
-using Darl.GraphQL.Models.Services;
-using Darl.Lineage;
 using GraphQL.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
     public class BotModelType : ObjectGraphType<BotModel>
     {
-        public BotModelType(ILineageModelService models)
+        public BotModelType()
         {
             Name = "BotModel";
             Description = "A bot model and its status.";

@@ -1,5 +1,4 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
-using Darl.GraphQL.Models.Services;
 using GraphQL.Types;
 using System;
 
@@ -8,7 +7,7 @@ namespace Darl.GraphQL.Models.Schemata
     public class DarlQuery : ObjectGraphType<object>
     {
 
-        public DarlQuery(IBotModelService botmodels, IMLModelService mlmodels, IRuleSetService rulesets, IConnectivity connectivity)
+        public DarlQuery(IConnectivity connectivity)
         {
             Name = "Query";
             Description = "View the contents of your account.";
@@ -16,7 +15,7 @@ namespace Darl.GraphQL.Models.Schemata
                 "rulesets",
                 resolve: async context => {
                     return await context.TryAsyncResolve(
-                        async c => await rulesets.GetRuleSetsAsync());
+                        async c => await connectivity.GetRuleSetsAsync());
                 }
             );
 
@@ -24,7 +23,7 @@ namespace Darl.GraphQL.Models.Schemata
                "mlmodels",
                resolve: async context => {
                    return await context.TryAsyncResolve(
-                       async c => await mlmodels.GetMLModelsAsync());
+                       async c => await connectivity.GetMlModelsAsync());
                }
             );
 
@@ -32,7 +31,7 @@ namespace Darl.GraphQL.Models.Schemata
               "botmodels",
               resolve: async context => {
                   return await context.TryAsyncResolve(
-                      async c => await botmodels.GetBotModelsAsync());
+                      async c => await connectivity.GetBotModelsAsync());
               }
             );
 
@@ -73,7 +72,7 @@ namespace Darl.GraphQL.Models.Schemata
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
                 resolve: async context => {
                     return await context.TryAsyncResolve(
-                        async c => await rulesets.GetRuleSet(c.GetArgument<String>("name"))
+                        async c => await connectivity.GetRuleSet(c.GetArgument<String>("name"))
                     );
                 }
             );
@@ -83,7 +82,7 @@ namespace Darl.GraphQL.Models.Schemata
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
                 resolve: async context => {
                     return await context.TryAsyncResolve(
-                        async c => await mlmodels.GetMLModel(c.GetArgument<String>("name"))
+                        async c => await connectivity.GetMlModel(c.GetArgument<String>("name"))
                     );
                 }
             );
@@ -93,7 +92,7 @@ namespace Darl.GraphQL.Models.Schemata
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
                 resolve: async context => {
                     return await context.TryAsyncResolve(
-                        async c => await botmodels.GetBotModel(c.GetArgument<String>("name"))
+                        async c => await connectivity.GetBotModel(c.GetArgument<String>("name"))
                     );
                 }
             );

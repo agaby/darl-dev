@@ -8,17 +8,12 @@ namespace Darl.GraphQL.Models.Models
 {
     public class BotModel
     {
-        public BotModel(string name, LineageModel model = null)
-        {
-            Name = name;
-            Model = model;
-        }
 
-        public string Name { get; }
-        public LineageModel Model { get; }
-        public List<ConnectivityView> botconnections { get; }
-        public List<string> Authorizations { get; set; }
+        public string Name { get; set; }
+        public LineageModel Model { get; set; } = new LineageModel();
+        public List<ConnectivityView> botconnections { get; set; } = new List<ConnectivityView>();
+        public List<string> Authorizations { get; set; } = new List<string>();
         public string userId { get; set; }
-        public ServiceConnectivity serviceConnectivity { get; set; }
+        public ServiceConnectivity serviceConnectivity { get; set; } = new ServiceConnectivity();
     }
 }

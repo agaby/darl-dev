@@ -7,17 +7,9 @@ namespace Darl.GraphQL.Models.Models
 {
     public class RuleSet
     {
-        public RuleSet(string name, RuleForm contents = null)
-        {
-            Name = name;
-            Contents = contents;
-        }
-
-        public string Name { get; }
-        public RuleForm Contents { get; }
+        public string Name { get; set; }
+        public RuleForm Contents { get; set; } = new RuleForm();
         public string userId { get; set; }
-        public ServiceConnectivity serviceConnectivity { get; set; }
-
-
+        public ServiceConnectivity serviceConnectivity { get; set; } = new ServiceConnectivity();
     }
 }
