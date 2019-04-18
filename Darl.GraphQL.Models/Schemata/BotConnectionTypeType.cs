@@ -7,9 +7,9 @@ using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
-    public class ConnectivityViewType : ObjectGraphType<ConnectivityView>
+    public class BotConnectionType : ObjectGraphType<ConnectivityView>
     {
-        public ConnectivityViewType(IConnectivity connectivity)
+        public BotConnectionType(IConnectivity connectivity)
         {
             Name = "BotConnection";
             Description = "Details of a bot in the bot framework";

@@ -88,7 +88,7 @@ namespace Darl.GraphQL
             services.AddTransient<ZendeskCredentialsType>();
             services.AddTransient<SendGridCredentialsType>();
             services.AddTransient<TwilioCredentialsType>();
-            services.AddTransient<ConnectivityViewType>();
+            services.AddTransient<BotConnectionType>();
             services.AddTransient<BotUsageType>();
             services.AddTransient<ContactType>();
             services.AddTransient<AuthorizationsType>();

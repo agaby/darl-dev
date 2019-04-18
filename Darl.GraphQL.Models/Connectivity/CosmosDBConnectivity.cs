@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Security.Authentication;
 using System.Text;
 using System.Threading.Tasks;
-using Darl.Connectivity.Models;
 using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
 using DarlCommon;
@@ -39,12 +38,12 @@ namespace Darl.GraphQL.Models.Connectivity
             db = mongoClient.GetDatabase(_opt.Value.MongoDatabase);
         }
 
-        public Task<TableAuthorizations> CreateAuthorization(string botModelName, string authorizationName)
+        public Task<string> CreateAuthorization(string botModelName, string authorizationName)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ConnectivityView> CreateBotConnection(string botModelName, string appId, string password)
+        public Task<BotConnection> CreateBotConnection(string botModelName, string appId, string password)
         {
             throw new NotImplementedException();
         }
@@ -118,7 +117,7 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<TableAuthorizations> DeleteAuthorization(string name, string name1)
+        public Task<string> DeleteAuthorization(string name, string name1)
         {
             throw new NotImplementedException();
         }
@@ -128,7 +127,7 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<ConnectivityView> DeleteBotConnection(string botModelName, string appId)
+        public Task<BotConnection> DeleteBotConnection(string botModelName, string appId)
         {
             throw new NotImplementedException();
         }
@@ -150,9 +149,9 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<Contact> DeleteContactAsync(string id)
         {
             var mc = db.GetCollection<Contact>("contact");
-            var query = mc.AsQueryable().Where(p => p.RowKey == id);
+            var query = mc.AsQueryable().Where(p => p.Id == id);
             var old = await query.FirstOrDefaultAsync();
-            await mc.DeleteOneAsync(Builders<Contact>.Filter.Eq(r => r.RowKey, id));
+            await mc.DeleteOneAsync(Builders<Contact>.Filter.Eq(r => r.Id, id));
             return old;
         }
 
@@ -221,12 +220,12 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<List<TableAuthorizations>> GetAuthorizations(string name)
+        public Task<List<string>> GetAuthorizations(string name)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<ConnectivityView>> GetBotConnectivity(string name)
+        public Task<List<BotConnection>> GetBotConnectivity(string name)
         {
             throw new NotImplementedException();
         }
@@ -261,7 +260,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var mc = db.GetCollection<Contact>("contact");
             var query = mc.AsQueryable()
-            .Where(p => p.RowKey == Id);
+            .Where(p => p.Id == Id);
             return await query.FirstOrDefaultAsync();
         }
 

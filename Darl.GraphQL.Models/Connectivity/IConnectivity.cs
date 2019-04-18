@@ -1,4 +1,4 @@
-﻿using Darl.Connectivity.Models;
+﻿//using Darl.Connectivity.Models;
 using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
 using DarlCommon;
@@ -21,10 +21,10 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<Models.MLModel> CreateEmptyMLModel(string name);
         Task<List<BotUsage>> GetBotUsage(string appId);
         Task<RuleSet> DeleteRuleSet(string name);
-        Task<List<TableAuthorizations>> GetAuthorizations(string name);
+        Task<List<string>> GetAuthorizations(string name);
         Task<Models.MLModel> DeleteMLModel(string name);
         Task<RuleForm> GetRuleFormAsync(string name);
-        Task<List<ConnectivityView>> GetBotConnectivity(string name);
+        Task<List<BotConnection>> GetBotConnectivity(string name);
         Task<RuleSet> GetRuleSet(string name);
         Task<List<RuleSet>> GetRuleSetsAsync();
         Task<LineageModel> GetLineageModelAsync(string name);
@@ -48,12 +48,12 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<OutputFormat> UpdateRuleFormOutputFormat(string ruleSetName, string outputName, OutputFormatUpdate outputUpdate);
         Task<LanguageText> UpdateRuleFormLanguageText(string ruleSetName, string languageName, string languageText);
         Task<VariantText> UpdateRuleFormVariantText(string ruleSetName, string languageName, string isoLanguageName, string variantText);
-        Task<TableAuthorizations> CreateAuthorization(string name, string name1);
+        Task<string> CreateAuthorization(string name, string name1);
         Task<Default> CreateUpdateDefault(string name, string value);
         Task<Default> DeleteDefault(string name);
-        Task<TableAuthorizations> DeleteAuthorization(string name, string name1);
-        Task<ConnectivityView> CreateBotConnection(string botModelName, string appId, string password);
-        Task<ConnectivityView> DeleteBotConnection(string botModelName, string appId);
+        Task<string> DeleteAuthorization(string name, string name1);
+        Task<BotConnection> CreateBotConnection(string botModelName, string appId, string password);
+        Task<BotConnection> DeleteBotConnection(string botModelName, string appId);
         Task<BotInputFormat> UpdateBotModelInputFormat(string botModelName, string inputName, InputFormatUpdate inputUpdate);
         Task<BotOutputFormat> UpdateBotModelOutputFormat(string botModelName, string outputName, BotOutputFormatUpdate outputUpdate);
         Task<StringDoublePair> CreateUpdateConstant(string botModelName, string name, double value);
