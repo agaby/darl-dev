@@ -1,4 +1,4 @@
-﻿using Darl.Connectivity.Models;
+﻿using Darl.GraphQL.Models.Models;
 using GraphQL.Types;
 using System;
 using System.Collections.Generic;

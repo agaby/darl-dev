@@ -1,4 +1,4 @@
-﻿using Darl.Connectivity.Models;
+﻿using Darl.GraphQL.Models.Models;
 using GraphQL.Types;
 using System;
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.Sector, true);
             Field(c => c.Source, true);
             Field(c => c.Title, true);
-            Field<StringGraphType>("Id", resolve: c => c.Source.RowKey);
+            Field<StringGraphType>("Id", resolve: c => c.Source.Id);
 
         }
     }

@@ -40,7 +40,7 @@ namespace Darl.GraphQL.Models.Schemata
 
             // Authorization
             //  Create
-            FieldAsync<AuthorizationsType>("createAuthorization", 
+            FieldAsync<StringGraphType>("createAuthorization", 
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
@@ -54,7 +54,7 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.CreateAuthorization(botModelName,name));
                 });
             //  Delete
-            FieldAsync<AuthorizationsType>("deleteAuthorization", 
+            FieldAsync<StringGraphType>("deleteAuthorization", 
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }

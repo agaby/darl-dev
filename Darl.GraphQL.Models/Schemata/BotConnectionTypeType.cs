@@ -1,5 +1,5 @@
-﻿using Darl.Connectivity.Models;
-using Darl.GraphQL.Models.Connectivity;
+﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.GraphQL.Models.Models;
 using GraphQL.Types;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
-    public class BotConnectionType : ObjectGraphType<ConnectivityView>
+    public class BotConnectionType : ObjectGraphType<BotConnection>
     {
         public BotConnectionType(IConnectivity connectivity)
         {

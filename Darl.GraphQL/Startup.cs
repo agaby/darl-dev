@@ -91,7 +91,6 @@ namespace Darl.GraphQL
             services.AddTransient<BotConnectionType>();
             services.AddTransient<BotUsageType>();
             services.AddTransient<ContactType>();
-            services.AddTransient<AuthorizationsType>();
             services.AddTransient<DefaultType>();
             services.AddTransient<ContactInputType>();
             services.AddTransient<ContactUpdateType>();

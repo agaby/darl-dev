@@ -1,4 +1,4 @@
-﻿using Darl.Connectivity.Models;
+﻿using Darl.GraphQL.Models.Models;
 using GraphQL.Types;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "Default";
             Description = "Name value pairs used to configure the system";
-            Field<StringGraphType>("name", resolve:  c => c.Source.RowKey);
+            Field<StringGraphType>("name", resolve:  c => c.Source.Name);
             Field(c => c.Value);
         }
     }
