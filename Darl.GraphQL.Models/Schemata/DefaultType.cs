@@ -12,7 +12,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "Default";
             Description = "Name value pairs used to configure the system";
-            Field<StringGraphType>("name", resolve:  c => c.Source.Name);
+            Field(c => c.Name);
             Field(c => c.Value);
         }
     }

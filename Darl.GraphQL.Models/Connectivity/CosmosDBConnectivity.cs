@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Authentication;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
 using DarlCommon;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using Default = Darl.GraphQL.Models.Models.Default;
@@ -36,6 +38,7 @@ namespace Darl.GraphQL.Models.Connectivity
             mongoClient = new MongoClient(settings);
             userId = _opt.Value.boaiuserid;
             db = mongoClient.GetDatabase(_opt.Value.MongoDatabase);
+            BsonClassMap.RegisterClassMap<LineageRecord>();
         }
 
         public Task<string> CreateAuthorization(string botModelName, string authorizationName)
@@ -43,9 +46,22 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<BotConnection> CreateBotConnection(string botModelName, string appId, string password)
+        public async Task<BotConnection> CreateBotConnection(string botModelName, string appId, string password)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<BotModel>("botmodel");
+            var bm = new BotConnection { AppId = appId, Password = password };
+            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+            var update = Builders<BotModel>.Update.Push("botconnections", bm);
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return bm;
+        }
+
+        public async Task<BotModel> CreateBotModel(string name, LineageModel lm, ServiceConnectivity sc, List<Authorization> authorizations, List<BotConnection> botConnections)
+        {
+            var mc = db.GetCollection<BotModel>("botmodel");
+            var model = new BotModel { Name = name, userId = userId,  Authorizations = authorizations, serviceConnectivity = sc, Model = lm, botconnections = botConnections };
+            await mc.InsertOneAsync(model);
+            return model;
         }
 
         public async Task<Contact> CreateContactAsync(Contact contact)
@@ -58,7 +74,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<Models.MLModel> CreateEmptyMLModel(string name)
         {
             var mc = db.GetCollection<MLModel>("mlmodel");
-            var model = new MLModel { Name = name, MlModel = new DarlCommon.MLModel { name = name, percentTest = 0, sets = 3, darl = "ruleset newRuleSet supervised\n{\n}\n"}, results = new List<MLResult>(), userId = userId };
+            var model = new MLModel { Name = name, model = new DarlCommon.MLModel { name = name, percentTest = 0, sets = 3, darl = "ruleset newRuleSet supervised\n{\n}\n"}, results = new List<MLResult>(), userId = userId };
             await mc.InsertOneAsync(model);
             return model;
         }
@@ -79,9 +95,25 @@ namespace Darl.GraphQL.Models.Connectivity
             return model;
         }
 
+        public async Task<RuleSet> CreateRuleSet(string name, RuleForm rf, ServiceConnectivity sc)
+        {
+            var mc = db.GetCollection<RuleSet>("ruleset");
+            var model = new RuleSet { Name = name, userId = userId, Contents = rf, serviceConnectivity = sc };
+            await mc.InsertOneAsync(model);
+            return model;
+        }
+
         public Task<LineageNodeDefinition> CreateLineageNode(string botModelName, string parent, string newName)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<MLModel> CreateMLModel(string name, DarlCommon.MLModel model)
+        {
+            var mc = db.GetCollection<MLModel>("mlmodel");
+            var mm = new MLModel { Name = name, userId = userId, model =  model};
+            await mc.InsertOneAsync(mm);
+            return mm;
         }
 
         public Task<LineageNodeDefinition> CreatePhrase(string botModelName, string path, object LineageNodeDefinition)

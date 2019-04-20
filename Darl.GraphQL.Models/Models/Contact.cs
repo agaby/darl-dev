@@ -24,7 +24,7 @@ namespace Darl.GraphQL.Models.Models
 
         public string Source { get; set; }
 
-        public string Created { get; set; }
+        public DateTime Created { get; set; }
 
         public string Notes { get; set; }
 

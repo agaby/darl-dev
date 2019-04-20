@@ -16,6 +16,8 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.lineage);
             Field<LineageTypeEnum>("lineageType", resolve: c => c.Source.type);
             Field(c => c.typeWord);
+            Field<ListGraphType<LineageAssociationType>>("follows", resolve: c => c.Source.follows);
+            Field<ListGraphType<LineageAssociationType>>("precedes", resolve: c => c.Source.precedes);
         }
     }
 }

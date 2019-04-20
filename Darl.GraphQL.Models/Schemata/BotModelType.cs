@@ -13,7 +13,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.Name).Description("The the unique name of the Bot model");
             Field<LineageModelType>("model", resolve: context => context.Source.Model);
             Field<ListGraphType<BotConnectionType>>("connections", resolve: context => context.Source.botconnections);
-            Field<ListGraphType<StringGraphType>>("authorizations", resolve: context =>context.Source.Authorizations);
+            Field<ListGraphType<AuthorizationType>>("authorizations", resolve: context => context.Source.Authorizations);
             Field<ServiceConnectivityType>("serviceConnectivity", resolve: context => context.Source.serviceConnectivity);
         }
     }

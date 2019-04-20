@@ -328,7 +328,7 @@ namespace Darl.GraphQL.Models.Schemata
                 {
                     var contactInput = context.GetArgument<ContactInput>("contact");
                     var id = Guid.NewGuid().ToString();
-                    var contact = new Contact { Company = contactInput.Company, Country = contactInput.Country, Created = DateTime.Now.ToString(), Email = contactInput.Email, FirstName = contactInput.FirstName, IntroSent = contactInput.IntroSent, LastName = contactInput.LastName, Notes = contactInput.Notes, Phone = contactInput.Phone, Id = id, Sector = contactInput.Sector, Source = contactInput.Source, Title = contactInput.Title };
+                    var contact = new Contact { Company = contactInput.Company, Country = contactInput.Country, Created = DateTime.Now, Email = contactInput.Email, FirstName = contactInput.FirstName, IntroSent = contactInput.IntroSent, LastName = contactInput.LastName, Notes = contactInput.Notes, Phone = contactInput.Phone, Id = id, Sector = contactInput.Sector, Source = contactInput.Source, Title = contactInput.Title };
                     return connectivity.CreateContactAsync(contact);
                 }
             );
@@ -340,7 +340,7 @@ namespace Darl.GraphQL.Models.Schemata
                     resolve: context =>
                     {
                         var contactUpdate = context.GetArgument<ContactUpdate>("contact");
-                        var contact = new Contact { Company = contactUpdate.Company, Country = contactUpdate.Country, Created = DateTime.Now.ToString(), Email = contactUpdate.Email, FirstName = contactUpdate.FirstName, IntroSent = contactUpdate.IntroSent, LastName = contactUpdate.LastName, Notes = contactUpdate.Notes, Phone = contactUpdate.Phone, Id = contactUpdate.Id, Sector = contactUpdate.Sector, Source = contactUpdate.Source, Title = contactUpdate.Title };
+                        var contact = new Contact { Company = contactUpdate.Company, Country = contactUpdate.Country, Created = DateTime.Now, Email = contactUpdate.Email, FirstName = contactUpdate.FirstName, IntroSent = contactUpdate.IntroSent, LastName = contactUpdate.LastName, Notes = contactUpdate.Notes, Phone = contactUpdate.Phone, Id = contactUpdate.Id, Sector = contactUpdate.Sector, Source = contactUpdate.Source, Title = contactUpdate.Title };
                         return connectivity.UpdateContactAsync(contact);
                     }
                 );

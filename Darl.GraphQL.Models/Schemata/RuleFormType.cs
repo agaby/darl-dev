@@ -21,7 +21,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.testData, true);
             Field(c => c.version, true).DefaultValue(string.Empty);
             Field<TriggerViewType>("trigger", resolve: context => context.Source.trigger);
-            //Field(c => c.format);
+            Field<FormFormatType>("format", resolve: context => context.Source.format);
 
         }
     }

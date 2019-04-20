@@ -106,6 +106,9 @@ namespace Darl.GraphQL
             services.AddTransient<StringStringPairInputType>();
             services.AddTransient<DarlVarInputType>();
             services.AddTransient<MLResultType>();
+            services.AddTransient<AuthorizationType>();
+            services.AddTransient<LineageAssociationType>();
+            services.AddTransient<LineageElementUnionType>();
 
 
             //root

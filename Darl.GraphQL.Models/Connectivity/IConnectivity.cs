@@ -81,5 +81,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<ZendeskCredentials> DeleteZendeskCredentials(string botModelName);
         Task<List<StringStringPair>> InferFromRulesetSimple(string ruleSetName, List<StringStringPair> inputs);
         Task<List<DarlVar>> InferFromRuleSetDarlVar(string ruleSetName, List<DarlVar> inputs);
+        Task<RuleSet> CreateRuleSet(string name, RuleForm rf, ServiceConnectivity sc);
+        Task<Models.MLModel> CreateMLModel(string name, DarlCommon.MLModel model);
     }
 }

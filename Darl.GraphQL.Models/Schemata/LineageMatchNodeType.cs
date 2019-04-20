@@ -13,7 +13,7 @@ namespace Darl.GraphQL.Models.Schemata
             Description = "A node in a text recognition tree";
             Field<LineageAnnotationNodeType>("annotation", resolve: context => context.Source.annotation); //
             Field<ListGraphType<LineageMatchNodePairType>>("children", resolve: context => GetChildrenAsPairs(context.Source.children));//
-            Field<LineageElementType>("element", resolve: context => context.Source.element); // nullable
+            Field<LineageElementUnionType>("element", resolve: context => context.Source.element); // nullable
         }
 
         private List<LineageMatchNodePair> GetChildrenAsPairs(SortedList<string, LineageMatchNode> children)
