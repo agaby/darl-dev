@@ -373,5 +373,10 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             throw new NotImplementedException();
         }
+
+        public Task<Authorization> CreateAuthorization(string name, Authorization auth)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
