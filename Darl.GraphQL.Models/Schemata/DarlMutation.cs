@@ -43,15 +43,15 @@ namespace Darl.GraphQL.Models.Schemata
             FieldAsync<StringGraphType>("createAuthorization", 
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
+                    new QueryArgument<NonNullGraphType<AuthorizationUpdateType>> { Name = "authorization" }
 
                 ),
                 resolve: async context =>
                 {
                     var botModelName = context.GetArgument<string>("botModelName");
-                    var name = context.GetArgument<string>("name");
+                    var authorization = context.GetArgument<Authorization>("authorization");
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.CreateAuthorization(botModelName,name));
+                        async c => await connectivity.CreateAuthorization(botModelName, authorization));
                 });
             //  Delete
             FieldAsync<StringGraphType>("deleteAuthorization", 
@@ -230,7 +230,7 @@ namespace Darl.GraphQL.Models.Schemata
                                        resolve: async context =>
                                        {
                                            var botModelName = context.GetArgument<string>("botModelName");
-                                           var liveMode = context.GetArgument<string>("liveMode");
+                                           var liveMode = context.GetArgument<bool>("liveMode");
                                            var merchantId = context.GetArgument<string>("merchantId");
                                            var stripeApiKey = context.GetArgument<string>("stripeApiKey");
                                            return await context.TryAsyncResolve(

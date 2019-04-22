@@ -15,5 +15,9 @@ namespace Darl.GraphQL.Models.Models
         [DataType(DataType.Password)]
         [Required]
         public string Password { get; set; }
+
+        public string FreindlyName { get; set; }
+
+        public List<BotUsage> UsageHistory { get; set; } = new List<BotUsage>();
     }
 }

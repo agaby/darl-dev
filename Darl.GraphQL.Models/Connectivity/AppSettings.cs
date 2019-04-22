@@ -18,5 +18,7 @@ namespace Darl.GraphQL
         public string mailcontentcontainer { get; set; }
         public string MongoConnectionString { get; set; }
         public string MongoDatabase { get; set; }
+        public string GremlinHostName { get; set; }
+        public string GremlinAuthKey { get; set; }
     }
 }

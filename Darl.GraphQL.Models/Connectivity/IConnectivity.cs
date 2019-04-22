@@ -18,16 +18,15 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<Models.MLModel>> GetMlModelsAsync();
         Task<Models.RuleSet> CreateEmptyRuleSet(string name);
         Task<Models.MLModel> CreateEmptyMLModel(string name);
-        Task<List<BotUsage>> GetBotUsage(string appId);
+        Task<List<BotUsage>> GetBotUsage(string appId, string v);
         Task<RuleSet> DeleteRuleSet(string name);
-        Task<List<string>> GetAuthorizations(string name);
+        Task<List<Authorization>> GetAuthorizations(string name);
         Task<Models.MLModel> DeleteMLModel(string name);
         Task<List<BotConnection>> GetBotConnectivity(string name);
         Task<RuleSet> GetRuleSet(string name);
         Task<List<RuleSet>> GetRuleSetsAsync();
         Task<BotModel> DeleteBotModel(string name);
         string userId { get; set; }
-        Task<ServiceConnectivity> GetServiceConnectivity();
         Task<BotModel> CreateEmptyModel(string name);
         Task<List<Contact>> GetContacts();
         Task<object> CreateDefaultModel(string name);
@@ -44,7 +43,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<OutputFormat> UpdateRuleFormOutputFormat(string ruleSetName, string outputName, OutputFormatUpdate outputUpdate);
         Task<LanguageText> UpdateRuleFormLanguageText(string ruleSetName, string languageName, string languageText);
         Task<VariantText> UpdateRuleFormVariantText(string ruleSetName, string languageName, string isoLanguageName, string variantText);
-        Task<string> CreateAuthorization(string name, string name1);
+        Task<Authorization> CreateAuthorization(string name, Authorization auth);
         Task<Default> CreateUpdateDefault(string name, string value);
         Task<Default> DeleteDefault(string name);
         Task<string> DeleteAuthorization(string name, string name1);
@@ -71,7 +70,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<LineageNodeDefinition> DeletePhrase(string botModelName, string phrase);
         Task<AzureCredentials> UpdateAzureCredentials(string botModelName, string apiKey);
         Task<AzureCredentials> DeleteAzureCredentials(string botModelName);
-        Task<SellerCenterCredentials> UpdateSellereCenterCredentials(string botModelName, string liveMode, string merchantId, string stripeApiKey);
+        Task<SellerCenterCredentials> UpdateSellereCenterCredentials(string botModelName, bool liveMode, string merchantId, string stripeApiKey);
         Task<SellerCenterCredentials> DeleteSellereCenterCredentials(string botModelName);
         Task<TwilioCredentials> UpdateTwilioCredentials(string botModelName, string sMSAccountFrom, string sMSAccountIdentification, string sMSAccountPassword);
         Task<TwilioCredentials> DeleteTwilioCredentials(string botModelName);

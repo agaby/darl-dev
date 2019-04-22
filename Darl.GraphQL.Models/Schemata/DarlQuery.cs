@@ -35,14 +35,6 @@ namespace Darl.GraphQL.Models.Schemata
               }
             );
 
-            FieldAsync<ServiceConnectivityType>(
-              "connectivity",
-                  resolve: async context => {
-                  return await context.TryAsyncResolve(
-                  async c => await connectivity.GetServiceConnectivity());
-                      }
-                    );
-
             FieldAsync<ListGraphType<ContactType>>(
               "contacts",
                   resolve: async context => {
@@ -93,6 +85,30 @@ namespace Darl.GraphQL.Models.Schemata
                 resolve: async context => {
                     return await context.TryAsyncResolve(
                         async c => await connectivity.GetBotModel(c.GetArgument<String>("name"))
+                    );
+                }
+            );
+
+            FieldAsync<ListGraphType<BotConnectionType>>(
+                "botConnectionsByModel",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
+                resolve: async context => {
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.GetBotConnectivity(c.GetArgument<String>("name"))
+                    );
+                }
+            );
+
+            FieldAsync<ListGraphType<BotUsageType>>(
+                "botUsages",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "appId" }
+                    ),
+                resolve: async context => {
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.GetBotUsage(c.GetArgument<String>("botModelName"), c.GetArgument<String>("appId"))
                     );
                 }
             );

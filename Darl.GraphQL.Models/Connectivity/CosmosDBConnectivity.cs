@@ -41,9 +41,13 @@ namespace Darl.GraphQL.Models.Connectivity
             BsonClassMap.RegisterClassMap<LineageRecord>();
         }
 
-        public Task<string> CreateAuthorization(string botModelName, string authorizationName)
+        public async Task<Authorization> CreateAuthorization(string botModelName, Authorization auth)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<BotModel>("botmodel");
+            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+            var update = Builders<BotModel>.Update.Push("Authorizations", auth);
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return auth;
         }
 
         public async Task<BotConnection> CreateBotConnection(string botModelName, string appId, string password)
@@ -252,14 +256,23 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<List<string>> GetAuthorizations(string name)
+        public async Task<List<Authorization>> GetAuthorizations(string name)
         {
-            throw new NotImplementedException();
-        }
+            
+            var collection = db.GetCollection<BotModel>("botmodel");
+            var query = collection.AsQueryable()
+                .Where(a => a.userId == userId && a.Name == name)
+                .Select(a => a.Authorizations);
+            return await query.SingleAsync();
+         }
 
-        public Task<List<BotConnection>> GetBotConnectivity(string name)
+            public async Task<List<BotConnection>> GetBotConnectivity(string name)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<BotModel>("botmodel");
+            var query = collection.AsQueryable()
+                .Where(a => a.userId == userId && a.Name == name)
+                .Select(a => a.botconnections);
+            return await query.SingleAsync();
         }
 
         public async Task<BotModel> GetBotModel(string name)
@@ -278,9 +291,14 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.ToListAsync();
         }
 
-        public Task<List<BotUsage>> GetBotUsage(string appId)
+        public async Task<List<BotUsage>> GetBotUsage(string botModelName, string appId)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<BotModel>("botmodel");
+            var query = collection.AsQueryable()
+                .Where(a => a.userId == userId && a.Name == botModelName)
+                .Select(a => a.botconnections).FirstOrDefault().Where(b => b.AppId == appId)
+                .Select(c => c.UsageHistory);
+            return query.FirstOrDefault().ToList();
         }
 
         public Task<List<LineageNodeDefinition>> GetChildrenLineageNodes(string botModelName, string path, bool isRoot)
@@ -373,10 +391,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.ToListAsync();
         }
 
-        public Task<ServiceConnectivity> GetServiceConnectivity()
-        {
-            throw new NotImplementedException();
-        }
 
         public Task<List<DarlVar>> InferFromRuleSetDarlVar(string ruleSetName, List<DarlVar> inputs)
         {
@@ -403,9 +417,14 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<AzureCredentials> UpdateAzureCredentials(string botModelName, string apiKey)
+        public async Task<AzureCredentials> UpdateAzureCredentials(string botModelName, string apiKey)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<BotModel>("botmodel");
+            var ac = new AzureCredentials { AzureAPIKey = apiKey };
+            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+            var update = Builders<BotModel>.Update.Set("serviceConnectivity.azureCred", ac);
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return ac;
         }
 
         public Task<BotInputFormat> UpdateBotModelInputFormat(string botModelName, string inputName, InputFormatUpdate inputUpdate)
@@ -418,49 +437,106 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<Contact> UpdateContactAsync(Contact contact)
+        public async Task<Contact> UpdateContactAsync(Contact contact)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<Contact>("contact");
+            var filter = Builders<Contact>.Filter.Where(x => x.Id == contact.Id );
+            await collection.ReplaceOneAsync(filter, contact);
+            return contact;
         }
 
-        public Task<InputFormat> UpdateRuleFormInputFormat(string name, string inputName, InputFormatUpdate inputUpdate)
+        public async Task<InputFormat> UpdateRuleFormInputFormat(string name, string inputName, InputFormatUpdate inputUpdate)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<RuleSet>("ruleset");
+            var filter = Builders<RuleSet>.Filter.Where(x => x.Name == name && x.userId == userId && x.Contents.format.InputFormatList.Any(i => i.Name == inputName));
+            var update = Builders<RuleSet>.Update.Combine(
+                Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList.ElementAt(-1).EnforceCrisp, inputUpdate.EnforceCrisp),
+                Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList.ElementAt(-1).Increment, inputUpdate.Increment),
+                Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList.ElementAt(-1).MaxLength, inputUpdate.MaxLength),
+                Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList.ElementAt(-1).NumericMax, inputUpdate.NumericMax),
+                Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList.ElementAt(-1).NumericMin, inputUpdate.NumericMin),
+                Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList.ElementAt(-1).path, inputUpdate.path),
+                Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList.ElementAt(-1).Regex, inputUpdate.Regex),
+                Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList.ElementAt(-1).ShowSets, inputUpdate.ShowSets)
+                );
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return new InputFormat { };
         }
 
-        public Task<LanguageText> UpdateRuleFormLanguageText(string ruleSetName, string languageName, string languageText)
+        public async Task<LanguageText> UpdateRuleFormLanguageText(string ruleSetName, string languageName, string languageText)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<RuleSet>("ruleset");
+            var filter = Builders<RuleSet>.Filter.Where(x => x.Name == ruleSetName && x.userId == userId && x.Contents.language.LanguageList.Any(i => i.Name == languageName));
+            var update = Builders<RuleSet>.Update.Set(x => x.Contents.language.LanguageList.ElementAt(-1).Text, languageText);
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return new LanguageText { Name = languageName, Text = languageText };
         }
 
-        public Task<OutputFormat> UpdateRuleFormOutputFormat(string ruleSetName, string outputName, OutputFormatUpdate outputUpdate)
+        public async Task<OutputFormat> UpdateRuleFormOutputFormat(string ruleSetName, string outputName, OutputFormatUpdate outputUpdate)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<RuleSet>("ruleset");
+            var filter = Builders<RuleSet>.Filter.Where(x => x.Name == ruleSetName && x.userId == userId && x.Contents.format.OutputFormatList.Any(i => i.Name == outputName));
+            var update = Builders<RuleSet>.Update.Combine(
+                Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList.ElementAt(-1).displayType.ToString(), outputUpdate.displayType.ToString()),
+                Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList.ElementAt(-1).Hide, outputUpdate.Hide),
+                Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList.ElementAt(-1).path, outputUpdate.path),
+                Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList.ElementAt(-1).ScoreBarColor, outputUpdate.ScoreBarColor),
+                Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList.ElementAt(-1).ScoreBarMaxVal, outputUpdate.ScoreBarMaxVal),
+                Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList.ElementAt(-1).ScoreBarMinVal, outputUpdate.ScoreBarMinVal),
+                Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList.ElementAt(-1).Uncertainty, outputUpdate.Uncertainty),
+                Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList.ElementAt(-1).ValueFormat, outputUpdate.ValueFormat)
+                );
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return new OutputFormat { };
         }
 
-        public Task<VariantText> UpdateRuleFormVariantText(string ruleSetName, string languageName, string isoLanguageName, string variantText)
+        public async Task<VariantText> UpdateRuleFormVariantText(string ruleSetName, string languageName, string isoLanguageName, string variantText)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<RuleSet>("ruleset");
+            var filter = Builders<RuleSet>.Filter.Where(x => x.Name == ruleSetName && x.userId == userId && x.Contents.language.LanguageList.First(i => i.Name == languageName).VariantList.Any( a => a.Language == isoLanguageName));
+            var update = Builders<RuleSet>.Update.Set(x => x.Contents.language.LanguageList.ElementAt(-1).VariantList.ElementAt(-1).Text, variantText);
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return new VariantText { Language = isoLanguageName, Text = variantText };
         }
 
-        public Task<SellerCenterCredentials> UpdateSellereCenterCredentials(string botModelName, string liveMode, string merchantId, string stripeApiKey)
+        public async Task<SellerCenterCredentials> UpdateSellereCenterCredentials(string botModelName, bool liveMode, string merchantId, string stripeApiKey)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<BotModel>("botmodel");
+            var scc = new SellerCenterCredentials {  LiveMode = liveMode, MerchantId = merchantId, StripeApiKey = stripeApiKey };
+            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+            var update = Builders<BotModel>.Update.Set("serviceConnectivity.sellerCred", scc);
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return scc;
         }
 
-        public Task<SendGridCredentials> UpdateSendgridCredentials(string botModelName, string sendGridAPIKey)
+        public async Task<SendGridCredentials> UpdateSendgridCredentials(string botModelName, string sendGridAPIKey)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<BotModel>("botmodel");
+            var sgc = new SendGridCredentials {  SendGridAPIKey = sendGridAPIKey };
+            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+            var update = Builders<BotModel>.Update.Set("serviceConnectivity.sendgridCred", sgc);
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return sgc;
         }
 
-        public Task<TwilioCredentials> UpdateTwilioCredentials(string botModelName, string sMSAccountFrom, string sMSAccountIdentification, string sMSAccountPassword)
+        public async Task<TwilioCredentials> UpdateTwilioCredentials(string botModelName, string sMSAccountFrom, string sMSAccountIdentification, string sMSAccountPassword)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<BotModel>("botmodel");
+            var tc = new TwilioCredentials { SMSAccountFrom = sMSAccountFrom, SMSAccountIdentification = sMSAccountIdentification, SMSAccountPassword = sMSAccountPassword };
+            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+            var update = Builders<BotModel>.Update.Set("serviceConnectivity.twilioCred", tc);
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return tc;
         }
 
-        public Task<ZendeskCredentials> UpdateZendeskCredentials(string botModelName, string zendeskApiKey, string zendeskURL, string zendeskUser)
+        public async Task<ZendeskCredentials> UpdateZendeskCredentials(string botModelName, string zendeskApiKey, string zendeskURL, string zendeskUser)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<BotModel>("botmodel");
+            var zc = new ZendeskCredentials { ZendeskApiKey = zendeskApiKey, ZendeskURL = zendeskURL, ZendeskUser = zendeskUser};
+            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+            var update = Builders<BotModel>.Update.Set("serviceConnectivity.zendeskCred", zc);
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return zc;
         }
 
         public Task<object> CreateDefaultModel(string name)

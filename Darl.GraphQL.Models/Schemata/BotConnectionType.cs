@@ -15,7 +15,8 @@ namespace Darl.GraphQL.Models.Schemata
             Description = "Details of a bot in the bot framework";
             Field(c => c.AppId);
             Field(c => c.Password);
-            Field<ListGraphType<BotUsageType>>("usageHistory", resolve: context => connectivity.GetBotUsage(context.Source.AppId));
+            Field(c => c.FreindlyName);
+            Field<ListGraphType<BotUsageType>>("usageHistory", resolve: context => context.Source.UsageHistory);
         }
     }
 }
