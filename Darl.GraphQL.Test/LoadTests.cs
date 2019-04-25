@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace Darl.GraphQL.Test
 {
     [TestClass]
-    public class ContactTests
+    public class LoadTests
     {
 
         public AppSettings appSettings = null;

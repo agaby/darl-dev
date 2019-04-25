@@ -378,5 +378,25 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             throw new NotImplementedException();
         }
+
+        public Task<List<DarlUser>> GetUsersByEmail(string email)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DarlUser> GetUserById(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DarlUser> CreateUserAsync(DarlUserInput contact)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DarlUser> UpdateUserAsync(DarlUserUpdate darlUserUpdate)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

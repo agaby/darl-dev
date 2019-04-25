@@ -70,6 +70,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<Contact> CreateContactAsync(Contact contact)
         {
+            contact.Id = Guid.NewGuid().ToString();
             var mc = db.GetCollection<Contact>("contact");
             await mc.InsertOneAsync(contact);
             return contact;
@@ -325,7 +326,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var mc = db.GetCollection<Contact>("contact");
             var query = mc.AsQueryable()
-            .Where(p => p.Email == email);
+            .Where(p => string.Equals(p.Email, email, StringComparison.OrdinalIgnoreCase));
             return await query.FirstOrDefaultAsync();
         }
 
@@ -333,7 +334,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var mc = db.GetCollection<Contact>("contact");
             var query = mc.AsQueryable()
-            .Where(p => p.LastName == lastName);
+            .Where(p => string.Equals(p.LastName, lastName, StringComparison.OrdinalIgnoreCase));
             return await query.ToListAsync();
         }
 
@@ -540,6 +541,32 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
         public Task<object> CreateDefaultModel(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<DarlUser>> GetUsersByEmail(string email)
+        {
+            var mc = db.GetCollection<DarlUser>("user");
+            var query = mc.AsQueryable()
+            .Where(p => string.Equals(p.InvoiceEmail, email, StringComparison.OrdinalIgnoreCase));
+            return await query.ToListAsync();
+        }
+
+        public async Task<DarlUser> GetUserById(string id)
+        {
+            var mc = db.GetCollection<DarlUser>("user");
+            var query = mc.AsQueryable()
+            .Where(p => p.userId == id);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public Task<DarlUser> CreateUserAsync(DarlUserInput contact)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DarlUser> UpdateUserAsync(DarlUserUpdate darlUserUpdate)
         {
             throw new NotImplementedException();
         }

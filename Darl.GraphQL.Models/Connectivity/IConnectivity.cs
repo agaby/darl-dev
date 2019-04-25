@@ -82,5 +82,9 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<DarlVar>> InferFromRuleSetDarlVar(string ruleSetName, List<DarlVar> inputs);
         Task<RuleSet> CreateRuleSet(string name, RuleForm rf, ServiceConnectivity sc);
         Task<Models.MLModel> CreateMLModel(string name, DarlCommon.MLModel model);
+        Task<List<DarlUser>> GetUsersByEmail(string email);
+        Task<DarlUser> GetUserById(string id);
+        Task<DarlUser> CreateUserAsync(DarlUserInput contact);
+        Task<DarlUser> UpdateUserAsync(DarlUserUpdate darlUserUpdate);
     }
 }

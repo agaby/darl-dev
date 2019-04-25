@@ -12,16 +12,16 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "ContactUpdate";
             Description = "A contact that has requested to be informed about DARL.ai";
-            Field<NonNullGraphType<StringGraphType>>("company");
-            Field<NonNullGraphType<StringGraphType>>("firstName");
-            Field<NonNullGraphType<StringGraphType>>("lastName");
+            Field<StringGraphType>("company");
+            Field<StringGraphType>("firstName");
+            Field<StringGraphType>("lastName");
             Field<NonNullGraphType<StringGraphType>>("email");
-            Field<NonNullGraphType<StringGraphType>>("phone");
-            Field<NonNullGraphType<StringGraphType>>("title");
-            Field<NonNullGraphType<StringGraphType>>("source");
-            Field<NonNullGraphType<StringGraphType>>("notes");
-            Field<NonNullGraphType<StringGraphType>>("sector");
-            Field<NonNullGraphType<StringGraphType>>("introSent");
+            Field<StringGraphType>("phone");
+            Field<StringGraphType>("title");
+            Field<StringGraphType>("source");
+            Field<StringGraphType>("notes");
+            Field<StringGraphType>("sector");
+            Field<BooleanGraphType>("introSent");
             Field<NonNullGraphType<StringGraphType>>("id");
         }
     }

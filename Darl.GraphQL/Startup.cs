@@ -109,6 +109,8 @@ namespace Darl.GraphQL
             services.AddTransient<AuthorizationType>();
             services.AddTransient<LineageAssociationType>();
             services.AddTransient<LineageElementUnionType>();
+            services.AddTransient<AuthorizationUpdateType>();
+            services.AddTransient<DarlUserType>();
 
 
             //root
@@ -140,6 +142,7 @@ namespace Darl.GraphQL
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseHttpsRedirection();
             app.UseDefaultFiles();
             app.UseStaticFiles();

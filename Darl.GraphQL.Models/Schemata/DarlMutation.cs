@@ -40,7 +40,7 @@ namespace Darl.GraphQL.Models.Schemata
 
             // Authorization
             //  Create
-            FieldAsync<StringGraphType>("createAuthorization", 
+ /*           FieldAsync<AuthorizationType>("createAuthorization", 
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
                     new QueryArgument<NonNullGraphType<AuthorizationUpdateType>> { Name = "authorization" }
@@ -52,9 +52,9 @@ namespace Darl.GraphQL.Models.Schemata
                     var authorization = context.GetArgument<Authorization>("authorization");
                     return await context.TryAsyncResolve(
                         async c => await connectivity.CreateAuthorization(botModelName, authorization));
-                });
+                });*/
             //  Delete
-            FieldAsync<StringGraphType>("deleteAuthorization", 
+            FieldAsync<AuthorizationType>("deleteAuthorization", 
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
@@ -592,6 +592,44 @@ namespace Darl.GraphQL.Models.Schemata
                 return await context.TryAsyncResolve(
                     async c => await connectivity.DeleteRuleSet(name));
             });
+            // DarlUser
+            //   Create/update
+            //   Delete
+            Field<DarlUserType>(
+                "createUser",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<ContactInputType>> { Name = "user" }),
+                resolve: context =>
+                {
+                    var darlUserInput = context.GetArgument<DarlUserInput>("user");
+                    return connectivity.CreateUserAsync(darlUserInput);
+                }
+            );
+            //  Update
+            Field<DarlUserType>(
+                    "updateUser",
+                    arguments: new QueryArguments(
+                        new QueryArgument<NonNullGraphType<DarlUserUpdateType>> { Name = "user" }),
+                    resolve: context =>
+                    {
+                        var darlUserUpdate = context.GetArgument<DarlUserUpdate>("user");
+                        return connectivity.UpdateUserAsync(darlUserUpdate);
+                    }
+                );
+            //  Delete
+            Field<ContactType>(
+                "deleteContact",
+                arguments: new QueryArguments(
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" }),
+                    resolve: context =>
+                    {
+                        var id = context.GetArgument<string>("id");
+                        var contact = connectivity.GetContactById(id);
+                        connectivity.DeleteContactAsync(id);
+                        return contact;
+                    }
+               );
+
             // Actions
             //  Whole ruleset inference
             FieldAsync<ListGraphType<StringStringPairType>>("inferFromRuleSetSimple",
