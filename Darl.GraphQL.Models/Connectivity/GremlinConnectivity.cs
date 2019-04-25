@@ -224,7 +224,7 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<List<BotUsage>> GetBotUsage(string appId, string v)
+        public Task<List<UserUsage>> GetBotUsage(string appId, string v)
         {
             throw new NotImplementedException();
         }

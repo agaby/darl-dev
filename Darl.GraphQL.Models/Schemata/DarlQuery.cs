@@ -100,7 +100,7 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             );
 
-            FieldAsync<ListGraphType<BotUsageType>>(
+            FieldAsync<ListGraphType<UserUsageType>>(
                 "botUsages",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },

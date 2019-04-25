@@ -6,12 +6,12 @@ using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
-    public class BotUsageType : ObjectGraphType<BotUsage>
+    public class UserUsageType : ObjectGraphType<UserUsage>
     {
-        public BotUsageType()
+        public UserUsageType()
         {
-            Name = "BotUsage";
-            Description = "A day of bot usage and the count of interactions.";
+            Name = "UserUsage";
+            Description = "A day of user usage and the count of interactions.";
             Field(c => c.Date);
             Field(c => c.Count);
         }

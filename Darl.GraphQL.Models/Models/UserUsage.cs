@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Darl.GraphQL.Models.Models
 {
-    public class BotUsage
+    public class UserUsage
     {
-        public BotUsage(DateTime date, int count)
+        public UserUsage(DateTime date, int count)
         {
             Date = date;
             Count = count;

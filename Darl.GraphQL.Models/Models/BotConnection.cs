@@ -18,6 +18,6 @@ namespace Darl.GraphQL.Models.Models
 
         public string FreindlyName { get; set; }
 
-        public List<BotUsage> UsageHistory { get; set; } = new List<BotUsage>();
+        public List<UserUsage> UsageHistory { get; set; } = new List<UserUsage>();
     }
 }

@@ -89,7 +89,7 @@ namespace Darl.GraphQL
             services.AddTransient<SendGridCredentialsType>();
             services.AddTransient<TwilioCredentialsType>();
             services.AddTransient<BotConnectionType>();
-            services.AddTransient<BotUsageType>();
+            services.AddTransient<UserUsageType>();
             services.AddTransient<ContactType>();
             services.AddTransient<DefaultType>();
             services.AddTransient<ContactInputType>();

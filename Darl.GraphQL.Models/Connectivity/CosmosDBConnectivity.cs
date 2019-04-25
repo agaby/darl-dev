@@ -292,7 +292,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.ToListAsync();
         }
 
-        public async Task<List<BotUsage>> GetBotUsage(string botModelName, string appId)
+        public async Task<List<UserUsage>> GetBotUsage(string botModelName, string appId)
         {
             var collection = db.GetCollection<BotModel>("botmodel");
             var query = collection.AsQueryable()

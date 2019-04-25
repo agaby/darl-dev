@@ -23,6 +23,8 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.StripeCustomerId);
             Field(c => c.UsageStripeSubscriptionItem);
             Field(c => c.userId);
+            Field<ListGraphType<UserUsageType>>("usageHistory", resolve: context => context.Source.UsageHistory);
+
         }
     }
 }

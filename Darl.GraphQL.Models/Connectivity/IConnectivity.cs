@@ -18,7 +18,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<Models.MLModel>> GetMlModelsAsync();
         Task<Models.RuleSet> CreateEmptyRuleSet(string name);
         Task<Models.MLModel> CreateEmptyMLModel(string name);
-        Task<List<BotUsage>> GetBotUsage(string appId, string v);
+        Task<List<UserUsage>> GetBotUsage(string appId, string v);
         Task<RuleSet> DeleteRuleSet(string name);
         Task<List<Authorization>> GetAuthorizations(string name);
         Task<Models.MLModel> DeleteMLModel(string name);

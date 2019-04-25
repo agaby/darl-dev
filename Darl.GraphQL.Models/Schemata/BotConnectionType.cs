@@ -16,7 +16,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.AppId);
             Field(c => c.Password);
             Field(c => c.FreindlyName);
-            Field<ListGraphType<BotUsageType>>("usageHistory", resolve: context => context.Source.UsageHistory);
+            Field<ListGraphType<UserUsageType>>("usageHistory", resolve: context => context.Source.UsageHistory);
         }
     }
 }
