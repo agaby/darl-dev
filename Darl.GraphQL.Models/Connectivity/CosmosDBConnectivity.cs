@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
 using DarlCommon;
+using GraphQL;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
@@ -70,10 +71,17 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<Contact> CreateContactAsync(Contact contact)
         {
-            contact.Id = Guid.NewGuid().ToString();
-            var mc = db.GetCollection<Contact>("contact");
-            await mc.InsertOneAsync(contact);
-            return contact;
+            try
+            {
+                contact.Id = Guid.NewGuid().ToString();
+                var mc = db.GetCollection<Contact>("contact");
+                await mc.InsertOneAsync(contact);
+                return contact;
+            }
+            catch(Exception ex)
+            {
+                throw new ExecutionError("Duplicate or malformed data"); 
+            }
         }
 
         public async Task<Models.MLModel> CreateEmptyMLModel(string name)
@@ -326,7 +334,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var mc = db.GetCollection<Contact>("contact");
             var query = mc.AsQueryable()
-            .Where(p => string.Equals(p.Email, email, StringComparison.OrdinalIgnoreCase));
+            .Where(p => p.Email.ToLower() == email.ToLower());
             return await query.FirstOrDefaultAsync();
         }
 
@@ -334,7 +342,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var mc = db.GetCollection<Contact>("contact");
             var query = mc.AsQueryable()
-            .Where(p => string.Equals(p.LastName, lastName, StringComparison.OrdinalIgnoreCase));
+            .Where(p => p.LastName.ToLower() == lastName.ToLower());
             return await query.ToListAsync();
         }
 

@@ -47,7 +47,7 @@ namespace Darl.GraphQL.Models.Schemata
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lastName" }),
                 resolve: async context => {return await context.TryAsyncResolve(async c => await connectivity.GetContactsByLastName(c.GetArgument<String>("lastName")));});
 
-            FieldAsync<ListGraphType<ContactType>>("contactsByEmail",
+            FieldAsync<ContactType>("contactsByEmail",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }),
                 resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetContactsByEmail(c.GetArgument<String>("email"))); });
 
