@@ -69,7 +69,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
-        //[Ignore]
+        [Ignore]
         public async Task CopyDarlDefaults()
         {
             var defaults = client.GetTableReference("defaults");

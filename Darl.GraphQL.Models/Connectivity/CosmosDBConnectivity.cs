@@ -148,7 +148,8 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var mc = db.GetCollection<Default>("default");
             var model = new Default { Name = name, Value = value };
-            await mc.ReplaceOneAsync(Builders<Default>.Filter.Eq(r => r.Name, "name"), model, new UpdateOptions() { IsUpsert = true });
+            await mc.InsertOneAsync(model);
+ //           await mc.ReplaceOneAsync(Builders<Default>.Filter.Eq(r => r.Name, "name"), model, new UpdateOptions() { IsUpsert = true });
             return model;
         }
 
