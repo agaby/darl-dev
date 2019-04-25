@@ -617,16 +617,14 @@ namespace Darl.GraphQL.Models.Schemata
                     }
                 );
             //  Delete
-            Field<ContactType>(
-                "deleteContact",
+            Field<DarlUserType>(
+                "deleteUser",
                 arguments: new QueryArguments(
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" }),
                     resolve: context =>
                     {
                         var id = context.GetArgument<string>("id");
-                        var contact = connectivity.GetContactById(id);
-                        connectivity.DeleteContactAsync(id);
-                        return contact;
+                        return connectivity.DeleteUser(id);
                     }
                );
 

@@ -111,6 +111,9 @@ namespace Darl.GraphQL
             services.AddTransient<LineageElementUnionType>();
             services.AddTransient<AuthorizationUpdateType>();
             services.AddTransient<DarlUserType>();
+            services.AddTransient<AccountStateEnum>();
+            services.AddTransient<DarlUserInputType>();
+            services.AddTransient<DarlUserUpdateType>();
 
 
             //root

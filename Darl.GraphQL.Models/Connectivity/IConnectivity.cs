@@ -86,5 +86,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<DarlUser> GetUserById(string id);
         Task<DarlUser> CreateUserAsync(DarlUserInput contact);
         Task<DarlUser> UpdateUserAsync(DarlUserUpdate darlUserUpdate);
+        Task<DarlUser> DeleteUser(string id);
     }
 }

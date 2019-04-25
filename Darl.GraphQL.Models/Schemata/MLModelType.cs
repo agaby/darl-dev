@@ -13,6 +13,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.Name);
             Field<MLSpecType>("mlmodel", resolve: context => context.Source.model);
             Field<ListGraphType<MLResultType>>("results", resolve: context => context.Source.results);
+            Field<ListGraphType<UserUsageType>>("usageHistory", resolve: context => context.Source.UsageHistory);
         }
     }
 }

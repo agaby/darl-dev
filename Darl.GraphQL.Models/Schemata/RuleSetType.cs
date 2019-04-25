@@ -16,6 +16,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(C => C.Name);
             Field<RuleFormType>("ruleform", resolve: context => context.Source.Contents);
             Field<ServiceConnectivityType>("serviceConnectivity", resolve: context => context.Source.serviceConnectivity);
+            Field<ListGraphType<UserUsageType>>("usageHistory", resolve: context => context.Source.UsageHistory);
         }
     }
 }

@@ -14,5 +14,7 @@ namespace Darl.GraphQL.Models.Models
         public RuleForm Contents { get; set; } = new RuleForm();
         public string userId { get; set; }
         public ServiceConnectivity serviceConnectivity { get; set; } = new ServiceConnectivity();
+        public List<UserUsage> UsageHistory { get; set; } = new List<UserUsage>();
+
     }
 }

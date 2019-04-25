@@ -570,5 +570,10 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             throw new NotImplementedException();
         }
+
+        public Task<DarlUser> DeleteUser(string id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
