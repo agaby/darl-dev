@@ -94,7 +94,7 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<Default> CreateUpdateDefault(string name, string value)
+        public Task<Default> CreateDefault(string name, string value)
         {
             throw new NotImplementedException();
         }
@@ -244,7 +244,7 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<Contact> GetContactsByEmail(string email)
+        public Task<Contact> GetContactByEmail(string email)
         {
             throw new NotImplementedException();
         }
@@ -400,6 +400,11 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
         public Task<DarlUser> DeleteUser(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Default> UpdateDefault(string name, string value)
         {
             throw new NotImplementedException();
         }

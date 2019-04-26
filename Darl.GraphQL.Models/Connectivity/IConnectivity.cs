@@ -31,7 +31,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<Contact>> GetContacts();
         Task<object> CreateDefaultModel(string name);
         Task<List<Contact>> GetContactsByLastName(string lastName);
-        Task<Contact> GetContactsByEmail(string email);
+        Task<Contact> GetContactByEmail(string email);
         Task<List<Default>> GetDefaults();
         Task<string> GetDefaultValue(string name);
         Task<Contact> CreateContactAsync(Contact contact);
@@ -44,7 +44,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<LanguageText> UpdateRuleFormLanguageText(string ruleSetName, string languageName, string languageText);
         Task<VariantText> UpdateRuleFormVariantText(string ruleSetName, string languageName, string isoLanguageName, string variantText);
         Task<Authorization> CreateAuthorization(string name, Authorization auth);
-        Task<Default> CreateUpdateDefault(string name, string value);
+        Task<Default> CreateDefault(string name, string value);
         Task<Default> DeleteDefault(string name);
         Task<string> DeleteAuthorization(string name, string name1);
         Task<BotConnection> CreateBotConnection(string botModelName, string appId, string password);
@@ -87,5 +87,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<DarlUser> CreateUserAsync(DarlUserInput contact);
         Task<DarlUser> UpdateUserAsync(DarlUserUpdate darlUserUpdate);
         Task<DarlUser> DeleteUser(string id);
+        Task<Default> UpdateDefault(string name, string value);
     }
 }

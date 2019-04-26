@@ -47,14 +47,14 @@ namespace Darl.GraphQL.Models.Schemata
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lastName" }),
                 resolve: async context => {return await context.TryAsyncResolve(async c => await connectivity.GetContactsByLastName(c.GetArgument<String>("lastName")));});
 
-            FieldAsync<ContactType>("contactsByEmail",
+            FieldAsync<ContactType>("contactByEmail",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }),
-                resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetContactsByEmail(c.GetArgument<String>("email"))); });
+                resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetContactByEmail(c.GetArgument<String>("email"))); });
 
             FieldAsync<ListGraphType<DefaultType>>("defaults",
                 resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetDefaults()); });
 
-            FieldAsync<ListGraphType<StringGraphType>>("defaultValue",
+            FieldAsync<StringGraphType>("defaultValue",
             arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
             resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetDefaultValue(c.GetArgument<String>("name"))); });
 

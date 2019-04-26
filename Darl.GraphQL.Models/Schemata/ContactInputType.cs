@@ -13,6 +13,7 @@ namespace Darl.GraphQL.Models.Schemata
             Name = "ContactInput";
             Description = "A contact that has requested to be informed about DARL.ai";
             Field<StringGraphType>("company");
+            Field<StringGraphType>("country");
             Field<StringGraphType>("firstName");
             Field<StringGraphType>("lastName");
             Field<NonNullGraphType<StringGraphType>>("email");

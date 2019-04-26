@@ -144,12 +144,11 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public async Task<Default> CreateUpdateDefault(string name, string value)
+        public async Task<Default> CreateDefault(string name, string value)
         {
             var mc = db.GetCollection<Default>("default");
             var model = new Default { Name = name, Value = value };
             await mc.InsertOneAsync(model);
- //           await mc.ReplaceOneAsync(Builders<Default>.Filter.Eq(r => r.Name, "name"), model, new UpdateOptions() { IsUpsert = true });
             return model;
         }
 
@@ -194,16 +193,27 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<Contact> DeleteContactAsync(string id)
         {
-            var mc = db.GetCollection<Contact>("contact");
-            var query = mc.AsQueryable().Where(p => p.Id == id);
-            var old = await query.FirstOrDefaultAsync();
-            await mc.DeleteOneAsync(Builders<Contact>.Filter.Eq(r => r.Id, id));
-            return old;
+            try
+            {
+                var mc = db.GetCollection<Contact>("contact");
+                var query = mc.AsQueryable().Where(p => p.Id == id);
+                var old = await query.FirstOrDefaultAsync();
+                var res = await mc.DeleteOneAsync(Builders<Contact>.Filter.Eq(r => r.Id, id));
+                return old;
+            }
+            catch(Exception ex)
+            {
+                throw new ExecutionError("Duplicate or malformed data");
+            }
         }
 
-        public Task<Default> DeleteDefault(string name)
+        public async Task<Default> DeleteDefault(string name)
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<Default>("default");
+            var query = mc.AsQueryable().Where(p => p.Name == name);
+            var old = await query.FirstOrDefaultAsync();
+            await mc.DeleteOneAsync(Builders<Default>.Filter.Eq(r => r.Name, name));
+            return old;
         }
 
         public Task<LineageNodeDefinition> DeleteLineageNode(string botModelName, string id)
@@ -331,7 +341,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.ToListAsync();
         }
 
-        public async Task<Contact> GetContactsByEmail(string email)
+        public async Task<Contact> GetContactByEmail(string email)
         {
             var mc = db.GetCollection<Contact>("contact");
             var query = mc.AsQueryable()
@@ -583,6 +593,16 @@ namespace Darl.GraphQL.Models.Connectivity
         public Task<DarlUser> DeleteUser(string id)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<Default> UpdateDefault(string name, string value)
+        {
+            var mc = db.GetCollection<Default>("default");
+            var model = new Default { Name = name, Value = value };
+            var filter = Builders<Default>.Filter.Where(x => x.Name == name);
+            var update = Builders<Default>.Update.Set("Value", value);
+            await mc.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Default,Default> {  IsUpsert = false });
+            return model;
         }
     }
 }

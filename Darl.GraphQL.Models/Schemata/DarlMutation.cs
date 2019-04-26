@@ -359,14 +359,22 @@ namespace Darl.GraphQL.Models.Schemata
                );
             // Default
             //  Create
-            FieldAsync<DefaultType>("createUpdateDefault", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }, new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "value" }), 
+            FieldAsync<DefaultType>("createDefault", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }, new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "value" }), 
                 resolve: async context =>
             {
                 var name = context.GetArgument<string>("name");
                 var value = context.GetArgument<string>("value");
                 return await context.TryAsyncResolve(
-                    async c => await connectivity.CreateUpdateDefault(name, value));
+                    async c => await connectivity.CreateDefault(name, value));
             });
+            FieldAsync<DefaultType>("updateDefault", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }, new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "value" }),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var value = context.GetArgument<string>("value");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.UpdateDefault(name, value));
+                });
             //  Delete
             FieldAsync<DefaultType>("deleteDefault", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
                 resolve: async context =>

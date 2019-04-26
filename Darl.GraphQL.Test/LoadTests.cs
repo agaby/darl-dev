@@ -86,7 +86,7 @@ namespace Darl.GraphQL.Test
             var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings));
             foreach (var c in list)
             {
-                await cosmos.CreateUpdateDefault(c.RowKey,  c.Value );
+                await cosmos.CreateDefault(c.RowKey,  c.Value );
             }
         }
 
