@@ -389,7 +389,7 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<DarlUser> CreateUserAsync(DarlUserInput contact)
+        public Task<DarlUser> CreateUserAsync(string userId, DarlUserInput contact)
         {
             throw new NotImplementedException();
         }
@@ -410,6 +410,16 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
         public Task<DarlUser> CreateUserAsync(DarlUser contact)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DarlUser> UpdateUserAsync(string userId, DarlUserUpdate darlUserUpdate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DarlUser> CreateUserAsync(DarlUserInput user)
         {
             throw new NotImplementedException();
         }

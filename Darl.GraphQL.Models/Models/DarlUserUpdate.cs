@@ -26,7 +26,7 @@ namespace Darl.GraphQL.Models.Models
         /// </summary>
         public string InvoiceEmail { get; set; }
 
-        public AccountState accountState { get; set; } = AccountState.trial;
+        public AccountState? accountState { get; set; } = AccountState.trial;
         /// <summary>
         /// end of current subscription period.
         /// </summary>

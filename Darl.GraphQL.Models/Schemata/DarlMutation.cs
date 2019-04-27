@@ -606,10 +606,12 @@ namespace Darl.GraphQL.Models.Schemata
             Field<DarlUserType>(
                 "createUser",
                 arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<ContactInputType>> { Name = "user" }),
+                    new QueryArgument<NonNullGraphType<DarlUserInputType>> { Name = "user" }
+                    ),
                 resolve: context =>
                 {
-                    var darlUser = context.GetArgument<DarlUser>("user");
+
+                    var darlUser = context.GetArgument<DarlUserInput>("user");
                     return connectivity.CreateUserAsync(darlUser);
                 }
             );
@@ -617,22 +619,25 @@ namespace Darl.GraphQL.Models.Schemata
             Field<DarlUserType>(
                     "updateUser",
                     arguments: new QueryArguments(
-                        new QueryArgument<NonNullGraphType<DarlUserUpdateType>> { Name = "user" }),
+                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId" },
+                       new QueryArgument<NonNullGraphType<DarlUserUpdateType>> { Name = "user" }
+                       ),
                     resolve: context =>
                     {
+                        var userId = context.GetArgument<string>("userId");
                         var darlUserUpdate = context.GetArgument<DarlUserUpdate>("user");
-                        return connectivity.UpdateUserAsync(darlUserUpdate);
+                        return connectivity.UpdateUserAsync(userId, darlUserUpdate);
                     }
                 );
             //  Delete
             Field<DarlUserType>(
                 "deleteUser",
                 arguments: new QueryArguments(
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id" }),
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId" }),
                     resolve: context =>
                     {
-                        var id = context.GetArgument<string>("id");
-                        return connectivity.DeleteUser(id);
+                        var userId = context.GetArgument<string>("userId");
+                        return connectivity.DeleteUser(userId);
                     }
                );
 

@@ -10,7 +10,7 @@ namespace Darl.GraphQL.Models.Schemata
 
         public AccountStateEnum()
         {
-            Name = "accountState";
+            Name = "AccountState";
             AddValue("trial", "In a trial period", 0);
             AddValue("trial_expired", "Trial is over but not signed up", 1);
             AddValue("paying", "paying for usage", 2);

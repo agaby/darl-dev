@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,6 +7,7 @@ namespace Darl.GraphQL.Models.Models
 {
     public class DarlUser
     {
+        public ObjectId id { get; set; }
         public enum AccountState { trial, trial_expired, paying, delinquent, suspended, closed, admin }
         public string userId { get; set; }
 

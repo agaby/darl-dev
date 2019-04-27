@@ -6,23 +6,22 @@ using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
-    public class DarlUserInputType : InputObjectGraphType<DarlUser>
+    public class DarlUserInputType : InputObjectGraphType<DarlUserInput>
     {
         public DarlUserInputType()
         {
-            Name = "darlUserInput";
+            Name = "DarlUserInput";
             Field<NonNullGraphType<StringGraphType>>("userId");
             Field<StringGraphType>("issuer");
             Field<NonNullGraphType<DateTimeGraphType>>("created");
-            Field<NonNullGraphType<DateTimeGraphType>>("paidUsageStarted");
+            Field<DateTimeGraphType>("paidUsageStarted");
             Field<StringGraphType>("invoiceName");
             Field<StringGraphType>("invoiceOrganization");
             Field<NonNullGraphType<StringGraphType>>("invoiceEmail");
-            Field<AccountStateEnum>("accountState");
-            Field<NonNullGraphType<DateTimeGraphType>>("current_period_end");
+            Field<DateTimeGraphType>("current_period_end");
             Field<StringGraphType>("stripeCustomerId");
             Field<StringGraphType>("usageStripeSubscriptionItem");
-            Field<ListGraphType<UserUsageType>>("usageHistory");
+
         }
     }
 }

@@ -602,13 +602,14 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<DarlUser> CreateUserAsync(DarlUser user)
+        public async Task<DarlUser> CreateUserAsync(DarlUserInput user)
         {
             try
             {
                 var mc = db.GetCollection<DarlUser>("user");
-                await mc.InsertOneAsync(user);
-                return user;
+                var duser = new DarlUser { Created = user.Created, current_period_end = user.current_period_end, InvoiceEmail = user.InvoiceEmail, InvoiceName = user.InvoiceName, InvoiceOrganization = user.InvoiceOrganization, Issuer = user.Issuer, PaidUsageStarted = user.PaidUsageStarted, StripeCustomerId = user.StripeCustomerId, UsageStripeSubscriptionItem = user.UsageStripeSubscriptionItem, userId = user.userId  };
+                await mc.InsertOneAsync(duser);
+                return duser;
             }
             catch (Exception ex)
             {
@@ -616,14 +617,50 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        public Task<DarlUser> UpdateUserAsync(DarlUserUpdate darlUserUpdate)
+        public async Task<DarlUser> UpdateUserAsync(string userId, DarlUserUpdate user)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<DarlUser>("user");
+            var filter = Builders<DarlUser>.Filter.Where(x => x.userId == userId);
+            var updList = new List<UpdateDefinition<DarlUser>>();
+            if (user.accountState != null)
+                updList.Add(Builders<DarlUser>.Update.Set(x => x.accountState, user.accountState));
+            if (user.current_period_end != null)
+                updList.Add(Builders<DarlUser>.Update.Set(x => x.current_period_end, user.current_period_end));
+            if (user.InvoiceEmail != null)
+                updList.Add(Builders<DarlUser>.Update.Set(x => x.InvoiceEmail, user.InvoiceEmail));
+            if (user.InvoiceName != null)
+                updList.Add(Builders<DarlUser>.Update.Set(x => x.InvoiceName, user.InvoiceName));
+            if (user.InvoiceEmail != null)
+                updList.Add(Builders<DarlUser>.Update.Set(x => x.InvoiceEmail, user.InvoiceEmail));
+            if (user.InvoiceName != null)
+                updList.Add(Builders<DarlUser>.Update.Set(x => x.InvoiceName, user.InvoiceName));
+            if (user.InvoiceOrganization != null)
+                updList.Add(Builders<DarlUser>.Update.Set(x => x.InvoiceOrganization, user.InvoiceOrganization));
+            if (user.PaidUsageStarted != null)
+                updList.Add(Builders<DarlUser>.Update.Set(x => x.PaidUsageStarted, user.PaidUsageStarted));
+            if (user.StripeCustomerId != null)
+                updList.Add(Builders<DarlUser>.Update.Set(x => x.StripeCustomerId, user.StripeCustomerId));
+            if (user.UsageStripeSubscriptionItem != null)
+                updList.Add(Builders<DarlUser>.Update.Set(x => x.UsageStripeSubscriptionItem, user.UsageStripeSubscriptionItem));
+            var update = Builders<DarlUser>.Update.Combine(updList);
+            var newUser = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<DarlUser, DarlUser> { IsUpsert = false });
+            return newUser;
         }
 
-        public Task<DarlUser> DeleteUser(string id)
+        public async Task<DarlUser> DeleteUser(string userId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var mc = db.GetCollection<DarlUser>("user");
+                var query = mc.AsQueryable().Where(p => p.userId == userId);
+                var old = await query.FirstOrDefaultAsync();
+                DeleteResult res = await mc.DeleteOneAsync<DarlUser>(r => r.userId == userId);
+                return old;
+            }
+            catch (Exception ex)
+            {
+                throw new ExecutionError("Duplicate or malformed data");
+            }
         }
 
         public async Task<Default> UpdateDefault(string name, string value)

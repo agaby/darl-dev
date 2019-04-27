@@ -121,7 +121,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
-        //[Ignore]
+        [Ignore]
 
         public async Task CopyDarlBotModels()
         {
@@ -134,8 +134,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
-        //[Ignore]
-
+        [Ignore]
         public async Task CopyDarlUsers()
         {
             var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
@@ -144,7 +143,7 @@ namespace Darl.GraphQL.Test
 
             foreach (var c in list)
             {
-                await cosmos.CreateUserAsync(new Models.Models.DarlUser { accountState = (AccountState)c.accountState, Created = c.Created, current_period_end = c.current_period_end, InvoiceEmail = c.InvoiceEmail, InvoiceName = c.InvoiceName, InvoiceOrganization = c.InvoiceOrganization, Issuer = c.Issuer, PaidUsageStarted = c.PaidUsageStarted, StripeCustomerId = c.StripeCustomerId, UsageStripeSubscriptionItem = c.UsageStripeSubscriptionItem, userId = c.PartitionKey });
+                await cosmos.CreateUserAsync(new Models.Models.DarlUserInput {  Created = c.Created, current_period_end = c.current_period_end, InvoiceEmail = c.InvoiceEmail, InvoiceName = c.InvoiceName, InvoiceOrganization = c.InvoiceOrganization, Issuer = c.Issuer, PaidUsageStarted = c.PaidUsageStarted, StripeCustomerId = c.StripeCustomerId, UsageStripeSubscriptionItem = c.UsageStripeSubscriptionItem, userId = c.PartitionKey });
             }
         }
     }

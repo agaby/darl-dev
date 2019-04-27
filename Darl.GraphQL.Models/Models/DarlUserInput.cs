@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using static Darl.GraphQL.Models.Models.DarlUser;
@@ -7,6 +8,8 @@ namespace Darl.GraphQL.Models.Models
 {
     public class DarlUserInput
     {
+        public string userId { get; set; }
+
         /// <summary>
         /// The issuer = Tenant in AD if part of a corporate log in
         /// </summary>
@@ -34,11 +37,10 @@ namespace Darl.GraphQL.Models.Models
         /// </summary>
         public string InvoiceEmail { get; set; }
 
-        public AccountState accountState { get; set; } = AccountState.trial;
         /// <summary>
         /// end of current subscription period.
         /// </summary>
-        public DateTime current_period_end { get; set; }
+        public DateTime current_period_end { get; set; } = DateTime.Now;
 
         public string StripeCustomerId { get; set; }
 

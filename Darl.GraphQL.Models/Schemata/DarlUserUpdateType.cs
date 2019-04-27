@@ -10,7 +10,7 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public DarlUserUpdateType()
         {
-            Name = "darlUserUpdate";
+            Name = "DarlUserUpdate";
             Description = "A user who has registered with the DARL system";
             Field<DateTimeGraphType>("PaidUsageStarted");
             Field<StringGraphType>("InvoiceName");
