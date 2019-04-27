@@ -198,7 +198,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 var mc = db.GetCollection<Contact>("contact");
                 var query = mc.AsQueryable().Where(p => p.Id == id);
                 var old = await query.FirstOrDefaultAsync();
-                var res = await mc.DeleteOneAsync(Builders<Contact>.Filter.Eq(r => r.Id, id));
+                DeleteResult res = await mc.DeleteManyAsync<Contact>(r => r.Id == id);
                 return old;
             }
             catch(Exception ex)
