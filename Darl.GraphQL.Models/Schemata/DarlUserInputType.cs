@@ -6,22 +6,23 @@ using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
-    public class DarlUserInputType : InputObjectGraphType<DarlUserInput>
+    public class DarlUserInputType : InputObjectGraphType<DarlUser>
     {
         public DarlUserInputType()
         {
             Name = "darlUserInput";
-            Field<NonNullGraphType<StringGraphType>>("company");
-            Field<NonNullGraphType<StringGraphType>>("firstName");
-            Field<NonNullGraphType<StringGraphType>>("lastName");
-            Field<NonNullGraphType<StringGraphType>>("email");
-            Field<NonNullGraphType<StringGraphType>>("phone");
-            Field<NonNullGraphType<StringGraphType>>("title");
-            Field<NonNullGraphType<StringGraphType>>("source");
-            Field<NonNullGraphType<StringGraphType>>("notes");
-            Field<NonNullGraphType<StringGraphType>>("sector");
-            Field<NonNullGraphType<StringGraphType>>("introSent");
-            Field<NonNullGraphType<StringGraphType>>("id");
+            Field<NonNullGraphType<StringGraphType>>("userId");
+            Field<StringGraphType>("issuer");
+            Field<NonNullGraphType<DateTimeGraphType>>("created");
+            Field<NonNullGraphType<DateTimeGraphType>>("paidUsageStarted");
+            Field<StringGraphType>("invoiceName");
+            Field<StringGraphType>("invoiceOrganization");
+            Field<NonNullGraphType<StringGraphType>>("invoiceEmail");
+            Field<AccountStateEnum>("accountState");
+            Field<NonNullGraphType<DateTimeGraphType>>("current_period_end");
+            Field<StringGraphType>("stripeCustomerId");
+            Field<StringGraphType>("usageStripeSubscriptionItem");
+            Field<ListGraphType<UserUsageType>>("usageHistory");
         }
     }
 }

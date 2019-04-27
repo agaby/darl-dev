@@ -21,8 +21,9 @@ namespace Darl.GraphQL.Models.Schemata
             Field<StringGraphType>("source");
             Field<StringGraphType>("notes");
             Field<StringGraphType>("sector");
+            Field<StringGraphType>("country");
             Field<BooleanGraphType>("introSent");
-            Field<NonNullGraphType<StringGraphType>>("id");
+            Field<StringGraphType>("id");
         }
     }
 }

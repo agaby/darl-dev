@@ -191,14 +191,14 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public async Task<Contact> DeleteContactAsync(string id)
+        public async Task<Contact> DeleteContactAsync(string email)
         {
             try
             {
                 var mc = db.GetCollection<Contact>("contact");
-                var query = mc.AsQueryable().Where(p => p.Id == id);
+                var query = mc.AsQueryable().Where(p => p.Email == email);
                 var old = await query.FirstOrDefaultAsync();
-                DeleteResult res = await mc.DeleteManyAsync<Contact>(r => r.Id == id);
+                DeleteResult res =  await mc.DeleteOneAsync<Contact>(r => r.Email == email);
                 return old;
             }
             catch(Exception ex)
@@ -460,8 +460,30 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<Contact> UpdateContactAsync(Contact contact)
         {
             var collection = db.GetCollection<Contact>("contact");
-            var filter = Builders<Contact>.Filter.Where(x => x.Id == contact.Id );
-            await collection.ReplaceOneAsync(filter, contact);
+            var filter = Builders<Contact>.Filter.Where(x => x.Email == contact.Email );
+            var updList = new List<UpdateDefinition<Contact>>();
+            if (contact.Company != null)
+                updList.Add(Builders<Contact>.Update.Set(x => x.Company, contact.Company));
+            if (contact.Country != null)
+                updList.Add(Builders<Contact>.Update.Set(x => x.Country, contact.Country));
+            if (contact.FirstName != null)
+                updList.Add(Builders<Contact>.Update.Set(x => x.FirstName, contact.FirstName));
+            if (contact.IntroSent)
+                updList.Add(Builders<Contact>.Update.Set(x => x.IntroSent, contact.IntroSent));
+            if (contact.LastName != null)
+                updList.Add(Builders<Contact>.Update.Set(x => x.LastName, contact.LastName));
+            if (contact.Notes != null)
+                updList.Add(Builders<Contact>.Update.Set(x => x.Notes, contact.Notes));
+            if (contact.Phone != null)
+                updList.Add(Builders<Contact>.Update.Set(x => x.Phone, contact.Phone));
+            if (contact.Sector != null)
+                updList.Add(Builders<Contact>.Update.Set(x => x.Sector, contact.Sector));
+            if (contact.Source != null)
+                updList.Add(Builders<Contact>.Update.Set(x => x.Source, contact.Source));
+            if (contact.Title != null)
+                updList.Add(Builders<Contact>.Update.Set(x => x.Title, contact.Title));
+            var update = Builders<Contact>.Update.Combine(updList);
+            await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Contact, Contact> { IsUpsert = false });
             return contact;
         }
 
@@ -568,7 +590,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var mc = db.GetCollection<DarlUser>("user");
             var query = mc.AsQueryable()
-            .Where(p => string.Equals(p.InvoiceEmail, email, StringComparison.OrdinalIgnoreCase));
+            .Where(p => p.InvoiceEmail.ToLower() == email.ToLower());
             return await query.ToListAsync();
         }
 
@@ -580,9 +602,18 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.FirstOrDefaultAsync();
         }
 
-        public Task<DarlUser> CreateUserAsync(DarlUserInput contact)
+        public async Task<DarlUser> CreateUserAsync(DarlUser user)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var mc = db.GetCollection<DarlUser>("user");
+                await mc.InsertOneAsync(user);
+                return user;
+            }
+            catch (Exception ex)
+            {
+                throw new ExecutionError("Duplicate or malformed data");
+            }
         }
 
         public Task<DarlUser> UpdateUserAsync(DarlUserUpdate darlUserUpdate)

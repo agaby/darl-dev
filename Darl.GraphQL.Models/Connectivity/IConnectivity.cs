@@ -84,7 +84,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<Models.MLModel> CreateMLModel(string name, DarlCommon.MLModel model);
         Task<List<DarlUser>> GetUsersByEmail(string email);
         Task<DarlUser> GetUserById(string id);
-        Task<DarlUser> CreateUserAsync(DarlUserInput contact);
+        Task<DarlUser> CreateUserAsync(DarlUser contact);
         Task<DarlUser> UpdateUserAsync(DarlUserUpdate darlUserUpdate);
         Task<DarlUser> DeleteUser(string id);
         Task<Default> UpdateDefault(string name, string value);

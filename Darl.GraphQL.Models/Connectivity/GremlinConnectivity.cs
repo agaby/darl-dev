@@ -408,5 +408,10 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             throw new NotImplementedException();
         }
+
+        public Task<DarlUser> CreateUserAsync(DarlUser contact)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

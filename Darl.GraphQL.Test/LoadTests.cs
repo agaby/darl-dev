@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using static Darl.GraphQL.Models.Models.DarlUser;
 
 namespace Darl.GraphQL.Test
 {
@@ -64,7 +65,7 @@ namespace Darl.GraphQL.Test
             var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings));
             foreach (var c in list)
             {
-                await cosmos.CreateContactAsync(new Models.Models.Contact { Company = c.Company, Country = c.Country, Created = c.Created, Email = c.Email, FirstName = c.FirstName, Id = c.RowKey, IntroSent = c.InfoSent, LastName = c.LastName, Notes = c.Notes, Phone = c.Phone, Sector = c.Sector, Source = c.Source, Title = c.Title });
+                await cosmos.CreateContactAsync(new Models.Models.Contact { Company = c.Company, Country = c.Country, Created = c.Created, Email = c.Email.ToLower(), FirstName = c.FirstName, Id = c.RowKey, IntroSent = c.InfoSent, LastName = c.LastName, Notes = c.Notes, Phone = c.Phone, Sector = c.Sector, Source = c.Source, Title = c.Title });
             }
         }
 
@@ -130,6 +131,21 @@ namespace Darl.GraphQL.Test
             var mm = await dr.GetModel(userId, c);
             await cosmos.CreateBotModel(c, mm, new Models.Models.ServiceConnectivity(), new List<Models.Models.Authorization>(), new List<Models.Models.BotConnection>());
             
+        }
+
+        [TestMethod]
+        //[Ignore]
+
+        public async Task CopyDarlUsers()
+        {
+            var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
+            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings));
+            var list = await dr.GetIndividualAccounts();
+
+            foreach (var c in list)
+            {
+                await cosmos.CreateUserAsync(new Models.Models.DarlUser { accountState = (AccountState)c.accountState, Created = c.Created, current_period_end = c.current_period_end, InvoiceEmail = c.InvoiceEmail, InvoiceName = c.InvoiceName, InvoiceOrganization = c.InvoiceOrganization, Issuer = c.Issuer, PaidUsageStarted = c.PaidUsageStarted, StripeCustomerId = c.StripeCustomerId, UsageStripeSubscriptionItem = c.UsageStripeSubscriptionItem, userId = c.PartitionKey });
+            }
         }
     }
 }

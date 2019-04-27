@@ -50,7 +50,7 @@ namespace Darl.GraphQL.Test
             Assert.IsTrue(resp.Errors == null || resp.Errors.Length == 0);
             var contact = resp.GetDataFieldAs<Models.Models.Contact>("contactByEmail");
             Assert.AreEqual("andy@darl.ai", contact.Email);
-            req = new GraphQLRequest() { OperationName = "updateContact", Variables = new { contact = new ContactUpdate {  FirstName = "Andrew"} }, Query = @"mutation updateContact($contact ContactUpdate!){updateContact(contact: $contact){ id email lastName  }}" };
+            req = new GraphQLRequest() { OperationName = "updateContact", Variables = new { contact = new ContactUpdate {  FirstName = "Andrew", Email = "andy@darl.ai"} }, Query = @"mutation updateContact($contact: ContactUpdate!){updateContact(contact: $contact){ id email lastName  }}" };
             resp = await client.PostAsync(req);
             Assert.IsTrue(resp.Errors == null || resp.Errors.Length == 0);
             req = new GraphQLRequest() { OperationName = "getContactByEmail", Variables = new { email = "andy@darl.ai" }, Query = @"query getContactByEmail($email: String!){  contactByEmail(email: $email){id email lastName firstName}}" };
@@ -58,7 +58,7 @@ namespace Darl.GraphQL.Test
             Assert.IsTrue(resp.Errors == null || resp.Errors.Length == 0);
             contact = resp.GetDataFieldAs<Models.Models.Contact>("contactByEmail");
             Assert.AreEqual("Andrew", contact.FirstName);
-            req = new GraphQLRequest() { OperationName = "deleteContact", Variables = new { id = contact.Id }, Query = @"mutation deleteContact($id: String!){deleteContact(id: $id) {id }}" };
+            req = new GraphQLRequest() { OperationName = "deleteContact", Variables = new { email = contact.Email }, Query = @"mutation deleteContact($email: String!){deleteContact(email: $email) {id }}" };
             resp = await client.PostAsync(req);
             Assert.IsTrue(resp.Errors == null || resp.Errors.Length == 0);
             req = new GraphQLRequest() { OperationName = "getContactByEmail", Variables = new { email = "andy@darl.ai" }, Query = @"query getContactByEmail($email: String!){  contactByEmail(email: $email){id email lastName}}" };
