@@ -114,7 +114,9 @@ namespace Darl.GraphQL
             services.AddTransient<AccountStateEnum>();
             services.AddTransient<DarlUserInputType>();
             services.AddTransient<DarlUserUpdateType>();
-
+            services.AddTransient<MLSpecUpdateType>();
+            services.AddTransient<SetGraphType>();
+            services.AddTransient<PercentGraphType>();
 
             //root
             services.AddTransient<DarlSchema>();

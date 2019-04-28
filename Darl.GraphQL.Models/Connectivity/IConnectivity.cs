@@ -70,7 +70,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<LineageNodeDefinition> DeletePhrase(string botModelName, string phrase);
         Task<AzureCredentials> UpdateAzureCredentials(string botModelName, string apiKey);
         Task<AzureCredentials> DeleteAzureCredentials(string botModelName);
-        Task<SellerCenterCredentials> UpdateSellereCenterCredentials(string botModelName, bool liveMode, string merchantId, string stripeApiKey);
+        Task<SellerCenterCredentials> UpdateSellerCenterCredentials(string botModelName, bool liveMode, string merchantId, string stripeApiKey);
         Task<SellerCenterCredentials> DeleteSellereCenterCredentials(string botModelName);
         Task<TwilioCredentials> UpdateTwilioCredentials(string botModelName, string sMSAccountFrom, string sMSAccountIdentification, string sMSAccountPassword);
         Task<TwilioCredentials> DeleteTwilioCredentials(string botModelName);
@@ -88,5 +88,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<DarlUser> UpdateUserAsync(string userId, DarlUserUpdate darlUserUpdate);
         Task<DarlUser> DeleteUser(string id);
         Task<Default> UpdateDefault(string name, string value);
+        Task<Models.MLModel> MachineLearnModel(string mlmodelname);
+        Task<Models.MLModel> UpdateMLSpec(string name, MLSpecUpdate mlspec);
     }
 }

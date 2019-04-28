@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
 using DarlCommon;
+using DarlLanguage;
+using DarlLanguage.Processing;
 using GraphQL;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization;
@@ -221,9 +223,13 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<MLModel> DeleteMLModel(string name)
+        public async Task<MLModel> DeleteMLModel(string name)
         {
-            throw new NotImplementedException();
+            var mc = db.GetCollection<MLModel>("mlmodel");
+            var query = mc.AsQueryable().Where(p => p.Name == name && p.userId == userId);
+            var old = await query.FirstOrDefaultAsync();
+            await mc.DeleteOneAsync(Builders<MLModel>.Filter.Eq(r => r.userId, userId) & Builders<MLModel>.Filter.Eq(r => r.Name, name));
+            return old;
         }
 
         public Task<LineageNodeDefinition> DeletePhrase(string botModelName, string phrase)
@@ -541,7 +547,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return new VariantText { Language = isoLanguageName, Text = variantText };
         }
 
-        public async Task<SellerCenterCredentials> UpdateSellereCenterCredentials(string botModelName, bool liveMode, string merchantId, string stripeApiKey)
+        public async Task<SellerCenterCredentials> UpdateSellerCenterCredentials(string botModelName, bool liveMode, string merchantId, string stripeApiKey)
         {
             var collection = db.GetCollection<BotModel>("botmodel");
             var scc = new SellerCenterCredentials {  LiveMode = liveMode, MerchantId = merchantId, StripeApiKey = stripeApiKey };
@@ -671,6 +677,69 @@ namespace Darl.GraphQL.Models.Connectivity
             var update = Builders<Default>.Update.Set("Value", value);
             await mc.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Default,Default> {  IsUpsert = false });
             return model;
+        }
+
+        /// <summary>
+        /// run machine learning model. 
+        /// </summary>
+        /// <param name="mlmodelname"></param>
+        /// <returns></returns>
+        public async Task<MLModel> MachineLearnModel(string mlmodelname)
+        {
+            var mc = db.GetCollection<MLModel>("mlmodel");
+            var query = mc.AsQueryable()
+            .Where(p => p.Name == mlmodelname && p.userId == userId);
+            var model = await query.FirstOrDefaultAsync();
+            var runtime = new DarlRunTime();
+            var rep = new DarlMineReport();
+            var start = DateTime.Now;
+            try
+            {
+                var newcode = runtime.MineSupervised(model.model.darl, model.model.trainData, model.model.sets, 100 - model.model.percentTest, rep);
+            }
+            catch (Exception ex)
+            {
+                rep.errorText = $"Error in running machine learning task: {ex.ToString()}";
+            }
+            var end = DateTime.Now;
+            //insert result into MLModel result array
+            var mlr = new MLResult { code = rep.code, errorText = rep.errorText, executionDate = start, executionTime = (end - start),  trainPercent = rep.trainPercent, trainPerformance = rep.trainPerformance, testPerformance = rep.testPerformance, unknownResponsePercent = rep.unknownResponsePercent};
+            var filter = Builders<MLModel>.Filter.Where(x => x.Name == mlmodelname && x.userId == userId);
+            var update = Builders<MLModel>.Update.AddToSet("results", mlr);
+            var options = new FindOneAndUpdateOptions<MLModel, MLModel> { IsUpsert = false, ReturnDocument = ReturnDocument.After };
+            return await mc.FindOneAndUpdateAsync(filter, update, options);
+        }
+
+        public async Task<MLModel> UpdateMLSpec(string name, MLSpecUpdate mlspec)
+        {
+            var collection = db.GetCollection<MLModel>("mlmodel");
+            var filter = Builders<MLModel>.Filter.Where(x => x.Name == name && x.userId == userId);
+            var updList = new List<UpdateDefinition<MLModel>>();
+            if (mlspec.author != null)
+                updList.Add(Builders<MLModel>.Update.Set(x => x.model.author, mlspec.author));
+            if (mlspec.copyright != null)
+                updList.Add(Builders<MLModel>.Update.Set(x => x.model.copyright, mlspec.copyright));
+            if (mlspec.darl != null)
+                updList.Add(Builders<MLModel>.Update.Set(x => x.model.darl, mlspec.darl));
+            if (mlspec.dataSchema != null)
+                updList.Add(Builders<MLModel>.Update.Set(x => x.model.dataSchema, mlspec.dataSchema));
+            if (mlspec.description != null)
+                updList.Add(Builders<MLModel>.Update.Set(x => x.model.description, mlspec.description));
+            if (mlspec.destinationRulesetName != null)
+                updList.Add(Builders<MLModel>.Update.Set(x => x.model.destinationRulesetName, mlspec.destinationRulesetName));
+            if (mlspec.license != null)
+                updList.Add(Builders<MLModel>.Update.Set(x => x.model.license, mlspec.license));
+            if (mlspec.percentTest != null)
+                updList.Add(Builders<MLModel>.Update.Set(x => x.model.percentTest, mlspec.percentTest));
+            if (mlspec.sets != null)
+                updList.Add(Builders<MLModel>.Update.Set(x => x.model.sets, mlspec.sets));
+            if (mlspec.trainData != null)
+                updList.Add(Builders<MLModel>.Update.Set(x => x.model.trainData, mlspec.trainData));
+            if (mlspec.version != null)
+                updList.Add(Builders<MLModel>.Update.Set(x => x.model.version, mlspec.version));
+            var update = Builders<MLModel>.Update.Combine(updList);
+            var newUser = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<MLModel, MLModel> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
+            return newUser;
         }
     }
 }

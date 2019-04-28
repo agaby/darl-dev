@@ -13,13 +13,12 @@ namespace Darl.GraphQL.Models.Schemata
             Name = "mlResult";
             Field(c => c.executionDate);
             Field(c => c.executionTime);
-            Field(c => c.inSamplePercent);
-            Field(c => c.inSamplePercentUnknown);
-            Field(c => c.inSampleRMSError);
-            Field(c => c.outSamplePercent);
-            Field(c => c.outSamplePercentUnknown);
-            Field(c => c.outSampleRMSError);
-            Field(c => c.percentTest);
+            Field(c => c.code);
+            Field(c => c.errorText);
+            Field(c => c.testPerformance);
+            Field(c => c.trainPercent);
+            Field(c => c.trainPerformance);
+            Field(c => c.unknownResponsePercent);
         }
     }
 }

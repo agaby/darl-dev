@@ -234,7 +234,7 @@ namespace Darl.GraphQL.Models.Schemata
                                            var merchantId = context.GetArgument<string>("merchantId");
                                            var stripeApiKey = context.GetArgument<string>("stripeApiKey");
                                            return await context.TryAsyncResolve(
-                                               async c => await connectivity.UpdateSellereCenterCredentials(botModelName, liveMode, merchantId, stripeApiKey));
+                                               async c => await connectivity.UpdateSellerCenterCredentials(botModelName, liveMode, merchantId, stripeApiKey));
                                        });
                                    FieldAsync<SellerCenterCredentialsType>("deleteSellereCenterCredentials",
                                        arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" }
@@ -390,6 +390,17 @@ namespace Darl.GraphQL.Models.Schemata
                 var name = context.GetArgument<string>("name");
                 return await context.TryAsyncResolve(
                     async c => await connectivity.CreateEmptyMLModel(name));
+            });
+            //  Update
+            FieldAsync<MLModelType>("updateMLModel", arguments: new QueryArguments(
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" },
+                new QueryArgument<NonNullGraphType<MLSpecUpdateType>> { Name = "mlspec" }
+                ), resolve: async context =>
+            {
+                var name = context.GetArgument<string>("name");
+                var mlspec = context.GetArgument<MLSpecUpdate>("mlspec");
+                return await context.TryAsyncResolve(
+                    async c => await connectivity.UpdateMLSpec(name, mlspec));
             });
             //  Delete
             FieldAsync<MLModelType>("deleteMLModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
@@ -671,6 +682,16 @@ namespace Darl.GraphQL.Models.Schemata
 
             //                BotModel step inference
             //                Machine learning run
+            FieldAsync<MLModelType>("machineLearnModel",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "mlmodelname" }
+                ),
+                resolve: async context =>
+                {
+                    var mlmodelname = context.GetArgument<string>("mlmodelname");
+
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.MachineLearnModel(mlmodelname));
+                });
 
 
 

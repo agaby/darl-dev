@@ -354,7 +354,7 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<SellerCenterCredentials> UpdateSellereCenterCredentials(string botModelName, bool liveMode, string merchantId, string stripeApiKey)
+        public Task<SellerCenterCredentials> UpdateSellerCenterCredentials(string botModelName, bool liveMode, string merchantId, string stripeApiKey)
         {
             throw new NotImplementedException();
         }
@@ -420,6 +420,21 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
         public Task<DarlUser> CreateUserAsync(DarlUserInput user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Models.MLModel> MachineLearnModel(string mlmodelname)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Models.MLModel> UpdateMLSpec(string name, string mlspec)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Models.MLModel> UpdateMLSpec(string name, MLSpecUpdate mlspec)
         {
             throw new NotImplementedException();
         }
