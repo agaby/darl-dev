@@ -438,5 +438,20 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             throw new NotImplementedException();
         }
+
+        public Task<QuestionSetProxy> BeginQuestionnaire(string ruleSetName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<QuestionSetProxy> ContinueQuestionnaire(QuestionSetInput responses)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<QuestionSetProxy> BacktrackQuestionnaire(string ieToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

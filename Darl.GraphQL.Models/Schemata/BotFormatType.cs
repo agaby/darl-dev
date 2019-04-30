@@ -39,7 +39,7 @@ namespace Darl.GraphQL.Models.Schemata
             return list;
         }
 
-        public List<StringStringPair> GetSSPairsFromDictionary(Dictionary<string, string> dict)
+        public static List<StringStringPair> GetSSPairsFromDictionary(Dictionary<string, string> dict)
         {
             var list = new List<StringStringPair>();
             foreach (var k in dict.Keys)

@@ -90,5 +90,8 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<Default> UpdateDefault(string name, string value);
         Task<Models.MLModel> MachineLearnModel(string mlmodelname);
         Task<Models.MLModel> UpdateMLSpec(string name, MLSpecUpdate mlspec);
+        Task<QuestionSetProxy> BeginQuestionnaire(string ruleSetName);
+        Task<QuestionSetProxy> ContinueQuestionnaire(QuestionSetInput responses);
+        Task<QuestionSetProxy> BacktrackQuestionnaire(string ieToken);
     }
 }

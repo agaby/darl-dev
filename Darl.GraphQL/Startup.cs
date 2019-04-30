@@ -117,6 +117,13 @@ namespace Darl.GraphQL
             services.AddTransient<MLSpecUpdateType>();
             services.AddTransient<SetGraphType>();
             services.AddTransient<PercentGraphType>();
+            services.AddTransient<QuestionSetType>();
+            services.AddTransient<QuestionType>();
+            services.AddTransient<QuestionTypeEnum>();
+            services.AddTransient<ResponseType>();
+            services.AddTransient<ResponseTypeEnum>();
+            services.AddTransient<QuestionSetInputType>();
+            services.AddTransient<QuestionInputType>();
 
             //root
             services.AddTransient<DarlSchema>();

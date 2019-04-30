@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <ApplicationInsightsResourceId>/subscriptions/636dbb70-dc1b-4c7d-a40f-074913c5dfd7/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/Darl.GraphQL</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/636dbb70-dc1b-4c7d-a40f-074913c5dfd7/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/Darl.GraphQL</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,12 +15,17 @@
     <PackageReference Include="GraphQL.Server.Ui.GraphiQL" Version="3.4.0" />
     <PackageReference Include="GraphQL.Server.Ui.Playground" Version="3.4.0" />
     <PackageReference Include="GraphQL.Server.Ui.Voyager" Version="3.4.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.6.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0-preview3-19153-02" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Darl.GraphQL.Models\Darl.GraphQL.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 
 </Project>

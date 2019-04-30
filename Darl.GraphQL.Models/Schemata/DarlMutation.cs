@@ -679,6 +679,34 @@ namespace Darl.GraphQL.Models.Schemata
             //                Test ruleset
 
             //                Ruleset step inference
+            FieldAsync<QuestionSetType>("beginQuestionnaire",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" }
+                ),
+                resolve: async context =>
+                {
+                    var ruleSetName = context.GetArgument<string>("ruleSetName");
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.BeginQuestionnaire(ruleSetName));
+                });
+            FieldAsync<QuestionSetType>("continueQuestionnaire",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<QuestionSetInputType>> { Name = "responses" }
+                ),
+                resolve: async context =>
+                {
+                    var responses = context.GetArgument<QuestionSetInput>("responses");
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.ContinueQuestionnaire(responses));
+                });
+            FieldAsync<QuestionSetType>("backtrackQuestionnaire",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ieToken" }
+                ),
+                resolve: async context =>
+                {
+                    var ieToken = context.GetArgument<string>("ieToken");
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.BacktrackQuestionnaire(ieToken));
+                });
+
 
             //                BotModel step inference
             //                Machine learning run

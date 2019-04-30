@@ -741,5 +741,20 @@ namespace Darl.GraphQL.Models.Connectivity
             var newUser = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<MLModel, MLModel> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
             return newUser;
         }
+
+        public Task<QuestionSetProxy> BeginQuestionnaire(string ruleSetName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<QuestionSetProxy> ContinueQuestionnaire(QuestionSetInput responses)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<QuestionSetProxy> BacktrackQuestionnaire(string ieToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
