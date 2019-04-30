@@ -15,7 +15,7 @@ using static Darl.GraphQL.Models.Models.DarlUser;
 
 namespace Darl.GraphQL.Test
 {
-    [TestClass]
+/*    [TestClass]
     public class LoadTests
     {
 
@@ -62,7 +62,7 @@ namespace Darl.GraphQL.Test
                 list.AddRange(defs);
                 continuationToken = defs.ContinuationToken;
             } while (continuationToken != null);
-            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings));
+            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi());
             foreach (var c in list)
             {
                 await cosmos.CreateContactAsync(new Models.Models.Contact { Company = c.Company, Country = c.Country, Created = c.Created, Email = c.Email.ToLower(), FirstName = c.FirstName, Id = c.RowKey, IntroSent = c.InfoSent, LastName = c.LastName, Notes = c.Notes, Phone = c.Phone, Sector = c.Sector, Source = c.Source, Title = c.Title });
@@ -146,5 +146,5 @@ namespace Darl.GraphQL.Test
                 await cosmos.CreateUserAsync(new Models.Models.DarlUserInput {  Created = c.Created, current_period_end = c.current_period_end, InvoiceEmail = c.InvoiceEmail, InvoiceName = c.InvoiceName, InvoiceOrganization = c.InvoiceOrganization, Issuer = c.Issuer, PaidUsageStarted = c.PaidUsageStarted, StripeCustomerId = c.StripeCustomerId, UsageStripeSubscriptionItem = c.UsageStripeSubscriptionItem, userId = c.PartitionKey });
             }
         }
-    }
+    }*/
 }

@@ -49,6 +49,7 @@ namespace Darl.GraphQL
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             //services
             services.AddSingleton<IConnectivity, CosmosDBConnectivity>();
+            services.AddSingleton<IFormApi, FormApi>();
 
             //types
             services.AddTransient<BotFormatType>();

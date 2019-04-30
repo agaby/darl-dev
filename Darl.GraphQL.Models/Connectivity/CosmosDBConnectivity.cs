@@ -27,10 +27,12 @@ namespace Darl.GraphQL.Models.Connectivity
         IMongoDatabase db;
 
         IOptions<AppSettings> _opt;
+        IFormApi _form;
 
-        public CosmosDBConnectivity(IOptions<AppSettings> optionsAccessor)
+        public CosmosDBConnectivity(IOptions<AppSettings> optionsAccessor, IFormApi form)
         {
             _opt = optionsAccessor;
+            _form = form;
 
             string connectionString =  _opt.Value.MongoConnectionString;
             MongoClientSettings settings = MongoClientSettings.FromUrl(
@@ -742,19 +744,24 @@ namespace Darl.GraphQL.Models.Connectivity
             return newUser;
         }
 
-        public Task<QuestionSetProxy> BeginQuestionnaire(string ruleSetName)
+        public async Task<QuestionSetProxy> BeginQuestionnaire(string ruleSetName)
         {
-            throw new NotImplementedException();
+            return await _form.Get(ruleSetName);
         }
 
-        public Task<QuestionSetProxy> ContinueQuestionnaire(QuestionSetInput responses)
+        public async Task<QuestionSetProxy> ContinueQuestionnaire(QuestionSetInput responses)
         {
-            throw new NotImplementedException();
+            var resp = new QuestionSetProxy { ieToken = responses.ieToken };
+            foreach(var i in responses.questions)
+            {
+                resp.questions.Add(new QuestionProxy { dResponse = i.dResponse, reference = i.reference, sResponse = i.sResponse });
+            }
+            return await _form.Post(resp);
         }
 
-        public Task<QuestionSetProxy> BacktrackQuestionnaire(string ieToken)
+        public async Task<QuestionSetProxy> BacktrackQuestionnaire(string ieToken)
         {
-            throw new NotImplementedException();
+            return await _form.Delete(ieToken);
         }
     }
 }
