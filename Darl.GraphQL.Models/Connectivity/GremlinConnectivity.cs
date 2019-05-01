@@ -15,7 +15,7 @@ namespace Darl.GraphQL.Models.Connectivity
     public class GremlinConnectivity : IConnectivity
     {
         public string userId { get; set; }
-
+        string IConnectivity.userId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         IOptions<AppSettings> _opt;
 
@@ -450,6 +450,411 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
         public Task<QuestionSetProxy> BacktrackQuestionnaire(string ieToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<BotModel> IConnectivity.GetBotModel(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<BotModel>> IConnectivity.GetBotModelsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Models.MLModel> IConnectivity.GetMlModel(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<Models.MLModel>> IConnectivity.GetMlModelsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<RuleSet> IConnectivity.CreateEmptyRuleSet(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Models.MLModel> IConnectivity.CreateEmptyMLModel(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<UserUsage>> IConnectivity.GetBotUsage(string appId, string v)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<RuleSet> IConnectivity.DeleteRuleSet(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<Authorization>> IConnectivity.GetAuthorizations(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Models.MLModel> IConnectivity.DeleteMLModel(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<BotConnection>> IConnectivity.GetBotConnectivity(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<RuleSet> IConnectivity.GetRuleSet(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<RuleSet>> IConnectivity.GetRuleSetsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<BotModel> IConnectivity.DeleteBotModel(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<BotModel> IConnectivity.CreateEmptyModel(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<Contact>> IConnectivity.GetContacts()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<object> IConnectivity.CreateDefaultModel(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<Contact>> IConnectivity.GetContactsByLastName(string lastName)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Contact> IConnectivity.GetContactByEmail(string email)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<Default>> IConnectivity.GetDefaults()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<string> IConnectivity.GetDefaultValue(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Contact> IConnectivity.CreateContactAsync(Contact contact)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Contact> IConnectivity.UpdateContactAsync(Contact contact)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Contact> IConnectivity.GetContactById(string Id)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Contact> IConnectivity.DeleteContactAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<RuleForm> IConnectivity.CreateRuleFormFromDarl(string name, string darl)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<InputFormat> IConnectivity.UpdateRuleFormInputFormat(string name, string inputName, InputFormatUpdate inputUpdate)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<OutputFormat> IConnectivity.UpdateRuleFormOutputFormat(string ruleSetName, string outputName, OutputFormatUpdate outputUpdate)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<LanguageText> IConnectivity.UpdateRuleFormLanguageText(string ruleSetName, string languageName, string languageText)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<VariantText> IConnectivity.UpdateRuleFormVariantText(string ruleSetName, string languageName, string isoLanguageName, string variantText)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Authorization> IConnectivity.CreateAuthorization(string name, Authorization auth)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Default> IConnectivity.CreateDefault(string name, string value)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Default> IConnectivity.DeleteDefault(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<string> IConnectivity.DeleteAuthorization(string name, string name1)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<BotConnection> IConnectivity.CreateBotConnection(string botModelName, string appId, string password)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<BotConnection> IConnectivity.DeleteBotConnection(string botModelName, string appId)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<BotInputFormat> IConnectivity.UpdateBotModelInputFormat(string botModelName, string inputName, InputFormatUpdate inputUpdate)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<BotOutputFormat> IConnectivity.UpdateBotModelOutputFormat(string botModelName, string outputName, BotOutputFormatUpdate outputUpdate)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<StringDoublePair> IConnectivity.CreateUpdateConstant(string botModelName, string name, double value)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<StringDoublePair> IConnectivity.DeleteConstant(string botModelName, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<string> IConnectivity.CreateUpdateStore(string botModelName, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<string> IConnectivity.DeleteStore(string botModelName, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<StringStringPair> IConnectivity.CreateUpdateString(string botModelName, string name, string value)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<StringStringPair> IConnectivity.DeleteString(string botModelName, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<LineageNodeDefinition>> IConnectivity.GetChildrenLineageNodes(string botModelName, string path, bool isRoot)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<LineageRecord>> IConnectivity.GetLineagesForWord(string isoLanguage, string word)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<LineageNodeDefinition>> IConnectivity.GetAttribute(string botModelName, string phrase)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<LineageNodeDefinition>> IConnectivity.GetAttributeFromPath(string botModelName, string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<LineageNodeAttributeUpdate> IConnectivity.UpdateAttribute(string botModelName, LineageNodeAttributeUpdate attribute)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<LineageNodeDefinition> IConnectivity.CreateLineageNode(string botModelName, string parent, string newName)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<LineageNodeDefinition> IConnectivity.RenameLineageNode(string botModelName, string id, string newName)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<LineageNodeDefinition> IConnectivity.DeleteLineageNode(string botModelName, string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<LineageNodeDefinition> IConnectivity.PasteLineageNode(string botModelName, string parent, List<string> nodes, string mode)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<LineageNodeDefinition> IConnectivity.CreatePhrase(string botModelName, string path, object LineageNodeDefinition)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<LineageNodeDefinition> IConnectivity.DeletePhrase(string botModelName, string phrase)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<AzureCredentials> IConnectivity.UpdateAzureCredentials(string botModelName, string apiKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<AzureCredentials> IConnectivity.DeleteAzureCredentials(string botModelName)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<SellerCenterCredentials> IConnectivity.UpdateSellerCenterCredentials(string botModelName, bool liveMode, string merchantId, string stripeApiKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<SellerCenterCredentials> IConnectivity.DeleteSellereCenterCredentials(string botModelName)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<TwilioCredentials> IConnectivity.UpdateTwilioCredentials(string botModelName, string sMSAccountFrom, string sMSAccountIdentification, string sMSAccountPassword)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<TwilioCredentials> IConnectivity.DeleteTwilioCredentials(string botModelName)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<SendGridCredentials> IConnectivity.UpdateSendgridCredentials(string botModelName, string sendGridAPIKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<SendGridCredentials> IConnectivity.DeleteSendgridCredentials(string botModelName)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<ZendeskCredentials> IConnectivity.UpdateZendeskCredentials(string botModelName, string zendeskApiKey, string zendeskURL, string zendeskUser)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<ZendeskCredentials> IConnectivity.DeleteZendeskCredentials(string botModelName)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<StringStringPair>> IConnectivity.InferFromRulesetSimple(string ruleSetName, List<StringStringPair> inputs)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<DarlVar>> IConnectivity.InferFromRuleSetDarlVar(string ruleSetName, List<DarlVar> inputs)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<RuleSet> IConnectivity.CreateRuleSet(string name, RuleForm rf, ServiceConnectivity sc)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Models.MLModel> IConnectivity.CreateMLModel(string name, DarlCommon.MLModel model)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<DarlUser>> IConnectivity.GetUsersByEmail(string email)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<DarlUser> IConnectivity.GetUserById(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<DarlUser> IConnectivity.CreateUserAsync(DarlUserInput user)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<DarlUser> IConnectivity.UpdateUserAsync(string userId, DarlUserUpdate darlUserUpdate)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<DarlUser> IConnectivity.DeleteUser(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Default> IConnectivity.UpdateDefault(string name, string value)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Models.MLModel> IConnectivity.MachineLearnModel(string mlmodelname)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Models.MLModel> IConnectivity.UpdateMLSpec(string name, MLSpecUpdate mlspec)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<QuestionSetProxy> IConnectivity.BeginQuestionnaire(string ruleSetName)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<QuestionSetProxy> IConnectivity.ContinueQuestionnaire(QuestionSetInput responses)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<QuestionSetProxy> IConnectivity.BacktrackQuestionnaire(string ieToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<DarlLintView>> IConnectivity.LintDarl(string darl, string skeleton, string insertion)
         {
             throw new NotImplementedException();
         }

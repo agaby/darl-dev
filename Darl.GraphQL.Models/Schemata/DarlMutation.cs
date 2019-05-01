@@ -706,7 +706,21 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                                     async c => await connectivity.BacktrackQuestionnaire(ieToken));
                 });
-
+            //                Lint Ruleset
+            FieldAsync<ListGraphType<DarlLintErrorType>>("lintDarl",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "darl" },
+                    new QueryArgument<StringGraphType> { Name = "skeleton" },
+                    new QueryArgument<StringGraphType> { Name = "insertion" }
+                    ),
+                resolve: async context =>
+                {
+                    var darl = context.GetArgument<string>("darl");
+                    var skeleton = context.GetArgument<string>("skeleton");
+                    var insertion = context.GetArgument<string>("insertion");
+                   return await context.TryAsyncResolve(
+                                    async c => await connectivity.LintDarl(darl,skeleton,insertion));
+                });
 
             //                BotModel step inference
             //                Machine learning run

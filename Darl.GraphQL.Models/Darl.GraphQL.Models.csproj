@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <Compile Remove="Connectivity\AzureStorageConnectivity.cs" />
+    <Compile Remove="Connectivity\GremlinConnectivity.cs" />
   </ItemGroup>
 
   <ItemGroup>

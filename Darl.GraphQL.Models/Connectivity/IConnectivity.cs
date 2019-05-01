@@ -93,5 +93,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<QuestionSetProxy> BeginQuestionnaire(string ruleSetName);
         Task<QuestionSetProxy> ContinueQuestionnaire(QuestionSetInput responses);
         Task<QuestionSetProxy> BacktrackQuestionnaire(string ieToken);
+        Task<List<DarlLintView>> LintDarl(string darl, string skeleton, string insertion);
     }
 }

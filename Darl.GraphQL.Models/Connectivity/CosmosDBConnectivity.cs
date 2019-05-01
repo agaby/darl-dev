@@ -816,5 +816,33 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return res;
         }
+
+        public async Task<List<DarlLintView>> LintDarl(string darl, string skeleton, string insertion)
+        {
+            var errorList = new List<DarlLintView>();
+            int rowoffset = 0;
+            int coloffset = 0;
+            if (!string.IsNullOrEmpty(skeleton) && !string.IsNullOrEmpty(insertion))
+            {
+                int offset = skeleton.IndexOf(insertion);
+                var start = skeleton.Substring(0, offset);
+                var lines = start.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                rowoffset = lines.Length - 1;
+                coloffset = lines.Last().Length;
+                darl = skeleton.Replace(insertion, darl);
+            }
+            if (!string.IsNullOrEmpty(darl))
+            {
+                var tree = runtime.CreateTreeEdit(darl);
+                if (tree.HasErrors())
+                {
+                    foreach (var pm in tree.ParserMessages)
+                    {
+                        errorList.Add(new DarlLintView { line_no = pm.Location.Line + 1 - rowoffset, column_no_start = pm.Location.Column + 1 - coloffset, column_no_stop = pm.Location.Column + 2 - coloffset, message = pm.Message, severity = pm.Level == ErrorLevel.Error ? "error" : "warning" });
+                    }
+                }
+            }
+            return errorList;
+        }
     }
 }

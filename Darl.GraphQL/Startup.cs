@@ -125,6 +125,8 @@ namespace Darl.GraphQL
             services.AddTransient<ResponseTypeEnum>();
             services.AddTransient<QuestionSetInputType>();
             services.AddTransient<QuestionInputType>();
+            services.AddTransient<DarlLintErrorType>();
+
 
             //root
             services.AddTransient<DarlSchema>();
