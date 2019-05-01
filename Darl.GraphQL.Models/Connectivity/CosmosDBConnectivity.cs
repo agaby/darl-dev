@@ -6,10 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
+using Darl.Lineage.Bot;
 using DarlCommon;
+using DarlCompiler;
+using DarlCompiler.Parsing;
 using DarlLanguage;
 using DarlLanguage.Processing;
 using GraphQL;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
@@ -22,6 +26,10 @@ namespace Darl.GraphQL.Models.Connectivity
     public class CosmosDBConnectivity : IConnectivity
     {
         public string userId { get; set; }
+
+        TelemetryClient telemetry = new TelemetryClient();
+        DarlRunTime runtime = new DarlRunTime();
+
 
         MongoClient mongoClient;
         IMongoDatabase db;
@@ -420,9 +428,38 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
 
-        public Task<List<DarlVar>> InferFromRuleSetDarlVar(string ruleSetName, List<DarlVar> inputs)
+        public async Task<List<DarlVar>> InferFromRuleSetDarlVar(string ruleSetName, List<DarlVar> inputs)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (!string.IsNullOrEmpty(ruleSetName))
+                {
+                    var tree = runtime.CreateTreeEdit(ruleSetName);
+                    if (tree.HasErrors())
+                    {
+                        var errors = new List<DarlVar>();
+                        int errorCount = 0;
+                        foreach (var pm in tree.ParserMessages)
+                        {
+                            var level = pm.Level == ErrorLevel.Error ? "error" : "warning";
+                            errors.Add(new DarlVar { name = $"error{errorCount++}", Value = $"line_no = {pm.Location.Line + 1}, column_no_start = {pm.Location.Column + 1}, column_no_stop = {pm.Location.Column + 2}, message = {pm.Message}, severity = {level}" });
+                        }
+                        telemetry.TrackEvent("DarlInf used with errors");
+                        return errors; //errors, just add them to the input and quit.
+                    }
+                    var res = await ProcessValues(DarlVarExtensions.Convert(inputs), tree);
+                    telemetry.TrackEvent("InferFromRuleSetDarlVar used");
+                    return DarlVarExtensions.Convert(res);
+                }
+            }
+            catch (Exception ex)
+            {
+                telemetry.TrackEvent("DarlInf Exception");
+                var errors = new List<DarlVar>();
+                errors.Add(new DarlVar { name = "error", Value = ex.Message });
+                return errors;
+            }
+            return inputs; 
         }
 
         public Task<List<StringStringPair>> InferFromRulesetSimple(string ruleSetName, List<StringStringPair> inputs)
@@ -692,7 +729,6 @@ namespace Darl.GraphQL.Models.Connectivity
             var query = mc.AsQueryable()
             .Where(p => p.Name == mlmodelname && p.userId == userId);
             var model = await query.FirstOrDefaultAsync();
-            var runtime = new DarlRunTime();
             var rep = new DarlMineReport();
             var start = DateTime.Now;
             try
@@ -762,6 +798,23 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<QuestionSetProxy> BacktrackQuestionnaire(string ieToken)
         {
             return await _form.Delete(ieToken);
+        }
+
+        private async Task<List<DarlResult>> ProcessValues(List<DarlResult> Values, ParseTree tree)
+        {
+            var res = await runtime.Evaluate(tree, Values);
+            var inputNames = runtime.GetInputNames(tree);
+            var outputNames = new List<string>();
+            foreach (var mo in tree.GetMapOutputs())
+                outputNames.Add(mo.Name);
+            foreach (var o in res.ToList())
+            {
+                if (!outputNames.Contains(o.name))
+                {
+                    res.Remove(o);
+                }
+            }
+            return res;
         }
     }
 }
