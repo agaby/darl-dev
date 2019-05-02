@@ -46,6 +46,20 @@ namespace Darl.GraphQL
                 options.MaxAge = TimeSpan.FromDays(60);
             });
 
+            services.AddDistributedRedisCache(option =>
+            {
+                option.Configuration = Configuration.GetSection("AppSettings")["RedisConnection"];
+                option.InstanceName = "darlai";
+            });
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(3600);
+                options.Cookie.HttpOnly = true;
+            });
+
+
+
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             //services
             services.AddSingleton<IConnectivity, CosmosDBConnectivity>();

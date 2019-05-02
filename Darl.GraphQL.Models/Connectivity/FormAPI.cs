@@ -16,6 +16,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Forms form = new Forms();
 
         private IMemoryCache _cache;
+        private IConnectivity _connectivity;
 
 
         TelemetryClient telemetry = new TelemetryClient();
@@ -25,10 +26,10 @@ namespace Darl.GraphQL.Models.Connectivity
         /// </summary>
         /// <param name="cache"></param>
         /// <param name="rep"></param>
-        public FormApi(IMemoryCache cache )
+        public FormApi(IMemoryCache cache, IConnectivity connectivity)
         {
             _cache = cache;
-
+            _connectivity = connectivity;
         }
 
         /// <summary>
@@ -155,12 +156,17 @@ namespace Darl.GraphQL.Models.Connectivity
         #region support methods
 
 
-        private RuleForm GetFormCache(string redirectAddress, QuestionCache qstate)
+        private async Task<RuleForm> GetFormCache(string redirectAddress, QuestionCache qstate)
         {
             RuleForm newForm = null;
             if (!_cache.TryGetValue(redirectAddress, out newForm))
             {//not in cache
-                return null;
+                var rs = await _connectivity.GetRuleSet(redirectAddress);
+                if (rs != null)
+                {
+
+                    return rs.Contents;
+                }
             }
             return newForm;
         }
