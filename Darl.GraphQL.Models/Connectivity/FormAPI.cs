@@ -1,4 +1,5 @@
-﻿using Darl.Lineage.Bot;
+﻿using Darl.GraphQL.Models.Models;
+using Darl.Lineage.Bot;
 using Darl_standard.Darl.Forms;
 using DarlCommon;
 using Microsoft.ApplicationInsights;
@@ -16,7 +17,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Forms form = new Forms();
 
         private IMemoryCache _cache;
-        private IConnectivity _connectivity;
 
 
         TelemetryClient telemetry = new TelemetryClient();
@@ -26,10 +26,9 @@ namespace Darl.GraphQL.Models.Connectivity
         /// </summary>
         /// <param name="cache"></param>
         /// <param name="rep"></param>
-        public FormApi(IMemoryCache cache, IConnectivity connectivity)
+        public FormApi(IMemoryCache cache)
         {
             _cache = cache;
-            _connectivity = connectivity;
         }
 
         /// <summary>
@@ -40,26 +39,14 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns>
         /// The set of questions, or responses
         /// </returns>
-        public async Task<QuestionSetProxy> Get(string id, int questCount = 1)
+        public async Task<QuestionSetProxy> Get(RuleSet ruleSet, string language = "en", int questCount = 1)
         {
             try
             {
-                var language = string.Empty;
-                QuestionCache qstate = null;
-                RuleForm formResources = null;
-                try
-                {
-                    if (!GetCaches(id, out qstate, out formResources))
-                        return null;
-                }
-                catch
-                {
-                    return null;
-                }
+                var qstate = new QuestionCache { currentIteration = 0, SessionKey = Guid.NewGuid(), projectId = ruleSet.Name, currentData = DarlVarExtensions.Convert(ruleSet.Contents.preload) };
+                _cache.Set(qstate.SessionKey.ToString(), (ruleSet.Contents, qstate), new MemoryCacheEntryOptions { SlidingExpiration = new TimeSpan(1, 0, 0) });
                 //at this point the session data must be available
-                qstate.languageSelection = language;
-                qstate.requestedQuestions = questCount;
-                return await form.Start(formResources, qstate);
+                return await form.Start(ruleSet.Contents, qstate);
             }
             catch (Exception ex)
             {
@@ -81,7 +68,6 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<QuestionSetProxy> Post(QuestionSetProxy questionsetproxy)
         {
 
-            //QuestionSetProxy questionsetproxy = new QuestionSetProxy();
             try
             {
                 QuestionCache qstate = null;
@@ -109,9 +95,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             try
             {
-                QuestionCache qstate = null;
-                RuleForm formResources = null;
-                if (!GetCaches(id, out qstate, out formResources))
+                if (!GetCaches(id, out QuestionCache qstate, out RuleForm formResources))
                     return null;
                 return await form.Back(formResources, qstate);
             }
@@ -156,22 +140,6 @@ namespace Darl.GraphQL.Models.Connectivity
         #region support methods
 
 
-        private async Task<RuleForm> GetFormCache(string redirectAddress, QuestionCache qstate)
-        {
-            RuleForm newForm = null;
-            if (!_cache.TryGetValue(redirectAddress, out newForm))
-            {//not in cache
-                var rs = await _connectivity.GetRuleSet(redirectAddress);
-                if (rs != null)
-                {
-
-                    return rs.Contents;
-                }
-            }
-            return newForm;
-        }
-
-
         /// <summary>
         /// Gets the caches.
         /// </summary>
@@ -180,7 +148,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <param name="formResources">The form resources, ruleset, texts and formatting.</param>
         /// <returns><c>true</c> if the form exists, <c>false</c> otherwise.</returns>
         /// <remarks>When starting a form the projectId is passed. On subsequent updates a session token is passed. 
-        /// This fact is used cache the form for re-use across multiple sessions. Note that a re-used form may need to be cleared out.</remarks>
+        /// The ruleform is also cached, but used solely for this questionnaire.</remarks>
         private bool GetCaches(string id, out QuestionCache qstate, out RuleForm formResources)
         {
             qstate = null;
@@ -189,25 +157,10 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 return false;
             }
-            dynamic qc;
-            if (!this._cache.TryGetValue(id, out qc)) //formapi is only used for form testing, so ruleset must be cached.
-            {
+            if (!_cache.TryGetValue<(RuleForm, QuestionCache)>(id, out (RuleForm, QuestionCache) values))
                 return false;
-            }
-            else
-            {
-                if (qc is QuestionCache)//subsequent call to same form, same session
-                {
-                    qstate = qc as QuestionCache;
-                    formResources = _cache.Get(qstate.projectId.ToString()) as RuleForm;
-                }
-                else if (qc is RuleForm)// call to existing form, new session.
-                {
-                    formResources = qc as RuleForm;
-                    qstate = new QuestionCache { currentIteration = 0, SessionKey = Guid.NewGuid(), projectId = id, currentData = DarlVarExtensions.Convert(formResources.preload) };
-                    _cache.Set(qstate.SessionKey.ToString(), qstate, new MemoryCacheEntryOptions { SlidingExpiration = new TimeSpan(1,0,0) });
-                }
-            }
+            formResources = values.Item1;
+            qstate = values.Item2;
             return true;
         }
 
@@ -217,4 +170,5 @@ namespace Darl.GraphQL.Models.Connectivity
 
         #endregion
     }
+
 }

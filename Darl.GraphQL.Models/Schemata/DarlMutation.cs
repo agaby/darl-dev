@@ -653,74 +653,9 @@ namespace Darl.GraphQL.Models.Schemata
                );
 
             // Actions
-            //  Whole ruleset inference
-            FieldAsync<ListGraphType<StringStringPairType>>("inferFromRuleSetSimple",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" },
-                new QueryArgument<NonNullGraphType<ListGraphType<StringStringPairInputType>>> { Name = "inputs" }
-                ),
-                resolve: async context =>
-                {
-                    var ruleSetName = context.GetArgument<string>("ruleSetName");
-                    var inputs = context.GetArgument<List<StringStringPair>>("inputs");
-                    return await context.TryAsyncResolve(
-                                    async c => await connectivity.InferFromRulesetSimple(ruleSetName, inputs));
-                });
-            FieldAsync<ListGraphType<DarlVarType>>("inferFromRuleSetDarlVar",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" },
-                new QueryArgument<NonNullGraphType<ListGraphType<DarlVarInputType>>> { Name = "inputs" }
-                ),
-                resolve: async context =>
-                {
-                    var ruleSetName = context.GetArgument<string>("ruleSetName");
-                    var inputs = context.GetArgument<List<DarlVar>>("inputs");
-                    return await context.TryAsyncResolve(
-                                    async c => await connectivity.InferFromRuleSetDarlVar(ruleSetName, inputs));
-                });
+
             //                Test ruleset
 
-            //                Ruleset step inference
-            FieldAsync<QuestionSetType>("beginQuestionnaire",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" }
-                ),
-                resolve: async context =>
-                {
-                    var ruleSetName = context.GetArgument<string>("ruleSetName");
-                    return await context.TryAsyncResolve(
-                                    async c => await connectivity.BeginQuestionnaire(ruleSetName));
-                });
-            FieldAsync<QuestionSetType>("continueQuestionnaire",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<QuestionSetInputType>> { Name = "responses" }
-                ),
-                resolve: async context =>
-                {
-                    var responses = context.GetArgument<QuestionSetInput>("responses");
-                    return await context.TryAsyncResolve(
-                                    async c => await connectivity.ContinueQuestionnaire(responses));
-                });
-            FieldAsync<QuestionSetType>("backtrackQuestionnaire",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ieToken" }
-                ),
-                resolve: async context =>
-                {
-                    var ieToken = context.GetArgument<string>("ieToken");
-                    return await context.TryAsyncResolve(
-                                    async c => await connectivity.BacktrackQuestionnaire(ieToken));
-                });
-            //                Lint Ruleset
-            FieldAsync<ListGraphType<DarlLintErrorType>>("lintDarl",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "darl" },
-                    new QueryArgument<StringGraphType> { Name = "skeleton" },
-                    new QueryArgument<StringGraphType> { Name = "insertion" }
-                    ),
-                resolve: async context =>
-                {
-                    var darl = context.GetArgument<string>("darl");
-                    var skeleton = context.GetArgument<string>("skeleton");
-                    var insertion = context.GetArgument<string>("insertion");
-                   return await context.TryAsyncResolve(
-                                    async c => await connectivity.LintDarl(darl,skeleton,insertion));
-                });
 
             //                BotModel step inference
             //                Machine learning run

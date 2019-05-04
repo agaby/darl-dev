@@ -389,9 +389,19 @@ namespace Darl.GraphQL.Models.Connectivity
             return def == null ? string.Empty : def.Value;
         }
 
-        public Task<List<LineageRecord>> GetLineagesForWord(string isoLanguage, string word)
+        public async Task<List<LineageRecord>> GetLineagesForWord( string word, string isoLanguage = "en")
         {
-            throw new NotImplementedException();
+            try
+            {
+                var offset = 0;
+                return LineageLibrary.WordRecognizer(new List<string> { word }, ref offset, true);
+                
+            }
+            catch (Exception ex)
+            {
+                telemetry.TrackEvent($"Bad lineage lookup for word {word} message: {ex.Message}");
+                return new List<LineageRecord>();
+            }
         }
 
 
@@ -434,22 +444,30 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 if (!string.IsNullOrEmpty(ruleSetName))
                 {
-                    var tree = runtime.CreateTreeEdit(ruleSetName);
-                    if (tree.HasErrors())
+                    var rs = await GetRuleSet(ruleSetName);
+                    if (rs != null)
                     {
-                        var errors = new List<DarlVar>();
-                        int errorCount = 0;
-                        foreach (var pm in tree.ParserMessages)
+                        var tree = runtime.CreateTreeEdit(rs.Contents.darl);
+                        if (tree.HasErrors())
                         {
-                            var level = pm.Level == ErrorLevel.Error ? "error" : "warning";
-                            errors.Add(new DarlVar { name = $"error{errorCount++}", Value = $"line_no = {pm.Location.Line + 1}, column_no_start = {pm.Location.Column + 1}, column_no_stop = {pm.Location.Column + 2}, message = {pm.Message}, severity = {level}" });
+                            var errors = new List<DarlVar>();
+                            int errorCount = 0;
+                            foreach (var pm in tree.ParserMessages)
+                            {
+                                var level = pm.Level == ErrorLevel.Error ? "error" : "warning";
+                                errors.Add(new DarlVar { name = $"error{errorCount++}", Value = $"line_no = {pm.Location.Line + 1}, column_no_start = {pm.Location.Column + 1}, column_no_stop = {pm.Location.Column + 2}, message = {pm.Message}, severity = {level}", dataType = DarlVar.DataType.textual });
+                            }
+                            telemetry.TrackEvent("DarlInf used with errors");
+                            return errors; //errors, just add them to the input and quit.
                         }
-                        telemetry.TrackEvent("DarlInf used with errors");
-                        return errors; //errors, just add them to the input and quit.
+                        var res = await ProcessValues(DarlVarExtensions.Convert(inputs), tree);
+                        telemetry.TrackEvent("InferFromRuleSetDarlVar used");
+                        return DarlVarExtensions.Convert(res);
                     }
-                    var res = await ProcessValues(DarlVarExtensions.Convert(inputs), tree);
-                    telemetry.TrackEvent("InferFromRuleSetDarlVar used");
-                    return DarlVarExtensions.Convert(res);
+                    else
+                    {
+                      return new List<DarlVar> { new DarlVar { name = "error", Value = $"RuleSet {ruleSetName} does not exist." } };
+                    }
                 }
             }
             catch (Exception ex)
@@ -780,9 +798,12 @@ namespace Darl.GraphQL.Models.Connectivity
             return newUser;
         }
 
-        public async Task<QuestionSetProxy> BeginQuestionnaire(string ruleSetName)
+        public async Task<QuestionSetProxy> BeginQuestionnaire(string ruleSetName, string language = "en", int questCount = 1)
         {
-            return await _form.Get(ruleSetName);
+            var rs = await GetRuleSet(ruleSetName);
+            if(rs != null)
+                return await _form.Get(rs,language,questCount);
+            return null;
         }
 
         public async Task<QuestionSetProxy> ContinueQuestionnaire(QuestionSetInput responses)
@@ -843,6 +864,87 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
             }
             return errorList;
+        }
+
+        public async Task<List<DarlVar>> GetExampleInputs(string ruleSetName)
+        {
+            if (!string.IsNullOrEmpty(ruleSetName))
+            {
+                var sm = await GetRuleSet(ruleSetName);
+                if(sm != null)
+                { 
+                    var tree = runtime.CreateTreeEdit(sm.Contents.darl);
+                    if (tree.HasErrors())
+                    {
+                        return null; //errors, just add them to the input and quit.
+                    }
+                    return GetInputs(tree);
+                }
+            }
+            return null;
+        }
+
+        private List<DarlVar> GetInputs(ParseTree tree, bool random = false)
+        {
+            var rand = new Random();
+            List<DarlVar> list = new List<DarlVar>();
+            var inputs = runtime.GetInputNames(tree);
+            inputs.Sort();
+            foreach (var inp in inputs)
+            {
+                var dv = new DarlVar { dataType = ConvertDarlInputType(tree.GetMapInputType(inp)), approximate = false, name = inp, unknown = false, weight = 1.0, categories = new Dictionary<string, double>(), values = new List<double>() };
+                //load any categories
+                var cats = tree.GetMapInputCategories(inp);
+                cats.Sort();
+                foreach (var cat in cats)
+                    dv.categories.Add(cat, 1.0);
+                if (dv.dataType == DarlVar.DataType.categorical && dv.categories.Count > 0)
+                {
+                    dv.Value = random ? cats[rand.Next(cats.Count - 1)] : cats[0];
+                }
+                else if (dv.dataType == DarlVar.DataType.numeric) //load range
+                {
+                    var res = tree.GetMapInputRange(inp);
+                    if (res.values.Count > 0)
+                    {
+                        dv.values.Add((double)res.values[0]);
+                        dv.Value = dv.values[0].ToString();
+                    }
+                    if (res.values.Count > 1)
+                    {
+                        dv.values.Add((double)res.values.Last());
+                        if (dv.values[0] == double.NegativeInfinity || dv.values[1] == double.PositiveInfinity)
+                        {
+
+                        }
+                        else
+                        {
+                            dv.Value = random ? ((dv.values[1] - dv.values[0]) * rand.NextDouble() + dv.values[0]).ToString() : ((dv.values[0] + dv.values[1]) / 2.0).ToString();
+                        }
+                    }
+                }
+                else if (dv.dataType == DarlVar.DataType.textual)
+                {
+                    dv.Value = inp + "_text";
+                }
+                else if (dv.dataType == DarlVar.DataType.sequence)
+                {
+                    dv.sequence = new List<List<string>>();
+                }
+                list.Add(dv);
+            }
+            return list;
+        }
+
+        private static DarlVar.DataType ConvertDarlInputType(string ty)
+        {
+            if (ty.ToLower().Contains(DarlVar.DataType.categorical.ToString()))
+                return DarlVar.DataType.categorical;
+            if (ty.ToLower().Contains(DarlVar.DataType.numeric.ToString()))
+                return DarlVar.DataType.numeric;
+            if (ty.ToLower().Contains(DarlVar.DataType.sequence.ToString()))
+                return DarlVar.DataType.sequence;
+            return DarlVar.DataType.textual;
         }
     }
 }

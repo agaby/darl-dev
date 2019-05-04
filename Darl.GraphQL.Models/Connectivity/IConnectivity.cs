@@ -58,7 +58,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<StringStringPair> CreateUpdateString(string botModelName, string name, string value);
         Task<StringStringPair> DeleteString(string botModelName, string name);
         Task<List<LineageNodeDefinition>> GetChildrenLineageNodes(string botModelName, string path, bool isRoot);
-        Task<List<LineageRecord>> GetLineagesForWord(string isoLanguage, string word);
+        Task<List<LineageRecord>> GetLineagesForWord( string word, string isoLanguage = "en");
         Task<List<LineageNodeDefinition>> GetAttribute(string botModelName, string phrase);
         Task<List<LineageNodeDefinition>> GetAttributeFromPath(string botModelName, string path);
         Task<LineageNodeAttributeUpdate> UpdateAttribute(string botModelName, LineageNodeAttributeUpdate attribute);
@@ -90,9 +90,10 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<Default> UpdateDefault(string name, string value);
         Task<Models.MLModel> MachineLearnModel(string mlmodelname);
         Task<Models.MLModel> UpdateMLSpec(string name, MLSpecUpdate mlspec);
-        Task<QuestionSetProxy> BeginQuestionnaire(string ruleSetName);
+        Task<QuestionSetProxy> BeginQuestionnaire(string ruleSetName, string language = "en", int questCount = 1);
         Task<QuestionSetProxy> ContinueQuestionnaire(QuestionSetInput responses);
         Task<QuestionSetProxy> BacktrackQuestionnaire(string ieToken);
         Task<List<DarlLintView>> LintDarl(string darl, string skeleton, string insertion);
+        Task<List<DarlVar>> GetExampleInputs(string ruleSetName);
     }
 }

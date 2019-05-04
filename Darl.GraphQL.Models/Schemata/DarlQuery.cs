@@ -1,6 +1,9 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.GraphQL.Models.Models;
+using DarlCommon;
 using GraphQL.Types;
 using System;
+using System.Collections.Generic;
 
 namespace Darl.GraphQL.Models.Schemata
 {
@@ -130,15 +133,15 @@ namespace Darl.GraphQL.Models.Schemata
 
             FieldAsync<ListGraphType<LineageRecordType>>("getLineagesForWord",
                 arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "isoLanguage" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "word" }
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "word", Description = "The word to look up"},
+                    new QueryArgument<StringGraphType> { Name = "isoLanguage", DefaultValue = "en", Description = "language for lookup (Only en currently supported)" }
                     ),
                 resolve: async context =>
                 {
                     var isoLanguage = context.GetArgument<string>("isoLanguage");
                     var word = context.GetArgument<string>("word");
                     return await context.TryAsyncResolve(
-                         async c => await connectivity.GetLineagesForWord(isoLanguage, word));
+                         async c => await connectivity.GetLineagesForWord(word, isoLanguage));
                 });
 
             FieldAsync<ListGraphType<LineageNodeAttributeType>>("getAttribute",
@@ -172,6 +175,78 @@ namespace Darl.GraphQL.Models.Schemata
             FieldAsync<DarlUserType>("userById",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId" }),
                 resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetUserById(c.GetArgument<String>("userId"))); });
+            //                GetExampleInputs
+            FieldAsync<ListGraphType<DarlVarType>>("getExampleInputs",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" }
+                ),
+                resolve: async context =>
+                {
+                    var ruleSetName = context.GetArgument<string>("ruleSetName");
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.GetExampleInputs(ruleSetName));
+                });
+            //  Whole ruleset inference
+            FieldAsync<ListGraphType<DarlVarType>>("inferFromRuleSet",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" },
+                new QueryArgument<NonNullGraphType<ListGraphType<DarlVarInputType>>> { Name = "inputs" }
+                ),
+                resolve: async context =>
+                {
+                    var ruleSetName = context.GetArgument<string>("ruleSetName");
+                    var inputs = context.GetArgument<List<DarlVar>>("inputs");
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.InferFromRuleSetDarlVar(ruleSetName, inputs));
+                });
+            //                Lint Ruleset
+            FieldAsync<ListGraphType<DarlLintErrorType>>("lintDarl",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "darl" },
+                    new QueryArgument<StringGraphType> { Name = "skeleton" },
+                    new QueryArgument<StringGraphType> { Name = "insertion" }
+                    ),
+                resolve: async context =>
+                {
+                    var darl = context.GetArgument<string>("darl");
+                    var skeleton = context.GetArgument<string>("skeleton");
+                    var insertion = context.GetArgument<string>("insertion");
+                    return await context.TryAsyncResolve(
+                                     async c => await connectivity.LintDarl(darl, skeleton, insertion));
+                });
+            //                Ruleset step inference
+            FieldAsync<QuestionSetType>("beginQuestionnaire",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName", Description = "The ruleset to run" },
+                    new QueryArgument<StringGraphType> { Name = "language", DefaultValue = "en", Description = "The ISO language"},
+                    new QueryArgument<IntGraphType> { Name = "questCount", DefaultValue = 1, Description = "The number of questions to ask at a time"}
+                ),
+                resolve: async context =>
+                {
+                    var ruleSetName = context.GetArgument<string>("ruleSetName");
+                    var language = context.GetArgument<string>("language");
+                    var questCount = context.GetArgument<int?>("questCount");
+
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.BeginQuestionnaire(ruleSetName,language ?? "en", questCount ?? 1));
+                });
+            FieldAsync<QuestionSetType>("continueQuestionnaire",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<QuestionSetInputType>> { Name = "responses" }
+                ),
+                resolve: async context =>
+                {
+                    var responses = context.GetArgument<QuestionSetInput>("responses");
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.ContinueQuestionnaire(responses));
+                });
+            FieldAsync<QuestionSetType>("backtrackQuestionnaire",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ieToken" }
+                ),
+                resolve: async context =>
+                {
+                    var ieToken = context.GetArgument<string>("ieToken");
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.BacktrackQuestionnaire(ieToken));
+                });
+
 
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Darl.GraphQL.Models.Models;
 using DarlCommon;
 
 namespace Darl.GraphQL.Models.Connectivity
@@ -6,7 +7,7 @@ namespace Darl.GraphQL.Models.Connectivity
     public interface IFormApi
     {
         Task<QuestionSetProxy> Delete(string id);
-        Task<QuestionSetProxy> Get(string id, int questCount = 1);
+        Task<QuestionSetProxy> Get(RuleSet ruleSet, string language = "en", int questCount = 1);
         Task<QuestionSetProxy> Post(QuestionSetProxy questionsetproxy);
         Task<bool> Trigger(string id);
     }

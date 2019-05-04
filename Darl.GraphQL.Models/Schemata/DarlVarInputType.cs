@@ -11,16 +11,16 @@ namespace Darl.GraphQL.Models.Schemata
         public DarlVarInputType()
         {
             Name = "darlVarUpdate";
-            Field<NonNullGraphType<BooleanGraphType>>("approximate");
-            Field<NonNullGraphType<ListGraphType<StringGraphType>>>("categories");
+            Field<BooleanGraphType>("approximate");
+            Field<ListGraphType<StringGraphType>>("categories");
             Field<NonNullGraphType< DarlVarDataTypeEnum >>("dataType");
             Field<NonNullGraphType<StringGraphType>>("name");
-            Field<NonNullGraphType<ListGraphType<ListGraphType<StringGraphType>>>>("sequence");
-            Field<NonNullGraphType<ListGraphType<DateGraphType>>>("times");
-            Field<NonNullGraphType<BooleanGraphType>>("unknown");
+            Field<ListGraphType<ListGraphType<StringGraphType>>>("sequence");
+            Field<ListGraphType<DateTimeGraphType>>("times");
+            Field<BooleanGraphType>("unknown");
             Field<NonNullGraphType<StringGraphType>>("value");
-            Field<NonNullGraphType<ListGraphType<FloatGraphType>>>("values");
-            Field <NonNullGraphType<FloatGraphType>>("weight");
+            Field<ListGraphType<FloatGraphType>>("values");
+            Field<FloatGraphType>("weight");
         }
     }
 }
