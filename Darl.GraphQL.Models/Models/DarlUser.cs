@@ -50,5 +50,7 @@ namespace Darl.GraphQL.Models.Models
 
         public List<UserUsage> UsageHistory { get; set; } = new List<UserUsage>();
 
+        public string APIKey { get; set; } = Guid.NewGuid().ToString();
+
     }
 }

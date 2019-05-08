@@ -569,13 +569,26 @@ namespace Darl.GraphQL.Models.Connectivity
         {
 
             var notleaf = r.children.Any();
-            var code = r.annotation != null ? string.Join("\n", r.annotation.darl) : "";
-            var bf = new BotFragment();
-            if (!string.IsNullOrEmpty(code.Trim()))
+            LineageNodeAttributes att = null;
+            if (r.annotation != null)
             {
-                bf = lm.BotFragmentBuilder(code);
+                var code = r.annotation != null ? string.Join("\n", r.annotation.darl) : "";
+                var bf = new BotFragment();
+                if (!string.IsNullOrEmpty(code.Trim()))
+                {
+                    bf = lm.BotFragmentBuilder(code);
+                }
+                att = new LineageNodeAttributes {
+                    accessRoles =  r.annotation.accessRoles,
+                    call = bf.CallRuleset,
+                    darl = code,
+                    implications = r.annotation.implications,
+                    present = att.present,
+                    randomResponse = bf.RandomResponses.Any(),
+                    randomResponses = bf.RandomResponses,
+                    response = bf.Response};
             }
-            next.Add(new LineageNodeDefinition { id = id, text = r.element.lineage, children = notleaf, attributes = new { code = GetDarlAsString(r), implications = GetImplicationsAsString(r), title = r.element.description, roles = GetRolesAsString(r), response = new ResponseView { random = bf.RandomResponses.Any(), randomResponses = bf.RandomResponses, response = bf.Response }, call = bf.CallRuleset, random = bf.RandomResponses } });
+            next.Add(new LineageNodeDefinition { id = id, text = r.element.lineage, children = notleaf,  definition = r.element.description, attributes = att});
 
         }
 

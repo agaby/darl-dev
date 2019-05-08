@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Models.Models;
+using GraphQL.Authorization.AspNetCore;
 using GraphQL.Types;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,8 @@ namespace Darl.GraphQL.Models.Schemata
         public ContactType()
         {
             Name = "Contact";
+            this.AuthorizeWith("AdminPolicy");
+
             Description = "A contact that has requested to be informed about DARL.ai";
             Field(c => c.Company,true);
             Field(c => c.Country, true);

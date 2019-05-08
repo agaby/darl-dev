@@ -1,10 +1,14 @@
 using Darl.GraphQL.Models.Connectivity;
+using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Schemata;
 using GraphQL;
+using GraphQL.Authorization.AspNetCore;
 using GraphQL.Server;
 using GraphQL.Server.Ui.GraphiQL;
 using GraphQL.Server.Ui.Playground;
 using GraphQL.Server.Ui.Voyager;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.AzureADB2C.UI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -35,8 +39,18 @@ namespace Darl.GraphQL
                 options.AllowSynchronousIO = true;
             });
 
+            services.AddAuthentication(AzureADB2CDefaults.AuthenticationScheme)
+                .AddAzureADB2C(options => Configuration.Bind("AzureAdB2C", options));
+
+
             services.AddMvc()
                 .AddNewtonsoftJson();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminPolicy", policy =>
+                    policy.RequireRole("Admin"));
+            });
 
 
             services.AddHsts(options =>
@@ -58,6 +72,7 @@ namespace Darl.GraphQL
                 options.Cookie.HttpOnly = true;
             });
 
+            services.AddGraphQLAuth();
 
 
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
@@ -156,7 +171,8 @@ namespace Darl.GraphQL
                 options.ExposeExceptions = Environment.IsDevelopment();
             })
             .AddWebSockets()
-            .AddDataLoader();
+            .AddDataLoader()
+            .AddUserContextBuilder(context => new GraphQLUserContext { User = context.User });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -175,6 +191,7 @@ namespace Darl.GraphQL
             app.UseHttpsRedirection();
             app.UseDefaultFiles();
             app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseWebSockets();
             app.UseGraphQLWebSockets<DarlSchema>("/graphql");
             app.UseGraphQL<DarlSchema>("/graphql");

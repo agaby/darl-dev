@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Models.Models;
+using GraphQL.Authorization.AspNetCore;
 using GraphQL.Types;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,8 @@ namespace Darl.GraphQL.Models.Schemata
         public DarlUserType()
         {
             Name = "darlUser";
+            this.AuthorizeWith("AdminPolicy");
+
             Field<AccountStateEnum>("accountState", resolve: c => c.Source.accountState);
             Field(c => c.Created);
             Field(c => c.current_period_end);
@@ -23,6 +26,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.StripeCustomerId);
             Field(c => c.UsageStripeSubscriptionItem);
             Field(c => c.userId);
+            Field(c => c.APIKey);
             Field<ListGraphType<UserUsageType>>("usageHistory", resolve: context => context.Source.UsageHistory);
 
         }
