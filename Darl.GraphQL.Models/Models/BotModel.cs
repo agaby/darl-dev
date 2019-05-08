@@ -11,7 +11,7 @@ namespace Darl.GraphQL.Models.Models
         public ObjectId id { get; set; }
 
         public string Name { get; set; }
-        public LineageModel Model { get; set; } = new LineageModel();
+        public byte[] Model { get; set; }
         public List<BotConnection> botconnections { get; set; } = new List<BotConnection>();
         public List<Authorization> Authorizations { get; set; } = new List<Authorization>();
         public string userId { get; set; }

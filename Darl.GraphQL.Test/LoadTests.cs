@@ -1,6 +1,7 @@
 using Darl.Connectivity;
 using Darl.Connectivity.Models;
 using Darl.GraphQL.Models.Connectivity;
+using Darl.Lineage;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.Storage;
@@ -15,10 +16,10 @@ using static Darl.GraphQL.Models.Models.DarlUser;
 
 namespace Darl.GraphQL.Test
 {
-/*    [TestClass]
+   [TestClass]
     public class LoadTests
     {
-
+ 
         public AppSettings appSettings = null;
         public Darl.Connectivity.AppSettings dAppSettings = null;
         public CloudStorageAccount storageAccount = null;
@@ -45,7 +46,7 @@ namespace Darl.GraphQL.Test
         {
 
         }
-
+/*
         [TestMethod]
         [Ignore]
         public async Task CopyDarlContacts()
@@ -118,21 +119,26 @@ namespace Darl.GraphQL.Test
                 var mm = await dr.GetMLModel(userId, c);
                 await cosmos.CreateMLModel(c, mm);
             }
-        }
+        }*/
 
         [TestMethod]
-        [Ignore]
+        //[Ignore]
 
         public async Task CopyDarlBotModels()
         {
             var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
-            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings));
-            var c = "cubebot.model";
+            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi(null));
+            var c = "thousandquestions.model";
             var mm = await dr.GetModel(userId, c);
-            await cosmos.CreateBotModel(c, mm, new Models.Models.ServiceConnectivity(), new List<Models.Models.Authorization>(), new List<Models.Models.BotConnection>());
-            
-        }
 
+            using (MemoryStream ms = new MemoryStream())
+            {
+                mm.Store(ms);
+                ms.Position = 0;              
+                await cosmos.CreateBotModel(c, ms.ToArray(), new Models.Models.ServiceConnectivity(), new List<Models.Models.Authorization>(), new List<Models.Models.BotConnection>());
+            }            
+        }
+/*
         [TestMethod]
         [Ignore]
         public async Task CopyDarlUsers()
@@ -145,6 +151,6 @@ namespace Darl.GraphQL.Test
             {
                 await cosmos.CreateUserAsync(new Models.Models.DarlUserInput {  Created = c.Created, current_period_end = c.current_period_end, InvoiceEmail = c.InvoiceEmail, InvoiceName = c.InvoiceName, InvoiceOrganization = c.InvoiceOrganization, Issuer = c.Issuer, PaidUsageStarted = c.PaidUsageStarted, StripeCustomerId = c.StripeCustomerId, UsageStripeSubscriptionItem = c.UsageStripeSubscriptionItem, userId = c.PartitionKey });
             }
-        }
-    }*/
-}
+*/        }
+    }
+

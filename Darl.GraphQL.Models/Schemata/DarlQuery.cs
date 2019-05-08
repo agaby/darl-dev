@@ -9,14 +9,14 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlQuery : ObjectGraphType<object>
     {
-
         public DarlQuery(IConnectivity connectivity)
         {
             Name = "Query";
             Description = "View the contents of your account.";
             FieldAsync<ListGraphType<RuleSetType>>(
                 "rulesets",
-                resolve: async context => {
+                resolve: async context =>
+                {
                     return await context.TryAsyncResolve(
                         async c => await connectivity.GetRuleSetsAsync());
                 }
@@ -24,7 +24,8 @@ namespace Darl.GraphQL.Models.Schemata
 
             FieldAsync<ListGraphType<MLModelType>>(
                "mlmodels",
-               resolve: async context => {
+               resolve: async context =>
+               {
                    return await context.TryAsyncResolve(
                        async c => await connectivity.GetMlModelsAsync());
                }
@@ -32,7 +33,8 @@ namespace Darl.GraphQL.Models.Schemata
 
             FieldAsync<ListGraphType<BotModelType>>(
               "botmodels",
-              resolve: async context => {
+              resolve: async context =>
+              {
                   return await context.TryAsyncResolve(
                       async c => await connectivity.GetBotModelsAsync());
               }
@@ -40,15 +42,16 @@ namespace Darl.GraphQL.Models.Schemata
 
             FieldAsync<ListGraphType<ContactType>>(
               "contacts",
-                  resolve: async context => {
+                  resolve: async context =>
+                  {
                       return await context.TryAsyncResolve(
                                   async c => await connectivity.GetContacts());
-                        }
-                    );
+                  }
+            );
 
             FieldAsync<ListGraphType<ContactType>>("contactsByLastName",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lastName" }),
-                resolve: async context => {return await context.TryAsyncResolve(async c => await connectivity.GetContactsByLastName(c.GetArgument<String>("lastName")));});
+                resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetContactsByLastName(c.GetArgument<String>("lastName"))); });
 
             FieldAsync<ContactType>("contactByEmail",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }),
@@ -61,11 +64,11 @@ namespace Darl.GraphQL.Models.Schemata
             arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
             resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetDefaultValue(c.GetArgument<String>("name"))); });
 
-
             FieldAsync<RuleSetType>(
                 "rulesetByName",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
-                resolve: async context => {
+                resolve: async context =>
+                {
                     return await context.TryAsyncResolve(
                         async c => await connectivity.GetRuleSet(c.GetArgument<String>("name"))
                     );
@@ -75,7 +78,8 @@ namespace Darl.GraphQL.Models.Schemata
             FieldAsync<MLModelType>(
                 "mlmodelByName",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
-                resolve: async context => {
+                resolve: async context =>
+                {
                     return await context.TryAsyncResolve(
                         async c => await connectivity.GetMlModel(c.GetArgument<String>("name"))
                     );
@@ -85,7 +89,8 @@ namespace Darl.GraphQL.Models.Schemata
             FieldAsync<BotModelType>(
                 "botmodelByName",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
-                resolve: async context => {
+                resolve: async context =>
+                {
                     return await context.TryAsyncResolve(
                         async c => await connectivity.GetBotModel(c.GetArgument<String>("name"))
                     );
@@ -96,7 +101,8 @@ namespace Darl.GraphQL.Models.Schemata
                 "botConnectionsByModel",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
-                resolve: async context => {
+                resolve: async context =>
+                {
                     return await context.TryAsyncResolve(
                         async c => await connectivity.GetBotConnectivity(c.GetArgument<String>("name"))
                     );
@@ -109,14 +115,15 @@ namespace Darl.GraphQL.Models.Schemata
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "appId" }
                     ),
-                resolve: async context => {
+                resolve: async context =>
+                {
                     return await context.TryAsyncResolve(
                         async c => await connectivity.GetBotUsage(c.GetArgument<String>("botModelName"), c.GetArgument<String>("appId"))
                     );
                 }
             );
 
-            FieldAsync< ListGraphType<LineageNodeDefinitionType>>("getChildrenLineageNodes",
+            FieldAsync<ListGraphType<LineageNodeDefinitionType>>("getChildrenLineageNodes",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "path" },
@@ -133,7 +140,7 @@ namespace Darl.GraphQL.Models.Schemata
 
             FieldAsync<ListGraphType<LineageRecordType>>("getLineagesForWord",
                 arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "word", Description = "The word to look up"},
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "word", Description = "The word to look up" },
                     new QueryArgument<StringGraphType> { Name = "isoLanguage", DefaultValue = "en", Description = "language for lookup (Only en currently supported)" }
                     ),
                 resolve: async context =>
@@ -154,7 +161,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var botModelName = context.GetArgument<string>("botModelName");
                     var phrase = context.GetArgument<string>("phrase");
                     return await context.TryAsyncResolve(
-                         async c => await connectivity.GetAttribute(botModelName,phrase));
+                         async c => await connectivity.GetAttribute(botModelName, phrase));
                 });
 
             FieldAsync<ListGraphType<LineageNodeAttributeType>>("getAttributeFromPath",
@@ -216,8 +223,8 @@ namespace Darl.GraphQL.Models.Schemata
             FieldAsync<QuestionSetType>("beginQuestionnaire",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName", Description = "The ruleset to run" },
-                    new QueryArgument<StringGraphType> { Name = "language", DefaultValue = "en", Description = "The ISO language"},
-                    new QueryArgument<IntGraphType> { Name = "questCount", DefaultValue = 1, Description = "The number of questions to ask at a time"}
+                    new QueryArgument<StringGraphType> { Name = "language", DefaultValue = "en", Description = "The ISO language" },
+                    new QueryArgument<IntGraphType> { Name = "questCount", DefaultValue = 1, Description = "The number of questions to ask at a time" }
                 ),
                 resolve: async context =>
                 {
@@ -226,7 +233,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var questCount = context.GetArgument<int?>("questCount");
 
                     return await context.TryAsyncResolve(
-                                    async c => await connectivity.BeginQuestionnaire(ruleSetName,language ?? "en", questCount ?? 1));
+                                    async c => await connectivity.BeginQuestionnaire(ruleSetName, language ?? "en", questCount ?? 1));
                 });
             FieldAsync<QuestionSetType>("continueQuestionnaire",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<QuestionSetInputType>> { Name = "responses" }
@@ -246,8 +253,6 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                                     async c => await connectivity.BacktrackQuestionnaire(ieToken));
                 });
-
-
         }
     }
 }

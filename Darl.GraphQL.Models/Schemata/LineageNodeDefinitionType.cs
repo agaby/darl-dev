@@ -10,11 +10,10 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public LineageNodeDefinitionType()
         {
-            Name = "lineageDefinition";
+            Name = "lineageNodeDefinition";
             Description = "data required to build an editable tree of the text engine contents";
             Field(c => c.children);
-            Field(c => c.data);
-            Field(c => c.icon);
+            Field(c => c.definition);
             Field(c => c.id);
             Field(c => c.text);
         }

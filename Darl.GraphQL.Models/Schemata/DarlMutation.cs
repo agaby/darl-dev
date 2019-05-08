@@ -527,7 +527,11 @@ namespace Darl.GraphQL.Models.Schemata
                 });
             // RuleForm
             //  create/update from DARL
-            FieldAsync<RuleFormType>("createRuleFormFromDarl", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }, new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "darl" }), resolve: async context =>
+            FieldAsync<RuleFormType>("updateRuleSetDarl", "Updates the DARL code and rebuilds the input/output and language definitions to suit.", 
+                arguments: new QueryArguments(
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "Ruleset to update"}, 
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "darl", Description = "DARL code to update" }), 
+                resolve: async context =>
             {
                 var name = context.GetArgument<string>("name");
                 var darl = context.GetArgument<string>("darl");
@@ -536,7 +540,7 @@ namespace Darl.GraphQL.Models.Schemata
             });
             // FormFormat
             //  Update Input
-            FieldAsync<InputFormatType>("updateRuleFormInputFormat", 
+            FieldAsync<InputFormatType>("updateRuleSetInputFormat", "Update the format of an input",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" }, 
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "inputName" },
                 new QueryArgument<NonNullGraphType<InputFormatUpdateType>> { Name = "inputUpdate" }
@@ -551,7 +555,7 @@ namespace Darl.GraphQL.Models.Schemata
             });
 
             //  Update Output
-            FieldAsync<OutputFormatType>("updateRuleFormOutputFormat",
+            FieldAsync<OutputFormatType>("updateRuleSetOutputFormat", "Update the format of an output",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" },
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "outputName" },
                 new QueryArgument<NonNullGraphType<InputFormatUpdateType>> { Name = "outputUpdate" }
@@ -567,7 +571,7 @@ namespace Darl.GraphQL.Models.Schemata
 
             // Language
             //  update text
-            FieldAsync<LanguageTextType>("updateRuleFormLanguageText",
+            FieldAsync<LanguageTextType>("updateRuleSetLanguageText", "Update the text displayed for a given interaction",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" },
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "languageName" },
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "languageText" }
@@ -581,7 +585,7 @@ namespace Darl.GraphQL.Models.Schemata
                                     async c => await connectivity.UpdateRuleFormLanguageText(ruleSetName, languageName, languageText));
                 });
             //  update variant
-            FieldAsync<VariantTextType>("updateRuleFormVariantText",
+            FieldAsync<VariantTextType>("updateRuleSetVariantText","Update the text for a given interaction in a given language",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" },
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "languageName" },
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "isoLanguageName" },
@@ -598,14 +602,19 @@ namespace Darl.GraphQL.Models.Schemata
                 });
             // RuleSet
             //  Create Empty
-            FieldAsync<MLModelType>("createEmptyRuleSet", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
+            FieldAsync<MLModelType>("createEmptyRuleSet", "Create an empty rule set and set default values",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), 
+                resolve: async context =>
             {
                 var name = context.GetArgument<string>("name");
                 return await context.TryAsyncResolve(
                     async c => await connectivity.CreateEmptyRuleSet(name));
             });
             //  Delete
-            FieldAsync<MLModelType>("deleteRuleSet", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
+            FieldAsync<MLModelType>("deleteRuleSet", "Delete a ruleset",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), 
+                resolve: async context =>
             {
                 var name = context.GetArgument<string>("name");
                 return await context.TryAsyncResolve(
