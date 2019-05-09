@@ -583,7 +583,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     call = bf.CallRuleset,
                     darl = code,
                     implications = r.annotation.implications,
-                    present = att.present,
+                    //present = att.present,
                     randomResponse = bf.RandomResponses.Any(),
                     randomResponses = bf.RandomResponses,
                     response = bf.Response};
@@ -592,7 +592,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         }
 
-        private async Task<LineageModel> GetLineageModel(string botModelName)
+        public async Task<LineageModel> GetLineageModel(string botModelName)
         {
             var bm = await GetBotModel(botModelName);
             LineageModel currentModel = null;

@@ -14,7 +14,8 @@ namespace Darl.GraphQL.Models.Schemata
             Field<BotFormatType>("form", resolve: context => GetConvertedBotFormat(context.Source.form));
             Field(c => c.ruleSkeleton);
             Field(c => c.texts,true);
-            Field<LineageMatchTreeType>("tree", resolve: context => context.Source.tree);//
+            Field<LineageMatchTreeType>("tree", resolve: context => context.Source.tree);
+            Field<StringStringPairType>("modelSettings", resolve: c => BotFormatType.GetSSPairsFromDictionary(c.Source.modelSettings));
         }
 
         private BotFormat GetConvertedBotFormat(string source)

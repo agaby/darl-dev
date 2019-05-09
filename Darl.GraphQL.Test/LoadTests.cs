@@ -122,13 +122,13 @@ namespace Darl.GraphQL.Test
         }*/
 
         [TestMethod]
-        //[Ignore]
+        [Ignore]
 
         public async Task CopyDarlBotModels()
         {
             var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
             var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi(null));
-            var c = "thousandquestions.model";
+            var c = "cubebot.model";
             var mm = await dr.GetModel(userId, c);
 
             using (MemoryStream ms = new MemoryStream())

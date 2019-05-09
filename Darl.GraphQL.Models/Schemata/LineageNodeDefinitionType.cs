@@ -16,6 +16,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.definition);
             Field(c => c.id);
             Field(c => c.text);
+            Field<LineageNodeAttributeType>("attributes", resolve: c => c.Source.attributes);
         }
     }
 }

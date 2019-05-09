@@ -118,6 +118,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
         Task<List<DarlVar>> GetExampleInputs(string ruleSetName);
 
+        Task<LineageModel> GetLineageModel(string botModelName);
+
         Task<List<LineageRecord>> GetLineagesForWord(string word, string isoLanguage = "en");
 
         Task<Models.MLModel> GetMlModel(string name);
