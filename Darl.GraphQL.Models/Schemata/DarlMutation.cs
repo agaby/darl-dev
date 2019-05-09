@@ -18,24 +18,28 @@ namespace Darl.GraphQL.Models.Schemata
             FieldAsync<BotModelType>("createEmptyBotModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
              {
                  var name = context.GetArgument<string>("name");
+                 var userId = connectivity.GetCurrentUserId(context.UserContext);
                  return await context.TryAsyncResolve(
-                     async c => await connectivity.CreateEmptyModel(name));
+                     async c => await connectivity.CreateEmptyModel(userId, name));
              });
 
             // create a default model
             FieldAsync<BotModelType>("createDefaultBotModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
             {
                 var name = context.GetArgument<string>("name");
+                var userId = connectivity.GetCurrentUserId(context.UserContext);
+
                 return await context.TryAsyncResolve(
-                    async c => await connectivity.CreateDefaultModel(name));
+                    async c => await connectivity.CreateDefaultModel(userId, name));
             });
 
             // Delete
             FieldAsync<BotModelType>("deleteBotModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
             {
                 var name = context.GetArgument<string>("name");
+                var userId = connectivity.GetCurrentUserId(context.UserContext);
                 return await context.TryAsyncResolve(
-                    async c => await connectivity.DeleteBotModel(name));
+                    async c => await connectivity.DeleteBotModel(userId, name));
             });
 
             // Authorization
@@ -63,8 +67,9 @@ namespace Darl.GraphQL.Models.Schemata
                 {
                     var botModelName = context.GetArgument<string>("botModelName");
                     var name = context.GetArgument<string>("name");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.DeleteAuthorization(botModelName,name));
+                        async c => await connectivity.DeleteAuthorization(userId, botModelName, name));
                 });
 
             // BotConnection
@@ -79,8 +84,9 @@ namespace Darl.GraphQL.Models.Schemata
                     var botModelName = context.GetArgument<string>("botModelName");
                     var appId = context.GetArgument<string>("appId");
                     var password = context.GetArgument<string>("password");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.CreateBotConnection(botModelName, appId, password));
+                        async c => await connectivity.CreateBotConnection(userId, botModelName, appId, password));
                 });
 
             //  Delete
@@ -93,8 +99,9 @@ namespace Darl.GraphQL.Models.Schemata
                 {
                     var botModelName = context.GetArgument<string>("botModelName");
                     var appId = context.GetArgument<string>("appId");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.DeleteBotConnection(botModelName, appId));
+                        async c => await connectivity.DeleteBotConnection(userId, botModelName, appId));
                 });
             // LineageTree
 
@@ -109,8 +116,10 @@ namespace Darl.GraphQL.Models.Schemata
                     var botModelName = context.GetArgument<string>("botModelName");
                     var parent = context.GetArgument<string>("parent");
                     var newName = context.GetArgument<string>("newName");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.CreateLineageNode(botModelName, parent, newName));
+                        async c => await connectivity.CreateLineageNode(userId, botModelName, parent, newName));
                 });
             //  RenameNode
             FieldAsync<LineageNodeDefinitionType>("renameLineageNode",
@@ -123,8 +132,9 @@ namespace Darl.GraphQL.Models.Schemata
                                var botModelName = context.GetArgument<string>("botModelName");
                                var id = context.GetArgument<string>("id");
                                var newName = context.GetArgument<string>("newName");
+                               var userId = connectivity.GetCurrentUserId(context.UserContext);
                                return await context.TryAsyncResolve(
-                                   async c => await connectivity.RenameLineageNode(botModelName, id, newName));
+                                   async c => await connectivity.RenameLineageNode(userId, botModelName, id, newName));
                            });
 
                        //  DeleteNode
@@ -136,8 +146,9 @@ namespace Darl.GraphQL.Models.Schemata
                            {
                                var botModelName = context.GetArgument<string>("botModelName");
                                var id = context.GetArgument<string>("id");
+                               var userId = connectivity.GetCurrentUserId(context.UserContext);
                                return await context.TryAsyncResolve(
-                                   async c => await connectivity.DeleteLineageNode(botModelName, id));
+                                   async c => await connectivity.DeleteLineageNode(userId, botModelName, id));
                            });
 
                        //  PasteNode 
@@ -153,8 +164,9 @@ namespace Darl.GraphQL.Models.Schemata
                                var parent = context.GetArgument<string>("parent");
                                var nodes = context.GetArgument<List<string>>("nodes");
                                var mode = context.GetArgument<string>("mode");
+                               var userId = connectivity.GetCurrentUserId(context.UserContext);
                                return await context.TryAsyncResolve(
-                                   async c => await connectivity.PasteLineageNode(botModelName, parent, nodes, mode));
+                                   async c => await connectivity.PasteLineageNode(userId, botModelName, parent, nodes, mode));
                            });
 
             //  CreatePhrase
@@ -168,8 +180,9 @@ namespace Darl.GraphQL.Models.Schemata
                                            var botModelName = context.GetArgument<string>("botModelName");
                                            var path = context.GetArgument<string>("path");
                                            var attribute = context.GetArgument<LineageNodeAttributes>("attribute");
+                                           var userId = connectivity.GetCurrentUserId(context.UserContext);
                                            return await context.TryAsyncResolve(
-                                               async c => await connectivity.CreatePhrase(botModelName, path, attribute));
+                                               async c => await connectivity.CreatePhrase(userId, botModelName, path, attribute));
                                        });
                                    //  DeletePhrase
                                    FieldAsync<LineageNodeAttributeType>("deletePhrase",
@@ -180,8 +193,9 @@ namespace Darl.GraphQL.Models.Schemata
                                        {
                                            var botModelName = context.GetArgument<string>("botModelName");
                                            var phrase = context.GetArgument<string>("phrase");
+                                           var userId = connectivity.GetCurrentUserId(context.UserContext);
                                            return await context.TryAsyncResolve(
-                                               async c => await connectivity.DeletePhrase(botModelName, phrase));
+                                               async c => await connectivity.DeletePhrase(userId, botModelName, phrase));
                                        });
 
 
@@ -194,8 +208,9 @@ namespace Darl.GraphQL.Models.Schemata
                                        {
                                            var botModelName = context.GetArgument<string>("botModelName");
                                            var attribute = context.GetArgument<LineageNodeAttributeUpdate>("attribute");
+                                           var userId = connectivity.GetCurrentUserId(context.UserContext);
                                            return await context.TryAsyncResolve(
-                                               async c => await connectivity.UpdateAttribute(botModelName, attribute));
+                                               async c => await connectivity.UpdateAttribute(userId, botModelName, attribute));
                                        });
                                    //                
                                    // ServiceConnectivity
@@ -208,8 +223,9 @@ namespace Darl.GraphQL.Models.Schemata
                                        {
                                            var botModelName = context.GetArgument<string>("botModelName");
                                            var apiKey = context.GetArgument<string>("apiKey");
+                                           var userId = connectivity.GetCurrentUserId(context.UserContext);
                                            return await context.TryAsyncResolve(
-                                               async c => await connectivity.UpdateAzureCredentials(botModelName, apiKey));
+                                               async c => await connectivity.UpdateAzureCredentials(userId, botModelName, apiKey));
                                        });
                                    FieldAsync<AzureCredentialsType>("deleteAzureCredentials",
                                        arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" }
@@ -217,8 +233,9 @@ namespace Darl.GraphQL.Models.Schemata
                                        resolve: async context =>
                                        {
                                            var botModelName = context.GetArgument<string>("botModelName");
+                                           var userId = connectivity.GetCurrentUserId(context.UserContext);
                                            return await context.TryAsyncResolve(
-                                               async c => await connectivity.DeleteAzureCredentials(botModelName));
+                                               async c => await connectivity.DeleteAzureCredentials(userId, botModelName));
                                        });
                                    //  Edit SellerCenter
                                    FieldAsync<SellerCenterCredentialsType>("updateSellereCenterCredentials",
@@ -233,8 +250,9 @@ namespace Darl.GraphQL.Models.Schemata
                                            var liveMode = context.GetArgument<bool>("liveMode");
                                            var merchantId = context.GetArgument<string>("merchantId");
                                            var stripeApiKey = context.GetArgument<string>("stripeApiKey");
+                                           var userId = connectivity.GetCurrentUserId(context.UserContext);
                                            return await context.TryAsyncResolve(
-                                               async c => await connectivity.UpdateSellerCenterCredentials(botModelName, liveMode, merchantId, stripeApiKey));
+                                               async c => await connectivity.UpdateSellerCenterCredentials(userId, botModelName, liveMode, merchantId, stripeApiKey));
                                        });
                                    FieldAsync<SellerCenterCredentialsType>("deleteSellereCenterCredentials",
                                        arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" }
@@ -242,8 +260,9 @@ namespace Darl.GraphQL.Models.Schemata
                                        resolve: async context =>
                                        {
                                            var botModelName = context.GetArgument<string>("botModelName");
+                                           var userId = connectivity.GetCurrentUserId(context.UserContext);
                                            return await context.TryAsyncResolve(
-                                               async c => await connectivity.DeleteSellereCenterCredentials(botModelName));
+                                               async c => await connectivity.DeleteSellereCenterCredentials(userId, botModelName));
                                        });
                                    //  Twilio
                                    FieldAsync<TwilioCredentialsType>("updateTwilioCredentials",
@@ -258,8 +277,9 @@ namespace Darl.GraphQL.Models.Schemata
                                            var sMSAccountFrom = context.GetArgument<string>("sMSAccountFrom");
                                            var sMSAccountIdentification = context.GetArgument<string>("sMSAccountIdentification");
                                            var sMSAccountPassword = context.GetArgument<string>("sMSAccountPassword");
+                                           var userId = connectivity.GetCurrentUserId(context.UserContext);
                                            return await context.TryAsyncResolve(
-                                               async c => await connectivity.UpdateTwilioCredentials(botModelName, sMSAccountFrom, sMSAccountIdentification, sMSAccountPassword));
+                                               async c => await connectivity.UpdateTwilioCredentials(userId, botModelName, sMSAccountFrom, sMSAccountIdentification, sMSAccountPassword));
                                        });
                                    FieldAsync<TwilioCredentialsType>("deleteTwilioCredentials",
                                        arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" }
@@ -267,8 +287,9 @@ namespace Darl.GraphQL.Models.Schemata
                                        resolve: async context =>
                                        {
                                            var botModelName = context.GetArgument<string>("botModelName");
+                                           var userId = connectivity.GetCurrentUserId(context.UserContext);
                                            return await context.TryAsyncResolve(
-                                               async c => await connectivity.DeleteTwilioCredentials(botModelName));
+                                               async c => await connectivity.DeleteTwilioCredentials(userId, botModelName));
                                        });
                                    //  SendGrid
                                    FieldAsync<SendGridCredentialsType>("updateSendgridCredentials",
@@ -279,8 +300,9 @@ namespace Darl.GraphQL.Models.Schemata
                                         {
                                             var botModelName = context.GetArgument<string>("botModelName");
                                             var sendGridAPIKey = context.GetArgument<string>("sendGridAPIKey");
+                                            var userId = connectivity.GetCurrentUserId(context.UserContext);
                                             return await context.TryAsyncResolve(
-                                                async c => await connectivity.UpdateSendgridCredentials(botModelName, sendGridAPIKey));
+                                                async c => await connectivity.UpdateSendgridCredentials(userId, botModelName, sendGridAPIKey));
                                         });
                                    FieldAsync<SendGridCredentialsType>("deleteSendgridCredentials",
                                        arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" }
@@ -288,8 +310,9 @@ namespace Darl.GraphQL.Models.Schemata
                                        resolve: async context =>
                                        {
                                            var botModelName = context.GetArgument<string>("botModelName");
+                                           var userId = connectivity.GetCurrentUserId(context.UserContext);
                                            return await context.TryAsyncResolve(
-                                               async c => await connectivity.DeleteSendgridCredentials(botModelName));
+                                               async c => await connectivity.DeleteSendgridCredentials(userId, botModelName));
                                        });
                                    //  Zendesk
                                    FieldAsync<ZendeskCredentialsType>("updateZendeskCredentials",
@@ -304,8 +327,9 @@ namespace Darl.GraphQL.Models.Schemata
                                             var zendeskApiKey = context.GetArgument<string>("zendeskApiKey");
                                             var zendeskURL = context.GetArgument<string>("zendeskURL");
                                             var zendeskUser = context.GetArgument<string>("zendeskUser");
+                                            var userId = connectivity.GetCurrentUserId(context.UserContext);
                                             return await context.TryAsyncResolve(
-                                                async c => await connectivity.UpdateZendeskCredentials(botModelName, zendeskApiKey, zendeskURL, zendeskUser));
+                                                async c => await connectivity.UpdateZendeskCredentials(userId, botModelName, zendeskApiKey, zendeskURL, zendeskUser));
                                         });
                                    FieldAsync<ZendeskCredentialsType>("deleteZendeskCredentials",
                                        arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" }
@@ -313,8 +337,9 @@ namespace Darl.GraphQL.Models.Schemata
                                        resolve: async context =>
                                        {
                                            var botModelName = context.GetArgument<string>("botModelName");
+                                           var userId = connectivity.GetCurrentUserId(context.UserContext);
                                            return await context.TryAsyncResolve(
-                                               async c => await connectivity.DeleteZendeskCredentials(botModelName));
+                                               async c => await connectivity.DeleteZendeskCredentials(userId, botModelName));
                                        });
                        
 
@@ -388,8 +413,9 @@ namespace Darl.GraphQL.Models.Schemata
             FieldAsync<MLModelType>("createEmptyMLModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
             {
                 var name = context.GetArgument<string>("name");
+                var userId = connectivity.GetCurrentUserId(context.UserContext);
                 return await context.TryAsyncResolve(
-                    async c => await connectivity.CreateEmptyMLModel(name));
+                    async c => await connectivity.CreateEmptyMLModel(userId, name));
             });
             //  Update
             FieldAsync<MLModelType>("updateMLModel", arguments: new QueryArguments(
@@ -399,15 +425,17 @@ namespace Darl.GraphQL.Models.Schemata
             {
                 var name = context.GetArgument<string>("name");
                 var mlspec = context.GetArgument<MLSpecUpdate>("mlspec");
+                var userId = connectivity.GetCurrentUserId(context.UserContext);
                 return await context.TryAsyncResolve(
-                    async c => await connectivity.UpdateMLSpec(name, mlspec));
+                    async c => await connectivity.UpdateMLSpec(userId, name, mlspec));
             });
             //  Delete
             FieldAsync<MLModelType>("deleteMLModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
             {
                 var name = context.GetArgument<string>("name");
+                var userId = connectivity.GetCurrentUserId(context.UserContext);
                 return await context.TryAsyncResolve(
-                    async c => await connectivity.DeleteMLModel(name));
+                    async c => await connectivity.DeleteMLModel(userId, name));
             });
 
             // BotFormat
@@ -424,8 +452,9 @@ namespace Darl.GraphQL.Models.Schemata
                     var botModelName = context.GetArgument<string>("botModelName");
                     var name = context.GetArgument<string>("name");
                     var value = context.GetArgument<double>("value");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.CreateUpdateConstant(botModelName, name, value));
+                        async c => await connectivity.CreateUpdateConstant(userId, botModelName, name, value));
                 });
             //  Delete constant
             FieldAsync<StringDoublePairType>("deleteConstant", arguments: new QueryArguments(
@@ -436,8 +465,9 @@ namespace Darl.GraphQL.Models.Schemata
                 {
                     var botModelName = context.GetArgument<string>("botModelName");
                     var name = context.GetArgument<string>("name");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                                    async c => await connectivity.DeleteConstant(botModelName, name));
+                                    async c => await connectivity.DeleteConstant(userId, botModelName, name));
                 });
 
             //  CreateUpdateStore
@@ -451,8 +481,9 @@ namespace Darl.GraphQL.Models.Schemata
                 {
                     var botModelName = context.GetArgument<string>("botModelName");
                     var name = context.GetArgument<string>("name");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.CreateUpdateStore(botModelName, name));
+                        async c => await connectivity.CreateUpdateStore(userId, botModelName, name));
                 });
             //  Delete store
             FieldAsync<StringDoublePairType>("deleteStore", arguments: new QueryArguments(
@@ -463,8 +494,9 @@ namespace Darl.GraphQL.Models.Schemata
                 {
                     var botModelName = context.GetArgument<string>("botModelName");
                     var name = context.GetArgument<string>("name");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                                    async c => await connectivity.DeleteStore(botModelName, name));
+                                    async c => await connectivity.DeleteStore(userId, botModelName, name));
                 });
             //  Add, update Delete sequences
             //  Add, update Delete strings
@@ -480,8 +512,9 @@ namespace Darl.GraphQL.Models.Schemata
                     var botModelName = context.GetArgument<string>("botModelName");
                     var name = context.GetArgument<string>("name");
                     var value = context.GetArgument<string>("value");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.CreateUpdateString(botModelName, name, value));
+                        async c => await connectivity.CreateUpdateString(userId, botModelName, name, value));
                 });
             //  Delete constant
             FieldAsync<StringStringPairType>("deleteString", arguments: new QueryArguments(
@@ -492,8 +525,9 @@ namespace Darl.GraphQL.Models.Schemata
                 {
                     var botModelName = context.GetArgument<string>("botModelName");
                     var name = context.GetArgument<string>("name");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                                    async c => await connectivity.DeleteString(botModelName, name));
+                                    async c => await connectivity.DeleteString(userId, botModelName, name));
                 });
             // BotInputFormat
             //  Update
@@ -507,8 +541,9 @@ namespace Darl.GraphQL.Models.Schemata
                     var botModelName = context.GetArgument<string>("botModelName");
                     var inputName = context.GetArgument<string>("inputName");
                     var inputUpdate = context.GetArgument<InputFormatUpdate>("inputUpdate");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.UpdateBotModelInputFormat(botModelName, inputName, inputUpdate));
+                        async c => await connectivity.UpdateBotModelInputFormat(userId, botModelName, inputName, inputUpdate));
                 });
 
             //  BotOutputFormat
@@ -522,8 +557,9 @@ namespace Darl.GraphQL.Models.Schemata
                     var botModelName = context.GetArgument<string>("botModelName");
                     var outputName = context.GetArgument<string>("outputName");
                     var outputUpdate = context.GetArgument<BotOutputFormatUpdate>("outputUpdate");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.UpdateBotModelOutputFormat(botModelName, outputName, outputUpdate));
+                        async c => await connectivity.UpdateBotModelOutputFormat(userId, botModelName, outputName, outputUpdate));
                 });
             // RuleForm
             //  create/update from DARL
@@ -535,8 +571,9 @@ namespace Darl.GraphQL.Models.Schemata
             {
                 var name = context.GetArgument<string>("name");
                 var darl = context.GetArgument<string>("darl");
+                var userId = connectivity.GetCurrentUserId(context.UserContext);
                 return await context.TryAsyncResolve(
-                    async c => await connectivity.CreateRuleFormFromDarl(name, darl));
+                    async c => await connectivity.CreateRuleFormFromDarl(userId, name, darl));
             });
             // FormFormat
             //  Update Input
@@ -550,8 +587,9 @@ namespace Darl.GraphQL.Models.Schemata
                 var ruleSetName = context.GetArgument<string>("ruleSetName");
                 var inputName = context.GetArgument<string>("inputName");
                 var inputUpdate = context.GetArgument<InputFormatUpdate>("inputUpdate");
+                var userId = connectivity.GetCurrentUserId(context.UserContext);
                 return await context.TryAsyncResolve(
-                    async c => await connectivity.UpdateRuleFormInputFormat(ruleSetName, inputName, inputUpdate));
+                    async c => await connectivity.UpdateRuleFormInputFormat(userId, ruleSetName, inputName, inputUpdate));
             });
 
             //  Update Output
@@ -565,8 +603,9 @@ namespace Darl.GraphQL.Models.Schemata
                     var ruleSetName = context.GetArgument<string>("ruleSetName");
                     var outputName = context.GetArgument<string>("outputName");
                     var outputUpdate = context.GetArgument<OutputFormatUpdate>("outputUpdate");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.UpdateRuleFormOutputFormat(ruleSetName, outputName, outputUpdate));
+                        async c => await connectivity.UpdateRuleFormOutputFormat(userId, ruleSetName, outputName, outputUpdate));
                 });
 
             // Language
@@ -581,8 +620,9 @@ namespace Darl.GraphQL.Models.Schemata
                     var ruleSetName = context.GetArgument<string>("ruleSetName");
                     var languageName = context.GetArgument<string>("languageName");
                     var languageText = context.GetArgument<string>("languageText");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                                    async c => await connectivity.UpdateRuleFormLanguageText(ruleSetName, languageName, languageText));
+                                    async c => await connectivity.UpdateRuleFormLanguageText(userId, ruleSetName, languageName, languageText));
                 });
             //  update variant
             FieldAsync<VariantTextType>("updateRuleSetVariantText","Update the text for a given interaction in a given language",
@@ -597,8 +637,9 @@ namespace Darl.GraphQL.Models.Schemata
                     var languageName = context.GetArgument<string>("languageName");
                     var isoLanguageName = context.GetArgument<string>("isoLanguageName");
                     var variantText = context.GetArgument<string>("variantText");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                                    async c => await connectivity.UpdateRuleFormVariantText(ruleSetName, languageName, isoLanguageName, variantText));
+                                    async c => await connectivity.UpdateRuleFormVariantText(userId, ruleSetName, languageName, isoLanguageName, variantText));
                 });
             // RuleSet
             //  Create Empty
@@ -608,8 +649,9 @@ namespace Darl.GraphQL.Models.Schemata
                 resolve: async context =>
             {
                 var name = context.GetArgument<string>("name");
+                var userId = connectivity.GetCurrentUserId(context.UserContext);
                 return await context.TryAsyncResolve(
-                    async c => await connectivity.CreateEmptyRuleSet(name));
+                    async c => await connectivity.CreateEmptyRuleSet(userId, name));
             });
             //  Delete
             FieldAsync<MLModelType>("deleteRuleSet", "Delete a ruleset",
@@ -617,8 +659,9 @@ namespace Darl.GraphQL.Models.Schemata
                 resolve: async context =>
             {
                 var name = context.GetArgument<string>("name");
+                var userId = connectivity.GetCurrentUserId(context.UserContext);
                 return await context.TryAsyncResolve(
-                    async c => await connectivity.DeleteRuleSet(name));
+                    async c => await connectivity.DeleteRuleSet(userId, name));
             });
             // DarlUser
             //   Create/update
@@ -674,14 +717,10 @@ namespace Darl.GraphQL.Models.Schemata
                 resolve: async context =>
                 {
                     var mlmodelname = context.GetArgument<string>("mlmodelname");
-
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                                    async c => await connectivity.MachineLearnModel(mlmodelname));
+                                    async c => await connectivity.MachineLearnModel(userId, mlmodelname));
                 });
-
-
-
-
 
         }
     }

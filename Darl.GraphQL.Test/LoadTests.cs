@@ -135,7 +135,7 @@ namespace Darl.GraphQL.Test
             {
                 mm.Store(ms);
                 ms.Position = 0;              
-                await cosmos.CreateBotModel(c, ms.ToArray(), new Models.Models.ServiceConnectivity(), new List<Models.Models.Authorization>(), new List<Models.Models.BotConnection>());
+                await cosmos.CreateBotModel(userId, c, ms.ToArray(), new Models.Models.ServiceConnectivity(), new List<Models.Models.Authorization>(), new List<Models.Models.BotConnection>());
             }            
         }
 /*

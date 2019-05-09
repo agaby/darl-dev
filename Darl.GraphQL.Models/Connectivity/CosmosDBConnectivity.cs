@@ -46,20 +46,18 @@ namespace Darl.GraphQL.Models.Connectivity
             settings.SslSettings =
               new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
             mongoClient = new MongoClient(settings);
-            userId = _opt.Value.boaiuserid;
             db = mongoClient.GetDatabase(_opt.Value.MongoDatabase);
             BsonClassMap.RegisterClassMap<LineageRecord>();
         }
 
-        public string userId { get; set; }
         public async Task<QuestionSetProxy> BacktrackQuestionnaire(string ieToken)
         {
             return await _form.Delete(ieToken);
         }
 
-        public async Task<QuestionSetProxy> BeginQuestionnaire(string ruleSetName, string language = "en", int questCount = 1)
+        public async Task<QuestionSetProxy> BeginQuestionnaire(string userId, string ruleSetName, string language = "en", int questCount = 1)
         {
-            var rs = await GetRuleSet(ruleSetName);
+            var rs = await GetRuleSet(userId, ruleSetName);
             if (rs != null)
                 return await _form.Get(rs, language, questCount);
             return null;
@@ -75,7 +73,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return await _form.Post(resp);
         }
 
-        public async Task<Authorization> CreateAuthorization(string botModelName, Authorization auth)
+        public async Task<Authorization> CreateAuthorization(string userId, string botModelName, Authorization auth)
         {
             var collection = db.GetCollection<BotModel>("botmodel");
             var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
@@ -84,7 +82,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return auth;
         }
 
-        public async Task<BotConnection> CreateBotConnection(string botModelName, string appId, string password)
+        public async Task<BotConnection> CreateBotConnection(string userId, string botModelName, string appId, string password)
         {
             var collection = db.GetCollection<BotModel>("botmodel");
             var bm = new BotConnection { AppId = appId, Password = password };
@@ -94,7 +92,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return bm;
         }
 
-        public async Task<BotModel> CreateBotModel(string name, byte [] lm, ServiceConnectivity sc, List<Authorization> authorizations, List<BotConnection> botConnections)
+        public async Task<BotModel> CreateBotModel(string userId, string name, byte [] lm, ServiceConnectivity sc, List<Authorization> authorizations, List<BotConnection> botConnections)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
             var model = new BotModel { Name = name, userId = userId, Authorizations = authorizations, serviceConnectivity = sc, Model = lm, botconnections = botConnections };
@@ -125,7 +123,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return model;
         }
 
-        public async Task<BotModel> CreateDefaultModel(string name)
+        public async Task<BotModel> CreateDefaultModel(string userId, string name)
         {
             var botModel = new BotModel { Name = name, userId = userId };
             var mc = db.GetCollection<BotModel>("botmodel");
@@ -133,7 +131,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return botModel;
         }
 
-        public async Task<Models.MLModel> CreateEmptyMLModel(string name)
+        public async Task<Models.MLModel> CreateEmptyMLModel(string userId, string name)
         {
             var mc = db.GetCollection<MLModel>("mlmodel");
             var model = new MLModel { Name = name, model = new DarlCommon.MLModel { name = name, percentTest = 0, sets = 3, darl = "ruleset newRuleSet supervised\n{\n}\n" }, results = new List<MLResult>(), userId = userId };
@@ -141,7 +139,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return model;
         }
 
-        public async Task<BotModel> CreateEmptyModel(string name)
+        public async Task<BotModel> CreateEmptyModel(string userId, string name)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
             var model = new BotModel { Name = name, userId = userId };
@@ -149,7 +147,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return model;
         }
 
-        public async Task<RuleSet> CreateEmptyRuleSet(string name)
+        public async Task<RuleSet> CreateEmptyRuleSet(string userId, string name)
         {
             var mc = db.GetCollection<RuleSet>("ruleset");
             var model = new RuleSet { Name = name, userId = userId };
@@ -157,12 +155,12 @@ namespace Darl.GraphQL.Models.Connectivity
             return model;
         }
 
-        public Task<LineageNodeDefinition> CreateLineageNode(string botModelName, string parent, string newName)
+        public Task<LineageNodeDefinition> CreateLineageNode(string userId, string botModelName, string parent, string newName)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<MLModel> CreateMLModel(string name, DarlCommon.MLModel model)
+        public async Task<MLModel> CreateMLModel(string userId, string name, DarlCommon.MLModel model)
         {
             var mc = db.GetCollection<MLModel>("mlmodel");
             var mm = new MLModel { Name = name, userId = userId, model = model };
@@ -170,14 +168,14 @@ namespace Darl.GraphQL.Models.Connectivity
             return mm;
         }
 
-        public Task<LineageNodeDefinition> CreatePhrase(string botModelName, string path, object LineageNodeDefinition)
+        public Task<LineageNodeDefinition> CreatePhrase(string userId, string botModelName, string path, object LineageNodeDefinition)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<RuleForm> CreateRuleFormFromDarl(string name, string darl)
+        public async Task<RuleForm> CreateRuleFormFromDarl(string userId, string name, string darl)
         {
-            var rs = await GetRuleSet(name);
+            var rs = await GetRuleSet(userId, name);
             if(rs != null)
             {
                 rs.Contents.darl = darl;
@@ -203,16 +201,16 @@ namespace Darl.GraphQL.Models.Connectivity
             return null;
         }
 
-        public async Task<RuleSet> CreateRuleSet(string name, RuleForm rf, ServiceConnectivity sc)
+        public async Task<RuleSet> CreateRuleSet(string userId, string name, RuleForm rf, ServiceConnectivity sc)
         {
             var mc = db.GetCollection<RuleSet>("ruleset");
             var model = new RuleSet { Name = name, userId = userId, Contents = rf, serviceConnectivity = sc };
             await mc.InsertOneAsync(model);
             return model;
         }
-        public async Task<StringDoublePair> CreateUpdateConstant(string botModelName, string name, double value)
+        public async Task<StringDoublePair> CreateUpdateConstant(string userId, string botModelName, string name, double value)
         {
-            BotFormat form = await GetBotFormat(botModelName);
+            BotFormat form = await GetBotFormat(userId, botModelName);
             StringDoublePair res = new StringDoublePair { name = name, value = form.Constants[name] }; 
             if (form != null)
             {
@@ -224,29 +222,29 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     form.Constants.Add(name, value);
                 }
-                await SaveBotFormat(botModelName, form);
+                await SaveBotFormat(userId, botModelName, form);
                 return res;
             }
             return null;
         }
-        public async Task<string> CreateUpdateStore(string botModelName, string name)
+        public async Task<string> CreateUpdateStore(string userId, string botModelName, string name)
         {
-            BotFormat form = await GetBotFormat(botModelName);
+            BotFormat form = await GetBotFormat(userId, botModelName);
             if (form != null)
             {
                 if (!form.Stores.Contains(name))
                 {
                     form.Stores.Add(name);
                 }
-                await SaveBotFormat(botModelName, form);
+                await SaveBotFormat(userId,botModelName, form);
                 return name;
             }
             return null;
         }
 
-        public async Task<StringStringPair> CreateUpdateString(string botModelName, string name, string value)
+        public async Task<StringStringPair> CreateUpdateString(string userId, string botModelName, string name, string value)
         {
-            BotFormat form = await GetBotFormat(botModelName);
+            BotFormat form = await GetBotFormat(userId,botModelName);
             StringStringPair res = new StringStringPair (name, form.Strings[name] );
             if (form != null)
             {
@@ -258,7 +256,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     form.Strings.Add(name, value);
                 }
-                await SaveBotFormat(botModelName, form);
+                await SaveBotFormat(userId,botModelName, form);
                 return res;
             }
             return null;
@@ -279,7 +277,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        public async Task<string> DeleteAuthorization(string name, string name1)
+        public async Task<string> DeleteAuthorization(string userId, string name, string name1)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
             var filter = Builders<BotModel>.Filter.Where(x => x.Name == name && x.userId == userId);
@@ -288,7 +286,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return name1;
         }
 
-        public async Task<AzureCredentials> DeleteAzureCredentials(string botModelName)
+        public async Task<AzureCredentials> DeleteAzureCredentials(string userId, string botModelName)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
             var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
@@ -297,7 +295,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return null;
         }
 
-        public async Task<BotConnection> DeleteBotConnection(string botModelName, string appId)
+        public async Task<BotConnection> DeleteBotConnection(string userId, string botModelName, string appId)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
             var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
@@ -306,7 +304,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return null;
         }
 
-        public async Task<BotModel> DeleteBotModel(string name)
+        public async Task<BotModel> DeleteBotModel(string userId, string name)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
             var query = mc.AsQueryable().Where(p => p.userId == userId && p.Name == name);
@@ -315,9 +313,9 @@ namespace Darl.GraphQL.Models.Connectivity
             return old;
         }
 
-        public async Task<StringDoublePair> DeleteConstant(string botModelName, string name)
+        public async Task<StringDoublePair> DeleteConstant(string userId, string botModelName, string name)
         {
-            BotFormat form = await GetBotFormat(botModelName);
+            BotFormat form = await GetBotFormat(userId, botModelName);
             StringDoublePair res = null;
             if (form != null)
             {
@@ -326,7 +324,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     res = new StringDoublePair { name = name, value = form.Constants[name] };
                     form.Constants.Remove(name);
                 }
-                await SaveBotFormat(botModelName, form);
+                await SaveBotFormat(userId,botModelName, form);
                 return res;
             }
             return null;
@@ -357,12 +355,12 @@ namespace Darl.GraphQL.Models.Connectivity
             return old;
         }
 
-        public Task<LineageNodeDefinition> DeleteLineageNode(string botModelName, string id)
+        public Task<LineageNodeDefinition> DeleteLineageNode(string userId, string botModelName, string id)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<MLModel> DeleteMLModel(string name)
+        public async Task<MLModel> DeleteMLModel(string userId, string name)
         {
             var mc = db.GetCollection<MLModel>("mlmodel");
             var query = mc.AsQueryable().Where(p => p.Name == name && p.userId == userId);
@@ -371,12 +369,12 @@ namespace Darl.GraphQL.Models.Connectivity
             return old;
         }
 
-        public Task<LineageNodeDefinition> DeletePhrase(string botModelName, string phrase)
+        public Task<LineageNodeDefinition> DeletePhrase(string userId, string botModelName, string phrase)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<RuleSet> DeleteRuleSet(string name)
+        public async Task<RuleSet> DeleteRuleSet(string userId, string name)
         {
             var mc = db.GetCollection<RuleSet>("ruleset");
             var query = mc.AsQueryable().Where(p => p.Name == name && p.userId == userId);
@@ -385,7 +383,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return old;
         }
 
-        public async Task<SellerCenterCredentials> DeleteSellereCenterCredentials(string botModelName)
+        public async Task<SellerCenterCredentials> DeleteSellereCenterCredentials(string userId, string botModelName)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
             var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
@@ -394,7 +392,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return null;
         }
 
-        public async Task<SendGridCredentials> DeleteSendgridCredentials(string botModelName)
+        public async Task<SendGridCredentials> DeleteSendgridCredentials(string userId, string botModelName)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
             var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
@@ -403,24 +401,24 @@ namespace Darl.GraphQL.Models.Connectivity
             return null;
         }
 
-        public async Task<string> DeleteStore(string botModelName, string name)
+        public async Task<string> DeleteStore(string userId, string botModelName, string name)
         {
-            BotFormat form = await GetBotFormat(botModelName);
+            BotFormat form = await GetBotFormat(userId,botModelName);
             if (form != null)
             {
                 if (form.Stores.Contains(name))
                 {
                     form.Stores.Remove(name);
                 }
-                await SaveBotFormat(botModelName, form);
+                await SaveBotFormat(userId, botModelName, form);
                 return name;
             }
             return null;
         }
 
-        public async Task<StringStringPair> DeleteString(string botModelName, string name)
+        public async Task<StringStringPair> DeleteString(string userId, string botModelName, string name)
         {
-            BotFormat form = await GetBotFormat(botModelName);
+            BotFormat form = await GetBotFormat(userId, botModelName);
             StringStringPair res = null;
             if (form != null)
             {
@@ -429,13 +427,13 @@ namespace Darl.GraphQL.Models.Connectivity
                     res = new StringStringPair( name, form.Strings[name] );
                     form.Strings.Remove(name);
                 }
-                await SaveBotFormat(botModelName, form);
+                await SaveBotFormat(userId, botModelName, form);
                 return res;
             }
             return null;
         }
 
-        public async Task<TwilioCredentials> DeleteTwilioCredentials(string botModelName)
+        public async Task<TwilioCredentials> DeleteTwilioCredentials(string userId, string botModelName)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
             var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
@@ -460,7 +458,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        public async Task<ZendeskCredentials> DeleteZendeskCredentials(string botModelName)
+        public async Task<ZendeskCredentials> DeleteZendeskCredentials(string userId, string botModelName)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
             var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
@@ -469,17 +467,17 @@ namespace Darl.GraphQL.Models.Connectivity
             return null;
         }
 
-        public Task<List<LineageNodeDefinition>> GetAttribute(string botModelName, string phrase)
+        public Task<List<LineageNodeDefinition>> GetAttribute(string userId, string botModelName, string phrase)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<LineageNodeDefinition>> GetAttributeFromPath(string botModelName, string path)
+        public Task<List<LineageNodeDefinition>> GetAttributeFromPath(string userId, string botModelName, string path)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<List<Authorization>> GetAuthorizations(string name)
+        public async Task<List<Authorization>> GetAuthorizations(string userId, string name)
         {
             var collection = db.GetCollection<BotModel>("botmodel");
             var query = collection.AsQueryable()
@@ -488,7 +486,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.SingleAsync();
         }
 
-        public async Task<List<BotConnection>> GetBotConnectivity(string name)
+        public async Task<List<BotConnection>> GetBotConnectivity(string userId, string name)
         {
             var collection = db.GetCollection<BotModel>("botmodel");
             var query = collection.AsQueryable()
@@ -497,7 +495,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.SingleAsync();
         }
 
-        public async Task<BotModel> GetBotModel(string name)
+        public async Task<BotModel> GetBotModel(string userId, string name)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
             var query = mc.AsQueryable()
@@ -505,7 +503,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<List<BotModel>> GetBotModelsAsync()
+        public async Task<List<BotModel>> GetBotModelsAsync(string userId)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
             var query = mc.AsQueryable()
@@ -513,7 +511,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.ToListAsync();
         }
 
-        public async Task<List<UserUsage>> GetBotUsage(string botModelName, string appId)
+        public async Task<List<UserUsage>> GetBotUsage(string userId, string botModelName, string appId)
         {
             var collection = db.GetCollection<BotModel>("botmodel");
             var query = collection.AsQueryable()
@@ -530,10 +528,10 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <param name="path"></param>
         /// <param name="isRoot"></param>
         /// <returns></returns>
-        public async Task<List<LineageNodeDefinition>> GetChildrenLineageNodes(string botModelName, string path, bool isRoot)
+        public async Task<List<LineageNodeDefinition>> GetChildrenLineageNodes(string userId, string botModelName, string path, bool isRoot)
         {
 
-            var currentModel = await GetLineageModel(botModelName);
+            var currentModel = await GetLineageModel(userId, botModelName);
             if (isRoot)
             {
                 var first = new List<LineageNodeDefinition>();
@@ -592,9 +590,9 @@ namespace Darl.GraphQL.Models.Connectivity
 
         }
 
-        public async Task<LineageModel> GetLineageModel(string botModelName)
+        public async Task<LineageModel> GetLineageModel(string userId, string botModelName)
         {
-            var bm = await GetBotModel(botModelName);
+            var bm = await GetBotModel(userId, botModelName);
             LineageModel currentModel = null;
             using (var ms = new MemoryStream(bm.Model))
             {
@@ -650,11 +648,11 @@ namespace Darl.GraphQL.Models.Connectivity
             return def == null ? string.Empty : def.Value;
         }
 
-        public async Task<List<DarlVar>> GetExampleInputs(string ruleSetName)
+        public async Task<List<DarlVar>> GetExampleInputs(string userId, string ruleSetName)
         {
             if (!string.IsNullOrEmpty(ruleSetName))
             {
-                var sm = await GetRuleSet(ruleSetName);
+                var sm = await GetRuleSet(userId, ruleSetName);
                 if (sm != null)
                 {
                     var tree = runtime.CreateTreeEdit(sm.Contents.darl);
@@ -682,7 +680,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        public async Task<Models.MLModel> GetMlModel(string name)
+        public async Task<Models.MLModel> GetMlModel(string userId, string name)
         {
             var mc = db.GetCollection<MLModel>("mlmodel");
             var query = mc.AsQueryable()
@@ -690,7 +688,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<List<Models.MLModel>> GetMlModelsAsync()
+        public async Task<List<Models.MLModel>> GetMlModelsAsync(string userId)
         {
             var mc = db.GetCollection<MLModel>("mlmodel");
             var query = mc.AsQueryable()
@@ -698,7 +696,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.ToListAsync();
         }
 
-        public async Task<RuleSet> GetRuleSet(string name)
+        public async Task<RuleSet> GetRuleSet(string userId, string name)
         {
             var mc = db.GetCollection<RuleSet>("ruleset");
             var query = mc.AsQueryable()
@@ -706,7 +704,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<List<RuleSet>> GetRuleSetsAsync()
+        public async Task<List<RuleSet>> GetRuleSetsAsync(string userId)
         {
             var mc = db.GetCollection<RuleSet>("ruleset");
             var query = mc.AsQueryable()
@@ -730,13 +728,13 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.ToListAsync();
         }
 
-        public async Task<List<DarlVar>> InferFromRuleSetDarlVar(string ruleSetName, List<DarlVar> inputs)
+        public async Task<List<DarlVar>> InferFromRuleSetDarlVar(string userId, string ruleSetName, List<DarlVar> inputs)
         {
             try
             {
                 if (!string.IsNullOrEmpty(ruleSetName))
                 {
-                    var rs = await GetRuleSet(ruleSetName);
+                    var rs = await GetRuleSet(userId, ruleSetName);
                     if (rs != null)
                     {
                         var tree = runtime.CreateTreeEdit(rs.Contents.darl);
@@ -805,7 +803,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// </summary>
         /// <param name="mlmodelname"></param>
         /// <returns></returns>
-        public async Task<MLModel> MachineLearnModel(string mlmodelname)
+        public async Task<MLModel> MachineLearnModel(string userId, string mlmodelname)
         {
             var mc = db.GetCollection<MLModel>("mlmodel");
             var query = mc.AsQueryable()
@@ -830,22 +828,22 @@ namespace Darl.GraphQL.Models.Connectivity
             return await mc.FindOneAndUpdateAsync(filter, update, options);
         }
 
-        public Task<LineageNodeDefinition> PasteLineageNode(string botModelName, string parent, List<string> nodes, string mode)
+        public Task<LineageNodeDefinition> PasteLineageNode(string userId, string botModelName, string parent, List<string> nodes, string mode)
         {
             throw new NotImplementedException();
         }
 
-        public Task<LineageNodeDefinition> RenameLineageNode(string botModelName, string id, string newName)
+        public Task<LineageNodeDefinition> RenameLineageNode(string userId, string botModelName, string id, string newName)
         {
             throw new NotImplementedException();
         }
 
-        public Task<LineageNodeAttributeUpdate> UpdateAttribute(string botModelName, LineageNodeAttributeUpdate attribute)
+        public Task<LineageNodeAttributeUpdate> UpdateAttribute(string userId, string botModelName, LineageNodeAttributeUpdate attribute)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<AzureCredentials> UpdateAzureCredentials(string botModelName, string apiKey)
+        public async Task<AzureCredentials> UpdateAzureCredentials(string userId, string botModelName, string apiKey)
         {
             var collection = db.GetCollection<BotModel>("botmodel");
             var ac = new AzureCredentials { AzureAPIKey = apiKey };
@@ -855,9 +853,9 @@ namespace Darl.GraphQL.Models.Connectivity
             return ac;
         }
 
-        public async Task<BotInputFormat> UpdateBotModelInputFormat(string botModelName, string inputName, InputFormatUpdate inputUpdate)
+        public async Task<BotInputFormat> UpdateBotModelInputFormat(string userId, string botModelName, string inputName, InputFormatUpdate inputUpdate)
         {
-            BotFormat form = await GetBotFormat(botModelName);
+            BotFormat form = await GetBotFormat(userId, botModelName);
             if (form != null)
             {
                 BotInputFormat inp = form.InputFormatList.FirstOrDefault(b => b.Name == inputName);
@@ -874,7 +872,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 inp.Regex = inputUpdate.Regex ?? inp.Regex;
                 inp.ShowSets = inputUpdate.ShowSets ?? inp.ShowSets;
                 //Save format
-                await SaveBotFormat(botModelName, form);
+                await SaveBotFormat(userId, botModelName, form);
                 return inp;
             }
             return null;
@@ -885,7 +883,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// </summary>
         /// <param name="botModelName"></param>
         /// <returns></returns>
-        private async Task<BotFormat> GetBotFormat(string botModelName)
+        private async Task<BotFormat> GetBotFormat(string userId, string botModelName)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
             var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
@@ -896,7 +894,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return string.IsNullOrEmpty(formString) ? null : JsonConvert.DeserializeObject<BotFormat>(formString, new StringEnumConverter());
         }
 
-        private async Task SaveBotFormat(string botModelName, BotFormat form)
+        private async Task SaveBotFormat(string userId, string botModelName, BotFormat form)
         {
             var formString = JsonConvert.SerializeObject(form, new StringEnumConverter());
             var mc = db.GetCollection<BotModel>("botmodel");
@@ -905,9 +903,9 @@ namespace Darl.GraphQL.Models.Connectivity
             await mc.UpdateOneAsync(filter, update);
         }
 
-        public async Task<BotOutputFormat> UpdateBotModelOutputFormat(string botModelName, string outputName, BotOutputFormatUpdate outputUpdate)
+        public async Task<BotOutputFormat> UpdateBotModelOutputFormat(string userId, string botModelName, string outputName, BotOutputFormatUpdate outputUpdate)
         {
-            BotFormat form = await GetBotFormat(botModelName);
+            BotFormat form = await GetBotFormat(userId, botModelName);
             if (form != null)
             {
                 BotOutputFormat outp = form.OutputFormatList.FirstOrDefault(b => b.Name == outputName);
@@ -918,7 +916,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
                 outp.displayType = outputUpdate.displayType ?? outp.displayType;
                 outp.ValueFormat = outputUpdate.ValueFormat ?? outp.ValueFormat;
-                await SaveBotFormat(botModelName, form);
+                await SaveBotFormat(userId, botModelName, form);
                 return outp;
             }
             return null;
@@ -964,7 +962,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return model;
         }
 
-        public async Task<MLModel> UpdateMLSpec(string name, MLSpecUpdate mlspec)
+        public async Task<MLModel> UpdateMLSpec(string userId, string name, MLSpecUpdate mlspec)
         {
             var collection = db.GetCollection<MLModel>("mlmodel");
             var filter = Builders<MLModel>.Filter.Where(x => x.Name == name && x.userId == userId);
@@ -996,7 +994,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return newUser;
         }
 
-        public async Task<InputFormat> UpdateRuleFormInputFormat(string name, string inputName, InputFormatUpdate inputUpdate)
+        public async Task<InputFormat> UpdateRuleFormInputFormat(string userId, string name, string inputName, InputFormatUpdate inputUpdate)
         {
             var collection = db.GetCollection<RuleSet>("ruleset");
             var filter = Builders<RuleSet>.Filter.Where(x => x.Name == name && x.userId == userId && x.Contents.format.InputFormatList.Any(i => i.Name == inputName));
@@ -1014,7 +1012,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return new InputFormat { };
         }
 
-        public async Task<LanguageText> UpdateRuleFormLanguageText(string ruleSetName, string languageName, string languageText)
+        public async Task<LanguageText> UpdateRuleFormLanguageText(string userId, string ruleSetName, string languageName, string languageText)
         {
             var collection = db.GetCollection<RuleSet>("ruleset");
             var filter = Builders<RuleSet>.Filter.Where(x => x.Name == ruleSetName && x.userId == userId && x.Contents.language.LanguageList.Any(i => i.Name == languageName));
@@ -1023,7 +1021,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return new LanguageText { Name = languageName, Text = languageText };
         }
 
-        public async Task<OutputFormat> UpdateRuleFormOutputFormat(string ruleSetName, string outputName, OutputFormatUpdate outputUpdate)
+        public async Task<OutputFormat> UpdateRuleFormOutputFormat(string userId, string ruleSetName, string outputName, OutputFormatUpdate outputUpdate)
         {
             var collection = db.GetCollection<RuleSet>("ruleset");
             var filter = Builders<RuleSet>.Filter.Where(x => x.Name == ruleSetName && x.userId == userId && x.Contents.format.OutputFormatList.Any(i => i.Name == outputName));
@@ -1041,7 +1039,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return new OutputFormat { };
         }
 
-        public async Task<VariantText> UpdateRuleFormVariantText(string ruleSetName, string languageName, string isoLanguageName, string variantText)
+        public async Task<VariantText> UpdateRuleFormVariantText(string userId, string ruleSetName, string languageName, string isoLanguageName, string variantText)
         {
             var collection = db.GetCollection<RuleSet>("ruleset");
             var filter = Builders<RuleSet>.Filter.Where(x => x.Name == ruleSetName && x.userId == userId && x.Contents.language.LanguageList.First(i => i.Name == languageName).VariantList.Any(a => a.Language == isoLanguageName));
@@ -1050,7 +1048,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return new VariantText { Language = isoLanguageName, Text = variantText };
         }
 
-        public async Task<SellerCenterCredentials> UpdateSellerCenterCredentials(string botModelName, bool liveMode, string merchantId, string stripeApiKey)
+        public async Task<SellerCenterCredentials> UpdateSellerCenterCredentials(string userId, string botModelName, bool liveMode, string merchantId, string stripeApiKey)
         {
             var collection = db.GetCollection<BotModel>("botmodel");
             var scc = new SellerCenterCredentials { LiveMode = liveMode, MerchantId = merchantId, StripeApiKey = stripeApiKey };
@@ -1060,7 +1058,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return scc;
         }
 
-        public async Task<SendGridCredentials> UpdateSendgridCredentials(string botModelName, string sendGridAPIKey)
+        public async Task<SendGridCredentials> UpdateSendgridCredentials(string userId, string botModelName, string sendGridAPIKey)
         {
             var collection = db.GetCollection<BotModel>("botmodel");
             var sgc = new SendGridCredentials { SendGridAPIKey = sendGridAPIKey };
@@ -1070,7 +1068,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return sgc;
         }
 
-        public async Task<TwilioCredentials> UpdateTwilioCredentials(string botModelName, string sMSAccountFrom, string sMSAccountIdentification, string sMSAccountPassword)
+        public async Task<TwilioCredentials> UpdateTwilioCredentials(string userId, string botModelName, string sMSAccountFrom, string sMSAccountIdentification, string sMSAccountPassword)
         {
             var collection = db.GetCollection<BotModel>("botmodel");
             var tc = new TwilioCredentials { SMSAccountFrom = sMSAccountFrom, SMSAccountIdentification = sMSAccountIdentification, SMSAccountPassword = sMSAccountPassword };
@@ -1110,7 +1108,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return newUser;
         }
 
-        public async Task<ZendeskCredentials> UpdateZendeskCredentials(string botModelName, string zendeskApiKey, string zendeskURL, string zendeskUser)
+        public async Task<ZendeskCredentials> UpdateZendeskCredentials(string userId, string botModelName, string zendeskApiKey, string zendeskURL, string zendeskUser)
         {
             var collection = db.GetCollection<BotModel>("botmodel");
             var zc = new ZendeskCredentials { ZendeskApiKey = zendeskApiKey, ZendeskURL = zendeskURL, ZendeskUser = zendeskUser };
@@ -1196,6 +1194,16 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
             }
             return res;
+        }
+
+        public string GetCurrentUserId(object userContext)
+        {           
+            if(userContext != null)
+            {
+                if(((GraphQLUserContext)userContext).User != null)
+                    return ((GraphQLUserContext)userContext).User.Identity.Name;
+            }
+            return _opt.Value.boaiuserid;
         }
     }
 }
