@@ -53,6 +53,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
         Task<DarlUser> CreateUserAsync(DarlUserInput user);
 
+        Task<DarlUser> CreateAndProvisionNewUser(DarlUserInput user);
+
         Task<string> DeleteAuthorization(string userId, string name, string name1);
 
         Task<AzureCredentials> DeleteAzureCredentials(string userId, string botModelName);

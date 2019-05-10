@@ -7,21 +7,35 @@ using GraphQL.Server;
 using GraphQL.Server.Ui.GraphiQL;
 using GraphQL.Server.Ui.Playground;
 using GraphQL.Server.Ui.Voyager;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureADB2C.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Security.Principal;
+using static Darl.GraphQL.Models.Models.DarlUser;
 
 namespace Darl.GraphQL
 {
     public class Startup
     {
+
+        static readonly string emailClaimText = @"emails";
+        static readonly string objectIdClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
+        static readonly string firstNameClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname";
+        static readonly string secondNameClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname";
+        static readonly string preferredUsernameClaimText = @"preferred_username";
+
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
 
@@ -193,8 +207,78 @@ namespace Darl.GraphQL
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseAuthentication();
-            app.UseWebSockets();
-            app.UseGraphQLWebSockets<DarlSchema>("/graphql");
+
+            app.Use(async (context, next) =>
+            {
+                if (context.User.Identity.IsAuthenticated)
+                {
+                    var tc = new TelemetryClient();
+                    var objectId = context.User.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
+                    var firstNameClaim = context.User.Claims.Where(ai => ai.Type == firstNameClaimText).FirstOrDefault();
+                    var firstName = firstNameClaim == null ? string.Empty : firstNameClaim.Value;
+                    var secondNameClaim = context.User.Claims.Where(ai => ai.Type == secondNameClaimText).FirstOrDefault();
+                    var secondName = secondNameClaim == null ? string.Empty : secondNameClaim.Value;
+                    var roles = context.Session.GetString(objectId);
+                    if (string.IsNullOrEmpty(roles))// not seen before
+                    {
+                        var _rep = (IConnectivity)context.RequestServices.GetService(typeof(IConnectivity));
+                        var existing = await _rep.GetUserById(objectId);
+                        if (existing != null)//in the table
+                        {
+                            switch (existing.accountState)
+                            {
+                                case AccountState.admin:
+                                    roles = "admin,user";
+                                    break;
+
+                                case AccountState.trial:
+                                case AccountState.paying:
+                                case AccountState.delinquent:
+                                    roles = "user";
+                                    break;
+                                default:
+                                    roles = string.Empty;
+                                    break;
+                            }
+                        }
+                        else // register new user
+                        {
+                            roles = "user";
+                            var emailList = context.User.Claims.Where(ai => ai.Type == emailClaimText).Single().Value;
+                            if (string.IsNullOrEmpty(emailList))
+                            {
+                                tc.TrackEvent("No email in new registration");
+                                await next.Invoke();
+                                return;
+                            }
+                            var emailClaim = emailList.Split(',')[0];
+                            var provider = "aadb2c";
+
+                            var invoiceName = "";
+                            if (string.IsNullOrEmpty(firstName) && string.IsNullOrEmpty(secondName))
+                            {
+                                invoiceName = emailClaim;
+                            }
+                            else
+                            {
+                                invoiceName = $"{firstName} {secondName}";
+                            }
+                            await _rep.CreateAndProvisionNewUser(new DarlUserInput { Created = DateTime.Now, InvoiceEmail = emailClaim, Issuer = provider, userId = objectId, InvoiceName = invoiceName });
+                            context.Session.SetString("newUser", "true");
+                            context.Session.SetString(objectId, roles);
+                        }
+                        var identity = new GenericIdentity(objectId);
+                        identity.AddClaims(context.User.Claims);
+                        identity.AddClaim(new Claim(preferredUsernameClaimText, $"{firstName} {secondName}"));
+                        context.User = new GenericPrincipal(identity, string.IsNullOrEmpty(roles) ? new string[0] : roles.Split(','));
+                    }
+                    await next.Invoke();
+                }
+            });
+
+
+            //app.UseWebSockets();
+            //app.UseGraphQLWebSockets<DarlSchema>("/graphql");
             app.UseGraphQL<DarlSchema>("/graphql");
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions()
             {

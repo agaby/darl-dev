@@ -22,6 +22,7 @@
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.6.1" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.8.0" />
+    <PackageReference Include="Stripe.net" Version="25.16.1" />
     <PackageReference Include="System.Reactive" Version="4.1.5" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>

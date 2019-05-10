@@ -20,5 +20,16 @@ namespace Darl.GraphQL
         public string MongoDatabase { get; set; }
         public string GremlinHostName { get; set; }
         public string GremlinAuthKey { get; set; }
+        public string StripeAPIKey { get; set; }
+        public string StripeCorporateLicensePlan { get; set; }
+        public string StripeIndividualLicensePlan { get; set; }
+        public string StripeCorporateUsagePlan { get; set; }
+        public string StripeIndividualUsagePlan { get; set; }
+        public string StripeWebHookSecret { get; set; }
+        public bool StripeTest { get; set; }
+        public int StripeTrialPeriodDays { get; set; }
+        public string ProvisionBotModel { get; set; }
+        public string ProvisionRulesets { get; set; }
+        public string ProvisionMLModels { get; set; }
     }
 }

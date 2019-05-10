@@ -23,6 +23,7 @@ using Darl_standard.Darl.Forms;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.IO;
+using Stripe;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -92,7 +93,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return bm;
         }
 
-        public async Task<BotModel> CreateBotModel(string userId, string name, byte [] lm, ServiceConnectivity sc, List<Authorization> authorizations, List<BotConnection> botConnections)
+        public async Task<BotModel> CreateBotModel(string userId, string name, byte[] lm, ServiceConnectivity sc, List<Authorization> authorizations, List<BotConnection> botConnections)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
             var model = new BotModel { Name = name, userId = userId, Authorizations = authorizations, serviceConnectivity = sc, Model = lm, botconnections = botConnections };
@@ -111,6 +112,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
+                telemetry.TrackException(ex);
                 throw new ExecutionError("Duplicate or malformed data");
             }
         }
@@ -176,11 +178,11 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<RuleForm> CreateRuleFormFromDarl(string userId, string name, string darl)
         {
             var rs = await GetRuleSet(userId, name);
-            if(rs != null)
+            if (rs != null)
             {
                 rs.Contents.darl = darl;
                 var errors = await rs.Contents.UpdateFromCode();
-                if(errors.Count == 0)
+                if (errors.Count == 0)
                 {
                     var rc = db.GetCollection<RuleSet>("ruleset");
                     await rc.UpdateOneAsync(Builders<RuleSet>.Filter.Where(x => x.Name == name && x.userId == userId),
@@ -191,7 +193,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     int errorCount = 1;
                     var dict = new Dictionary<string, object>();
-                    foreach(var err in errors)
+                    foreach (var err in errors)
                     {
                         dict.Add($"Error{errorCount++}", err);
                     }
@@ -211,7 +213,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<StringDoublePair> CreateUpdateConstant(string userId, string botModelName, string name, double value)
         {
             BotFormat form = await GetBotFormat(userId, botModelName);
-            StringDoublePair res = new StringDoublePair { name = name, value = form.Constants[name] }; 
+            StringDoublePair res = new StringDoublePair { name = name, value = form.Constants[name] };
             if (form != null)
             {
                 if (form.Constants.ContainsKey(name))
@@ -236,7 +238,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     form.Stores.Add(name);
                 }
-                await SaveBotFormat(userId,botModelName, form);
+                await SaveBotFormat(userId, botModelName, form);
                 return name;
             }
             return null;
@@ -244,8 +246,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<StringStringPair> CreateUpdateString(string userId, string botModelName, string name, string value)
         {
-            BotFormat form = await GetBotFormat(userId,botModelName);
-            StringStringPair res = new StringStringPair (name, form.Strings[name] );
+            BotFormat form = await GetBotFormat(userId, botModelName);
+            StringStringPair res = new StringStringPair(name, form.Strings[name]);
             if (form != null)
             {
                 if (form.Strings.ContainsKey(name))
@@ -256,7 +258,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     form.Strings.Add(name, value);
                 }
-                await SaveBotFormat(userId,botModelName, form);
+                await SaveBotFormat(userId, botModelName, form);
                 return res;
             }
             return null;
@@ -273,6 +275,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
+                telemetry.TrackException(ex);
                 throw new ExecutionError("Duplicate or malformed data");
             }
         }
@@ -319,12 +322,12 @@ namespace Darl.GraphQL.Models.Connectivity
             StringDoublePair res = null;
             if (form != null)
             {
-                if(form.Constants.ContainsKey(name))
+                if (form.Constants.ContainsKey(name))
                 {
                     res = new StringDoublePair { name = name, value = form.Constants[name] };
                     form.Constants.Remove(name);
                 }
-                await SaveBotFormat(userId,botModelName, form);
+                await SaveBotFormat(userId, botModelName, form);
                 return res;
             }
             return null;
@@ -342,6 +345,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
+                telemetry.TrackException(ex);
                 throw new ExecutionError("Duplicate or malformed data");
             }
         }
@@ -403,7 +407,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<string> DeleteStore(string userId, string botModelName, string name)
         {
-            BotFormat form = await GetBotFormat(userId,botModelName);
+            BotFormat form = await GetBotFormat(userId, botModelName);
             if (form != null)
             {
                 if (form.Stores.Contains(name))
@@ -424,7 +428,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 if (form.Constants.ContainsKey(name))
                 {
-                    res = new StringStringPair( name, form.Strings[name] );
+                    res = new StringStringPair(name, form.Strings[name]);
                     form.Strings.Remove(name);
                 }
                 await SaveBotFormat(userId, botModelName, form);
@@ -454,6 +458,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
+                telemetry.TrackException(ex);
                 throw new ExecutionError("Duplicate or malformed data");
             }
         }
@@ -535,7 +540,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (isRoot)
             {
                 var first = new List<LineageNodeDefinition>();
-                
+
                 foreach (var r in currentModel.tree.root.children.Values)
                 {
                     AddLineageNodeDefinition(r, currentModel, first, r.element.lineage);
@@ -563,7 +568,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return next;
         }
 
-        private void AddLineageNodeDefinition(LineageMatchNode r, LineageModel lm, List<LineageNodeDefinition> next,  string id)
+        private void AddLineageNodeDefinition(LineageMatchNode r, LineageModel lm, List<LineageNodeDefinition> next, string id)
         {
 
             var notleaf = r.children.Any();
@@ -577,16 +582,16 @@ namespace Darl.GraphQL.Models.Connectivity
                     bf = lm.BotFragmentBuilder(code);
                 }
                 att = new LineageNodeAttributes {
-                    accessRoles =  r.annotation.accessRoles,
+                    accessRoles = r.annotation.accessRoles,
                     call = bf.CallRuleset,
                     darl = code,
                     implications = r.annotation.implications,
                     //present = att.present,
                     randomResponse = bf.RandomResponses.Any(),
                     randomResponses = bf.RandomResponses,
-                    response = bf.Response};
+                    response = bf.Response };
             }
-            next.Add(new LineageNodeDefinition { id = id, text = r.element.lineage, children = notleaf,  definition = r.element.description, attributes = att});
+            next.Add(new LineageNodeDefinition { id = id, text = r.element.lineage, children = notleaf, definition = r.element.description, attributes = att });
 
         }
 
@@ -859,7 +864,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (form != null)
             {
                 BotInputFormat inp = form.InputFormatList.FirstOrDefault(b => b.Name == inputName);
-                if(inp == null)
+                if (inp == null)
                 {
                     inp = new BotInputFormat();
                     form.InputFormatList.Add(inp);
@@ -1197,13 +1202,94 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
         public string GetCurrentUserId(object userContext)
-        {           
-            if(userContext != null)
+        {
+            if (userContext != null)
             {
-                if(((GraphQLUserContext)userContext).User != null)
+                if (((GraphQLUserContext)userContext).User != null)
                     return ((GraphQLUserContext)userContext).User.Identity.Name;
             }
             return _opt.Value.boaiuserid;
         }
+
+        public async Task<DarlUser> CreateAndProvisionNewUser(DarlUserInput user)
+        {
+            // create stripe account
+            var stripeVals = await CreateStripeCustomer(user.userId, user.InvoiceEmail, false, _opt.Value.StripeTrialPeriodDays, user.InvoiceName);
+            // provision account
+            await ProvisionUser(user.userId);
+            //create user
+            var mc = db.GetCollection<DarlUser>("user");
+            var duser = new DarlUser { Created = DateTime.Now, current_period_end = DateTime.Now + new TimeSpan(_opt.Value.StripeTrialPeriodDays, 0,0,0,0), InvoiceEmail = user.InvoiceEmail, InvoiceName = user.InvoiceName, InvoiceOrganization = user.InvoiceOrganization, Issuer = user.Issuer, PaidUsageStarted = DateTime.MaxValue, StripeCustomerId = stripeVals.Item1, UsageStripeSubscriptionItem = stripeVals.Item2, userId = user.userId };
+            await mc.InsertOneAsync(duser);
+            return duser;
+
+        }
+
+        private async Task<(string, string)> CreateStripeCustomer(string userId, string email, bool corporate, int trialPeriodDays, string name = "", string organization = "")
+        {
+            StripeConfiguration.SetApiKey(_opt.Value.StripeAPIKey);
+            try
+            {
+                var options = new CustomerCreateOptions
+                {
+                    Email = email,
+                    Description = userId,
+                    Metadata = new Dictionary<string, string> { { nameof(userId), userId }, { nameof(name), name }, { nameof(organization), organization } }
+                };
+                var service = new CustomerService();
+                Customer customer = await service.CreateAsync(options);
+                var items = corporate ?
+                    new List<SubscriptionItemOption> { new SubscriptionItemOption { PlanId = _opt.Value.StripeCorporateLicensePlan},
+                                                                new SubscriptionItemOption { PlanId = _opt.Value.StripeCorporateUsagePlan }} :
+                    new List<SubscriptionItemOption> { new SubscriptionItemOption { PlanId = _opt.Value.StripeIndividualLicensePlan},
+                                                                new SubscriptionItemOption { PlanId = _opt.Value.StripeIndividualUsagePlan }};
+                var subsoptions = new SubscriptionCreateOptions
+                {
+                    Items = items,
+                    TrialPeriodDays = trialPeriodDays,
+                    CustomerId = customer.Id,
+                    Billing = Billing.SendInvoice,
+                    DaysUntilDue = 14,
+                };
+                var subsservice = new SubscriptionService();
+                Subscription subscription = await subsservice.CreateAsync(subsoptions);
+                //extract the subscription item id for the usage so we can register usages with stripe
+                string stripeUsageSubsItemId = "";
+                foreach (var subitem in subscription.Items)
+                {
+                    if (subitem.Plan.Id == (corporate ? _opt.Value.StripeCorporateUsagePlan : _opt.Value.StripeIndividualUsagePlan))
+                    {
+                        stripeUsageSubsItemId = subitem.Id;
+                        break;
+                    }
+                }
+                return (customer.Id, stripeUsageSubsItemId);
+            }
+            catch (Exception ex)
+            {
+                telemetry.TrackException(ex);
+            }
+            return ("", "");
+        }
+
+        private async Task ProvisionUser(string userId)
+        {
+            //copy just the thousandquestions botmodel from the master account
+            
+            var bm = await GetBotModel(_opt.Value.boaiuserid, _opt.Value.ProvisionBotModel);
+            await CreateBotModel(userId, _opt.Value.ProvisionBotModel, bm.Model, bm.serviceConnectivity, bm.Authorizations, bm.botconnections);
+            // copy selected rulesets
+            foreach(var r in _opt.Value.ProvisionRulesets.Split(','))
+            {
+                var rs = await GetRuleSet(_opt.Value.boaiuserid, r);
+                await CreateRuleSet(userId, r, rs.Contents, rs.serviceConnectivity);
+            }
+            foreach (var r in _opt.Value.ProvisionMLModels.Split(','))
+            {
+                var rs = await GetMlModel(_opt.Value.boaiuserid, r);
+                await CreateMLModel(userId, r, rs.model);
+            }
+        }
+
     }
 }
