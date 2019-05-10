@@ -96,8 +96,9 @@
                 {
                     setTitle: true,
                     endpoint: window.location.protocol + "//" + window.location.host + "/graphql",
-                    subscriptionEndpoint: (window.location.protocol === "http:" ? "ws://" : "wss://") + window.location.host + "/graphql"
-        });
+                    subscriptionEndpoint: (window.location.protocol === "http:" ? "ws://" : "wss://") + window.location.host + "/graphql",
+                    settings: { 'editor.theme': 'light', 'request.credentials': 'include'  }
+                });
         })
     </script>
 </body>
