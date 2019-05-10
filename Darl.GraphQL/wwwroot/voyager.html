@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>DARL GraphQL API Portal - Voyager</title>
+    <style>
+        body {
+            height: 100%;
+            margin: 0;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        #voyager {
+            height: 100vh;
+        }
+    </style>
+
+    <!--
+      This GraphQL Voyager example depends on Promise and fetch, which are available in
+      modern browsers, but can be "polyfilled" for older browsers.
+      GraphQL Voyager itself depends on React DOM.
+    -->
+    <script src="https://cdn.jsdelivr.net/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/fetch/0.9.0/fetch.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react@16/umd/react.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@16/umd/react-dom.production.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/graphql-voyager/dist/voyager.css" />
+    <script src="https://cdn.jsdelivr.net/npm/graphql-voyager/dist/voyager.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" href="Index.html">
+                    <img src="/images/logo.png" alt="">
+                    GraphQL API Portal
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="Index.html">GraphiQL</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="playground.html">Playground</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="https://darl.ai">DARL.AI</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="https://darl.ai/#pricing">Pricing</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="https://darl.ai/help/index">Documentation</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="https://darl.ai/Home/Privacy">Privacy</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="https://darl.ai/Home/Terms">Terms of use</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-rounded btn-primary" href="">Login/Register</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div id="voyager">Loading...</div>
+    <script>
+
+        // Defines a GraphQL introspection fetcher using the fetch API. You're not required to
+        // use fetch, and could instead implement introspectionProvider however you like,
+        // as long as it returns a Promise
+        // Voyager passes introspectionQuery as an argument for this function
+        function introspectionProvider(introspectionQuery) {
+            // This example expects a GraphQL server at the path /graphql.
+            // Change this to point wherever you host your GraphQL server.
+            return fetch(window.location.protocol + "//" + window.location.host + "/graphql", {
+                method: 'post',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query: introspectionQuery }),
+                credentials: 'include',
+            }).then(function (response) {
+                return response.text();
+            }).then(function (responseBody) {
+                try {
+                    return JSON.parse(responseBody);
+                } catch (error) {
+                    return responseBody;
+                }
+            });
+        }
+
+        // Render <Voyager /> into the body.
+        GraphQLVoyager.init(document.getElementById('voyager'), {
+            introspection: introspectionProvider
+        });
+    </script>
+</body>
+</html>

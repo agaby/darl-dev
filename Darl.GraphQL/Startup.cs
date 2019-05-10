@@ -207,7 +207,7 @@ namespace Darl.GraphQL
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseAuthentication();
-
+/*
             app.Use(async (context, next) =>
             {
                 if (context.User.Identity.IsAuthenticated)
@@ -275,25 +275,10 @@ namespace Darl.GraphQL
                     await next.Invoke();
                 }
             });
-
-
-            //app.UseWebSockets();
-            //app.UseGraphQLWebSockets<DarlSchema>("/graphql");
+*/
+            app.UseWebSockets();
+            app.UseGraphQLWebSockets<DarlSchema>("/graphql");
             app.UseGraphQL<DarlSchema>("/graphql");
-            app.UseGraphQLPlayground(new GraphQLPlaygroundOptions()
-            {
-                Path = "/ui/playground"
-            });
-            app.UseGraphiQLServer(new GraphiQLOptions
-            {
-                GraphiQLPath = "/ui/graphiql",
-                GraphQLEndPoint = "/graphql"
-            });
-            app.UseGraphQLVoyager(new GraphQLVoyagerOptions()
-            { 
-                GraphQLEndPoint = "/graphql",
-                Path = "/ui/voyager"
-            });
         }
     }
 }
