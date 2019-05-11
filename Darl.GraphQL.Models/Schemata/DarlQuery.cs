@@ -161,7 +161,7 @@ namespace Darl.GraphQL.Models.Schemata
                          async c => await connectivity.GetLineagesForWord(word, isoLanguage));
                 });
 
-            FieldAsync<ListGraphType<LineageNodeAttributeType>>("getAttribute",
+            FieldAsync<LineageNodeAttributeType>("getAttribute",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "phrase" }
@@ -175,7 +175,7 @@ namespace Darl.GraphQL.Models.Schemata
                          async c => await connectivity.GetAttribute(userId, botModelName, phrase));
                 });
 
-            FieldAsync<ListGraphType<LineageNodeAttributeType>>("getAttributeFromPath",
+            FieldAsync<LineageNodeAttributeType>("getAttributeFromPath",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "path" }
@@ -217,6 +217,17 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
                                     async c => await connectivity.InferFromRuleSetDarlVar(userId, ruleSetName, inputs));
+                });
+            //   Get darl for editing
+            FieldAsync<StringGraphType>("getDarlFromRuleSet",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" }
+                ),
+                resolve: async context =>
+                {
+                    var ruleSetName = context.GetArgument<string>("ruleSetName");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.GetDarlFromRuleset(userId, ruleSetName));
                 });
             //                Lint Ruleset
             FieldAsync<ListGraphType<DarlLintErrorType>>("lintDarl",

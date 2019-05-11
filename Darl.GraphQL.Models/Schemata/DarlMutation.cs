@@ -201,16 +201,19 @@ namespace Darl.GraphQL.Models.Schemata
 
                                    //  SaveAttributes
                                    FieldAsync<LineageNodeAttributeType>("updateAttribute",
-                                       arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
-                                       new QueryArgument<NonNullGraphType<LineageNodeAttributeUpdateType>> { Name = "attribute" }
+                                       arguments: new QueryArguments(
+                                           new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                                        new QueryArgument<NonNullGraphType<LineageNodeAttributeUpdateType>> { Name = "attribute" },
+                                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "path" }
                                        ),
                                        resolve: async context =>
                                        {
                                            var botModelName = context.GetArgument<string>("botModelName");
+                                           var path = context.GetArgument<string>("path");
                                            var attribute = context.GetArgument<LineageNodeAttributeUpdate>("attribute");
                                            var userId = connectivity.GetCurrentUserId(context.UserContext);
                                            return await context.TryAsyncResolve(
-                                               async c => await connectivity.UpdateAttribute(userId, botModelName, attribute));
+                                               async c => await connectivity.UpdateAttribute(userId, botModelName, path, attribute));
                                        });
                                    //                
                                    // ServiceConnectivity
@@ -721,6 +724,20 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                                     async c => await connectivity.MachineLearnModel(userId, mlmodelname));
                 });
+            //                 Update DARL
+            FieldAsync<StringGraphType>("updateDarlInRuleset",
+                 arguments: 
+                 new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "darl" }
+                 ),
+                 resolve: async context =>
+                 {
+                     var ruleSetName = context.GetArgument<string>("ruleSetName");
+                     var darl = context.GetArgument<string>("darl");
+                     var userId = connectivity.GetCurrentUserId(context.UserContext);
+                     return await context.TryAsyncResolve(
+                                     async c => await connectivity.UpdateDarlInRuleset(userId, ruleSetName, darl));
+                 });
 
         }
     }

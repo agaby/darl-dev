@@ -144,7 +144,8 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<BotModel> CreateEmptyModel(string userId, string name)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
-            var model = new BotModel { Name = name, userId = userId };
+            var lm = new LineageModel();
+            var model = new BotModel { Name = name, userId = userId, Model = ConvertLineageModel(lm) };
             await mc.InsertOneAsync(model);
             return model;
         }
@@ -157,9 +158,12 @@ namespace Darl.GraphQL.Models.Connectivity
             return model;
         }
 
-        public Task<LineageNodeDefinition> CreateLineageNode(string userId, string botModelName, string parent, string newName)
+        public async Task<LineageNodeDefinition> CreateLineageNode(string userId, string botModelName, string parent, string newName)
         {
-            throw new NotImplementedException();
+            var currentModel = await GetLineageModel(userId, botModelName);
+            var lmn = currentModel.tree.Add(parent, newName.Trim().ToLower());
+            await SaveLineageModel(userId, botModelName, currentModel);
+            return new LineageNodeDefinition { text = lmn.element.lineage, id = lmn.element.lineage, definition = lmn.element.description, attributes = null, children = false };
         }
 
         public async Task<MLModel> CreateMLModel(string userId, string name, DarlCommon.MLModel model)
@@ -170,9 +174,15 @@ namespace Darl.GraphQL.Models.Connectivity
             return mm;
         }
 
-        public Task<LineageNodeDefinition> CreatePhrase(string userId, string botModelName, string path, object LineageNodeDefinition)
+        public async Task<LineageNodeDefinition> CreatePhrase(string userId, string botModelName, string path, LineageNodeAttributes attribute)
         {
-            throw new NotImplementedException();
+            var currentModel = await GetLineageModel(userId, botModelName);
+            var lmn = currentModel.PhraseCreate(path);
+            //Also save attribute at the same time
+            var newCode = currentModel.ReconcileCode(attribute.darl, new BotFragment { CallRuleset = attribute.call, RandomResponses = attribute.randomResponses, Response = attribute.response }, path);
+            currentModel.tree.SaveAttributes(path, newCode.Trim(), new List<string>(), attribute.accessRoles);
+            await SaveLineageModel(userId, botModelName, currentModel);
+            return new LineageNodeDefinition { text = lmn.element.lineage, id = lmn.element.lineage, definition = lmn.element.description, attributes = null, children = false };
         }
 
         public async Task<RuleForm> CreateRuleFormFromDarl(string userId, string name, string darl)
@@ -359,9 +369,12 @@ namespace Darl.GraphQL.Models.Connectivity
             return old;
         }
 
-        public Task<LineageNodeDefinition> DeleteLineageNode(string userId, string botModelName, string id)
+        public async Task<LineageNodeDefinition> DeleteLineageNode(string userId, string botModelName, string id)
         {
-            throw new NotImplementedException();
+            var lm = await GetLineageModel(userId, botModelName);
+            lm.tree.Delete(id);
+            await SaveLineageModel(userId, botModelName, lm);
+            return new LineageNodeDefinition();
         }
 
         public async Task<MLModel> DeleteMLModel(string userId, string name)
@@ -373,9 +386,12 @@ namespace Darl.GraphQL.Models.Connectivity
             return old;
         }
 
-        public Task<LineageNodeDefinition> DeletePhrase(string userId, string botModelName, string phrase)
+        public async Task<LineageNodeDefinition> DeletePhrase(string userId, string botModelName, string phrase)
         {
-            throw new NotImplementedException();
+            var lm = await GetLineageModel(userId, botModelName);
+            lm.PhraseDelete(phrase); 
+            await SaveLineageModel(userId, botModelName, lm);
+            return new LineageNodeDefinition();
         }
 
         public async Task<RuleSet> DeleteRuleSet(string userId, string name)
@@ -472,14 +488,60 @@ namespace Darl.GraphQL.Models.Connectivity
             return null;
         }
 
-        public Task<List<LineageNodeDefinition>> GetAttribute(string userId, string botModelName, string phrase)
+        public async Task<LineageNodeAttributes> GetAttribute(string userId, string botModelName, string phrase)
         {
-            throw new NotImplementedException();
+            if (!string.IsNullOrEmpty(phrase))
+            {
+                var currentModel = await GetLineageModel(userId, botModelName);
+                var results = currentModel.Match(phrase, new List<DarlVar>());
+                var att = results.Last();
+                if (att.path.Contains("default:")) //no actual match
+                {
+                    var path = currentModel.BestMatch(phrase);
+                    return new LineageNodeAttributes();
+                }
+                var code = string.Join("\n", att.annotation.darl);
+                var bf = currentModel.BotFragmentBuilder(code);
+                return new LineageNodeAttributes
+                {
+                    accessRoles = att.annotation.accessRoles,
+                    call = bf.CallRuleset,
+                    darl = code,
+                    implications = att.annotation.implications,
+                    //present = att.present,
+                    randomResponse = bf.RandomResponses.Any(),
+                    randomResponses = bf.RandomResponses,
+                    response = bf.Response
+                };
+            }
+            return new LineageNodeAttributes();
         }
 
-        public Task<List<LineageNodeDefinition>> GetAttributeFromPath(string userId, string botModelName, string path)
+        public async Task<LineageNodeAttributes> GetAttributeFromPath(string userId, string botModelName, string path)
         {
-            throw new NotImplementedException();
+            if (!string.IsNullOrEmpty(path))
+            {
+                var currentModel = await GetLineageModel(userId, botModelName);
+                var results = currentModel.tree.Navigate(path);
+                if (results.Count > 0)
+                {
+                    var att = results.Last();
+                    var code = string.Join("\n", att.annotation.darl);
+                    var bf = currentModel.BotFragmentBuilder(code);
+                    return new LineageNodeAttributes
+                    {
+                        accessRoles = att.annotation.accessRoles,
+                        call = bf.CallRuleset,
+                        darl = code,
+                        implications = att.annotation.implications,
+                        //present = att.present,
+                        randomResponse = bf.RandomResponses.Any(),
+                        randomResponses = bf.RandomResponses,
+                        response = bf.Response
+                    };
+                }
+            }
+            return new LineageNodeAttributes();
         }
 
         public async Task<List<Authorization>> GetAuthorizations(string userId, string name)
@@ -572,6 +634,12 @@ namespace Darl.GraphQL.Models.Connectivity
         {
 
             var notleaf = r.children.Any();
+            LineageNodeAttributes att = ConvertFromLineageMatchNode(r, lm);
+            next.Add(new LineageNodeDefinition { id = id, text = r.element.lineage, children = notleaf, definition = r.element.description, attributes = att });
+        }
+
+        private LineageNodeAttributes ConvertFromLineageMatchNode(LineageMatchNode r, LineageModel lm)
+        {
             LineageNodeAttributes att = null;
             if (r.annotation != null)
             {
@@ -581,7 +649,8 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     bf = lm.BotFragmentBuilder(code);
                 }
-                att = new LineageNodeAttributes {
+                att = new LineageNodeAttributes
+                {
                     accessRoles = r.annotation.accessRoles,
                     call = bf.CallRuleset,
                     darl = code,
@@ -589,10 +658,10 @@ namespace Darl.GraphQL.Models.Connectivity
                     //present = att.present,
                     randomResponse = bf.RandomResponses.Any(),
                     randomResponses = bf.RandomResponses,
-                    response = bf.Response };
+                    response = bf.Response
+                };
             }
-            next.Add(new LineageNodeDefinition { id = id, text = r.element.lineage, children = notleaf, definition = r.element.description, attributes = att });
-
+            return att;
         }
 
         public async Task<LineageModel> GetLineageModel(string userId, string botModelName)
@@ -606,6 +675,8 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return currentModel;
         }
+
+
 
         public async Task<Contact> GetContactByEmail(string email)
         {
@@ -833,19 +904,29 @@ namespace Darl.GraphQL.Models.Connectivity
             return await mc.FindOneAndUpdateAsync(filter, update, options);
         }
 
-        public Task<LineageNodeDefinition> PasteLineageNode(string userId, string botModelName, string parent, List<string> nodes, string mode)
+        public async Task<LineageNodeDefinition> PasteLineageNode(string userId, string botModelName, string parent, List<string> nodes, string mode)
         {
-            throw new NotImplementedException();
+            var lm = await GetLineageModel(userId, botModelName);
+            lm.tree.Paste(parent, nodes, mode);
+            await SaveLineageModel(userId, botModelName, lm);
+            return new LineageNodeDefinition();
         }
 
-        public Task<LineageNodeDefinition> RenameLineageNode(string userId, string botModelName, string id, string newName)
+        public async Task<LineageNodeDefinition> RenameLineageNode(string userId, string botModelName, string id, string newName)
         {
-            throw new NotImplementedException();
+            var lm = await GetLineageModel(userId, botModelName);
+            lm.tree.Rename(id, newName.Trim().ToLower());
+            await SaveLineageModel(userId, botModelName, lm);
+            return new LineageNodeDefinition();
         }
 
-        public Task<LineageNodeAttributeUpdate> UpdateAttribute(string userId, string botModelName, LineageNodeAttributeUpdate attribute)
+        public async Task<LineageNodeAttributeUpdate> UpdateAttribute(string userId, string botModelName, string path, LineageNodeAttributeUpdate attribute)
         {
-            throw new NotImplementedException();
+            var lm = await GetLineageModel(userId, botModelName);
+            var newCode = lm.ReconcileCode(attribute.darl, new BotFragment { CallRuleset = attribute.call, RandomResponses = attribute.randomResponses, Response = attribute.response }, path);
+            lm.tree.SaveAttributes(path, newCode.Trim(), new List<string>(), attribute.accessRoles );
+            await SaveLineageModel(userId, botModelName, lm); 
+            return attribute;
         }
 
         public async Task<AzureCredentials> UpdateAzureCredentials(string userId, string botModelName, string apiKey)
@@ -890,23 +971,59 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         private async Task<BotFormat> GetBotFormat(string userId, string botModelName)
         {
-            var mc = db.GetCollection<BotModel>("botmodel");
-            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var projection = Builders<BotModel>.Projection.Include("Model.form").Exclude("_id");
-            var options = new FindOptions<BotModel, string> { Projection = projection };
-            var res = await mc.FindAsync(filter, options);
-            var formString = await res.FirstOrDefaultAsync();
-            return string.IsNullOrEmpty(formString) ? null : JsonConvert.DeserializeObject<BotFormat>(formString, new StringEnumConverter());
+            var lm = await GetLineageModel(userId, botModelName);
+            return string.IsNullOrEmpty(lm.form) ? null : JsonConvert.DeserializeObject<BotFormat>(lm.form, new StringEnumConverter());
         }
 
+        /// <summary>
+        /// Save a botformat to the lineage model and thence to the database
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="botModelName"></param>
+        /// <param name="form"></param>
+        /// <returns></returns>
         private async Task SaveBotFormat(string userId, string botModelName, BotFormat form)
         {
+            var lm = await GetLineageModel(userId, botModelName);
             var formString = JsonConvert.SerializeObject(form, new StringEnumConverter());
+            lm.form = formString;
+            await SaveLineageModel(userId, botModelName, lm);
+        }
+
+        /// <summary>
+        /// Save a lineage model to the database
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="botModelName"></param>
+        /// <param name="lm"></param>
+        /// <returns></returns>
+        private async Task SaveLineageModel(string userId, string botModelName, LineageModel lm)
+        {
+            var binaryLM = ConvertLineageModel(lm);
             var mc = db.GetCollection<BotModel>("botmodel");
             var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var update = Builders<BotModel>.Update.Set("Model.form", formString);
+            var update = Builders<BotModel>.Update.Set("Model", binaryLM);
             await mc.UpdateOneAsync(filter, update);
         }
+
+        /// <summary>
+        /// Get the byte represetation of a lineagemodel
+        /// </summary>
+        /// <param name="lm"></param>
+        /// <returns></returns>
+        private byte[] ConvertLineageModel(LineageModel lm)
+        {
+            byte[] result;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                lm.Store(ms);
+                ms.Position = 0;
+                result = ms.ToArray();
+            }
+            return result;
+        }
+
+
 
         public async Task<BotOutputFormat> UpdateBotModelOutputFormat(string userId, string botModelName, string outputName, BotOutputFormatUpdate outputUpdate)
         {
@@ -1206,7 +1323,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (userContext != null)
             {
                 if (((GraphQLUserContext)userContext).User != null)
-                    return ((GraphQLUserContext)userContext).User.Identity.Name;
+                    return ((GraphQLUserContext)userContext).User.Identity.Name ?? _opt.Value.boaiuserid;
             }
             return _opt.Value.boaiuserid;
         }
@@ -1219,7 +1336,7 @@ namespace Darl.GraphQL.Models.Connectivity
             await ProvisionUser(user.userId);
             //create user
             var mc = db.GetCollection<DarlUser>("user");
-            var duser = new DarlUser { Created = DateTime.Now, current_period_end = DateTime.Now + new TimeSpan(_opt.Value.StripeTrialPeriodDays, 0,0,0,0), InvoiceEmail = user.InvoiceEmail, InvoiceName = user.InvoiceName, InvoiceOrganization = user.InvoiceOrganization, Issuer = user.Issuer, PaidUsageStarted = DateTime.MaxValue, StripeCustomerId = stripeVals.Item1, UsageStripeSubscriptionItem = stripeVals.Item2, userId = user.userId };
+            var duser = new DarlUser { Created = DateTime.Now, current_period_end = DateTime.Now + new TimeSpan(_opt.Value.StripeTrialPeriodDays, 0, 0, 0, 0), InvoiceEmail = user.InvoiceEmail, InvoiceName = user.InvoiceName, InvoiceOrganization = user.InvoiceOrganization, Issuer = user.Issuer, PaidUsageStarted = DateTime.MaxValue, StripeCustomerId = stripeVals.Item1, UsageStripeSubscriptionItem = stripeVals.Item2, userId = user.userId };
             await mc.InsertOneAsync(duser);
             return duser;
 
@@ -1275,11 +1392,11 @@ namespace Darl.GraphQL.Models.Connectivity
         private async Task ProvisionUser(string userId)
         {
             //copy just the thousandquestions botmodel from the master account
-            
+
             var bm = await GetBotModel(_opt.Value.boaiuserid, _opt.Value.ProvisionBotModel);
             await CreateBotModel(userId, _opt.Value.ProvisionBotModel, bm.Model, bm.serviceConnectivity, bm.Authorizations, bm.botconnections);
             // copy selected rulesets
-            foreach(var r in _opt.Value.ProvisionRulesets.Split(','))
+            foreach (var r in _opt.Value.ProvisionRulesets.Split(','))
             {
                 var rs = await GetRuleSet(_opt.Value.boaiuserid, r);
                 await CreateRuleSet(userId, r, rs.Contents, rs.serviceConnectivity);
@@ -1291,5 +1408,26 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
+        public async Task<string> GetDarlFromRuleset(string userId, string rulesetName)
+        {
+            if (!string.IsNullOrEmpty(rulesetName))
+            {
+                var rs = await GetRuleSet(userId, rulesetName);
+                return rs.Contents.darl;
+            }
+            return string.Empty;
+        }
+
+        public async Task<string> UpdateDarlInRuleset(string userId, string ruleSetName, string darl)
+        {
+            if (!string.IsNullOrEmpty(ruleSetName))
+            {
+                var collection = db.GetCollection<RuleSet>("ruleset");
+                var filter = Builders<RuleSet>.Filter.Where(x => x.Name == ruleSetName && x.userId == userId );
+                var update = Builders<RuleSet>.Update.Set(x => x.Contents.darl, darl);
+                await collection.FindOneAndUpdateAsync(filter, update);
+            }
+            return darl;
+        }
     }
 }

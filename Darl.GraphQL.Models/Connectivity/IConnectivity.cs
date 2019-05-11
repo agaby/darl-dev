@@ -39,7 +39,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         Task<Models.MLModel> CreateMLModel(string userId, string name, DarlCommon.MLModel model);
 
-        Task<LineageNodeDefinition> CreatePhrase(string userId, string botModelName, string path, object LineageNodeDefinition);
+        Task<LineageNodeDefinition> CreatePhrase(string userId, string botModelName, string path, LineageNodeAttributes attribute);
 
         Task<RuleForm> CreateRuleFormFromDarl(string userId, string name, string darl);
 
@@ -91,9 +91,9 @@ namespace Darl.GraphQL.Models.Connectivity
 
         Task<ZendeskCredentials> DeleteZendeskCredentials(string userId, string botModelName);
 
-        Task<List<LineageNodeDefinition>> GetAttribute(string userId, string botModelName, string phrase);
+        Task<LineageNodeAttributes> GetAttribute(string userId, string botModelName, string phrase);
 
-        Task<List<LineageNodeDefinition>> GetAttributeFromPath(string userId, string botModelName, string path);
+        Task<LineageNodeAttributes> GetAttributeFromPath(string userId, string botModelName, string path);
 
         Task<List<Authorization>> GetAuthorizations(string userId, string name);
 
@@ -112,6 +112,8 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<Contact>> GetContacts();
 
         Task<List<Contact>> GetContactsByLastName(string lastName);
+
+        Task<string> GetDarlFromRuleset(string userId, string rulesetName);
 
         Task<List<Default>> GetDefaults();
 
@@ -143,7 +145,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         Task<LineageNodeDefinition> RenameLineageNode(string userId, string botModelName, string id, string newName);
 
-        Task<LineageNodeAttributeUpdate> UpdateAttribute(string userId, string botModelName, LineageNodeAttributeUpdate attribute);
+        Task<LineageNodeAttributeUpdate> UpdateAttribute(string userId, string botModelName, string path, LineageNodeAttributeUpdate attribute);
 
         Task<AzureCredentials> UpdateAzureCredentials(string userId, string botModelName, string apiKey);
 
@@ -168,5 +170,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<DarlUser> UpdateUserAsync(string userId, DarlUserUpdate darlUserUpdate);
 
         Task<ZendeskCredentials> UpdateZendeskCredentials(string userId, string botModelName, string zendeskApiKey, string zendeskURL, string zendeskUser);
+        Task<string> UpdateDarlInRuleset(string userId, string ruleSetName, string darl);
     }
 }

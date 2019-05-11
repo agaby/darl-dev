@@ -170,6 +170,7 @@ namespace Darl.GraphQL
             services.AddTransient<QuestionSetInputType>();
             services.AddTransient<QuestionInputType>();
             services.AddTransient<DarlLintErrorType>();
+            services.AddTransient<StringDarlVarPairType>();
 
 
             //root

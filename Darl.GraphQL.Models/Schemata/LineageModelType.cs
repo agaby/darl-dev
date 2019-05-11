@@ -1,7 +1,9 @@
-﻿using Darl.Lineage;
+﻿using Darl.GraphQL.Models.Models;
+using Darl.Lineage;
 using DarlCommon;
 using GraphQL.Types;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Darl.GraphQL.Models.Schemata
 {
@@ -15,7 +17,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.ruleSkeleton);
             Field(c => c.texts,true);
             Field<LineageMatchTreeType>("tree", resolve: context => context.Source.tree);
-            Field<StringStringPairType>("modelSettings", resolve: c => BotFormatType.GetSSPairsFromDictionary(c.Source.modelSettings));
+            Field<ListGraphType<StringDarlVarPairType>>("modelSettings", resolve: c => GetSDPairsFromDictionary(c.Source.modelSettings));
         }
 
         private BotFormat GetConvertedBotFormat(string source)
@@ -30,6 +32,16 @@ namespace Darl.GraphQL.Models.Schemata
             {
                 return null;
             }
+        }
+
+        public static List<StringDarlVarPair> GetSDPairsFromDictionary(Dictionary<string, string> dict)
+        {
+            var list = new List<StringDarlVarPair>();
+            foreach (var k in dict.Keys)
+            {
+                list.Add(new StringDarlVarPair { Name = k, Value=JsonConvert.DeserializeObject<DarlVar>(dict[k])});
+            }
+            return list;
         }
     }
 }
