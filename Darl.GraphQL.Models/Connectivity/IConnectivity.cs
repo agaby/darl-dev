@@ -1,6 +1,7 @@
 ﻿//using Darl.Connectivity.Models;
 using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
+using Darl.Lineage.Bot;
 using DarlCommon;
 using System;
 using System.Collections.Generic;
@@ -171,5 +172,6 @@ namespace Darl.GraphQL.Models.Connectivity
 
         Task<ZendeskCredentials> UpdateZendeskCredentials(string userId, string botModelName, string zendeskApiKey, string zendeskURL, string zendeskUser);
         Task<string> UpdateDarlInRuleset(string userId, string ruleSetName, string darl);
+        Task<InteractTestResponse> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData);
     }
 }

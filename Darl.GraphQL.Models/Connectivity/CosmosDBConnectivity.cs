@@ -1429,5 +1429,11 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return darl;
         }
+
+        public async Task<InteractTestResponse> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData)
+        {
+            var bm = await GetLineageModel(userId, botModelName);
+            return await _form.Interact(bm, userId,  conversationId, conversationData);
+        }
     }
 }

@@ -279,6 +279,20 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                                     async c => await connectivity.BacktrackQuestionnaire(ieToken));
                 });
+            FieldAsync<InteractResponseType>("interact",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName", Description = "The bot model to run" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "conversationId", Description = "The unique conversation identifier" },
+                    new QueryArgument<NonNullGraphType<DarlVarType>> { Name = "conversationData", Description = "The input from the other conversers." }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var conversationId = context.GetArgument<string>("conversationId");
+                    var conversationData = context.GetArgument<DarlVar>("conversationData");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await connectivity.InteractAsync(userId, botModelName, conversationId, conversationData)); });
         }
+    
     }
 }

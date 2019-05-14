@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Darl.GraphQL.Models.Models;
+using Darl.Lineage;
+using Darl.Lineage.Bot;
 using DarlCommon;
 
 namespace Darl.GraphQL.Models.Connectivity
@@ -10,5 +12,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<QuestionSetProxy> Get(RuleSet ruleSet, string language = "en", int questCount = 1);
         Task<QuestionSetProxy> Post(QuestionSetProxy questionsetproxy);
         Task<bool> Trigger(string id);
+        Task<InteractTestResponse> Interact(LineageModel bm, string userId, string conversationId, DarlVar conversationData);
     }
 }

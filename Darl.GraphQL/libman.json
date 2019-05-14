@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "codemirror@5.46.0",
+      "destination": "wwwroot/codemirror/"
+    },
+    {
+      "library": "jquery@3.4.1",
+      "destination": "wwwroot/jquery"
+    }
+
+  ]
+}
