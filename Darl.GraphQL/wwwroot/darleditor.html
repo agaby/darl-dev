@@ -2,9 +2,147 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title></title>
+    <title>Darl Editor</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/codemirror/theme/neat.css" />
+    <link rel="stylesheet" href="/codemirror/codemirror.css" />
+    <link rel="stylesheet" href="/codemirror/addon/display/fullscreen.css" />
+    <link rel="stylesheet" href="/codemirror/addon/hint/show-hint.min.css" />
+    <link rel="stylesheet" href="/codemirror/addon/lint/lint.css" />
+    <link rel="stylesheet" href="/codemirror/addon/fold/foldgutter.css" />
 </head>
 <body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" href="Index.html">
+                    <img src="/images/logo.png" alt="">
+                    GraphQL API Portal
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="voyager.html">Voyager</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="playground.html">Playground</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="https://darl.ai">DARL.AI</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="https://darl.ai/#pricing">Pricing</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="https://darl.ai/help/index">Documentation</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="https://darl.ai/Home/Privacy">Privacy</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="https://darl.ai/Home/Terms">Terms of use</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-rounded btn-primary" href="">Login/Register</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="space-70"></div>
+    <div class="container margin-b-40">
+        <div class="row">
+            <div class="col-md-12 margin-b-40">
+                <textarea id="Darl" name="Darl" rows="100" cols="160" class="form-control"></textarea>
+                <hr />
+                <button id="Save" class="btn btn-primary" onclick="download('test.txt', 'Hello world!');">Save</button>
+            </div>
+        </div>
+    </div>
 
+    <script src="jquery/jquery.min.js"></script>
+    <script src="/codemirror/codemirror.js"></script>
+    <script src="/codemirror/mode/javascript/javascript.js"></script>
+    <script src="/codemirror/addon/display/fullscreen.js"></script>
+    <script src="/codemirror/addon/hint/show-hint.js"></script>
+    <script src="/codemirror/addon/fold/foldcode.min.js"></script>
+    <script src="/codemirror/addon/fold/foldgutter.min.js"></script>
+    <script src="/codemirror/addon/fold/brace-fold.min.js"></script>
+    <script src="/codemirror/addon/lint/lint.js"></script>
+    <script src="/codemirror/addon/lint/json-lint.min.js"></script>
+    <script src="/darl-codemirror/darl-codemirror.js"></script>
+
+    <script>
+        var darlCodeMirror;
+        var timeout;
+        $(function () {
+            darlCodeMirror = CodeMirror.fromTextArea(document.getElementById("Darl"), {
+                matchBrackets: true,
+                autoCloseBrackets: true,
+                lineNumbers: true,
+                theme: 'neat',
+                mode: "text/x-darl",
+                gutters: ["CodeMirror-lint-markers"],
+                extraKeys: {
+                    "Ctrl-Space": "autocomplete",
+                    "F11": function (cm) {
+                        cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+                        $('.navbar').hide();
+                    },
+                    "Esc": function (cm) {
+                        if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+                        $('.navbar').show();
+                    }
+                },
+                lint: {
+                    "getAnnotations": CodeMirror.remoteValidator,
+                    "async": true,
+                    "check_cb": check_syntax
+                }
+
+            });
+            darlCodeMirror.setValue(convertescapes('ruleset myfirstruleset \n{ \n}'));
+
+            darlCodeMirror.on("inputRead", function (cm) {
+                if (timeout) clearTimeout(timeout);
+                timeout = setTimeout(function () {
+                    CodeMirror.showHint(cm, CodeMirror.hint.darl, { completeSingle: false });
+                }, 150);
+            });
+
+            darlCodeMirror.on("keyup", function (cm, event) {
+                var keyCode = event.keyCode || event.which;
+                if (keyCode == 8 || keyCode == 46) {
+                    if (timeout) clearTimeout(timeout);
+                    timeout = setTimeout(function () {
+                        CodeMirror.showHint(cm, CodeMirror.hint.darl, { completeSingle: false });
+                    }, 150);
+                }
+            });
+
+        });
+
+        function check_syntax(code, result_cb) {
+            var baseUri = "https://darl.ai/api/Linter/DarlLint";
+            var jqxr = $.post(baseUri, { 'source': code }, function (data, status, xhr) {
+                result_cb(data);
+            });
+
+        }
+        function convertescapes(text) {
+            text = text.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&#x221E;/g, '∞').replace(/&#xD;/g, '\r').replace(/&#xA;/g, '\n').replace(/&#x9;/g, '\t').replace(/&#x2B;/g, '+').replace(/&#x27;/g, '\'');
+            return unescape(text);
+        }
+
+        function download(filename, text) {
+            var blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+            FileSaver.saveAs(blob, "filename");
+        }
+    </script>
 </body>
 </html>
