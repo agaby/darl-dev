@@ -72,7 +72,9 @@ namespace Darl.GraphQL.Test
         [TestMethod]
         public async Task TestRunModel()
         {
-
+            var req = new GraphQLRequest() { OperationName = "", Variables = null, Query = "mutation{machineLearnModel(mlmodelname: \"yingyang.mlmodel\"){ mlmodel { darl } results { trainPerformance }}}" };
+            var resp = await client.PostAsync(req);
+            Assert.IsTrue(resp.Errors == null || resp.Errors.Length == 0);
         }
 
 
