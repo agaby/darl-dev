@@ -1,0 +1,8 @@
+site_name: 'Darl.dev documentation'
+site_description: 'Automate bots, questionnaires and more with DARL'
+copyright: '(c) Dr Andy`s IP 2019, all rights reserved. DARL(r) is a registered trademark'
+google_analytics: ['UA-117408682-1','darl.ai']
+docs_dir: 'md'
+site_dir: 'wwwroot/docs'
+nav:
+    - home: index.md

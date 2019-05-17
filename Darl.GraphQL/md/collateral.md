@@ -1,0 +1,21 @@
+﻿---
+title: Collateral page
+description: Adding collateral to bots.
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+Collateral page
+======
+Bot channels typically use markdown for display purposes. So a store of pre-made markdown text is useful.
+These files can be displayed through a bot by using the "Collateral" [store](./stores).
+```darl
+if anything then response will be Colateral["index.md"];
+```
+
+
+This page enables you to view, upload, download and delete your markdown collateral.
+
+![Collateral image](/images/collateral.png)
