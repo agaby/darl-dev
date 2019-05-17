@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Handling Defaults - Darl.dev</title>
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+
+                <!-- Collapsed navigation -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="..">Darl.dev</a>
+                </div>
+
+                <!-- Expanded navigation -->
+                <div class="navbar-collapse collapse">
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#handling-defaults">Handling Defaults</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="handling-defaults">Handling Defaults</h1>
+<p>In DARL, inputs and outputs are in an "unknown" state until something sets them to another state. In that other state they can have various amounts of uncertainty, but they are considered "known".</p>
+<p>The Questionnaire engine takes advantage of this by seeking to make all the outputs known during a questionnaire run. As you add new knowledge by answering questions the engine continually tracks back from those outputs that are still undefined to see what inputs must be made known  in order to satisfy all the outputs.
+A corollary of this is that for an output that is categorical or numeric, there normally needs to be at least one rule per category, and possibly per set.</p>
+<p>It makes life considerably easier sometimes if you can have a default state that a given output goes into when no other rules fire. </p>
+<p>However, a default state means that whatever the inputs, an output with a default state will be known, so the questionnaire engine won't bother to ask any questions to determine that state.
+So this is fine for a straight through inference usage, but problematic for questionnaires.</p>
+<p>DARL has the <em>otherwise</em> operator to handle this set of circumstances.</p>
+<p>A rule starting with <em>otherwise if</em> rather than <em>if</em> is gramatically identical in all other respects to any other rule, but this rule is held in reserve to fire if no other rules fire for the controlling output.</p>
+<p>The inference engine permits only one <em>otherwise if</em> rule per output.</p>
+<p>So if we consider this simple rule set:</p>
+<pre><code class="darl">ruleset simple
+{
+    input categorical a {true,false};
+    input categorical b {true, false};
+
+    output categorical c {true, false};
+
+    if a is true and b is true then c will be true;
+    otherwise if anything then c will be false;
+}
+</code></pre>
+
+<p>This will work well with the inference engine, but with the questionnaire engine the value of <strong>c</strong> will always be false and the questionnaire engine won't ask any questions.</p>
+<p>If you wanted to set up the questionnaire engine to run the same simple rule set you should use the following DARL:</p>
+<pre><code class="darl">ruleset simple_questionnaire_
+{
+    input categorical a {true,false};
+    input categorical b {true, false};
+
+    output categorical c {true, false};
+
+    if a is true and b is true then c will be true;
+    otherwise if a is present and b is present then c will be false;
+}
+</code></pre>
+
+<p>If you use this rule set in the questionnaire engine it will prompt for <strong>a</strong> and <strong>b</strong>.
+This is because the <em>otherwise if</em> rule is only satified if <strong>a</strong> and <strong>b</strong> are present, i.e. <em>known</em>.</p>
+<p>You can have any number of rules associated with an output, but you only ever need on <em>otherwise if</em> rule.
+It is up to you to determine which inputs or outputs must be known before the <em>otherwise if</em> rule triggers. </p>
+<p>See <a href="./Excluded_middle">Excluded middle</a> for background.</p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

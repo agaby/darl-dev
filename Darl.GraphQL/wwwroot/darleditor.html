@@ -17,7 +17,7 @@
             <div class="container">
                 <a class="navbar-brand" href="Index.html">
                     <img src="/images/logo.png" alt="">
-                    GraphQL API Portal
+                    GraphQL API
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -25,6 +25,9 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="Index.html">GraphiQL</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" href="voyager.html">Voyager</a>
                         </li>
@@ -38,13 +41,7 @@
                             <a class="nav-link text-dark" href="https://darl.ai/#pricing">Pricing</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="https://darl.ai/help/index">Documentation</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="https://darl.ai/Home/Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="https://darl.ai/Home/Terms">Terms of use</a>
+                            <a class="nav-link text-dark" href="/docs/">Docs</a>
                         </li>
                         <li class="nav-item">
                             <a class="btn btn-rounded btn-primary" href="">Login/Register</a>
@@ -58,12 +55,20 @@
     <div class="container margin-b-40">
         <div class="row">
             <div class="col-md-12 margin-b-40">
+                <h1>Ruleset editing</h1>
+                <p>Select a ruleset from your account to edit. The editor supports syntax checking and autocomplete.</p>
+                <label>Rulesets </label>
+                <select id="ruleset-dropdown" name="rulesets" class="dropdown"></select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 margin-b-40">
                 <textarea id="Darl" name="Darl" rows="100" cols="160" class="form-control"></textarea>
                 <hr />
                 <button id="Save" class="btn btn-primary" onclick="download('test.txt', 'Hello world!');">Save</button>
             </div>
         </div>
-    </div>
+        </div>
 
     <script src="jquery/jquery.min.js"></script>
     <script src="/codemirror/codemirror.js"></script>
@@ -76,11 +81,12 @@
     <script src="/codemirror/addon/lint/lint.js"></script>
     <script src="/codemirror/addon/lint/json-lint.min.js"></script>
     <script src="/darl-codemirror/darl-codemirror.js"></script>
+    <script src="/graphql/graphql.min.js"></script>
 
     <script>
         var darlCodeMirror;
         var timeout;
-        $(function () {
+        $(async function () {
             darlCodeMirror = CodeMirror.fromTextArea(document.getElementById("Darl"), {
                 matchBrackets: true,
                 autoCloseBrackets: true,
@@ -107,6 +113,7 @@
 
             });
             darlCodeMirror.setValue(convertescapes('ruleset myfirstruleset \n{ \n}'));
+            darlCodeMirror.setSize(1200, 800);
 
             darlCodeMirror.on("inputRead", function (cm) {
                 if (timeout) clearTimeout(timeout);
@@ -124,6 +131,32 @@
                     }, 150);
                 }
             });
+
+            var dropdown = $('#ruleset-dropdown');
+            var rsname;
+            dropdown.empty();
+            dropdown.append('<option selected="true" disabled>Choose a ruleset to edit</option>');
+            dropdown.prop('selectedIndex', 0);
+
+            var graph = graphql("https://darl.dev/graphql");
+            var allrulesets = graph(`{ rulesets { name }}`);
+            var darlContent = graph(`query getdarl($name: String!){  getDarlFromRuleSet(ruleSetName: $name)}`);
+            var savecontent = graph('mutation setdarl($name: String!, $darl: String!){updateDarlInRuleset(ruleSetName: $name, darl: $darl)}');
+            const rs = await allrulesets();
+            $.each(rs.rulesets, function (key, entry) {
+                dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
+            });
+
+            $('#ruleset-dropdown').on('change', async function () {
+                rsname = this.value;
+                var content = await darlContent({ name: rsname });
+                darlCodeMirror.setValue(convertescapes(content.getDarlFromRuleSet));
+            });
+            $('#Save').click(async function () {
+                var content = $("#Darl").val();
+                await savecontent({ name: rsname, darl: content });
+            });
+
 
         });
 

@@ -283,7 +283,7 @@ namespace Darl.GraphQL.Models.Schemata
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName", Description = "The bot model to run" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "conversationId", Description = "The unique conversation identifier" },
-                    new QueryArgument<NonNullGraphType<DarlVarType>> { Name = "conversationData", Description = "The input from the other conversers." }
+                    new QueryArgument<NonNullGraphType<DarlVarInputType>> { Name = "conversationData", Description = "The input from the other conversers." }
                 ),
                 resolve: async context =>
                 {
