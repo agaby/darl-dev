@@ -78,5 +78,20 @@ namespace Darl.GraphQL.Test
             Assert.IsNull(user);
 
         }
+
+        [TestMethod]
+        public async Task TestAddAPIKey()
+        {
+            var req = new GraphQLRequest() { Query = @"{ users {invoiceEmail userId } }" };
+            var resp = await client.PostAsync(req);
+            var users = resp.GetDataFieldAs<List<DarlUser>>("users");
+            foreach(var u in users)
+            {
+                var apiKey = Guid.NewGuid().ToString();
+                req = new GraphQLRequest() { OperationName = "updateUser", Variables = new { userId = u.userId, user = new DarlUserUpdate { APIKey = apiKey } }, Query = @"mutation updateUser($userId: String!, $user: DarlUserUpdate!){updateUser(userId: $userId, user: $user){ aPIKey  }}" };
+                resp = await client.PostAsync(req);
+            }
+
+        }
     }
 }

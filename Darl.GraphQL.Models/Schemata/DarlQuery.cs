@@ -52,6 +52,14 @@ namespace Darl.GraphQL.Models.Schemata
                                   async c => await connectivity.GetContacts());
                   }
             );
+            FieldAsync<ListGraphType<DarlUserType>>(
+              "users",
+                  resolve: async context =>
+                  {
+                      return await context.TryAsyncResolve(
+                                  async c => await connectivity.GetUsers());
+                  }
+            );
 
             FieldAsync<ListGraphType<ContactType>>("contactsByLastName",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lastName" }),

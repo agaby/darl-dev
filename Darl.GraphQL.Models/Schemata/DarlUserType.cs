@@ -13,7 +13,7 @@ namespace Darl.GraphQL.Models.Schemata
         public DarlUserType()
         {
             Name = "darlUser";
-            this.AuthorizeWith("AdminPolicy");
+//           this.AuthorizeWith("AdminPolicy");
 
             Field<AccountStateEnum>("accountState", resolve: c => c.Source.accountState);
             Field(c => c.Created);

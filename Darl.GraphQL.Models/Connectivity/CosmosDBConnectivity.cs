@@ -1225,8 +1225,10 @@ namespace Darl.GraphQL.Models.Connectivity
                 updList.Add(Builders<DarlUser>.Update.Set(x => x.StripeCustomerId, user.StripeCustomerId));
             if (user.UsageStripeSubscriptionItem != null)
                 updList.Add(Builders<DarlUser>.Update.Set(x => x.UsageStripeSubscriptionItem, user.UsageStripeSubscriptionItem));
+            if (user.APIKey != null)
+                updList.Add(Builders<DarlUser>.Update.Set(x => x.APIKey, user.APIKey));
             var update = Builders<DarlUser>.Update.Combine(updList);
-            var newUser = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<DarlUser, DarlUser> { IsUpsert = false });
+            var newUser = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<DarlUser, DarlUser> { IsUpsert = false, ReturnDocument= ReturnDocument.After });
             return newUser;
         }
 
@@ -1434,6 +1436,13 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var bm = await GetLineageModel(userId, botModelName);
             return await _form.Interact(bm, userId,  conversationId, conversationData);
+        }
+
+        public async Task<List<DarlUser>> GetUsers()
+        {
+            var mc = db.GetCollection<DarlUser>("user");
+            var query = mc.AsQueryable();
+            return await query.ToListAsync();
         }
     }
 }
