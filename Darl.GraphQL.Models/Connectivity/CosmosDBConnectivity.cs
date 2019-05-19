@@ -1470,11 +1470,16 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.ToListAsync();
         }
 
+        /// <summary>
+        /// Get the user if the API key matches and the account is valid.
+        /// </summary>
+        /// <param name="apiKey">The api key</param>
+        /// <returns>the user</returns>
         public async Task<DarlUser> GetUserByApiKey(string apiKey)
         {
             var mc = db.GetCollection<DarlUser>("user");
             var query = mc.AsQueryable()
-            .Where(p => p.APIKey == apiKey);
+            .Where(p => p.APIKey == apiKey  && p.accountState != DarlUser.AccountState.suspended && p.accountState != DarlUser.AccountState.closed);
             return await query.FirstOrDefaultAsync();
         }
     }
