@@ -1410,6 +1410,31 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
+        public async Task<bool> FactoryReset(string userId)
+        {
+            try
+            { 
+                foreach(var bm in await GetBotModelsAsync(userId))
+                {
+                    await DeleteBotModel(userId, bm.Name);
+                }
+                foreach (var rs in await GetRuleSetsAsync(userId))
+                {
+                    await DeleteRuleSet(userId, rs.Name);
+                }
+                foreach (var ml in await GetMlModelsAsync(userId))
+                {
+                    await DeleteMLModel(userId, ml.Name);
+                }
+                await ProvisionUser(userId);
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+
         public async Task<string> GetDarlFromRuleset(string userId, string rulesetName)
         {
             if (!string.IsNullOrEmpty(rulesetName))

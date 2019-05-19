@@ -65,7 +65,7 @@ namespace Darl.GraphQL
             {
                 options.AddPolicy("AdminPolicy", policy =>
                     policy.RequireRole("Admin"));
-                options.AddPolicy("AdminPolicy", policy =>
+                options.AddPolicy("UserPolicy", policy =>
                     policy.RequireRole("User"));
             });
 

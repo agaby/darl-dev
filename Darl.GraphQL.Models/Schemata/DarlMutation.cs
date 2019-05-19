@@ -742,7 +742,15 @@ namespace Darl.GraphQL.Models.Schemata
                      return await context.TryAsyncResolve(
                                      async c => await connectivity.UpdateDarlInRuleset(userId, ruleSetName, darl));
                  });
-
+            //              FactoryReset
+            Field<BooleanGraphType>(
+             "factoryReset",
+             resolve: context =>
+                 {
+                     var userId = connectivity.GetCurrentUserId(context.UserContext);
+                     return connectivity.FactoryReset(userId);
+                 }
+            );
         }
     }
 }

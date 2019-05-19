@@ -1,146 +1,68 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <title>DARL GraphQL API Portal - Graphiql</title>
-    <style>
+    <meta charset=utf-8 />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, minimal-ui">
+    <title>DARL GraphQL API Portal - Playground</title>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/graphql-playground-react/build/static/css/index.css" />
+    <link rel="shortcut icon" href="//cdn.jsdelivr.net/npm/graphql-playground-react/build/favicon.png" />
+    <script src="//cdn.jsdelivr.net/npm/graphql-playground-react/build/static/js/middleware.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117408682-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
 
-        body {
-            height: 100%;
-            margin: 0;
-            overflow: hidden;
-            width: 100%;
-        }
-
-        #graphiql {
-            height: 100vh;
-        }
-    </style>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.1.1/es6-promise.auto.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.2.0/umd/react.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.2.0/umd/react-dom.production.min.js"></script>
-
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/graphiql/0.13.0/graphiql.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/graphiql/0.13.0/graphiql.min.js"></script>
-
-    <script src="https://unpkg.com/subscriptions-transport-ws@0.9.15/browser/client.js"></script>
-    <script src="https://unpkg.com/graphiql-subscriptions-fetcher@0.0.2/browser/client.js"></script>
-
-
+        gtag('config', 'UA-117408682-1');
+    </script>
 
 </head>
 <body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" href="https://darl.ai">
+                    <img src="/images/logo.png" alt="">
+                    GraphQL API
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="Index.html">Playground</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="voyager.html">Voyager</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="darleditor.html">DARL editor</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/docs/">Docs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-rounded btn-primary" href="">Login/Register</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12  ">
+            <iframe style="width: 100vw;height: 90vh;position: relative;" src="ui/graphiql" frameborder="0" allowfullscreen align="top"></iframe>
+        </div>
+    </div>
+    <footer class="footer text-center">
+        <p class="footer">&copy; 2019 - Dr Andy's IP. DARL® is a registered trademark of Dr Andy's IP. <a href="https://darl.ai/home/terms" target="_blank">Terms </a><a href="https://darl.ai/home/terms" target="_blank">Privacy </a>
+    </footer>
 
-    <div id="graphiql">Loading...</div>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-
-        /**
-         * This GraphiQL example illustrates how to use some of GraphiQL's props
-         * in order to enable reading and updating the URL parameters, making
-         * link sharing of queries a little bit easier.
-         *
-         * This is only one example of this kind of feature, GraphiQL exposes
-         * various React params to enable interesting integrations.
-         */
-
-        // Parse the search string to get url parameters.
-        var search = window.location.search;
-        var parameters = {};
-        search.substr(1).split('&').forEach(function (entry) {
-            var eq = entry.indexOf('=');
-            if (eq >= 0) {
-                parameters[decodeURIComponent(entry.slice(0, eq))] =
-                    decodeURIComponent(entry.slice(eq + 1));
-            }
-        });
-
-        // if variables was provided, try to format it.
-        if (parameters.variables) {
-            try {
-                parameters.variables =
-                    JSON.stringify(JSON.parse(parameters.variables), null, 2);
-            } catch (e) {
-                // Do nothing, we want to display the invalid JSON as a string, rather
-                // than present an error.
-            }
-        }
-
-        // When the query and variables string is edited, update the URL bar so
-        // that it can be easily shared
-        function onEditQuery(newQuery) {
-            parameters.query = newQuery;
-            updateURL();
-        }
-
-        function onEditVariables(newVariables) {
-            parameters.variables = newVariables;
-            updateURL();
-        }
-
-        function onEditOperationName(newOperationName) {
-            parameters.operationName = newOperationName;
-            updateURL();
-        }
-
-        function updateURL() {
-            var newSearch = '?' + Object.keys(parameters).filter(function (key) {
-                return Boolean(parameters[key]);
-            }).map(function (key) {
-                return encodeURIComponent(key) + '=' +
-                    encodeURIComponent(parameters[key]);
-            }).join('&');
-            history.replaceState(null, null, newSearch);
-        }
-
-        // Defines a GraphQL fetcher using the fetch API. You're not required to
-        // use fetch, and could instead implement graphQLFetcher however you like,
-        // as long as it returns a Promise or Observable.
-        function graphQLFetcher(graphQLParams) {
-            // This example expects a GraphQL server at the path /graphql.
-            // Change this to point wherever you host your GraphQL server.
-            return fetch(window.location.protocol + "//" + window.location.host + '/graphql', {
-                method: 'post',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(graphQLParams),
-                credentials: 'include',
-            }).then(function (response) {
-                return response.text();
-            }).then(function (responseBody) {
-                try {
-                    return JSON.parse(responseBody);
-                } catch (error) {
-                    return responseBody;
-                }
-            });
-        }
-
-        // Enable Subscriptions via WebSocket
-        var subscriptionsClient = new window.SubscriptionsTransportWs.SubscriptionClient((window.location.protocol === "http:" ? "ws://" : "wss://") + window.location.host + "/graphql", { reconnect: true });
-        var subscriptionsFetcher = window.GraphiQLSubscriptionsFetcher.graphQLFetcher(subscriptionsClient, graphQLFetcher);
-
-        // Render <GraphiQL /> into the body.
-        // See the README in the top level of this module to learn more about
-        // how you can customize GraphiQL by providing different values or
-        // additional child elements.
-        ReactDOM.render(
-            React.createElement(GraphiQL, {
-                fetcher: subscriptionsFetcher,
-                query: parameters.query,
-                variables: parameters.variables,
-                operationName: parameters.operationName,
-                onEditQuery: onEditQuery,
-                onEditVariables: onEditVariables,
-                onEditOperationName: onEditOperationName
-            }),
-            document.getElementById('graphiql')
-        );
-    </script>
 </body>
 </html>

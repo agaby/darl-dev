@@ -92,6 +92,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
         Task<ZendeskCredentials> DeleteZendeskCredentials(string userId, string botModelName);
 
+        Task<bool> FactoryReset(string userId);
+
         Task<LineageNodeAttributes> GetAttribute(string userId, string botModelName, string phrase);
 
         Task<LineageNodeAttributes> GetAttributeFromPath(string userId, string botModelName, string path);
