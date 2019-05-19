@@ -45,7 +45,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" href="/docs/">Docs</a>
                         </li>
-                         <li class="nav-item">
+                        <li class="nav-item">
                             <a class="btn btn-rounded btn-primary" href="">Login/Register</a>
                         </li>
                     </ul>
@@ -53,53 +53,16 @@
             </div>
         </nav>
     </header>
-    <div id="root">
-        <style>
-            body {
-                background-color: rgb(23,42,58);
-                font-family: Open Sans,sans-serif;
-                height: 90vh;
-            }
-
-            #root {
-                height: 100%;
-                width: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .loading {
-                font-size: 32px;
-                font-weight: 200;
-                color: rgba(255,255,255,.6);
-                margin-left: 20px;
-            }
-
-            img {
-                width: 78px;
-                height: 78px;
-            }
-
-            .title {
-                font-weight: 400;
-            }
-        </style>
-        <img src='//cdn.jsdelivr.net/npm/graphql-playground-react/build/logo.png' alt=''>
-        <div class="loading">
-            Loading <span class="title">GraphQL Playground</span>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12  ">
+            <iframe style="width: 100vw;height: 90vh;position: relative;" src="ui/playground" frameborder="0" allowfullscreen align="top"></iframe>
         </div>
     </div>
-    <script>
-        window.addEventListener('load', function (event) {
-            GraphQLPlayground.init(document.getElementById('root'),
-                {
-                    setTitle: true,
-                    endpoint: window.location.protocol + "//" + window.location.host + "/graphql",
-                    subscriptionEndpoint: (window.location.protocol === "http:" ? "ws://" : "wss://") + window.location.host + "/graphql",
-                    settings: { 'editor.theme': 'light', 'request.credentials': 'include'  }
-                });
-        })
-    </script>
+    <footer class="footer">
+        <p class="footer pull-right">&copy; 2019 - Dr Andy's IP. DARL® is a registered trademark of Dr Andy's IP. <a href="https://darl.ai/home/terms" target="_blank">Terms </a><a href="https://darl.ai/home/terms" target="_blank">Privacy </a>
+    </footer>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

@@ -20,7 +20,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field<StringGraphType>("StripeCustomerId");
             Field<StringGraphType>("UsageStripeSubscriptionItem");
             Field<AccountStateEnum>("accountState");
-            Field<StringGraphType>("APIKey");
+            Field<StringGraphType>("apiKey");
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
 using DarlCommon;
+using GraphQL.Authorization.AspNetCore;
 using GraphQL.Types;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "Mutation";
             Description = "Make changes to the contents of your account.";
+            this.AuthorizeWith("UserPolicy");
             // BotModel
             //    create an empty model
             FieldAsync<BotModelType>("createEmptyBotModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>

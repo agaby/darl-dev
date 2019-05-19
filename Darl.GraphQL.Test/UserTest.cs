@@ -21,6 +21,8 @@ namespace Darl.GraphQL.Test
         public void Initialize()
         {
             client = new GraphQLClient("https://darl.dev/graphql/");
+            var authcode = "d70f1008-5758-41b5-9c44-bc90535aeabc";
+            client.DefaultRequestHeaders.Add("Authorization", $"Basic {authcode}");
             client.Options.JsonSerializerSettings.Converters.Add(new StringEnumConverter());
         }
 
@@ -80,6 +82,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task TestAddAPIKey()
         {
             var req = new GraphQLRequest() { Query = @"{ users {invoiceEmail userId } }" };
@@ -88,7 +91,7 @@ namespace Darl.GraphQL.Test
             foreach(var u in users)
             {
                 var apiKey = Guid.NewGuid().ToString();
-                req = new GraphQLRequest() { OperationName = "updateUser", Variables = new { userId = u.userId, user = new DarlUserUpdate { APIKey = apiKey } }, Query = @"mutation updateUser($userId: String!, $user: DarlUserUpdate!){updateUser(userId: $userId, user: $user){ aPIKey  }}" };
+                req = new GraphQLRequest() { OperationName = "updateUser", Variables = new { userId = u.userId, user = new DarlUserUpdate { apiKey = apiKey } }, Query = @"mutation updateUser($userId: String!, $user: DarlUserUpdate!){  updateUser(userId: $userId, user: $user)  { aPIKey  }}" };
                 resp = await client.PostAsync(req);
             }
 

@@ -212,78 +212,73 @@ namespace Darl.GraphQL
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseAuthentication();
-/*
+
             app.Use(async (context, next) =>
             {
+                DarlUser du = null;
+                String roles = string.Empty;
+                string objectId = string.Empty;
+                var _rep = (IConnectivity)context.RequestServices.GetService(typeof(IConnectivity));
                 if (context.User.Identity.IsAuthenticated)
                 {
                     var tc = new TelemetryClient();
-                    var objectId = context.User.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
-                    var firstNameClaim = context.User.Claims.Where(ai => ai.Type == firstNameClaimText).FirstOrDefault();
-                    var firstName = firstNameClaim == null ? string.Empty : firstNameClaim.Value;
-                    var secondNameClaim = context.User.Claims.Where(ai => ai.Type == secondNameClaimText).FirstOrDefault();
-                    var secondName = secondNameClaim == null ? string.Empty : secondNameClaim.Value;
-                    var roles = context.Session.GetString(objectId);
-                    if (string.IsNullOrEmpty(roles))// not seen before
+                    //look up user
+                    objectId = context.User.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
+                    du = await _rep.GetUserById(objectId);
+                 }
+                else
+                {
+                    //look for header
+                    var authHeader = context.Request.Headers["Authorization"].ToString();
+                    if(authHeader != null && authHeader.StartsWith("Basic", StringComparison.OrdinalIgnoreCase))
                     {
-                        var _rep = (IConnectivity)context.RequestServices.GetService(typeof(IConnectivity));
-                        var existing = await _rep.GetUserById(objectId);
-                        if (existing != null)//in the table
-                        {
-                            switch (existing.accountState)
-                            {
-                                case AccountState.admin:
-                                    roles = "admin,user";
-                                    break;
-
-                                case AccountState.trial:
-                                case AccountState.paying:
-                                case AccountState.delinquent:
-                                    roles = "user";
-                                    break;
-                                default:
-                                    roles = string.Empty;
-                                    break;
-                            }
-                        }
-                        else // register new user
-                        {
-                            roles = "user";
-                            var emailList = context.User.Claims.Where(ai => ai.Type == emailClaimText).Single().Value;
-                            if (string.IsNullOrEmpty(emailList))
-                            {
-                                tc.TrackEvent("No email in new registration");
-                                await next.Invoke();
-                                return;
-                            }
-                            var emailClaim = emailList.Split(',')[0];
-                            var provider = "aadb2c";
-
-                            var invoiceName = "";
-                            if (string.IsNullOrEmpty(firstName) && string.IsNullOrEmpty(secondName))
-                            {
-                                invoiceName = emailClaim;
-                            }
-                            else
-                            {
-                                invoiceName = $"{firstName} {secondName}";
-                            }
-                            await _rep.CreateAndProvisionNewUser(new DarlUserInput { Created = DateTime.Now, InvoiceEmail = emailClaim, Issuer = provider, userId = objectId, InvoiceName = invoiceName });
-                            context.Session.SetString("newUser", "true");
-                            context.Session.SetString(objectId, roles);
-                        }
-                        var identity = new GenericIdentity(objectId);
-                        identity.AddClaims(context.User.Claims);
-                        identity.AddClaim(new Claim(preferredUsernameClaimText, $"{firstName} {secondName}"));
-                        context.User = new GenericPrincipal(identity, string.IsNullOrEmpty(roles) ? new string[0] : roles.Split(','));
+                        var token = authHeader.Substring("Basic ".Length).Trim();
+                        du = await _rep.GetUserByApiKey(token);
+                        objectId = du.userId;
                     }
-                    await next.Invoke();
+
                 }
+                if (du != null)//found it from one or other
+                {
+                    switch (du.accountState)
+                    {
+                        case AccountState.admin:
+                            roles = "Admin,User";
+                            break;
+                        case AccountState.trial:
+                        case AccountState.paying:
+                        case AccountState.delinquent:
+                            roles = "User";
+                            break;
+                        default:
+                            roles = string.Empty;
+                            break;
+                    }
+                    //overwrite user 
+                    var identity = new GenericIdentity(objectId);
+                    identity.AddClaims(context.User.Claims);
+                    context.User = new GenericPrincipal(identity, string.IsNullOrEmpty(roles) ? new string[0] : roles.Split(','));
+               }
+                await next.Invoke();
             });
-*/
+
             app.UseWebSockets();
             app.UseGraphQLWebSockets<DarlSchema>("/graphql");
             app.UseGraphQL<DarlSchema>("/graphql");
+            app.UseGraphQLPlayground(new GraphQLPlaygroundOptions()
+            {
+                Path = "/ui/playground"
+            });
+            app.UseGraphiQLServer(new GraphiQLOptions
+            {
+                GraphiQLPath = "/ui/graphiql",
+                GraphQLEndPoint = "/graphql"
+            });
+            app.UseGraphQLVoyager(new GraphQLVoyagerOptions()
+            {
+                GraphQLEndPoint = "/graphql",
+                Path = "/ui/voyager"
+            });
         }
     }
 }

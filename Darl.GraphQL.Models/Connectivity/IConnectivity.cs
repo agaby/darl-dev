@@ -130,7 +130,10 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<Models.MLModel>> GetMlModelsAsync(string userId);
         Task<RuleSet> GetRuleSet(string userId, string name);
         Task<List<RuleSet>> GetRuleSetsAsync(string userId);
+        Task<DarlUser> GetUserByApiKey(string apiKey);
+
         Task<DarlUser> GetUserById(string id);
+
         Task<List<DarlUser>> GetUsers();
 
 
