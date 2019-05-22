@@ -18,7 +18,8 @@
         gtag('js', new Date());
 
         gtag('config', 'UA-117408682-1');
-    </script>
+
+/**/</script>
 
 </head>
 <body>
@@ -48,7 +49,7 @@
                             <a class="nav-link text-dark" href="/docs/">Docs</a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-rounded btn-primary" href="">Login/Register</a>
+                            <button id="auth" onclick="login()" class="btn btn-rounded btn-primary">Login/Register</button>
                         </li>
                     </ul>
                 </div>
@@ -76,7 +77,7 @@
     <footer class="footer text-center">
         <p class="footer">&copy; 2019 - Dr Andy's IP. DARL® is a registered trademark of Dr Andy's IP. <a href="https://darl.ai/home/terms" target="_blank">Terms </a><a href="https://darl.ai/home/terms" target="_blank">Privacy </a>
     </footer>
-
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.0/js/msal.js"></script>
     <script src="jquery/jquery.min.js"></script>
     <script src="/codemirror/codemirror.js"></script>
     <script src="/codemirror/mode/javascript/javascript.js"></script>
@@ -179,10 +180,48 @@
             return unescape(text);
         }
 
-        function download(filename, text) {
-            var blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-            FileSaver.saveAs(blob, "filename");
+        var msalConfig =
+        {
+            auth: {
+                clientId: "51f76e8b-66fb-4607-a5b0-a3d4bce03ce1", //This is your client ID
+                authority: "https://login.microsoftonline.com/tfp/darlai.onmicrosoft.com/B2C_1_signupin " //This is your tenant info
+            },
+            cache: {
+                cacheLocation: "localStorage",
+                storeAuthStateInCookie: true
+            }
+        };
+
+        var clientApplication = new Msal.UserAgentApplication(msalConfig);
+        function login() {
+            var loginRequest = {
+                scopes: ""
+            };
+
+            clientApplication.loginPopup(loginRequest).then(function (loginResponse) {
+                var tokenRequest = {
+                    scopes: appConfig.b2cScopes
+                };
+
+                clientApplication.acquireTokenSilent(tokenRequest).then(function (tokenResponse) {
+                    updateUI();
+                }).catch(function (error) {
+                    clientApplication.acquireTokenPopup(tokenRequest).then(function (tokenResponse) {
+                        updateUI();
+                    }).catch(function (error) {
+                        logMessage("Error acquiring the popup:\n" + error);
+                    });
+                })
+            }).catch(function (error) {
+                logMessage("Error during login:\n" + error);
+            });
         }
+        function updateUI() {
+            var authButton = document.getElementById('auth');
+            authButton.innerHTML = 'logout';
+            authButton.setAttribute('onclick', 'logout();');
+        }
+
     </script>
 </body>
 </html>
