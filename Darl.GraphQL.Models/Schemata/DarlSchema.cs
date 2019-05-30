@@ -8,7 +8,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlSchema : Schema
     {
-        public DarlSchema(DarlQuery query, DarlMutation mutation, DarlSubscription subscription, IDependencyResolver resolver)
+        public DarlSchema(DarlQuery query, DarlMutation mutation, IDependencyResolver resolver)
         {
             Query = query;
             Mutation = mutation;

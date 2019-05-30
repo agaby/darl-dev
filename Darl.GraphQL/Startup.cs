@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +24,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
-using static Darl.GraphQL.Models.Models.DarlUser;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Darl.GraphQL
 {
@@ -58,8 +60,8 @@ namespace Darl.GraphQL
             services.AddAuthentication(AzureADB2CDefaults.AuthenticationScheme)
                 .AddAzureADB2C(options => Configuration.Bind("AzureAdB2C", options));
 
+            services.AddControllersWithViews().AddNewtonsoftJson();
 
-            services.AddMvc().AddNewtonsoftJson();
 
             services.AddAuthorization(options =>
             {
@@ -180,7 +182,6 @@ namespace Darl.GraphQL
             //root
             services.AddTransient<DarlSchema>();
             services.AddTransient<DarlMutation>();
-            services.AddTransient<DarlSubscription>();
             services.AddTransient<DarlQuery>();
 
 
@@ -190,9 +191,10 @@ namespace Darl.GraphQL
                 options.EnableMetrics = true;
                 options.ExposeExceptions = Environment.IsDevelopment();
             })
-            .AddWebSockets()
+            .AddGraphTypes()
             .AddDataLoader()
             .AddUserContextBuilder(context => new GraphQLUserContext { User = context.User });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -213,7 +215,7 @@ namespace Darl.GraphQL
             app.UseStaticFiles();
             app.UseAuthentication();
 
-            app.Use(async (context, next) =>
+ /*           app.Use(async (context, next) =>
             {
                 DarlUser du = null;
                 String roles = string.Empty;
@@ -242,12 +244,12 @@ namespace Darl.GraphQL
                 {
                     switch (du.accountState)
                     {
-                        case AccountState.admin:
+                        case DarlUser.AccountState.admin:
                             roles = "Admin,User";
                             break;
-                        case AccountState.trial:
-                        case AccountState.paying:
-                        case AccountState.delinquent:
+                        case DarlUser.AccountState.trial:
+                        case DarlUser.AccountState.paying:
+                        case DarlUser.AccountState.delinquent:
                             roles = "User";
                             break;
                         default:
@@ -257,17 +259,15 @@ namespace Darl.GraphQL
                     //overwrite user 
                     var identity = new GenericIdentity(objectId);
                     identity.AddClaims(context.User.Claims);
-                    context.User = new GenericPrincipal(identity, string.IsNullOrEmpty(roles) ? new string[0] : roles.Split(','));
+//                    context.User = new GenericPrincipal(identity, string.IsNullOrEmpty(roles) ? new string[0] : roles.Split(','));
                }
                 await next.Invoke();
-            });
+            });*/
 
-            app.UseWebSockets();
-            app.UseGraphQLWebSockets<DarlSchema>("/graphql");
             app.UseGraphQL<DarlSchema>("/graphql");
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions()
             {
-                Path = "/ui/playground"
+                Path = "/ui/playground",
             });
             app.UseGraphiQLServer(new GraphiQLOptions
             {
@@ -278,6 +278,19 @@ namespace Darl.GraphQL
             {
                 GraphQLEndPoint = "/graphql",
                 Path = "/ui/voyager"
+            });
+
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                  name: "areas",
+                  pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+                );
+
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

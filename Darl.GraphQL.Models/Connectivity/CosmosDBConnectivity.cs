@@ -48,7 +48,6 @@ namespace Darl.GraphQL.Models.Connectivity
               new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
             mongoClient = new MongoClient(settings);
             db = mongoClient.GetDatabase(_opt.Value.MongoDatabase);
-            BsonClassMap.RegisterClassMap<LineageRecord>();
         }
 
         public async Task<QuestionSetProxy> BacktrackQuestionnaire(string ieToken)
