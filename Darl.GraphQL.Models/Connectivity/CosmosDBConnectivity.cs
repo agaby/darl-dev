@@ -24,6 +24,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.IO;
 using Stripe;
+using System.Security.Claims;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -1323,8 +1324,8 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             if (userContext != null)
             {
-                if (((GraphQLUserContext)userContext).User != null)
-                    return ((GraphQLUserContext)userContext).User.Identity.Name ?? _opt.Value.boaiuserid;
+                if (((Dictionary<string,object>)userContext).ContainsKey("User"))
+                    return ((ClaimsPrincipal)((Dictionary<string, object>)userContext)["User"]).Identity.Name ?? _opt.Value.boaiuserid;
             }
             return _opt.Value.boaiuserid;
         }

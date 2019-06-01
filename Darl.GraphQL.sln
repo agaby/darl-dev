@@ -9,7 +9,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Models", "Darl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Test", "Darl.GraphQL.Test\Darl.GraphQL.Test.csproj", "{13DF51B0-9234-43F9-9DAC-75BD8CCB0C85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Darl.GraphQL.Web", "Darl.GraphQL.Web\Darl.GraphQL.Web.csproj", "{C7E6B579-462B-415D-AFA5-1F93AD7867F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Web", "Darl.GraphQL.Web\Darl.GraphQL.Web.csproj", "{C7E6B579-462B-415D-AFA5-1F93AD7867F0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "..\..\..\Downloads\server-sync-with-graphql-prerelease\server-sync-with-graphql-prerelease\src\Core\Core.csproj", "{1B966BD9-15B0-45C9-BD72-773D0B62E665}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Transports.AspNetCore", "..\..\..\Downloads\server-sync-with-graphql-prerelease\server-sync-with-graphql-prerelease\src\Transports.AspNetCore\Transports.AspNetCore.csproj", "{B4020C44-49B0-4435-AFCB-CD75DD75327B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ui.GraphiQL", "..\..\..\Downloads\server-sync-with-graphql-prerelease\server-sync-with-graphql-prerelease\src\Ui.GraphiQL\Ui.GraphiQL.csproj", "{7F69B8F5-8BDD-49D5-B2DE-B4CF907D4A01}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ui.Playground", "..\..\..\Downloads\server-sync-with-graphql-prerelease\server-sync-with-graphql-prerelease\src\Ui.Playground\Ui.Playground.csproj", "{6D0FC53D-0CE7-4B8C-815F-26D8EF61E1BD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ui.Voyager", "..\..\..\Downloads\server-sync-with-graphql-prerelease\server-sync-with-graphql-prerelease\src\Ui.Voyager\Ui.Voyager.csproj", "{8FEDD5A6-F46A-4781-8D7D-E2DC60798D12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +43,26 @@ Global
 		{C7E6B579-462B-415D-AFA5-1F93AD7867F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7E6B579-462B-415D-AFA5-1F93AD7867F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7E6B579-462B-415D-AFA5-1F93AD7867F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B966BD9-15B0-45C9-BD72-773D0B62E665}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B966BD9-15B0-45C9-BD72-773D0B62E665}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B966BD9-15B0-45C9-BD72-773D0B62E665}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B966BD9-15B0-45C9-BD72-773D0B62E665}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4020C44-49B0-4435-AFCB-CD75DD75327B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4020C44-49B0-4435-AFCB-CD75DD75327B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4020C44-49B0-4435-AFCB-CD75DD75327B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4020C44-49B0-4435-AFCB-CD75DD75327B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F69B8F5-8BDD-49D5-B2DE-B4CF907D4A01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F69B8F5-8BDD-49D5-B2DE-B4CF907D4A01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F69B8F5-8BDD-49D5-B2DE-B4CF907D4A01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F69B8F5-8BDD-49D5-B2DE-B4CF907D4A01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D0FC53D-0CE7-4B8C-815F-26D8EF61E1BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D0FC53D-0CE7-4B8C-815F-26D8EF61E1BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D0FC53D-0CE7-4B8C-815F-26D8EF61E1BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D0FC53D-0CE7-4B8C-815F-26D8EF61E1BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FEDD5A6-F46A-4781-8D7D-E2DC60798D12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FEDD5A6-F46A-4781-8D7D-E2DC60798D12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FEDD5A6-F46A-4781-8D7D-E2DC60798D12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FEDD5A6-F46A-4781-8D7D-E2DC60798D12}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

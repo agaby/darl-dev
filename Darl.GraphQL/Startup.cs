@@ -193,7 +193,7 @@ namespace Darl.GraphQL
             })
             .AddGraphTypes()
             .AddDataLoader()
-            .AddUserContextBuilder(context => new GraphQLUserContext { User = context.User });
+            .AddUserContextBuilder(context => new Dictionary<string,object> { { "User", context.User } });
 
         }
 
@@ -215,7 +215,7 @@ namespace Darl.GraphQL
             app.UseStaticFiles();
             app.UseAuthentication();
 
- /*           app.Use(async (context, next) =>
+            app.Use(async (context, next) =>
             {
                 DarlUser du = null;
                 String roles = string.Empty;
@@ -259,10 +259,10 @@ namespace Darl.GraphQL
                     //overwrite user 
                     var identity = new GenericIdentity(objectId);
                     identity.AddClaims(context.User.Claims);
-//                    context.User = new GenericPrincipal(identity, string.IsNullOrEmpty(roles) ? new string[0] : roles.Split(','));
+                    context.User = new GenericPrincipal(identity, string.IsNullOrEmpty(roles) ? new string[0] : roles.Split(','));
                }
                 await next.Invoke();
-            });*/
+            });
 
             app.UseGraphQL<DarlSchema>("/graphql");
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions()
