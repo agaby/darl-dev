@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Darl.Connectivity" Version="1.0.44" />
     <PackageReference Include="Darl_standard" Version="1.2.6" />
-    <PackageReference Include="GraphQL" Version="3.0.0-preview-1141" />
+    <PackageReference Include="GraphQL" Version="3.0.0-preview-1149" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.6.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureADB2C.UI" Version="3.0.0-preview5-19227-01" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0-preview5-19227-01" />
@@ -18,7 +18,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Darl.GraphQL.Models\Darl.GraphQL.Models.csproj" />
+    <ProjectReference Include="..\Transports.AspNetCore\Transports.AspNetCore.csproj" />
+    <ProjectReference Include="..\Ui.GraphiQL\Ui.GraphiQL.csproj" />
+    <ProjectReference Include="..\Ui.Playground\Ui.Playground.csproj" />
+    <ProjectReference Include="..\Ui.Voyager\Ui.Voyager.csproj" />
   </ItemGroup>
 
   <ItemGroup>
