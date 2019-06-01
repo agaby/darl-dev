@@ -60,9 +60,6 @@ namespace Darl.GraphQL
             services.AddAuthentication(AzureADB2CDefaults.AuthenticationScheme)
                 .AddAzureADB2C(options => Configuration.Bind("AzureAdB2C", options));
 
-            services.AddControllersWithViews().AddNewtonsoftJson();
-
-
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("AdminPolicy", policy =>
@@ -213,10 +210,14 @@ namespace Darl.GraphQL
             app.UseHttpsRedirection();
             app.UseDefaultFiles();
             app.UseStaticFiles();
+            app.UseRouting();
+
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.Use(async (context, next) =>
             {
+
                 DarlUser du = null;
                 String roles = string.Empty;
                 string objectId = string.Empty;
@@ -227,12 +228,12 @@ namespace Darl.GraphQL
                     //look up user
                     objectId = context.User.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
                     du = await _rep.GetUserById(objectId);
-                 }
+                }
                 else
                 {
                     //look for header
                     var authHeader = context.Request.Headers["Authorization"].ToString();
-                    if(authHeader != null && authHeader.StartsWith("Basic", StringComparison.OrdinalIgnoreCase))
+                    if (authHeader != null && authHeader.StartsWith("Basic", StringComparison.OrdinalIgnoreCase))
                     {
                         var token = authHeader.Substring("Basic ".Length).Trim();
                         du = await _rep.GetUserByApiKey(token);
@@ -260,9 +261,10 @@ namespace Darl.GraphQL
                     var identity = new GenericIdentity(objectId);
                     identity.AddClaims(context.User.Claims);
                     context.User = new GenericPrincipal(identity, string.IsNullOrEmpty(roles) ? new string[0] : roles.Split(','));
-               }
+                }
                 await next.Invoke();
             });
+
 
             app.UseGraphQL<DarlSchema>("/graphql");
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions()
@@ -280,18 +282,13 @@ namespace Darl.GraphQL
                 Path = "/ui/voyager"
             });
 
-            app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                  name: "areas",
-                  pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
-                );
-
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
         }
     }
 }
