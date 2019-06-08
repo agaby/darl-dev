@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Darl.Connectivity" Version="1.0.44" />
     <PackageReference Include="Darl_standard" Version="1.2.6" />
-    <PackageReference Include="GraphQL" Version="3.0.0-preview-1141" />
+    <PackageReference Include="GraphQL-Parser" Version="4.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.6.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureADB2C.UI" Version="3.0.0-preview5-19227-01" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0-preview5-19227-01" />
@@ -19,6 +19,30 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Darl.GraphQL.Models\Darl.GraphQL.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="GraphQL">
+      <HintPath>..\..\graphql-dotnet\src\GraphQL\bin\Debug\netstandard2.0\GraphQL.dll</HintPath>
+    </Reference>
+    <Reference Include="GraphQL.Server.Authorization.AspNetCore">
+      <HintPath>..\..\server\src\Authorization.AspNetCore\bin\Debug\netstandard2.0\GraphQL.Server.Authorization.AspNetCore.dll</HintPath>
+    </Reference>
+    <Reference Include="GraphQL.Server.Core">
+      <HintPath>..\..\server\src\Core\bin\Debug\netstandard2.0\GraphQL.Server.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="GraphQL.Server.Transports.AspNetCore">
+      <HintPath>..\..\server\src\Transports.AspNetCore\bin\Debug\netstandard2.0\GraphQL.Server.Transports.AspNetCore.dll</HintPath>
+    </Reference>
+    <Reference Include="GraphQL.Server.Ui.GraphiQL">
+      <HintPath>..\..\server\src\Ui.GraphiQL\bin\Debug\netstandard2.0\GraphQL.Server.Ui.GraphiQL.dll</HintPath>
+    </Reference>
+    <Reference Include="GraphQL.Server.Ui.Playground">
+      <HintPath>..\..\server\src\Ui.Playground\bin\Debug\netstandard2.0\GraphQL.Server.Ui.Playground.dll</HintPath>
+    </Reference>
+    <Reference Include="GraphQL.Server.Ui.Voyager">
+      <HintPath>..\..\server\src\Ui.Voyager\bin\Debug\netstandard2.0\GraphQL.Server.Ui.Voyager.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

@@ -1324,8 +1324,8 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             if (userContext != null)
             {
-                if (((Dictionary<string,object>)userContext).ContainsKey("User"))
-                    return ((ClaimsPrincipal)((Dictionary<string, object>)userContext)["User"]).Identity.Name ?? _opt.Value.boaiuserid;
+                var ctxt = userContext as GraphQLUserContext;
+                return ctxt.User.Identity.Name ?? _opt.Value.boaiuserid;                   
             }
             return _opt.Value.boaiuserid;
         }

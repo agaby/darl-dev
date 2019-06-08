@@ -1,5 +1,5 @@
 ﻿using Darl.GraphQL.Models.Models;
-using GraphQL.Authorization.AspNetCore;
+using GraphQL.Server.Authorization.AspNetCore;
 using GraphQL.Types;
 using System;
 using System.Collections.Generic;

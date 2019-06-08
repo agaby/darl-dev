@@ -2,7 +2,7 @@ using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Schemata;
 using GraphQL;
-using GraphQL.Authorization.AspNetCore;
+using GraphQL.Server.Authorization.AspNetCore;
 using GraphQL.Server;
 using GraphQL.Server.Ui.GraphiQL;
 using GraphQL.Server.Ui.Playground;
@@ -60,15 +60,6 @@ namespace Darl.GraphQL
             services.AddAuthentication(AzureADB2CDefaults.AuthenticationScheme)
                 .AddAzureADB2C(options => Configuration.Bind("AzureAdB2C", options));
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("AdminPolicy", policy =>
-                    policy.RequireRole("Admin"));
-                options.AddPolicy("UserPolicy", policy =>
-                    policy.RequireRole("User"));
-            });
-
-
             services.AddHsts(options =>
             {
                 options.Preload = true;
@@ -87,8 +78,6 @@ namespace Darl.GraphQL
                 options.IdleTimeout = TimeSpan.FromSeconds(3600);
                 options.Cookie.HttpOnly = true;
             });
-
-            services.AddGraphQLAuth();
 
 
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
@@ -188,9 +177,19 @@ namespace Darl.GraphQL
                 options.EnableMetrics = true;
                 options.ExposeExceptions = Environment.IsDevelopment();
             })
+            .AddGraphQLAuthorization(options =>
+            {
+                options.AddPolicy("AdminPolicy", policy =>
+                   policy.RequireRole("Admin"));
+                options.AddPolicy("UserPolicy", policy =>
+                    policy.RequireRole("User"));                          
+            })
             .AddGraphTypes()
             .AddDataLoader()
-            .AddUserContextBuilder(context => new Dictionary<string,object> { { "User", context.User } });
+            .AddUserContextBuilder(ctx => new GraphQLUserContext
+            {
+                User = ctx.User
+            });
 
         }
 
@@ -213,7 +212,6 @@ namespace Darl.GraphQL
             app.UseRouting();
 
             app.UseAuthentication();
-            app.UseAuthorization();
 
             app.Use(async (context, next) =>
             {
