@@ -26,6 +26,7 @@ using System.Security.Claims;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Threading.Tasks;
 
 namespace Darl.GraphQL
 {
@@ -36,7 +37,6 @@ namespace Darl.GraphQL
         static readonly string objectIdClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
         static readonly string firstNameClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname";
         static readonly string secondNameClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname";
-        static readonly string preferredUsernameClaimText = @"preferred_username";
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
@@ -191,6 +191,8 @@ namespace Darl.GraphQL
                 User = ctx.User
             });
 
+            services.AddRazorPages();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -222,10 +224,18 @@ namespace Darl.GraphQL
                 var _rep = (IConnectivity)context.RequestServices.GetService(typeof(IConnectivity));
                 if (context.User.Identity.IsAuthenticated)
                 {
-                    var tc = new TelemetryClient();
                     //look up user
                     objectId = context.User.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
                     du = await _rep.GetUserById(objectId);
+                    if(du == null) //new user
+                    {
+                        du = await AddNewUser(context, objectId, _rep);
+                        if(du == null) //can't setup user
+                        {
+                            await next.Invoke();
+                            return;
+                        }
+                    }
                 }
                 else
                 {
@@ -285,8 +295,46 @@ namespace Darl.GraphQL
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
 
+        }
+
+        private async Task<DarlUser> AddNewUser(HttpContext context, string objectId, IConnectivity _rep)
+        {
+            var tc = new TelemetryClient();
+            try
+            { 
+                //extract claims that may be present
+                var firstNameClaim = context.User.Claims.Where(ai => ai.Type == firstNameClaimText).FirstOrDefault();
+                var firstName = firstNameClaim == null ? string.Empty : firstNameClaim.Value;
+                var secondNameClaim = context.User.Claims.Where(ai => ai.Type == secondNameClaimText).FirstOrDefault();
+                var secondName = secondNameClaim == null ? string.Empty : secondNameClaim.Value;
+                var emailList = context.User.Claims.Where(ai => ai.Type == emailClaimText).Single().Value;
+                if (string.IsNullOrEmpty(emailList))
+                {
+                    return null;
+                }
+                var emailClaim = emailList.Split(',')[0];
+                //build names as best we can
+                var invoiceName = "";
+                if (string.IsNullOrEmpty(firstName) && string.IsNullOrEmpty(secondName))
+                {
+                    invoiceName = emailClaim;
+                }
+                else
+                {
+                    invoiceName = $"{firstName} {secondName}";
+                }
+                var provider = "aadb2c";
+                tc.TrackEvent("New registration", new Dictionary<string, string> { { "UserId", objectId }, { "provider", provider }, { "email", emailClaim } });
+                return await _rep.CreateAndProvisionNewUser(new DarlUserInput {userId = objectId, InvoiceEmail = emailClaim, Issuer = provider, InvoiceName = invoiceName, InvoiceOrganization = "" });
+            }
+            catch(Exception ex)
+            {
+                tc.TrackException(ex, new Dictionary<string, string> { { "UserId", objectId } });
+                return null;
+            }
         }
     }
 }

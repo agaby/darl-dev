@@ -1,83 +1,40 @@
-﻿<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title>Darl Editor</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+﻿@page
+@model Darl.GraphQL.Pages.darleditorModel
+@{
+    Layout = "_Layout";
+}
+
+<div class="space-70"></div>
+<div class="container margin-b-40">
+    <div class="row">
+        <div class="col-md-12 margin-b-40">
+            <h1>Ruleset editing</h1>
+            <p>Select a ruleset from your account to edit. The editor supports syntax checking and autocomplete. F11 for fullscreen, ESC to return</p>
+            <label>Rulesets </label>
+            <select id="ruleset-dropdown" name="rulesets" class="dropdown"></select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 margin-b-40">
+            <textarea id="Darl" name="Darl" rows="100" cols="160" class="form-control"></textarea>
+            <hr />
+            <button id="Save" class="btn btn-primary" onclick="download('test.txt', 'Hello world!');">Save</button>
+        </div>
+    </div>
+</div>
+
+@section StyleSheets
+{
     <link rel="stylesheet" href="/codemirror/theme/neat.css" />
     <link rel="stylesheet" href="/codemirror/codemirror.css" />
     <link rel="stylesheet" href="/codemirror/addon/display/fullscreen.css" />
     <link rel="stylesheet" href="/codemirror/addon/hint/show-hint.min.css" />
     <link rel="stylesheet" href="/codemirror/addon/lint/lint.css" />
     <link rel="stylesheet" href="/codemirror/addon/fold/foldgutter.css" />
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117408682-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
+}
 
-        gtag('config', 'UA-117408682-1');
-
-/**/</script>
-
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" href="https://darl.ai">
-                    <img src="/images/logo.png" alt="">
-                    GraphQL API<span style="color: #0026ff"> &beta;</span>
-                </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="Index.html">Playground</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="voyager.html">Voyager</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="graphiql.html">Graphiql</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="/docs/">Docs</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/azureadb2c/account/signin" class="btn btn-rounded btn-primary">Login/Register</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="space-70"></div>
-    <div class="container margin-b-40">
-        <div class="row">
-            <div class="col-md-12 margin-b-40">
-                <h1>Ruleset editing</h1>
-                <p>Select a ruleset from your account to edit. The editor supports syntax checking and autocomplete.</p>
-                <label>Rulesets </label>
-                <select id="ruleset-dropdown" name="rulesets" class="dropdown"></select>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 margin-b-40">
-                <textarea id="Darl" name="Darl" rows="100" cols="160" class="form-control"></textarea>
-                <hr />
-                <button id="Save" class="btn btn-primary" onclick="download('test.txt', 'Hello world!');">Save</button>
-            </div>
-        </div>
-    </div>
-    <footer class="footer text-center">
-        <p class="footer">&copy; 2019 - Dr Andy's IP. DARL® is a registered trademark of Dr Andy's IP. <a href="https://darl.ai/home/terms" target="_blank">Terms </a><a href="https://darl.ai/home/terms" target="_blank">Privacy </a>
-    </footer>
-    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.0/js/msal.js"></script>
+@section Scripts
+{
     <script src="jquery/jquery.min.js"></script>
     <script src="/codemirror/codemirror.js"></script>
     <script src="/codemirror/mode/javascript/javascript.js"></script>
@@ -181,5 +138,4 @@
         }
 
     </script>
-</body>
-</html>
+}

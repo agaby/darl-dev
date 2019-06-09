@@ -1,13 +1,31 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Authentication
+@using Microsoft.Extensions.Options
+@using System.Security.Principal
+
+
+<!DOCTYPE html>
 <html>
 <head>
-    <meta charset=utf-8 />
-    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, minimal-ui">
-    <title>DARL GraphQL API Portal - Playground</title>
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/graphql-playground-react/build/static/css/index.css" />
-    <link rel="shortcut icon" href="//cdn.jsdelivr.net/npm/graphql-playground-react/build/favicon.png" />
-    <script src="//cdn.jsdelivr.net/npm/graphql-playground-react/build/static/js/middleware.js"></script>
+    <meta charset="utf-8" />
+    <title>DARL GraphQL API Portal - Graphiql</title>
+    <style>
+
+        body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        #graphiql {
+            height: 100vh;
+        }
+    </style>
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+
+    @RenderSection("StyleSheets", required: false)
+
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117408682-1"></script>
     <script>
@@ -18,10 +36,11 @@
         gtag('config', 'UA-117408682-1');
     </script>
 
+
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-4">
             <div class="container">
                 <a class="navbar-brand" href="https://darl.ai">
                     <img src="/images/logo.png" alt="">
@@ -34,35 +53,43 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="Index.html">Playground</a>
+                            <a class="nav-link text-dark" href="index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="voyager.html">Voyager</a>
+                            <a class="nav-link text-dark" href="voyager">Voyager</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="darleditor.html">DARL editor</a>
+                            <a class="nav-link text-dark" href="graphiql">Graphiql</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="/docs/">Docs</a>
+                            <a class="nav-link text-dark" href="darleditor">DARL editor</a>
                         </li>
                         <li class="nav-item">
-                            <a href="/azureadb2c/account/signin" class="btn btn-rounded btn-primary">Login/Register</a>
+                            <a class="nav-link text-dark" href="/docs/">Read me!</a>
+                        </li>
+                        <li class="nav-item">
+                            @if (!User.Identity.IsAuthenticated)
+                            {
+                                <a href="/azureadb2c/account/signin" class="btn btn-rounded btn-primary">Log in/Register</a>
+                            }
+                            else
+                            {
+                                <a href="/azureadb2c/account/signout" class="btn btn-rounded btn-primary">Log out</a>
+                            }
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12  ">
-            <iframe style="width: 100vw;height: 90vh;position: relative;" src="ui/graphiql" frameborder="0" allowfullscreen align="top"></iframe>
-        </div>
-    </div>
+    @RenderBody()
     <footer class="footer text-center">
         <p class="footer">&copy; 2019 - Dr Andy's IP. DARL® is a registered trademark of Dr Andy's IP. <a href="https://darl.ai/home/terms" target="_blank">Terms </a><a href="https://darl.ai/home/terms" target="_blank">Privacy </a>
     </footer>
 
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+
+    @RenderSection("Scripts", required: false)
+
 
 </body>
 </html>
