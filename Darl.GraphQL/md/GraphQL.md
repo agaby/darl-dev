@@ -13,7 +13,7 @@ The actual endpoint is
 https://darl.dev/graphql
 ```
 
-The main page uses the GraphiQL access tool. Voyager and Playground are also supported on other pages.
+The main page uses the Playground access tool. Voyager and GraphiQL are also supported on other pages.
 
 Whatever lanquage and platform you use will have support, normally in the form of a library, for GraphQL. 
 
