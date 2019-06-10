@@ -56,4 +56,8 @@
     <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="mkdocs build" />
+  </Target>
+
 </Project>
