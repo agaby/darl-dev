@@ -498,7 +498,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 if (att.path.Contains("default:")) //no actual match
                 {
                     var path = currentModel.BestMatch(phrase);
-                    return new LineageNodeAttributes();
+                    return new LineageNodeAttributes { path = path};
                 }
                 var code = string.Join("\n", att.annotation.darl);
                 var bf = currentModel.BotFragmentBuilder(code);
@@ -507,8 +507,9 @@ namespace Darl.GraphQL.Models.Connectivity
                     accessRoles = att.annotation.accessRoles,
                     call = bf.CallRuleset,
                     darl = code,
+                    path = att.path,
                     implications = att.annotation.implications,
-                    //present = att.present,
+                    present = true,
                     randomResponse = bf.RandomResponses.Any(),
                     randomResponses = bf.RandomResponses,
                     response = bf.Response
@@ -1480,6 +1481,30 @@ namespace Darl.GraphQL.Models.Connectivity
             var query = mc.AsQueryable()
             .Where(p => p.APIKey == apiKey  && p.accountState != DarlUser.AccountState.suspended && p.accountState != DarlUser.AccountState.closed);
             return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<string> UpdateUserAPIKey(string userId)
+        {
+            var collection = db.GetCollection<DarlUser>("user");
+            var filter = Builders<DarlUser>.Filter.Where(x => x.userId == userId);
+            var updList = new List<UpdateDefinition<DarlUser>>();
+            var newAPIKey = Guid.NewGuid().ToString();
+            updList.Add(Builders<DarlUser>.Update.Set(x => x.APIKey, newAPIKey));
+            var update = Builders<DarlUser>.Update.Combine(updList);
+            var newUser = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<DarlUser, DarlUser> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
+            return newAPIKey;
+        }
+
+        public async Task<LineageNodeAttributeResources> getLineageNodeAttributeResources(string userId, string botModelName)
+        {
+            var lnar = new LineageNodeAttributeResources();
+            var bm = await GetLineageModel(userId, botModelName);
+            lnar.ruleSkeleton = bm.CreateCodeFromFormat();
+            lnar.insertionPointText = LineageModel.insertionPointText;
+            var rs = await GetRuleSetsAsync(userId);
+            lnar.AllRulesets = rs.Select(c => c.Name).ToList();
+            lnar.AllRoles = (await GetBotModel(userId, botModelName)).Authorizations.Select(c => c.name).ToList();
+            return lnar;
         }
     }
 }

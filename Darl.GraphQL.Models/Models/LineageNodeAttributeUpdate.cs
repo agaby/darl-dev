@@ -19,7 +19,5 @@ namespace Darl.GraphQL.Models.Models
 
         public string call { get; set; }
 
-        public bool present { get; set; }
-
     }
 }

@@ -7,10 +7,11 @@
         <div class="col-md-12 margin-b-40">
             <h1>Bot model editing</h1>
             <p>Select a bot model from your account to edit.</p>
-            <label>bot models </label>
+            <label>Bot models </label>
             <select id="botmodel-dropdown" name="botmodel" class="dropdown"></select>
         </div>
     </div>
+    <div class="space-90"></div>
     <div class="row">
         <div class="col-md-12 margin-b-40">
             <div class="container">
@@ -25,7 +26,7 @@
                         <input class="input form-control" id="findtext" type="text" value="">
                     </div>
                     <div class="col-md-2">
-                        <input class="checkbox" type="checkbox" id="phraseexists" readonly disabled="disabled"><label for="phraseexists"> Exists</label>
+                        <input class="checkbox" type="checkbox" id="phraseexists" readonly disabled="disabled">&nbsp;<label for="phraseexists"> Exists</label>
                     </div>
                 </div>
                 <div class="row">
@@ -45,43 +46,30 @@
                         <!--<button type="button" class="btn btn-info" id="separatebutton">Separate</button>-->
                     </div>
                 </div>
-                <div class="row">
-                    <label><a data-toggle="collapse" data-target="#patternhelp">Help with patterns</a></label>
-                    <div class="well collapse" id="patternhelp">
-                        <p>
-                            Define patterns by separating words with the "/" symbol.
-                        </p>
-                        <p>All words should be lower case only.</p>
-                        <p>Separate alternate choices with the "|" symbol.</p>
-                        <p>So, <pre>talk/to/dr|doctor|doc/andy</pre> will match "talk to dr andy" and "talk to doctor andy" and "talk to doc andy"</p>
-                        <p>Concepts and special symbols have a ":" character in them.</p>
-                        <p>So, <pre>my/name/is/value:</pre> will match "my name is andy" and extract the "andy" as the value.</p>
-                        <p>Defaults are written as "default:" so <pre>who/is/default:</pre> will match "who is andy" if "andy" is not specified in another phrase.</p>
-                    </div>
-                </div>
             </div>
-            <div >
+            <br />
+            <div>
                 <h4>Attributes for <i><span id="nodePathText"></span></i></h4>
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" role="tablist">
-                    <li class="active"><a href="#response" role="tab" data-toggle="tab">Response</a></li>
-                    <li><a href="#calltab" role="tab" data-toggle="tab">Call</a></li>
-                    <li><a href="#advanced" role="tab" data-toggle="tab">Advanced</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#response" role="tab" data-toggle="tab">Response</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#calltab" role="tab" data-toggle="tab">Call</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#advanced" role="tab" data-toggle="tab">Advanced</a></li>
                 </ul>
 
                 <!-- Tab panes -->
                 <div class="tab-content">
-                    <div class="tab-pane active" id="response">
+                    <div class="tab-pane container active" id="response">
                         <div id="responseedit">
 
                         </div>
                     </div>
-                    <div class="tab-pane" id="calltab">
+                    <div class="tab-pane container" id="calltab">
                         <div id="calledit">
 
                         </div>
                     </div>
-                    <div class="tab-pane" id="advanced">
+                    <div class="tab-pane container" id="advanced">
                         <div>
                             <label>Darl code</label>
                             <textarea id="code"></textarea>
@@ -100,12 +88,6 @@
             </div>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col-md-12 margin-b-40">
-            <button id="Save" class="btn btn-primary" onclick="download('test.txt', 'Hello world!');">Save</button>
-        </div>
-    </div>
 </div>
 
 @section StyleSheets
@@ -116,11 +98,13 @@
     <link rel="stylesheet" href="/codemirror/addon/hint/show-hint.min.css" />
     <link rel="stylesheet" href="/codemirror/addon/lint/lint.css" />
     <link rel="stylesheet" href="/codemirror/addon/fold/foldgutter.css" />
+    <link rel='stylesheet' href='//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css'>
 }
 
 @section Scripts
 {
     <script src="jquery/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
     <script src="/codemirror/codemirror.js"></script>
     <script src="/codemirror/mode/javascript/javascript.js"></script>
     <script src="/codemirror/addon/display/fullscreen.js"></script>
@@ -138,34 +122,25 @@
     <script>
         var darlCodeMirror;
         var timeout;
+        var mdname;
+        var attResources;
+
         $(async function () {
             darlCodeMirror = CodeMirror.fromTextArea(document.getElementById("code"), {
-                matchBrackets: true,
-                autoCloseBrackets: true,
                 lineNumbers: true,
                 theme: 'neat',
                 mode: "text/x-darl",
                 gutters: ["CodeMirror-lint-markers"],
-                extraKeys: {
-                    "Ctrl-Space": "autocomplete",
-                    "F11": function (cm) {
-                        cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-                        $('.navbar').hide();
-                    },
-                    "Esc": function (cm) {
-                        if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
-                        $('.navbar').show();
-                    }
-                },
+                extraKeys: { "Ctrl-Space": "autocomplete" },
                 lint: {
                     "getAnnotations": CodeMirror.remoteValidator,
                     "async": true,
                     "check_cb": check_syntax
-                }
+                },
+                viewportMargin: Infinity
 
             });
-            darlCodeMirror.setValue(convertescapes('ruleset myfirstruleset \n{ \n}'));
-            darlCodeMirror.setSize(1200, 800);
+            //JSONEditor.defaults.options.iconlib = "fontawesome4";
 
             darlCodeMirror.on("inputRead", function (cm) {
                 if (timeout) clearTimeout(timeout);
@@ -185,40 +160,225 @@
             });
 
             var dropdown = $('#botmodel-dropdown');
-            var rsname;
             dropdown.empty();
             dropdown.append('<option selected="true" disabled>Choose a ruleset to edit</option>');
             dropdown.prop('selectedIndex', 0);
 
-            var graph = graphql("https://darl.dev/graphql");
+            var graph = graphql("https://darl.dev/graphql");//"https://localhost:44311/graphql"
             var allbotmodels = graph(`{ botmodels { name }}`);
-            var darlContent = graph(`query getdarl($name: String!){  getDarlFromRuleSet(ruleSetName: $name)}`);
-            var savecontent = graph('mutation setdarl($name: String!, $darl: String!){updateDarlInRuleset(ruleSetName: $name, darl: $darl)}');
+            var attPhrase = graph(`query getAttFromPhrase($model: String!, $phrase: String! ){getAttribute(botModelName: $model, phrase: $phrase ){response call darl accessRoles randomResponse randomResponses path present }}`);
+            var attPath = graph(`query getAttFromPath($model: String!, $path: String! ){getAttributeFromPath(botModelName: $model, path: $path ){response call darl accessRoles randomResponse randomResponses path present }}`);
+            var attResource = graph(`query getAttResources($model: String!){getLineageNodeAttributeResources(botModelName: $model){allRoles allRulesets ruleSkeleton insertionPointText }}`);
             const rs = await allbotmodels();
             $.each(rs.botmodels, function (key, entry) {
                 dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
             });
 
             $('#botmodel-dropdown').on('change', async function () {
-                rsname = this.value;
-                var content = await darlContent({ name: rsname });
-                darlCodeMirror.setValue(convertescapes(content.getDarlFromRuleSet));
-            });
-            $('#Save').click(async function () {
-                var content = $("#Darl").val();
-                await savecontent({ name: rsname, darl: content });
+                mdname = this.value;
+                attResources = await attResource({ model: mdname });
+                if (attResources.getLineageNodeAttributeResources.allRoles.length == 0) {
+                    $('#roleEdit').hide();
+                }
+                else {
+                    var options = '<option value="">No authorization</option>';
+                    var list = attResources.getLineageNodeAttributeResources.allRoles;
+                    for (var x = 0; x < list.length; x++) {
+                        options += '<option value="' + list[x]['rowKey'] + '">' + list[x]['name'] + '</option>';
+                    }
+                    $('#roles').html(options);
+                }
+                //enable 
             });
 
 
+            var find = $("#findtext");
+            var to = false;
+            find.on('change', async function (e) {
+                if (to) { clearTimeout(to); }
+                to = setTimeout(async function () {
+                    var text = $('#findtext').val();
+                    var r = await attPhrase({ model: mdname, phrase: text });
+                    if (r != null) {
+                            darlCodeMirror.setValue(r.getAttribute.darl);
+                            $('#roles').val(r.getAttribute.accessRoles);
+                            editorResponse.setValue(r.getAttribute);
+                            editorCall.setValue(r.getAttribute.call);
+                            $('#phraseexists').attr('checked', r.getAttribute.present);
+                            $("#nodePathText").text(r.getAttribute.path);
+                            $("#pattern").val(r.getAttribute.path);
+                            if (r.getAttribute.present) {
+                                $('#addbutton').attr('disabled', 'disabled');
+                                $('#patternLabel').text("Pattern");
+                                $('#deletebutton').removeAttr('disabled');
+                            }
+                            else {
+                                $('#addbutton').removeAttr('disabled');
+                                $('#patternLabel').text("Suggested pattern");
+                                $('#deletebutton').attr('disabled', 'disabled');
+                            }
+                    }
+                }, 300);
+            });
+
+
+            var top = false;
+            $('#pattern').on('change', function (e) {
+                if (top) { clearTimeout(top); }
+                top = setTimeout(function () {
+                    var text = $('#pattern').val();
+                    var r = await attPath({ model: mdname, path: text });
+                    if (r != null && r.code)
+                    {
+                        darlCodeMirror.setValue(r.darl);
+                        rolesSelect.val(r.accessRoles);
+                        editorResponse.setValue(r.response);
+                        editorCall.setValue(r.call);
+                        $("#nodePathText").text(r.path);
+                        $("#lineageList").empty();
+                        $('#addbutton').attr('disabled', 'disabled');
+                        $('#deletebutton').removeAttr('disabled');
+                    }
+                    else
+                    {
+                        darlCodeMirror.setValue(r.darl);
+                        rolesSelect.val(r.accessRoles);
+                        $("#nodePathText").text(r.path);
+                        $('#addbutton').removeAttr('disabled');
+                        $('#deletebutton').attr('disabled', 'disabled');
+                    }
+                }, 1000);
+            });
+
+            var editorResponse = new JSONEditor(document.getElementById('responseedit'), {
+                theme: 'bootstrap4',
+                schema: {
+                    "$schema": "http://json-schema.org/draft-04/schema#",
+                    "title": "Edit text responses",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "response": {
+                            "title": "A single response",
+                            "type": [
+                                "null",
+                                "string"
+                            ],
+                            "description": "The text you want to use to respond. Use MarkDown for any formatting."
+                        },
+                        "random": {
+                            "title": "Randomly selected responses",
+                            "type": "boolean",
+                            "format": "checkbox",
+                            "description": "The response will be one of the following, randomly selected."
+                        },
+                        "randomResponses": {
+                            "title": "Possible responses",
+                            "type": "array",
+                            "format": "table",
+                            "description": "The text you want to use to respond. Use MarkDown for any formatting.",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                collapsed: true,
+                disable_edit_json: true,
+                disable_properties: true,
+                disable_collapse: true,
+                disable_array_add: false,
+                disable_array_delete: false,
+                disable_array_reorder: true,
+                form_name_root: "responses",
+                iconlib: 'fontawesome4'
+            });
+
+            var editorCall = new JSONEditor(document.getElementById('calledit'), {
+                theme: 'bootstrap4',
+                schema: {
+                    "$schema": "http://json-schema.org/draft-04/schema#",
+                    "type": "string",
+                    "format": "table",
+                    "title": "Called ruleset",
+                    "description": "Ruleset that will be called when the phrase is recognized.",
+                    "enum": ""
+                    },
+            collapsed: true,
+            disable_edit_json: true,
+            disable_properties: true,
+            disable_collapse: true,
+            disable_array_add: true,
+            disable_array_delete: true,
+            disable_array_reorder: true,
+            form_name_root: "rulesets",
+            iconlib: 'fontawesome4'
+
+            });
+
+            $('#addbutton').click(function (e) {
+                $.ajax({
+                    'url': '@Url.Action("PhraseCreate", "Edit")',
+                    'type': 'PUT',
+                    'data':
+                    {
+                        'path': $('#pattern').val(),
+                        'darl': darlCodeMirror.getValue(),
+                        'roles': rolesSelect.val(),
+                        'response': editorResponse.getValue(),
+                        'call': editorCall.getValue()
+                    },
+                    'success': function (r) {
+                        $("#findtext").change();
+                        $('#saveModel').show();
+                        $("#tree_location").jstree(true).refresh();
+                    }
+                });
+            });
+
+            $('#deletebutton').click(function (e) {
+                $.ajax({
+                    'url': '@Url.Action("PhraseDelete", "Edit")',
+                    'type': 'PUT',
+                    'data': { 'phrase': $('#pattern').val() },
+                    'success': function (r) {
+                        $("#findtext").change();
+                        $('#saveModel').show();
+                    }
+                });
+            });
+
+            $("#saveAttributes").on("click", function (cm, event) {
+                $('#saveModel').show();
+                var path = $("#nodePathText").text();
+                $.ajax({
+                    'url': '@Url.Action("SaveAttributes", "Edit")',
+                    'type': 'PUT',
+                    'data': { 'path': path, 'darl': darlCodeMirror.getValue(), 'roles': rolesSelect.val(), 'response': editorResponse.getValue(), 'call': editorCall.getValue() },
+                    'success': function (r)
+                    {
+                        var sel = $("#tree_location").jstree(true).get_selected();
+                        $("#tree_location").jstree(true).refresh_node(sel[0]);
+                    }
+                });
+            });
+
+
+            $('.nav-tabs a').on('shown.bs.tab', function () {
+                darlCodeMirror.refresh();
+            });
+
+            CodeMirror.commands.autocomplete = function (cm) { cm.showHint({ hint: CodeMirror.hint.darl }); }
         });
 
         function check_syntax(code, result_cb) {
             var baseUri = "https://darl.ai/api/Linter/DarlLint";
-            var jqxr = $.post(baseUri, { 'source': code }, function (data, status, xhr) {
+            var jqxr = $.post(baseUri, { 'source': code, 'ruleset': attResources.getLineageNodeAttributeResources.ruleSkeleton, 'insertion': attResources.getLineageNodeAttributeResources.insertionPointText }, function (data, status, xhr) {
                 result_cb(data);
             });
-
         }
+
+
         function convertescapes(text) {
             text = text.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&#x221E;/g, '∞').replace(/&#xD;/g, '\r').replace(/&#xA;/g, '\n').replace(/&#x9;/g, '\t').replace(/&#x2B;/g, '+').replace(/&#x27;/g, '\'');
             return unescape(text);

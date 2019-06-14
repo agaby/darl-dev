@@ -1,6 +1,7 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
 using DarlCommon;
+using GraphQL.Server.Authorization.AspNetCore;
 using GraphQL.Types;
 using System;
 using System.Collections.Generic;
@@ -214,7 +215,7 @@ namespace Darl.GraphQL.Models.Schemata
                                     async c => await connectivity.GetExampleInputs(userId, ruleSetName));
                 });
             //  Whole ruleset inference
-            FieldAsync<ListGraphType<DarlVarType>>("inferFromRuleSet",
+            FieldAsync<ListGraphType<DarlVarType>>("inferFromRuleSet","Make an inference with the selected ruleset and attached inputs",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" },
                 new QueryArgument<NonNullGraphType<ListGraphType<DarlVarInputType>>> { Name = "inputs" }
                 ),
@@ -227,7 +228,7 @@ namespace Darl.GraphQL.Models.Schemata
                                     async c => await connectivity.InferFromRuleSetDarlVar(userId, ruleSetName, inputs));
                 });
             //   Get darl for editing
-            FieldAsync<StringGraphType>("getDarlFromRuleSet",
+            FieldAsync<StringGraphType>("getDarlFromRuleSet","Gets the DARL code element of a ruleset",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" }
                 ),
                 resolve: async context =>
@@ -238,7 +239,7 @@ namespace Darl.GraphQL.Models.Schemata
                                     async c => await connectivity.GetDarlFromRuleset(userId, ruleSetName));
                 });
             //                Lint Ruleset
-            FieldAsync<ListGraphType<DarlLintErrorType>>("lintDarl",
+            FieldAsync<ListGraphType<DarlLintErrorType>>("lintDarl", "Read code in DARL and return any syntax errors",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "darl" },
                     new QueryArgument<StringGraphType> { Name = "skeleton" },
@@ -299,7 +300,32 @@ namespace Darl.GraphQL.Models.Schemata
                     var conversationId = context.GetArgument<string>("conversationId");
                     var conversationData = context.GetArgument<DarlVar>("conversationData");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await connectivity.InteractAsync(userId, botModelName, conversationId, conversationData)); });
+                    return await context.TryAsyncResolve(async c => await connectivity.InteractAsync(userId, botModelName, conversationId, conversationData));
+                });
+            FieldAsync<StringGraphType>(
+               "getApiKey",
+               "Gets the API key for this account. Only accessible to logged in users.",
+               resolve: async context =>
+               {
+                   var userId = connectivity.GetCurrentUserId(context.UserContext);
+
+                   return await context.TryAsyncResolve(
+                       async c => (await connectivity.GetUserById(userId)).APIKey);
+               }
+            ).AuthorizeWith("UserPolicy");
+
+            FieldAsync<LineageNodeAttributeResourceType>( 
+                "getLineageNodeAttributeResources",
+                "Get the resources needed to edit ar create lineageNodeAttributes",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName", Description = "The bot model to run" }),
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.getLineageNodeAttributeResources(userId, botModelName));
+                }
+            );
         }
     
     }

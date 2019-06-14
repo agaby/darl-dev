@@ -173,12 +173,12 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<VariantText> UpdateRuleFormVariantText(string userId, string ruleSetName, string languageName, string isoLanguageName, string variantText);
         Task<SellerCenterCredentials> UpdateSellerCenterCredentials(string userId, string botModelName, bool liveMode, string merchantId, string stripeApiKey);
         Task<SendGridCredentials> UpdateSendgridCredentials(string userId, string botModelName, string sendGridAPIKey);
-
         Task<TwilioCredentials> UpdateTwilioCredentials(string userId, string botModelName, string sMSAccountFrom, string sMSAccountIdentification, string sMSAccountPassword);
         Task<DarlUser> UpdateUserAsync(string userId, DarlUserUpdate darlUserUpdate);
-
+        Task<string> UpdateUserAPIKey(string userId);
         Task<ZendeskCredentials> UpdateZendeskCredentials(string userId, string botModelName, string zendeskApiKey, string zendeskURL, string zendeskUser);
         Task<string> UpdateDarlInRuleset(string userId, string ruleSetName, string darl);
         Task<InteractTestResponse> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData);
+        Task<LineageNodeAttributeResources> getLineageNodeAttributeResources(string userId, string botModelName);
     }
 }

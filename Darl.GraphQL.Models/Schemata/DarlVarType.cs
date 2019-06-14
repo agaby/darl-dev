@@ -11,6 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
         public DarlVarType()
         {
             Name = "darlVar";
+            Description = "A variable of any type supported by DARL with associated uncertainty";
             Field(c => c.approximate);
             Field<ListGraphType<StringGraphType>>("categories", resolve: context => context.Source.categories);
             Field<DarlVarDataTypeEnum>("dataType", resolve: context => context.Source.dataType);

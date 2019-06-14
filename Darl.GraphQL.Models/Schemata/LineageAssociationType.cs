@@ -11,6 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
         public LineageAssociationType()
         {
             Name = "lineageAssociation";
+            Description = "The weighted association between two lineages";
             Field(c => c.weight);
             Field<LineageRecordType>("start", resolve: c => c.Source.start);
             Field<LineageRecordType>("end", resolve: c => c.Source.end);

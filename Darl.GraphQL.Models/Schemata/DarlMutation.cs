@@ -751,6 +751,16 @@ namespace Darl.GraphQL.Models.Schemata
                      return connectivity.FactoryReset(userId);
                  }
             );
+            FieldAsync<StringGraphType>(
+               "resetApiKey","Regenerate your API key",
+               resolve: async context =>
+               {
+                   var userId = connectivity.GetCurrentUserId(context.UserContext);
+
+                   return await context.TryAsyncResolve(
+                       async c => await connectivity.UpdateUserAPIKey(userId));
+               }
+            );
         }
     }
 }

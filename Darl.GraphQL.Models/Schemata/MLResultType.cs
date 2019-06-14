@@ -11,14 +11,15 @@ namespace Darl.GraphQL.Models.Schemata
         public MLResultType()
         {
             Name = "mlResult";
-            Field(c => c.executionDate);
-            Field(c => c.executionTime);
-            Field(c => c.code);
-            Field(c => c.errorText);
-            Field(c => c.testPerformance);
-            Field(c => c.trainPercent);
-            Field(c => c.trainPerformance);
-            Field(c => c.unknownResponsePercent);
+            Description = "The results of a machine learning run.";
+            Field(c => c.executionDate).Description("Date and time of run");
+            Field(c => c.executionTime).Description("Run time in seconds");
+            Field(c => c.code).Description("The DARL code generated");
+            Field(c => c.errorText, true).Description("Text of any errors"); ;
+            Field(c => c.testPerformance, true).Description("The performance on the test set, RMS error for numeric, percentage for categorical"); 
+            Field(c => c.trainPercent).Description("The percentage of the data set used for training"); 
+            Field(c => c.trainPerformance).Description("The performance on the training set, RMS error for numeric, percentage for categorical");
+            Field(c => c.unknownResponsePercent).Description("The percentage of results marked as unknown");
         }
     }
 }

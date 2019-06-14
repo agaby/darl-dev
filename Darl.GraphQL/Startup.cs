@@ -163,6 +163,7 @@ namespace Darl.GraphQL
             services.AddTransient<StringDarlVarPairType>();
             services.AddTransient<InteractResponseType>();
             services.AddTransient<MatchedAnnotationType>();
+            services.AddTransient<LineageNodeAttributeResourceType>();
 
 
             //root
