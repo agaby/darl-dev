@@ -180,5 +180,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<string> UpdateDarlInRuleset(string userId, string ruleSetName, string darl);
         Task<InteractTestResponse> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData);
         Task<LineageNodeAttributeResources> getLineageNodeAttributeResources(string userId, string botModelName);
+        Task<DarlUser> GetUserByStripeId(string stripeId);
     }
 }

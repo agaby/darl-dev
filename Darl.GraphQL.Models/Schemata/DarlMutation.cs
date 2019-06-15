@@ -243,7 +243,7 @@ namespace Darl.GraphQL.Models.Schemata
                                                async c => await connectivity.DeleteAzureCredentials(userId, botModelName));
                                        });
                                    //  Edit SellerCenter
-                                   FieldAsync<SellerCenterCredentialsType>("updateSellereCenterCredentials",
+                                   FieldAsync<SellerCenterCredentialsType>("updateSellerCenterCredentials",
                                        arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
                                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "liveMode" },
                                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "merchantId" },
@@ -259,7 +259,7 @@ namespace Darl.GraphQL.Models.Schemata
                                            return await context.TryAsyncResolve(
                                                async c => await connectivity.UpdateSellerCenterCredentials(userId, botModelName, liveMode, merchantId, stripeApiKey));
                                        });
-                                   FieldAsync<SellerCenterCredentialsType>("deleteSellereCenterCredentials",
+                                   FieldAsync<SellerCenterCredentialsType>("deleteSellerCenterCredentials",
                                        arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" }
                                       ),
                                        resolve: async context =>
@@ -361,7 +361,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var contact = new Contact { Company = contactInput.Company, Country = contactInput.Country, Created = DateTime.Now, Email = contactInput.Email.ToLower(), FirstName = contactInput.FirstName, IntroSent = contactInput.IntroSent, LastName = contactInput.LastName, Notes = contactInput.Notes, Phone = contactInput.Phone, Id = id, Sector = contactInput.Sector, Source = contactInput.Source, Title = contactInput.Title };
                     return connectivity.CreateContactAsync(contact);
                 }
-            );
+            ).AuthorizeWith("AdminPolicy");
             //  Update
             Field<ContactType>(
                     "updateContact",
@@ -373,7 +373,7 @@ namespace Darl.GraphQL.Models.Schemata
                         var contact = new Contact { Company = contactUpdate.Company, Country = contactUpdate.Country, Email = contactUpdate.Email, FirstName = contactUpdate.FirstName, IntroSent = contactUpdate.IntroSent, LastName = contactUpdate.LastName, Notes = contactUpdate.Notes, Phone = contactUpdate.Phone, Id = contactUpdate.Id, Sector = contactUpdate.Sector, Source = contactUpdate.Source, Title = contactUpdate.Title };
                         return connectivity.UpdateContactAsync(contact);
                     }
-                );
+                ).AuthorizeWith("AdminPolicy");
             //  Delete
             Field<ContactType>(
                 "deleteContact",
@@ -386,7 +386,7 @@ namespace Darl.GraphQL.Models.Schemata
                         connectivity.DeleteContactAsync(email);
                         return contact;
                     }
-               );
+               ).AuthorizeWith("AdminPolicy");
             // Default
             //  Create
             FieldAsync<DefaultType>("createDefault", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }, new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "value" }), 
@@ -396,7 +396,7 @@ namespace Darl.GraphQL.Models.Schemata
                 var value = context.GetArgument<string>("value");
                 return await context.TryAsyncResolve(
                     async c => await connectivity.CreateDefault(name, value));
-            });
+            }).AuthorizeWith("AdminPolicy");
             FieldAsync<DefaultType>("updateDefault", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }, new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "value" }),
                 resolve: async context =>
                 {
@@ -404,7 +404,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var value = context.GetArgument<string>("value");
                     return await context.TryAsyncResolve(
                         async c => await connectivity.UpdateDefault(name, value));
-                });
+                }).AuthorizeWith("AdminPolicy");
             //  Delete
             FieldAsync<DefaultType>("deleteDefault", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
                 resolve: async context =>
@@ -412,7 +412,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var name = context.GetArgument<string>("name");
                     return await context.TryAsyncResolve(
                                     async c => await connectivity.DeleteDefault(name));
-                });
+                }).AuthorizeWith("AdminPolicy");
             //MLModel
             //  Create MLSpec as an object
             FieldAsync<MLModelType>("createEmptyMLModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
@@ -682,7 +682,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var darlUser = context.GetArgument<DarlUserInput>("user");
                     return connectivity.CreateUserAsync(darlUser);
                 }
-            );
+            ).AuthorizeWith("AdminPolicy");
             //  Update
             Field<DarlUserType>(
                     "updateUser",
@@ -696,7 +696,7 @@ namespace Darl.GraphQL.Models.Schemata
                         var darlUserUpdate = context.GetArgument<DarlUserUpdate>("user");
                         return connectivity.UpdateUserAsync(userId, darlUserUpdate);
                     }
-                );
+                ).AuthorizeWith("AdminPolicy");
             //  Delete
             Field<DarlUserType>(
                 "deleteUser",
@@ -707,7 +707,7 @@ namespace Darl.GraphQL.Models.Schemata
                         var userId = context.GetArgument<string>("userId");
                         return connectivity.DeleteUser(userId);
                     }
-               );
+               ).AuthorizeWith("AdminPolicy");
 
             // Actions
 

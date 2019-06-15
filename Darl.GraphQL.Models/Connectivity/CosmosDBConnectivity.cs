@@ -1506,5 +1506,13 @@ namespace Darl.GraphQL.Models.Connectivity
             lnar.AllRoles = (await GetBotModel(userId, botModelName)).Authorizations.Select(c => c.name).ToList();
             return lnar;
         }
+
+        public async Task<DarlUser> GetUserByStripeId(string stripeId)
+        {
+            var mc = db.GetCollection<DarlUser>("user");
+            var query = mc.AsQueryable()
+            .Where(p => p.StripeCustomerId == stripeId);
+            return await query.FirstOrDefaultAsync();
+        }
     }
 }

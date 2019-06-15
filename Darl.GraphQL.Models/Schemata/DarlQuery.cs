@@ -52,7 +52,7 @@ namespace Darl.GraphQL.Models.Schemata
                       return await context.TryAsyncResolve(
                                   async c => await connectivity.GetContacts());
                   }
-            );
+            ).AuthorizeWith("AdminPolicy");
             FieldAsync<ListGraphType<DarlUserType>>(
               "users",
                   resolve: async context =>
@@ -60,22 +60,26 @@ namespace Darl.GraphQL.Models.Schemata
                       return await context.TryAsyncResolve(
                                   async c => await connectivity.GetUsers());
                   }
-            );
+            ).AuthorizeWith("AdminPolicy");
 
             FieldAsync<ListGraphType<ContactType>>("contactsByLastName",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lastName" }),
-                resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetContactsByLastName(c.GetArgument<String>("lastName"))); });
+                resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetContactsByLastName(c.GetArgument<String>("lastName"))); })
+                .AuthorizeWith("AdminPolicy");
 
             FieldAsync<ContactType>("contactByEmail",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }),
-                resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetContactByEmail(c.GetArgument<String>("email"))); });
+                resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetContactByEmail(c.GetArgument<String>("email"))); })
+                .AuthorizeWith("AdminPolicy");
 
             FieldAsync<ListGraphType<DefaultType>>("defaults",
-                resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetDefaults()); });
+                resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetDefaults()); })
+                .AuthorizeWith("AdminPolicy");
 
             FieldAsync<StringGraphType>("defaultValue",
             arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
-            resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetDefaultValue(c.GetArgument<String>("name"))); });
+            resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetDefaultValue(c.GetArgument<String>("name"))); })
+                .AuthorizeWith("AdminPolicy");
 
             FieldAsync<RuleSetType>(
                 "rulesetByName",
@@ -199,10 +203,17 @@ namespace Darl.GraphQL.Models.Schemata
                 });
             FieldAsync<ListGraphType<DarlUserType>>("usersByEmail",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }),
-                resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetUsersByEmail(c.GetArgument<String>("email"))); });
+                resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetUsersByEmail(c.GetArgument<String>("email"))); })
+                .AuthorizeWith("AdminPolicy");
             FieldAsync<DarlUserType>("userById",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId" }),
-                resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetUserById(c.GetArgument<String>("userId"))); });
+                resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetUserById(c.GetArgument<String>("userId"))); })
+                .AuthorizeWith("AdminPolicy");
+            FieldAsync<DarlUserType>("userByStripeId",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "stripeCustomerId" }),
+                resolve: async context => { return await context.TryAsyncResolve(async c => await connectivity.GetUserByStripeId(c.GetArgument<String>("stripeCustomerId"))); })
+                .AuthorizeWith("AdminPolicy");
+
             //                GetExampleInputs
             FieldAsync<ListGraphType<DarlVarType>>("getExampleInputs",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" }
