@@ -1514,5 +1514,60 @@ namespace Darl.GraphQL.Models.Connectivity
             .Where(p => p.StripeCustomerId == stripeId);
             return await query.FirstOrDefaultAsync();
         }
+
+        public async Task<string> GetCollateral(string userId, string name)
+        {
+            var mc = db.GetCollection<Collateral>("collateral");
+            var query = mc.AsQueryable()
+            .Where(p => p.Name == name && p.userId == userId);
+            var def = await query.FirstOrDefaultAsync();
+            return def == null ? string.Empty : def.Content;
+        }
+
+        public async Task<Collateral> UpdateCollateral(string userId, string name, string value)
+        {
+            var mc = db.GetCollection<Collateral>("collateral");
+            var model = new Collateral { Name = name, Content = value, userId = userId  };
+            var filter = Builders<Collateral>.Filter.Where(x => x.Name == name && x.userId == userId);
+            var update = Builders<Collateral>.Update.Set("Value", value);
+            await mc.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Collateral, Collateral> { IsUpsert = true });
+            return model;
+        }
+
+        public async Task<Collateral> DeleteCollateral(string userId, string name)
+        {
+            var mc = db.GetCollection<Collateral>("collateral");
+            var query = mc.AsQueryable().Where(p => p.Name == name && p.userId == userId);
+            var old = await query.FirstOrDefaultAsync();
+            await mc.DeleteOneAsync(Builders<Collateral>.Filter.Eq(r => r.userId, userId) & Builders<Collateral>.Filter.Eq(r => r.Name, name));
+            return old;
+        }
+
+        public async Task<List<Collateral>> GetCollaterals(string userId)
+        {
+            var mc = db.GetCollection<Collateral>("collateral");
+            var query = mc.AsQueryable()
+            .Where(p => p.userId == userId);
+            return await query.ToListAsync();
+        }
+
+        public async Task<DateTime> GetLastUpdate(string from, string to)
+        {
+            var mc = db.GetCollection<Update>("update");
+            var query = mc.AsQueryable()
+            .Where(p => p.from == from && p.to == to);
+            var def = await query.FirstOrDefaultAsync();
+            return def == null ? DateTime.MinValue : def.updated;
+        }
+
+        public async Task<DateTime> SetLastUpdate(string from, string to)
+        {
+            var mc = db.GetCollection<Update>("update");
+            var now = DateTime.UtcNow;
+            var filter = Builders<Update>.Filter.Where(x => x.from == from && x.to == to);
+            var update = Builders<Update>.Update.Set("updated", now);
+            await mc.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Update, Update> { IsUpsert = true });
+            return now;
+        }
     }
 }

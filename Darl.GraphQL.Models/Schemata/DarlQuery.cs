@@ -226,7 +226,7 @@ namespace Darl.GraphQL.Models.Schemata
                                     async c => await connectivity.GetExampleInputs(userId, ruleSetName));
                 });
             //  Whole ruleset inference
-            FieldAsync<ListGraphType<DarlVarType>>("inferFromRuleSet","Make an inference with the selected ruleset and attached inputs",
+            FieldAsync<ListGraphType<DarlVarType>>("inferFromRuleSet", "Make an inference with the selected ruleset and attached inputs",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" },
                 new QueryArgument<NonNullGraphType<ListGraphType<DarlVarInputType>>> { Name = "inputs" }
                 ),
@@ -239,7 +239,7 @@ namespace Darl.GraphQL.Models.Schemata
                                     async c => await connectivity.InferFromRuleSetDarlVar(userId, ruleSetName, inputs));
                 });
             //   Get darl for editing
-            FieldAsync<StringGraphType>("getDarlFromRuleSet","Gets the DARL code element of a ruleset",
+            FieldAsync<StringGraphType>("getDarlFromRuleSet", "Gets the DARL code element of a ruleset",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" }
                 ),
                 resolve: async context =>
@@ -325,7 +325,7 @@ namespace Darl.GraphQL.Models.Schemata
                }
             ).AuthorizeWith("UserPolicy");
 
-            FieldAsync<LineageNodeAttributeResourceType>( 
+            FieldAsync<LineageNodeAttributeResourceType>(
                 "getLineageNodeAttributeResources",
                 "Get the resources needed to edit ar create lineageNodeAttributes",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName", Description = "The bot model to run" }),
@@ -335,6 +335,43 @@ namespace Darl.GraphQL.Models.Schemata
                     var botModelName = context.GetArgument<string>("botModelName");
                     return await context.TryAsyncResolve(
                         async c => await connectivity.getLineageNodeAttributeResources(userId, botModelName));
+                }
+            );
+            FieldAsync<StringGraphType>(
+                "getCollateral",
+                "Get text used in responses",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the collateral" }),
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    var name = context.GetArgument<string>("name");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.GetCollateral(userId, name));
+                }
+            );
+            FieldAsync<ListGraphType<CollateralType>>(
+                "collateral",
+                "Get texts used in responses",
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.GetCollaterals(userId));
+                }
+            );
+            FieldAsync<DateTimeGraphType>(
+                "getLastUpdate",
+                "Get the utc time of a system wide update.",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "from", Description = "The source of the update" },
+                    new QueryArgument<NonNullGraphType<ListGraphType<DarlVarInputType>>> { Name = "to", Description = "The destination of the update" }
+                ),
+                resolve: async context =>
+                {
+                    var from = context.GetArgument<string>("from");
+                    var to = context.GetArgument<string>("to");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.GetLastUpdate(from,to));
                 }
             );
         }

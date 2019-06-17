@@ -761,6 +761,51 @@ namespace Darl.GraphQL.Models.Schemata
                        async c => await connectivity.UpdateUserAPIKey(userId));
                }
             );
+            FieldAsync<CollateralType>(
+                "updateCollateral",
+                "update text used in responses",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the collateral" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "value", Description = "The value of the collateral" }
+                ),
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    var name = context.GetArgument<string>("name");
+                    var value = context.GetArgument<string>("value");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.UpdateCollateral(userId, name, value ));
+                }
+            );
+            FieldAsync<CollateralType>(
+                "deleteCollateral",
+                "Delete text used in responses",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the collateral" }
+                ),
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    var name = context.GetArgument<string>("name");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.DeleteCollateral(userId, name));
+                }
+            );
+            FieldAsync<DateTimeGraphType>(
+                "setLastUpdate",
+                "Set the utc time of a system wide update.",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "from", Description = "The source of the update" },
+                    new QueryArgument<NonNullGraphType<ListGraphType<DarlVarInputType>>> { Name = "to", Description = "The destination of the update" }
+                ),
+                resolve: async context =>
+                {
+                    var from = context.GetArgument<string>("from");
+                    var to = context.GetArgument<string>("to");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.SetLastUpdate(from, to));
+                }
+            );
         }
     }
 }

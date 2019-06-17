@@ -181,5 +181,11 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<InteractTestResponse> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData);
         Task<LineageNodeAttributeResources> getLineageNodeAttributeResources(string userId, string botModelName);
         Task<DarlUser> GetUserByStripeId(string stripeId);
+        Task<string> GetCollateral(string userId, string name);
+        Task<Collateral> UpdateCollateral(string userId, string name, string value);
+        Task<Collateral> DeleteCollateral(string userId, string name);
+        Task<List<Collateral>> GetCollaterals(string userId);
+        Task<DateTime> GetLastUpdate(string from, string to);
+        Task<DateTime> SetLastUpdate(string from, string to);
     }
 }

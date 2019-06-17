@@ -19,9 +19,9 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.Created);
             Field(c => c.current_period_end);
             Field(c => c.InvoiceEmail);
-            Field(c => c.InvoiceName);
-            Field(c => c.InvoiceOrganization);
-            Field(c => c.Issuer);
+            Field(c => c.InvoiceName, true);
+            Field(c => c.InvoiceOrganization,true);
+            Field(c => c.Issuer, true);
             Field(c => c.PaidUsageStarted);
             Field(c => c.StripeCustomerId);
             Field(c => c.UsageStripeSubscriptionItem);
