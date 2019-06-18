@@ -22,6 +22,7 @@
     <PackageReference Include="MongoDB.Driver" Version="2.8.1" />
     <PackageReference Include="Stripe.net" Version="26.0.0" />
     <PackageReference Include="System.Reactive" Version="4.1.5" />
+    <PackageReference Include="VSTS.Net.AspNetCore" Version="0.2.4" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
 

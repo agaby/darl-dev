@@ -187,5 +187,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<Collateral>> GetCollaterals(string userId);
         Task<DateTime> GetLastUpdate(string from, string to);
         Task<DateTime> SetLastUpdate(string from, string to);
+        Task<bool> CreateSupportRequest(string customerName, string customerEmail, string text, string project);
     }
 }

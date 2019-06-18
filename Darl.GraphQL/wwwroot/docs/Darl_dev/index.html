@@ -71,6 +71,7 @@
             <li><a href="#the-voyager-interface">The Voyager interface</a></li>
             <li><a href="#the-graphiql-interface">The GraphiQL interface</a></li>
             <li><a href="#the-darl-editor">The DARL editor</a></li>
+            <li><a href="#bug-or-request-reporting">Bug or request reporting</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -125,7 +126,14 @@ full details can be found <a href="https://github.com/APIs-guru/graphql-voyager"
 The DARL editor plug-in is described in the <a href="./darl_editor">DARL editor</a> page, and the DARL language is decribed in the <a href="./darl">DARL</a> page.
 Depending on whether or not you are logged in the drop down selection shows either your rule sets or the demo collection.</p>
 <p>If the demo collection, the save button, which calls a <em>mutation</em>, will not work.</p>
-<p><img alt="darl editor" src="/images/darl_dev_darl_editor.png" /></p></div>
+<p><img alt="darl editor" src="/images/darl_dev_darl_editor.png" /></p>
+<h2 id="bug-or-request-reporting">Bug or request reporting</h2>
+<p>You can talk to the support team through the API using the following mutation:</p>
+<pre><code>mutation
+{
+  createSupportRequest(customerName: &quot;Dr Andy&quot;, customerEmail: &quot;support@darl.ai&quot;, text: &quot;there's something wrong&quot;)
+}
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">

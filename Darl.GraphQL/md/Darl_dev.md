@@ -82,5 +82,16 @@ If the demo collection, the save button, which calls a _mutation_, will not work
 
 ![darl editor](/images/darl_dev_darl_editor.png)
 
+## Bug or request reporting
+
+You can talk to the support team through the API using the following mutation:
+
+```
+mutation
+{
+  createSupportRequest(customerName: "Dr Andy", customerEmail: "support@darl.ai", text: "there's something wrong")
+}
+```
+
 
 

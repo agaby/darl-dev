@@ -25,6 +25,10 @@ using Newtonsoft.Json.Converters;
 using System.IO;
 using Stripe;
 using System.Security.Claims;
+using VSTS.Net.Types;
+using VSTS.Net;
+using VSTS.Net.Models.Request;
+using VSTS.Net.Models.WorkItems;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -1568,6 +1572,32 @@ namespace Darl.GraphQL.Models.Connectivity
             var update = Builders<Update>.Update.Set("updated", now);
             await mc.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Update, Update> { IsUpsert = true });
             return now;
+        }
+
+        /// <summary>
+        /// Create a bug using the VSTS.Net library
+        /// </summary>
+        /// <remarks>Uses VSTS.Net because Microsoft products don't work with .net core</remarks>
+        /// <returns>nothing</returns>    
+        public async Task<bool> CreateSupportRequest(string customerName, string customerEmail, string text, string project)
+        {
+            try
+            { 
+                var urlBuilderFactory = new OnlineUrlBuilderFactory(_opt.Value.AzureDevopsAccount);
+                var client = VstsClient.Get(urlBuilderFactory, accessToken: _opt.Value.AzureDevopsPersonalAccessToken);
+                await client.CreateWorkItemAsync(project, "bug", new WorkItem
+                {
+                    Fields = new Dictionary<string, string> {
+                    {"System.Title", "User reported bug" },
+                    {"Microsoft.VSTS.TCM.ReproSteps",  $"Customer {customerName} with email {customerEmail} reported the following: {text}"}
+                }
+                });
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

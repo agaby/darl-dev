@@ -31,5 +31,7 @@ namespace Darl.GraphQL
         public string ProvisionBotModel { get; set; }
         public string ProvisionRulesets { get; set; }
         public string ProvisionMLModels { get; set; }
+        public string AzureDevopsAccount { get; set; }
+        public string AzureDevopsPersonalAccessToken { get; set; }
     }
 }

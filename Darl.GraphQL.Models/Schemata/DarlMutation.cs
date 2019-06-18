@@ -806,6 +806,23 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.SetLastUpdate(from, to));
                 }
             );
+            FieldAsync<BooleanGraphType>(
+                "createSupportRequest",
+                "Create a support request in the darl support system",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "customerName", Description = "Person reporting the bug or request" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "customerEmail", Description = "Email for Dr Andy to respond to" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "text", Description = "Request or bug text" }
+                ),
+                resolve: async context =>
+                {
+                    var customerName = context.GetArgument<string>("customerName");
+                    var customerEmail = context.GetArgument<string>("customerEmail");
+                    var text = context.GetArgument<string>("text");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreateSupportRequest(customerName, customerEmail,text, "GraphQL trial site"));
+                }
+            );
         }
     }
 }
