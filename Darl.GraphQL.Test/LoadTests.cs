@@ -16,10 +16,10 @@ using static Darl.GraphQL.Models.Models.DarlUser;
 
 namespace Darl.GraphQL.Test
 {
-   [TestClass]
+    [TestClass]
     public class LoadTests
     {
- 
+
         public AppSettings appSettings = null;
         public Darl.Connectivity.AppSettings dAppSettings = null;
         public CloudStorageAccount storageAccount = null;
@@ -46,84 +46,83 @@ namespace Darl.GraphQL.Test
         {
 
         }
-/*
+        /*
+                [TestMethod]
+                [Ignore]
+                public async Task CopyDarlContacts()
+                {
+
+                    var contacts = client.GetTableReference("contacts");
+                    var list = new List<TableContacts>();
+                    TableQuery<TableContacts> defQuery = new TableQuery<TableContacts>().Where(
+                        TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, appSettings.boaiuserid));
+                    TableContinuationToken continuationToken = null;
+                    do
+                    {
+                        var defs = await contacts.ExecuteQuerySegmentedAsync(defQuery, continuationToken);
+                        list.AddRange(defs);
+                        continuationToken = defs.ContinuationToken;
+                    } while (continuationToken != null);
+                    var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi());
+                    foreach (var c in list)
+                    {
+                        await cosmos.CreateContactAsync(new Models.Models.Contact { Company = c.Company, Country = c.Country, Created = c.Created, Email = c.Email.ToLower(), FirstName = c.FirstName, Id = c.RowKey, IntroSent = c.InfoSent, LastName = c.LastName, Notes = c.Notes, Phone = c.Phone, Sector = c.Sector, Source = c.Source, Title = c.Title });
+                    }
+                }
+
+                [TestMethod]
+                [Ignore]
+                public async Task CopyDarlDefaults()
+                {
+                    var defaults = client.GetTableReference("defaults");
+                    var list = new List<TableDefaults>();
+                    TableQuery<TableDefaults> defQuery = new TableQuery<TableDefaults>().Where(
+                        TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, appSettings.boaiuserid));
+                    TableContinuationToken continuationToken = null;
+                    do
+                    {
+                        var defs = await defaults.ExecuteQuerySegmentedAsync(defQuery, continuationToken);
+                        list.AddRange(defs);
+                        continuationToken = defs.ContinuationToken;
+                    } while (continuationToken != null);
+                    var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings));
+                    foreach (var c in list)
+                    {
+                        await cosmos.CreateDefault(c.RowKey,  c.Value );
+                    }
+                }
+
+                [TestMethod]
+                [Ignore]
+                public async Task CopyDarlRuleSets()
+                {
+                    var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
+                    var list = await dr.GetRuleSets(userId);
+                    var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings));
+                    foreach (var c in list)
+                    {
+                        var rf = await dr.GetRuleset(userId, c);
+                        await cosmos.CreateRuleSet(c,rf,new Models.Models.ServiceConnectivity());
+                    }
+                }
+
+                [TestMethod]
+                [Ignore]
+
+                public async Task CopyDarlMLModels()
+                {
+                    var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
+                    var list = await dr.GetMLModels(userId);
+                    var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings));
+                    foreach (var c in list)
+                    {
+                        var mm = await dr.GetMLModel(userId, c);
+                        await cosmos.CreateMLModel(c, mm);
+                    }
+                }*/
+
         [TestMethod]
         [Ignore]
-        public async Task CopyDarlContacts()
-        {
-
-            var contacts = client.GetTableReference("contacts");
-            var list = new List<TableContacts>();
-            TableQuery<TableContacts> defQuery = new TableQuery<TableContacts>().Where(
-                TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, appSettings.boaiuserid));
-            TableContinuationToken continuationToken = null;
-            do
-            {
-                var defs = await contacts.ExecuteQuerySegmentedAsync(defQuery, continuationToken);
-                list.AddRange(defs);
-                continuationToken = defs.ContinuationToken;
-            } while (continuationToken != null);
-            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi());
-            foreach (var c in list)
-            {
-                await cosmos.CreateContactAsync(new Models.Models.Contact { Company = c.Company, Country = c.Country, Created = c.Created, Email = c.Email.ToLower(), FirstName = c.FirstName, Id = c.RowKey, IntroSent = c.InfoSent, LastName = c.LastName, Notes = c.Notes, Phone = c.Phone, Sector = c.Sector, Source = c.Source, Title = c.Title });
-            }
-        }
-
-        [TestMethod]
-        [Ignore]
-        public async Task CopyDarlDefaults()
-        {
-            var defaults = client.GetTableReference("defaults");
-            var list = new List<TableDefaults>();
-            TableQuery<TableDefaults> defQuery = new TableQuery<TableDefaults>().Where(
-                TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, appSettings.boaiuserid));
-            TableContinuationToken continuationToken = null;
-            do
-            {
-                var defs = await defaults.ExecuteQuerySegmentedAsync(defQuery, continuationToken);
-                list.AddRange(defs);
-                continuationToken = defs.ContinuationToken;
-            } while (continuationToken != null);
-            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings));
-            foreach (var c in list)
-            {
-                await cosmos.CreateDefault(c.RowKey,  c.Value );
-            }
-        }
-
-        [TestMethod]
-        [Ignore]
-        public async Task CopyDarlRuleSets()
-        {
-            var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
-            var list = await dr.GetRuleSets(userId);
-            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings));
-            foreach (var c in list)
-            {
-                var rf = await dr.GetRuleset(userId, c);
-                await cosmos.CreateRuleSet(c,rf,new Models.Models.ServiceConnectivity());
-            }
-        }
-
-        [TestMethod]
-        [Ignore]
-
-        public async Task CopyDarlMLModels()
-        {
-            var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
-            var list = await dr.GetMLModels(userId);
-            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings));
-            foreach (var c in list)
-            {
-                var mm = await dr.GetMLModel(userId, c);
-                await cosmos.CreateMLModel(c, mm);
-            }
-        }*/
-
-        [TestMethod]
-        [Ignore]
-
         public async Task CopyDarlBotModels()
         {
             var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
@@ -134,11 +133,11 @@ namespace Darl.GraphQL.Test
             using (MemoryStream ms = new MemoryStream())
             {
                 mm.Store(ms);
-                ms.Position = 0;              
-                await cosmos.CreateBotModel(userId, c, ms.ToArray(), new Models.Models.ServiceConnectivity(), new List<Models.Models.Authorization>(), new List<Models.Models.BotConnection>());
-            }            
+                ms.Position = 0;
+                await cosmos.CreateBotModel(userId, c, ms.ToArray());
+            }
         }
-/*
+        /*
         [TestMethod]
         [Ignore]
         public async Task CopyDarlUsers()
@@ -151,6 +150,51 @@ namespace Darl.GraphQL.Test
             {
                 await cosmos.CreateUserAsync(new Models.Models.DarlUserInput {  Created = c.Created, current_period_end = c.current_period_end, InvoiceEmail = c.InvoiceEmail, InvoiceName = c.InvoiceName, InvoiceOrganization = c.InvoiceOrganization, Issuer = c.Issuer, PaidUsageStarted = c.PaidUsageStarted, StripeCustomerId = c.StripeCustomerId, UsageStripeSubscriptionItem = c.UsageStripeSubscriptionItem, userId = c.PartitionKey });
             }
-*/        }
+        }
+        */
+        [TestMethod]
+        [Ignore]
+        public async Task CopyCollateral()
+        {
+            var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
+            var list = await dr.GetMailContents(userId);
+            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi(null));
+            foreach (var c in list)
+            {
+                var rf = await dr.GetMailContent(userId, c);
+                await cosmos.UpdateCollateral(userId, c, rf);
+            }
+        }
+
+        /// <summary>
+        /// Copy reference collateral to admin account
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        [Ignore]
+        public async Task CloneCollateral()
+        {
+            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi(null));
+            foreach (var c in await cosmos.GetCollaterals(userId))
+            {
+                await cosmos.UpdateCollateral("786e46c2-fa33-4124-af67-1bb14625c216", c.Name, c.Value);
+            }
+        }
+
+        [TestMethod]
+        [Ignore]
+        public async Task CreateBotConnections()
+        {
+            var adminuserId = "786e46c2-fa33-4124-af67-1bb14625c216";
+            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi(null));
+//            await cosmos.FactoryReset(adminuserId);
+            var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
+            var creds = await dr.GetAllCredentialsAsync();
+            foreach(var c in creds)
+            {
+                await cosmos.CreateBotConnection(adminuserId, c.model, c.PartitionKey, c.password);
+            }
+        }
     }
+}
 

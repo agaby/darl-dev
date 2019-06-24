@@ -13,7 +13,7 @@ namespace Darl.GraphQL.Models.Schemata
             Name = "Collateral";
             Description = "Formatted text that can be used in bot responses";
             Field(c => c.Name);
-            Field(c => c.Content);
+            Field(c => c.Value);
         }
     }
 }

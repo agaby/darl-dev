@@ -104,7 +104,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         Task<BotModel> GetBotModel(string userId, string name);
         Task<List<BotModel>> GetBotModelsAsync(string userId);
-        Task<List<UserUsage>> GetBotUsage(string userId, string appId, string v);
+        Task<List<UserUsage>> GetBotUsage(string appId);
 
         Task<List<LineageNodeDefinition>> GetChildrenLineageNodes(string userId, string botModelName, string path, bool isRoot);
 
@@ -188,5 +188,11 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<DateTime> GetLastUpdate(string from, string to);
         Task<DateTime> SetLastUpdate(string from, string to);
         Task<bool> CreateSupportRequest(string customerName, string customerEmail, string text, string project);
+        Task<List<Conversation>> GetConversations();
+        Task<Conversation> CreateConversation(Conversation conversationInput);
+        Task<UserUsage> CreateUserUsage(DateTime date, int count, string userId);
+        Task<UserUsage> CreateBotUsage(DateTime date, int count, string userId, string botId);
+        Task<BotRuntimeModel> GetBotModelFromAppId(string appId);
+        Task<List<BotConnection>> GetBotConnectionsAsync();
     }
 }

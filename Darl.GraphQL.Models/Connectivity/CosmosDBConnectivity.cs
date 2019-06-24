@@ -89,18 +89,31 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<BotConnection> CreateBotConnection(string userId, string botModelName, string appId, string password)
         {
-            var collection = db.GetCollection<BotModel>("botmodel");
-            var bm = new BotConnection { AppId = appId, Password = password };
-            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var update = Builders<BotModel>.Update.Push("botconnections", bm);
-            await collection.FindOneAndUpdateAsync(filter, update);
-            return bm;
+            var bm = await GetBotModel(userId, botModelName);
+            if(bm != null)
+            { 
+                //create bot connection
+                var bc = new BotConnection { AppId = appId, FriendlyName = botModelName, Password = password, UsageHistory = new List<UserUsage>(), botModel = bm.id, userId = userId };
+                var collection = db.GetCollection<BotConnection>("botconnection");
+                await collection.InsertOneAsync(bc);
+                //bc is updated with id during insert
+                //Add to BotModel
+                var bmcollection = db.GetCollection<BotModel>("botmodel");
+                var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+                var update = Builders<BotModel>.Update.Push("botconnections", bc.id);
+                await bmcollection.FindOneAndUpdateAsync(filter, update);
+                return bc;
+            }
+            else
+            {
+                throw new ExecutionError($"{botModelName} doesn't exist in account {userId}");
+            }
         }
 
-        public async Task<BotModel> CreateBotModel(string userId, string name, byte[] lm, ServiceConnectivity sc, List<Authorization> authorizations, List<BotConnection> botConnections)
+        public async Task<BotModel> CreateBotModel(string userId, string name, byte[] lm)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
-            var model = new BotModel { Name = name, userId = userId, Authorizations = authorizations, serviceConnectivity = sc, Model = lm, botconnections = botConnections };
+            var model = new BotModel { Name = name, userId = userId, Authorizations = new List<Authorization>(), serviceConnectivity = new ServiceConnectivity(), Model = lm, botconnections = new List<MongoDB.Bson.ObjectId>() };
             await mc.InsertOneAsync(model);
             return model;
         }
@@ -314,11 +327,18 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<BotConnection> DeleteBotConnection(string userId, string botModelName, string appId)
         {
+            //delete connection
+            var bc = db.GetCollection<BotConnection>("botconnection");
+            var query = bc.AsQueryable().Where(p => p.AppId == appId);
+            var old = await query.FirstOrDefaultAsync();
+            var bcfilter = Builders<BotConnection>.Filter.Where(x => x.AppId == appId);
+            await bc.DeleteOneAsync(bcfilter);
+            //delete reference
             var mc = db.GetCollection<BotModel>("botmodel");
             var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var update = Builders<BotModel>.Update.PullFilter(p => p.botconnections, f => f.AppId == appId);
+            var update = Builders<BotModel>.Update.PullFilter(p => p.botconnections, f => f == old.id);
             await mc.UpdateOneAsync(filter, update);
-            return null;
+            return old;
         }
 
         public async Task<BotModel> DeleteBotModel(string userId, string name)
@@ -560,11 +580,23 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<List<BotConnection>> GetBotConnectivity(string userId, string name)
         {
+            var list = new List<BotConnection>();
             var collection = db.GetCollection<BotModel>("botmodel");
             var query = collection.AsQueryable()
                 .Where(a => a.userId == userId && a.Name == name)
                 .Select(a => a.botconnections);
-            return await query.SingleAsync();
+            var references = await query.SingleAsync();
+            if (references.Count != 0)
+            { 
+                var bccollection = db.GetCollection<BotConnection>("botconnection");
+                foreach(var r in references)
+                {
+                    var bcquery = bccollection.AsQueryable()
+                        .Where(a => a.id == r);
+                    list.Add(await bcquery.SingleAsync());
+                }
+            }
+            return list;
         }
 
         public async Task<BotModel> GetBotModel(string userId, string name)
@@ -583,12 +615,11 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.ToListAsync();
         }
 
-        public async Task<List<UserUsage>> GetBotUsage(string userId, string botModelName, string appId)
+        public async Task<List<UserUsage>> GetBotUsage(string appId)
         {
-            var collection = db.GetCollection<BotModel>("botmodel");
+            var collection = db.GetCollection<BotConnection>("botconnection");
             var query = collection.AsQueryable()
-                .Where(a => a.userId == userId && a.Name == botModelName)
-                .Select(a => a.botconnections).FirstOrDefault().Where(b => b.AppId == appId)
+                .Where(a => a.AppId == appId)
                 .Select(c => c.UsageHistory);
             return query.FirstOrDefault().ToList();
         }
@@ -1400,7 +1431,7 @@ namespace Darl.GraphQL.Models.Connectivity
             //copy just the thousandquestions botmodel from the master account
 
             var bm = await GetBotModel(_opt.Value.boaiuserid, _opt.Value.ProvisionBotModel);
-            await CreateBotModel(userId, _opt.Value.ProvisionBotModel, bm.Model, bm.serviceConnectivity, bm.Authorizations, bm.botconnections);
+            await CreateBotModel(userId, _opt.Value.ProvisionBotModel, bm.Model);
             // copy selected rulesets
             foreach (var r in _opt.Value.ProvisionRulesets.Split(','))
             {
@@ -1525,13 +1556,13 @@ namespace Darl.GraphQL.Models.Connectivity
             var query = mc.AsQueryable()
             .Where(p => p.Name == name && p.userId == userId);
             var def = await query.FirstOrDefaultAsync();
-            return def == null ? string.Empty : def.Content;
+            return def == null ? string.Empty : def.Value;
         }
 
         public async Task<Collateral> UpdateCollateral(string userId, string name, string value)
         {
             var mc = db.GetCollection<Collateral>("collateral");
-            var model = new Collateral { Name = name, Content = value, userId = userId  };
+            var model = new Collateral { Name = name, Value = value, userId = userId  };
             var filter = Builders<Collateral>.Filter.Where(x => x.Name == name && x.userId == userId);
             var update = Builders<Collateral>.Update.Set("Value", value);
             await mc.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Collateral, Collateral> { IsUpsert = true });
@@ -1598,6 +1629,60 @@ namespace Darl.GraphQL.Models.Connectivity
                 return false;
             }
             return true;
+        }
+
+        public async Task<List<Conversation>> GetConversations()
+        {
+            var mc = db.GetCollection<Conversation>("conversation");
+            var query = mc.AsQueryable();
+            return await query.ToListAsync();
+        }
+
+        public async Task<Conversation> CreateConversation(Conversation conversationInput)
+        {
+            var mc = db.GetCollection<Conversation>("conversation");
+            await mc.InsertOneAsync(conversationInput);
+            return conversationInput;
+        }
+
+        public async Task<UserUsage> CreateUserUsage(DateTime date, int count, string userId)
+        {
+            var usage = new UserUsage(date, count);
+            var collection = db.GetCollection<DarlUser>("user");
+            var filter = Builders<DarlUser>.Filter.Where(x => x.userId == userId);
+            var update = Builders<DarlUser>.Update.Push("usageHistory", usage);
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return usage;
+        }
+
+        public async Task<UserUsage> CreateBotUsage(DateTime date, int count, string userId, string botId)
+        {
+            var usage = new UserUsage(date, count);
+            var collection = db.GetCollection<BotConnection>("botconnection");
+            var filter = Builders<BotConnection>.Filter.Where(x => x.AppId == botId);
+            var update = Builders<BotConnection>.Update.Push("usageHistory", usage);
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return usage;
+        }
+
+        public async Task<BotRuntimeModel> GetBotModelFromAppId(string appId)
+        {
+            var collection = db.GetCollection<BotConnection>("botconnection");
+            var query = collection.AsQueryable()
+            .Where(p => p.AppId == appId);
+            var botcon =  await query.SingleAsync();
+            var mc = db.GetCollection<BotModel>("botmodel");
+            var mcquery = mc.AsQueryable()
+            .Where(p => p.id == botcon.id);
+            var bot = await mcquery.SingleAsync();
+            return new BotRuntimeModel { Authorizations = bot.Authorizations, botModelName = bot.Name, Model = bot.Model, password = botcon.Password, serviceConnectivity = bot.serviceConnectivity, userId = bot.userId };
+        }
+
+        public async Task<List<BotConnection>> GetBotConnectionsAsync()
+        {
+            var mc = db.GetCollection<BotConnection>("botconnection");
+            var query = mc.AsQueryable();
+            return await query.ToListAsync();
         }
     }
 }

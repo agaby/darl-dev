@@ -796,7 +796,7 @@ namespace Darl.GraphQL.Models.Schemata
                 "Set the utc time of a system wide update.",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "from", Description = "The source of the update" },
-                    new QueryArgument<NonNullGraphType<ListGraphType<DarlVarInputType>>> { Name = "to", Description = "The destination of the update" }
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "to", Description = "The destination of the update" }
                 ),
                 resolve: async context =>
                 {
@@ -805,7 +805,8 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await connectivity.SetLastUpdate(from, to));
                 }
-            );
+            ).AuthorizeWith("AdminPolicy");
+
             FieldAsync<BooleanGraphType>(
                 "createSupportRequest",
                 "Create a support request in the darl support system",
@@ -823,6 +824,55 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.CreateSupportRequest(customerName, customerEmail,text, "GraphQL trial site"));
                 }
             );
+            Field<ConversationType>(
+                "createConversation",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<ConversationInputType>> { Name = "conversation" }),
+                resolve: context =>
+                {
+                    var conversationInput = context.GetArgument<Conversation>("conversation");
+                    return connectivity.CreateConversation(conversationInput);
+                }
+            ).AuthorizeWith("AdminPolicy");
+
+            FieldAsync<UserUsageType>(
+                "createUserUsage",
+                "Attach a day of usage to a user",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<DateTimeGraphType>> { Name = "date", Description = "The date of the usage" },
+                    new QueryArgument<NonNullGraphType<IntGraphType>> { Name = "count", Description = "The count of the usages" },
+                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId", Description = "The user responsible for the usages" }
+               ),
+                resolve: async context =>
+                {
+                    var date = context.GetArgument<DateTime>("date");
+                    var count = context.GetArgument<int>("count");
+                    var userId = context.GetArgument<string>("userId");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreateUserUsage(date,count,userId));
+                }
+            ).AuthorizeWith("AdminPolicy");
+
+            FieldAsync<UserUsageType>(
+                "createBotUsage",
+                "Attach a day of usage to a user",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<DateTimeGraphType>> { Name = "date", Description = "The date of the usage" },
+                    new QueryArgument<NonNullGraphType<IntGraphType>> { Name = "count", Description = "The count of the usages" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId", Description = "The user responsible for the usages" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botId", Description = "The bot responsible for the usages" }
+               ),
+                resolve: async context =>
+                {
+                    var date = context.GetArgument<DateTime>("date");
+                    var count = context.GetArgument<int>("count");
+                    var userId = context.GetArgument<string>("userId");
+                    var botId = context.GetArgument<string>("botId");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreateBotUsage(date, count, userId, botId));
+                }
+            ).AuthorizeWith("AdminPolicy");
+
         }
     }
 }

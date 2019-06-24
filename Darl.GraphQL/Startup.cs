@@ -166,6 +166,9 @@ namespace Darl.GraphQL
             services.AddTransient<LineageNodeAttributeResourceType>();
             services.AddTransient<CollateralType>();
             services.AddTransient<UpdateType>();
+            services.AddTransient<ConversationType>();
+            services.AddTransient<ConversationInputType>();
+            services.AddTransient<BotRuntimeModelType>();
 
 
             //root

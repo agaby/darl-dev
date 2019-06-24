@@ -13,7 +13,7 @@ namespace Darl.GraphQL.Models.Schemata
             Name = "MailContent";
             Description = "Text used for emailing";
             Field(c => c.Name);
-            Field(c => c.Content);
+            Field(c => c.Value);
         }
     }
 }

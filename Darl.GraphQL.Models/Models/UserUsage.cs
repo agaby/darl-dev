@@ -12,7 +12,7 @@ namespace Darl.GraphQL.Models.Models
             Count = count;
         }
 
-        public DateTime Date { get; }
-        public int Count { get; }
+        public DateTime Date { get; set; }
+        public int Count { get; set; }
     }
 }

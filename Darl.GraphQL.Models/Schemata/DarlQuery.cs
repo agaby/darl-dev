@@ -133,17 +133,15 @@ namespace Darl.GraphQL.Models.Schemata
             FieldAsync<ListGraphType<UserUsageType>>(
                 "botUsages",
                 arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "appId" }
                     ),
                 resolve: async context =>
                 {
-                    var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.GetBotUsage(userId, c.GetArgument<String>("botModelName"), c.GetArgument<String>("appId"))
+                        async c => await connectivity.GetBotUsage( c.GetArgument<String>("appId"))
                     );
                 }
-            );
+            ).AuthorizeWith("User");
 
             FieldAsync<ListGraphType<LineageNodeDefinitionType>>("getChildrenLineageNodes",
                 arguments: new QueryArguments(
@@ -364,7 +362,7 @@ namespace Darl.GraphQL.Models.Schemata
                 "Get the utc time of a system wide update.",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "from", Description = "The source of the update" },
-                    new QueryArgument<NonNullGraphType<ListGraphType<DarlVarInputType>>> { Name = "to", Description = "The destination of the update" }
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "to", Description = "The destination of the update" }
                 ),
                 resolve: async context =>
                 {
@@ -374,7 +372,34 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.GetLastUpdate(from,to));
                 }
             );
+            FieldAsync<ListGraphType<ConversationType>>(
+              "conversations",
+                  resolve: async context =>
+                  {
+                      return await context.TryAsyncResolve(
+                                  async c => await connectivity.GetConversations());
+                  }
+            ).AuthorizeWith("AdminPolicy");
+            FieldAsync<BotRuntimeModelType>(
+                "getBotModelFromAppId",
+                "Reference a bot model from an external id ",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "appId", Description = "The remote reference to a bot instance" }),
+                resolve: async context =>
+                {
+                    var appId = context.GetArgument<string>("appId");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.GetBotModelFromAppId(appId));
+                }
+            ).AuthorizeWith("AdminPolicy");
+            FieldAsync<ListGraphType<BotConnectionType>>(
+               "botConnections",
+               resolve: async context =>
+               {
+                   return await context.TryAsyncResolve(
+                       async c => await connectivity.GetBotConnectionsAsync());
+               }
+            ).AuthorizeWith("AdminPolicy"); ;
         }
-    
+
     }
 }
