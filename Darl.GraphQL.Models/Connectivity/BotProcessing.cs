@@ -49,6 +49,10 @@ namespace Darl.GraphQL.Models.Connectivity
                     {
                         resp.Add(r);
                     }
+                    if (r.response.approximate)
+                    {
+                        await _conv.CreateDefaultResponse(new DefaultResponse { date = DateTime.Now, model = botModelName, message = conversationData.Value, response = r.response.Value, userId = userId, version = bm.modelSettings["version"] });
+                    }
                 }
                 else
                 {

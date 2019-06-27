@@ -195,5 +195,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<BotRuntimeModel> GetBotModelFromAppId(string appId);
         Task<List<BotConnection>> GetBotConnectionsAsync();
         Task<string> GetUserIdFromAppId(string appId);
+        Task CreateDefaultResponse(DefaultResponse response);
     }
 }

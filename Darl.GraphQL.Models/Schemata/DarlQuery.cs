@@ -10,7 +10,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlQuery : ObjectGraphType<object>
     {
-        public DarlQuery(IConnectivity connectivity)
+        public DarlQuery(IConnectivity connectivity, IBotProcessing bot)
         {
             Name = "Query";
             Description = "View the contents of your account.";
@@ -309,7 +309,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var conversationId = context.GetArgument<string>("conversationId");
                     var conversationData = context.GetArgument<DarlVar>("conversationData");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await connectivity.InteractAsync(userId, botModelName, conversationId, conversationData));
+                    return await context.TryAsyncResolve(async c => await bot.InteractAsync(userId, botModelName, conversationId, conversationData));
                 });
             FieldAsync<StringGraphType>(
                "getApiKey",

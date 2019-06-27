@@ -1695,18 +1695,24 @@ namespace Darl.GraphQL.Models.Connectivity
             var collection = db.GetCollection<BotState>("botstate");
             var query = collection.AsQueryable()
             .Where(p => p.userId == userId && p.conversationId == conversationId);
-            return await query.SingleAsync();
+            return await query.FirstOrDefaultAsync();
         }
 
         public async Task SaveBotState(BotState bs)
         {
             var collection = db.GetCollection<BotState>("botstate");
-            await collection.ReplaceOneAsync( doc => doc.id == bs.id, bs, new UpdateOptions { IsUpsert = true });
+            await collection.ReplaceOneAsync( doc => doc.id == bs.id && doc.userId == bs.userId , bs, new UpdateOptions { IsUpsert = true });
         }
 
         public Task<DarlVar> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task CreateDefaultResponse(DefaultResponse response)
+        {
+            var collection = db.GetCollection<DefaultResponse>("defaultresponse");
+            await collection.InsertOneAsync(response);
         }
     }
 }
