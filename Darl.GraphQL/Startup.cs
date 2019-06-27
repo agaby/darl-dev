@@ -27,6 +27,7 @@ using System.Security.Principal;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Threading.Tasks;
+using Darl.Lineage.Bot.Stores;
 
 namespace Darl.GraphQL
 {
@@ -84,6 +85,8 @@ namespace Darl.GraphQL
             //services
             services.AddSingleton<IConnectivity, CosmosDBConnectivity>();
             services.AddSingleton<IFormApi, FormApi>();
+            services.AddSingleton<IBotProcessing, BotProcessing>();
+            services.AddSingleton<IRuleFormInterface, RuleFormInterface>();
 
             //types
             services.AddTransient<BotFormatType>();

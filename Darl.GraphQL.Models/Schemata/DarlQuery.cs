@@ -297,7 +297,7 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                                     async c => await connectivity.BacktrackQuestionnaire(ieToken));
                 });
-            FieldAsync<InteractResponseType>("interact",
+            FieldAsync<ListGraphType<InteractResponseType>>("interact",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName", Description = "The bot model to run" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "conversationId", Description = "The unique conversation identifier" },
@@ -398,7 +398,18 @@ namespace Darl.GraphQL.Models.Schemata
                    return await context.TryAsyncResolve(
                        async c => await connectivity.GetBotConnectionsAsync());
                }
-            ).AuthorizeWith("AdminPolicy"); ;
+            ).AuthorizeWith("AdminPolicy");
+            FieldAsync<StringGraphType>(
+                "getUserIdFromAppId",
+                "Get the userId from an external id ",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "appId", Description = "The remote reference to a bot instance" }),
+                resolve: async context =>
+                {
+                    var appId = context.GetArgument<string>("appId");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.GetUserIdFromAppId(appId));
+                }
+            ).AuthorizeWith("AdminPolicy");
         }
 
     }

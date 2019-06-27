@@ -27,7 +27,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<Contact> CreateContactAsync(Contact contact);
 
         Task<Default> CreateDefault(string name, string value);
-
+        Task<BotState> GetBotState(string userId, string conversationId);
         Task<BotModel> CreateDefaultModel(string userId, string name);
 
         Task<Models.MLModel> CreateEmptyMLModel(string userId, string name);
@@ -49,7 +49,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<StringDoublePair> CreateUpdateConstant(string userId, string botModelName, string name, double value);
 
         Task<string> CreateUpdateStore(string userId, string botModelName, string name);
-
+        Task SaveBotState(BotState bs);
         Task<StringStringPair> CreateUpdateString(string userId, string botModelName, string name, string value);
 
         Task<DarlUser> CreateUserAsync(DarlUserInput user);
@@ -178,7 +178,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<string> UpdateUserAPIKey(string userId);
         Task<ZendeskCredentials> UpdateZendeskCredentials(string userId, string botModelName, string zendeskApiKey, string zendeskURL, string zendeskUser);
         Task<string> UpdateDarlInRuleset(string userId, string ruleSetName, string darl);
-        Task<InteractTestResponse> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData);
+        Task<DarlVar> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData);
         Task<LineageNodeAttributeResources> getLineageNodeAttributeResources(string userId, string botModelName);
         Task<DarlUser> GetUserByStripeId(string stripeId);
         Task<string> GetCollateral(string userId, string name);
@@ -194,5 +194,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<UserUsage> CreateBotUsage(DateTime date, int count, string userId, string botId);
         Task<BotRuntimeModel> GetBotModelFromAppId(string appId);
         Task<List<BotConnection>> GetBotConnectionsAsync();
+        Task<string> GetUserIdFromAppId(string appId);
     }
 }

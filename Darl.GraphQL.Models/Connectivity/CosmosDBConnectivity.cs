@@ -29,6 +29,7 @@ using VSTS.Net.Types;
 using VSTS.Net;
 using VSTS.Net.Models.Request;
 using VSTS.Net.Models.WorkItems;
+using Darl.Lineage.Bot.Stores;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -1492,11 +1493,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return darl;
         }
 
-        public async Task<InteractTestResponse> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData)
-        {
-            var bm = await GetLineageModel(userId, botModelName);
-            return await _form.Interact(bm, userId,  conversationId, conversationData);
-        }
 
         public async Task<List<DarlUser>> GetUsers()
         {
@@ -1683,6 +1679,34 @@ namespace Darl.GraphQL.Models.Connectivity
             var mc = db.GetCollection<BotConnection>("botconnection");
             var query = mc.AsQueryable();
             return await query.ToListAsync();
+        }
+
+        public async Task<string> GetUserIdFromAppId(string appId)
+        {
+            var collection = db.GetCollection<BotConnection>("botconnection");
+            var query = collection.AsQueryable()
+            .Where(p => p.AppId == appId);
+            var botcon = await query.SingleAsync();
+            return botcon.userId;
+        }
+
+        public async Task<BotState> GetBotState(string userId, string conversationId)
+        {
+            var collection = db.GetCollection<BotState>("botstate");
+            var query = collection.AsQueryable()
+            .Where(p => p.userId == userId && p.conversationId == conversationId);
+            return await query.SingleAsync();
+        }
+
+        public async Task SaveBotState(BotState bs)
+        {
+            var collection = db.GetCollection<BotState>("botstate");
+            await collection.ReplaceOneAsync( doc => doc.id == bs.id, bs, new UpdateOptions { IsUpsert = true });
+        }
+
+        public Task<DarlVar> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData)
+        {
+            throw new NotImplementedException();
         }
     }
 }

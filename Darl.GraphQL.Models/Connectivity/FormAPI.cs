@@ -137,19 +137,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return true;
         }
 
-        //There is a problem here
-        //We do not want FormAPI to access storage, that's the task of IConnectivity, and this is passed as a parameter.
-        //however CreateStores calls IRuleFormInterface, which passes access to storage so that call and collatteral stores can acces data.
-        //So we could have Iconnectivity -> IFormAPI -> IRuleFormInterface -> IConnectivity
-        //resolve: Actions, Lambdas?
-
-        public Task<InteractTestResponse> Interact(LineageModel bm, string userId, string conversationId, DarlVar conversationData)
-        {
-//            var stores = bm.CreateStores(userId, _rep.GetNewCallInterface(userId), botState.values, new LocalBotData(botState.UserData), new LocalBotData(botState.ConversationData), new LocalBotData(botState.PrivateConversationData));
-
-            throw new NotImplementedException();
-        }
-
 
 
         #region support methods

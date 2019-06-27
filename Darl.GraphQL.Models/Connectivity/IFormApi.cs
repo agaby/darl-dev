@@ -12,6 +12,5 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<QuestionSetProxy> Get(RuleSet ruleSet, string language = "en", int questCount = 1);
         Task<QuestionSetProxy> Post(QuestionSetProxy questionsetproxy);
         Task<bool> Trigger(string id);
-        Task<InteractTestResponse> Interact(LineageModel bm, string userId, string conversationId, DarlVar conversationData);
     }
 }
