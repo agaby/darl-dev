@@ -1,9 +1,11 @@
 ﻿using Darl.GraphQL.Models.Models;
+using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using DarlCommon;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,26 +17,35 @@ namespace Darl.GraphQL.Models.Connectivity
         IConnectivity _conv;
         IFormApi _form;
         IRuleFormInterface _rfi;
+        ITrigger _trigger;
 
-        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi)
+        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger)
         {
             _conv = conv;
             _form = form;
             _rfi = rfi;
+            _trigger = trigger;
         }
 
         public async Task<List<InteractTestResponse>> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData)
         {
             List<InteractTestResponse> resp = new List<InteractTestResponse>();
-            var bm = await _conv.GetLineageModel(userId, botModelName);
+            //cache these?
+            var bmt = await _conv.GetBotModel(userId, botModelName);
+            LineageModel bm = null;
+            using (var ms = new MemoryStream(bmt.Model))
+            {
+                ms.Position = 0;
+                bm = LineageModel.Load(ms);
+            }
             BotState bs = await _conv.GetBotState(userId, conversationId);
             if(bs == null)//first call for this conversation
             {
-                bs = new BotState { conversationId = conversationId, userId = userId, userData = new LocalBotData(new Dictionary<string, string>()), conversationData = new LocalBotData(new Dictionary<string, string>()), privateConversationData = new LocalBotData(new Dictionary<string, string>()), values = new List<DarlVar>(), ruleProcessing = new Stack<QuestionSetProxy>() }; 
+                bs = new BotState { conversationId = conversationId, userId = userId, userData = new LocalBotData(new Dictionary<string, string>()), conversationData = new LocalBotData(new Dictionary<string, string>()), privateConversationData = new LocalBotData(new Dictionary<string, string>()), values = new List<DarlVar>(), ruleProcessing = new Stack<RuleSetHandler>() }; 
             }
+            var stores = bm.CreateStores(userId, _rfi, bs.values, bs.userData, bs.conversationData, bs.privateConversationData );
             if (bs.ruleProcessing.Count == 0) // conversational processing
             {
-                var stores = bm.CreateStores(userId, _rfi, bs.values, bs.userData, bs.conversationData, bs.privateConversationData );
                 var responses = await bm.InteractTest(conversationData, bs.values, stores);
                 if(responses.Any())
                 {
@@ -43,7 +54,8 @@ namespace Darl.GraphQL.Models.Connectivity
                     {
                         //call the ruleset and stack it
                         var newRF = ((CallStore)stores["Call"]).currentRF;
-                        bs.ruleProcessing.Push(await _form.Get(new RuleSet { Contents = newRF, userId = userId }));
+                        if(newRF != null)
+                            bs.ruleProcessing.Push(new RuleSetHandler { user = userId, rf = newRF, modelId = conversationId });
                     }
                     else
                     {
@@ -61,17 +73,51 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             if (bs.ruleProcessing.Count > 0) //ruleset processing
             {
+                var rsh = bs.ruleProcessing.Peek();
+                rsh.trigger = _trigger;
                 //handle simple navigation
                 var c = LineageModelBotExtensions.HandleRuleSetCommands(conversationData.Value);
                 switch(c)
                 {
                     case LineageModelBotExtensions.Commands.quit:
-                        break;
+                        bs.ruleProcessing.Clear();
+                        resp.Add(new InteractTestResponse { response = new DarlVar { Value = "I'm quitting that sequence of questions.", dataType = DarlVar.DataType.textual } });
+                        await _conv.SaveBotState(bs);
+                        return resp;
                     case LineageModelBotExtensions.Commands.back:
+                        if (rsh.CanGoBack())
+                            rsh.Back(bs.values); //removes last value from values
+                        break;
+                    default:
+                        var request = new DarlVar { Value = conversationData.Value, name = RuleSetHandler.questionIdentifier, dataType = DarlVar.DataType.textual };
+                        var existing = bs.values.Where(a => a.name == RuleSetHandler.questionIdentifier).FirstOrDefault();
+                        if (existing != null)
+                            bs.values.Remove(existing);
+                        bs.values.Add(request); //should be hashset throughout
                         break;
                 }
                 //pass on to ruleset
+                var responses = await rsh.RuleSetPass(bs.values, stores, bmt.serviceConnectivity);
                 //add to resp;
+                foreach (var r in responses)
+                {
+                    switch (r.response.dataType)
+                    {
+                        case DarlVar.DataType.ruleset:
+                            resp.Add(r);
+                            var newRF = ((CallStore)stores["Call"]).currentRF; if (newRF != null)
+                                bs.ruleProcessing.Push(new RuleSetHandler { user = userId, rf = newRF, modelId = conversationId });
+                            break;
+                        case DarlVar.DataType.complete:
+                            //clear out values etc here
+                            bs.values.Clear();
+                            bs.ruleProcessing.Pop();
+                            break;
+                        default:
+                            resp.Add(r);
+                            break;
+                    }
+                }
             }
             await _conv.SaveBotState(bs);
             return resp;

@@ -12,9 +12,9 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "Document";
             Description = "A word document that can be used for reporting";
-            Field(c => c.LastModified);
-            Field(c => c.Name);
-            Field(c => c.Size);
+            Field(c => c.userId).Description("The owner of the document");
+            Field(c => c.name).Description("The document name");
+            Field(c => c.content).Description("The document content");
         }
     }
 }

@@ -106,7 +106,7 @@
             var graph = graphql("https://darl.dev/graphql");
             var allrulesets = graph(`{ rulesets { name }}`);
             var darlContent = graph(`query getdarl($name: String!){  getDarlFromRuleSet(ruleSetName: $name)}`);
-            var savecontent = graph('mutation setdarl($name: String!, $darl: String!){updateDarlInRuleset(ruleSetName: $name, darl: $darl)}');
+            var savecontent = graph('mutation setdarl($name: String!, $darl: String!){updateRuleSetDarl(name: $name, darl: $darl)}');
             const rs = await allrulesets();
             $.each(rs.rulesets, function (key, entry) {
                 dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));

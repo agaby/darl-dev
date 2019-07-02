@@ -33,5 +33,6 @@ namespace Darl.GraphQL
         public string ProvisionMLModels { get; set; }
         public string AzureDevopsAccount { get; set; }
         public string AzureDevopsPersonalAccessToken { get; set; }
+        public string ProvisionCollateral { get; set; }
     }
 }

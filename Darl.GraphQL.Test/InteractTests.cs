@@ -21,7 +21,7 @@ namespace Darl.GraphQL.Test
         public void Initialize()
         {
             client = new GraphQLClient("https://darl.dev/graphql/");
-            var authcode = "86f98f0e-0b42-409b-a304-44de4bd99113";
+            var authcode = "8952d1af-9d34-4866-a4bc-412bf51743d6";
             client.DefaultRequestHeaders.Add("Authorization", $"Basic {authcode}");
             client.Options.JsonSerializerSettings.Converters.Add(new StringEnumConverter());
         }
@@ -31,12 +31,28 @@ namespace Darl.GraphQL.Test
         {
             var req = new GraphQLRequest()
             {
-                Variables = new { model = "thousandquestions.model", convId = "aaabbb", data = new DarlVar { name = "", Value = "hi", dataType = DarlVar.DataType.textual } },
+                Variables = new { model = "thousandquestions.model", convId = "aaabbb", data = new { name = "", Value = "hi", dataType = DarlVar.DataType.textual } },
                 Query = @"query Interact($model: String!, $convId: String!, $data: darlVarUpdate!){ interact(botModelName: $model, conversationId: $convId, conversationData: $data){ response { value dataType } }}",
                 OperationName = "Interact"
             };
             var resp = await client.PostAsync(req);
             var responses = resp.GetDataFieldAs<List<InteractTestResponse>>("interact");
+            Assert.AreEqual(1, responses.Count);
+
+        }
+
+        [TestMethod]
+        public async Task TestDefaultHandling()
+        {
+            var req = new GraphQLRequest()
+            {
+                Variables = new { model = "thousandquestions.model", convId = "aaabbb", data = new { name = "", Value = "schnerbblewerble", dataType = DarlVar.DataType.textual } },
+                Query = @"query Interact($model: String!, $convId: String!, $data: darlVarUpdate!){ interact(botModelName: $model, conversationId: $convId, conversationData: $data){ response { value dataType approximate} }}",
+                OperationName = "Interact"
+            };
+            var resp = await client.PostAsync(req);
+            var responses = resp.GetDataFieldAs<List<InteractTestResponse>>("interact");
+            Assert.IsTrue(responses[0].response.approximate);
 
         }
     }

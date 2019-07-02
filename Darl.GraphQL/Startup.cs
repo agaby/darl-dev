@@ -28,6 +28,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Threading.Tasks;
 using Darl.Lineage.Bot.Stores;
+using Darl.Lineage.Bot;
 
 namespace Darl.GraphQL
 {
@@ -87,6 +88,7 @@ namespace Darl.GraphQL
             services.AddSingleton<IFormApi, FormApi>();
             services.AddSingleton<IBotProcessing, BotProcessing>();
             services.AddSingleton<IRuleFormInterface, RuleFormInterface>();
+            services.AddSingleton<ITrigger, BotTrigger>();
 
             //types
             services.AddTransient<BotFormatType>();
@@ -172,6 +174,7 @@ namespace Darl.GraphQL
             services.AddTransient<ConversationType>();
             services.AddTransient<ConversationInputType>();
             services.AddTransient<BotRuntimeModelType>();
+            services.AddTransient<DocumentType>();
 
 
             //root

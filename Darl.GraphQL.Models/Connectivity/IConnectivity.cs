@@ -90,7 +90,6 @@ namespace Darl.GraphQL.Models.Connectivity
 
         Task<DarlUser> DeleteUser(string id);
 
-        Task<ZendeskCredentials> DeleteZendeskCredentials(string userId, string botModelName);
 
         Task<bool> FactoryReset(string userId);
 
@@ -176,7 +175,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<TwilioCredentials> UpdateTwilioCredentials(string userId, string botModelName, string sMSAccountFrom, string sMSAccountIdentification, string sMSAccountPassword);
         Task<DarlUser> UpdateUserAsync(string userId, DarlUserUpdate darlUserUpdate);
         Task<string> UpdateUserAPIKey(string userId);
-        Task<ZendeskCredentials> UpdateZendeskCredentials(string userId, string botModelName, string zendeskApiKey, string zendeskURL, string zendeskUser);
         Task<string> UpdateDarlInRuleset(string userId, string ruleSetName, string darl);
         Task<DarlVar> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData);
         Task<LineageNodeAttributeResources> getLineageNodeAttributeResources(string userId, string botModelName);
@@ -196,5 +194,10 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<BotConnection>> GetBotConnectionsAsync();
         Task<string> GetUserIdFromAppId(string appId);
         Task CreateDefaultResponse(DefaultResponse response);
+        Task<Document> GetDocument(string userId, string name);
+        Task<List<Document>> GetDocuments(string userId);
+        Task<Document> UpdateDocument(Document document);
+        Task<Document> DeleteDocument(string userId, string name);
+
     }
 }

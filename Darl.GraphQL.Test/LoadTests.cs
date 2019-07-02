@@ -1,6 +1,7 @@
 using Darl.Connectivity;
 using Darl.Connectivity.Models;
 using Darl.GraphQL.Models.Connectivity;
+using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -152,18 +153,23 @@ namespace Darl.GraphQL.Test
             }
         }
         */
-        [TestMethod]
+        [TestMethod]   
         [Ignore]
         public async Task CopyCollateral()
         {
-            var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
-            var list = await dr.GetMailContents(userId);
-            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi(null));
-            foreach (var c in list)
-            {
-                var rf = await dr.GetMailContent(userId, c);
-                await cosmos.UpdateCollateral(userId, c, rf);
-            }
+            /*           var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
+                       var list = await dr.GetCollaterals(userId);
+                       foreach (var c in list)
+                       {
+                           if(c.EndsWith("md"))
+                           { 
+                               var rf = await dr.GetCollateral(userId, c);
+                               await cosmos.UpdateCollateral(userId, c, rf);
+                           }
+                       }*/
+           var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi(null));
+           await cosmos.UpdateCollateral(userId, "suggestions.md", File.ReadAllText(@"C:\Users\Andrew\Downloads\suggestions.md"));
+           await cosmos.UpdateCollateral(userId, "bot_help.md", File.ReadAllText(@"C:\Users\Andrew\Downloads\bot_help.md"));
         }
 
         /// <summary>
@@ -194,6 +200,38 @@ namespace Darl.GraphQL.Test
             {
                 await cosmos.CreateBotConnection(adminuserId, c.model, c.PartitionKey, c.password);
             }
+        }
+
+        [TestMethod]
+        [Ignore]
+        public async Task CreateDocuments()
+        {
+            var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
+            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi(null));
+            foreach (var doc in await dr.GetDocuments(userId))
+            {
+                using (var ms = new MemoryStream())
+                {
+                    var d = new Document {userId = userId, name = doc };
+                    await dr.GetDocumentStream(userId, doc, ms);
+                    d.content = ms.ToArray();
+                    await cosmos.UpdateDocument(d);
+                }
+            }
+
+        }
+
+        [TestMethod]
+        public async Task CopyDocuments()
+        {
+            var adminuserId = "786e46c2-fa33-4124-af67-1bb14625c216";
+            var slawUserId = "8a14e17b-268a-4dc8-84fc-95d1a558e737";
+            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi(null));
+            var d = await cosmos.GetDocument(userId, "modernslaverytest.docx");
+            d.userId = adminuserId;
+            await cosmos.UpdateDocument(d);
+            d.userId = slawUserId;
+            await cosmos.UpdateDocument(d);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Darl.Lineage.Bot.Stores;
+﻿using Darl.Lineage.Bot;
+using Darl.Lineage.Bot.Stores;
 using DarlCommon;
 using MongoDB.Bson;
 using System;
@@ -15,7 +16,7 @@ namespace Darl.GraphQL.Models.Models
 
         public string conversationId { get; set; }
 
-        public Stack<QuestionSetProxy> ruleProcessing { get; set; } = new Stack<QuestionSetProxy>();
+        public Stack<RuleSetHandler> ruleProcessing { get; set; } = new Stack<RuleSetHandler>();
 
         public List<DarlVar> values { get; set; } = new List<DarlVar>();
 

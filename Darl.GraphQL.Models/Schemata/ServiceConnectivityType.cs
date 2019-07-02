@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Models.Models;
+using DarlCommon;
 using GraphQL.Types;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,6 @@ namespace Darl.GraphQL.Models.Schemata
             Field<SellerCenterCredentialsType>("sellerCred", resolve: context => context.Source.sellercred);
             Field<TwilioCredentialsType>("twilioCred", resolve: context => context.Source.twiliocred);
             Field<SendGridCredentialsType>("sendgridCred", resolve: context => context.Source.sendgridcred);
-            Field<ZendeskCredentialsType>("zendeskCred", resolve: context => context.Source.zendeskcred);
         }
     }
 }

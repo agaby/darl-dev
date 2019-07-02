@@ -209,23 +209,32 @@ namespace Darl.GraphQL.Models.Connectivity
             if (rs != null)
             {
                 rs.Contents.darl = darl;
-                var errors = await rs.Contents.UpdateFromCode();
-                if (errors.Count == 0)
-                {
-                    var rc = db.GetCollection<RuleSet>("ruleset");
-                    await rc.UpdateOneAsync(Builders<RuleSet>.Filter.Where(x => x.Name == name && x.userId == userId),
-                        Builders<RuleSet>.Update.Set(x => x, rs));
-                    return rs.Contents;
-                }
-                else
-                {
-                    int errorCount = 1;
-                    var dict = new Dictionary<string, object>();
-                    foreach (var err in errors)
+                if (string.IsNullOrEmpty(rs.Contents.name))
+                    rs.Contents.name = name;
+                try
+                { 
+                    var errors = await rs.Contents.UpdateFromCode();
+                    if (errors.Count == 0)
                     {
-                        dict.Add($"Error{errorCount++}", err);
+                        var rc = db.GetCollection<RuleSet>("ruleset");
+                        await rc.UpdateOneAsync(Builders<RuleSet>.Filter.Where(x => x.Name == name && x.userId == userId),
+                            Builders<RuleSet>.Update.Set(x => x.Contents, rs.Contents));
+                        return rs.Contents;
                     }
-                    throw new ExecutionError("Errors in updating I/O.", dict);
+                    else
+                    {
+                        int errorCount = 1;
+                        var dict = new Dictionary<string, object>();
+                        foreach (var err in errors)
+                        {
+                            dict.Add($"Error{errorCount++}", err);
+                        }
+                        throw new ExecutionError("Errors in updating I/O.", dict);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    throw new ExecutionError("Errors in Darl source");
                 }
             }
             return null;
@@ -502,15 +511,6 @@ namespace Darl.GraphQL.Models.Connectivity
                 telemetry.TrackException(ex);
                 throw new ExecutionError("Duplicate or malformed data");
             }
-        }
-
-        public async Task<ZendeskCredentials> DeleteZendeskCredentials(string userId, string botModelName)
-        {
-            var mc = db.GetCollection<BotModel>("botmodel");
-            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var update = Builders<BotModel>.Update.Set(p => p.serviceConnectivity.zendeskcred, null);
-            await mc.UpdateOneAsync(filter, update);
-            return null;
         }
 
         public async Task<LineageNodeAttributes> GetAttribute(string userId, string botModelName, string phrase)
@@ -971,7 +971,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var collection = db.GetCollection<BotModel>("botmodel");
             var ac = new AzureCredentials { AzureAPIKey = apiKey };
             var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var update = Builders<BotModel>.Update.Set("serviceConnectivity.azureCred", ac);
+            var update = Builders<BotModel>.Update.Set("serviceConnectivity.azurecred", ac);
             await collection.FindOneAndUpdateAsync(filter, update);
             return ac;
         }
@@ -1212,7 +1212,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var collection = db.GetCollection<BotModel>("botmodel");
             var scc = new SellerCenterCredentials { LiveMode = liveMode, MerchantId = merchantId, StripeApiKey = stripeApiKey };
             var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var update = Builders<BotModel>.Update.Set("serviceConnectivity.sellerCred", scc);
+            var update = Builders<BotModel>.Update.Set("serviceConnectivity.sellercred", scc);
             await collection.FindOneAndUpdateAsync(filter, update);
             return scc;
         }
@@ -1222,7 +1222,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var collection = db.GetCollection<BotModel>("botmodel");
             var sgc = new SendGridCredentials { SendGridAPIKey = sendGridAPIKey };
             var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var update = Builders<BotModel>.Update.Set("serviceConnectivity.sendgridCred", sgc);
+            var update = Builders<BotModel>.Update.Set("serviceConnectivity.sendgridcred", sgc);
             await collection.FindOneAndUpdateAsync(filter, update);
             return sgc;
         }
@@ -1232,7 +1232,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var collection = db.GetCollection<BotModel>("botmodel");
             var tc = new TwilioCredentials { SMSAccountFrom = sMSAccountFrom, SMSAccountIdentification = sMSAccountIdentification, SMSAccountPassword = sMSAccountPassword };
             var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var update = Builders<BotModel>.Update.Set("serviceConnectivity.twilioCred", tc);
+            var update = Builders<BotModel>.Update.Set("serviceConnectivity.twiliocred", tc);
             await collection.FindOneAndUpdateAsync(filter, update);
             return tc;
         }
@@ -1274,7 +1274,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var collection = db.GetCollection<BotModel>("botmodel");
             var zc = new ZendeskCredentials { ZendeskApiKey = zendeskApiKey, ZendeskURL = zendeskURL, ZendeskUser = zendeskUser };
             var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var update = Builders<BotModel>.Update.Set("serviceConnectivity.zendeskCred", zc);
+            var update = Builders<BotModel>.Update.Set("serviceConnectivity.zendeskcred", zc);
             await collection.FindOneAndUpdateAsync(filter, update);
             return zc;
         }
@@ -1437,12 +1437,20 @@ namespace Darl.GraphQL.Models.Connectivity
             foreach (var r in _opt.Value.ProvisionRulesets.Split(','))
             {
                 var rs = await GetRuleSet(_opt.Value.boaiuserid, r);
-                await CreateRuleSet(userId, r, rs.Contents, rs.serviceConnectivity);
+                if(rs != null)
+                    await CreateRuleSet(userId, r, rs.Contents, rs.serviceConnectivity);
             }
             foreach (var r in _opt.Value.ProvisionMLModels.Split(','))
             {
                 var rs = await GetMlModel(_opt.Value.boaiuserid, r);
-                await CreateMLModel(userId, r, rs.model);
+                if (rs != null)
+                    await CreateMLModel(userId, r, rs.model);
+            }
+            foreach (var r in _opt.Value.ProvisionCollateral.Split(','))
+            {
+                var rs = await GetCollateral(_opt.Value.boaiuserid, r);
+                if (rs != null)
+                    await UpdateCollateral(userId, r, rs);
             }
         }
 
@@ -1461,6 +1469,10 @@ namespace Darl.GraphQL.Models.Connectivity
                 foreach (var ml in await GetMlModelsAsync(userId))
                 {
                     await DeleteMLModel(userId, ml.Name);
+                }
+                foreach (var co in await GetCollaterals(userId))
+                {
+                    await DeleteCollateral(userId, co.Name);
                 }
                 await ProvisionUser(userId);
             }
@@ -1485,9 +1497,16 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             if (!string.IsNullOrEmpty(ruleSetName))
             {
+                var rs = await GetRuleSet(userId, ruleSetName);
+                rs.Contents.darl = darl;
+                var errors = await  rs.Contents.UpdateFromCode();
+                if(errors.Count > 0)
+                {
+                    throw new ExecutionError($"{ruleSetName} has errors. Check with the online editor");
+                }
                 var collection = db.GetCollection<RuleSet>("ruleset");
                 var filter = Builders<RuleSet>.Filter.Where(x => x.Name == ruleSetName && x.userId == userId );
-                var update = Builders<RuleSet>.Update.Set(x => x.Contents.darl, darl);
+                var update = Builders<RuleSet>.Update.Set(x => x.Contents, rs.Contents);
                 await collection.FindOneAndUpdateAsync(filter, update);
             }
             return darl;
@@ -1713,6 +1732,40 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var collection = db.GetCollection<DefaultResponse>("defaultresponse");
             await collection.InsertOneAsync(response);
+        }
+
+        public async Task<Document> GetDocument(string userId, string name)
+        {
+            var mc = db.GetCollection<Document>("document");
+            var query = mc.AsQueryable()
+            .Where(p => p.name == name && p.userId == userId);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Document>> GetDocuments(string userId)
+        {
+            var mc = db.GetCollection<Document>("document");
+            var query = mc.AsQueryable()
+            .Where(p => p.userId == userId);
+            return await query.ToListAsync();
+        }
+
+        public async Task<Document> UpdateDocument(Document document)
+        {
+            var mc = db.GetCollection<Document>("document");
+            var filter = Builders<Document>.Filter.Where(x => x.name == document.name && x.userId == document.userId);
+            var update = Builders<Document>.Update.Set("content", document.content);
+            await mc.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Document, Document> { IsUpsert = true });
+            return document;
+        }
+
+        public async Task<Document> DeleteDocument(string userId, string name)
+        {
+            var mc = db.GetCollection<Document>("document");
+            var query = mc.AsQueryable().Where(p => p.name == name && p.userId == userId);
+            var old = await query.FirstOrDefaultAsync();
+            await mc.DeleteOneAsync(Builders<Document>.Filter.Eq(r => r.userId, userId) & Builders<Document>.Filter.Eq(r => r.name, name));
+            return old;
         }
     }
 }

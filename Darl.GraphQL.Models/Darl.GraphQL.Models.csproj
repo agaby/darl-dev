@@ -16,11 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Darl_standard" Version="1.2.6" />
+    <PackageReference Include="Darl_standard" Version="1.2.11" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.6.1" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.8.1" />
-    <PackageReference Include="Stripe.net" Version="26.0.0" />
+    <PackageReference Include="Sendgrid" Version="9.11.0" />
+    <PackageReference Include="Stripe.net" Version="27.4.0" />
     <PackageReference Include="System.Reactive" Version="4.1.5" />
     <PackageReference Include="VSTS.Net.AspNetCore" Version="0.2.4" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />

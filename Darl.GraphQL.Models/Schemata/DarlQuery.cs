@@ -410,6 +410,28 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.GetUserIdFromAppId(appId));
                 }
             ).AuthorizeWith("AdminPolicy");
+            FieldAsync<DocumentType>(
+                "getDocument",
+                "Get a document used as a template",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the collateral" }),
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    var name = context.GetArgument<string>("name");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.GetDocument(userId, name));
+                }
+            );
+            FieldAsync<ListGraphType<DocumentType>>(
+                "documents",
+                "Get documents used as templates",
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.GetDocuments(userId));
+                }
+            );
         }
 
     }
