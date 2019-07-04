@@ -11,10 +11,10 @@ namespace Darl.GraphQL.Models.Schemata
         public QuestionInputType()
         {
             Name = "QuestionInput";
-            Description = "One response from a questionaire user";
-            Field(c => c.dResponse);
-            Field(c => c.reference);
-            Field(c => c.sResponse);
+            Description = "One response from a questionnaire user";
+            Field(c => c.dResponse,true).Description("The value if numeric");
+            Field(c => c.reference).Description("The reference of the question asked");
+            Field(c => c.sResponse,true).Description("The value if not numeric");
         }
     }
 }

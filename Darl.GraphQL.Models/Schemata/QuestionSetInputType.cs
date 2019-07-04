@@ -11,9 +11,9 @@ namespace Darl.GraphQL.Models.Schemata
         public QuestionSetInputType()
         {
             Name = "QuestionSetInput";
-            Description = "A sett off questionnaire responses";
+            Description = "A set of questionnaire responses";
             Field(c => c.ieToken);
-            Field<ListGraphType<QuestionInputType>>("responses");
+            Field<ListGraphType<QuestionInputType>>("questions");
         }
     }
 }

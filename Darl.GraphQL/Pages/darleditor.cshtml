@@ -18,7 +18,7 @@
         <div class="col-md-12 margin-b-40">
             <textarea id="Darl" name="Darl" rows="100" cols="160" class="form-control"></textarea>
             <hr />
-            <button id="Save" class="btn btn-primary" onclick="download('test.txt', 'Hello world!');">Save</button>
+            <button id="Save" class="btn btn-primary">Save</button>
         </div>
     </div>
 </div>
@@ -103,10 +103,10 @@
             dropdown.append('<option selected="true" disabled>Choose a ruleset to edit</option>');
             dropdown.prop('selectedIndex', 0);
 
-            var graph = graphql("https://darl.dev/graphql");
+            var graph = graphql("https://darl.dev/graphql", { headers: { "Authorization": "Basic 8952d1af-9d34-4866-a4bc-412bf51743d6"}});
             var allrulesets = graph(`{ rulesets { name }}`);
             var darlContent = graph(`query getdarl($name: String!){  getDarlFromRuleSet(ruleSetName: $name)}`);
-            var savecontent = graph('mutation setdarl($name: String!, $darl: String!){updateRuleSetDarl(name: $name, darl: $darl)}');
+            var savecontent = graph('mutation setdarl($name: String!, $darl: String!){updateRuleSetDarl(name: $name, darl: $darl){name}}');
             const rs = await allrulesets();
             $.each(rs.rulesets, function (key, entry) {
                 dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
@@ -118,8 +118,9 @@
                 darlCodeMirror.setValue(convertescapes(content.getDarlFromRuleSet));
             });
             $('#Save').click(async function () {
-                var content = $("#Darl").val();
-                await savecontent({ name: rsname, darl: content });
+                var content = darlCodeMirror.getValue();
+                var name = await savecontent({ name: rsname, darl: content });
+                alert(name);
             });
 
 

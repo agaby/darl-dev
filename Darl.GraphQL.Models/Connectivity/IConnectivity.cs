@@ -198,6 +198,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<Document>> GetDocuments(string userId);
         Task<Document> UpdateDocument(Document document);
         Task<Document> DeleteDocument(string userId, string name);
-
+        Task<DarlVar> CreateRulesetPreload(string userId, string rulesetName, DarlVar preloadData);
     }
 }

@@ -13,14 +13,14 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "inputFormatInput";
             Description = "Format for an input used in a questionnaire";
-            Field<NonNullGraphType<FloatGraphType>>("increment");
-            Field<NonNullGraphType<IntGraphType>>("maxLength");
-            Field<NonNullGraphType<FloatGraphType>>("numericMax");
-            Field<NonNullGraphType<FloatGraphType>>("numericMin");
-            Field<NonNullGraphType<StringGraphType>>("regex");
-            Field<NonNullGraphType<BooleanGraphType>>("showSets");
-            Field<NonNullGraphType<BooleanGraphType>>("enforceCrisp");
-            Field<NonNullGraphType<StringGraphType>>("path");
+            Field<FloatGraphType>("increment");
+            Field<IntGraphType>("maxLength");
+            Field<FloatGraphType>("numericMax");
+            Field<FloatGraphType>("numericMin");
+            Field<StringGraphType>("regex");
+            Field<BooleanGraphType>("showSets");
+            Field<BooleanGraphType>("enforceCrisp");
+            Field<StringGraphType>("path");
         }
     }
 }

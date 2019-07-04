@@ -71,7 +71,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<QuestionSetProxy> ContinueQuestionnaire(QuestionSetInput responses)
         {
-            var resp = new QuestionSetProxy { ieToken = responses.ieToken };
+            var resp = new QuestionSetProxy { ieToken = responses.ieToken, questions = new List<QuestionProxy>() };
             foreach (var i in responses.questions)
             {
                 resp.questions.Add(new QuestionProxy { dResponse = i.dResponse, reference = i.reference, sResponse = i.sResponse });
@@ -1175,7 +1175,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var collection = db.GetCollection<RuleSet>("ruleset");
             var filter = Builders<RuleSet>.Filter.Where(x => x.Name == ruleSetName && x.userId == userId && x.Contents.language.LanguageList.Any(i => i.Name == languageName));
-            var update = Builders<RuleSet>.Update.Set(x => x.Contents.language.LanguageList.ElementAt(-1).Text, languageText);
+            var update = Builders<RuleSet>.Update.Set(x => x.Contents.language.LanguageList[-1].Text, languageText);
             await collection.FindOneAndUpdateAsync(filter, update);
             return new LanguageText { Name = languageName, Text = languageText };
         }
@@ -1184,17 +1184,25 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var collection = db.GetCollection<RuleSet>("ruleset");
             var filter = Builders<RuleSet>.Filter.Where(x => x.Name == ruleSetName && x.userId == userId && x.Contents.format.OutputFormatList.Any(i => i.Name == outputName));
-            var update = Builders<RuleSet>.Update.Combine(
-                Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList.ElementAt(-1).displayType.ToString(), outputUpdate.displayType.ToString()),
-                Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList.ElementAt(-1).Hide, outputUpdate.Hide),
-                Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList.ElementAt(-1).path, outputUpdate.path),
-                Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList.ElementAt(-1).ScoreBarColor, outputUpdate.ScoreBarColor),
-                Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList.ElementAt(-1).ScoreBarMaxVal, outputUpdate.ScoreBarMaxVal),
-                Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList.ElementAt(-1).ScoreBarMinVal, outputUpdate.ScoreBarMinVal),
-                Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList.ElementAt(-1).Uncertainty, outputUpdate.Uncertainty),
-                Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList.ElementAt(-1).ValueFormat, outputUpdate.ValueFormat)
-                );
-            await collection.FindOneAndUpdateAsync(filter, update);
+            var updList = new List<UpdateDefinition<RuleSet>>();
+            if (outputUpdate.displayType != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList[-1].displayType.ToString(), outputUpdate.displayType.ToString()));
+            if (outputUpdate.Hide != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList[-1].Hide, outputUpdate.Hide));
+            if (outputUpdate.path != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList[-1].path, outputUpdate.path));
+            if (outputUpdate.ScoreBarColor != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList[-1].ScoreBarColor, outputUpdate.ScoreBarColor));
+            if (outputUpdate.ScoreBarMaxVal != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList[-1].ScoreBarMaxVal, outputUpdate.ScoreBarMaxVal));
+            if (outputUpdate.ScoreBarMinVal != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList[-1].ScoreBarMinVal, outputUpdate.ScoreBarMinVal));
+            if (outputUpdate.Uncertainty != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList[-1].Uncertainty, outputUpdate.Uncertainty));
+            if (outputUpdate.ValueFormat != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.format.OutputFormatList[-1].ValueFormat, outputUpdate.ValueFormat));
+            var update = Builders<RuleSet>.Update.Combine(updList);
+            var rs = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<RuleSet, RuleSet> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
             return new OutputFormat { };
         }
 
@@ -1202,7 +1210,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var collection = db.GetCollection<RuleSet>("ruleset");
             var filter = Builders<RuleSet>.Filter.Where(x => x.Name == ruleSetName && x.userId == userId && x.Contents.language.LanguageList.First(i => i.Name == languageName).VariantList.Any(a => a.Language == isoLanguageName));
-            var update = Builders<RuleSet>.Update.Set(x => x.Contents.language.LanguageList.ElementAt(-1).VariantList.ElementAt(-1).Text, variantText);
+            var update = Builders<RuleSet>.Update.Set(x => x.Contents.language.LanguageList[-1].VariantList[-1].Text, variantText);
             await collection.FindOneAndUpdateAsync(filter, update);
             return new VariantText { Language = isoLanguageName, Text = variantText };
         }
@@ -1766,6 +1774,29 @@ namespace Darl.GraphQL.Models.Connectivity
             var old = await query.FirstOrDefaultAsync();
             await mc.DeleteOneAsync(Builders<Document>.Filter.Eq(r => r.userId, userId) & Builders<Document>.Filter.Eq(r => r.name, name));
             return old;
+        }
+
+        public async Task<DarlVar> CreateRulesetPreload(string userId, string rulesetName, DarlVar preloadData)
+        {
+            var collection = db.GetCollection<RuleSet>("ruleset");
+            var rs = await GetRuleSet(userId, rulesetName);
+            var list = new List<DarlVar>();
+            if(rs.Contents.preload != null)
+            {
+                list.AddRange(rs.Contents.preload);
+            }
+            list.Add(preloadData);
+            if (rs != null)
+            {
+                var filter = Builders<RuleSet>.Filter.Where(x => x.id == rs.id && x.userId == userId);
+                var update = Builders<RuleSet>.Update.Set("Contents.preload", list);
+                await collection.FindOneAndUpdateAsync(filter, update);
+            }
+            else
+            {
+                throw new ExecutionError($"Can't Find {rulesetName}.");
+            }
+            return preloadData;
         }
     }
 }

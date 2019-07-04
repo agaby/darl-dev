@@ -12,14 +12,14 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "outputFormatUpdate";
             Description = "Format for an output used in a questionnaire";
-            Field<NonNullGraphType<BooleanGraphType>>("hide");
-            Field<NonNullGraphType<DisplayTypeEnum>>("displayType");
-            Field<NonNullGraphType<StringGraphType>>("scoreBarColor");
-            Field<NonNullGraphType<FloatGraphType>>("scoreBarMaxVal");
-            Field<NonNullGraphType<FloatGraphType>>("ScoreBarMinVal");
-            Field<NonNullGraphType<BooleanGraphType>>("uncertainty");
-            Field<NonNullGraphType<StringGraphType>>("valueFormat");
-            Field<NonNullGraphType<StringGraphType>>("path");
+            Field<BooleanGraphType>("hide", "If true, this output's value will not be reported in results");
+            Field<DisplayTypeEnum>("displayType", "The display type for this output");
+            Field<StringGraphType>("scoreBarColor", "Color of score bar if specified");
+            Field<FloatGraphType>("scoreBarMaxVal", "Maximum value of score bar if specified");
+            Field<FloatGraphType>("ScoreBarMinVal", "Minimum value of score bar if specified");
+            Field<BooleanGraphType>("uncertainty", "If true uncertainty information is appended to results");
+            Field<StringGraphType>("valueFormat", "Format for numeric values.");
+            Field<StringGraphType>("path", "locator for this value in Json or XML source");
         }
     }
 }

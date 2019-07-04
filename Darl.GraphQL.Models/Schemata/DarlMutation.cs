@@ -573,7 +573,7 @@ namespace Darl.GraphQL.Models.Schemata
             FieldAsync<OutputFormatType>("updateRuleSetOutputFormat", "Update the format of an output",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" },
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "outputName" },
-                new QueryArgument<NonNullGraphType<InputFormatUpdateType>> { Name = "outputUpdate" }
+                new QueryArgument<NonNullGraphType<OutputFormatUpdateType>> { Name = "outputUpdate" }
                 ),
                 resolve: async context =>
                 {
@@ -852,6 +852,22 @@ namespace Darl.GraphQL.Models.Schemata
                     var name = context.GetArgument<string>("name");
                     return await context.TryAsyncResolve(
                         async c => await connectivity.DeleteDocument(userId, name));
+                }
+            );
+            FieldAsync<DarlVarType>(
+                "updateRulesetPreload",
+                "Add or update a preloaded value to a ruleset",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "rulesetName", Description = "Name of the ruleset" },
+                    new QueryArgument<NonNullGraphType<DarlVarInputType>> { Name = "preloadData", Description = "The data to load" }
+               ),
+                resolve: async context =>
+                {
+                    var rulesetName = context.GetArgument<String>("rulesetName");
+                    var preloadData = context.GetArgument<DarlVar>("preloadData");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreateRulesetPreload(userId, rulesetName, preloadData));
                 }
             );
         }

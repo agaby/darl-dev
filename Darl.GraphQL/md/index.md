@@ -39,7 +39,8 @@ The DARL engines are accessible via the API described in these pages so you can 
 
 
 ### GraphQL API
-[Using the GraphQL API](./GraphQL.md)
+[Using the GraphQL API](./GraphQL)
+[Usage examples](./GraphQL_examples)
 
 #### DARL
 [The DARL language](./darl)
