@@ -68,9 +68,13 @@
             <li><a href="#finding-your-api-key">Finding your API key</a></li>
             <li><a href="#listing-collateral">listing collateral</a></li>
             <li><a href="#seeing-the-language-elements-set-in-a-ruleset">Seeing the language elements set in a ruleset</a></li>
+            <li><a href="#see-a-list-of-preloaded-data-items-in-a-rule-set">See a list of preloaded data items in a rule set</a></li>
+            <li><a href="#start-a-questionnaire">Start a questionnaire</a></li>
+            <li><a href="#continue-a-questionnaire">Continue a questionnaire</a></li>
         <li class="main "><a href="#mutations">Mutations</a></li>
             <li><a href="#setting-the-text-for-a-ruleset-question">Setting the text for a ruleset question</a></li>
             <li><a href="#setting-a-preloaded-data-value-for-a-rule-set">Setting a preloaded data value for a rule set</a></li>
+            <li><a href="#run-a-machine-learning-model">Run a machine learning model</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -131,6 +135,64 @@
 }
 </code></pre>
 
+<h2 id="see-a-list-of-preloaded-data-items-in-a-rule-set">See a list of preloaded data items in a rule set</h2>
+<pre><code class="json">{
+  rulesetByName(name: &quot;military_service.rule&quot;)
+  {
+    ruleform{
+      preload{
+        name
+        dataType
+        value
+      }
+    }
+  }
+}
+</code></pre>
+
+<h2 id="start-a-questionnaire">Start a questionnaire</h2>
+<pre><code class="json">{
+  beginQuestionnaire(ruleSetName: &quot;military_service.rule&quot;)
+  {
+    ieToken
+    questionHeader
+    questions
+    {
+      text
+      categories
+      reference
+      questionType
+    }
+  }
+}
+</code></pre>
+
+<h2 id="continue-a-questionnaire">Continue a questionnaire</h2>
+<pre><code class="json">{
+  continueQuestionnaire(responses:{
+     ieToken: &quot;40a8a8e9-c24b-4711-bf66-0cb038746216&quot;,
+    questions:
+    [
+    {
+      reference: &quot;military&quot;,
+      sResponse: &quot;Yes&quot;
+    }
+  ]
+  })
+  {
+       ieToken
+    questionHeader
+    questions
+    {
+      text
+      categories
+      reference
+      questionType
+    }
+  }
+}
+</code></pre>
+
 <h1 id="mutations">Mutations</h1>
 <h2 id="setting-the-text-for-a-ruleset-question">Setting the text for a ruleset question</h2>
 <pre><code class="json">mutation{
@@ -151,6 +213,19 @@
   {
     name
     value
+  }
+}
+</code></pre>
+
+<h2 id="run-a-machine-learning-model">Run a machine learning model</h2>
+<pre><code class="json">mutation
+{
+  machineLearnModel(mlmodelname: &quot;iris.mlmodel&quot;)
+  {
+    results{
+      trainPerformance
+      code
+    }
   }
 }
 </code></pre></div>

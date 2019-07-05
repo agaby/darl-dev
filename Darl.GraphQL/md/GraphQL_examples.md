@@ -122,6 +122,22 @@ The GraphQL interface permits you to create, maintain and edit your models progr
 }
 ```
 
+## Interact with a Bot
+```json
+query interact($model: String!, $convId: String!, $data: darlVarUpdate!)
+{
+  interact(botModelName: $model, conversationId: $convId, conversationData: $data)
+  {
+    response
+    {
+      value
+      dataType
+      categories
+    }
+  }
+}
+```
+
 # Mutations
 
 ## Setting the text for a ruleset question
@@ -159,6 +175,36 @@ mutation
       trainPerformance
       code
     }
+  }
+}
+```
+
+## Factory reset - Dangerous!
+```json
+mutation
+{
+  factoryReset
+}
+```
+
+## Update the DARL code in a rulesset
+```json
+mutation
+{
+  updateRuleSetDarl(name: "military_service.rule", darl: "ruleset military_service {} ")
+  {
+    name
+  }
+}
+```
+## Update SendGrid credentials
+```json
+mutation
+{
+  updateSendgridCredentials(botModelName: "thousandquestions.model", 
+    sendGridAPIKey: "SG.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+  {
+    sendGridAPIKey
   }
 }
 ```
