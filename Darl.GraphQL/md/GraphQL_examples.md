@@ -250,10 +250,24 @@ mutation
     subjectSource: FIXED,
     subjectText: "Application on website" ,
     bodySource: RESULTS,
-    bodyText: "emailText";
+    bodyText: "emailText"
   })
   {
     sendEmail
+  }
+}
+```
+
+## exclude a Ruleset output from the visible results
+```json
+mutation
+{
+ updateRuleSetOutputFormat(ruleSetName: "military_service.rule", outputName: "emailText", outputUpdate:
+  {
+    hide: true
+  })
+  {
+    hide
   }
 }
 ```

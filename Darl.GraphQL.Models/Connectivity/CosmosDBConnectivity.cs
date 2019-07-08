@@ -1843,7 +1843,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 if (trigger.bodySource != null)
                     trigg.bodySource = trigger.bodySource ?? DarlCommon.SourceType._fixed;
                 if (trigger.bodyText != null)
-                   trigger.bodyText = trigger.bodyText;
+                   trigg.bodyText = trigger.bodyText;
                 if (trigger.emailFrom != null)
                     trigg.emailFrom = trigger.emailFrom;
                 if (trigger.postData != null)
