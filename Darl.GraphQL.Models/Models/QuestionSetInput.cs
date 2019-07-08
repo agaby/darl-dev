@@ -7,7 +7,7 @@ namespace Darl.GraphQL.Models.Models
 {
     public class QuestionSetInput
     {
-        public List<QuestionProxy> questions { get; set; }
+        public List<QuestionInput> questions { get; set; }
 
         public string ieToken { get; set; }
 

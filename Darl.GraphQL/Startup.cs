@@ -175,6 +175,7 @@ namespace Darl.GraphQL
             services.AddTransient<ConversationInputType>();
             services.AddTransient<BotRuntimeModelType>();
             services.AddTransient<DocumentType>();
+            services.AddTransient<TriggerViewInputType>();
 
 
             //root

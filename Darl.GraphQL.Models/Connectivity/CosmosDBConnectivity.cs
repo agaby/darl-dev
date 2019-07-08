@@ -71,12 +71,26 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<QuestionSetProxy> ContinueQuestionnaire(QuestionSetInput responses)
         {
-            var resp = new QuestionSetProxy { ieToken = responses.ieToken, questions = new List<QuestionProxy>() };
-            foreach (var i in responses.questions)
+            QuestionSetProxy r = null;
+            try
             {
-                resp.questions.Add(new QuestionProxy { dResponse = i.dResponse, reference = i.reference, sResponse = i.sResponse });
+                var resp = new QuestionSetProxy { ieToken = responses.ieToken, questions = new List<QuestionProxy>() };
+                foreach (var i in responses.questions)
+                {
+                    resp.questions.Add(new QuestionProxy { dResponse = i.dResponse, reference = i.reference, sResponse = i.sResponse, qtype = (int)i.qType });
+                }
+                r = await _form.Post(resp);
             }
-            return await _form.Post(resp);
+            catch(Exception ex)
+            {
+                throw new ExecutionError($"Internal error", ex);
+            }
+            if (r == null)
+            {
+                throw new ExecutionError($"ieToken {responses.ieToken} not found. Questionnaire timed out?");
+            }
+            return r;
+
         }
 
         public async Task<Authorization> CreateAuthorization(string userId, string botModelName, Authorization auth)
@@ -1797,6 +1811,126 @@ namespace Darl.GraphQL.Models.Connectivity
                 throw new ExecutionError($"Can't Find {rulesetName}.");
             }
             return preloadData;
+        }
+
+        /// <summary>
+        /// Write a json version of a ruleset to file.
+        /// </summary>
+        /// <returns></returns>
+        public async Task WriteRuleFormForTest(string userId, string ruleset, string filename)
+        {
+            var rs = await GetRuleSet(userId, ruleset);
+            if(rs != null)
+                await System.IO.File.WriteAllTextAsync(filename, JsonConvert.SerializeObject(rs.Contents, new StringEnumConverter()));
+        }
+
+        public async Task<TriggerView> UpdateRuleFormTrigger(string userId, string ruleSetName, TriggerViewInput trigger)
+        {
+            var collection = db.GetCollection<RuleSet>("ruleset");
+            var rs = await GetRuleSet(userId, ruleSetName);
+            var filter = Builders<RuleSet>.Filter.Where(x => x.Name == ruleSetName && x.userId == userId);
+            if (rs.Contents.trigger == null) //create a new TriggerView and add the data
+            {
+                var trigg = new TriggerView();
+                if (trigger.addressSource != null)
+                    trigg.addressSource =  trigger.addressSource ?? DarlCommon.SourceType._fixed;
+                if (trigger.addressText != null)
+                   trigg.addressText = trigger.addressText;
+                if (trigger.attachmentName != null)
+                    trigg.attachmentName = trigger.attachmentName;
+                if (trigger.attachmentUri != null)
+                    trigg.attachmentUri = trigger.attachmentUri;
+                if (trigger.bodySource != null)
+                    trigg.bodySource = trigger.bodySource ?? DarlCommon.SourceType._fixed;
+                if (trigger.bodyText != null)
+                   trigger.bodyText = trigger.bodyText;
+                if (trigger.emailFrom != null)
+                    trigg.emailFrom = trigger.emailFrom;
+                if (trigger.postData != null)
+                    trigg.postData = trigger.postData;
+                if (trigger.postDataSource != null)
+                    trigg.postDataSource  = trigger.postDataSource ?? DarlCommon.SourceType._fixed;
+                if (trigger.postDataUri != null)
+                    trigg.postDataUri = trigger.postDataUri;
+                if (trigger.postType != null)
+                    trigg.postType = trigger.postType ?? PostType.darlvarlist;
+                if (trigger.queueData != null)
+                    trigg.queueData = trigger.queueData;
+                if (trigger.queueDataSource != null)
+                   trigg.queueDataSource = trigger.queueDataSource ?? DarlCommon.SourceType._fixed;
+                if (trigger.queueName != null)
+                    trigg.queueName = trigger.queueName;
+                if (trigger.sendAttachment != null)
+                    trigg.sendAttachment = trigger.sendAttachment;
+                if (trigger.sendAttachmentSource != null)
+                    trigg.sendAttachmentSource = trigger.sendAttachmentSource ?? DarlCommon.SourceType._fixed;
+                if (trigger.sendBug != null)
+                    trigg.sendBug = trigger.sendBug;
+                if (trigger.sendBugSource != null)
+                    trigg.sendBugSource = trigger.sendBugSource ?? DarlCommon.SourceType._fixed;
+                if (trigger.sendEmail != null)
+                    trigg.sendEmail = trigger.sendEmail;
+                if (trigger.sendEmailSource != null)
+                    trigg.sendEmailSource = trigger.sendEmailSource ?? DarlCommon.SourceType._fixed;
+                if (trigger.subjectSource != null)
+                    trigg.subjectSource = trigger.subjectSource ?? DarlCommon.SourceType._fixed;
+                if (trigger.subjectText != null)
+                    trigg.subjectText = trigger.subjectText;
+                var update = Builders<RuleSet>.Update.Set("Contents.trigger", trigg);
+                var rs1 = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<RuleSet, RuleSet> { ReturnDocument = ReturnDocument.After });
+                return rs1.Contents.trigger;
+            }
+            else
+            {
+                var updList = new List<UpdateDefinition<RuleSet>>();
+                if (trigger.addressSource != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.addressSource, trigger.addressSource));
+                if (trigger.addressText != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.addressText, trigger.addressText));
+                if (trigger.attachmentName != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.attachmentName, trigger.attachmentName));
+                if (trigger.attachmentUri != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.attachmentUri, trigger.attachmentUri));
+                if (trigger.bodySource != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.bodySource, trigger.bodySource));
+                if (trigger.bodyText != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.bodyText, trigger.bodyText));
+                if (trigger.emailFrom != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.emailFrom, trigger.emailFrom));
+                if (trigger.postData != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.postData, trigger.postData));
+                if (trigger.postDataSource != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.postDataSource, trigger.postDataSource));
+                if (trigger.postDataUri != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.postDataUri, trigger.postDataUri));
+                if (trigger.postType != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.postType, trigger.postType));
+                if (trigger.queueData != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.queueData, trigger.queueData));
+                if (trigger.queueDataSource != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.queueDataSource, trigger.queueDataSource));
+                if (trigger.queueName != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.queueName, trigger.queueName));
+                if (trigger.sendAttachment != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.sendAttachment, trigger.sendAttachment));
+                if (trigger.sendAttachmentSource != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.sendAttachmentSource, trigger.sendAttachmentSource));
+                if (trigger.sendBug != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.sendBug, trigger.sendBug));
+                if (trigger.sendBugSource != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.sendBugSource, trigger.sendBugSource));
+                if (trigger.sendEmail != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.sendEmail, trigger.sendEmail));
+                if (trigger.sendEmailSource != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.sendEmailSource, trigger.sendEmailSource));
+                if (trigger.subjectSource != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.subjectSource, trigger.subjectSource));
+                if (trigger.subjectText != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.subjectText, trigger.subjectText));
+                var update = Builders<RuleSet>.Update.Combine(updList);
+                var rs1 = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<RuleSet, RuleSet> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
+                return rs1.Contents.trigger;
+            }
         }
     }
 }

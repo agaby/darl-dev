@@ -3,6 +3,7 @@ using Darl.Lineage;
 using DarlCommon;
 using GraphQL.Types;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
 
 namespace Darl.GraphQL.Models.Schemata
@@ -26,7 +27,7 @@ namespace Darl.GraphQL.Models.Schemata
                 return null;
             try
             {
-                return JsonConvert.DeserializeObject<BotFormat>(source);
+                return JsonConvert.DeserializeObject<BotFormat>(source, new StringEnumConverter());
             }
             catch
             {
@@ -39,7 +40,7 @@ namespace Darl.GraphQL.Models.Schemata
             var list = new List<StringDarlVarPair>();
             foreach (var k in dict.Keys)
             {
-                list.Add(new StringDarlVarPair { Name = k, Value=JsonConvert.DeserializeObject<DarlVar>(dict[k])});
+                list.Add(new StringDarlVarPair { Name = k, Value=JsonConvert.DeserializeObject<DarlVar>(dict[k], new StringEnumConverter()) });
             }
             return list;
         }

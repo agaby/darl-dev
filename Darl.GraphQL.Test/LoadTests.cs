@@ -153,7 +153,7 @@ namespace Darl.GraphQL.Test
             }
         }
         */
-        [TestMethod]   
+        [TestMethod]
         [Ignore]
         public async Task CopyCollateral()
         {
@@ -167,9 +167,9 @@ namespace Darl.GraphQL.Test
                                await cosmos.UpdateCollateral(userId, c, rf);
                            }
                        }*/
-           var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi(null));
-           await cosmos.UpdateCollateral(userId, "suggestions.md", File.ReadAllText(@"C:\Users\Andrew\Downloads\suggestions.md"));
-           await cosmos.UpdateCollateral(userId, "bot_help.md", File.ReadAllText(@"C:\Users\Andrew\Downloads\bot_help.md"));
+            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi(null));
+            await cosmos.UpdateCollateral(userId, "suggestions.md", File.ReadAllText(@"C:\Users\Andrew\Downloads\suggestions.md"));
+            await cosmos.UpdateCollateral(userId, "bot_help.md", File.ReadAllText(@"C:\Users\Andrew\Downloads\bot_help.md"));
         }
 
         /// <summary>
@@ -193,10 +193,10 @@ namespace Darl.GraphQL.Test
         {
             var adminuserId = "786e46c2-fa33-4124-af67-1bb14625c216";
             var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi(null));
-//            await cosmos.FactoryReset(adminuserId);
+            //            await cosmos.FactoryReset(adminuserId);
             var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
             var creds = await dr.GetAllCredentialsAsync();
-            foreach(var c in creds)
+            foreach (var c in creds)
             {
                 await cosmos.CreateBotConnection(adminuserId, c.model, c.PartitionKey, c.password);
             }
@@ -212,7 +212,7 @@ namespace Darl.GraphQL.Test
             {
                 using (var ms = new MemoryStream())
                 {
-                    var d = new Document {userId = userId, name = doc };
+                    var d = new Document { userId = userId, name = doc };
                     await dr.GetDocumentStream(userId, doc, ms);
                     d.content = ms.ToArray();
                     await cosmos.UpdateDocument(d);
@@ -222,6 +222,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task CopyDocuments()
         {
             var adminuserId = "786e46c2-fa33-4124-af67-1bb14625c216";
@@ -232,6 +233,15 @@ namespace Darl.GraphQL.Test
             await cosmos.UpdateDocument(d);
             d.userId = slawUserId;
             await cosmos.UpdateDocument(d);
+        }
+
+        [TestMethod]
+        //[Ignore]
+        public async Task WriteOutRuleFile()
+        {
+            var slawUserId = "8a14e17b-268a-4dc8-84fc-95d1a558e737";
+            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi(null));
+            await cosmos.WriteRuleFormForTest(slawUserId, "military_service.rule", "military_service.rule");
         }
     }
 }

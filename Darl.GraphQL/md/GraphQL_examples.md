@@ -138,6 +138,18 @@ query interact($model: String!, $convId: String!, $data: darlVarUpdate!)
 }
 ```
 
+## Get lineages for a word
+```json
+{
+  getLineagesForWord(word: "immigration")
+  {
+    description
+    lineage
+    typeWord
+  }
+}
+```
+
 # Mutations
 
 ## Setting the text for a ruleset question
@@ -205,6 +217,43 @@ mutation
     sendGridAPIKey: "SG.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
   {
     sendGridAPIKey
+  }
+}
+```
+
+## Add a phrase to botmodel
+```json
+mutation
+{
+  createPhrase(botModelName: "thousandquestions.model",
+    path: "verb:067,4,0|noun:01,0,2,00,00,15,20,19,1",
+    attribute: {
+      call: "military_service.rule"
+    }
+  )
+  {
+    darl
+  }
+}
+```
+
+## Update a ruleset trigger
+```json
+mutation
+{
+  updateRuleSetTrigger(ruleSetName: "military_service.rule", trigger: {
+  	sendEmailSource: RESULTS,
+    sendEmail: "trigger.true",
+    addressSource: FIXED,
+    addressText: "andy@darl.ai",
+    emailFrom: "support@darl.ai",
+    subjectSource: FIXED,
+    subjectText: "Application on website" ,
+    bodySource: RESULTS,
+    bodyText: "emailText";
+  })
+  {
+    sendEmail
   }
 }
 ```

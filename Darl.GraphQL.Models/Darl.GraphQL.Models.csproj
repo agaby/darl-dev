@@ -16,9 +16,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Darl_standard" Version="1.2.11" />
+    <PackageReference Include="Darl_standard" Version="1.2.17" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.6.1" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
+    <PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta2-19351-01">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="MongoDB.Driver" Version="2.8.1" />
     <PackageReference Include="Sendgrid" Version="9.11.0" />
     <PackageReference Include="Stripe.net" Version="27.4.0" />

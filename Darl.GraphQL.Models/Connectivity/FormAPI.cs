@@ -4,20 +4,26 @@ using Darl.Lineage.Bot;
 using Darl_standard.Darl.Forms;
 using DarlCommon;
 using Microsoft.ApplicationInsights;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
     /// <summary>
-    /// performs form evaluation
+    /// Performs form evaluation 
+    /// Arranged as a singleton. Each ruleset and questionnaire state is cached and retrieved.
     /// </summary>
     public class FormApi : IFormApi
     {
         Forms form = new Forms();
 
-        private IMemoryCache _cache;
+        private IDistributedCache _cache;
 
 
         TelemetryClient telemetry = new TelemetryClient();
@@ -27,7 +33,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// </summary>
         /// <param name="cache"></param>
         /// <param name="rep"></param>
-        public FormApi(IMemoryCache cache)
+        public FormApi(IDistributedCache cache)
         {
             _cache = cache;
         }
@@ -45,8 +51,7 @@ namespace Darl.GraphQL.Models.Connectivity
             try
             {
                 var qstate = new QuestionCache { currentIteration = 0, SessionKey = Guid.NewGuid(), projectId = ruleSet.Name, currentData = DarlVarExtensions.Convert(ruleSet.Contents.preload) };
-                _cache.Set(qstate.SessionKey.ToString(), (ruleSet.Contents, qstate), new MemoryCacheEntryOptions { SlidingExpiration = new TimeSpan(1, 0, 0) });
-                //at this point the session data must be available
+                await SetCache(new CombinedCache {  questionCache = qstate, ruleForm = ruleSet.Contents});
                 return await form.Start(ruleSet.Contents, qstate);
             }
             catch (Exception ex)
@@ -71,13 +76,12 @@ namespace Darl.GraphQL.Models.Connectivity
 
             try
             {
-                QuestionCache qstate = null;
-                RuleForm formResources = null;
-                if (!GetCaches(questionsetproxy.ieToken, out qstate, out formResources))
-                    return null;
-                //at this point the session data must be available
+                var co = await GetCaches(questionsetproxy.ieToken);
+                if (co == null)
+                    return null; 
                 //TO DO, handle redirect
-                var qsp = await form.Next(questionsetproxy, formResources, qstate);
+                var qsp = await form.Next(questionsetproxy, co.ruleForm, co.questionCache);
+                await SetCache(co);
                 return qsp;
             }
             catch (Exception ex)
@@ -96,9 +100,12 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             try
             {
-                if (!GetCaches(id, out QuestionCache qstate, out RuleForm formResources))
+                var co = await GetCaches(id);
+                if (co == null)
                     return null;
-                return await form.Back(formResources, qstate);
+                var res =  await form.Back(co.ruleForm, co.questionCache);
+                await SetCache(co);
+                return res;
             }
             catch (Exception ex)
             {
@@ -112,17 +119,12 @@ namespace Darl.GraphQL.Models.Connectivity
         /// </summary>
         /// <param name="id">the ieToken of a current completed session.</param>
         /// <returns></returns>
-
         public async Task<bool> Trigger(string id)
         {
-
-            QuestionCache qcache;
-            if (!_cache.TryGetValue(id.ToString(), out qcache))
+            var co = await GetCaches(id);
+            if (co == null)
                 return false;
-            RuleForm fcache;
-            if (!_cache.TryGetValue(qcache.projectId, out fcache))
-                return false;
-            if (fcache.trigger != null && Guid.TryParse(fcache.author, out Guid guid))
+            if (co.ruleForm.trigger != null && Guid.TryParse(co.ruleForm.author, out Guid guid))
             {
                 try
                 {
@@ -151,27 +153,52 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns><c>true</c> if the form exists, <c>false</c> otherwise.</returns>
         /// <remarks>When starting a form the projectId is passed. On subsequent updates a session token is passed. 
         /// The ruleform is also cached, but used solely for this questionnaire.</remarks>
-        private bool GetCaches(string id, out QuestionCache qstate, out RuleForm formResources)
+        private async Task<CombinedCache> GetCaches(string id)
         {
-            qstate = null;
-            formResources = null;
             if (string.IsNullOrEmpty(id))
             {
-                return false;
+                return null;
             }
-            if (!_cache.TryGetValue<(RuleForm, QuestionCache)>(id, out (RuleForm, QuestionCache) values))
-                return false;
-            formResources = values.Item1;
-            qstate = values.Item2;
-            return true;
+            var c = await _cache.GetStringAsync(id);
+            if(!string.IsNullOrEmpty(c))
+            {
+                return CombinedCache.Factory(c);
+            }
+            return null;
+        }
+
+        private async Task SetCache(CombinedCache co)
+        {
+            //conversations held for one hour.
+            var coz = co.ToString();
+            await _cache.SetStringAsync(co.questionCache.SessionKey.ToString(), coz, new DistributedCacheEntryOptions { SlidingExpiration = new TimeSpan(1,0,0) });
         }
 
 
 
 
-
-
         #endregion
+    }
+
+    public class CombinedCache
+    {
+        static ITraceWriter traceWriter = new MemoryTraceWriter();
+
+        static JsonSerializerSettings jss = new JsonSerializerSettings { TraceWriter = traceWriter, Converters = new List<JsonConverter>() { new StringEnumConverter { } } };
+
+        public RuleForm ruleForm { get; set; }
+
+        public QuestionCache questionCache { get; set;}
+
+        public override string ToString()
+        {
+             return JsonConvert.SerializeObject(this, jss);               
+        }
+
+        public static CombinedCache Factory(string source)
+        {
+            return JsonConvert.DeserializeObject<CombinedCache>(source,jss);
+        }
     }
 
 }

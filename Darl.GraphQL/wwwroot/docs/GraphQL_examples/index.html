@@ -71,10 +71,17 @@
             <li><a href="#see-a-list-of-preloaded-data-items-in-a-rule-set">See a list of preloaded data items in a rule set</a></li>
             <li><a href="#start-a-questionnaire">Start a questionnaire</a></li>
             <li><a href="#continue-a-questionnaire">Continue a questionnaire</a></li>
+            <li><a href="#interact-with-a-bot">Interact with a Bot</a></li>
+            <li><a href="#get-lineages-for-a-word">Get lineages for a word</a></li>
         <li class="main "><a href="#mutations">Mutations</a></li>
             <li><a href="#setting-the-text-for-a-ruleset-question">Setting the text for a ruleset question</a></li>
             <li><a href="#setting-a-preloaded-data-value-for-a-rule-set">Setting a preloaded data value for a rule set</a></li>
             <li><a href="#run-a-machine-learning-model">Run a machine learning model</a></li>
+            <li><a href="#factory-reset-dangerous">Factory reset - Dangerous!</a></li>
+            <li><a href="#update-the-darl-code-in-a-rulesset">Update the DARL code in a rulesset</a></li>
+            <li><a href="#update-sendgrid-credentials">Update SendGrid credentials</a></li>
+            <li><a href="#add-a-phrase-to-botmodel">Add a phrase to botmodel</a></li>
+            <li><a href="#update-a-ruleset-trigger">Update a ruleset trigger</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -193,6 +200,32 @@
 }
 </code></pre>
 
+<h2 id="interact-with-a-bot">Interact with a Bot</h2>
+<pre><code class="json">query interact($model: String!, $convId: String!, $data: darlVarUpdate!)
+{
+  interact(botModelName: $model, conversationId: $convId, conversationData: $data)
+  {
+    response
+    {
+      value
+      dataType
+      categories
+    }
+  }
+}
+</code></pre>
+
+<h2 id="get-lineages-for-a-word">Get lineages for a word</h2>
+<pre><code class="json">{
+  getLineagesForWord(word: &quot;immigration&quot;)
+  {
+    description
+    lineage
+    typeWord
+  }
+}
+</code></pre>
+
 <h1 id="mutations">Mutations</h1>
 <h2 id="setting-the-text-for-a-ruleset-question">Setting the text for a ruleset question</h2>
 <pre><code class="json">mutation{
@@ -226,6 +259,69 @@
       trainPerformance
       code
     }
+  }
+}
+</code></pre>
+
+<h2 id="factory-reset-dangerous">Factory reset - Dangerous!</h2>
+<pre><code class="json">mutation
+{
+  factoryReset
+}
+</code></pre>
+
+<h2 id="update-the-darl-code-in-a-rulesset">Update the DARL code in a rulesset</h2>
+<pre><code class="json">mutation
+{
+  updateRuleSetDarl(name: &quot;military_service.rule&quot;, darl: &quot;ruleset military_service {} &quot;)
+  {
+    name
+  }
+}
+</code></pre>
+
+<h2 id="update-sendgrid-credentials">Update SendGrid credentials</h2>
+<pre><code class="json">mutation
+{
+  updateSendgridCredentials(botModelName: &quot;thousandquestions.model&quot;, 
+    sendGridAPIKey: &quot;SG.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&quot;)
+  {
+    sendGridAPIKey
+  }
+}
+</code></pre>
+
+<h2 id="add-a-phrase-to-botmodel">Add a phrase to botmodel</h2>
+<pre><code class="json">mutation
+{
+  createPhrase(botModelName: &quot;thousandquestions.model&quot;,
+    path: &quot;verb:067,4,0|noun:01,0,2,00,00,15,20,19,1&quot;,
+    attribute: {
+      call: &quot;military_service.rule&quot;
+    }
+  )
+  {
+    darl
+  }
+}
+</code></pre>
+
+<h2 id="update-a-ruleset-trigger">Update a ruleset trigger</h2>
+<pre><code class="json">mutation
+{
+  updateRuleSetTrigger(ruleSetName: &quot;military_service.rule&quot;, trigger: {
+    sendEmailSource: RESULTS,
+    sendEmail: &quot;trigger.true&quot;,
+    addressSource: FIXED,
+    addressText: &quot;andy@darl.ai&quot;,
+    emailFrom: &quot;support@darl.ai&quot;,
+    subjectSource: FIXED,
+    subjectText: &quot;Application on website&quot; ,
+    bodySource: RESULTS,
+    bodyText: &quot;emailText&quot;;
+  })
+  {
+    sendEmail
   }
 }
 </code></pre></div>

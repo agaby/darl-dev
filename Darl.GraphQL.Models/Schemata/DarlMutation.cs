@@ -172,7 +172,7 @@ namespace Darl.GraphQL.Models.Schemata
                 });
 
             //  CreatePhrase
-            FieldAsync<LineageNodeAttributeType>("createPhrase",
+            FieldAsync<LineageNodeDefinitionType>("createPhrase",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "path" },
                 new QueryArgument<NonNullGraphType<LineageNodeAttributeUpdateType>> { Name = "attribute" }
@@ -617,6 +617,19 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
                                     async c => await connectivity.UpdateRuleFormVariantText(userId, ruleSetName, languageName, isoLanguageName, variantText));
+                });
+            //  Update Trigger
+            FieldAsync<TriggerViewType>("updateRuleSetTrigger", "Update the events that occur when a ruleset completes",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName" },
+                new QueryArgument<NonNullGraphType<TriggerViewInputType>> { Name = "trigger" }
+                ),
+                resolve: async context =>
+                {
+                    var ruleSetName = context.GetArgument<string>("ruleSetName");
+                    var trigger = context.GetArgument<TriggerViewInput>("trigger");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.UpdateRuleFormTrigger(userId, ruleSetName, trigger));
                 });
             // RuleSet
             //  Create Empty

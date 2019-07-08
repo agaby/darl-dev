@@ -11,7 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "";
             Description = "The data type sought.";
-            AddValue("numeric", "a numbert", 0);
+            AddValue("numeric", "a number", 0);
             AddValue("categorical", "text from a range of texts", 1);
             AddValue("textual", "Free form text", 2);
         }
