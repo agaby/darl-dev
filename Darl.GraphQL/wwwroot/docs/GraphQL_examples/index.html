@@ -164,12 +164,23 @@
   {
     ieToken
     questionHeader
+    values
+    {
+      name
+      value
+    }
     questions
     {
       text
       categories
       reference
-      questionType
+      qType
+    }
+    responses
+    {
+      responseType
+      mainText
+      annotation
     }
   }
 }
@@ -178,24 +189,36 @@
 <h2 id="continue-a-questionnaire">Continue a questionnaire</h2>
 <pre><code class="json">{
   continueQuestionnaire(responses:{
-     ieToken: &quot;40a8a8e9-c24b-4711-bf66-0cb038746216&quot;,
+     ieToken: &quot;&lt;ieToken value returned by begin questionnaire&gt;&quot;,
     questions:
     [
     {
-      reference: &quot;military&quot;,
-      sResponse: &quot;Yes&quot;
+      reference: &quot;name&quot;,
+      sResponse: &quot;Yes&quot;,
+      qType: textual
     }
   ]
   })
   {
-       ieToken
+    complete
+    ieToken
     questionHeader
+    values
+    {
+      name
+      value
+    }
     questions
     {
       text
       categories
       reference
-      questionType
+      qType
+    }
+    responses
+    {
+      mainText
+      annotation
     }
   }
 }

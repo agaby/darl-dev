@@ -84,12 +84,23 @@ The GraphQL interface permits you to create, maintain and edit your models progr
   {
     ieToken
     questionHeader
+    values
+    {
+      name
+      value
+    }
     questions
     {
       text
       categories
       reference
-      questionType
+      qType
+    }
+    responses
+    {
+      responseType
+      mainText
+      annotation
     }
   }
 }
@@ -99,24 +110,36 @@ The GraphQL interface permits you to create, maintain and edit your models progr
 ```json
 {
   continueQuestionnaire(responses:{
-     ieToken: "40a8a8e9-c24b-4711-bf66-0cb038746216",
+     ieToken: "<ieToken value returned by begin questionnaire>",
     questions:
     [
     {
-      reference: "military",
-      sResponse: "Yes"
+      reference: "name",
+      sResponse: "Yes",
+      qType: textual
     }
   ]
   })
   {
-       ieToken
+    complete
+    ieToken
     questionHeader
+    values
+    {
+      name
+      value
+    }
     questions
     {
       text
       categories
       reference
-      questionType
+      qType
+    }
+    responses
+    {
+      mainText
+      annotation
     }
   }
 }

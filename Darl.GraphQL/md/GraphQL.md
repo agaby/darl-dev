@@ -15,7 +15,7 @@ https://darl.dev/graphql
 
 The main page uses the Playground access tool. Voyager and GraphiQL are also supported on other pages.
 
-Whatever lanquage and platform you use will have support, normally in the form of a library, for GraphQL. 
+Whatever language and platform you use will have support, normally in the form of a library, for GraphQL. 
 
 The general form for accessing the GraphQL API from your own code will be the following.
 
@@ -25,7 +25,7 @@ The general form for accessing the GraphQL API from your own code will be the fo
 
 + Call the API and catch the response
 
-+ Convert the response to objects usable within your lanquage or just parse the Json.
++ Convert the response to objects usable within your language or just parse the Json.
 
 The GraphQL query language is very simple to learn, and is a kind of simplified json. Read more here [GraphQL.org](https://graphql.org/).
 

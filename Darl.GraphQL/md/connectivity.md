@@ -16,7 +16,7 @@ This determines how a model interacts with other remote services, and must be se
 
 # Azure Bot Services
 
-You can connect this model to multiple bots in Azure. Each row coresponds to an external Bot reference in the ABS.
+You can connect this model to multiple bots in Azure. Each row corresponds to an external Bot reference in the ABS.
 
 ![Connectivity ABS](/images/connectivity_ABS.png)
 

@@ -12,7 +12,7 @@ Collateral page
 Bot channels typically use markdown for display purposes. So a store of pre-made markdown text is useful.
 These files can be displayed through a bot by using the "Collateral" [store](./stores).
 ```darl
-if anything then response will be Colateral["index.md"];
+if anything then response will be Collateral["index.md"];
 ```
 
 

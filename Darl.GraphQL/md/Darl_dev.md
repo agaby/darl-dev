@@ -75,12 +75,19 @@ This interface is included because it may be more familiar than playground. You 
 ## The DARL editor
 
 Although you can access all the data items in the API through the interfaces, including the text of rulesets, it is much more convenient to edit DARL in a dedicated syntax-checking editor.
-The DARL editor plug-in is described in the [DARL editor](./darl_editor) page, and the DARL language is decribed in the [DARL](./darl) page.
+The DARL editor plug-in is described in the [DARL editor](./darl_editor) page, and the DARL language is described in the [DARL](./darl) page.
 Depending on whether or not you are logged in the drop down selection shows either your rule sets or the demo collection.
 
 If the demo collection, the save button, which calls a _mutation_, will not work.
 
 ![darl editor](/images/darl_dev_darl_editor.png)
+
+### Editing using an API key
+If you are logged in you can only edit records associated with your account.  You can edit on behalf of another account if you know the APIKey.
+Pass the API key as a parameter. For instance:
+
+```
+https://darl.dev/darleditor?apikey=api_key_here"```
 
 ## Bug or request reporting
 

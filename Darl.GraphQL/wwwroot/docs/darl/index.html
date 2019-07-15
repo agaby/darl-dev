@@ -122,7 +122,7 @@ They follow the convention of C#, namely: </p>
 <h2 id="numeric-literals">Numeric literals</h2>
 <p>These follow C#, so they can be integers or floating point numbers with optional exponent.</p>
 <h3 id="infinity">Infinity</h3>
-<p>Unbounded sets are denoted by positive or negative infinity as the first or last value. Darl recognises <em>Infinity</em>, <em>-Infinity</em>, <em>-∞</em> and <em>∞</em>.</p>
+<p>Unbounded sets are denoted by positive or negative infinity as the first or last value. Darl recognizes <em>Infinity</em>, <em>-Infinity</em>, <em>-∞</em> and <em>∞</em>.</p>
 <h2 id="string-literals">String literals</h2>
 <p>These are pieces of text delineated with the " or ' characters.</p>
 <h2 id="terminators">Terminators</h2>
@@ -180,7 +180,7 @@ Sources can be mapinputs or ruleset outputs. Destinations may be mapoutputs or r
 </code></pre>
 
 <p>The DARL parser checks for impossible combinations, such as connecting two ruleset outputs.
-The online DARL designer makes these checks dynamically.
+The on-line DARL designer makes these checks dynamically.
 A further constraint is that connections between rulesets are only possible where the data types match. </p>
 <h2 id="rulesets">Rulesets</h2>
 <p>These define the block of code corresponding to a ruleset.
@@ -299,7 +299,7 @@ Since constants are frequently re-used and it is better practice to keep them in
 <pre><code class="darl">duration trial_duration 30.00:00:0.0;
 </code></pre>
 
-<p>The format of a period definition is <days>.<hours>:<minutes>:<seconds> where days, hours amd minutes are integers and seconds ids a real number.
+<p>The format of a period definition is <days>.<hours>:<minutes>:<seconds> where days, hours and minutes are integers and seconds ids a real number.
 Examples are:</p>
 <pre><code>duration trial_duration 30.00:00:0.0; // 30 days
 duration trial_duration 0.02:00:0.0; // 2 hours
@@ -553,10 +553,10 @@ However the coder may well want a particular output to have a defined value for 
 
 <p>There should be only one <em>otherwise</em> rule per output. The otherwise rule is triggered only if no other rules fire for that output, and thus provides default functionality.</p>
 <h2 id="stores">Stores</h2>
-<p>There are circumstances where defining inputs and outputs in a ruleset is unweildy.
+<p>There are circumstances where defining inputs and outputs in a ruleset is unwieldy.
 DARL has the <em>stores</em> functionality to handle data input and output within a ruleset, if the environment the inference engine is running in supports stores.
 The stores are defined like inputs and outputs, but the environment must support the store specified or a runtime exception will be generated.</p>
-<p>Stores can be sinks or sources of information, or both. For instance, when using DARL within the Bot Develepment System a store is defined containing the local data stored during the conversation. Such a store can be treated as an output and an input. </p>
+<p>Stores can be sinks or sources of information, or both. For instance, when using DARL within the Bot Development System a store is defined containing the local data stored during the conversation. Such a store can be treated as an output and an input. </p>
 <p>A store can have a sequence of parameters that are specific to that store, where the parameters must be provided in the order expected.
 Parameters can be string constants, strings, textual outputs or other stores.</p>
 <p>A store has the general format:</p>
@@ -576,8 +576,8 @@ Parameters can be string constants, strings, textual outputs or other stores.</p
 
 </code></pre>
 
-<p>Stores can be readonly or writeonly, in which case reading or writing the wrong way round will not create a syntax error, but will have no effect.
-A read to a store that is writeonly, or a read of a data item that does not exist will return an <em>unknown</em> value.</p></div>
+<p>Stores can be read-only or write-only, in which case reading or writing the wrong way round will not create a syntax error, but will have no effect.
+A read to a store that is write-only, or a read of a data item that does not exist will return an <em>unknown</em> value.</p></div>
         </div>
 
         <footer class="col-md-12">

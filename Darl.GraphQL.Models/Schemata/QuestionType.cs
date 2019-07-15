@@ -14,17 +14,17 @@ namespace Darl.GraphQL.Models.Schemata
             Name = "Question";
             Description = "A single question";
             Field<ListGraphType<StringGraphType>>("categories", resolve: c => c.Source.categories);
-            Field(c => c.dResponse);
-            Field(c => c.enforceCrisp);
-            Field(c => c.format);
-            Field(c => c.increment);
-            Field(c => c.maxval);
-            Field(c => c.minval);
-            Field(c => c.path);
+            Field(c => c.dResponse,true);
+            Field(c => c.enforceCrisp,true);
+            Field(c => c.format,true);
+            Field(c => c.increment,true);
+            Field(c => c.maxval,true);
+            Field(c => c.minval,true);
+            Field(c => c.path,true);
             Field<QuestionTypeEnum>("qType", resolve: c => c.Source.qtype);
             Field(c => c.reference);
-            Field(c => c.sResponse);
-            Field(c => c.text);
+            Field(c => c.sResponse,true);
+            Field(c => c.text,true);
         }
     }
 }

@@ -71,12 +71,12 @@
 
 <h1 id="output-aggregation">Output aggregation</h1>
 <p>DARL is a language that takes uncertainty very seriously, since it is intended to infer results in circumstances where inputs and rules bear varying amounts of uncertainty.</p>
-<p>The various run time tools for DARL ultimately output <a href="DarlVar">DarlVar</a> data structures capable of containing multiple forms of uncertaintyfor each output. The name parameter will contain the output name.
+<p>The various run time tools for DARL ultimately output <a href="DarlVar">DarlVar</a> data structures capable of containing multiple forms of uncertainty for each output. The name parameter will contain the output name.
 In each case the Value parameter contains a crisp, central value. The uncertainty information is held in other places, depending on the type.</p>
 <p>The three output types all aggregate data in different ways:</p>
 <h1 id="numeric-outputs">Numeric outputs</h1>
 <p>In the worst case, the DARL inference engine must aggregate multiple fuzzy sets, each with associated confidence values, to create a single crisp Value parameter and a fuzzy set representing the uncertainty.
-The central value is determined using the <a href="https://en.wikipedia.org/wiki/Defuzzification">Centre of Gravity method</a>.
+The central value is determined using the <a href="https://en.wikipedia.org/wiki/Defuzzification">Center of Gravity method</a>.
 The Values parameter contains a sequence of doubles delineating the fuzzy uncertainty associated with the result in standard <a href="fuzzy sets">fuzzy set</a> format.</p>
 <h1 id="categorical-outputs">Categorical outputs</h1>
 <p>Again in the worst case the rules may have caused multiple categories to be generated with different confidence levels.

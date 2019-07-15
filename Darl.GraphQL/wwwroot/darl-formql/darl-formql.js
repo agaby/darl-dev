@@ -1,24 +1,33 @@
 ﻿// A library to create a form/questionnaire from the darl.dev GraphQL endpoint
 // relies on graphql.js here https://github.com/f/graphql.js
 var currentQSP;
-var darlUrl;
 var rootDiv;
 var isValid = null;
 var graph;
 
-async function DARLForm(div, id, url, debug) {
-    darlUrl = url;
-    graph = graphql(url, { headers: { "Authorization": "Basic 8952d1af-9d34-4866-a4bc-412bf51743d6" } });
-    var firstQSP = graph(`query beginForm($ruleset: String!){ beginQuestionnaire(ruleSetName: $ruleset){ ieToken questionHeader questions { text categories reference questionType maxval minval format dResponse sResponse }}}`);
-    var content = await firstQSP({ ruleset: id });
-    var data = content.beginQuestionnaire;
-    if ( data === null) {
-        var root = $(div);
-        root.append($('<p></p>').text("This ruleset can't be found or has timed out. Refresh the page."));
+async function DARLForm(div, id, debug, apiKey) {
+    try {
+        if (apiKey === null) {
+            graph = graphql("https://darl.dev/graphql");
+        }
+        else {
+            graph = graphql("https://darl.dev/graphql", { headers: { "Authorization": "Basic " + apiKey } });
+        }
+        var firstQSP = graph(`query beginForm($ruleset: String!){ beginQuestionnaire(ruleSetName: $ruleset){ ieToken questionHeader questions { text categories reference qType maxval minval format dResponse sResponse }}}`);
+        var content = await firstQSP({ ruleset: id });
+
+        var data = content.beginQuestionnaire;
+        if (data === null) {
+            var root = $(div);
+            root.append($('<p></p>').text("This ruleset can't be found or has timed out. Refresh the page."));
+        }
+        else {
+            BuildForm(div, data, debug);
+            currentQSP = data;
+        }
     }
-    else {
-        BuildForm(div, data, debug);
-        currentQSP = data;
+    catch (err) {
+        alert(err[0].message);
     }
 }
 

@@ -40,17 +40,17 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-4">
+        <nav class="navbar navbar-expand-lg navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-4">
             <div class="container">
                 <a class="navbar-brand" href="https://darl.ai">
                     <img src="/images/logo.png" alt="">
                     GraphQL API<span style="color: #0026ff"> &beta;</span>
                 </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse" id="navbarSupportedContent">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" href="index">Home</a>
@@ -61,8 +61,15 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" href="graphiql">Graphiql</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="darleditor">DARL editor</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Darl editing
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="darleditor">DARL editor</a>
+                                <a class="dropdown-item" href="darlevaluator">DARL evaluation</a>
+                                <a class="dropdown-item" href="boteditor">Bot editor</a>
+                            </div>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" href="/docs/">Read me!</a>
@@ -88,6 +95,10 @@
 
     </footer>
 
+    <script src="~/jquery/jquery.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
     @RenderSection("Scripts", required: false)
 

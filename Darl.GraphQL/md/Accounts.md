@@ -25,7 +25,7 @@ If you don't pay within 14 days, or your trial has expired without you registeri
 
 The top bar will contain a lock symbol to indicate your account is suspended.
 
-Regstering, if at the end of a trial, or paying your bill will result in the suspension being lifted at the end of the next back office processing cycle. This is typically half an hour.
+Registering, if at the end of a trial, or paying your bill will result in the suspension being lifted at the end of the next back office processing cycle. This is typically half an hour.
 
 # Bot Suspension
 If an account is suspended, we reserve the right to switch your bot models for our own models indicating the account is suspended. Your bot models will be reinstated at the end of the next back office processing cycle.

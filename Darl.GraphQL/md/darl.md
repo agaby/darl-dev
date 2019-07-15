@@ -35,7 +35,7 @@ They follow the convention of C#, namely:
 These follow C#, so they can be integers or floating point numbers with optional exponent.
 
 ### Infinity
-Unbounded sets are denoted by positive or negative infinity as the first or last value. Darl recognises _Infinity_, _-Infinity_, _-∞_ and _∞_.
+Unbounded sets are denoted by positive or negative infinity as the first or last value. Darl recognizes _Infinity_, _-Infinity_, _-∞_ and _∞_.
 
 ## String literals
 These are pieces of text delineated with the " or ' characters.
@@ -108,7 +108,7 @@ wire ruleset2.output1 ruleset3.input2
 ```
 
 The DARL parser checks for impossible combinations, such as connecting two ruleset outputs.
-The online DARL designer makes these checks dynamically.
+The on-line DARL designer makes these checks dynamically.
 A further constraint is that connections between rulesets are only possible where the data types match. 
 
 ## Rulesets
@@ -250,7 +250,7 @@ Since constants are frequently re-used and it is better practice to keep them in
 duration trial_duration 30.00:00:0.0;
 ```
 
-The format of a period definition is <days>.<hours>:<minutes>:<seconds> where days, hours amd minutes are integers and seconds ids a real number.
+The format of a period definition is <days>.<hours>:<minutes>:<seconds> where days, hours and minutes are integers and seconds ids a real number.
 Examples are:
 
 ```
@@ -493,11 +493,11 @@ otherwise if anything then b will be true;
 There should be only one _otherwise_ rule per output. The otherwise rule is triggered only if no other rules fire for that output, and thus provides default functionality.
 
 ## Stores
-There are circumstances where defining inputs and outputs in a ruleset is unweildy.
+There are circumstances where defining inputs and outputs in a ruleset is unwieldy.
 DARL has the _stores_ functionality to handle data input and output within a ruleset, if the environment the inference engine is running in supports stores.
 The stores are defined like inputs and outputs, but the environment must support the store specified or a runtime exception will be generated.
 
-Stores can be sinks or sources of information, or both. For instance, when using DARL within the Bot Develepment System a store is defined containing the local data stored during the conversation. Such a store can be treated as an output and an input. 
+Stores can be sinks or sources of information, or both. For instance, when using DARL within the Bot Development System a store is defined containing the local data stored during the conversation. Such a store can be treated as an output and an input. 
 
 A store can have a sequence of parameters that are specific to that store, where the parameters must be provided in the order expected.
 Parameters can be string constants, strings, textual outputs or other stores.
@@ -525,8 +525,8 @@ ruleset storedemo
 
 ```
 
-Stores can be readonly or writeonly, in which case reading or writing the wrong way round will not create a syntax error, but will have no effect.
-A read to a store that is writeonly, or a read of a data item that does not exist will return an _unknown_ value.
+Stores can be read-only or write-only, in which case reading or writing the wrong way round will not create a syntax error, but will have no effect.
+A read to a store that is write-only, or a read of a data item that does not exist will return an _unknown_ value.
 
 
 

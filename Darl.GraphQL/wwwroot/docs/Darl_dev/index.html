@@ -123,10 +123,16 @@ full details can be found <a href="https://github.com/APIs-guru/graphql-voyager"
 <p><img alt="graphiql" src="/images/darl_dev_graphiql.png" /></p>
 <h2 id="the-darl-editor">The DARL editor</h2>
 <p>Although you can access all the data items in the API through the interfaces, including the text of rulesets, it is much more convenient to edit DARL in a dedicated syntax-checking editor.
-The DARL editor plug-in is described in the <a href="./darl_editor">DARL editor</a> page, and the DARL language is decribed in the <a href="./darl">DARL</a> page.
+The DARL editor plug-in is described in the <a href="./darl_editor">DARL editor</a> page, and the DARL language is described in the <a href="./darl">DARL</a> page.
 Depending on whether or not you are logged in the drop down selection shows either your rule sets or the demo collection.</p>
 <p>If the demo collection, the save button, which calls a <em>mutation</em>, will not work.</p>
 <p><img alt="darl editor" src="/images/darl_dev_darl_editor.png" /></p>
+<h3 id="editing-using-an-api-key">Editing using an API key</h3>
+<p>If you are logged in you can only edit records associated with your account.  You can edit on behalf of another account if you know the APIKey.
+Pass the API key as a parameter. For instance:</p>
+<pre><code>https://darl.dev/darleditor?apikey=api_key_here&quot;
+</code></pre>
+
 <h2 id="bug-or-request-reporting">Bug or request reporting</h2>
 <p>You can talk to the support team through the API using the following mutation:</p>
 <pre><code>mutation
