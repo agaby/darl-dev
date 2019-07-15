@@ -9,7 +9,19 @@
     {
       "library": "jquery@3.4.1",
       "destination": "wwwroot/jquery"
+    },
+    {
+      "provider": "filesystem",
+      "library": "https://github.com/f/graphql.js/graphql.js",
+      "destination": "wwwroot/graphql/"
+    },
+    {
+      "provider": "filesystem",
+      "library": "https://github.com/drandysip/darl-codemirror/tree/master/dist/darl-codemirror.js",
+      "destination": "wwwroot/darl-codemirror/",
+      "files": [
+        "darl-codemirror.js"
+      ]
     }
-
   ]
 }

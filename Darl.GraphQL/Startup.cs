@@ -158,9 +158,9 @@ namespace Darl.GraphQL
             services.AddTransient<SetGraphType>();
             services.AddTransient<PercentGraphType>();
             services.AddTransient<QuestionSetType>();
-            services.AddTransient<QuestionType>();
+            services.AddTransient<QuestionDataType>();
             services.AddTransient<QuestionTypeEnum>();
-            services.AddTransient<ResponseType>();
+            services.AddTransient<ResponseDataType>();
             services.AddTransient<ResponseTypeEnum>();
             services.AddTransient<QuestionSetInputType>();
             services.AddTransient<QuestionInputType>();

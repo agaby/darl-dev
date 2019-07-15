@@ -182,9 +182,9 @@ namespace Darl.GraphQL.Models.Connectivity
 
     public class CombinedCache
     {
-        static ITraceWriter traceWriter = new MemoryTraceWriter();
+        static ITraceWriter traceWriter = new MemoryTraceWriter(); //new DiagnosticsTraceWriter(); //
 
-        static JsonSerializerSettings jss = new JsonSerializerSettings { TraceWriter = traceWriter, Converters = new List<JsonConverter>() { new StringEnumConverter { } } };
+        static JsonSerializerSettings jss = new JsonSerializerSettings { TraceWriter = traceWriter, Converters = new List<JsonConverter>() { new StringEnumConverter { } }, ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
 
         public RuleForm ruleForm { get; set; }
 

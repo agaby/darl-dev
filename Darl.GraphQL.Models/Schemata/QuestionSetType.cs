@@ -19,10 +19,10 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.percentComplete).Description("The percentage of the questionnaire currently complete");
             Field(c => c.preamble,true).Description("Text to display before the questionnaire");
             Field(c => c.questionHeader,true).Description("Text to display before the questions");
-            Field<ListGraphType<QuestionType>>("questions","The list of questions to be asked", resolve: c => c.Source.questions);
+            Field<ListGraphType<QuestionDataType>>("questions","The list of questions to be asked", resolve: c => c.Source.questions);
             Field(c => c.questionsRequested).Description("The number of questions to be asked at a time. Default: 1");
             Field(c => c.responseHeader,true).Description("text to display before responses");
-            Field<ListGraphType<ResponseType>>("responses","A list of responses - the results of the ruleset", resolve: c => c.Source.responses);
+            Field<ListGraphType<ResponseDataType>>("responses","A list of responses - the results of the ruleset", resolve: c => c.Source.responses);
             Field<ListGraphType<StringStringPairType>>("values","Status information of unfilled inputs and outputs", resolve: c => BotFormatType.GetSSPairsFromDictionary(c.Source.values));
         }
     }

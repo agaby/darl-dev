@@ -6,11 +6,11 @@ using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
-    public class ResponseType : ObjectGraphType<ResponseProxy>
+    public class ResponseDataType : ObjectGraphType<ResponseProxy>
     {
-        public ResponseType()
+        public ResponseDataType()
         {
-            Name = "ResponseType";
+            Name = "Response";
             Description = "A response at the completion of a questionnaire";
             Field(c => c.annotation, true).Description("The description of the answer");
             Field(c => c.color,true).Description("The color of any score bar");

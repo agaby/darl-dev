@@ -9,7 +9,7 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public QuestionTypeEnum()
         {
-            Name = "";
+            Name = "QuestionType";
             Description = "The data type sought.";
             AddValue("numeric", "a number", 0);
             AddValue("categorical", "text from a range of texts", 1);

@@ -6,10 +6,10 @@ using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
-    public class QuestionType : ObjectGraphType<QuestionProxy>
+    public class QuestionDataType : ObjectGraphType<QuestionProxy>
     {
 
-        public QuestionType()
+        public QuestionDataType()
         {
             Name = "Question";
             Description = "A single question";
@@ -21,7 +21,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.maxval);
             Field(c => c.minval);
             Field(c => c.path);
-            Field<QuestionTypeEnum>("questionType", resolve: c => c.Source.qtype);
+            Field<QuestionTypeEnum>("qType", resolve: c => c.Source.qtype);
             Field(c => c.reference);
             Field(c => c.sResponse);
             Field(c => c.text);
