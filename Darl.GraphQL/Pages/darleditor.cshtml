@@ -102,8 +102,10 @@
             dropdown.empty();
             dropdown.append('<option selected="true" disabled>Choose a ruleset to edit</option>');
             dropdown.prop('selectedIndex', 0);
-
-            var graph = graphql("https://darl.dev/graphql", { headers: { "Authorization": "Basic 8952d1af-9d34-4866-a4bc-412bf51743d6"}});
+            var graph = graphql("https://darl.dev/graphql");
+            var apiKey = findGetParameter("apikey");
+            if(apiKey !== null)
+                graph = graphql("https://darl.dev/graphql", { headers: { "Authorization": "Basic " + apiKey } });
             var allrulesets = graph(`{ rulesets { name }}`);
             var darlContent = graph(`query getdarl($name: String!){  getDarlFromRuleSet(ruleSetName: $name)}`);
             var savecontent = graph('mutation setdarl($name: String!, $darl: String!){updateRuleSetDarl(name: $name, darl: $darl){name}}');
@@ -136,6 +138,19 @@
         function convertescapes(text) {
             text = text.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&#x221E;/g, '∞').replace(/&#xD;/g, '\r').replace(/&#xA;/g, '\n').replace(/&#x9;/g, '\t').replace(/&#x2B;/g, '+').replace(/&#x27;/g, '\'');
             return unescape(text);
+        }
+
+        function findGetParameter(parameterName) {
+            var result = null,
+                tmp = [];
+            location.search
+                .substr(1)
+                .split("&")
+                .forEach(function (item) {
+                  tmp = item.split("=");
+                  if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+                });
+            return result;
         }
 
     </script>
