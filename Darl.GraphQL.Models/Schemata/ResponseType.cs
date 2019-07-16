@@ -21,7 +21,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.maxVal,true).Description("Numeric max of the score bar");
             Field(c => c.minVal,true).Description("Numeric min of the score bar");
             Field(c => c.preamble,true).Description("Preamble text");
-            Field<ResponseTypeEnum>("responseType","The type of the result", resolve: c => c.Source.rtype);//
+            Field<ResponseTypeEnum>("rType","The type of the result", resolve: c => c.Source.rtype);
             Field(c => c.value,true).Description("Numeric value if score bar");
         }
     }

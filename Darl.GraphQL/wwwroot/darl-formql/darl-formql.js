@@ -4,6 +4,7 @@ var currentQSP;
 var rootDiv;
 var isValid = null;
 var graph;
+var nextQSP;
 
 async function DARLForm(div, id, debug, apiKey) {
     try {
@@ -13,7 +14,8 @@ async function DARLForm(div, id, debug, apiKey) {
         else {
             graph = graphql("https://darl.dev/graphql", { headers: { "Authorization": "Basic " + apiKey } });
         }
-        var firstQSP = graph(`query beginForm($ruleset: String!){ beginQuestionnaire(ruleSetName: $ruleset){ ieToken questionHeader questions { text categories reference qType maxval minval format dResponse sResponse }}}`);
+        var firstQSP = graph(`query beginForm($ruleset: String!){ beginQuestionnaire(ruleSetName: $ruleset){ ieToken questionHeader percentComplete questions { text categories reference qType maxval minval format dResponse sResponse } values {name value}}}`);
+        nextQSP = graph('query nextStep($ieToken: String!, $reference: String!, $qType: QuestionType!, $sresponse: String, $dresponse: Float   ){ continueQuestionnaire(responses: {ieToken: $ieToken, questions:[{reference: $reference, sResponse: $sresponse,dResponse: $dresponse, qType: $qType}]}) { complete ieToken questionHeader percentComplete values {name value } questions { text categories  reference qType sResponse  dResponse} responses { mainText annotation rType }}}');
         var content = await firstQSP({ ruleset: id });
 
         var data = content.beginQuestionnaire;
@@ -22,6 +24,7 @@ async function DARLForm(div, id, debug, apiKey) {
             root.append($('<p></p>').text("This ruleset can't be found or has timed out. Refresh the page."));
         }
         else {
+            $(div).empty();
             BuildForm(div, data, debug);
             currentQSP = data;
         }
@@ -54,7 +57,7 @@ function BuildForm(div, qsp, debug) {
     $(div).append(root);
     var header = $("<h4></h4>").text(qsp.preamble);
     root.append(header);
-    if (qsp.questions !== null) {
+    if (qsp.questions !== null && qsp.questions !== undefined) {
         root.append($("<h4></h4>").text(qsp.questionHeader));
         //iterate over questions
         var i;
@@ -63,13 +66,13 @@ function BuildForm(div, qsp, debug) {
             var outerdiv = $('<div></div>').attr('class', 'form-group row');
             outerdiv.append($('<div></div>').attr('class', 'control-label col-md-4').text(q.text));
             var innerdiv = $('<div></div>').attr('class', 'col-md-8');
-            switch (q.qtype) {
-                case 0:
+            switch (q.qType) {
+                case 'numeric':
                     var numinput = $('<input/>').attr({ class: "form-control", 'data-val': 'true', 'data-val-number': 'the response must be a number', 'data-val-required': 'The field is required', id: 'form' + q.reference, max: q.maxval, min: q.minval, name: 'form' + q.reference, step: q.increment, value: q.dResponse, 'type': 'number' });
                     var numval = $('<span></span').attr({ class: "field-validation-valid", 'data-valmsg-for': 'form' + q.reference, 'data-valmsg-replace': 'true' });
                     innerdiv.append(numinput, numval);
                     break;
-                case 1:
+                case 'categorical':
                     var catinput = $('<select></select>').attr({ class: "form-control", name: 'form' + q.reference, id: 'form' + q.reference });
                     for (p = 0; p < q.categories.length; p++) {
                         catinput.append($('<option></option>').text(q.categories[p]));
@@ -77,7 +80,7 @@ function BuildForm(div, qsp, debug) {
                     var catval = $('<span></span').attr({ class: "field-validation-valid", 'data-valmsg-for': 'form' + q.reference, 'data-valmsg-replace': 'true' });
                     innerdiv.append(catinput, catval);
                     break;
-                case 2:
+                case 'textual':
                     if (q.format !== "") { //chrome doesn't like empty pattern
                         var textinput = $('<input/>').attr({ class: "form-control widetextbox", 'data-val': 'true', 'data-val-required': 'The field is required', id: 'form' + q.reference, name: 'form' + q.reference, value: q.sResponse, pattern: q.format, 'type': 'text' });
                     }
@@ -92,7 +95,7 @@ function BuildForm(div, qsp, debug) {
             root.append(outerdiv);
         }
     }
-    if (qsp.responses !== null) {
+    if (qsp.responses !== null && qsp.responses !== undefined) {
         root.append($("<h4></h4>").text(qsp.responseHeader));
         //iterate over responses
         var n;
@@ -193,7 +196,7 @@ function GoBack(e) {
     e.preventDefault(); //no submit
 }
 
-function GoNext(e) {
+async function GoNext(e) {
     //collect data
     var valid = true;
     if (currentQSP.questions !== null) {
@@ -202,7 +205,7 @@ function GoNext(e) {
             var q = currentQSP.questions[i];
             if (!$('#form' + q.reference)[0].checkValidity())
                 valid = false;
-            switch (q.qtype) {
+            switch (q.qType) {
                 case 0:
                     q.dResponse = $('#form' + q.reference).val();
                     break;
@@ -214,24 +217,22 @@ function GoNext(e) {
         }
     }
     if (valid === true) {
-        isValid = true;
-        e.preventDefault(); //no submit
-        $.ajax({
-            type: 'POST',
-            url: darlUrl,
-            data: JSON.stringify(currentQSP),
-            success: function (data) {
-                $(rootDiv).empty();
-                BuildForm(rootDiv, data);
-                currentQSP = data;
-            },
-            contentType: "application/json",
-            dataType: 'json'
-        });
+        try {
+            isValid = true;
+            e.preventDefault(); //no submit
+            var nqsp = await nextQSP({ ieToken: currentQSP.ieToken, reference: currentQSP.questions[0].reference, qType: currentQSP.questions[0].qType, sresponse: currentQSP.questions[0].sResponse, dresponse: currentQSP.questions[0].dResponse });
+            $(rootDiv).empty();
+            var data = nqsp.continueQuestionnaire;
+            BuildForm(rootDiv, data);
+            currentQSP = data;
+        }
+        catch (err) {
+            alert(err[0].message);
+        }
     }
     else {
         isValid = false;
-        return true; //default behaviour if invalid
+        return true; //default behavior if invalid
     }
 
 
