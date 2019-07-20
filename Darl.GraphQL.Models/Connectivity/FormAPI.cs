@@ -3,6 +3,8 @@ using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl_standard.Darl.Forms;
 using DarlCommon;
+using DarlLanguage;
+using Datl.Language;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
@@ -11,6 +13,8 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
@@ -139,6 +143,69 @@ namespace Darl.GraphQL.Models.Connectivity
             return true;
         }
 
+        public async Task<QuestionSetProxy> CreateDynamicRuleSetEditor(RuleSet ruleset, RuleSet template)
+        {
+            //insert key elements from the ruleset into the template
+            var inserts = new Dictionary<string, string>();
+            inserts.Add("inputs",string.Join(',', ruleset.Contents.format.InputFormatList.Select(a => a.Name)));
+            inserts.Add("outputs",string.Join(',', ruleset.Contents.format.OutputFormatList.Select(a => a.Name)));
+            inserts.Add("texts","\"" + string.Join("\",\"", ruleset.Contents.language.LanguageList.Select(a => a.Name)) + "\"");
+            var sb = new StringBuilder();
+            bool numericsExist = false;
+            if(ruleset.Contents.format.InputFormatList.Where(a => a.InType == InputFormat.InputType.numeric).Any())
+            {
+                sb.Append("if inputs is ");
+                sb.Append(string.Join(" or inputs is ", ruleset.Contents.format.InputFormatList.Where(a => a.InType == InputFormat.InputType.numeric).Select(a => a.Name)));
+                sb.Append(" then numericIO will be true; \n");
+                numericsExist = true;
+            }
+            if (ruleset.Contents.format.OutputFormatList.Where(a => a.OutputType == OutputFormat.OutType.numeric).Any())
+            {
+                sb.Append("if outputs is ");
+                sb.Append(string.Join(" or outputs is ", ruleset.Contents.format.OutputFormatList.Where(a => a.OutputType == OutputFormat.OutType.numeric).Select(a => a.Name)));
+                sb.Append(" then numericIO will be true; \n");
+                numericsExist = true;
+            }
+            if(numericsExist)
+            {
+                sb.Append("otherwise ");
+            }
+            sb.Append("if anything then numericIO will be false;\n");
+
+            bool textualsExist = false;
+            if(ruleset.Contents.format.InputFormatList.Where(a => a.InType == InputFormat.InputType.textual).Any())
+            {
+                sb.Append("if inputs is ");
+                sb.Append(string.Join(" or inputs is ", ruleset.Contents.format.InputFormatList.Where(a => a.InType == InputFormat.InputType.textual).Select(a => a.Name)));
+                sb.Append(" then textualIO will be true; \n");
+                textualsExist = true;
+            }
+            if (ruleset.Contents.format.OutputFormatList.Where(a => a.OutputType == OutputFormat.OutType.textual).Any())
+            {
+                sb.Append("if outputs is ");
+                sb.Append(string.Join(" or outputs is ", ruleset.Contents.format.OutputFormatList.Where(a => a.OutputType == OutputFormat.OutType.textual).Select(a => a.Name)));
+                sb.Append(" then textualIO will be true; \n");
+                textualsExist = true;
+            }
+            if (textualsExist)
+            {
+                sb.Append("otherwise ");
+            }
+            sb.Append("if anything then textualIO will be false;\n");
+            inserts.Add("rules", sb.ToString());
+
+            //insert text into template 
+            var tp = new TextProcess();
+            template.Contents.darl = tp.Parse(template.Contents.darl, inserts);
+
+            await template.Contents.UpdateFromCode();
+
+            var rt = new DarlRunTime();
+            var tree = rt.CreateTree(template.Contents.darl);
+
+            return await Get(template);
+                
+        }
 
 
         #region support methods
@@ -174,9 +241,7 @@ namespace Darl.GraphQL.Models.Connectivity
             await _cache.SetStringAsync(co.questionCache.SessionKey.ToString(), coz, new DistributedCacheEntryOptions { SlidingExpiration = new TimeSpan(1,0,0) });
         }
 
-
-
-
+ 
         #endregion
     }
 

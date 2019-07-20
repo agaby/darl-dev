@@ -176,6 +176,7 @@ namespace Darl.GraphQL
             services.AddTransient<BotRuntimeModelType>();
             services.AddTransient<DocumentType>();
             services.AddTransient<TriggerViewInputType>();
+            services.AddTransient<DQTypeEnum>();
 
 
             //root

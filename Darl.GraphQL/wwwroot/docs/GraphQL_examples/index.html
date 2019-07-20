@@ -71,6 +71,7 @@
             <li><a href="#see-a-list-of-preloaded-data-items-in-a-rule-set">See a list of preloaded data items in a rule set</a></li>
             <li><a href="#start-a-questionnaire">Start a questionnaire</a></li>
             <li><a href="#continue-a-questionnaire">Continue a questionnaire</a></li>
+            <li><a href="#go-back-a-step-with-a-questionnaire">Go Back a step with a questionnaire</a></li>
             <li><a href="#interact-with-a-bot">Interact with a Bot</a></li>
             <li><a href="#get-lineages-for-a-word">Get lineages for a word</a></li>
         <li class="main "><a href="#mutations">Mutations</a></li>
@@ -178,7 +179,7 @@
     }
     responses
     {
-      responseType
+      rType
       mainText
       annotation
     }
@@ -219,6 +220,41 @@
     {
       mainText
       annotation
+      rType
+    }
+  }
+}
+</code></pre>
+
+<h2 id="go-back-a-step-with-a-questionnaire">Go Back a step with a questionnaire</h2>
+<pre><code class="json">query back($ieToken: String!)
+{
+  backtrackQuestionnaire(ieToken: $ieToken)
+  {
+    complete 
+    ieToken 
+    questionHeader 
+    percentComplete 
+    canUnwind
+    values {
+      name 
+      value 
+    } 
+    questions 
+    { 
+      text 
+      categories  
+      reference 
+      qType 
+      sResponse  
+      dResponse
+    } 
+    responses 
+    { 
+      mainText
+      annotation 
+      rType 
+      preamble
     }
   }
 }

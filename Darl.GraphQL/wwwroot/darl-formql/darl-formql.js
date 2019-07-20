@@ -5,17 +5,22 @@ var rootDiv;
 var isValid = null;
 var graph;
 var nextQSP;
+var backQSP;
+var isDebug;
+var url = "https://localhost:44311/graphql"; //"https://darl.dev/graphql"
 
 async function DARLForm(div, id, debug, apiKey) {
     try {
         if (apiKey === null) {
-            graph = graphql("https://darl.dev/graphql");
+            graph = graphql(url);
         }
         else {
-            graph = graphql("https://darl.dev/graphql", { headers: { "Authorization": "Basic " + apiKey } });
+            graph = graphql(url, { headers: { "Authorization": "Basic " + apiKey } });
         }
-        var firstQSP = graph(`query beginForm($ruleset: String!){ beginQuestionnaire(ruleSetName: $ruleset){ ieToken questionHeader percentComplete questions { text categories reference qType maxval minval format dResponse sResponse } values {name value}}}`);
-        nextQSP = graph('query nextStep($ieToken: String!, $reference: String!, $qType: QuestionType!, $sresponse: String, $dresponse: Float   ){ continueQuestionnaire(responses: {ieToken: $ieToken, questions:[{reference: $reference, sResponse: $sresponse,dResponse: $dresponse, qType: $qType}]}) { complete ieToken questionHeader percentComplete values {name value } questions { text categories  reference qType sResponse  dResponse} responses { mainText annotation rType }}}');
+        isDebug = debug;
+        var firstQSP = graph(`query beginForm($ruleset: String!){ beginQuestionnaire(ruleSetName: $ruleset){ ieToken questionHeader percentComplete canUnwind questions { text categories reference qType maxval minval format dResponse sResponse } values {name value}}}`);
+        nextQSP = graph('query nextStep($ieToken: String!, $reference: String!, $qType: QuestionType!, $sresponse: String, $dresponse: Float   ){ continueQuestionnaire(responses: {ieToken: $ieToken, questions:[{reference: $reference, sResponse: $sresponse,dResponse: $dresponse, qType: $qType}]}) { complete ieToken questionHeader percentComplete canUnwind values {name value } questions { text categories  reference qType sResponse  dResponse} responses { mainText annotation rType preamble}}}');
+        backQSP = graph('query back($ieToken: String!){ backtrackQuestionnaire(ieToken: $ieToken) {complete ieToken questionHeader percentComplete canUnwind values { name value } questions { text categories  reference qType sResponse  dResponse } responses { mainText annotation rType preamble }}}');
         var content = await firstQSP({ ruleset: id });
 
         var data = content.beginQuestionnaire;
@@ -49,7 +54,7 @@ function BuildForm(div, qsp, debug) {
             return false;
         }
         //user pressed enter, process as if they clicked next instead
-        $('#nextButton').trigger('click');
+      //  $('#nextButton').trigger('click');
     };
 
     root.submit(submitForm);
@@ -102,15 +107,15 @@ function BuildForm(div, qsp, debug) {
         for (n = 0; n < qsp.responses.length; n++) {
             var r = qsp.responses[n];
             var outerrespdiv = $('<div></div>').attr('class', 'form-group row');
-            switch (r.rtype) {
-                case 0:
+            switch (r.rType) {
+                case 'Preamble':
                     outerrespdiv.append($('<div></div>').attr('class', 'well well-lg').text(r.preamble));
                     break;
-                case 1:
+                case 'Text':
                     outerrespdiv.append($('<div></div>').attr('class', 'control-label col-sm-4').text(r.annotation));
                     outerrespdiv.append($('<div></div>').attr('class', 'col-sm-6 multiline').text(r.mainText));
                     break;
-                case 2:
+                case 'ScoreBar':
                     outerrespdiv.append($('<div></div>').attr('class', 'control-label col-sm-6').text(r.annotation));
                     outerrespdiv.append($('<div></div>').attr('class', 'col-sm-1').text(r.lowText));
                     outerrespdiv.append($('<div></div>').attr({
@@ -118,7 +123,7 @@ function BuildForm(div, qsp, debug) {
                     }).text(r.value));
                     outerrespdiv.append($('<div></div>').attr('class', 'col-sm-1').text(r.highText));
                     break;
-                case 3:
+                case 'Link':
                     var innerrespdiv = $('<div></div>').attr('class', 'control-label col-sm-4')
                     innerrespdiv.append($('<a></a>').attr({ href: 'r.mainText', class: 'btn btn-primary', style: 'opacity:' + r.format }).text(r.annotation));
                     outerrespdiv.append(innerrespdiv);
@@ -166,34 +171,30 @@ function BuildForm(div, qsp, debug) {
         var variablesTable = $('<table></table>').attr('class', 'table').append($('<thead></thead').append($('<tr></tr>').append($('<th></th>').text('Variable'), $('<th></th>').text(tableHead))));
         var variablesBody = $('<tbody></tbody>');
         for (var key in qsp.values) {
-            variablesBody.append($('<tr></tr>').append($('<td></td>').text(key), $('<td></td>').text(qsp.values[key])));
+            variablesBody.append($('<tr></tr>').append($('<td></td>').text(qsp.values[key].name), $('<td></td>').text(qsp.values[key].value)));
         }
 
         variablesTable.append(variablesBody);
         reportingDiv.append($('<div></div>').attr({ 'class': 'panel-collapse collapse', id: 'darlDebugValues' }).append($('<div></div>').attr('class', 'panel-body').append(variablesTable)));
         root.append(reportingDiv);
     }
-
     $('#nextButton').on('click', GoNext);
     $('#backButton').on('click', GoBack);
 
 }
 
-function GoBack(e) {
-    currentQSP.questionsRequested = -1;
-    $.ajax({
-        type: 'POST',
-        url: darlUrl,
-        data: JSON.stringify(currentQSP),
-        success: function (data) {
-            $(rootDiv).empty();
-            BuildForm(rootDiv, data);
-            currentQSP = data;
-        },
-        contentType: "application/json",
-        dataType: 'json'
-    });
-    e.preventDefault(); //no submit
+async function GoBack(e) {
+    try {
+        var bqsp = await backQSP({ ieToken: currentQSP.ieToken });
+        var data = bqsp.backtrackQuestionnaire;
+        $(rootDiv).empty();
+        BuildForm(rootDiv, data, isDebug);
+        currentQSP = data;
+        e.preventDefault(); //no submit
+    }
+    catch (err) {
+        alert(err[0].message);
+    }
 }
 
 async function GoNext(e) {
@@ -206,11 +207,11 @@ async function GoNext(e) {
             if (!$('#form' + q.reference)[0].checkValidity())
                 valid = false;
             switch (q.qType) {
-                case 0:
+                case 'numeric':
                     q.dResponse = $('#form' + q.reference).val();
                     break;
-                case 1:
-                case 2:
+                case 'categorical':
+                case 'textual':
                     q.sResponse = $('#form' + q.reference).val();
                     break;
             }
@@ -223,7 +224,7 @@ async function GoNext(e) {
             var nqsp = await nextQSP({ ieToken: currentQSP.ieToken, reference: currentQSP.questions[0].reference, qType: currentQSP.questions[0].qType, sresponse: currentQSP.questions[0].sResponse, dresponse: currentQSP.questions[0].dResponse });
             $(rootDiv).empty();
             var data = nqsp.continueQuestionnaire;
-            BuildForm(rootDiv, data);
+            BuildForm(rootDiv, data,isDebug);
             currentQSP = data;
         }
         catch (err) {

@@ -98,7 +98,7 @@ The GraphQL interface permits you to create, maintain and edit your models progr
     }
     responses
     {
-      responseType
+      rType
       mainText
       annotation
     }
@@ -140,6 +140,42 @@ The GraphQL interface permits you to create, maintain and edit your models progr
     {
       mainText
       annotation
+      rType
+    }
+  }
+}
+```
+
+## Go Back a step with a questionnaire
+```json
+query back($ieToken: String!)
+{
+  backtrackQuestionnaire(ieToken: $ieToken)
+  {
+    complete 
+    ieToken 
+    questionHeader 
+    percentComplete 
+    canUnwind
+    values {
+      name 
+      value 
+    } 
+    questions 
+    { 
+      text 
+      categories  
+      reference 
+      qType 
+      sResponse  
+      dResponse
+    } 
+    responses 
+    { 
+      mainText
+      annotation 
+      rType 
+      preamble
     }
   }
 }

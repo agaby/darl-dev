@@ -1,5 +1,6 @@
 ﻿//using Darl.Connectivity.Models;
 using Darl.GraphQL.Models.Models;
+using Darl.GraphQL.Models.Schemata;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using DarlCommon;
@@ -200,5 +201,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<Document> DeleteDocument(string userId, string name);
         Task<DarlVar> CreateRulesetPreload(string userId, string rulesetName, DarlVar preloadData);
         Task<TriggerView> UpdateRuleFormTrigger(string userId, string ruleSetName, TriggerViewInput trigger);
+        Task<object> BeginDynamicQuestionnaire(string userId, string selector, DQType dqType);
     }
 }

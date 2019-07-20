@@ -441,7 +441,7 @@ if a is = maximum(b,c,d) then p will be q;
 if a is = minimum(b,c,d) then p will be q;
 ```
 + normprob: The Gaussian probability of a normalized value (average = 0, SD = 1).
-= ```darl
+```darl
 if a is = normprob(b) then p will be q;
 ```
 *Note a single operand.*

@@ -236,7 +236,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
-        //[Ignore]
+        [Ignore]
         public async Task WriteOutRuleFile()
         {
             var slawUserId = "8a14e17b-268a-4dc8-84fc-95d1a558e737";

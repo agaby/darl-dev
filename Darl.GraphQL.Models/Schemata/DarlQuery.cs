@@ -263,7 +263,7 @@ namespace Darl.GraphQL.Models.Schemata
                                      async c => await connectivity.LintDarl(darl, skeleton, insertion));
                 });
             //                Ruleset step inference
-            FieldAsync<QuestionSetType>("beginQuestionnaire",
+            FieldAsync<QuestionSetType>("beginQuestionnaire","Begin a questionnaire by specifying the ruleset",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName", Description = "The ruleset to run" },
                     new QueryArgument<StringGraphType> { Name = "language", DefaultValue = "en", Description = "The ISO language" },
@@ -279,6 +279,21 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                                     async c => await connectivity.BeginQuestionnaire(userId, ruleSetName, language ?? "en", questCount ?? 1));
                 });
+            FieldAsync<QuestionSetType>("beginDynamicQuestionnaire","Begin a dynamic questionnaire",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "selector", Description = "The model/ruleset to modify" },
+                    new QueryArgument<DQTypeEnum> { Name = "dqType", DefaultValue = "rule_edit", Description = "The process" }
+                ),
+                resolve: async context =>
+                {
+                    var selector = context.GetArgument<string>("selector");
+                    var dqType = context.GetArgument<DQType>("dqType");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+
+                    return await context.TryAsyncResolve(
+                                    async c => await connectivity.BeginDynamicQuestionnaire(userId, selector, dqType));
+                });
+
             FieldAsync<QuestionSetType>("continueQuestionnaire",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<QuestionSetInputType>> { Name = "responses" }
                 ),

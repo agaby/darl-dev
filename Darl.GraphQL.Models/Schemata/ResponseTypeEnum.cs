@@ -11,10 +11,10 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "ResponseType";
             Description = "The ways in which a response can be presented.";
-            AddValue("Preamble", "The text is a preamble", 1);
+            AddValue("Preamble", "The text is a preamble", 0);
             AddValue("Text", "Represent as the response main text", 1);
-            AddValue("ScoreBar", "Represent as a score bar", 1);
-            AddValue("Link", "Represent as a hyperlink", 1);
+            AddValue("ScoreBar", "Represent as a score bar", 2);
+            AddValue("Link", "Represent as a hyperlink", 3);
         }
     }
 }

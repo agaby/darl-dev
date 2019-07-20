@@ -30,6 +30,7 @@ using VSTS.Net;
 using VSTS.Net.Models.Request;
 using VSTS.Net.Models.WorkItems;
 using Darl.Lineage.Bot.Stores;
+using Darl.GraphQL.Models.Schemata;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -1931,6 +1932,22 @@ namespace Darl.GraphQL.Models.Connectivity
                 var rs1 = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<RuleSet, RuleSet> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
                 return rs1.Contents.trigger;
             }
+        }
+
+        public async Task<object> BeginDynamicQuestionnaire(string userId, string selector, DQType dqType)
+        {
+            switch(dqType)
+            {
+                case DQType.rule_edit:
+                    { 
+                        var rs = await GetRuleSet(userId, selector);
+                        var tp = await GetRuleSet(_opt.Value.boaiuserid, "ruleseteditor.rule");
+                        if (rs != null)
+                            return await _form.CreateDynamicRuleSetEditor(rs, tp);
+                        return null;
+                    }
+            }
+            return null;
         }
     }
 }
