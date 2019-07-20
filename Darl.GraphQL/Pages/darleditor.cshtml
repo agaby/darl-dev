@@ -51,6 +51,7 @@
     <script>
         var darlCodeMirror;
         var timeout;
+        var graph;
         $(async function () {
             darlCodeMirror = CodeMirror.fromTextArea(document.getElementById("Darl"), {
                 matchBrackets: true,
@@ -102,7 +103,7 @@
             dropdown.empty();
             dropdown.append('<option selected="true" disabled>Choose a ruleset to edit</option>');
             dropdown.prop('selectedIndex', 0);
-            var graph = graphql("https://darl.dev/graphql");
+            graph = graphql("https://darl.dev/graphql");
             var apiKey = findGetParameter("apikey");
             if(apiKey !== null)
                 graph = graphql("https://darl.dev/graphql", { headers: { "Authorization": "Basic " + apiKey } });
@@ -128,13 +129,16 @@
 
         });
 
-        function check_syntax(code, result_cb) {
-            var baseUri = "https://darl.ai/api/Linter/DarlLint";
-            var jqxr = $.post(baseUri, { 'source': code }, function (data, status, xhr) {
-                result_cb(data);
-            });
+        async function check_syntax(code, result_cb) {
+            var lintCall = graph('query lint($darl: String!){  lintDarl(darl: $darl){ column_no_start column_no_stop line_no message severity }}');
+            var result = await lintCall({ darl: code });
+//            var baseUri = "https://darl.ai/api/Linter/DarlLint";
+//            var jqxr = $.post(baseUri, { 'source': code }, function (data, status, xhr) {
+//                result_cb(data);
+            result_cb(result.lintDarl);
+            }
 
-        }
+        
         function convertescapes(text) {
             text = text.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&#x221E;/g, '∞').replace(/&#xD;/g, '\r').replace(/&#xA;/g, '\n').replace(/&#x9;/g, '\t').replace(/&#x2B;/g, '+').replace(/&#x27;/g, '\'');
             return unescape(text);

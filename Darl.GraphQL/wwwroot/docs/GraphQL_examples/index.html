@@ -74,6 +74,7 @@
             <li><a href="#go-back-a-step-with-a-questionnaire">Go Back a step with a questionnaire</a></li>
             <li><a href="#interact-with-a-bot">Interact with a Bot</a></li>
             <li><a href="#get-lineages-for-a-word">Get lineages for a word</a></li>
+            <li><a href="#use-the-darl-linter">Use the DARL linter</a></li>
         <li class="main "><a href="#mutations">Mutations</a></li>
             <li><a href="#setting-the-text-for-a-ruleset-question">Setting the text for a ruleset question</a></li>
             <li><a href="#setting-a-preloaded-data-value-for-a-rule-set">Setting a preloaded data value for a rule set</a></li>
@@ -282,6 +283,20 @@
     description
     lineage
     typeWord
+  }
+}
+</code></pre>
+
+<h2 id="use-the-darl-linter">Use the DARL linter</h2>
+<pre><code class="json">query lint($darl: String!)
+{
+  lintDarl(darl: $darl)
+  {
+    column_no_start
+    column_no_stop
+    line_no
+    message
+    severity
   }
 }
 </code></pre>

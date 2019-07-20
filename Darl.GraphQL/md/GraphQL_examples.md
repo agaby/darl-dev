@@ -209,6 +209,21 @@ query interact($model: String!, $convId: String!, $data: darlVarUpdate!)
 }
 ```
 
+## Use the DARL linter
+```json
+query lint($darl: String!)
+{
+  lintDarl(darl: $darl)
+  {
+    column_no_start
+    column_no_stop
+    line_no
+    message
+    severity
+  }
+}
+```
+
 # Mutations
 
 ## Setting the text for a ruleset question
