@@ -204,6 +204,12 @@
                         return "comment";
                     }
                 }
+                if (ch == "%") {
+                    if (stream.eat("%")) {
+                        state.tokenize = tokenComment;
+                        return insertComment(stream, state);
+                    }
+                }
                 if (isOperatorChar.test(ch)) {
                     stream.eatWhile(isOperatorChar);
                     return "operator";
@@ -243,6 +249,18 @@
                         break;
                     }
                     maybeEnd = (ch == "*");
+                }
+                return "comment";
+            }
+
+            function insertComment(stream, state) {
+                var maybeEnd = false, ch;
+                while (ch = stream.next()) {
+                    if (ch == "%" && maybeEnd) {
+                        state.tokenize = null;
+                        break;
+                    }
+                    maybeEnd = (ch == "%");
                 }
                 return "comment";
             }

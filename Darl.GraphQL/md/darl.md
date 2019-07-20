@@ -72,6 +72,12 @@ Comments are freely permitted in code. They follow the C#/Java form:
 /*bounded  comment */
 ```
 
+### Insertion comments
+In order to support templating, darl permits special comments that represent a site to be replaced by a named value.
+```darl
+%% named.value %%
+```
+
 # Top level elements
 These elements are concerned with inputs and outputs at the highest level, and the definition of rulesets.
 Darl permits the creation of multiple rule sets within a file, like functional blocks in a schematic diagram, and these can be wired to "connector" elements that act as inputs and outputs for the aggregate document, called a *map*. 

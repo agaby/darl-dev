@@ -7,7 +7,7 @@ var graph;
 var nextQSP;
 var backQSP;
 var isDebug;
-var url = "https://localhost:44311/graphql"; //"https://darl.dev/graphql"
+var url = "https://darl.dev/graphql";
 
 async function DARLForm(div, id, debug, apiKey) {
     try {
