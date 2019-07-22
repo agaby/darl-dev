@@ -38,8 +38,8 @@ namespace Darl.GraphQL.Test
         public async Task TestDynamicRuleSet()
         {
             var m = new Mock<IDistributedCache>();
-            var f = new FormApi(m.Object);
-            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi(null));
+            var f = new FormApi(m.Object,null);
+            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), new FormApi(null,null));
             var adminuserId = "786e46c2-fa33-4124-af67-1bb14625c216";
 
             var rs = await cosmos.GetRuleSet(adminuserId, "UK Tax and NI.rule");

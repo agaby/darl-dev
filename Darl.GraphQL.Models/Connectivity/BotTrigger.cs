@@ -2,6 +2,8 @@
 using Darl.Lineage.Bot;
 using DarlCommon;
 using Datl.Language;
+using GraphQL.Client;
+using GraphQL.Common.Request;
 using Microsoft.ApplicationInsights;
 using SendGrid;
 using SendGrid.Helpers.Mail;
@@ -35,6 +37,9 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     var sendEmail = GetBoolValue(rf.trigger.sendEmailSource, rf.trigger.sendEmail, values);
                     var sendBug = GetBoolValue(rf.trigger.sendBugSource, rf.trigger.sendBug, values);
+                    var sendGraphQL = GetBoolValue(rf.trigger.graphqlDataSource, rf.trigger.graphqlData, values);
+                    var graphQLUrl = GetStringValue(rf.trigger.graphqlDataSource, rf.trigger.graphqlName, values);
+                    var graphQLData = GetStringValue(rf.trigger.graphqlDataSource, rf.trigger.graphqlData, values);
                     var emailAddress = GetStringValue(rf.trigger.addressSource, rf.trigger.addressText, values);
                     var emailSubject = GetStringValue(rf.trigger.subjectSource, rf.trigger.subjectText, values);
                     var emailBody = GetStringValue(rf.trigger.bodySource, rf.trigger.bodyText, values);
@@ -79,14 +84,20 @@ namespace Darl.GraphQL.Models.Connectivity
                         }
 
 
-                        if (postData)
-                        {
+                    }
+                    if (postData)
+                    {
 
-                        }
                     }
                     if (sendBug)
                     {
                         await _connectivity.CreateSupportRequest(GetName(values, emailAddress), emailAddress, $"{emailSubject}: {emailBody}", "GraphQL trial site");
+                    }
+                    if(sendGraphQL)
+                    {
+                        GraphQLClient client = new GraphQLClient(graphQLUrl);
+                        var req = new GraphQLRequest() {Query = graphQLData };
+                        var resp = await client.PostAsync(req);
                     }
                 }
                 catch (Exception ex)

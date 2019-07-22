@@ -1,13 +1,10 @@
 ﻿using Darl.GraphQL.Models.Models;
-using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl_standard.Darl.Forms;
 using DarlCommon;
-using DarlLanguage;
 using Datl.Language;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -28,6 +25,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Forms form = new Forms();
 
         private IDistributedCache _cache;
+        private ITrigger _trigger;
 
 
         TelemetryClient telemetry = new TelemetryClient();
@@ -37,9 +35,10 @@ namespace Darl.GraphQL.Models.Connectivity
         /// </summary>
         /// <param name="cache"></param>
         /// <param name="rep"></param>
-        public FormApi(IDistributedCache cache)
+        public FormApi(IDistributedCache cache, ITrigger trigger)
         {
             _cache = cache;
+            _trigger = trigger;
         }
 
         /// <summary>
@@ -55,7 +54,7 @@ namespace Darl.GraphQL.Models.Connectivity
             try
             {
                 var qstate = new QuestionCache { currentIteration = 0, SessionKey = Guid.NewGuid(), projectId = ruleSet.Name, currentData = DarlVarExtensions.Convert(ruleSet.Contents.preload) };
-                await SetCache(new CombinedCache {  questionCache = qstate, ruleForm = ruleSet.Contents});
+                await SetCache(new CombinedCache {  questionCache = qstate, ruleForm = ruleSet.Contents, userId = ruleSet.userId, serviceConnectivity = ruleSet.serviceConnectivity});
                 return await form.Start(ruleSet.Contents, qstate);
             }
             catch (Exception ex)
@@ -85,6 +84,11 @@ namespace Darl.GraphQL.Models.Connectivity
                     return null; 
                 //TO DO, handle redirect
                 var qsp = await form.Next(questionsetproxy, co.ruleForm, co.questionCache);
+                if(qsp.complete && !co.triggered)
+                {
+                    await Trigger(co);
+                    co.triggered = true; //one shot.
+                }
                 await SetCache(co);
                 return qsp;
             }
@@ -123,16 +127,13 @@ namespace Darl.GraphQL.Models.Connectivity
         /// </summary>
         /// <param name="id">the ieToken of a current completed session.</param>
         /// <returns></returns>
-        public async Task<bool> Trigger(string id)
+        private async Task<bool> Trigger(CombinedCache co)
         {
-            var co = await GetCaches(id);
-            if (co == null)
-                return false;
-            if (co.ruleForm.trigger != null && Guid.TryParse(co.ruleForm.author, out Guid guid))
+            if (co.ruleForm.trigger != null )
             {
                 try
                 {
-                    //await _rep.HandleTrigger(fcache.trigger, qcache.currentData, fcache.author);
+                    await _trigger.TriggerEvent(DarlVarExtensions.Convert(co.questionCache.currentData), co.ruleForm, co.userId, co.serviceConnectivity );
                 }
                 catch (Exception ex)
                 {
@@ -200,8 +201,6 @@ namespace Darl.GraphQL.Models.Connectivity
 
             await template.Contents.UpdateFromCode();
 
-            var rt = new DarlRunTime();
-            var tree = rt.CreateTree(template.Contents.darl);
 
             return await Get(template);
                 
@@ -254,6 +253,13 @@ namespace Darl.GraphQL.Models.Connectivity
         public RuleForm ruleForm { get; set; }
 
         public QuestionCache questionCache { get; set;}
+
+        public string userId { get; set; }
+
+        public ServiceConnectivity serviceConnectivity { get; set; }
+
+        public bool triggered { get; set; } = false;
+
 
         public override string ToString()
         {
