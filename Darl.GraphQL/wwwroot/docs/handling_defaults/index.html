@@ -74,7 +74,7 @@ A corollary of this is that for an output that is categorical or numeric, there 
 <p>However, a default state means that whatever the inputs, an output with a default state will be known, so the questionnaire engine won't bother to ask any questions to determine that state.
 So this is fine for a straight through inference usage, but problematic for questionnaires.</p>
 <p>DARL has the <em>otherwise</em> operator to handle this set of circumstances.</p>
-<p>A rule starting with <em>otherwise if</em> rather than <em>if</em> is gramatically identical in all other respects to any other rule, but this rule is held in reserve to fire if no other rules fire for the controlling output.</p>
+<p>A rule starting with <em>otherwise if</em> rather than <em>if</em> is grammatically identical in all other respects to any other rule, but this rule is held in reserve to fire if no other rules fire for the controlling output.</p>
 <p>The inference engine permits only one <em>otherwise if</em> rule per output.</p>
 <p>So if we consider this simple rule set:</p>
 <pre><code class="darl">ruleset simple
@@ -104,7 +104,7 @@ So this is fine for a straight through inference usage, but problematic for ques
 </code></pre>
 
 <p>If you use this rule set in the questionnaire engine it will prompt for <strong>a</strong> and <strong>b</strong>.
-This is because the <em>otherwise if</em> rule is only satified if <strong>a</strong> and <strong>b</strong> are present, i.e. <em>known</em>.</p>
+This is because the <em>otherwise if</em> rule is only satisfied if <strong>a</strong> and <strong>b</strong> are present, i.e. <em>known</em>.</p>
 <p>You can have any number of rules associated with an output, but you only ever need on <em>otherwise if</em> rule.
 It is up to you to determine which inputs or outputs must be known before the <em>otherwise if</em> rule triggers. </p>
 <p>See <a href="./Excluded_middle">Excluded middle</a> for background.</p></div>
