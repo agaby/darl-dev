@@ -23,7 +23,7 @@ So this is fine for a straight through inference usage, but problematic for ques
 
 DARL has the _otherwise_ operator to handle this set of circumstances.
 
-A rule starting with _otherwise if_ rather than _if_ is gramatically identical in all other respects to any other rule, but this rule is held in reserve to fire if no other rules fire for the controlling output.
+A rule starting with _otherwise if_ rather than _if_ is grammatically identical in all other respects to any other rule, but this rule is held in reserve to fire if no other rules fire for the controlling output.
 
 The inference engine permits only one _otherwise if_ rule per output.
 
@@ -56,7 +56,7 @@ ruleset simple_questionnaire_
 }
 ```
 If you use this rule set in the questionnaire engine it will prompt for __a__ and __b__.
-This is because the _otherwise if_ rule is only satified if __a__ and __b__ are present, i.e. _known_.
+This is because the _otherwise if_ rule is only satisfied if __a__ and __b__ are present, i.e. _known_.
 
 You can have any number of rules associated with an output, but you only ever need on _otherwise if_ rule.
 It is up to you to determine which inputs or outputs must be known before the _otherwise if_ rule triggers. 

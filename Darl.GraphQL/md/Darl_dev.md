@@ -87,7 +87,8 @@ If you are logged in you can only edit records associated with your account.  Yo
 Pass the API key as a parameter. For instance:
 
 ```
-https://darl.dev/darleditor?apikey=api_key_here"```
+https://darl.dev/darleditor?apikey=api_key_here"
+```
 
 ## Bug or request reporting
 

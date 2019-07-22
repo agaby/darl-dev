@@ -19,7 +19,7 @@ Bots created with DBS can be “unguided” as in responding to any query and/or
 
 *DR Andy’s IP has re-invented the Expert System for the 21st century using DARL, our fuzzy logic inference language. In order to create truly intelligent systems, some rule definitions must be written in this extremely simple declarative language, but this is very much simpler than programming, and accessible to any intelligent professional.
 # Using the SaaS facilities
-After registration on our site, Darl.ai, new users are presented with a prebuilt prototype Bot model and a series of demonstration expert system rulesets. The Bot model is intended to handle the “unguided” part of user interaction processing, and consists of a configurable phrase recognition engine that can respond to simple enquiries, and the ability to hand over to the expert systems for more complicated processing.
+After registration on our site, Darl.ai, new users are presented with a pre-built prototype Bot model and a series of demonstration expert system rulesets. The Bot model is intended to handle the “unguided” part of user interaction processing, and consists of a configurable phrase recognition engine that can respond to simple enquiries, and the ability to hand over to the expert systems for more complicated processing.
 
 A new user can rapidly configure the bot model to respond in the appropriate way for their application. Building expert systems is a more difficult process, but one that typically takes hours and days, rather than the months of previous Expert Systems, using our engine and tools. Facilities also exist to machine learn rulesets from data.
 

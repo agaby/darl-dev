@@ -17,7 +17,7 @@ One can also reason with numeric variables by using bounds, such as > x, < y, et
 
 In Fuzzy logic parlance, such sets and limits are called "crisp". This means that membership is sharply defined.
 
-Around 500BC, the Greek philosopher Zeno described a paradox, known as the sorites paradox, that illustrates the problem with crisp sets:
+Around 500BC, the Greek philosopher Zeno described a paradox, known as the Sorites paradox, that illustrates the problem with crisp sets:
 
 + A pile of 2 or 3 stones is a small pile of stones
 + If you add a stone to a small pile of stones, it is still a small pile of stones

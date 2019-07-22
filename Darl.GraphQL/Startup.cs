@@ -89,6 +89,7 @@ namespace Darl.GraphQL
             services.AddSingleton<IBotProcessing, BotProcessing>();
             services.AddSingleton<IRuleFormInterface, RuleFormInterface>();
             services.AddSingleton<ITrigger, BotTrigger>();
+            services.AddSingleton<IFormProcessing, FormProcessing>();
 
             //types
             services.AddTransient<BotFormatType>();

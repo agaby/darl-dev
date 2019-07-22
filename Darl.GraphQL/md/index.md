@@ -11,7 +11,7 @@ output:
 ### Documentation index
 
 DARL is a language and set of tools for reasoning in the presence of uncertainty.
-The princple business of AI and ML is handling uncertainty.
+The principle business of AI and ML is handling uncertainty.
 The most common aspect of uncertainty that drives the use of AI and ML is _model uncertainty_; the fact that for a particular problem there may be no defined analytical method for solving it.
 Alternatively, the true state of a system may be unknown or known only within bounds. 
 
@@ -22,7 +22,7 @@ Where only example data is available, DARL can machine learn relationships.
 
 Uniquely, DARL uses the _same_ representation for knowledge derived from either method.
 
-The DARL toolset includes a Bot creation service that uses NLP and heuristics to understand requesrts and offer advice, a Fuzzy logic expert system like inference engine that can be used with incomplete data, and that can create it's own sequence of minimal questions to create an inference, and a set of Machine learning algorithms that create results that are useable in the former engines.
+The DARL tool-set includes a Bot creation service that uses NLP and heuristics to understand requests and offer advice, a Fuzzy logic expert system like inference engine that can be used with incomplete data, and that can create it's own sequence of minimal questions to create an inference, and a set of Machine learning algorithms that create results that are usable in the former engines.
 
 The DARL engines are accessible via the API described in these pages so you can develop intelligent solutions making use of them.
 

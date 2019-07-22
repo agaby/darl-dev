@@ -36,16 +36,14 @@ namespace Darl.GraphQL.Models.Connectivity
 {
     public class CosmosDBConnectivity : IConnectivity
     {
-        private IFormApi _form;
         private IOptions<AppSettings> _opt;
         private IMongoDatabase db;
         private MongoClient mongoClient;
         private DarlRunTime runtime = new DarlRunTime();
         private TelemetryClient telemetry = new TelemetryClient();
-        public CosmosDBConnectivity(IOptions<AppSettings> optionsAccessor, IFormApi form)
+        public CosmosDBConnectivity(IOptions<AppSettings> optionsAccessor)
         {
             _opt = optionsAccessor;
-            _form = form;
 
             string connectionString = _opt.Value.MongoConnectionString;
             MongoClientSettings settings = MongoClientSettings.FromUrl(
@@ -55,43 +53,6 @@ namespace Darl.GraphQL.Models.Connectivity
               new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
             mongoClient = new MongoClient(settings);
             db = mongoClient.GetDatabase(_opt.Value.MongoDatabase);
-        }
-
-        public async Task<QuestionSetProxy> BacktrackQuestionnaire(string ieToken)
-        {
-            return await _form.Delete(ieToken);
-        }
-
-        public async Task<QuestionSetProxy> BeginQuestionnaire(string userId, string ruleSetName, string language = "en", int questCount = 1)
-        {
-            var rs = await GetRuleSet(userId, ruleSetName);
-            if (rs != null)
-                return await _form.Get(rs, language, questCount);
-            return null;
-        }
-
-        public async Task<QuestionSetProxy> ContinueQuestionnaire(QuestionSetInput responses)
-        {
-            QuestionSetProxy r = null;
-            try
-            {
-                var resp = new QuestionSetProxy { ieToken = responses.ieToken, questions = new List<QuestionProxy>() };
-                foreach (var i in responses.questions)
-                {
-                    resp.questions.Add(new QuestionProxy { dResponse = i.dResponse, reference = i.reference, sResponse = i.sResponse, qtype = (int)i.qType });
-                }
-                r = await _form.Post(resp);
-            }
-            catch(Exception ex)
-            {
-                throw new ExecutionError($"Internal error", ex);
-            }
-            if (r == null)
-            {
-                throw new ExecutionError($"ieToken {responses.ieToken} not found. Questionnaire timed out?");
-            }
-            return r;
-
         }
 
         public async Task<Authorization> CreateAuthorization(string userId, string botModelName, Authorization auth)
@@ -1932,22 +1893,6 @@ namespace Darl.GraphQL.Models.Connectivity
                 var rs1 = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<RuleSet, RuleSet> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
                 return rs1.Contents.trigger;
             }
-        }
-
-        public async Task<object> BeginDynamicQuestionnaire(string userId, string selector, DQType dqType)
-        {
-            switch(dqType)
-            {
-                case DQType.rule_edit:
-                    { 
-                        var rs = await GetRuleSet(userId, selector);
-                        var tp = await GetRuleSet(_opt.Value.boaiuserid, "ruleseteditor.rule");
-                        if (rs != null)
-                            return await _form.CreateDynamicRuleSetEditor(rs, tp);
-                        return null;
-                    }
-            }
-            return null;
         }
     }
 }

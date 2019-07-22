@@ -26,10 +26,10 @@ The output of this DARL fragment would look like:
 
     11:08 UTC
 
-In this example we declare a temporary output called "time", use it it to hold the current time,
+In this example we declare a temporary output called "time", use it to hold the current time,
 and then insert it into a format string.
 
-The _document_ function takes two parameters, the format string, and a list of inputs or outputs occuring in that string. Using an input or output without declaring it will create a runtime error.
+The _document_ function takes two parameters, the format string, and a list of inputs or outputs occurring in that string. Using an input or output without declaring it will create a runtime error.
 
 # the format string
 
@@ -64,7 +64,7 @@ On %% date_of_ticket %% at %% time_of_ticket %% my vehicle, registration number 
 
 As I do not have a history of persistently incorrectly using permits, I feel that the rules should be consistently applied and my representation should be accepted. 
 
-I believe that it is impossible the permits, which stated, %% incorrect_date %% were used on another day, since the last %% incorrect_date %% was clearly prior to the issue of the permit. It is therefore clear that this PCN was issued for a mis-stated date, making the PCN trivial and inconsistent with other offences for which the fine is issued usually. 
+I believe that it is impossible the permits, which stated, %% incorrect_date %% were used on another day, since the last %% incorrect_date %% was clearly prior to the issue of the permit. It is therefore clear that this PCN was issued for a mis-stated date, making the PCN trivial and inconsistent with other offenses for which the fine is issued usually. 
 
 Furthermore, in an almost identical case, London Tribunals (formerly PATAS, Parking and Traffic Appeals Service) allowed an appeal, stating the clear precedent that this type of error is 'de minimis': 
 

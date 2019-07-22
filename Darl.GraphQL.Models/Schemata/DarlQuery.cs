@@ -10,7 +10,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlQuery : ObjectGraphType<object>
     {
-        public DarlQuery(IConnectivity connectivity, IBotProcessing bot)
+        public DarlQuery(IConnectivity connectivity, IBotProcessing bot, IFormProcessing form)
         {
             Name = "Query";
             Description = "View the contents of your account.";
@@ -277,7 +277,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
 
                     return await context.TryAsyncResolve(
-                                    async c => await connectivity.BeginQuestionnaire(userId, ruleSetName, language ?? "en", questCount ?? 1));
+                                    async c => await form.BeginQuestionnaire(userId, ruleSetName, language ?? "en", questCount ?? 1));
                 });
             FieldAsync<QuestionSetType>("beginDynamicQuestionnaire","Begin a dynamic questionnaire",
                 arguments: new QueryArguments(
@@ -291,7 +291,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
 
                     return await context.TryAsyncResolve(
-                                    async c => await connectivity.BeginDynamicQuestionnaire(userId, selector, dqType));
+                                    async c => await form.BeginDynamicQuestionnaire(userId, selector, dqType));
                 });
 
             FieldAsync<QuestionSetType>("continueQuestionnaire",
@@ -301,7 +301,7 @@ namespace Darl.GraphQL.Models.Schemata
                 {
                     var responses = context.GetArgument<QuestionSetInput>("responses");
                     return await context.TryAsyncResolve(
-                                    async c => await connectivity.ContinueQuestionnaire(responses));
+                                    async c => await form.ContinueQuestionnaire(responses));
                 });
             FieldAsync<QuestionSetType>("backtrackQuestionnaire",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ieToken" }
@@ -310,7 +310,7 @@ namespace Darl.GraphQL.Models.Schemata
                 {
                     var ieToken = context.GetArgument<string>("ieToken");
                     return await context.TryAsyncResolve(
-                                    async c => await connectivity.BacktrackQuestionnaire(ieToken));
+                                    async c => await form.BacktrackQuestionnaire(ieToken));
                 });
             FieldAsync<ListGraphType<InteractResponseType>>("interact",
                 arguments: new QueryArguments(

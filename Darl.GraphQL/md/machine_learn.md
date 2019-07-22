@@ -108,7 +108,7 @@ Our machine learning algorithm can handle missing data without the need to creat
 DARL follows a schematic paradigm, in that rulesets are treated like circuit elements that can be wired up.
 You can read more [here](./darl).
 
-_Mapinput_ and _mapoutput_are elements at the edge of the schematic sheet, and these wire up to the the data items.
+_Mapinput_ and _mapoutput_are elements at the edge of the schematic sheet, and these wire up to the data items.
 
 The following code, again specified outside of any rule set, specifies edge inputs and outputs, their names and the respective relative XPath.
 The Wire elements connect the edge elements to the rule set.

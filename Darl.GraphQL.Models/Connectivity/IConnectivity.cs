@@ -15,12 +15,6 @@ namespace Darl.GraphQL.Models.Connectivity
     public interface IConnectivity
     {
 
-        Task<QuestionSetProxy> BacktrackQuestionnaire(string ieToken);
-
-        Task<QuestionSetProxy> BeginQuestionnaire(string userId, string ruleSetName, string language = "en", int questCount = 1);
-
-        Task<QuestionSetProxy> ContinueQuestionnaire(QuestionSetInput responses);
-
         Task<Authorization> CreateAuthorization(string userId, string name, Authorization auth);
 
         Task<BotConnection> CreateBotConnection(string userId, string botModelName, string appId, string password);
@@ -201,6 +195,5 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<Document> DeleteDocument(string userId, string name);
         Task<DarlVar> CreateRulesetPreload(string userId, string rulesetName, DarlVar preloadData);
         Task<TriggerView> UpdateRuleFormTrigger(string userId, string ruleSetName, TriggerViewInput trigger);
-        Task<object> BeginDynamicQuestionnaire(string userId, string selector, DQType dqType);
     }
 }

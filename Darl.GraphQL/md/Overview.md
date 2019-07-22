@@ -26,7 +26,7 @@ The directed system consists of a user created set of DARL rulesets that can be 
 
 To create your bot, just register and either edit the default bot you are given or create your own. To connect it to the outside world, register with the Microsoft BotFramework and copy the AppID and password to our site under the "connectivity" tab.
 We will host the bot for you. 
-All you then need to do is connect your bot to the various interfaces usng Microsoft BotFramework.
+All you then need to do is connect your bot to the various interfaces using Microsoft BotFramework.
 
 You can keep multiple versions of your bots and switch them in and out using the "connectivity" tab.
 

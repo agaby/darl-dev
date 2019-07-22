@@ -34,8 +34,8 @@ There are two ways yu can do that, through the tree view or the phrase view. Bot
 To the immediate right of the sidebar is the tree view.
 By clicking on elements you can open up parts of the tree for inspection.
 
-To the right is the attribute section, which synchronises with your selection of a place on the tree.
-The attribute section determines what the response will be, if any, to a user who'se text directs the recognition engine to that part of the tree.
+To the right is the attribute section, which synchronizes with your selection of a place on the tree.
+The attribute section determines what the response will be, if any, to a user who's text directs the recognition engine to that part of the tree.
   
 Beneath the attribute section is a list of potential lineage matches for the word selected in the tree.
 
@@ -63,7 +63,7 @@ This button adds a new root entry, i.e. initial word in the sequence to be match
 
 
 ### Text sequence elements
-A list of all the things you can enter at each point in the tree is availabe on the [text sequence elements page](text_sequence_elements)
+A list of all the things you can enter at each point in the tree is available on the [text sequence elements page](text_sequence_elements)
 
 
 # Phrase view
@@ -92,7 +92,7 @@ This will remove a given path and attributes from the model if it exists.
 ## Default handling
 
 As your Bot runs any interactions where a _default_ is triggered are stored along with identification of the model and owner.
-These anonymised records are vital for discovering interactions that your bot is not responding to.
+These anonymized records are vital for discovering interactions that your bot is not responding to.
 
 A table of these interactions is shown, along with the response the Bot gave. This could be the root default response, or any other default response further down the tree.
 
@@ -154,7 +154,7 @@ Any changes to the attributes are saved by clicking this button.
 As usual these changes only become part of the working Bot model, and are not saved to the bot until the save icon on the top bar is clicked.
 
 ## Possible lineages list
-Whenever a tree element is selected, if it just contain s a simple word, a liookup is made of all the concepts related to this word.
+Whenever a tree element is selected, if it just contain s a simple word, a lookup is made of all the concepts related to this word.
 You can replace the word with a concept by clicking on a concept.
 This is an extremely powerful tool, because thereafter all words that match this concept, and any concept derived from it, in any grammatic variant will be matched.
 This can reduce the size of the tree dramatically, but is most appropriate for those with a knowledge of computational linguistics.
