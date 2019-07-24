@@ -805,14 +805,15 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.CreateSupportRequest(customerName, customerEmail,text, "GraphQL trial site"));
                 }
             );
-            Field<ConversationType>(
+            FieldAsync<ConversationType>(
                 "createConversation",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<ConversationInputType>> { Name = "conversation" }),
-                resolve: context =>
+                resolve: async context =>
                 {
                     var conversationInput = context.GetArgument<Conversation>("conversation");
-                    return connectivity.CreateConversation(conversationInput);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreateConversation(conversationInput));
                 }
             ).AuthorizeWith("AdminPolicy");
 
