@@ -10,7 +10,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlMutation : ObjectGraphType<object>
     {
-        public DarlMutation(IConnectivity connectivity)
+        public DarlMutation(IConnectivity connectivity, IEmailProcessing email)
         {
             Name = "Mutation";
             Description = "Make changes to the contents of your account.";
@@ -883,6 +883,47 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.CreateRulesetPreload(userId, rulesetName, preloadData));
                 }
             );
+            FieldAsync<ListGraphType<ContactType>>(
+                "mailshot",
+                "send a mailshot",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "collateral", Description = "Collateral to use for the body" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "subject", Description = "Email subject" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "sendfrom", Description = "Source email" },
+                    new QueryArgument<StringGraphType> { Name = "filter", Description = "Filter expression" },
+                    new QueryArgument<BooleanGraphType> { Name = "test", DefaultValue=false, Description = "if true no emails are sent"}
+                    ),
+                resolve: async context =>
+                {
+                    var collateral = context.GetArgument<String>("collateral");
+                    var subject = context.GetArgument<String>("subject");
+                    var sendfrom = context.GetArgument<String>("sendfrom");
+                    var filter = context.GetArgument<String>("filter");
+                    var test = context.GetArgument<bool>("test");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await email.Mailshot(userId, collateral, subject, sendfrom, filter, test));
+                }
+            ).AuthorizeWith("AdminPolicy");
+            FieldAsync<StringGraphType>(
+                "email",
+                "send an email",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "body", Description = "Body of the email" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "subject", Description = "Email subject" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "sendfrom", Description = "Source email" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "emailAddress", Description = "email of recipient" }
+                    ),
+                resolve: async context =>
+                {
+                    var body = context.GetArgument<String>("body");
+                    var subject = context.GetArgument<String>("subject");
+                    var sendfrom = context.GetArgument<String>("sendfrom");
+                    var emailAddress = context.GetArgument<String>("emailAddress");
+                    return await context.TryAsyncResolve(
+                        async c => await email.SendEmail(body, subject, sendfrom, emailAddress));
+                }
+            ).AuthorizeWith("AdminPolicy");
         }
     }
 }

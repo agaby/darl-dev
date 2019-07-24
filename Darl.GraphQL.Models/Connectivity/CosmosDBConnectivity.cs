@@ -1658,7 +1658,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var usage = new UserUsage(date, count);
             var collection = db.GetCollection<BotConnection>("botconnection");
-            var filter = Builders<BotConnection>.Filter.Where(x => x.AppId == botId);
+            var filter = Builders<BotConnection>.Filter.Where(x => x.AppId == botId && x.userId == userId);
             var update = Builders<BotConnection>.Update.Push("usageHistory", usage);
             await collection.FindOneAndUpdateAsync(filter, update);
             return usage;
