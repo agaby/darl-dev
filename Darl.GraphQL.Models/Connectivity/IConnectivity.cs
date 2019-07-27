@@ -4,6 +4,7 @@ using Darl.GraphQL.Models.Schemata;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using DarlCommon;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,6 +15,7 @@ namespace Darl.GraphQL.Models.Connectivity
 {
     public interface IConnectivity
     {
+        IMongoDatabase db { get; set; }
 
         Task<Authorization> CreateAuthorization(string userId, string name, Authorization auth);
 
@@ -195,5 +197,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<Document> DeleteDocument(string userId, string name);
         Task<DarlVar> CreateRulesetPreload(string userId, string rulesetName, DarlVar preloadData);
         Task<TriggerView> UpdateRuleFormTrigger(string userId, string ruleSetName, TriggerViewInput trigger);
+        Task<string> CopyToReserveAccount(string userId, ResourceType resourceType, string name, string newName);
     }
 }

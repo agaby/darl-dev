@@ -884,7 +884,7 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.CreateRulesetPreload(userId, rulesetName, preloadData));
                 }
             );
-            FieldAsync<ListGraphType<ContactType>>(
+            FieldAsync<IntGraphType>(
                 "mailshot",
                 "send a mailshot",
                 arguments: new QueryArguments(
@@ -923,6 +923,25 @@ namespace Darl.GraphQL.Models.Schemata
                     var emailAddress = context.GetArgument<String>("emailAddress");
                     return await context.TryAsyncResolve(
                         async c => await email.SendEmail(body, subject, sendfrom, emailAddress));
+                }
+            ).AuthorizeWith("AdminPolicy");
+
+            FieldAsync<StringGraphType>(
+                "copyToReserveAccount",
+                "Copy a resource in the current account to the reserve account",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<ResourceTypeEnum>> { Name = "resourceType", Description = "The kind of resource to copy" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name in the current account" },
+                    new QueryArgument<StringGraphType> { Name = "newName", Description = "name in reserve account (null copies same name)" }
+                    ),
+                resolve: async context =>
+                {
+                    var resourceType = context.GetArgument<ResourceType>("resourceType");
+                    var name = context.GetArgument<String>("name");
+                    var newName = context.GetArgument<String>("newName");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CopyToReserveAccount(userId, resourceType, name, newName));
                 }
             ).AuthorizeWith("AdminPolicy");
         }

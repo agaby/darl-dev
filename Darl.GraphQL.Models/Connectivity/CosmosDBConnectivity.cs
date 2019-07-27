@@ -37,7 +37,7 @@ namespace Darl.GraphQL.Models.Connectivity
     public class CosmosDBConnectivity : IConnectivity
     {
         private IOptions<AppSettings> _opt;
-        private IMongoDatabase db;
+        public IMongoDatabase db { get; set; }
         private MongoClient mongoClient;
         private DarlRunTime runtime = new DarlRunTime();
         private TelemetryClient telemetry = new TelemetryClient();
@@ -710,7 +710,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<List<Contact>> GetContacts()
         {
             var mc = db.GetCollection<Contact>("contact");
-            var query = mc.AsQueryable();
+            var query = mc.AsQueryable(new AggregateOptions {  BatchSize = 10000});
             return await query.ToListAsync();
         }
         public async Task<List<Contact>> GetContactsByLastName(string lastName)
@@ -1893,6 +1893,75 @@ namespace Darl.GraphQL.Models.Connectivity
                 var rs1 = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<RuleSet, RuleSet> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
                 return rs1.Contents.trigger;
             }
+        }
+
+        /// <summary>
+        /// Create a version of this resource in the reserve account
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="resourceType"></param>
+        /// <param name="name"></param>
+        /// <param name="newName"></param>
+        /// <returns></returns>
+        public async Task<string> CopyToReserveAccount(string userId, ResourceType resourceType, string name, string newName)
+        {
+            var destName = string.IsNullOrEmpty(newName) ? name : newName;
+            switch (resourceType)
+            {
+                case ResourceType.botmodel:
+                    {
+                        var bm = await GetBotModel(userId, name);
+                        if(bm == null)
+                        {
+                            throw new ExecutionError($"Botmodel {name} doesn't exist in account {userId}");
+                        }
+                        await CreateBotModel(_opt.Value.boaiuserid, destName, bm.Model);
+                    }
+                    break;
+                case ResourceType.ruleset:
+                    {
+                        var rs = await GetRuleSet(userId, name);
+                        if (rs == null)
+                        {
+                            throw new ExecutionError($"Ruleset {name} doesn't exist in account {userId}");
+                        }
+                        await CreateRuleSet(_opt.Value.boaiuserid, destName, rs.Contents, new ServiceConnectivity());
+                    }
+                    break;
+                case ResourceType.mlmodel:
+                    {
+                        var ml = await GetMlModel(userId, name);
+                        if (ml == null)
+                        {
+                            throw new ExecutionError($"MLModel {name} doesn't exist in account {userId}");
+                        }
+                        await CreateMLModel(_opt.Value.boaiuserid, destName, ml.model);
+                    }
+                    break;
+                case ResourceType.document:
+                    {
+                        var doc = await GetDocument(userId, name);
+                        if (doc == null)
+                        {
+                            throw new ExecutionError($"Document {name} doesn't exist in account {userId}");
+                        }
+                        doc.userId = _opt.Value.boaiuserid;
+                        await UpdateDocument(doc);
+                    }
+                    break;
+                case ResourceType.collateral:
+                    {
+                        var coll = await GetCollateral(userId, name);
+                        if (coll == null)
+                        {
+                            throw new ExecutionError($"Collateral {name} doesn't exist in account {userId}");
+                        }
+                        await UpdateCollateral(_opt.Value.boaiuserid, destName, coll);
+                    }
+                    break;
+
+            }
+            return destName;
         }
     }
 }

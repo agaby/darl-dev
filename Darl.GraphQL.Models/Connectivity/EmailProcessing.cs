@@ -8,6 +8,7 @@ using Datl.Language;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Queue;
 using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 
 namespace Darl.GraphQL.Models.Connectivity
@@ -27,23 +28,29 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
 
-        public async Task<List<Contact>> Mailshot(string userId, string collateral, string subject, string sendfrom, string filter, bool test)
+        public async Task<int> Mailshot(string userId, string collateral, string subject, string sendfrom, string filter, bool test)
         {
-            var contacts = await _connectivity.GetContacts();
             var coll = await _connectivity.GetCollateral(userId, collateral);
+
+            var collection = _connectivity.db.GetCollection<Contact>("contact");
+            int count = 0;
             var tp = new TextProcess();
-            if (!string.IsNullOrEmpty(filter))
+            using (IAsyncCursor<Contact> cursor = await collection.FindAsync(string.IsNullOrEmpty(filter) ? FilterDefinition<Contact>.Empty : Builders<Contact>.Filter.Where(x => x.Sector == filter)))
             {
-                contacts = contacts.Where(a => a.Sector == filter).ToList();
-            }
-            foreach (var c in contacts)
-            {
-                if (!test)
+                while (await cursor.MoveNextAsync())
                 {
-                    await SendEmail(tp.Parse(coll, new Dictionary<string, string> { { "FirstName", c.FirstName } }), subject, sendfrom, c.Email);
+                    IEnumerable<Contact> batch = cursor.Current;
+                    foreach (Contact c in batch)
+                    {
+                        if (!test)
+                        {
+                            await SendEmail(tp.Parse(coll, new Dictionary<string, string> { { "FirstName", c.FirstName } }), subject, sendfrom, c.Email);
+                        }
+                        count++;
+                    }
                 }
             }
-            return contacts;
+            return count;
         }
 
         public async Task<string> SendEmail(string body, string subject, string sendfrom, string emailAddress)
