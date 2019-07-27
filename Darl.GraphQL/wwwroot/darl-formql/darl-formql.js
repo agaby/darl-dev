@@ -39,6 +39,36 @@ async function DARLForm(div, id, debug, apiKey) {
     }
 }
 
+async function DARLDynamicForm(div, id, debug, apiKey) {
+    try {
+        if (apiKey === null) {
+            graph = graphql(url);
+        }
+        else {
+            graph = graphql(url, { headers: { "Authorization": "Basic " + apiKey } });
+        }
+        isDebug = debug;
+        var firstQSP = graph(`query beginForm($ruleset: String!){ beginDynamicQuestionnaire(selector: $ruleset, dqType: rule_edit){ ieToken questionHeader percentComplete canUnwind questions { text categories reference qType maxval minval format dResponse sResponse } values {name value}}}`);
+        nextQSP = graph('query nextStep($ieToken: String!, $reference: String!, $qType: QuestionType!, $sresponse: String, $dresponse: Float   ){ continueQuestionnaire(responses: {ieToken: $ieToken, questions:[{reference: $reference, sResponse: $sresponse,dResponse: $dresponse, qType: $qType}]}) { complete ieToken questionHeader percentComplete canUnwind values {name value } questions { text categories  reference qType sResponse  dResponse} responses { mainText annotation rType preamble}}}');
+        backQSP = graph('query back($ieToken: String!){ backtrackQuestionnaire(ieToken: $ieToken) {complete ieToken questionHeader percentComplete canUnwind values { name value } questions { text categories  reference qType sResponse  dResponse } responses { mainText annotation rType preamble }}}');
+        var content = await firstQSP({ ruleset: id });
+
+        var data = content.beginDynamicQuestionnaire;
+        if (data === null) {
+            var root = $(div);
+            root.append($('<p></p>').text("This ruleset can't be found or has timed out. Refresh the page."));
+        }
+        else {
+            $(div).empty();
+            BuildForm(div, data, debug);
+            currentQSP = data;
+        }
+    }
+    catch (err) {
+        alert(err[0].message);
+    }
+}
+
 //
 function BuildForm(div, qsp, debug) {
     rootDiv = div;

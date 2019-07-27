@@ -6,7 +6,7 @@ using System.Text;
 namespace Darl.GraphQL.Models.Schemata
 {
     public enum DQType { rule_edit, bot_edit };
-    public class DQTypeEnum : EnumerationGraphType<DQType>
+    public class DQTypeEnum : EnumerationGraphType
     {
         public DQTypeEnum()
         {

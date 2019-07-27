@@ -60,7 +60,7 @@
 
             $('#ruleset-dropdown').on('change', async function () {
                 rsname = this.value;
-                var form = await DARLForm('#ruleform', rsname, true, apiKey);
+                var form = await DARLDynamicForm('#ruleform', rsname, true, apiKey);
             });
         });
 
