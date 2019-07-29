@@ -208,6 +208,17 @@ query interact($model: String!, $convId: String!, $data: darlVarUpdate!)
   }
 }
 ```
+## Investigate the bot text recognition tree
+```json
+{
+  getChildrenLineageNodes(botModelName: "thousandquestions.model", path: "", isRoot: true )
+  {
+    text
+  }
+}
+```
+
+
 
 ## Use the DARL linter
 ```json

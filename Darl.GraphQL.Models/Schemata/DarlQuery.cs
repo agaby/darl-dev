@@ -349,7 +349,7 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await connectivity.getLineageNodeAttributeResources(userId, botModelName));
                 }
-            );
+            ).;
             FieldAsync<StringGraphType>(
                 "getCollateral",
                 "Get text used in responses",
@@ -361,7 +361,7 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await connectivity.GetCollateral(userId, name));
                 }
-            );
+            ).RequiresAuthorization();
             FieldAsync<ListGraphType<CollateralType>>(
                 "collateral",
                 "Get texts used in responses",
