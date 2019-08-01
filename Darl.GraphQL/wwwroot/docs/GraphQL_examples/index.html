@@ -74,6 +74,7 @@
             <li><a href="#go-back-a-step-with-a-questionnaire">Go Back a step with a questionnaire</a></li>
             <li><a href="#interact-with-a-bot">Interact with a Bot</a></li>
             <li><a href="#get-lineages-for-a-word">Get lineages for a word</a></li>
+            <li><a href="#investigate-the-bot-text-recognition-tree">Investigate the bot text recognition tree</a></li>
             <li><a href="#use-the-darl-linter">Use the DARL linter</a></li>
         <li class="main "><a href="#mutations">Mutations</a></li>
             <li><a href="#setting-the-text-for-a-ruleset-question">Setting the text for a ruleset question</a></li>
@@ -283,6 +284,15 @@
     description
     lineage
     typeWord
+  }
+}
+</code></pre>
+
+<h2 id="investigate-the-bot-text-recognition-tree">Investigate the bot text recognition tree</h2>
+<pre><code class="json">{
+  getChildrenLineageNodes(botModelName: &quot;thousandquestions.model&quot;, path: &quot;&quot;, isRoot: true )
+  {
+    text
   }
 }
 </code></pre>

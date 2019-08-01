@@ -349,7 +349,7 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await connectivity.getLineageNodeAttributeResources(userId, botModelName));
                 }
-            ).;
+            );
             FieldAsync<StringGraphType>(
                 "getCollateral",
                 "Get text used in responses",

@@ -62,6 +62,7 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#collateral-page">Collateral page</a></li>
+            <li><a href="#accessing-collateral-in-your-account-via-the-api">Accessing Collateral in your account via the API</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -72,8 +73,17 @@ These files can be displayed through a bot by using the "Collateral" <a href="./
 <pre><code class="darl">if anything then response will be Collateral[&quot;index.md&quot;];
 </code></pre>
 
-<p>This page enables you to view, upload, download and delete your markdown collateral.</p>
-<p><img alt="Collateral image" src="/images/collateral.png" /></p></div>
+<p>This page enables you to upload your markdown collateral.</p>
+<p><img alt="Collateral image" src="/images/collateral.png" /></p>
+<h2 id="accessing-collateral-in-your-account-via-the-api">Accessing Collateral in your account via the API</h2>
+<pre><code class="json">{
+ collateral
+  {
+    name
+    value
+  }
+}
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">
