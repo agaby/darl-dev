@@ -93,42 +93,74 @@
             </div>
         </nav>
     </header>
+
+    <div id="modalIntro" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Welcome to Darl.dev</h3>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <p>This site provides GraphQL access to our <a href="https://darl.ai" target="_blank">DARL expert system, machine learning and Bot functionality</a>.</p>
+                    <p>
+                        This is a tenanted site. If you <a href="/azureadb2c/account/signin">register</a> you get your own account with an initial free set of expert system rulesets, machine learning examples and a bot model, which you can modify or add to as you please. The API permits you to embed rulesets and bots in your own applications.
+                    </p>
+                    <p>
+                        If you don’t register you can query the default examples, but not modify them.
+                    </p>
+                    <p>
+                        Registration is free with no monthly charges and there is a generous allowance of free ruleset and bot usage. If you exceed this usage the <a href="https://darl.ai/#pricing" target="_blank">charges</a> won’t break the bank.
+                    </p>
+                    <p>
+                        GraphQL has excellent tooling, and we’ve included state of the art tools to access and explore our API. This page contains a Playground interface; other pages contain a Voyager object browser to explore the large object model employed by DARL, and GraphiQL, an alternate user interface.
+                    </p>
+                    <p>
+                        Pages also exist for specialized editing, like our DARL interactive editor.
+                    </p>
+                    <p>
+                        Please <a href="/azureadb2c/account/signin">Register now</a>. You can <a href="docs/darl_dev/" target="_blank">read more about this site here</a>.
+                    </p>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @RenderBody()
     <footer class="footer text-center">
         <p class="footer">&copy; 2019 - Dr Andy's IP. DARL® is a registered trademark of Dr Andy's IP. <a href="https://darl.ai/home/terms" target="_blank">Terms </a><a href="https://darl.ai/home/terms" target="_blank">Privacy </a>  <span>Assembly Version = @Microsoft.Extensions.PlatformAbstractions.PlatformServices.Default.Application.ApplicationVersion;</span> .Net core 3.0. RQRF</p>
 
     </footer>
-    <!-- Load Facebook SDK for JavaScript -->
-    <div id="fb-root"></div>
-    <script>
-        window.fbAsyncInit = function () {
-            FB.init({
-                xfbml: true,
-                version: 'v4.0'
-            });
-        };
 
-        (function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s); js.id = id;
-            js.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js';
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));</script>
-
-    <!-- Your customer chat code -->
-    <div class="fb-customerchat"
-         attribution=setup_tool
-         page_id="2019545694937236">
-    </div>
 
     <script src="~/jquery/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"></script>
-
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+
 
     @RenderSection("Scripts", required: false)
 
+    <script>
+        $(document).ready(function () {
+            if (localStorage.getItem('darldev_popState') != 'shown') {
+                $("#modalIntro").modal('show');
+                localStorage.setItem('darldev_popState', 'shown')
+            }
 
+            $('#popup-close').click(function (e) // You are clicking the close button
+            {
+                $('#modalIntro').fadeOut(); // Now the pop up is hiden.
+            });
+            $('#modalIntro').click(function (e) {
+                $('#modalIntro').fadeOut();
+            });
+        });
+    </script>
 </body>
 </html>
