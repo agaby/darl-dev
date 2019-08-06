@@ -31,5 +31,7 @@ namespace Darl.GraphQL.Models.Models
         public string Sector { get; set; }
 
         public bool IntroSent { get; set; } = false;
+
+        public List<Purchase> purchases { get; set; } = new List<Purchase>();
     }
 }

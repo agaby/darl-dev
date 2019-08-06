@@ -361,7 +361,7 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await connectivity.GetCollateral(userId, name));
                 }
-            ).RequiresAuthorization();
+            );
             FieldAsync<ListGraphType<CollateralType>>(
                 "collateral",
                 "Get texts used in responses",
@@ -447,6 +447,15 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.GetDocuments(userId));
                 }
             );
+            FieldAsync<ListGraphType<UpdateType>>(
+                "updates",
+                "Get details about most recent updates",
+                resolve: async context =>
+                {
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.GetUpdates());
+                }
+            ).AuthorizeWith("AdminPolicy");
         }
 
     }

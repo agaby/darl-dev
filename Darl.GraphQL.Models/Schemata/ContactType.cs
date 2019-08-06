@@ -28,7 +28,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.Source, true);
             Field(c => c.Title, true);
             Field<StringGraphType>("Id", resolve: c => c.Source.Id);
-
+            Field<ListGraphType<PurchaseType>>("purchases", resolve:  c => c.Source.purchases);
         }
     }
 }

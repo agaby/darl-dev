@@ -180,6 +180,8 @@ namespace Darl.GraphQL
             services.AddTransient<TriggerViewInputType>();
             services.AddTransient<DQTypeEnum>();
             services.AddTransient<ResourceTypeEnum>();
+            services.AddTransient<PurchaseType>();
+
 
             //root
             services.AddTransient<DarlSchema>();

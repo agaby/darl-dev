@@ -1963,5 +1963,33 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return destName;
         }
+
+        public async Task<List<Update>> GetUpdates()
+        {
+            var mc = db.GetCollection<Update>("update");
+            var query = mc.AsQueryable();
+            return await query.ToListAsync();
+        }
+
+        //create contact if not found, add purchase.
+        public async Task<Purchase> ReportPurchase(string email, string name, string sessionId, DateTime date)
+        {
+            var purchase = new Purchase { date = date, sessionId = sessionId };
+            var contact = await GetContactByEmail(email);
+            if(contact != null) //existing contact
+            {
+                //add purchase - handle empty purchases list
+                var collection = db.GetCollection<Contact>("contact");
+                var filter = Builders<Contact>.Filter.Where(x => x.Email == email);
+                var update = Builders<Contact>.Update.Push("purchases", purchase);
+                await collection.FindOneAndUpdateAsync(filter, update);
+            }
+            else
+            {
+                contact = new Contact { Email = email, FirstName = name, Created = date, Source = "Online purchase", Sector = "Advice", IntroSent = true, purchases = new List<Purchase> {purchase} };
+                await CreateContactAsync(contact);
+            }
+            return purchase;
+        }
     }
 }

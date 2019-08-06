@@ -3,6 +3,7 @@ using Darl.GraphQL.Models.Models;
 using GraphQL.Client;
 using GraphQL.Common.Request;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,6 +21,9 @@ namespace Darl.GraphQL.Test
         public void Initialize()
         {
             client = new GraphQLClient("https://darl.dev/graphql/");
+            var authcode = "d70f1008-5758-41b5-9c44-bc90535aeabc";
+            client.DefaultRequestHeaders.Add("Authorization", $"Basic {authcode}");
+            client.Options.JsonSerializerSettings.Converters.Add(new StringEnumConverter());
         }
 
 
@@ -66,6 +70,18 @@ namespace Darl.GraphQL.Test
             Assert.IsTrue(resp.Errors == null || resp.Errors.Length == 0);
             contact = resp.GetDataFieldAs<Models.Models.Contact>("contactByEmail");
             Assert.IsNull(contact);
+
+        }
+
+        [TestMethod]
+        public async Task TestreportPurchase()
+        {
+            var email = "ed.guiness@verifile.co.uk";
+            var name = "ed Guiness";
+            var sessionId = "jhkjhkjlkjlkj";
+            var date = DateTime.UtcNow;
+            var req = new GraphQLRequest() { Variables = new { email = email, name = name, date = date, sessionId = sessionId }, Query = @"mutation reportPurchase($email: String!, $name: String!, $sessionId: String!, $date: DateTime!){ reportPurchase(email: $email, name: $name, sessionId: $sessionId, date: $date){sessionId}}" };
+            var resp = await client.PostAsync(req);
 
         }
     }

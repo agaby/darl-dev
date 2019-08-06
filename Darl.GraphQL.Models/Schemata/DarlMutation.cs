@@ -944,6 +944,25 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.CopyToReserveAccount(userId, resourceType, name, newName));
                 }
             ).AuthorizeWith("AdminPolicy");
+            FieldAsync<PurchaseType>(
+                "reportPurchase",
+                "Associate a purchase with a contact",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email", Description = "The purchasers email" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the purchaser" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "sessionId", Description = "The stripe id of the purchase)"},
+                    new QueryArgument<NonNullGraphType<DateTimeGraphType>> { Name = "date", Description = "The date and time of the purchase)" }
+                    ),
+                resolve: async context =>
+                {
+                    var email = context.GetArgument<string>("email");
+                    var name = context.GetArgument<String>("name");
+                    var sessionId = context.GetArgument<String>("sessionId");
+                    var date = context.GetArgument<DateTime>("date");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.ReportPurchase(email,name,sessionId,date));
+                }
+            ).AuthorizeWith("AdminPolicy");
         }
     }
 }

@@ -198,5 +198,8 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<DarlVar> CreateRulesetPreload(string userId, string rulesetName, DarlVar preloadData);
         Task<TriggerView> UpdateRuleFormTrigger(string userId, string ruleSetName, TriggerViewInput trigger);
         Task<string> CopyToReserveAccount(string userId, ResourceType resourceType, string name, string newName);
+        Task<List<Update>> GetUpdates();
+        Task<Purchase> ReportPurchase(string email, string name, string sessionId, DateTime date);
+
     }
 }
