@@ -455,6 +455,21 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await connectivity.GetUpdates());
                 }
+            );
+
+            FieldAsync<BooleanGraphType>(
+                "checkEmail",
+                "Check if an email is valid",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email", Description = "The email to check" },
+                    new QueryArgument<StringGraphType> { Name = "ipaddress", Description = "IP address of the applicant, if available" }),
+                resolve: async context =>
+                {
+                    var email = context.GetArgument<string>("email");
+                    var ipaddress = context.GetArgument<string>("ipaddress");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CheckEmail(email, ipaddress));
+                }
             ).AuthorizeWith("AdminPolicy");
         }
 

@@ -200,6 +200,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<string> CopyToReserveAccount(string userId, ResourceType resourceType, string name, string newName);
         Task<List<Update>> GetUpdates();
         Task<Purchase> ReportPurchase(string email, string name, string sessionId, DateTime date);
-
+        Task<bool> CheckEmail(string email, string ipaddress = "");
     }
 }

@@ -34,5 +34,6 @@ namespace Darl.GraphQL
         public string AzureDevopsAccount { get; set; }
         public string AzureDevopsPersonalAccessToken { get; set; }
         public string ProvisionCollateral { get; set; }
+        public string ZeroBounceAPIKey { get; set; }
     }
 }
