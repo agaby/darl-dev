@@ -25,6 +25,9 @@ namespace Darl.GraphQL.Pages
         [BindProperty, Display(Name = "Name of resource")]
         public string destinationName { get; set; }
 
+        [BindProperty, Display(Name = "Api Key")]
+        public string apiKey { get; set; }
+
         private IConnectivity _connectivity;
 
         public UploadCollateralModel(IConnectivity connectivity)
@@ -34,14 +37,31 @@ namespace Darl.GraphQL.Pages
 
         public async Task OnPostAsync()
         {
-            if (string.IsNullOrEmpty(destinationName) || string.IsNullOrEmpty(User.Identity.Name))
+            if (string.IsNullOrEmpty(destinationName))
                 return;
-            switch(uploadType)
+            string userId = "";
+            if(string.IsNullOrEmpty(User.Identity.Name))
+            {
+                if(apiKey != null) //look up userId
+                {
+                    var user = await _connectivity.GetUserByApiKey(apiKey);
+                    userId = user.userId;
+                }
+                else
+                {
+                    return; //no way to get userId
+                }
+            }
+            else
+            {
+                userId = User.Identity.Name;
+            }
+            switch (uploadType)
             {
                 case UploadType.document:
                     using (var ms = new MemoryStream())
                     {
-                        var d = new Document { userId = User.Identity.Name, name = destinationName };
+                        var d = new Document { userId = userId, name = destinationName };
                         await UploadedFile.CopyToAsync(ms);
                         d.content = ms.ToArray();
                         await _connectivity.UpdateDocument(d);
@@ -51,14 +71,15 @@ namespace Darl.GraphQL.Pages
                     using (var ms = new MemoryStream())
                     {
                         await UploadedFile.CopyToAsync(ms);
+                        ms.Position = 0;
                         using (var reader = new StreamReader(ms))
                         {
-                           await _connectivity.UpdateCollateral(User.Identity.Name, destinationName, reader.ReadToEnd());
+                           var content = await reader.ReadToEndAsync();
+                           await _connectivity.UpdateCollateral(userId, destinationName, content);
                         }
                     }
                     break;
             }
-
         }
     }
 }
