@@ -15,19 +15,16 @@ Various projects and code samples are available to help you use DARL.
 
 # API
 
-[DARL Free API documentation](https://darl.ai/swagger)
+[DARL Free API documentation](https://darl.dev)
 
 # Github samples
+
+[MS Bot framework Bot that works with the new GraphQL API](https://github.com/drandysip/DarlCoreBot)
 
 [CodeMirror extension for the DARL language](https://github.com/drandysip/darl-codemirror)
 
 [App for Windows, Android and Apple you can embed a bot in](https://github.com/Microsoft/BotBuilder-Samples/tree/master/CSharp/capability-BotInApps)
 
-[Free DARL REST Inference Engine example code](https://github.com/drandysip/DarlRestExample)
-
-[Free DARL REST Machine Learning example code](https://github.com/drandysip/DarlMLRestExample)
-
-[Free DASL Financial trading simulation example code](https://github.com/drandysip/DaslTradingExample)
 
 # Articles
 
