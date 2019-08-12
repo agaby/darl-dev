@@ -840,7 +840,7 @@ namespace Darl.GraphQL.Models.Connectivity
                             return errors; //errors, just add them to the input and quit.
                         }
                         var res = await ProcessValues(DarlVarExtensions.Convert(inputs), tree);
-                        telemetry.TrackEvent("InferFromRuleSetDarlVar used");
+                        telemetry.TrackEvent($"InferFromRuleSetDarlVar used. userId = {userId}, ruleset name = {ruleSetName}");
                         return DarlVarExtensions.Convert(res);
                     }
                     else
@@ -909,8 +909,10 @@ namespace Darl.GraphQL.Models.Connectivity
                 rep.errorText = $"Error in running machine learning task: {ex.ToString()}";
             }
             var end = DateTime.Now;
+            TimeSpan execTime = (end - start);
+            telemetry.TrackEvent($"Machine learning run used. userId = {userId}, mlmodel name = {mlmodelname}, seconds = {execTime.TotalSeconds}");
             //insert result into MLModel result array
-            var mlr = new MLResult { code = rep.code, errorText = rep.errorText, executionDate = start, executionTime = (end - start), trainPercent = rep.trainPercent, trainPerformance = rep.trainPerformance, testPerformance = rep.testPerformance, unknownResponsePercent = rep.unknownResponsePercent };
+            var mlr = new MLResult { code = rep.code, errorText = rep.errorText, executionDate = start, executionTime = execTime, trainPercent = rep.trainPercent, trainPerformance = rep.trainPerformance, testPerformance = rep.testPerformance, unknownResponsePercent = rep.unknownResponsePercent };
             var filter = Builders<MLModel>.Filter.Where(x => x.Name == mlmodelname && x.userId == userId);
             var update = Builders<MLModel>.Update.AddToSet("results", mlr);
             var options = new FindOneAndUpdateOptions<MLModel, MLModel> { IsUpsert = false, ReturnDocument = ReturnDocument.After };
@@ -1705,11 +1707,6 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var collection = db.GetCollection<BotState>("botstate");
             await collection.ReplaceOneAsync( doc => doc.id == bs.id && doc.userId == bs.userId , bs, new UpdateOptions { IsUpsert = true });
-        }
-
-        public Task<DarlVar> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task CreateDefaultResponse(DefaultResponse response)

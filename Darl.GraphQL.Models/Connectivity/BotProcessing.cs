@@ -3,6 +3,7 @@ using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using DarlCommon;
+using Microsoft.ApplicationInsights;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,6 +19,8 @@ namespace Darl.GraphQL.Models.Connectivity
         IFormApi _form;
         IRuleFormInterface _rfi;
         ITrigger _trigger;
+        private TelemetryClient telemetryClient = new TelemetryClient();
+
 
         public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger)
         {
@@ -29,6 +32,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<List<InteractTestResponse>> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData)
         {
+            telemetryClient.TrackEvent($"Bot interaction. userId = {userId}, Bot model name = {botModelName}, conversationId = {conversationId}, conversationData = {conversationData}");
             List<InteractTestResponse> resp = new List<InteractTestResponse>();
             //cache these?
             var bmt = await _conv.GetBotModel(userId, botModelName);

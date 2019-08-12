@@ -9,7 +9,7 @@ output:
 
 Tutorial
 ===
-This will show you how to get a Bot running in minutes using our example bot model, and then how to change the responses to something appropriate to your needs.
+This will show you how to get a Bot running in minutes using our example bot model.
 
 You will need a Microsoft™ Azure account which you can get [here](https://azure.microsoft.com).
 
@@ -17,49 +17,72 @@ To begin, go to the [Microsoft Azure Portal](https://portal.azure.com) and log i
 
 Select _Bot services_.
 
-![Bot services in portal](/images/bot_services_in_portal.png)
 
-Select _Add_ and then _Bot Channels Registration_.
-
-
-![Bot service add](/images/Add_Bot_in_portal.png)
-
-Select _Create_.
+Select _Add_ and then _Web App Bot_.
 
 Fill in the name of the new bot, which must be as yet unregistered, and fill in the other values.
+Choose Echo bot as the type.
 
-![Bot channels registration](/images/bot_channels_reg.png)
+![Bot service add](/images/tutorial1.png)
 
-Either set the appid and password yourself, or auto create.
-
-Select _Create_ again.
 
 After a short period your Bot connection will be created.
 
-Select the bot you have just created, go to _settings_ and then above the App ID, click on _manage_.
+![Bot creation success](/images/tutorial2.png)
 
-Now, in Darl.ai, select the model you wish to use for the bot on the models page.
+You can test this primitive bot just to make sure everything is working.
+Note two things are created: a bot service and a web app, both with the same name.
 
-Select _Open model_ and then choose _Connectivity_ on the left side bar.
+![Echo bot test](/images/tutorial5.png)
 
-![Bot connectivity](/images/bot_connectivity.png)
+Now let's create our own bot to overwrite this.
 
-Click the _+row_ button and fill in the App ID and the password from the portal settings. You may need to create a new pasword.
+go to [GitHub](https://github.com/drandysip/DarlCoreBot) and download a copy of the DARL bot.
 
-Now click _Save connectivity_ at the bottom of the page.
+![The DARL bot](/images/tutorial9.png)
 
-Back on the _Portal Settings_ page, set the messaging endpoint to "https://darlbot.com/api/messages"
+We'll assume you are using Visual Studio.
 
-![messaging endpoint](/images/messaging_endpoint.png)
+Load the solution, compile and publish it.
 
-Save the changes to the bot in the portal.
+![publishing 1](/images/tutorial3.png)
 
-Now, if everything has worked, you should be able to test the new bot using the _Test in web chat_ link.
+Choose the web app you created previously.
 
-![Test in web chat](/images/test_in_webchat.png)
+![publishing 2](/images/tutorial4.png)
 
-You can make changes to the selected bot using the [Edit tree](edit_tree) page.
+Once the bot is published we just have to change it's settings.
 
-You can switch the bot model used by deleting the appropriate row in the Connectivity Bot Framework's connection, (making note of the App ID and password) opening the preferred model on the models page, going back to connectivity, now for the new model,  and adding the removed credentials to that bot model.
+Back in the azure portal navigate to the Web app and edit the settings.
+
+![Edit settings 1](/images/tutorial6.png)
+
+There are four settings you need to add. They are
+
+- "DarlAPIAddress", this is always: "https://darl.dev/graphql/"
+- "DarlBotModel", this is the name of your model, such as "thousandquestions.model"
+- "initialText", This is the first text the bot shows given a new connection, such as "hello from darlbot".
+- "DarlAPIKey", This is the API key to access your account on Darl.dev. Find it by logging into Darl.Dev and then making the following query:
+
+```json
+{
+  getApiKey
+}
+
+```
+
+When the settings are complete you should see the following:
+
+![Edit settings 2](/images/tutorial7.png)
+
+Select _Save_ to save the changes.
+
+Now, if you've done this correctly, you can navigate back to the bot service and test it.
+
+![working bot](/images/tutorial8.png)
+
+In order to use this bot in anger you need to connect it to various other channels, such as Skype or Facebook Messenger. This process is described in the Microsoft [bot framework documentation](https://docs.microsoft.com/en-us/azure/bot-service/bot-service-manage-channels?view=azure-bot-service-4.0).
+
+
 
 

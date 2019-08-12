@@ -6,6 +6,7 @@ using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Schemata;
 using DarlCommon;
 using GraphQL;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Options;
 
 namespace Darl.GraphQL.Models.Connectivity
@@ -15,6 +16,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private IConnectivity _connectivity;
         private IFormApi _formApi;
         private IOptions<AppSettings> _opt;
+        private TelemetryClient telemetryClient = new TelemetryClient();
 
 
         public FormProcessing(IConnectivity connectivity, IFormApi formApi, IOptions<AppSettings> optionsAccessor)
@@ -50,7 +52,11 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var rs = await _connectivity.GetRuleSet(userId, ruleSetName);
             if (rs != null)
-                return await _formApi.Get(rs, language, questCount);
+            {
+                var qsp = await _formApi.Get(rs, language, questCount);
+                telemetryClient.TrackEvent($"Questionnaire interaction started. userId = {userId}, Ruleset name = {ruleSetName}, id = {qsp.ieToken}");
+                return qsp;
+            }
             return null;
         }
 
@@ -74,6 +80,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 throw new ExecutionError($"ieToken {responses.ieToken} not found. Questionnaire timed out?");
             }
+            telemetryClient.TrackEvent($"Questionnaire interaction continued.  id = {r.ieToken}");
             return r;
         }
     }

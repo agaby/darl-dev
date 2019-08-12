@@ -20,5 +20,7 @@ namespace Darl.GraphQL.Models.Models
         public List<Authorization> Authorizations { get; set; } = new List<Authorization>();
         public string userId { get; set; }
         public ServiceConnectivity serviceConnectivity { get; set; } = new ServiceConnectivity();
+        public List<UserUsage> UsageHistory { get; set; } = new List<UserUsage>();
+
     }
 }

@@ -173,7 +173,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<DarlUser> UpdateUserAsync(string userId, DarlUserUpdate darlUserUpdate);
         Task<string> UpdateUserAPIKey(string userId);
         Task<string> UpdateDarlInRuleset(string userId, string ruleSetName, string darl);
-        Task<DarlVar> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData);
         Task<LineageNodeAttributeResources> getLineageNodeAttributeResources(string userId, string botModelName);
         Task<DarlUser> GetUserByStripeId(string stripeId);
         Task<string> GetCollateral(string userId, string name);

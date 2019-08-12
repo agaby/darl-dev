@@ -117,19 +117,6 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             );
 
-            FieldAsync<ListGraphType<BotConnectionType>>(
-                "botConnectionsByModel",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
-                resolve: async context =>
-                {
-                    var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await connectivity.GetBotConnectivity(userId, c.GetArgument<String>("name"))
-                    );
-                }
-            );
-
             FieldAsync<ListGraphType<UserUsageType>>(
                 "botUsages",
                 arguments: new QueryArguments(
@@ -405,14 +392,6 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await connectivity.GetBotModelFromAppId(appId));
                 }
-            ).AuthorizeWith("AdminPolicy");
-            FieldAsync<ListGraphType<BotConnectionType>>(
-               "botConnections",
-               resolve: async context =>
-               {
-                   return await context.TryAsyncResolve(
-                       async c => await connectivity.GetBotConnectionsAsync());
-               }
             ).AuthorizeWith("AdminPolicy");
             FieldAsync<StringGraphType>(
                 "getUserIdFromAppId",

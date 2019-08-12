@@ -74,37 +74,6 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.DeleteAuthorization(userId, botModelName, name));
                 });
 
-            // BotConnection
-            //  Create
-            FieldAsync<BotConnectionType>("createBotConnection",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "appId" },
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "password" }
-                ),
-                resolve: async context =>
-                {
-                    var botModelName = context.GetArgument<string>("botModelName");
-                    var appId = context.GetArgument<string>("appId");
-                    var password = context.GetArgument<string>("password");
-                    var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await connectivity.CreateBotConnection(userId, botModelName, appId, password));
-                });
-
-            //  Delete
-            FieldAsync<BotConnectionType>("deleteBotConnection",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "appId" }
-                    ),
-                resolve: async context =>
-                {
-                    var botModelName = context.GetArgument<string>("botModelName");
-                    var appId = context.GetArgument<string>("appId");
-                    var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await connectivity.DeleteBotConnection(userId, botModelName, appId));
-                });
             // LineageTree
 
             //  CreateNode
