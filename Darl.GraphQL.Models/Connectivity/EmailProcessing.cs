@@ -44,7 +44,8 @@ namespace Darl.GraphQL.Models.Connectivity
                     {
                         if (!test)
                         {
-                            await SendEmail(tp.Parse(coll, new Dictionary<string, string> { { "FirstName", c.FirstName } }), subject, sendfrom, c.Email);
+                            var body = tp.Parse(coll, new Dictionary<string, string> { { "InvoiceName", c.FirstName } }); //make the insertion dictionary programmable
+                            await SendEmail(body, subject, sendfrom, c.Email);
                         }
                         count++;
                     }
