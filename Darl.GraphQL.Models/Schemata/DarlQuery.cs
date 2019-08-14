@@ -10,7 +10,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlQuery : ObjectGraphType<object>
     {
-        public DarlQuery(IConnectivity connectivity, IBotProcessing bot, IFormProcessing form)
+        public DarlQuery(IConnectivity connectivity, IBotProcessing bot, IFormProcessing form, ISimProcessing sim)
         {
             Name = "Query";
             Description = "View the contents of your account.";
@@ -435,7 +435,6 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.GetUpdates());
                 }
             );
-
             FieldAsync<BooleanGraphType>(
                 "checkEmail",
                 "Check if an email is valid",
@@ -450,6 +449,24 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.CheckEmail(email, ipaddress));
                 }
             ).AuthorizeWith("AdminPolicy");
+
+            FieldAsync<DaslSetType>(
+                "simulate",
+                "run a simulation",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "Name of the ruleset to use" },
+                    new QueryArgument<NonNullGraphType<DaslSetType>> { Name = "dataSet", Description = "The sequence data set to use" },
+                    new QueryArgument<NonNullGraphType<SampleTypeEnum>> { Name = "sampleType", Description = "whether the data is events or samples" }),
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    var name = context.GetArgument<string>("name");
+                    var dataSet = context.GetArgument<DaslSet>("dataSet");
+                    var sampleType = context.GetArgument<SampleType>("sampleType");
+                    return await context.TryAsyncResolve(
+                        async c => await sim.Simulate(userId,name,dataSet,sampleType));
+                }
+            );
         }
 
     }

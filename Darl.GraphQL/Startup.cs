@@ -180,6 +180,9 @@ namespace Darl.GraphQL
             services.AddTransient<DQTypeEnum>();
             services.AddTransient<ResourceTypeEnum>();
             services.AddTransient<PurchaseType>();
+            services.AddTransient<DaslSetType>();
+            services.AddTransient<DaslStateType>();
+            services.AddTransient<SampleTypeEnum>();
 
 
             //root
