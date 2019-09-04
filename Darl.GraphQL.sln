@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.28711.60
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL", "Darl.GraphQL\Darl.GraphQL.csproj", "{88E5A55B-7ADD-4DB2-AFEB-D332C0E6285F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Models", "Darl.GraphQL.Models\Darl.GraphQL.Models.csproj", "{B827A695-1464-4655-8339-3786064CCB28}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Test", "Darl.GraphQL.Test\Darl.GraphQL.Test.csproj", "{13DF51B0-9234-43F9-9DAC-75BD8CCB0C85}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Process", "Darl.GraphQL.Process\Darl.GraphQL.Process.csproj", "{2C5E0900-B138-401D-BABA-89B265AAF6FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +19,14 @@ Global
 		{88E5A55B-7ADD-4DB2-AFEB-D332C0E6285F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88E5A55B-7ADD-4DB2-AFEB-D332C0E6285F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88E5A55B-7ADD-4DB2-AFEB-D332C0E6285F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B827A695-1464-4655-8339-3786064CCB28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B827A695-1464-4655-8339-3786064CCB28}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B827A695-1464-4655-8339-3786064CCB28}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B827A695-1464-4655-8339-3786064CCB28}.Release|Any CPU.Build.0 = Release|Any CPU
 		{13DF51B0-9234-43F9-9DAC-75BD8CCB0C85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{13DF51B0-9234-43F9-9DAC-75BD8CCB0C85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13DF51B0-9234-43F9-9DAC-75BD8CCB0C85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13DF51B0-9234-43F9-9DAC-75BD8CCB0C85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C5E0900-B138-401D-BABA-89B265AAF6FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C5E0900-B138-401D-BABA-89B265AAF6FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C5E0900-B138-401D-BABA-89B265AAF6FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C5E0900-B138-401D-BABA-89B265AAF6FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

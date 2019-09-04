@@ -1,34 +1,34 @@
 using Darl.GraphQL.Models.Connectivity;
+using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Schemata;
+using Darl.GraphQL.Process.Middleware;
+using Darl.GraphQL.Ui.GraphiQL;
+using Darl.GraphQL.Ui.Playground;
+using Darl.GraphQL.Ui.Voyager;
+using Darl.Lineage.Bot;
+using Darl.Lineage.Bot.Stores;
 using GraphQL;
-using GraphQL.Server.Authorization.AspNetCore;
-using GraphQL.Server;
-using GraphQL.Server.Ui.GraphiQL;
-using GraphQL.Server.Ui.Playground;
-using GraphQL.Server.Ui.Voyager;
+using GraphQL.Http;
+using GraphQL.Types;
+using GraphQL.Validation;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureADB2C.UI;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Security.Principal;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Threading.Tasks;
-using Darl.Lineage.Bot.Stores;
-using Darl.Lineage.Bot;
 
 namespace Darl.GraphQL
 {
@@ -42,7 +42,6 @@ namespace Darl.GraphQL
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
-
             Environment = environment;
             Configuration = configuration;
         }
@@ -84,6 +83,8 @@ namespace Darl.GraphQL
 
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             //services
+            services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
+            services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddSingleton<IConnectivity, CosmosDBConnectivity>();
             services.AddSingleton<IFormApi, FormApi>();
             services.AddSingleton<IBotProcessing, BotProcessing>();
@@ -91,125 +92,154 @@ namespace Darl.GraphQL
             services.AddSingleton<ITrigger, BotTrigger>();
             services.AddSingleton<IFormProcessing, FormProcessing>();
             services.AddSingleton<IEmailProcessing, EmailProcessing>();
+            services.AddSingleton<ISimProcessing, SimProcessing>();
+            services.AddSingleton<IAuthChecker, AuthChecker>(); 
 
             //types
-            services.AddTransient<BotFormatType>();
-            services.AddTransient<BotInputFormatType>();
-            services.AddTransient<BotModelType>();
-            services.AddTransient<BotOutputFormatType>();
-            services.AddTransient<DictionarySequenceType>();
-            services.AddTransient<DisplayTypeEnum>();
-            services.AddTransient<FormFormatType>();
-            services.AddTransient<InputFormatType>();
-            services.AddTransient<InputTypeEnum>();
-            services.AddTransient<LanguageFormatType>();
-            services.AddTransient<LanguageTextType>();
-            services.AddTransient<LineageAnnotationNodeType>();
-            services.AddTransient<LineageElementType>();
-            services.AddTransient<LineageMatchNodePairType>();
-            services.AddTransient<LineageMatchNodeType>();
-            services.AddTransient<LineageMatchTreeType>();
-            services.AddTransient<LineageModelType>();
-            services.AddTransient<LineageTypeEnum>();
-            services.AddTransient<MLModelType>();
-            services.AddTransient<MLSpecType>();
-            services.AddTransient<OutputFormatType>();
-            services.AddTransient<OutputTypeEnum>();
-            services.AddTransient<PostTypeEnum>();
-            services.AddTransient<RuleFormType>();
-            services.AddTransient<RuleSetType>();
-            services.AddTransient<SourceTypeEnum>();
-            services.AddTransient<StringDoublePairType>();
-            services.AddTransient<StringStringPairType>();
-            services.AddTransient<TriggerViewType>();
-            services.AddTransient<VariantTextType>();
-            services.AddTransient<SetDefinitionType>();
-            services.AddTransient<ServiceConnectivityType>();
-            services.AddTransient<AzureCredentialsType>();
-            services.AddTransient<SellerCenterCredentialsType>();
-            services.AddTransient<ZendeskCredentialsType>();
-            services.AddTransient<SendGridCredentialsType>();
-            services.AddTransient<TwilioCredentialsType>();
-            services.AddTransient<UserUsageType>();
-            services.AddTransient<ContactType>();
-            services.AddTransient<DefaultType>();
-            services.AddTransient<ContactInputType>();
-            services.AddTransient<ContactUpdateType>();
-            services.AddTransient<InputFormatUpdateType>();
-            services.AddTransient<OutputFormatUpdateType>();
-            services.AddTransient<BotOutputFormatUpdateType>();
-            services.AddTransient<LineageNodeDefinitionType>();
-            services.AddTransient<LineageRecordType>();
-            services.AddTransient<LineageNodeAttributeUpdateType>();
-            services.AddTransient<LineageNodeAttributeType>();
-            services.AddTransient<DarlVarType>();
-            services.AddTransient<DarlVarDataTypeEnum>();
-            services.AddTransient<StringStringPairInputType>();
-            services.AddTransient<DarlVarInputType>();
-            services.AddTransient<MLResultType>();
-            services.AddTransient<AuthorizationType>();
-            services.AddTransient<LineageAssociationType>();
-            services.AddTransient<LineageElementUnionType>();
-            services.AddTransient<AuthorizationUpdateType>();
-            services.AddTransient<DarlUserType>();
-            services.AddTransient<AccountStateEnum>();
-            services.AddTransient<DarlUserInputType>();
-            services.AddTransient<DarlUserUpdateType>();
-            services.AddTransient<MLSpecUpdateType>();
-            services.AddTransient<SetGraphType>();
-            services.AddTransient<PercentGraphType>();
-            services.AddTransient<QuestionSetType>();
-            services.AddTransient<QuestionDataType>();
-            services.AddTransient<QuestionTypeEnum>();
-            services.AddTransient<ResponseDataType>();
-            services.AddTransient<ResponseTypeEnum>();
-            services.AddTransient<QuestionSetInputType>();
-            services.AddTransient<QuestionInputType>();
-            services.AddTransient<DarlLintErrorType>();
-            services.AddTransient<StringDarlVarPairType>();
-            services.AddTransient<InteractResponseType>();
-            services.AddTransient<MatchedAnnotationType>();
-            services.AddTransient<LineageNodeAttributeResourceType>();
-            services.AddTransient<CollateralType>();
-            services.AddTransient<UpdateType>();
-            services.AddTransient<ConversationType>();
-            services.AddTransient<ConversationInputType>();
-            services.AddTransient<BotRuntimeModelType>();
-            services.AddTransient<DocumentType>();
-            services.AddTransient<TriggerViewInputType>();
-            services.AddTransient<DQTypeEnum>();
-            services.AddTransient<ResourceTypeEnum>();
-            services.AddTransient<PurchaseType>();
-            services.AddTransient<DaslSetType>();
-            services.AddTransient<DaslStateType>();
-            services.AddTransient<SampleTypeEnum>();
+            services.AddSingleton<BotFormatType>();
+            services.AddSingleton<BotInputFormatType>();
+            services.AddSingleton<BotModelType>();
+            services.AddSingleton<BotOutputFormatType>();
+            services.AddSingleton<DictionarySequenceType>();
+            services.AddSingleton<DisplayTypeEnum>();
+            services.AddSingleton<FormFormatType>();
+            services.AddSingleton<InputFormatType>();
+            services.AddSingleton<InputTypeEnum>();
+            services.AddSingleton<LanguageFormatType>();
+            services.AddSingleton<LanguageTextType>();
+            services.AddSingleton<LineageAnnotationNodeType>();
+            services.AddSingleton<LineageElementType>();
+            services.AddSingleton<LineageMatchNodePairType>();
+            services.AddSingleton<LineageMatchNodeType>();
+            services.AddSingleton<LineageMatchTreeType>();
+            services.AddSingleton<LineageModelType>();
+            services.AddSingleton<LineageTypeEnum>();
+            services.AddSingleton<MLModelType>();
+            services.AddSingleton<MLSpecType>();
+            services.AddSingleton<OutputFormatType>();
+            services.AddSingleton<OutputTypeEnum>();
+            services.AddSingleton<PostTypeEnum>();
+            services.AddSingleton<RuleFormType>();
+            services.AddSingleton<RuleSetType>();
+            services.AddSingleton<SourceTypeEnum>();
+            services.AddSingleton<StringDoublePairType>();
+            services.AddSingleton<StringStringPairType>();
+            services.AddSingleton<TriggerViewType>();
+            services.AddSingleton<VariantTextType>();
+            services.AddSingleton<SetDefinitionType>();
+            services.AddSingleton<ServiceConnectivityType>();
+            services.AddSingleton<AzureCredentialsType>();
+            services.AddSingleton<SellerCenterCredentialsType>();
+            services.AddSingleton<ZendeskCredentialsType>();
+            services.AddSingleton<SendGridCredentialsType>();
+            services.AddSingleton<TwilioCredentialsType>();
+            services.AddSingleton<UserUsageType>();
+            services.AddSingleton<ContactType>();
+            services.AddSingleton<DefaultType>();
+            services.AddSingleton<ContactInputType>();
+            services.AddSingleton<ContactUpdateType>();
+            services.AddSingleton<InputFormatUpdateType>();
+            services.AddSingleton<OutputFormatUpdateType>();
+            services.AddSingleton<BotOutputFormatUpdateType>();
+            services.AddSingleton<LineageNodeDefinitionType>();
+            services.AddSingleton<LineageRecordType>();
+            services.AddSingleton<LineageNodeAttributeUpdateType>();
+            services.AddSingleton<LineageNodeAttributeType>();
+            services.AddSingleton<DarlVarType>();
+            services.AddSingleton<DarlVarDataTypeEnum>();
+            services.AddSingleton<StringStringPairInputType>();
+            services.AddSingleton<DarlVarInputType>();
+            services.AddSingleton<MLResultType>();
+            services.AddSingleton<AuthorizationType>();
+            services.AddSingleton<LineageAssociationType>();
+            services.AddSingleton<LineageElementUnionType>();
+            services.AddSingleton<AuthorizationUpdateType>();
+            services.AddSingleton<DarlUserType>();
+            services.AddSingleton<AccountStateEnum>();
+            services.AddSingleton<DarlUserInputType>();
+            services.AddSingleton<DarlUserUpdateType>();
+            services.AddSingleton<MLSpecUpdateType>();
+            services.AddSingleton<SetGraphType>();
+            services.AddSingleton<PercentGraphType>();
+            services.AddSingleton<QuestionSetType>();
+            services.AddSingleton<QuestionDataType>();
+            services.AddSingleton<QuestionTypeEnum>();
+            services.AddSingleton<ResponseDataType>();
+            services.AddSingleton<ResponseTypeEnum>();
+            services.AddSingleton<QuestionSetInputType>();
+            services.AddSingleton<QuestionInputType>();
+            services.AddSingleton<DarlLintErrorType>();
+            services.AddSingleton<StringDarlVarPairType>();
+            services.AddSingleton<InteractResponseType>();
+            services.AddSingleton<MatchedAnnotationType>();
+            services.AddSingleton<LineageNodeAttributeResourceType>();
+            services.AddSingleton<CollateralType>();
+            services.AddSingleton<UpdateType>();
+            services.AddSingleton<ConversationType>();
+            services.AddSingleton<ConversationInputType>();
+            services.AddSingleton<BotRuntimeModelType>();
+            services.AddSingleton<DocumentType>();
+            services.AddSingleton<TriggerViewInputType>();
+            services.AddSingleton<DQTypeEnum>();
+            services.AddSingleton<ResourceTypeEnum>();
+            services.AddSingleton<PurchaseType>();
+            services.AddSingleton<DaslSetType>();
+            services.AddSingleton<DaslStateType>();
+            services.AddSingleton<SampleTypeEnum>();
+            services.AddSingleton<AdminFilter>();
+            services.AddSingleton<DaslSetInputType>();
+            services.AddSingleton<DaslStateInputType>();
+            services.AddSingleton<DarlSubscription>();
+            services.AddSingleton<StringDoublePairInputType>();
 
 
             //root
-            services.AddTransient<DarlSchema>();
-            services.AddTransient<DarlMutation>();
-            services.AddTransient<DarlQuery>();
+            services.AddSingleton<DarlMutation>();
+            services.AddSingleton<DarlQuery>();
+            services.AddSingleton<DarlSchema>();
 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            services.AddSingleton<IDependencyResolver>(
-                c => new FuncDependencyResolver(type => c.GetRequiredService(type)));
-            services.AddGraphQL(options => {
-                options.EnableMetrics = true;
-                options.ExposeExceptions = Environment.IsDevelopment();
-            })
-            .AddGraphQLAuthorization(options =>
+            services.AddSingleton<IValidationRule, AuthorizationValidationRule>()
+                .AddAuthorization(options =>
+                {
+                    options.AddPolicy("AdminPolicy", policy =>
+                       policy.RequireRole("Admin"));
+                    options.AddPolicy("UserPolicy", policy =>
+                        policy.RequireRole("User"));
+                });
+
+            services.AddSingleton<IUserContextBuilder>(new UserContextBuilder<GraphQLUserContext>(ctx => new GraphQLUserContext{ User = ctx.User}));
+
+            services.TryAddSingleton<IDocumentExecuter, DocumentExecuter>();
+            services.TryAddTransient(typeof(IGraphQLExecuter<>), typeof(DefaultGraphQLExecuter<>));
+//            services.AddSingleton(p => Options.Create(options(p)));
+
+            services.TryAddSingleton<IDocumentWriter>(x =>
             {
-                options.AddPolicy("AdminPolicy", policy =>
-                   policy.RequireRole("Admin"));
-                options.AddPolicy("UserPolicy", policy =>
-                    policy.RequireRole("User"));                          
-            })
-            .AddGraphTypes()
-            .AddDataLoader()
-            .AddUserContextBuilder(ctx => new GraphQLUserContext
-            {
-                User = ctx.User
+                return new DocumentWriter(Formatting.None, new JsonSerializerSettings());
             });
+
+
+            /*            services.AddSingleton<IDependencyResolver>(
+                            c => new FuncDependencyResolver(type => c.GetRequiredService(type)));
+                        services.AddGraphQL(options => {
+                            options.EnableMetrics = true;
+                            options.ExposeExceptions = Environment.IsDevelopment();
+                        })
+                        .AddGraphQLAuthorization(options =>
+                        {
+                            options.AddPolicy("AdminPolicy", policy =>
+                               policy.RequireRole("Admin"));
+                            options.AddPolicy("UserPolicy", policy =>
+                                policy.RequireRole("User"));                          
+                        })
+                        .AddGraphTypes()
+                        .AddDataLoader()
+                        .AddUserContextBuilder(ctx => new GraphQLUserContext
+                        {
+                            User = ctx.User
+                        });*/
 
             services.AddRazorPages();
 
@@ -293,8 +323,8 @@ namespace Darl.GraphQL
                 await next.Invoke();
             });
 
+            app.UseMiddleware<GraphQLHttpMiddleware<DarlSchema>>(new PathString("/graphql"));
 
-            app.UseGraphQL<DarlSchema>("/graphql");
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions()
             {
                 Path = "/ui/playground",

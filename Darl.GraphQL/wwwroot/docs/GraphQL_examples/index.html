@@ -85,7 +85,8 @@
             <li><a href="#update-sendgrid-credentials">Update SendGrid credentials</a></li>
             <li><a href="#add-a-phrase-to-botmodel">Add a phrase to botmodel</a></li>
             <li><a href="#update-a-ruleset-trigger">Update a ruleset trigger</a></li>
-            <li><a href="#exclude-a-ruleset-output-from-the-visible-results">exclude a Ruleset output from the visible results</a></li>
+            <li><a href="#exclude-a-ruleset-output-from-the-visible-results">Exclude a Ruleset output from the visible results</a></li>
+            <li><a href="#infer-a-ruleset-using-darl-code">Infer a ruleset using DARL code</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -411,7 +412,7 @@
 }
 </code></pre>
 
-<h2 id="exclude-a-ruleset-output-from-the-visible-results">exclude a Ruleset output from the visible results</h2>
+<h2 id="exclude-a-ruleset-output-from-the-visible-results">Exclude a Ruleset output from the visible results</h2>
 <pre><code class="json">mutation
 {
  updateRuleSetOutputFormat(ruleSetName: &quot;military_service.rule&quot;, outputName: &quot;emailText&quot;, outputUpdate:
@@ -422,6 +423,21 @@
     hide
   }
 }
+</code></pre>
+
+<h2 id="infer-a-ruleset-using-darl-code">Infer a ruleset using DARL code</h2>
+<pre><code class="json">mutation ifd($code: String!, $inputs: [darlVarUpdate]!)
+{
+  inferFromDarl(code: $code, inputs: $inputs)
+  {
+    name
+    value
+    dataType
+    unknown
+    weight
+  }
+}
+
 </code></pre></div>
         </div>
 

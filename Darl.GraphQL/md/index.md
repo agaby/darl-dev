@@ -73,6 +73,9 @@ The DARL engines are accessible via the API described in these pages so you can 
 #### Machine learning
 [Machine learn a ruleset](./machine_learn)
 
+#### System simulation in time
+[How to create a simulation](./simulation)
+
 #### Connectivity
 [Set connection data](./connectivity)
 

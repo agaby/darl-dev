@@ -343,7 +343,7 @@ mutation
 }
 ```
 
-## exclude a Ruleset output from the visible results
+## Exclude a Ruleset output from the visible results
 ```json
 mutation
 {
@@ -355,4 +355,20 @@ mutation
     hide
   }
 }
+```
+
+## Infer a ruleset using DARL code
+```json
+mutation ifd($code: String!, $inputs: [darlVarUpdate]!)
+{
+  inferFromDarl(code: $code, inputs: $inputs)
+  {
+    name
+    value
+    dataType
+    unknown
+    weight
+  }
+}
+
 ```

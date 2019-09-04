@@ -17,8 +17,10 @@
 
   <ItemGroup>
     <PackageReference Include="Darl_standard" Version="1.2.19" />
+    <PackageReference Include="GraphQL" Version="3.0.0-preview-1211" />
     <PackageReference Include="GraphQL.Client" Version="1.0.3" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.7.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.0.0" />
     <PackageReference Include="Microsoft.Azure.Storage.Queue" Version="10.0.3" />
     <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
@@ -34,12 +36,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="GraphQL">
-      <HintPath>..\..\graphql-dotnet\src\GraphQL\bin\Debug\netstandard2.0\GraphQL.dll</HintPath>
-    </Reference>
-    <Reference Include="GraphQL.Server.Authorization.AspNetCore">
-      <HintPath>..\..\server\src\Authorization.AspNetCore\bin\Debug\netstandard2.0\GraphQL.Server.Authorization.AspNetCore.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Extensions.Caching.Abstractions">
       <HintPath>..\..\..\..\..\..\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref\3.0.0-preview3-19153-02\ref\netcoreapp3.0\Microsoft.Extensions.Caching.Abstractions.dll</HintPath>
     </Reference>

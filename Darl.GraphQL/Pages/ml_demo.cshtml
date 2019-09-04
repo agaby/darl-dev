@@ -1,0 +1,118 @@
+﻿@page
+
+@{
+    Layout = "_BlankLayout";
+}
+
+    <div class="Row">
+        <!--Model selection-->
+        <div class="col-md-12">
+            <h1>Whitebox learning examples</h1>
+            <p>Select a model, view the training data, train the model and see how the DARL code changes.</p>
+            <label>ML models </label>
+            <select id="mlmodel-dropdown" name="mlmodels" class="dropdown"></select>
+            <p><span id="description"></span></p>
+        </div>
+    </div>
+    <div class="Row">
+        <!--Tabbed ruleset, data and results-->
+        <div class="col-md-12">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item"><a class="nav-link active" href="#ruleset" role="tab" data-toggle="tab">Ruleset</a></li>
+                <li class="nav-item"><a class="nav-link" href="#traindata" role="tab" data-toggle="tab">Training data</a></li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div class="tab-pane container active float-left" id="ruleset">
+                    <textarea id="Darl" name="Darl" rows="100" cols="260" class="form-control"></textarea>
+                </div>
+                <div class="tab-pane container float-left" id="traindata">
+                    <textarea id="Data" name="Data" rows="100" cols="160" class="form-control pull-left"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="Row">
+        <!--The train/process button-->
+        <div class=" = col-md-12 pull-left">
+            <br/>
+            <button class="btn btn-info pull-left" id="process">Train the model</button>
+        </div>
+    </div>
+
+@section StyleSheets
+{
+    <link rel="stylesheet" href="/codemirror/theme/neat.css" />
+    <link rel="stylesheet" href="/codemirror/codemirror.css" />
+}
+
+@section Scripts
+{
+
+    <script src="/codemirror/codemirror.js"></script>
+    <script src="/codemirror/mode/javascript/javascript.js"></script>
+    <script src="/darl-codemirror/darl-codemirror.js"></script>
+    <script src="/graphql/graphql.min.js"></script>
+
+    <script>
+        var darlCodeMirror;
+        var dataMirror;
+
+        $(async function () {
+            darlCodeMirror = CodeMirror.fromTextArea(document.getElementById("Darl"), {
+                matchBrackets: true,
+                autoCloseBrackets: true,
+                lineNumbers: true,
+                theme: 'neat',
+                mode: "text/x-darl"
+            });
+
+            dataMirror = CodeMirror.fromTextArea(document.getElementById("Data"), {
+                lineNumbers: true,
+                theme: 'neat',
+                mode: "application/json"
+            });
+
+            var dropdown = $('#mlmodel-dropdown');
+            var mlname;
+            dropdown.empty();
+            dropdown.append('<option selected="true" disabled>Choose an ml model to train</option>');
+            dropdown.prop('selectedIndex', 0);
+            graph = graphql("https://darl.dev/graphql");
+            var allmodels = graph(`{ mlmodels { name }}`);
+            var mlContent = graph(`query getModel($name: String!){  mlmodelByName(name: $name)  { mlmodel { darl trainData description}}}`);
+            var trainedContent = graph('query gc($name: String!){getCollateral(name: $name)}');
+            const ml = await allmodels();
+            $.each(ml.mlmodels, function (key, entry) {
+                dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
+            });
+
+            $('#mlmodel-dropdown').on('change', async function () {
+                mlname = this.value;
+                var content = await mlContent({ name: mlname });
+                darlCodeMirror.setValue(content.mlmodelByName.mlmodel.darl);
+                dataMirror.setValue(content.mlmodelByName.mlmodel.trainData);
+                $("#description").text(content.mlmodelByName.mlmodel.description);
+                darlCodeMirror.refresh();
+                dataMirror.refresh();
+            });
+            $('#process').click(async function () {
+                var content = await trainedContent({ name: mlname });
+                darlCodeMirror.setValue(content.getCollateral);
+                darlCodeMirror.refresh();
+            });
+
+           $('.nav-tabs a').on('shown.bs.tab', function () {
+               darlCodeMirror.refresh();
+               dataMirror.refresh();
+            });
+
+        });
+
+    </script>
+}
+
+
+
+

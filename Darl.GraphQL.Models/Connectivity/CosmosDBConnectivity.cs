@@ -31,6 +31,7 @@ using VSTS.Net.Models.Request;
 using VSTS.Net.Models.WorkItems;
 using Darl.Lineage.Bot.Stores;
 using Darl.GraphQL.Models.Schemata;
+using Darl.GraphQL.Models.Middleware;
 
 namespace Darl.GraphQL.Models.Connectivity
 {

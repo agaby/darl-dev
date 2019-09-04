@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Text;
 using GraphQL;
 using GraphQL.Types;
+using GraphQL.Utilities;
 
 namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlSchema : Schema
     {
-        public DarlSchema(DarlQuery query, DarlMutation mutation, IDependencyResolver resolver)
+        public DarlSchema(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
-            Query = query;
-            Mutation = mutation;
-//            Subscription = subscription;
-            DependencyResolver = resolver;
+            Query = serviceProvider.GetRequiredService<DarlQuery>();
+            Mutation = serviceProvider.GetRequiredService<DarlMutation>();
         }
     }
 }
