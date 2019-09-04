@@ -54,7 +54,7 @@ namespace Darl.GraphQL.Models.Middleware
                 CancellationToken = cancellationToken,
                 ComplexityConfiguration = _options.ComplexityConfiguration,
                 EnableMetrics = _options.EnableMetrics,
-                ExposeExceptions = true, //_options.ExposeExceptions,
+                ExposeExceptions = _options.ExposeExceptions,
                 SetFieldMiddleware = _options.SetFieldMiddleware,
                 SchemaFilter = Schema.Filter                
             };
