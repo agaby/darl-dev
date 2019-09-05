@@ -104,6 +104,8 @@ namespace Darl.GraphQL.Models.Models
 
         public static Dictionary<string, double> SetSDPairsToDictionary(List<StringDoublePair> list)
         {
+            if (list == null)
+                return null;
             var dict = new Dictionary<string, double>();
             foreach (var k in list)
             {
