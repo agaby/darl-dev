@@ -113,7 +113,7 @@
                 case "constant":
                     found.push({ text: "Zero 0;", displayText: "name + numerical value" });
                     break;
-                case "period":
+                case "duration":
                     found.push({ text: "week 7.00:00:0.0;", displayText: "name + time offset value" });
                     break;
                 case "string":
@@ -139,7 +139,8 @@
                 // return the inner list.
                 var list = ("if anything is then will be confidence input output numeric categorical textual constant string " +
                     "sum product sigmoid normprob round match and or not maximum minimum fuzzytuple " +
-                    "exists absent present sequence document randomtext otherwise store period temporal").split(" ");
+                    "exists absent present sequence document randomtext otherwise store duration temporal" +
+                    "categoryof timerange before preceding overlapping during starting finishing after now").split(" ");
 
                 for (var i = 0; i < list.length; i++) {
                     var word = list[i];
@@ -402,7 +403,9 @@
             name: "clike",
             keywords: words("if anything is then will be confidence input output numeric categorical textual constant string " +
                 "sum product sigmoid normprob round match and or not maximum minimum fuzzytuple " +
-                "ruleset wire mapinput mapoutput pattern delay exists absent present sequence supervised document randomtext otherwise store period temporal"),
+                "ruleset wire mapinput mapoutput pattern delay exists absent present sequence supervised document randomtext otherwise store duration temporal" +
+                "categoryof timerange before preceding overlapping during starting finishing after now"
+            ),
             blockKeywords: words("ruleset"),
             atoms: words("true false null"),
             hooks: {

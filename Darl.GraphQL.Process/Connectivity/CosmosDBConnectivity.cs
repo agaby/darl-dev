@@ -148,7 +148,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<RuleSet> CreateEmptyRuleSet(string userId, string name)
         {
             var mc = db.GetCollection<RuleSet>("ruleset");
-            var model = new RuleSet { Name = name, userId = userId };
+            var model = new RuleSet { Name = name, userId = userId, Contents = new RuleForm { darl = "ruleset myRuleSet\n{\n}\n"  } };
             await mc.InsertOneAsync(model);
             return model;
         }

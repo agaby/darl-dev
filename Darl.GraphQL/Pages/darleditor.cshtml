@@ -103,10 +103,10 @@
             dropdown.empty();
             dropdown.append('<option selected="true" disabled>Choose a ruleset to edit</option>');
             dropdown.prop('selectedIndex', 0);
-            graph = graphql("https://darl.dev/graphql");
+            graph = graphql("/graphql");
             var apiKey = findGetParameter("apikey");
             if (apiKey !== null)
-                graph = graphql("https://darl.dev/graphql", { headers: { "Authorization": "Basic " + apiKey } });
+                graph = graphql("/graphql", { headers: { "Authorization": "Basic " + apiKey } });
             var allrulesets = graph(`{ rulesets { name }}`);
             var darlContent = graph(`query getdarl($name: String!){  getDarlFromRuleSet(ruleSetName: $name)}`);
             var savecontent = graph('mutation setdarl($name: String!, $darl: String!){updateRuleSetDarl(name: $name, darl: $darl){name}}');

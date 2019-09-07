@@ -15,6 +15,8 @@ namespace Darl.GraphQL.Models.Schemata
             AddValue("NUMERIC", "input is numeric", 0);
             AddValue("CATEGORICAL", "input is categorical", 1);
             AddValue("TEXTUAL", "input is textual",2);
+            AddValue("TEMPORAL", "input is temporal", 3);
+
         }
     }
 }

@@ -250,13 +250,13 @@ Sequences are an extension to DARL used in DAPL.
 
 ## Duration constants
 This permits the definition of time offsets.
-Since constants are frequently re-used and it is better practice to keep them in one place, DARL does not allow the use of period literals inside rules. Instead you should define a period constant and use the name of that constant.
+Since constants are frequently re-used and it is better practice to keep them in one place, DARL does not allow the use of duration literals inside rules. Instead you should define a duration constant and use the name of that constant.
 
 ```darl
 duration trial_duration 30.00:00:0.0;
 ```
 
-The format of a period definition is <days>.<hours>:<minutes>:<seconds> where days, hours and minutes are integers and seconds ids a real number.
+The format of a duration definition is <days>.<hours>:<minutes>:<seconds> where days, hours and minutes are integers and seconds ids a real number.
 Examples are:
 
 ```
@@ -357,14 +357,14 @@ if a is = b % c then d will be true;
 
 ## Temporal expressions
 There are a limited set of things that you can logically do with times. For instance, adding two dates is meaningless.
-Temporal expressions contain either temporal inputs and outputs or simple additive and subtractive expressions involving the foregoing and _period_ constants.
+Temporal expressions contain either temporal inputs and outputs or simple additive and subtractive expressions involving the foregoing and _duration_ constants.
 The comparison operators >,<,>=,<=,= are available to make decisions based on time.
 
 ```darl
 input temporal time_now;
 input temporal start_time;
 output categorical status {running,expired};
-period delay 0.00:00:30.0 //30 seconds
+duration delay 0.00:00:30.0 //30 seconds
 if time_now > start_time + delay then status will be expired;
 otherwise if anything status will be running;
 ```
@@ -372,7 +372,7 @@ otherwise if anything status will be running;
 ```darl
 input temporal contract_start;
 output temporal contract_end;
-period contract_length 30.00:00:0.0; //30 days
+duration contract_length 30.00:00:0.0; //30 days
 
 if anything then contract_end will be contract_start + contract_length;
 ```
@@ -383,6 +383,15 @@ if anything then contract_end will be contract_start + contract_length;
 Is the temporal equivalent of __FuzzyTuple__. A Fuzzy number can be constructed from temporal singletons. For instance:
 ```Darl
 if anything then fuzzy_time will be timerange(start_time, end_time);
+```
+
+### Now
+ 
+This returns the current UTC time as a temporal value
+
+```darl
+duration sixyears 2190.00:00:00.0;
+if anything then qualifyingDate will be now - sixyears; 
 ```
 
 ## Temporal operators
@@ -474,6 +483,8 @@ output categorical bill {true, false};
 
 if anything then bill will be categoryof(fred);
 ```
+
+
 
 ## Optional Confidence Value
 Rules can have an optional confidence value, in the range 0.0 to 1.0.
