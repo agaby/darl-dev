@@ -7,7 +7,7 @@ var graph;
 var nextQSP;
 var backQSP;
 var isDebug;
-var url = "https://darl.dev/graphql";
+var url = "/graphql";
 
 async function DARLForm(div, id, debug, apiKey) {
     try {
@@ -116,14 +116,20 @@ function BuildForm(div, qsp, debug) {
                     innerdiv.append(catinput, catval);
                     break;
                 case 'textual':
+                    var textinput;
                     if (q.format !== "") { //chrome doesn't like empty pattern
-                        var textinput = $('<input/>').attr({ class: "form-control widetextbox", 'data-val': 'true', 'data-val-required': 'The field is required', id: 'form' + q.reference, name: 'form' + q.reference, value: q.sResponse, pattern: q.format, 'type': 'text' });
+                        textinput = $('<input/>').attr({ class: "form-control widetextbox", 'data-val': 'true', 'data-val-required': 'The field is required', id: 'form' + q.reference, name: 'form' + q.reference, value: q.sResponse, pattern: q.format, 'type': 'text' });
                     }
                     else {
-                        var textinput = $('<input/>').attr({ class: "form-control widetextbox", 'data-val': 'true', 'data-val-required': 'The field is required', id: 'form' + q.reference, name: 'form' + q.reference, value: q.sResponse, 'type': 'text' });
+                        textinput = $('<input/>').attr({ class: "form-control widetextbox", 'data-val': 'true', 'data-val-required': 'The field is required', id: 'form' + q.reference, name: 'form' + q.reference, value: q.sResponse, 'type': 'text' });
                     }
                     var textval = $('<span></span').attr({ class: "field-validation-valid", 'data-valmsg-for': 'form' + q.reference, 'data-valmsg-replace': 'true' });
                     innerdiv.append(textinput, textval);
+                    break;
+                case "temporal":
+                    var dateinput = $('<input/>').attr({ class: "form-control", 'data-val': 'true', 'data-val-date': 'the response must be a date', 'data-val-required': 'The field is required', id: 'form' + q.reference, name: 'form' + q.reference, value: q.dResponse, 'type': 'date' });
+                    var dateval = $('<span></span').attr({ class: "field-validation-valid", 'data-valmsg-for': 'form' + q.reference, 'data-valmsg-replace': 'true' });
+                    innerdiv.append(dateinput, dateval);
                     break;
             }
             outerdiv.append(innerdiv);
@@ -242,6 +248,7 @@ async function GoNext(e) {
                     break;
                 case 'categorical':
                 case 'textual':
+                case 'temporal':
                     q.sResponse = $('#form' + q.reference).val();
                     break;
             }

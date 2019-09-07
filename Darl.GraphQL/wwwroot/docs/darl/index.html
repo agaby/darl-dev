@@ -300,11 +300,11 @@ A sequence constant has two parameters, the identifier naming the constant and a
 Sequences are an extension to DARL used in DAPL.</p>
 <h2 id="duration-constants">Duration constants</h2>
 <p>This permits the definition of time offsets.
-Since constants are frequently re-used and it is better practice to keep them in one place, DARL does not allow the use of period literals inside rules. Instead you should define a period constant and use the name of that constant.</p>
+Since constants are frequently re-used and it is better practice to keep them in one place, DARL does not allow the use of duration literals inside rules. Instead you should define a duration constant and use the name of that constant.</p>
 <pre><code class="darl">duration trial_duration 30.00:00:0.0;
 </code></pre>
 
-<p>The format of a period definition is <days>.<hours>:<minutes>:<seconds> where days, hours and minutes are integers and seconds ids a real number.
+<p>The format of a duration definition is <days>.<hours>:<minutes>:<seconds> where days, hours and minutes are integers and seconds ids a real number.
 Examples are:</p>
 <pre><code>duration trial_duration 30.00:00:0.0; // 30 days
 duration trial_duration 0.02:00:0.0; // 2 hours
@@ -426,19 +426,19 @@ The operators available are:</p>
 
 <h2 id="temporal-expressions">Temporal expressions</h2>
 <p>There are a limited set of things that you can logically do with times. For instance, adding two dates is meaningless.
-Temporal expressions contain either temporal inputs and outputs or simple additive and subtractive expressions involving the foregoing and <em>period</em> constants.
+Temporal expressions contain either temporal inputs and outputs or simple additive and subtractive expressions involving the foregoing and <em>duration</em> constants.
 The comparison operators &gt;,&lt;,&gt;=,&lt;=,= are available to make decisions based on time.</p>
 <pre><code class="darl">input temporal time_now;
 input temporal start_time;
 output categorical status {running,expired};
-period delay 0.00:00:30.0 //30 seconds
+duration delay 0.00:00:30.0 //30 seconds
 if time_now &gt; start_time + delay then status will be expired;
 otherwise if anything status will be running;
 </code></pre>
 
 <pre><code class="darl">input temporal contract_start;
 output temporal contract_end;
-period contract_length 30.00:00:0.0; //30 days
+duration contract_length 30.00:00:0.0; //30 days
 
 if anything then contract_end will be contract_start + contract_length;
 </code></pre>
@@ -447,6 +447,12 @@ if anything then contract_end will be contract_start + contract_length;
 <h3 id="timerange">Timerange</h3>
 <p>Is the temporal equivalent of <strong>FuzzyTuple</strong>. A Fuzzy number can be constructed from temporal singletons. For instance:</p>
 <pre><code class="Darl">if anything then fuzzy_time will be timerange(start_time, end_time);
+</code></pre>
+
+<h3 id="now">Now</h3>
+<p>This returns the current UTC time as a temporal value</p>
+<pre><code class="darl">duration sixyears 2190.00:00:00.0;
+if anything then qualifyingDate will be now - sixyears; 
 </code></pre>
 
 <h2 id="temporal-operators">Temporal operators</h2>

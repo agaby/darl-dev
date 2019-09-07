@@ -14,6 +14,7 @@ namespace Darl.GraphQL.Models.Schemata
             AddValue("numeric", "a number", 0);
             AddValue("categorical", "text from a range of texts", 1);
             AddValue("textual", "Free form text", 2);
+            AddValue("temporal", "Free form text", 3);
         }
     }
 }
