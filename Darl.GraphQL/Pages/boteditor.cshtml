@@ -162,13 +162,13 @@
 
             var dropdown = $('#botmodel-dropdown');
             dropdown.empty();
-            dropdown.append('<option selected="true" disabled>Choose a ruleset to edit</option>');
+            dropdown.append('<option selected="true" disabled>Choose a bot model to edit</option>');
             dropdown.prop('selectedIndex', 0);
 
-            graph = graphql("https://darl.dev/graphql");
+            graph = graphql("/graphql");
             var apiKey = findGetParameter("apikey");
             if(apiKey !== null)
-                graph = graphql("https://darl.dev/graphql", { headers: { "Authorization": "Basic " + apiKey } });
+                graph = graphql("/graphql", { headers: { "Authorization": "Basic " + apiKey } });
             var allbotmodels = graph(`{ botmodels { name }}`);
             var attPhrase = graph(`query getAttFromPhrase($model: String!, $phrase: String! ){getAttribute(botModelName: $model, phrase: $phrase ){response call darl accessRoles randomResponse randomResponses path present }}`);
             var attPath = graph(`query getAttFromPath($model: String!, $path: String! ){getAttributeFromPath(botModelName: $model, path: $path ){response call darl accessRoles randomResponse randomResponses path present }}`);
@@ -199,30 +199,28 @@
             var find = $("#findtext");
             var to = false;
             find.on('change', async function (e) {
-                if (to) { clearTimeout(to); }
-                to = setTimeout(async function () {
-                    var text = $('#findtext').val();
-                    var r = await attPhrase({ model: mdname, phrase: text });
-                    if (r != null) {
-                            darlCodeMirror.setValue(r.getAttribute.darl);
-                            $('#roles').val(r.getAttribute.accessRoles);
-                            editorResponse.setValue(r.getAttribute);
-                            editorCall.setValue(r.getAttribute.call);
-                            $('#phraseexists').attr('checked', r.getAttribute.present);
-                            $("#nodePathText").text(r.getAttribute.path);
-                            $("#pattern").val(r.getAttribute.path);
-                            if (r.getAttribute.present) {
-                                $('#addbutton').attr('disabled', 'disabled');
-                                $('#patternLabel').text("Pattern");
-                                $('#deletebutton').removeAttr('disabled');
-                            }
-                            else {
-                                $('#addbutton').removeAttr('disabled');
-                                $('#patternLabel').text("Suggested pattern");
-                                $('#deletebutton').attr('disabled', 'disabled');
-                            }
+                var text = $('#findtext').val();
+                var r = await attPhrase({ model: mdname, phrase: text });
+                if (r != null) {
+                    darlCodeMirror.setValue(r.getAttribute.darl);
+                    darlCodeMirror.refresh();
+                    $('#roles').val(r.getAttribute.accessRoles);
+                    editorResponse.setValue(r.getAttribute);
+                    editorCall.setValue(r.getAttribute.call);
+                    $('#phraseexists').attr('checked', r.getAttribute.present);
+                    $("#nodePathText").text(r.getAttribute.path);
+                    $("#pattern").val(r.getAttribute.path);
+                    if (r.getAttribute.present) {
+                        $('#addbutton').attr('disabled', 'disabled');
+                        $('#patternLabel').text("Pattern");
+                        $('#deletebutton').removeAttr('disabled');
                     }
-                }, 300);
+                    else {
+                        $('#addbutton').removeAttr('disabled');
+                        $('#patternLabel').text("Suggested pattern");
+                        $('#deletebutton').attr('disabled', 'disabled');
+                    }
+                }
             });
 
 
@@ -252,7 +250,7 @@
                         $('#addbutton').removeAttr('disabled');
                         $('#deletebutton').attr('disabled', 'disabled');
                     }
-                }, 1000);
+                }, 300);
             });
 
             var editorResponse = new JSONEditor(document.getElementById('responseedit'), {
