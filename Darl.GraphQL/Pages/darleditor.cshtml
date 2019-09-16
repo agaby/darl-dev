@@ -7,11 +7,18 @@
 <div class="space-70"></div>
 <div class="container margin-b-40">
     <div class="row">
-        <div class="col-md-12 margin-b-40">
-            <h1>Ruleset editing</h1>
+        <h1>Ruleset editing</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-6 margin-b-40">
             <p>Select a ruleset from your account to edit. The editor supports syntax checking and auto-complete. F11 for full-screen, ESC to return.</p>
             <label>Rulesets </label>
             <select id="ruleset-dropdown" name="rulesets" class="dropdown"></select>
+        </div>
+        <div class="col-md-6 margin-b-40">
+            <label>Or create a new ruleset - choose a name</label>
+            <input id="ruleset-input" name="rulesets" class="form-control">
+            <button id="ruleset-create" class="btn btn-primary">Create</button>
         </div>
     </div>
     <div class="row">
@@ -52,6 +59,7 @@
         var darlCodeMirror;
         var timeout;
         var graph;
+        var allrulesets;
         $(async function () {
             darlCodeMirror = CodeMirror.fromTextArea(document.getElementById("Darl"), {
                 matchBrackets: true,
@@ -98,23 +106,16 @@
                 }
             });
 
-            var dropdown = $('#ruleset-dropdown');
             var rsname;
-            dropdown.empty();
-            dropdown.append('<option selected="true" disabled>Choose a ruleset to edit</option>');
-            dropdown.prop('selectedIndex', 0);
             graph = graphql("/graphql");
             var apiKey = findGetParameter("apikey");
             if (apiKey !== null)
                 graph = graphql("/graphql", { headers: { "Authorization": "Basic " + apiKey } });
-            var allrulesets = graph(`{ rulesets { name }}`);
+            allrulesets = graph(`{ rulesets { name }}`);
+            var createRuleset = graph('mutation createRuleset($name: String!){createEmptyRuleSet(name: $name){name}}');
             var darlContent = graph(`query getdarl($name: String!){  getDarlFromRuleSet(ruleSetName: $name)}`);
             var savecontent = graph('mutation setdarl($name: String!, $darl: String!){updateRuleSetDarl(name: $name, darl: $darl){name}}');
-            const rs = await allrulesets();
-            $.each(rs.rulesets, function (key, entry) {
-                dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
-            });
-
+            await updateDropdown();
             $('#ruleset-dropdown').on('change', async function () {
                 rsname = this.value;
                 var content = await darlContent({ name: rsname });
@@ -122,8 +123,25 @@
             });
             $('#Save').click(async function () {
                 var content = darlCodeMirror.getValue();
+                try {
                 var name = await savecontent({ name: rsname, darl: content });
-                alert(rsname + " saved");
+                    alert(rsname + " saved");
+                }
+                catch (err) {
+                    alert(err[0].message);
+                }              
+ 
+            });
+            $('#ruleset-create').click(async function () {
+                rsname = $('#ruleset-input').val();
+                try {
+                    var res = await createRuleset({ name: rsname });
+                    await updateDropdown();
+                    alert(rsname + " created");
+                }
+                catch (err) {
+                    alert(err[0].message);
+                }              
             });
 
 
@@ -155,6 +173,17 @@
                     if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
                 });
             return result;
+        }
+        async function updateDropdown() {
+            const rs = await allrulesets();
+            var dropdown = $('#ruleset-dropdown');
+            dropdown.empty();
+            dropdown.append('<option selected="true" disabled>Choose a ruleset to edit</option>');
+            dropdown.prop('selectedIndex', 0);
+            $.each(rs.rulesets, function (key, entry) {
+                dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
+            });
+
         }
 
     </script>

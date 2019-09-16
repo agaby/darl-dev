@@ -1,0 +1,335 @@
+﻿@page
+@{
+    Layout = "_Layoutscrolling";
+}
+
+<div class="space-70"></div>
+<div class="container margin-b-40">
+    <div class="row">
+        <div class="col-md-12 margin-b-40">
+            <h1>Ruleset additional data</h1>
+            <p>Select a ruleset from your account to edit the associated additional data.</p>
+            <label>Rulesets </label>
+            <select id="ruleset-dropdown" name="rulesets" class="dropdown"></select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 margin-b-40">
+            <div id="extra"></div>
+            <hr />
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+
+    <script src="https://cdn.jsdelivr.net/npm/@@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
+    <script src="/graphql/graphql.min.js"></script>
+
+    <script>
+
+        var editor1;
+        var rsname;
+        var graph;
+
+        $(async function () {
+
+            var dropdown = $('#ruleset-dropdown');
+            dropdown.empty();
+            dropdown.append('<option selected="true" disabled>Choose a ruleset to edit</option>');
+            dropdown.prop('selectedIndex', 0);
+            graph = graphql("/graphql");
+            var apiKey = findGetParameter("apikey");
+            if (apiKey !== null)
+                graph = graphql("/graphql", { headers: { "Authorization": "Basic " + apiKey } });
+            var allrulesets = graph(`{ rulesets { name }}`);
+            var extraContent = graph(`query getruleset($name: String!){ rulesetByName(name: $name){ ruleform { author currency copyright description license price version trigger{ addressSource addressText attachmentName attachmentUri bodySource bodyText emailFrom postData postDataSource postDataUri postType queueData queueName queueDataSource sendAttachment sendAttachmentSource sendBug sendBugSource sendEmail sendEmailSource subjectSource subjectText } preload{ name dataType value }}}}`);
+            const rs = await allrulesets();
+            $.each(rs.rulesets, function (key, entry) {
+                dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
+            });
+
+            $('#ruleset-dropdown').on('change', async function () {
+                rsname = this.value;
+                $("#extra").empty();
+                editor1 = new JSONEditor(document.getElementById('extra'), {
+                    theme: 'bootstrap4',
+                    schema: {
+                        "type": "object",
+                        "typeName": "ruleform",
+                        "title": "Ruleset additional data",
+                        "additionalProperties": false,
+                        "options": {
+                            "disable_collapse": true
+                        },
+                        "required": [
+                            "author",
+                            "currency",
+                            "copyright",
+                            "description",
+                            "license",
+                            "price",
+                            "version",
+                            "trigger",
+                            "preload"
+                        ],
+                        "properties": {
+                            "author": {
+                                "type": "string",
+                                "title": "Ruleset author",
+                                "description": "Optional author name"
+                            },
+                            "copyright": {
+                                "type": "string",
+                                "title": "Copyright",
+                                "description": "Optional copyright information"
+                            },
+                            "description": {
+                                "type": "string",
+                                "title": "Description",
+                                "description": "Optional ruleset description"
+                            },
+                            "license": {
+                                "type": "string",
+                                "title": "License",
+                                "description": "Optional ruleset license"
+                            },
+                            "version": {
+                                "type": "string",
+                                "title": "Version",
+                                "description": "Optional ruleset version"
+                            },
+                            "price": {
+                                "type": "number",
+                                "title": "Price",
+                                "description": "Optional charge per use (default 0.00)"
+                            },
+                            "currency": {
+                                "type": "string",
+                                "title": "Currency",
+                                "description": "Optional 3-character currency of usage charge (default USD)"
+                            },
+                            "trigger": {
+                                "title": "Actions at completion",
+                                "type": "object",
+                                "additionalProperties": false,
+                                "options": {
+                                    "disable_collapse": true
+                                },
+                                "properties": {
+                                    "sendEmailSource": {
+                                        "title": "Send Email source",
+                                        "description": "Is the sending of the email determined by the rule set or fixed?",
+                                        "$ref": "#/definitions/sourceType",
+                                        "options": { "input_width": "120px" }
+                                    },
+                                    "sendEmail": {
+                                        "title": "Send Email decision",
+                                        "type": "string",
+                                        "description": "The io and category that corresponds to a decision to send the email, or \"true\",\"false\" if fixed."
+                                    },
+                                    "sendBugSource": {
+                                        "title": "Send Bug source",
+                                        "$ref": "#/definitions/sourceType",
+                                        "options": { "input_width": "120px" },
+                                        "description": "Is the sending of the bug request determined by the rule set or fixed?"
+                                    },
+                                    "sendBug": {
+                                        "title": "Send Bug decision",
+                                        "type": "string",
+                                        "description": "The io and category that corresponds to a decision to send the bug request, or \"true\",\"false\" if fixed."
+                                    },
+                                    "addressSource": {
+                                        "title": "Address source",
+                                        "description": "Is the email address rule-set generated or fixed?",
+                                        "$ref": "#/definitions/sourceType",
+                                        "options": { "input_width": "120px" }
+                                    },
+                                    "addressText": {
+                                        "title": "Address text",
+                                        "type": "string",
+                                        "description": "Either the name of textual io or the fixed email address"
+                                    },
+                                    "subjectSource": {
+                                        "title": "Subject source",
+                                        "description": "Is the message subject source rule-set generated or fixed?",
+                                        "$ref": "#/definitions/sourceType",
+                                        "options": { "input_width": "120px" }
+                                    },
+                                    "subjectText": {
+                                        "title": "Subject text",
+                                        "type": "string",
+                                        "description": "Either the name of textual io or the fixed message subject"
+                                    },
+                                    "bodySource": {
+                                        "title": "Body source",
+                                        "description": "Is the message body source rule-set generated or fixed?",
+                                        "$ref": "#/definitions/sourceType",
+                                        "options": { "input_width": "120px" }
+                                    },
+                                    "bodyText": {
+                                        "title": "Body text",
+                                        "type": "string",
+                                        "description": "Either the name of textual io or the fixed message body"
+                                    },
+                                    "emailFrom": {
+                                        "title": "Email from",
+                                        "type": "string",
+                                        "description": "The from address for the email"
+                                    },
+                                    "sendAttachmentSource": {
+                                        "title": "send attachment source",
+                                        "description": "Is the presence of an attachment rule-set generated or fixed?",
+                                        "$ref": "#/definitions/sourceType",
+                                        "options": { "input_width": "120px" }
+                                    },
+                                    "sendAttachment": {
+                                        "title": "Send attachment decision",
+                                        "type": "string",
+                                        "description": "The io and category that corresponds to a decision to add the attachment, or \"true\",\"false\" if fixed."
+                                    },
+                                    "attachmentName": {
+                                        "title": "The attachment name",
+                                        "type": "string",
+                                        "description": "The name of the attachment in the email"
+                                    },
+                                    "attachmentUri": {
+                                        "title": "The attachment uri",
+                                        "type": "string",
+                                        "description": "The source of the attachment in blob storage"
+                                    },
+                                    "queueDataSource": {
+                                        "title": "Queue data source",
+                                        "description": "Is the decision to send a the data to a queue rule-set generated or fixed?",
+                                        "$ref": "#/definitions/sourceType",
+                                        "options": { "input_width": "120px" }
+                                    },
+                                    "queueData": {
+                                        "title": "Queue decision",
+                                        "type": "string",
+                                        "description": "The io and category that corresponds to a decision to post, or \"true\",\"false\" if fixed."
+                                    },
+                                    "queueName": {
+                                        "title": "Queue name",
+                                        "type": "string",
+                                        "description": "Existing queue within the Azure storage group accessed by your stored connection string"
+                                    },
+ 
+                                }
+                            },
+                            "preload":{
+                                "type": "array",
+                                "title": "Preloaded data",
+                                "format": "grid",
+                                "options": {
+                                    "disable_collapse": true
+                                    },
+                                "items": {
+                                    "type": "object",
+                                    "typeName": "DarlVar",
+                                    "additionalProperties": false,
+                                    "options": {
+                                        "disable_collapse": true
+                                        },
+                                    "required": [
+                                      "name",
+                                      "dataType",
+                                      "value"
+                                    ],
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "title": "Rule input name",
+                                        },
+                                        "dataType": {
+                                            "type": "string",
+                                            "title": "Data type",
+                                            "$ref": "#/definitions/dataType"
+                                        },
+                                        "value": {
+                                            "type": "string",
+                                            "title": "Value",
+                                            "format": "textarea",
+                                        }
+                                    },
+                                },
+                            }
+                        },
+                        "definitions": {
+                            "sourceType": {
+                                "type": "string",
+                                "description": "",
+                                "x-enumNames": [
+                                    "results",
+                                    "_fixed"
+                                ],
+                                "enum": [
+                                    "results",
+                                    "_fixed"
+                                ]
+                            },
+                            "postType": {
+                                "type": "string",
+                                "description": "",
+                                "x-enumNames": [
+                                    "darlvarlist",
+                                    "form"
+                                ],
+                                "enum": [
+                                    "darlvarlist",
+                                    "form"
+                                ]
+                            },
+                            "dataType": {
+                                "type": "string",
+                                "typeName": "DataType",
+                                "enumNames": [
+                                  "numeric",
+                                  "categorical",
+                                  "textual",
+                                  "temporal"
+                                ],
+                                "enum": [
+                                  "numeric",
+                                  "categorical",
+                                  "textual",
+                                  "temporal"
+                                ]
+                            }
+                        }
+                    },
+                    collapsed: true,
+                    disable_edit_json: true,
+                    disable_properties: true,
+                    disable_collapse: false,
+                    disable_array_add: false,
+                    disable_array_delete: true,
+                    disable_array_reorder: true,
+                });
+                var content = await extraContent({ name: rsname });
+                editor1.setValue(content.rulesetByName.ruleform);
+            });
+        });
+
+        function findGetParameter(parameterName) {
+            var result = null,
+                tmp = [];
+            location.search
+                .substr(1)
+                .split("&")
+                .forEach(function (item) {
+                    tmp = item.split("=");
+                    if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+                });
+            return result;
+        }
+
+        var charCodeZero = "0".charCodeAt(0);
+        var charCodeNine = "9".charCodeAt(0);
+
+        function isDigitCode(n) {
+           return(n.charCodeAt(0) >= charCodeZero && n.charCodeAt(0) <= charCodeNine);
+        }
+    </script>
+}

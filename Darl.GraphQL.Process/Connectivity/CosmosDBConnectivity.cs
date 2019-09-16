@@ -131,6 +131,12 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<Models.MLModel> CreateEmptyMLModel(string userId, string name)
         {
             var mc = db.GetCollection<MLModel>("mlmodel");
+            var query = mc.AsQueryable().Where(p => p.userId == userId);
+            var existing = await query.ToListAsync();
+            if (existing.Any(a => a.Name == name))
+            {
+                throw new ExecutionError($"An ml model with name {name} already exists in your account.");
+            }
             var model = new MLModel { Name = name, model = new DarlCommon.MLModel { name = name, percentTest = 0, sets = 3, darl = "ruleset newRuleSet supervised\n{\n}\n" }, results = new List<MLResult>(), userId = userId };
             await mc.InsertOneAsync(model);
             return model;
@@ -139,6 +145,12 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<BotModel> CreateEmptyModel(string userId, string name)
         {
             var mc = db.GetCollection<BotModel>("botmodel");
+            var query = mc.AsQueryable().Where(p => p.userId == userId);
+            var existing = await query.ToListAsync();
+            if (existing.Any(a => a.Name == name))
+            {
+                throw new ExecutionError($"A bot model with name {name} already exists in your account.");
+            }
             var lm = new LineageModel();
             var model = new BotModel { Name = name, userId = userId, Model = ConvertLineageModel(lm) };
             await mc.InsertOneAsync(model);
@@ -148,6 +160,12 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<RuleSet> CreateEmptyRuleSet(string userId, string name)
         {
             var mc = db.GetCollection<RuleSet>("ruleset");
+            var query = mc.AsQueryable().Where(p => p.userId == userId);
+            var existing = await query.ToListAsync();
+            if(existing.Any( a => a.Name == name))
+            {
+                throw new ExecutionError($"A ruleset with name {name} already exists in your account.");
+            }
             var model = new RuleSet { Name = name, userId = userId, Contents = new RuleForm { darl = "ruleset myRuleSet\n{\n}\n"  } };
             await mc.InsertOneAsync(model);
             return model;
@@ -407,9 +425,10 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<RuleSet> DeleteRuleSet(string userId, string name)
         {
+            RuleSet old = null;
             var mc = db.GetCollection<RuleSet>("ruleset");
             var query = mc.AsQueryable().Where(p => p.Name == name && p.userId == userId);
-            var old = await query.FirstOrDefaultAsync();
+            old = await query.FirstOrDefaultAsync();
             await mc.DeleteOneAsync(Builders<RuleSet>.Filter.Eq(r => r.userId, userId) & Builders<RuleSet>.Filter.Eq(r => r.Name, name));
             return old;
         }
@@ -1136,17 +1155,25 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var collection = db.GetCollection<RuleSet>("ruleset");
             var filter = Builders<RuleSet>.Filter.Where(x => x.Name == name && x.userId == userId && x.Contents.format.InputFormatList.Any(i => i.Name == inputName));
-            var update = Builders<RuleSet>.Update.Combine(
-                Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList.ElementAt(-1).EnforceCrisp, inputUpdate.EnforceCrisp),
-                Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList.ElementAt(-1).Increment, inputUpdate.Increment),
-                Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList.ElementAt(-1).MaxLength, inputUpdate.MaxLength),
-                Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList.ElementAt(-1).NumericMax, inputUpdate.NumericMax),
-                Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList.ElementAt(-1).NumericMin, inputUpdate.NumericMin),
-                Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList.ElementAt(-1).path, inputUpdate.path),
-                Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList.ElementAt(-1).Regex, inputUpdate.Regex),
-                Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList.ElementAt(-1).ShowSets, inputUpdate.ShowSets)
-                );
-            await collection.FindOneAndUpdateAsync(filter, update);
+            var updList = new List<UpdateDefinition<RuleSet>>();
+            if (inputUpdate.EnforceCrisp != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList[-1].EnforceCrisp, inputUpdate.EnforceCrisp));
+            if (inputUpdate.Increment != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList[-1].Increment, inputUpdate.Increment));
+            if (inputUpdate.MaxLength != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList[-1].MaxLength, inputUpdate.MaxLength));
+            if (inputUpdate.NumericMax != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList[-1].NumericMax, inputUpdate.NumericMax));
+            if (inputUpdate.NumericMin != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList[-1].NumericMin, inputUpdate.NumericMin));
+            if (inputUpdate.path != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList[-1].path, inputUpdate.path));
+            if (inputUpdate.Regex != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList[-1].Regex, inputUpdate.Regex));
+            if (inputUpdate.ShowSets != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.format.InputFormatList[-1].ShowSets, inputUpdate.ShowSets));
+            var update = Builders<RuleSet>.Update.Combine(updList);
+            var rs = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<RuleSet, RuleSet> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
             return new InputFormat { };
         }
 
