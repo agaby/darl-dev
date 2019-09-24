@@ -17,6 +17,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field<SellerCenterCredentialsType>("sellerCred", resolve: context => context.Source.sellercred);
             Field<TwilioCredentialsType>("twilioCred", resolve: context => context.Source.twiliocred);
             Field<SendGridCredentialsType>("sendgridCred", resolve: context => context.Source.sendgridcred);
+            
         }
     }
 }

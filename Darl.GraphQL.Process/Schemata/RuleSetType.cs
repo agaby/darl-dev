@@ -1,4 +1,5 @@
-﻿using Darl.GraphQL.Models.Models;
+﻿using Darl.GraphQL.Models.Middleware;
+using Darl.GraphQL.Models.Models;
 using DarlCommon;
 using GraphQL.Types;
 using System;
@@ -15,8 +16,8 @@ namespace Darl.GraphQL.Models.Schemata
             Description = "Top level ruleset description";
             Field(C => C.Name);
             Field<RuleFormType>("ruleform", resolve: context => context.Source.Contents);
-            Field<ServiceConnectivityType>("serviceConnectivity", resolve: context => context.Source.serviceConnectivity);
-            Field<ListGraphType<UserUsageType>>("usageHistory", resolve: context => context.Source.UsageHistory);
+            Field<ServiceConnectivityType>("serviceConnectivity", resolve: context => context.Source.serviceConnectivity).AuthorizeWith("UserPolicy");
+            Field<ListGraphType<UserUsageType>>("usageHistory", resolve: context => context.Source.UsageHistory).AuthorizeWith("UserPolicy");
         }
     }
 }

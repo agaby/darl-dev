@@ -37,6 +37,8 @@ The DARL engines are accessible via the API described in these pages so you can 
 
 [Tutorial on setting up a bot](tutorial)
 
+[Example of creating a ruleset](example_rule_set)
+
 
 ### GraphQL API
 [Using the GraphQL API](./GraphQL)
