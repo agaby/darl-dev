@@ -6,11 +6,11 @@ using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
-    public class ModelDetailsType : ObjectGraphType<ModelDetails>
+    public class ModelDetailsInputType : InputObjectGraphType<ModelDetails>
     {
-        public ModelDetailsType()
+        public ModelDetailsInputType()
         {
-            Name = "modelDetails";
+            Name = "modelDetailsInput";
             Description = "The extra details attached to a model such as the license.";
             Field(c => c.author, true).Description("The author of this model");
             Field(c => c.copyright, true).Description("The copyright of this model");

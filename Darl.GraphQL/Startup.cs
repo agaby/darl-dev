@@ -191,6 +191,8 @@ namespace Darl.GraphQL
             services.AddSingleton<DaslStateInputType>();
             services.AddSingleton<DarlSubscription>();
             services.AddSingleton<StringDoublePairInputType>();
+            services.AddSingleton<ModelDetailsType>();
+            services.AddSingleton<ModelDetailsInputType>();
 
 
             //root

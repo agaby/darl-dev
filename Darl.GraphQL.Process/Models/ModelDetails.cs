@@ -11,5 +11,8 @@ namespace Darl.GraphQL.Models.Models
         public string copyright { get; set; }
         public string license { get; set; }
         public string description { get; set; }
+        public double? price { get; set; }
+        public string currency { get; set; }
+
     }
 }

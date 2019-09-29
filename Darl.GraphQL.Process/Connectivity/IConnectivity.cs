@@ -201,5 +201,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<Purchase> ReportPurchase(string email, string name, string sessionId, DateTime date);
         Task<bool> CheckEmail(string email, string ipaddress = "");
         Task<List<DarlVar>> InferFromDarlDarlVar(string userId, string code, List<DarlVarInput> inputs);
+        Task<ModelDetails> CreateRulesetDetails(string userId, string rulesetName, ModelDetails details);
     }
 }

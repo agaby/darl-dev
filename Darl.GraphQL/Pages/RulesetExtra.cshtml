@@ -32,6 +32,7 @@
         var editor1;
         var rsname;
         var graph;
+        var watcherCallback;
 
         $(async function () {
 
@@ -45,6 +46,9 @@
                 graph = graphql("/graphql", { headers: { "Authorization": "Basic " + apiKey } });
             var allrulesets = graph(`{ rulesets { name }}`);
             var extraContent = graph(`query getruleset($name: String!){ rulesetByName(name: $name){ ruleform { author currency copyright description license price version trigger{ addressSource addressText attachmentName attachmentUri bodySource bodyText emailFrom postData postDataSource postDataUri postType queueData queueName queueDataSource sendAttachment sendAttachmentSource sendBug sendBugSource sendEmail sendEmailSource subjectSource subjectText } preload{ name dataType value }}}}`);
+            var updateDetails = graph('mutation urd($name: String!, $details: modelDetailsInput!){updateRulesetDetails(rulesetName: $name, details: $details ){author}}');
+            var updateTrigger = graph('mutation urt($name: String!, $trigger: triggerInput!){updateRuleSetTrigger(ruleSetName: $name, trigger: $trigger ){addressText }}');
+            var updatePreload = graph('mutation urp($name: String! $val: darlVarUpdate!){updateRulesetPreload(rulesetName: $name, preloadData: $val){name}}');
             const rs = await allrulesets();
             $.each(rs.rulesets, function (key, entry) {
                 dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
@@ -195,9 +199,9 @@
                                         "description": "The name of the attachment in the email"
                                     },
                                     "attachmentUri": {
-                                        "title": "The attachment uri",
+                                        "title": "The attachment document",
                                         "type": "string",
-                                        "description": "The source of the attachment in blob storage"
+                                        "description": "The name of the attachment in your Documents"
                                     },
                                     "queueDataSource": {
                                         "title": "Queue data source",
@@ -261,24 +265,24 @@
                                 "type": "string",
                                 "description": "",
                                 "x-enumNames": [
-                                    "results",
-                                    "_fixed"
+                                    "RESULTS",
+                                    "FIXEDVALUE"
                                 ],
                                 "enum": [
-                                    "results",
-                                    "_fixed"
+                                    "RESULTS",
+                                    "FIXEDVALUE"
                                 ]
                             },
                             "postType": {
                                 "type": "string",
                                 "description": "",
                                 "x-enumNames": [
-                                    "darlvarlist",
-                                    "form"
+                                    "DARLVARLIST",
+                                    "FORM"
                                 ],
                                 "enum": [
-                                    "darlvarlist",
-                                    "form"
+                                    "DARLVARLIST",
+                                    "FORM"
                                 ]
                             },
                             "dataType": {
@@ -309,8 +313,129 @@
                 });
                 var content = await extraContent({ name: rsname });
                 editor1.setValue(content.rulesetByName.ruleform);
+                watcherCallback = async function (path) {
+                    try {
+                        var ioval = editor1.getEditor(path).getValue();
+                        //filter based on path
+                        switch (path) {
+                            case "root.author":
+                                await updateDetails({ name: rsname, details: {author: ioval}});
+                                break;
+                            case "root.copyright":
+                                await updateDetails({ name: rsname, details: {copyright: ioval}});
+                                break;
+                            case "root.description":
+                                await updateDetails({ name: rsname, details: {description: ioval}});
+                                break;
+                            case "root.version":
+                                await updateDetails({ name: rsname, details: {version: ioval}});
+                                break;
+                            case "root.license":
+                                await updateDetails({ name: rsname, details: {license: ioval}});
+                                break;
+                            case "root.price":
+                                await updateDetails({ name: rsname, details: {price: ioval}});
+                                break;
+                            case "root.currency":
+                                await updateDetails({ name: rsname, details: {currency: ioval}});
+                                break;
+                            case "root.trigger.queueDataSource":
+                                await updateTrigger({ name: rsname, trigger: {queueDataSource: ioval}});
+                                break;
+                            case "root.trigger.queueDataSource":
+                                await updateTrigger({ name: rsname, trigger: {queueDataSource: ioval}});
+                                break;
+                            case "root.trigger.postType":
+                                await updateTrigger({ name: rsname, trigger: {postType: ioval}});
+                                break;
+                            case "root.trigger.postDataUri":
+                                await updateTrigger({ name: rsname, trigger: {postDataUri: ioval}});
+                                break;
+                            case "root.trigger.postData":
+                                await updateTrigger({ name: rsname, trigger: {postData: ioval}});
+                                break;
+                            case "root.trigger.postDataSource":
+                                await updateTrigger({ name: rsname, trigger: {postDataSource: ioval}});
+                                break;
+                            case "root.trigger.attachmentUri":
+                                await updateTrigger({ name: rsname, trigger: {attachmentUri: ioval}});
+                                break;
+                            case "root.trigger.attachmentName":
+                                await updateTrigger({ name: rsname, trigger: {attachmentName: ioval}});
+                                break;
+                            case "root.trigger.sendAttachment":
+                                await updateTrigger({ name: rsname, trigger: {sendAttachment: ioval}});
+                                break;
+                            case "root.trigger.sendAttachmentSource":
+                                await updateTrigger({ name: rsname, trigger: {sendAttachmentSource: ioval}});
+                                break;
+                            case "root.trigger.queueData":
+                                await updateTrigger({ name: rsname, trigger: {queueData: ioval}});
+                                break;
+                            case "root.trigger.emailFrom":
+                                await updateTrigger({ name: rsname, trigger: {emailFrom: ioval}});
+                                break;
+                            case "root.trigger.bodySource":
+                                await updateTrigger({ name: rsname, trigger: {bodySource: ioval}});
+                                break;
+                            case "root.trigger.subjectText":
+                                await updateTrigger({ name: rsname, trigger: {subjectText: ioval}});
+                                break;
+                            case "root.trigger.subjectSource":
+                                await updateTrigger({ name: rsname, trigger: {subjectSource: ioval}});
+                                break;
+                            case "root.trigger.addressText":
+                                await updateTrigger({ name: rsname, trigger: {addressText: ioval}});
+                                break;
+                            case "root.trigger.addressSource":
+                                await updateTrigger({ name: rsname, trigger: {addressSource: ioval}});
+                                break;
+                            case "root.trigger.sendBug":
+                                await updateTrigger({ name: rsname, trigger: {sendBug: ioval}});
+                                break;
+                            case "root.trigger.sendBugSource":
+                                await updateTrigger({ name: rsname, trigger: {sendBugSource: ioval}});
+                                break;
+                            case "root.trigger.sendEmail":
+                                await updateTrigger({ name: rsname, trigger: {sendEmail: ioval}});
+                                break;
+                            case "root.trigger.sendEmailSource":
+                                await updateTrigger({ name: rsname, trigger: {sendEmailSource: ioval}});
+                                break;
+                            case "root.trigger.bodyText":
+                                await updateTrigger({ name: rsname, trigger: {bodyText: ioval}});
+                                break;
+                            case "root.trigger.queueName":
+                                await updateTrigger({ name: rsname, trigger: {queueName: ioval}});
+                                break;
+                            default:
+                                if (isDigitCode(path.slice(-1))) {
+                                    var node = this.getEditor(path).getValue();
+                                    if (!!node.name) {
+                                        await updatePreload({ name: rsname, val: { name: node.name, dataType: node.dataType, value: node.value } });
+                                    }
+                                }
+                        }
+                    }
+                    catch (err) {
+                        alert(err[0].message);
+                    }
+                }
+                bindWatchers(editor1, watcherCallback);
+
+                editor1.on('addRow', function (editor) {
+                    bindWatchers(editor1, watcherCallback);
+                });
             });
         });
+
+        function bindWatchers(editor, callback) {
+            for (var key in editor1.editors) {
+                if (editor.editors.hasOwnProperty(key) && key !== 'root') {
+                editor1.watch(key, callback.bind(editor1, key));
+                }
+            }
+        }
 
         function findGetParameter(parameterName) {
             var result = null,

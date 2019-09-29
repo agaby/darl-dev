@@ -944,6 +944,19 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                                     async c => await connectivity.InferFromDarlDarlVar(userId, code, inputs));
                 });
+            FieldAsync<ModelDetailsType>("updateRulesetDetails", "Update the details of a rule set", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "rulesetName", Description = "Name of the ruleset" },
+                    new QueryArgument<NonNullGraphType<ModelDetailsInputType>> { Name = "details", Description = "The details to update" }
+               ),
+                resolve: async context =>
+                {
+                    var rulesetName = context.GetArgument<String>("rulesetName");
+                    var details = context.GetArgument<ModelDetails>("details");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreateRulesetDetails(userId, rulesetName, details));
+                }
+            );
         }
     }
 }

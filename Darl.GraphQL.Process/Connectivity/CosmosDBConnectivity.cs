@@ -166,7 +166,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 throw new ExecutionError($"A ruleset with name {name} already exists in your account.");
             }
-            var model = new RuleSet { Name = name, userId = userId, Contents = new RuleForm { darl = "ruleset myRuleSet\n{\n}\n"  } };
+            var model = new RuleSet { Name = name, userId = userId, Contents = new RuleForm { darl = "ruleset myRuleSet\n{\n}\n", trigger = new TriggerView()  } };
             await mc.InsertOneAsync(model);
             return model;
         }
@@ -1779,16 +1779,25 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<DarlVar> CreateRulesetPreload(string userId, string rulesetName, DarlVar preloadData)
         {
+            if(string.IsNullOrEmpty(preloadData.name))
+            {
+                throw new ExecutionError($"preloadData name can't be empty.");
+            }
             var collection = db.GetCollection<RuleSet>("ruleset");
             var rs = await GetRuleSet(userId, rulesetName);
-            var list = new List<DarlVar>();
-            if(rs.Contents.preload != null)
-            {
-                list.AddRange(rs.Contents.preload);
-            }
-            list.Add(preloadData);
             if (rs != null)
             {
+                var list = new List<DarlVar>();
+                if(rs.Contents.preload != null)
+                {
+                    list.AddRange(rs.Contents.preload);
+                }
+                //check if a darlvar already exists with the same name and update if so.
+                if(list.Any(a => a.name == preloadData.name))
+                {
+                    list.Remove(list.First(a => a.name == preloadData.name));
+                }
+                list.Add(preloadData);
                 var filter = Builders<RuleSet>.Filter.Where(x => x.id == rs.id && x.userId == userId);
                 var update = Builders<RuleSet>.Update.Set("Contents.preload", list);
                 await collection.FindOneAndUpdateAsync(filter, update);
@@ -1820,7 +1829,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 var trigg = new TriggerView();
                 if (trigger.addressSource != null)
-                    trigg.addressSource =  trigger.addressSource ?? DarlCommon.SourceType._fixed;
+                    trigg.addressSource =  trigger.addressSource ?? DarlCommon.SourceType.fixedvalue;
                 if (trigger.addressText != null)
                    trigg.addressText = trigger.addressText;
                 if (trigger.attachmentName != null)
@@ -1828,7 +1837,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 if (trigger.attachmentUri != null)
                     trigg.attachmentUri = trigger.attachmentUri;
                 if (trigger.bodySource != null)
-                    trigg.bodySource = trigger.bodySource ?? DarlCommon.SourceType._fixed;
+                    trigg.bodySource = trigger.bodySource ?? DarlCommon.SourceType.fixedvalue;
                 if (trigger.bodyText != null)
                    trigg.bodyText = trigger.bodyText;
                 if (trigger.emailFrom != null)
@@ -1836,31 +1845,31 @@ namespace Darl.GraphQL.Models.Connectivity
                 if (trigger.postData != null)
                     trigg.postData = trigger.postData;
                 if (trigger.postDataSource != null)
-                    trigg.postDataSource  = trigger.postDataSource ?? DarlCommon.SourceType._fixed;
+                    trigg.postDataSource  = trigger.postDataSource ?? DarlCommon.SourceType.fixedvalue;
                 if (trigger.postDataUri != null)
                     trigg.postDataUri = trigger.postDataUri;
                 if (trigger.postType != null)
-                    trigg.postType = trigger.postType ?? PostType.darlvarlist;
+                    trigg.postType = trigger.postType ?? DarlCommon.PostType.darlvarlist;
                 if (trigger.queueData != null)
                     trigg.queueData = trigger.queueData;
                 if (trigger.queueDataSource != null)
-                   trigg.queueDataSource = trigger.queueDataSource ?? DarlCommon.SourceType._fixed;
+                   trigg.queueDataSource = trigger.queueDataSource ?? DarlCommon.SourceType.fixedvalue;
                 if (trigger.queueName != null)
                     trigg.queueName = trigger.queueName;
                 if (trigger.sendAttachment != null)
                     trigg.sendAttachment = trigger.sendAttachment;
                 if (trigger.sendAttachmentSource != null)
-                    trigg.sendAttachmentSource = trigger.sendAttachmentSource ?? DarlCommon.SourceType._fixed;
+                    trigg.sendAttachmentSource = trigger.sendAttachmentSource ?? DarlCommon.SourceType.fixedvalue;
                 if (trigger.sendBug != null)
                     trigg.sendBug = trigger.sendBug;
                 if (trigger.sendBugSource != null)
-                    trigg.sendBugSource = trigger.sendBugSource ?? DarlCommon.SourceType._fixed;
+                    trigg.sendBugSource = trigger.sendBugSource ?? DarlCommon.SourceType.fixedvalue;
                 if (trigger.sendEmail != null)
                     trigg.sendEmail = trigger.sendEmail;
                 if (trigger.sendEmailSource != null)
-                    trigg.sendEmailSource = trigger.sendEmailSource ?? DarlCommon.SourceType._fixed;
+                    trigg.sendEmailSource = trigger.sendEmailSource ?? DarlCommon.SourceType.fixedvalue;
                 if (trigger.subjectSource != null)
-                    trigg.subjectSource = trigger.subjectSource ?? DarlCommon.SourceType._fixed;
+                    trigg.subjectSource = trigger.subjectSource ?? DarlCommon.SourceType.fixedvalue;
                 if (trigger.subjectText != null)
                     trigg.subjectText = trigger.subjectText;
                 var update = Builders<RuleSet>.Update.Set("Contents.trigger", trigg);
@@ -2069,6 +2078,31 @@ namespace Darl.GraphQL.Models.Connectivity
                 return errors;
             }
             return null;
+        }
+
+        public async Task<ModelDetails> CreateRulesetDetails(string userId, string rulesetName, ModelDetails details)
+        {
+            var collection = db.GetCollection<RuleSet>("ruleset");
+            var rs = await GetRuleSet(userId, rulesetName);
+            var filter = Builders<RuleSet>.Filter.Where(x => x.Name == rulesetName && x.userId == userId);
+            var updList = new List<UpdateDefinition<RuleSet>>();
+            if (details.author != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.author, details.author));
+            if (details.copyright != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.copyright, details.copyright));
+            if (details.description != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.description, details.description));
+            if (details.license != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.license, details.license));
+            if (details.version != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.version, details.version));
+            if (details.price != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.price, details.price));
+            if (details.currency != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.currency, details.currency));
+            var update = Builders<RuleSet>.Update.Combine(updList);
+            var rs1 = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<RuleSet, RuleSet> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
+            return new ModelDetails { author = rs1.Contents.author, copyright = rs1.Contents.copyright, description = rs1.Contents.description, license = rs1.Contents.license, version = rs1.Contents.version };
         }
     }
 }

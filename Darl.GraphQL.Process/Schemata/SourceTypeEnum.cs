@@ -11,7 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "sourceTypes";
             AddValue("RESULTS", "Get the value from a result in the ruleset output", 0);
-            AddValue("FIXED", "The values is determined at design time", 1);
+            AddValue("FIXEDVALUE", "The values is determined at design time", 1);
         }
     }
 }
