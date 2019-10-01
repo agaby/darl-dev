@@ -122,8 +122,15 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<BotModel> CreateDefaultModel(string userId, string name)
         {
-            var botModel = new BotModel { Name = name, userId = userId };
             var mc = db.GetCollection<BotModel>("botmodel");
+            var query = mc.AsQueryable().Where(p => p.userId == userId);
+            var existing = await query.ToListAsync();
+            if (existing.Any(a => a.Name == name))
+            {
+                throw new ExecutionError($"A bot model with name {name} already exists in your account.");
+            }
+            var bm = await GetBotModel(_opt.Value.boaiuserid, _opt.Value.ProvisionBotModel);
+            var botModel = new BotModel { Name = name, userId = userId, Model = bm.Model };
             await mc.InsertOneAsync(botModel);
             return botModel;
         }
@@ -955,13 +962,13 @@ namespace Darl.GraphQL.Models.Connectivity
             return new LineageNodeDefinition();
         }
 
-        public async Task<LineageNodeAttributeUpdate> UpdateAttribute(string userId, string botModelName, string path, LineageNodeAttributeUpdate attribute)
+        public async Task<LineageNodeAttributes> UpdateAttribute(string userId, string botModelName, string path, LineageNodeAttributeUpdate attribute)
         {
             var lm = await GetLineageModel(userId, botModelName);
             var newCode = lm.ReconcileCode(attribute.darl, new BotFragment { CallRuleset = attribute.call, RandomResponses = attribute.randomResponses, Response = attribute.response }, path);
             lm.tree.SaveAttributes(path, newCode.Trim(), new List<string>(), attribute.accessRoles );
             await SaveLineageModel(userId, botModelName, lm); 
-            return attribute;
+            return new LineageNodeAttributes { accessRoles = attribute.accessRoles, call = attribute.call, darl = attribute.darl, path = path, present = true, randomResponse = attribute.randomResponse, randomResponses = attribute.randomResponses, response = attribute.response };
         }
 
         public async Task<AzureCredentials> UpdateAzureCredentials(string userId, string botModelName, string apiKey)

@@ -150,9 +150,6 @@
         async function check_syntax(code, result_cb) {
             var lintCall = graph('query lint($darl: String!){  lintDarl(darl: $darl){ column_no_start column_no_stop line_no message severity }}');
             var result = await lintCall({ darl: code });
-            //            var baseUri = "https://darl.ai/api/Linter/DarlLint";
-            //            var jqxr = $.post(baseUri, { 'source': code }, function (data, status, xhr) {
-            //                result_cb(data);
             result_cb(result.lintDarl);
         }
 

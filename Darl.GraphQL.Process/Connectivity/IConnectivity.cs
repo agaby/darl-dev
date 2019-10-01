@@ -149,7 +149,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         Task<LineageNodeDefinition> RenameLineageNode(string userId, string botModelName, string id, string newName);
 
-        Task<LineageNodeAttributeUpdate> UpdateAttribute(string userId, string botModelName, string path, LineageNodeAttributeUpdate attribute);
+        Task<LineageNodeAttributes> UpdateAttribute(string userId, string botModelName, string path, LineageNodeAttributeUpdate attribute);
 
         Task<AzureCredentials> UpdateAzureCredentials(string userId, string botModelName, string apiKey);
 
