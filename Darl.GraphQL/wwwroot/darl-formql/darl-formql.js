@@ -18,9 +18,9 @@ async function DARLForm(div, id, debug, apiKey) {
             graph = graphql(url, { headers: { "Authorization": "Basic " + apiKey } });
         }
         isDebug = debug;
-        var firstQSP = graph(`query beginForm($ruleset: String!){ beginQuestionnaire(ruleSetName: $ruleset){ ieToken questionHeader percentComplete canUnwind questions { text categories reference qType maxval minval format dResponse sResponse } values {name value}}}`);
-        nextQSP = graph('query nextStep($ieToken: String!, $reference: String!, $qType: QuestionType!, $sresponse: String, $dresponse: Float   ){ continueQuestionnaire(responses: {ieToken: $ieToken, questions:[{reference: $reference, sResponse: $sresponse,dResponse: $dresponse, qType: $qType}]}) { complete ieToken questionHeader percentComplete canUnwind values {name value } questions { text categories  reference qType sResponse  dResponse} responses { mainText annotation rType preamble}}}');
-        backQSP = graph('query back($ieToken: String!){ backtrackQuestionnaire(ieToken: $ieToken) {complete ieToken questionHeader percentComplete canUnwind values { name value } questions { text categories  reference qType sResponse  dResponse } responses { mainText annotation rType preamble }}}');
+        var firstQSP = graph(`query beginForm($ruleset: String!){ beginQuestionnaire(ruleSetName: $ruleset){ ieToken questionHeader percentComplete canUnwind preamble responseHeader questions { text categories reference qType maxval minval format dResponse sResponse } values {name value}}}`);
+        nextQSP = graph('query nextStep($ieToken: String!, $reference: String!, $qType: QuestionType!, $sresponse: String, $dresponse: Float   ){ continueQuestionnaire(responses: {ieToken: $ieToken, questions:[{reference: $reference, sResponse: $sresponse,dResponse: $dresponse, qType: $qType}]}) { complete ieToken questionHeader percentComplete canUnwind preamble responseHeader values {name value } questions { text categories  reference qType sResponse  dResponse} responses { mainText annotation rType preamble}}}');
+        backQSP = graph('query back($ieToken: String!){ backtrackQuestionnaire(ieToken: $ieToken) {complete ieToken questionHeader percentComplete canUnwind preamble responseHeader values { name value } questions { text categories  reference qType sResponse  dResponse } responses { mainText annotation rType preamble }}}');
         var content = await firstQSP({ ruleset: id });
 
         var data = content.beginQuestionnaire;
@@ -48,9 +48,9 @@ async function DARLDynamicForm(div, id, debug, apiKey) {
             graph = graphql(url, { headers: { "Authorization": "Basic " + apiKey } });
         }
         isDebug = debug;
-        var firstQSP = graph(`query beginForm($ruleset: String!){ beginDynamicQuestionnaire(selector: $ruleset, dqType: rule_edit){ ieToken questionHeader percentComplete canUnwind questions { text categories reference qType maxval minval format dResponse sResponse } values {name value}}}`);
-        nextQSP = graph('query nextStep($ieToken: String!, $reference: String!, $qType: QuestionType!, $sresponse: String, $dresponse: Float   ){ continueQuestionnaire(responses: {ieToken: $ieToken, questions:[{reference: $reference, sResponse: $sresponse,dResponse: $dresponse, qType: $qType}]}) { complete ieToken questionHeader percentComplete canUnwind values {name value } questions { text categories  reference qType sResponse  dResponse} responses { mainText annotation rType preamble}}}');
-        backQSP = graph('query back($ieToken: String!){ backtrackQuestionnaire(ieToken: $ieToken) {complete ieToken questionHeader percentComplete canUnwind values { name value } questions { text categories  reference qType sResponse  dResponse } responses { mainText annotation rType preamble }}}');
+        var firstQSP = graph(`query beginForm($ruleset: String!){ beginDynamicQuestionnaire(selector: $ruleset, dqType: rule_edit){ ieToken questionHeader percentComplete canUnwind preamble responseHeader questions { text categories reference qType maxval minval format dResponse sResponse } values {name value}}}`);
+        nextQSP = graph('query nextStep($ieToken: String!, $reference: String!, $qType: QuestionType!, $sresponse: String, $dresponse: Float   ){ continueQuestionnaire(responses: {ieToken: $ieToken, questions:[{reference: $reference, sResponse: $sresponse,dResponse: $dresponse, qType: $qType}]}) { complete ieToken questionHeader percentComplete canUnwind preamble responseHeader values {name value } questions { text categories  reference qType sResponse  dResponse} responses { mainText annotation rType preamble}}}');
+        backQSP = graph('query back($ieToken: String!){ backtrackQuestionnaire(ieToken: $ieToken) {complete ieToken questionHeader percentComplete canUnwind preamble responseHeader values { name value } questions { text categories  reference qType sResponse  dResponse } responses { mainText annotation rType preamble }}}');
         var content = await firstQSP({ ruleset: id });
 
         var data = content.beginDynamicQuestionnaire;
@@ -90,7 +90,7 @@ function BuildForm(div, qsp, debug) {
     root.submit(submitForm);
 
     $(div).append(root);
-    var header = $("<h4></h4>").text(qsp.preamble);
+    var header = $("<p></p>").text(qsp.preamble);
     root.append(header);
     if (qsp.questions !== null && qsp.questions !== undefined) {
         root.append($("<h4></h4>").text(qsp.questionHeader));
@@ -169,19 +169,21 @@ function BuildForm(div, qsp, debug) {
         }
     }
     //buttons
-    var buttonsFormDiv = $('<div></div>').attr('class', 'form-group row');
-    var buttonsDiv = $('<div></div>').attr('class', 'col-sm-offset-4 col-sm-10');
-    var back = $('<input/>').attr({ class: "btn btn-primary", value: 'Back', type: 'submit', name: "backButton", 'id': 'backButton' });
-    var next = $('<input/>').attr({ class: "btn btn-primary", value: 'Next', type: 'submit', name: "nextButton", 'id': 'nextButton' });
-    if (qsp.canUnwind !== true) {
-        back.attr('disabled', 'disabled');
+    if (debug === true || qsp.responses === null || qsp.responses === undefined) { //only show if not complete or debug. Don't encourage multiple uses.
+        var buttonsFormDiv = $('<div></div>').attr('class', 'form-group row');
+        var buttonsDiv = $('<div></div>').attr('class', 'col-sm-offset-4 col-sm-10');
+        var back = $('<input/>').attr({ class: "btn btn-primary", value: 'Back', type: 'submit', name: "backButton", 'id': 'backButton' });
+        var next = $('<input/>').attr({ class: "btn btn-primary", value: 'Next', type: 'submit', name: "nextButton", 'id': 'nextButton' });
+        if (qsp.canUnwind !== true) {
+            back.attr('disabled', 'disabled');
+        }
+        if (qsp.complete === true) {
+            next.attr('disabled', 'disabled');
+        }
+        buttonsDiv.append(back, next);
+        buttonsFormDiv.append(buttonsDiv);
+        root.append(buttonsFormDiv);
     }
-    if (qsp.complete === true) {
-        next.attr('disabled', 'disabled');
-    }
-    buttonsDiv.append(back, next);
-    buttonsFormDiv.append(buttonsDiv);
-    root.append(buttonsFormDiv);
     //progress
     if (qsp.questions !== null) {
         var progressDiv = $('<div></div>').attr('class', 'form-group row');
