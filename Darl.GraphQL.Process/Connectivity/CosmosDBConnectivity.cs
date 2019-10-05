@@ -328,12 +328,22 @@ namespace Darl.GraphQL.Models.Connectivity
             return name1;
         }
 
-        public async Task<AzureCredentials> DeleteAzureCredentials(string userId, string botModelName)
+        public async Task<AzureCredentials> DeleteAzureCredentials(string userId, string botModelName, ModelType modelType)
         {
-            var mc = db.GetCollection<BotModel>("botmodel");
-            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var update = Builders<BotModel>.Update.Set(p => p.serviceConnectivity.azurecred, null);
-            await mc.UpdateOneAsync(filter, update);
+            if(modelType == ModelType.botmodel)
+            { 
+                var mc = db.GetCollection<BotModel>("botmodel");
+                var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+                var update = Builders<BotModel>.Update.Set(p => p.serviceConnectivity.azurecred, null);
+                await mc.UpdateOneAsync(filter, update);
+            }
+            if(modelType == ModelType.ruleset)
+            {
+                var mc = db.GetCollection<RuleSet>("ruleset");
+                var filter = Builders<RuleSet>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+                var update = Builders<RuleSet>.Update.Set(p => p.serviceConnectivity.azurecred, null);
+                await mc.UpdateOneAsync(filter, update);
+            }
             return null;
         }
 
@@ -440,21 +450,41 @@ namespace Darl.GraphQL.Models.Connectivity
             return old;
         }
 
-        public async Task<SellerCenterCredentials> DeleteSellereCenterCredentials(string userId, string botModelName)
+        public async Task<SellerCenterCredentials> DeleteSellereCenterCredentials(string userId, string botModelName, ModelType modelType)
         {
-            var mc = db.GetCollection<BotModel>("botmodel");
-            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var update = Builders<BotModel>.Update.Set(p => p.serviceConnectivity.sellercred, null);
-            await mc.UpdateOneAsync(filter, update);
+            if(modelType == ModelType.botmodel)
+            { 
+                var mc = db.GetCollection<BotModel>("botmodel");
+                var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+                var update = Builders<BotModel>.Update.Set(p => p.serviceConnectivity.sellercred, null);
+                await mc.UpdateOneAsync(filter, update);
+            }
+            else if (modelType == ModelType.ruleset)
+            {
+                var mc = db.GetCollection<RuleSet>("ruleset");
+                var filter = Builders<RuleSet>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+                var update = Builders<RuleSet>.Update.Set(p => p.serviceConnectivity.sellercred, null);
+                await mc.UpdateOneAsync(filter, update);
+            }
             return null;
         }
 
-        public async Task<SendGridCredentials> DeleteSendgridCredentials(string userId, string botModelName)
+        public async Task<SendGridCredentials> DeleteSendgridCredentials(string userId, string botModelName, ModelType modelType)
         {
-            var mc = db.GetCollection<BotModel>("botmodel");
-            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var update = Builders<BotModel>.Update.Set(p => p.serviceConnectivity.sendgridcred, null);
-            await mc.UpdateOneAsync(filter, update);
+            if (modelType == ModelType.botmodel)
+            {
+                var mc = db.GetCollection<BotModel>("botmodel");
+                var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+                var update = Builders<BotModel>.Update.Set(p => p.serviceConnectivity.sendgridcred, null);
+                await mc.UpdateOneAsync(filter, update);
+            }
+            else if (modelType == ModelType.ruleset)
+            {
+                var mc = db.GetCollection<RuleSet>("ruleset");
+                var filter = Builders<RuleSet>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+                var update = Builders<RuleSet>.Update.Set(p => p.serviceConnectivity.sendgridcred, null);
+                await mc.UpdateOneAsync(filter, update);
+            }
             return null;
         }
 
@@ -490,12 +520,22 @@ namespace Darl.GraphQL.Models.Connectivity
             return null;
         }
 
-        public async Task<TwilioCredentials> DeleteTwilioCredentials(string userId, string botModelName)
+        public async Task<TwilioCredentials> DeleteTwilioCredentials(string userId, string botModelName, ModelType modelType)
         {
-            var mc = db.GetCollection<BotModel>("botmodel");
-            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var update = Builders<BotModel>.Update.Set(p => p.serviceConnectivity.twiliocred, null);
-            await mc.UpdateOneAsync(filter, update);
+            if (modelType == ModelType.botmodel)
+            {
+                var mc = db.GetCollection<BotModel>("botmodel");
+                var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+                var update = Builders<BotModel>.Update.Set(p => p.serviceConnectivity.twiliocred, null);
+                await mc.UpdateOneAsync(filter, update);
+            }
+            else if (modelType == ModelType.ruleset)
+            {
+                var mc = db.GetCollection<RuleSet>("ruleset");
+                var filter = Builders<RuleSet>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+                var update = Builders<RuleSet>.Update.Set(p => p.serviceConnectivity.twiliocred, null);
+                await mc.UpdateOneAsync(filter, update);
+            }
             return null;
         }
 
@@ -971,13 +1011,23 @@ namespace Darl.GraphQL.Models.Connectivity
             return new LineageNodeAttributes { accessRoles = attribute.accessRoles, call = attribute.call, darl = attribute.darl, path = path, present = true, randomResponse = attribute.randomResponse, randomResponses = attribute.randomResponses, response = attribute.response };
         }
 
-        public async Task<AzureCredentials> UpdateAzureCredentials(string userId, string botModelName, string apiKey)
+        public async Task<AzureCredentials> UpdateAzureCredentials(string userId, string botModelName, string apiKey, ModelType modelType)
         {
-            var collection = db.GetCollection<BotModel>("botmodel");
             var ac = new AzureCredentials { AzureAPIKey = apiKey };
-            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var update = Builders<BotModel>.Update.Set("serviceConnectivity.azurecred", ac);
-            await collection.FindOneAndUpdateAsync(filter, update);
+            if(modelType == ModelType.botmodel)
+            {
+                var collection = db.GetCollection<BotModel>("botmodel");
+                var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+                var update = Builders<BotModel>.Update.Set("serviceConnectivity.azurecred", ac);
+                await collection.FindOneAndUpdateAsync(filter, update);
+            }
+            if(modelType == ModelType.ruleset)
+            {
+                var collection = db.GetCollection<RuleSet>("ruleset");
+                var filter = Builders<RuleSet>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+                var update = Builders<RuleSet>.Update.Set("serviceConnectivity.azurecred", ac);
+                await collection.FindOneAndUpdateAsync(filter, update);
+            }
             return ac;
         }
 
@@ -1228,33 +1278,63 @@ namespace Darl.GraphQL.Models.Connectivity
             return new VariantText { Language = isoLanguageName, Text = variantText };
         }
 
-        public async Task<SellerCenterCredentials> UpdateSellerCenterCredentials(string userId, string botModelName, bool liveMode, string merchantId, string stripeApiKey)
+        public async Task<SellerCenterCredentials> UpdateSellerCenterCredentials(string userId, string botModelName, bool liveMode, string merchantId, string stripeApiKey, ModelType modelType)
         {
-            var collection = db.GetCollection<BotModel>("botmodel");
             var scc = new SellerCenterCredentials { LiveMode = liveMode, MerchantId = merchantId, StripeApiKey = stripeApiKey };
-            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var update = Builders<BotModel>.Update.Set("serviceConnectivity.sellercred", scc);
-            await collection.FindOneAndUpdateAsync(filter, update);
+            if (modelType == ModelType.botmodel)
+            {
+                var collection = db.GetCollection<BotModel>("botmodel");
+                var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+                var update = Builders<BotModel>.Update.Set("serviceConnectivity.sellercred", scc);
+                await collection.FindOneAndUpdateAsync(filter, update);
+            }
+            else if(modelType == ModelType.ruleset)
+            {
+                var collection = db.GetCollection<RuleSet>("ruleset");
+                var filter = Builders<RuleSet>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+                var update = Builders<RuleSet>.Update.Set("serviceConnectivity.sellercred", scc);
+                await collection.FindOneAndUpdateAsync(filter, update);
+            }
             return scc;
         }
 
-        public async Task<SendGridCredentials> UpdateSendgridCredentials(string userId, string botModelName, string sendGridAPIKey)
+        public async Task<SendGridCredentials> UpdateSendgridCredentials(string userId, string ModelName, string sendGridAPIKey, ModelType modelType)
         {
-            var collection = db.GetCollection<BotModel>("botmodel");
             var sgc = new SendGridCredentials { SendGridAPIKey = sendGridAPIKey };
-            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var update = Builders<BotModel>.Update.Set("serviceConnectivity.sendgridcred", sgc);
-            await collection.FindOneAndUpdateAsync(filter, update);
+            if(modelType == ModelType.botmodel)
+            { 
+                var collection = db.GetCollection<BotModel>("botmodel");
+                var filter = Builders<BotModel>.Filter.Where(x => x.Name == ModelName && x.userId == userId);
+                var update = Builders<BotModel>.Update.Set("serviceConnectivity.sendgridcred", sgc);
+                await collection.FindOneAndUpdateAsync(filter, update);
+            }
+            else if(modelType == ModelType.ruleset)
+            {
+                var collection = db.GetCollection<RuleSet>("ruleset");
+                var filter = Builders<RuleSet>.Filter.Where(x => x.Name == ModelName && x.userId == userId);
+                var update = Builders<RuleSet>.Update.Set("serviceConnectivity.sendgridcred", sgc);
+                await collection.FindOneAndUpdateAsync(filter, update);
+            }
             return sgc;
         }
 
-        public async Task<TwilioCredentials> UpdateTwilioCredentials(string userId, string botModelName, string sMSAccountFrom, string sMSAccountIdentification, string sMSAccountPassword)
+        public async Task<TwilioCredentials> UpdateTwilioCredentials(string userId, string botModelName, string sMSAccountFrom, string sMSAccountIdentification, string sMSAccountPassword, ModelType modelType)
         {
-            var collection = db.GetCollection<BotModel>("botmodel");
             var tc = new TwilioCredentials { SMSAccountFrom = sMSAccountFrom, SMSAccountIdentification = sMSAccountIdentification, SMSAccountPassword = sMSAccountPassword };
-            var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
-            var update = Builders<BotModel>.Update.Set("serviceConnectivity.twiliocred", tc);
-            await collection.FindOneAndUpdateAsync(filter, update);
+            if(modelType == ModelType.botmodel)
+            { 
+                var collection = db.GetCollection<BotModel>("botmodel");
+                var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+                var update = Builders<BotModel>.Update.Set("serviceConnectivity.twiliocred", tc);
+                await collection.FindOneAndUpdateAsync(filter, update);
+            }
+            else if(modelType == ModelType.ruleset)
+            {
+                var collection = db.GetCollection<RuleSet>("ruleset");
+                var filter = Builders<RuleSet>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+                var update = Builders<RuleSet>.Update.Set("serviceConnectivity.twiliocred", tc);
+                await collection.FindOneAndUpdateAsync(filter, update);
+            }
             return tc;
         }
 
@@ -1835,50 +1915,28 @@ namespace Darl.GraphQL.Models.Connectivity
             if (rs.Contents.trigger == null) //create a new TriggerView and add the data
             {
                 var trigg = new TriggerView();
-                if (trigger.addressSource != null)
-                    trigg.addressSource =  trigger.addressSource ?? DarlCommon.SourceType.fixedvalue;
-                if (trigger.addressText != null)
-                   trigg.addressText = trigger.addressText;
-                if (trigger.attachmentName != null)
-                    trigg.attachmentName = trigger.attachmentName;
-                if (trigger.attachmentUri != null)
-                    trigg.attachmentUri = trigger.attachmentUri;
-                if (trigger.bodySource != null)
-                    trigg.bodySource = trigger.bodySource ?? DarlCommon.SourceType.fixedvalue;
-                if (trigger.bodyText != null)
-                   trigg.bodyText = trigger.bodyText;
-                if (trigger.emailFrom != null)
-                    trigg.emailFrom = trigger.emailFrom;
-                if (trigger.postData != null)
-                    trigg.postData = trigger.postData;
-                if (trigger.postDataSource != null)
-                    trigg.postDataSource  = trigger.postDataSource ?? DarlCommon.SourceType.fixedvalue;
-                if (trigger.postDataUri != null)
-                    trigg.postDataUri = trigger.postDataUri;
-                if (trigger.postType != null)
-                    trigg.postType = trigger.postType ?? DarlCommon.PostType.darlvarlist;
-                if (trigger.queueData != null)
-                    trigg.queueData = trigger.queueData;
-                if (trigger.queueDataSource != null)
-                   trigg.queueDataSource = trigger.queueDataSource ?? DarlCommon.SourceType.fixedvalue;
-                if (trigger.queueName != null)
-                    trigg.queueName = trigger.queueName;
-                if (trigger.sendAttachment != null)
-                    trigg.sendAttachment = trigger.sendAttachment;
-                if (trigger.sendAttachmentSource != null)
-                    trigg.sendAttachmentSource = trigger.sendAttachmentSource ?? DarlCommon.SourceType.fixedvalue;
-                if (trigger.sendBug != null)
-                    trigg.sendBug = trigger.sendBug;
-                if (trigger.sendBugSource != null)
-                    trigg.sendBugSource = trigger.sendBugSource ?? DarlCommon.SourceType.fixedvalue;
-                if (trigger.sendEmail != null)
-                    trigg.sendEmail = trigger.sendEmail;
-                if (trigger.sendEmailSource != null)
-                    trigg.sendEmailSource = trigger.sendEmailSource ?? DarlCommon.SourceType.fixedvalue;
-                if (trigger.subjectSource != null)
-                    trigg.subjectSource = trigger.subjectSource ?? DarlCommon.SourceType.fixedvalue;
-                if (trigger.subjectText != null)
-                    trigg.subjectText = trigger.subjectText;
+                trigg.addressSource =  DarlCommon.SourceType.fixedvalue;
+                trigg.addressText = String.Empty;
+                trigg.attachmentName = String.Empty;
+                trigg.attachmentUri = String.Empty;
+                trigg.bodySource = DarlCommon.SourceType.fixedvalue;
+                trigg.bodyText = String.Empty;
+                trigg.emailFrom = String.Empty;
+                trigg.postData = String.Empty;
+                trigg.postDataSource  = DarlCommon.SourceType.fixedvalue;
+                trigg.postDataUri = String.Empty;
+                trigg.postType = DarlCommon.PostType.darlvarlist;
+                trigg.queueData = String.Empty;
+                trigg.queueDataSource = DarlCommon.SourceType.fixedvalue;
+                trigg.queueName = String.Empty;
+                trigg.sendAttachment = String.Empty;
+                trigg.sendAttachmentSource = DarlCommon.SourceType.fixedvalue;
+                trigg.sendBug = String.Empty;
+                trigg.sendBugSource = DarlCommon.SourceType.fixedvalue;
+                trigg.sendEmail = String.Empty;
+                trigg.sendEmailSource = DarlCommon.SourceType.fixedvalue;
+                trigg.subjectSource = DarlCommon.SourceType.fixedvalue;
+                trigg.subjectText = String.Empty;
                 var update = Builders<RuleSet>.Update.Set("Contents.trigger", trigg);
                 var rs1 = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<RuleSet, RuleSet> { ReturnDocument = ReturnDocument.After });
                 return rs1.Contents.trigger;
@@ -2091,6 +2149,8 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var collection = db.GetCollection<RuleSet>("ruleset");
             var rs = await GetRuleSet(userId, rulesetName);
+            if (rs.Contents.trigger == null)
+                await UpdateRuleFormTrigger(userId, rulesetName, null);
             var filter = Builders<RuleSet>.Filter.Where(x => x.Name == rulesetName && x.userId == userId);
             var updList = new List<UpdateDefinition<RuleSet>>();
             if (details.author != null)
@@ -2107,7 +2167,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.price, details.price));
             if (details.currency != null)
                 updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.currency, details.currency));
-            var update = Builders<RuleSet>.Update.Combine(updList);
+             var update = Builders<RuleSet>.Update.Combine(updList);
             var rs1 = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<RuleSet, RuleSet> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
             return new ModelDetails { author = rs1.Contents.author, copyright = rs1.Contents.copyright, description = rs1.Contents.description, license = rs1.Contents.license, version = rs1.Contents.version };
         }

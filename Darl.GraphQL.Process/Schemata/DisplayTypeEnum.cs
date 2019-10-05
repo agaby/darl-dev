@@ -1,4 +1,5 @@
-﻿using GraphQL.Types;
+﻿using Darl.GraphQL.Models.Models;
+using GraphQL.Types;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -55,7 +55,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         Task<string> DeleteAuthorization(string userId, string name, string name1);
 
-        Task<AzureCredentials> DeleteAzureCredentials(string userId, string botModelName);
+        Task<AzureCredentials> DeleteAzureCredentials(string userId, string botModelName, ModelType modelType);
 
         Task<BotConnection> DeleteBotConnection(string userId, string botModelName, string appId);
 
@@ -75,15 +75,15 @@ namespace Darl.GraphQL.Models.Connectivity
 
         Task<RuleSet> DeleteRuleSet(string userId, string name);
 
-        Task<SellerCenterCredentials> DeleteSellereCenterCredentials(string userId, string botModelName);
+        Task<SellerCenterCredentials> DeleteSellereCenterCredentials(string userId, string botModelName, ModelType modelType);
 
-        Task<SendGridCredentials> DeleteSendgridCredentials(string userId, string botModelName);
+        Task<SendGridCredentials> DeleteSendgridCredentials(string userId, string botModelName, ModelType modelType);
 
         Task<string> DeleteStore(string userId, string botModelName, string name);
 
         Task<StringStringPair> DeleteString(string userId, string botModelName, string name);
 
-        Task<TwilioCredentials> DeleteTwilioCredentials(string userId, string botModelName);
+        Task<TwilioCredentials> DeleteTwilioCredentials(string userId, string botModelName, ModelType modelType);
 
         Task<DarlUser> DeleteUser(string id);
 
@@ -151,7 +151,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         Task<LineageNodeAttributes> UpdateAttribute(string userId, string botModelName, string path, LineageNodeAttributeUpdate attribute);
 
-        Task<AzureCredentials> UpdateAzureCredentials(string userId, string botModelName, string apiKey);
+        Task<AzureCredentials> UpdateAzureCredentials(string userId, string botModelName, string apiKey, ModelType modelType);
 
         Task<BotInputFormat> UpdateBotModelInputFormat(string userId, string botModelName, string inputName, InputFormatUpdate inputUpdate);
 
@@ -167,9 +167,9 @@ namespace Darl.GraphQL.Models.Connectivity
 
         Task<OutputFormat> UpdateRuleFormOutputFormat(string userId, string ruleSetName, string outputName, OutputFormatUpdate outputUpdate);
         Task<VariantText> UpdateRuleFormVariantText(string userId, string ruleSetName, string languageName, string isoLanguageName, string variantText);
-        Task<SellerCenterCredentials> UpdateSellerCenterCredentials(string userId, string botModelName, bool liveMode, string merchantId, string stripeApiKey);
-        Task<SendGridCredentials> UpdateSendgridCredentials(string userId, string botModelName, string sendGridAPIKey);
-        Task<TwilioCredentials> UpdateTwilioCredentials(string userId, string botModelName, string sMSAccountFrom, string sMSAccountIdentification, string sMSAccountPassword);
+        Task<SellerCenterCredentials> UpdateSellerCenterCredentials(string userId, string botModelName, bool liveMode, string merchantId, string stripeApiKey, ModelType modelType);
+        Task<SendGridCredentials> UpdateSendgridCredentials(string userId, string botModelName, string sendGridAPIKey, ModelType modelType);
+        Task<TwilioCredentials> UpdateTwilioCredentials(string userId, string botModelName, string sMSAccountFrom, string sMSAccountIdentification, string sMSAccountPassword, ModelType modelType);
         Task<DarlUser> UpdateUserAsync(string userId, DarlUserUpdate darlUserUpdate);
         Task<string> UpdateUserAPIKey(string userId);
         Task<string> UpdateDarlInRuleset(string userId, string ruleSetName, string darl);

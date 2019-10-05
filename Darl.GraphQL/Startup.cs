@@ -193,6 +193,7 @@ namespace Darl.GraphQL
             services.AddSingleton<StringDoublePairInputType>();
             services.AddSingleton<ModelDetailsType>();
             services.AddSingleton<ModelDetailsInputType>();
+            services.AddSingleton<ModelTypeEnum>();
 
 
             //root
