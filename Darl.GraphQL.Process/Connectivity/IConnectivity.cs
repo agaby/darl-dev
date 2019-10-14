@@ -202,5 +202,12 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<bool> CheckEmail(string email, string ipaddress = "");
         Task<List<DarlVar>> InferFromDarlDarlVar(string userId, string code, List<DarlVarInput> inputs);
         Task<ModelDetails> CreateRulesetDetails(string userId, string rulesetName, ModelDetails details);
+        Task<GraphQLCredentials> UpdateGraphQLCredentials(string userId, string modelName, string url, string header, ModelType modelType);
+        Task<GraphQLCredentials> DeleteGraphQLCredentials(string userId, string botModelName, ModelType modelType);
+        Task<long> GetContactsCount(string userId);
+        Task<long> GetUserCount(string userId);
+        Task<long> GetConversationCount(string userId);
+        Task<long> GetContactsDayCount(string userId);
+        Task<long> GetContactsMonthCount(string userId);
     }
 }

@@ -13,7 +13,7 @@ namespace Darl.GraphQL.Models.Schemata
         public TriggerViewType()
         {
             Name = "Trigger";
-            Description = "Definitions of the actions triggered by a questionnaire being completed..";
+            Description = "Definitions of the actions triggered by a questionnaire being completed.";
             Field(c => c.addressText,true);
             Field<SourceTypeEnum>("addressSource", resolve: context => context.Source.addressSource);
             Field(c => c.attachmentName, true);
@@ -36,6 +36,8 @@ namespace Darl.GraphQL.Models.Schemata
             Field<SourceTypeEnum>("sendEmailSource", resolve: context => context.Source.sendEmailSource);
             Field<SourceTypeEnum>("subjectSource", resolve: context => context.Source.subjectSource);
             Field(c => c.subjectText, true);
+            Field(c => c.graphqlData, true);
+            Field<SourceTypeEnum>("graphqlDataSource", resolve: context => context.Source.graphqlDataSource);
         }
     }
 }

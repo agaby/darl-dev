@@ -467,6 +467,58 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await sim.Simulate(userId,name,dataSet,sampleType));
                 }
             );
+
+            FieldAsync<IntGraphType>(
+                "contactCount",
+                "Get the count of contacts",
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.GetContactsCount(userId));
+                }
+            ).AuthorizeWith("AdminPolicy");
+            FieldAsync<IntGraphType>(
+                "contactCount30Days",
+                "Get the count of contacts added in the last 30 days",
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.GetContactsMonthCount(userId));
+                }
+            ).AuthorizeWith("AdminPolicy");
+            FieldAsync<IntGraphType>(
+                "contactCountDay",
+                "Get the count of contacts added in the last 24 hours",
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.GetContactsDayCount(userId));
+                }
+            ).AuthorizeWith("AdminPolicy");
+
+            FieldAsync<IntGraphType>(
+                "userCount",
+                "Get the count of users",
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.GetUserCount(userId));
+                }
+            ).AuthorizeWith("AdminPolicy");
+            FieldAsync<IntGraphType>(
+                "conversationCount",
+                "Get the count of conversations",
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.GetConversationCount(userId));
+                }
+            ).AuthorizeWith("AdminPolicy");
         }
 
     }

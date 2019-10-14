@@ -45,7 +45,7 @@
             if (apiKey !== null)
                 graph = graphql("/graphql", { headers: { "Authorization": "Basic " + apiKey } });
             var allrulesets = graph(`{ rulesets { name }}`);
-            var extraContent = graph(`query getruleset($name: String!){ rulesetByName(name: $name){ ruleform { author currency copyright description license price version trigger{ addressSource addressText attachmentName attachmentUri bodySource bodyText emailFrom postData postDataSource postDataUri postType queueData queueName queueDataSource sendAttachment sendAttachmentSource sendBug sendBugSource sendEmail sendEmailSource subjectSource subjectText } preload{ name dataType value }}}}`);
+            var extraContent = graph(`query getruleset($name: String!){ rulesetByName(name: $name){ ruleform { author currency copyright description license price version trigger{ addressSource addressText attachmentName attachmentUri bodySource bodyText emailFrom postData postDataSource postDataUri postType queueData queueName queueDataSource sendAttachment sendAttachmentSource sendBug sendBugSource sendEmail sendEmailSource subjectSource subjectText graphqlData graphqlDataSource } preload{ name dataType value }}}}`);
             var updateDetails = graph('mutation urd($name: String!, $details: modelDetailsInput!){updateRulesetDetails(rulesetName: $name, details: $details ){author}}');
             var updateTrigger = graph('mutation urt($name: String!, $trigger: triggerInput!){updateRuleSetTrigger(ruleSetName: $name, trigger: $trigger ){addressText }}');
             var updatePreload = graph('mutation urp($name: String! $val: darlVarUpdate!){updateRulesetPreload(rulesetName: $name, preloadData: $val){name}}');
@@ -216,14 +216,24 @@
                                     "queueData": {
                                         "title": "Queue decision",
                                         "type": "string",
-                                        "description": "The io and category that corresponds to a decision to post, or \"true\",\"false\" if fixed."
+                                        "description": "The io and category that corresponds to a decision to push a message, or \"true\",\"false\" if fixed."
                                     },
                                     "queueName": {
                                         "title": "Queue name",
                                         "type": "string",
                                         "description": "Existing queue within the Azure storage group accessed by your stored connection string"
                                     },
- 
+                                     "graphqlDataSource": {
+                                        "title": "GraphQL data source",
+                                        "description": "Is the decision to send a the data to a GraphQL endpoint rule-set generated or fixed?",
+                                        "$ref": "#/definitions/sourceType",
+                                        "options": { "input_width": "120px" }
+                                    },
+                                    "graphqlData": {
+                                        "title": "GraphQL decision",
+                                        "type": "string",
+                                        "description": "The io and category that corresponds to a decision to query or mutate, or \"true\",\"false\" if fixed."
+                                    }
                                 }
                             },
                             "preload":{
@@ -412,6 +422,13 @@
                             case "root.trigger.queueName":
                                 await updateTrigger({ name: rsname, trigger: {queueName: ioval}});
                                 break;
+                            case "root.trigger.graphqlData":
+                                await updateTrigger({ name: rsname, trigger: {graphqlData: ioval}});
+                                break;
+                            case "root.trigger.graphqlDataSource":
+                                await updateTrigger({ name: rsname, trigger: {graphqlDataSource: ioval}});
+                                break;
+
                             default:
                                 if (isDigitCode(path.slice(-1))) {
                                     var node = this.getEditor(path).getValue();
@@ -431,6 +448,11 @@
                     bindWatchers(editor1, watcherCallback);
                 });
             });
+            rsname = findGetParameter("ruleset");
+            if (rsname !== null) {
+                $('#ruleset-dropdown').val(rsname).trigger('change');
+            }
+
         });
 
         function bindWatchers(editor, callback) {

@@ -437,6 +437,11 @@
                     }
                 }
             });
+            rsname = findGetParameter("ruleset");
+            if (rsname !== null) {
+                $('#ruleset-dropdown').val(rsname).trigger('change');
+            }
+
         });
 
         function findGetParameter(parameterName) {

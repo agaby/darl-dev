@@ -55,5 +55,9 @@ namespace Darl.GraphQL.Models.Models
         public string bodyText { get; set; }
         [Display(Name = "Queue name", Description = "Existing within the Azure storage group accessed by your stored connection string.")]
         public string queueName { get; set; }
+
+        public string graphqlData { get; set; }
+        public SourceType? graphqlDataSource { get; set; }
+
     }
 }

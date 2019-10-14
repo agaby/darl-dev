@@ -304,6 +304,35 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await connectivity.DeleteSendgridCredentials(userId, botModelName,modelType));
                 });
+            //  GraphQL
+            FieldAsync<GraphQLCredentialsType>("updateGraphQLCredentials",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ModelName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "url" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "header" },
+                new QueryArgument<NonNullGraphType<ModelTypeEnum>> { Name = "modelType" }
+                ),
+                resolve: async context =>
+                {
+                    var ModelName = context.GetArgument<string>("ModelName");
+                    var url = context.GetArgument<string>("url");
+                    var header = context.GetArgument<string>("header");
+                    var modelType = context.GetArgument<ModelType>("modelType");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.UpdateGraphQLCredentials(userId, ModelName, url,header, modelType));
+                });
+            FieldAsync<GraphQLCredentialsType>("deleteGraphQLCredentials",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ModelName" },
+                new QueryArgument<NonNullGraphType<ModelTypeEnum>> { Name = "modelType" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var modelType = context.GetArgument<ModelType>("modelType");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.DeleteGraphQLCredentials(userId, botModelName, modelType));
+                });
 
             // Contact
             //  Create

@@ -35,6 +35,8 @@ namespace Darl.GraphQL.Models.Schemata
             Field<SourceTypeEnum>("sendEmailSource", "Is the sending of the email determined by the rule set or fixed?");
             Field<SourceTypeEnum>("subjectSource", "Is the message subject source rule-set generated or fixed?");
             Field(c => c.subjectText, true).Description("Either the name of textual i/o or the fixed message subject.");
+            Field(c => c.graphqlData, true).Description("Either the name of textual i/o or the fixed query or mutation.");
+            Field<SourceTypeEnum>("graphqlDataSource", "Is the GraphQl interaction determined by the rule set or fixed?");
         }
     }
 }

@@ -32,6 +32,7 @@ using VSTS.Net.Models.WorkItems;
 using Darl.Lineage.Bot.Stores;
 using Darl.GraphQL.Models.Schemata;
 using Darl.GraphQL.Models.Middleware;
+using MongoDB.Bson;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -1937,6 +1938,9 @@ namespace Darl.GraphQL.Models.Connectivity
                 trigg.sendEmailSource = DarlCommon.SourceType.fixedvalue;
                 trigg.subjectSource = DarlCommon.SourceType.fixedvalue;
                 trigg.subjectText = String.Empty;
+                trigg.graphqlDataSource = DarlCommon.SourceType.fixedvalue;
+                trigg.graphqlData = String.Empty;
+
                 var update = Builders<RuleSet>.Update.Set("Contents.trigger", trigg);
                 var rs1 = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<RuleSet, RuleSet> { ReturnDocument = ReturnDocument.After });
                 return rs1.Contents.trigger;
@@ -1988,6 +1992,10 @@ namespace Darl.GraphQL.Models.Connectivity
                     updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.subjectSource, trigger.subjectSource));
                 if (trigger.subjectText != null)
                     updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.subjectText, trigger.subjectText));
+                if (trigger.graphqlDataSource != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.graphqlDataSource, trigger.graphqlDataSource));
+                if (trigger.graphqlData != null)
+                    updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.trigger.graphqlData, trigger.graphqlData));
                 var update = Builders<RuleSet>.Update.Combine(updList);
                 var rs1 = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<RuleSet, RuleSet> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
                 return rs1.Contents.trigger;
@@ -2170,6 +2178,77 @@ namespace Darl.GraphQL.Models.Connectivity
              var update = Builders<RuleSet>.Update.Combine(updList);
             var rs1 = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<RuleSet, RuleSet> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
             return new ModelDetails { author = rs1.Contents.author, copyright = rs1.Contents.copyright, description = rs1.Contents.description, license = rs1.Contents.license, version = rs1.Contents.version };
+        }
+
+        public async Task<GraphQLCredentials> UpdateGraphQLCredentials(string userId, string modelName, string url, string header, ModelType modelType)
+        {
+            var sgc = new GraphQLCredentials { url = url, header = header };
+            if (modelType == ModelType.botmodel)
+            {
+                var collection = db.GetCollection<BotModel>("botmodel");
+                var filter = Builders<BotModel>.Filter.Where(x => x.Name == modelName && x.userId == userId);
+                var update = Builders<BotModel>.Update.Set("serviceConnectivity.graphqlcred", sgc);
+                await collection.FindOneAndUpdateAsync(filter, update);
+            }
+            else if (modelType == ModelType.ruleset)
+            {
+                var collection = db.GetCollection<RuleSet>("ruleset");
+                var filter = Builders<RuleSet>.Filter.Where(x => x.Name == modelName && x.userId == userId);
+                var update = Builders<RuleSet>.Update.Set("serviceConnectivity.graphqlcred", sgc);
+                await collection.FindOneAndUpdateAsync(filter, update);
+            }
+            return sgc;
+        }
+
+        public async Task<GraphQLCredentials> DeleteGraphQLCredentials(string userId, string botModelName, ModelType modelType)
+        {
+            if (modelType == ModelType.botmodel)
+            {
+                var mc = db.GetCollection<BotModel>("botmodel");
+                var filter = Builders<BotModel>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+                var update = Builders<BotModel>.Update.Set(p => p.serviceConnectivity.graphqlcred, null);
+                await mc.UpdateOneAsync(filter, update);
+            }
+            else if (modelType == ModelType.ruleset)
+            {
+                var mc = db.GetCollection<RuleSet>("ruleset");
+                var filter = Builders<RuleSet>.Filter.Where(x => x.Name == botModelName && x.userId == userId);
+                var update = Builders<RuleSet>.Update.Set(p => p.serviceConnectivity.graphqlcred, null);
+                await mc.UpdateOneAsync(filter, update);
+            }
+            return null;
+        }
+
+        public async Task<long> GetContactsCount(string userId)
+        {
+            var mc = db.GetCollection<Contact>("contact");
+            return await mc.CountAsync(new BsonDocument());
+        }
+
+        public async Task<long> GetContactsMonthCount(string userId)
+        {
+            var mc = db.GetCollection<Contact>("contact");
+            var oneMonthBefore = DateTime.UtcNow - new TimeSpan(30, 0, 0, 0);
+            return mc.AsQueryable().Where(x => x.Created > oneMonthBefore).Count();
+        }
+
+        public async Task<long> GetContactsDayCount(string userId)
+        {
+            var oneDayBefore = DateTime.UtcNow - new TimeSpan(1, 0, 0, 0);
+            var mc = db.GetCollection<Contact>("contact");
+            return mc.AsQueryable().Where(x => x.Created > oneDayBefore).Count();
+        }
+
+        public async Task<long> GetUserCount(string userId)
+        {
+            var mc = db.GetCollection<DarlUser>("user");
+            return await mc.CountDocumentsAsync(new BsonDocument());
+        }
+
+        public async Task<long> GetConversationCount(string userId)
+        {
+            var mc = db.GetCollection<Conversation>("conversation");
+            return await mc.CountDocumentsAsync(new BsonDocument());
         }
     }
 }

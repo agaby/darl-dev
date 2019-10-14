@@ -60,6 +60,11 @@
                 rsname = this.value;
                 var form = await DARLForm('#ruleform', rsname, true, apiKey);
             });
+            rsname = findGetParameter("ruleset");
+            if (rsname !== null) {
+                $('#ruleset-dropdown').val(rsname).trigger('change');
+            }
+
         });
 
         function findGetParameter(parameterName) {

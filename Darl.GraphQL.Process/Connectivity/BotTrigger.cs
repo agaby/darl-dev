@@ -5,6 +5,7 @@ using Datl.Language;
 using GraphQL.Client;
 using GraphQL.Common.Request;
 using Microsoft.ApplicationInsights;
+using Newtonsoft.Json.Converters;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System;
@@ -95,9 +96,15 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                     if(sendGraphQL)
                     {
-                        GraphQLClient client = new GraphQLClient(graphQLUrl);
-                        var req = new GraphQLRequest() {Query = graphQLData };
-                        var resp = await client.PostAsync(req);
+                        var gq = service.graphqlcred;
+                        if(gq != null)
+                        {
+                            GraphQLClient client = new GraphQLClient(gq.url);
+                            client.DefaultRequestHeaders.Add("Authorization", gq.header);
+                            client.Options.JsonSerializerSettings.Converters.Add(new StringEnumConverter());
+                            var req = new GraphQLRequest() {Query = graphQLData };
+                            var resp = await client.PostAsync(req);
+                        }
                     }
                 }
                 catch (Exception ex)

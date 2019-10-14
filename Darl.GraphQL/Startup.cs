@@ -194,6 +194,7 @@ namespace Darl.GraphQL
             services.AddSingleton<ModelDetailsType>();
             services.AddSingleton<ModelDetailsInputType>();
             services.AddSingleton<ModelTypeEnum>();
+            services.AddSingleton<GraphQLCredentialsType>();
 
 
             //root
