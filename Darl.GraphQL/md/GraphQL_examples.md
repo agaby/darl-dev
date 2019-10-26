@@ -235,6 +235,34 @@ query lint($darl: String!)
 }
 ```
 
+## Getting an Alexa InteractionModel to build an Alexa skill
+```json
+alexaInteractionModel(name: "is_it_using_AI.rule" invocationName: "using AI")
+  {
+    languageModel
+    {
+      invocationName
+      intents
+      {
+        name
+        samples
+        slots
+        {
+          name
+          samples
+          type
+        }
+      }
+      types
+      {
+        name
+      }
+    }
+  }
+```
+note: In the returned Json, rename _alexaInteractionModel_ to _interactionModel_ and remove the outer braces and _data:_ . You can then drop the Json into the Alexa Developer Console Json editor.
+_
+
 # Mutations
 
 ## Setting the text for a ruleset question

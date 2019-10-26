@@ -195,6 +195,11 @@ namespace Darl.GraphQL
             services.AddSingleton<ModelDetailsInputType>();
             services.AddSingleton<ModelTypeEnum>();
             services.AddSingleton<GraphQLCredentialsType>();
+            services.AddSingleton<InteractionModelType>();
+            services.AddSingleton<LanguageModelType>();
+            services.AddSingleton<IntentType>();
+            services.AddSingleton<SlotType>();
+            services.AddSingleton<AlexaTypeType>();
 
 
             //root

@@ -11,5 +11,7 @@ namespace Darl.GraphQL.Models.Models
         public string Name { get; set; }
         public string Value { get; set; }
         public string userId { get; set; }
+        public byte[] content { get; set; }
+
     }
 }

@@ -55,6 +55,7 @@ namespace Darl.GraphQL.Models.Connectivity
               new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
             mongoClient = new MongoClient(settings);
             db = mongoClient.GetDatabase(_opt.Value.MongoDatabase);
+            BsonClassMap.RegisterClassMap<BotTrigger>();
         }
 
         public async Task<Authorization> CreateAuthorization(string userId, string botModelName, Authorization auth)

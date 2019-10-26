@@ -76,6 +76,7 @@
             <li><a href="#get-lineages-for-a-word">Get lineages for a word</a></li>
             <li><a href="#investigate-the-bot-text-recognition-tree">Investigate the bot text recognition tree</a></li>
             <li><a href="#use-the-darl-linter">Use the DARL linter</a></li>
+            <li><a href="#getting-an-alexa-interactionmodel-to-build-an-alexa-skill">Getting an Alexa InteractionModel to build an Alexa skill</a></li>
         <li class="main "><a href="#mutations">Mutations</a></li>
             <li><a href="#setting-the-text-for-a-ruleset-question">Setting the text for a ruleset question</a></li>
             <li><a href="#setting-a-preloaded-data-value-for-a-rule-set">Setting a preloaded data value for a rule set</a></li>
@@ -312,6 +313,33 @@
 }
 </code></pre>
 
+<h2 id="getting-an-alexa-interactionmodel-to-build-an-alexa-skill">Getting an Alexa InteractionModel to build an Alexa skill</h2>
+<pre><code class="json">alexaInteractionModel(name: &quot;is_it_using_AI.rule&quot; invocationName: &quot;using AI&quot;)
+  {
+    languageModel
+    {
+      invocationName
+      intents
+      {
+        name
+        samples
+        slots
+        {
+          name
+          samples
+          type
+        }
+      }
+      types
+      {
+        name
+      }
+    }
+  }
+</code></pre>
+
+<p>note: In the returned Json, rename <em>alexaInteractionModel</em> to <em>interactionModel</em> and remove the outer braces and <em>data:</em> . You can then drop the Json into the Alexa Developer Console Json editor.
+_</p>
 <h1 id="mutations">Mutations</h1>
 <h2 id="setting-the-text-for-a-ruleset-question">Setting the text for a ruleset question</h2>
 <pre><code class="json">mutation{

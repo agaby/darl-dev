@@ -2,12 +2,14 @@
 using Darl.Lineage.Bot.Stores;
 using DarlCommon;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Darl.GraphQL.Models.Models
 {
+    [BsonIgnoreExtraElements]
     public class BotState
     {
         public ObjectId id { get; set; }

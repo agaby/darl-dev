@@ -28,9 +28,12 @@ namespace Darl.GraphQL.Models.Schemata
         public static List<StringDoublePair> GetSDPairsFromDictionary(Dictionary<string, double> dict)
         {
             var list = new List<StringDoublePair>();
-            foreach (var k in dict.Keys)
-            {
-                list.Add(new StringDoublePair { name = k, value = dict[k] });
+            if(dict != null)
+            { 
+                foreach (var k in dict.Keys)
+                {
+                    list.Add(new StringDoublePair { name = k, value = dict[k] });
+                }
             }
             return list;
         }

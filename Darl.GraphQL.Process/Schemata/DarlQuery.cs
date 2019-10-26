@@ -519,6 +519,21 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.GetConversationCount(userId));
                 }
             ).AuthorizeWith("AdminPolicy");
+            FieldAsync<InteractionModelType>(
+                "alexaInteractionModel",
+                "Get the json contents of an Alexa interaction model to set up an Alexa skill.",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "Name of the ruleset to use" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "invocationName", Description = "The invocation name of the skill" }),
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    var name = context.GetArgument<string>("name");
+                    var invocationName = context.GetArgument<string>("invocationName");
+                    return await context.TryAsyncResolve(
+                        async c => await form.GetAlexaInteractionModel(userId,name,invocationName));
+                }
+            );
         }
 
     }

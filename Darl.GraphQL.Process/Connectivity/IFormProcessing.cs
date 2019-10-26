@@ -1,5 +1,6 @@
 ﻿using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Schemata;
+using Darl.GraphQL.Process.Models.Alexa;
 using DarlCommon;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         Task<QuestionSetProxy> ContinueQuestionnaire(QuestionSetInput responses);
 
-        Task<object> BeginDynamicQuestionnaire(string userId, string selector, DQType dqType);
-
+        Task<QuestionSetProxy> BeginDynamicQuestionnaire(string userId, string selector, DQType dqType);
+        Task<InteractionModel> GetAlexaInteractionModel(string userId, string name, string invocationName);
     }
 }
