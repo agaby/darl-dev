@@ -67,3 +67,13 @@ At any part of the tree a single default value can be specified. If no better ma
 A single match element may be a combination of several words, lineages or values separated by the '|' character.
 __Do not mix types in an element, or debugging may be very difficult!__
 
+# Path definitions
+
+Define patterns by separating words with the "/" symbol.
+
+
+All words should be lower case only. Separate alternate choices with the "|" symbol. So, "talk/to/dr|doctor|doc/andy will match "talk to dr andy" and "talk to doctor andy" and "talk to doc andy".
+Concepts and special symbols have a ":" character in them. So, _my/name/is/value:_ will match "my name is andy" and extract the "andy" as the value.
+
+Defaults are written as "default:" so _who/is/default:_ will match "who is andy" if "andy" is not specified in another phrase.
+

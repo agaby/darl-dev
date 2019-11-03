@@ -66,6 +66,7 @@
         <li class="main "><a href="#variables">Variables</a></li>
         <li class="main "><a href="#default">Default</a></li>
         <li class="main "><a href="#combining-elements">Combining elements</a></li>
+        <li class="main "><a href="#path-definitions">Path definitions</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -158,7 +159,12 @@ So, lineages are represented as follows:</p>
 <p>At any part of the tree a single default value can be specified. If no better match can be found the deepest default found is triggered instead.</p>
 <h1 id="combining-elements">Combining elements</h1>
 <p>A single match element may be a combination of several words, lineages or values separated by the '|' character.
-<strong>Do not mix types in an element, or debugging may be very difficult!</strong></p></div>
+<strong>Do not mix types in an element, or debugging may be very difficult!</strong></p>
+<h1 id="path-definitions">Path definitions</h1>
+<p>Define patterns by separating words with the "/" symbol.</p>
+<p>All words should be lower case only. Separate alternate choices with the "|" symbol. So, "talk/to/dr|doctor|doc/andy will match "talk to dr andy" and "talk to doctor andy" and "talk to doc andy".
+Concepts and special symbols have a ":" character in them. So, <em>my/name/is/value:</em> will match "my name is andy" and extract the "andy" as the value.</p>
+<p>Defaults are written as "default:" so <em>who/is/default:</em> will match "who is andy" if "andy" is not specified in another phrase.</p></div>
         </div>
 
         <footer class="col-md-12">

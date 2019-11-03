@@ -1,6 +1,7 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
+using Darl.Lineage;
 using DarlCommon;
 using GraphQL.Types;
 using System;
@@ -534,6 +535,17 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await form.GetAlexaInteractionModel(userId,name,invocationName));
                 }
             );
+            Field<ListGraphType<StringGraphType>>(
+                "tokenize",
+                "Tokenize a string using the standard en tokenizer",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "text", Description = "Text to tokenize" }),
+                resolve:  context =>
+                {
+                    var text = context.GetArgument<string>("text");
+                    return LineageLibrary.SimpleTokenizer(text);
+                }
+            );
+
         }
 
     }

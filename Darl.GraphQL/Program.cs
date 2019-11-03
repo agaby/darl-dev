@@ -23,6 +23,6 @@ namespace Darl.GraphQL
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                });
+                }); 
     }
 }
