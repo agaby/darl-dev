@@ -1101,7 +1101,7 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
         /// <summary>
-        /// Get the byte represetation of a lineagemodel
+        /// Get the byte representation of a lineagemodel
         /// </summary>
         /// <param name="lm"></param>
         /// <returns></returns>
