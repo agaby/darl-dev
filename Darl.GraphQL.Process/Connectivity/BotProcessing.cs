@@ -4,6 +4,7 @@ using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using DarlCommon;
 using Microsoft.ApplicationInsights;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -67,7 +68,13 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                     if (r.response.approximate)
                     {
-                        await _conv.CreateDefaultResponse(new DefaultResponse { date = DateTime.Now, model = botModelName, message = conversationData.Value, response = r.response.Value, userId = userId, version = bm.modelSettings["version"] });
+                        string version = "unknown";
+                        if(bm.modelSettings.ContainsKey("version"))
+                        {
+                            var v = JsonConvert.DeserializeObject<DarlVar>(bm.modelSettings["version"]);
+                            version = v.Value;
+                        }
+                        await _conv.CreateDefaultResponse(new DefaultResponse { date = DateTime.UtcNow, model = botModelName, message = conversationData.Value, response = r.response.Value, userId = userId, version = version });
                     }
                 }
                 else

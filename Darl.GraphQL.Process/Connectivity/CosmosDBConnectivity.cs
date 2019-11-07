@@ -161,6 +161,14 @@ namespace Darl.GraphQL.Models.Connectivity
                 throw new ExecutionError($"A bot model with name {name} already exists in your account.");
             }
             var lm = new LineageModel();
+            lm.ruleSkeleton = "ruleset botRuleset\n{\n /*%% rule_insertion_point %%*/\n}";
+            lm.modelSettings.Add("name", $"{{\"name\": \"name\", \"unknown\": false, \"weight\": 1.0,\"approximate\": false,\"dataType\": \"textual\", \"value\": \"{name}\"}}");
+            lm.modelSettings.Add("copyright", "{\"name\": \"copyright\",\"unknown\": false,\"weight\": 1.0,\"approximate\": false,\"dataType\": \"textual\",\"value\": \"(c) 2017 Dr Andy's IP\"}");
+            lm.modelSettings.Add("version", "{\"name\": \"version\",\"unknown\": false,\"weight\": 1.0,\"approximate\": false,\"dataType\": \"textual\",\"value\": \"1.0.0\"}");
+            lm.form = "{\"InputFormatList\": [], \"OutputFormatList\": [{\"Categories\": null,\"Sets\": null,\"Name\": \"response\",\"OutputType\": \"textual\",\"displayType\": \"Text\",\"ValueFormat\": null},{\"Categories\": null,\"Sets\": null,\"Name\": \"link\",\"OutputType\": \"textual\",\"displayType\": \"Link\",\"ValueFormat\": null}],\"Stores\": [\"UserData\",\"ConversationData\",\"PrivateConversationData\",\"Bot\",\"Value\",\"Call\",\"Word\",\"Rest\",\"Collateral\"],\"Strings\": {}, \"Constants\": {}, \"Sequences\": {}}";
+            lm.tree = new LineageMatchTree();
+            lm.PhraseCreate("default:");
+            lm.tree.SaveAttributes("default:", "if anything then response will be \"I don't know the answer to that\";", new List<string>(), new List<string>());
             var model = new BotModel { Name = name, userId = userId, Model = ConvertLineageModel(lm) };
             await mc.InsertOneAsync(model);
             return model;
