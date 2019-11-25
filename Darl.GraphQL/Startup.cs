@@ -200,6 +200,8 @@ namespace Darl.GraphQL
             services.AddSingleton<IntentType>();
             services.AddSingleton<SlotType>();
             services.AddSingleton<AlexaTypeType>();
+            services.AddSingleton<StoreStateType>();
+            services.AddSingleton<BotTestViewType>();
 
 
             //root

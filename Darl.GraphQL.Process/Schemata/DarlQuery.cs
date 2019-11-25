@@ -545,6 +545,25 @@ namespace Darl.GraphQL.Models.Schemata
                     return LineageLibrary.SimpleTokenizer(text);
                 }
             );
+            FieldAsync<ListGraphType<BotTestViewType>>(
+                "botTest",
+                "test a bot through conversation with visibility of internal states",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName", Description = "Name of the bot model" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "conversationId", Description = "The conversationId" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "text", Description = "The user's text" },
+                    new QueryArgument<NonNullGraphType<BooleanGraphType>> { Name = "reset", Description = "true if the conversation is reset" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var conversationId = context.GetArgument<string>("conversationId");
+                    var text = context.GetArgument<string>("text");
+                    var reset = context.GetArgument<bool>("reset");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await bot.InteractTestAsync(userId, botModelName, conversationId, text, reset));
+                }
+            );
 
         }
 

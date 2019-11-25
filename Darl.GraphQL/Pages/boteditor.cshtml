@@ -30,7 +30,7 @@
         <div class="col-md-12 margin-b-40">
             <hr/>
             <div class="container">
-                <div class=" = row">
+                <div class="row">
                     <h4>Edit Phrases</h4>
                 </div>
                 <div class="row">
@@ -161,14 +161,14 @@
                 viewportMargin: Infinity
 
             });
-            //JSONEditor.defaults.options.iconlib = "fontawesome4";
 
-            darlCodeMirror.on("inputRead", function (cm) {
-                if (timeout) clearTimeout(timeout);
-                timeout = setTimeout(function () {
-                    CodeMirror.showHint(cm, CodeMirror.hint.darl, { completeSingle: false });
-                }, 150);
-            });
+
+                darlCodeMirror.on("inputRead", function (cm) {
+                    if (timeout) clearTimeout(timeout);
+                    timeout = setTimeout(function () {
+                        CodeMirror.showHint(cm, CodeMirror.hint.darl, { completeSingle: false });
+                    }, 150);
+                });
 
             darlCodeMirror.on("keyup", function (cm, event) {
                 var keyCode = event.keyCode || event.which;

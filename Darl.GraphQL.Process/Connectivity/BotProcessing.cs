@@ -51,7 +51,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var stores = bm.CreateStores(userId, _rfi, bs.values, bs.userData, bs.conversationData, bs.privateConversationData );
             if (bs.ruleProcessing.Count == 0) // conversational processing
             {
-                var responses = await bm.InteractTest(conversationData, bs.values, stores);
+                var responses = await bm.InteractTest(conversationData, bs.values, stores,true);
                 if(responses.Any())
                 {
                     var r = responses.Last();
@@ -132,6 +132,38 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             await _conv.SaveBotState(bs);
             return resp;
+        }
+
+        public async Task<BotTestView> InteractTestAsync(string userId, string botModelName, string conversationId, string text, bool reset)
+        {
+            List<InteractTestResponse> resp = new List<InteractTestResponse>();
+            //cache these?
+            var bmt = await _conv.GetBotModel(userId, botModelName);
+            LineageModel bm = null;
+            using (var ms = new MemoryStream(bmt.Model))
+            {
+                ms.Position = 0;
+                bm = LineageModel.Load(ms);
+            }
+            BotState bs = await _conv.GetBotState(userId, conversationId);
+            if (bs == null)//first call for this conversation
+            {
+                bs = new BotState { conversationId = conversationId, userId = userId, userData = new LocalBotData(new Dictionary<string, string>()), conversationData = new LocalBotData(new Dictionary<string, string>()), privateConversationData = new LocalBotData(new Dictionary<string, string>()), values = new List<DarlVar>(), ruleProcessing = new Stack<RuleSetHandler>() };
+            }
+            var stores = bm.CreateStores(userId, _rfi, bs.values, bs.userData, bs.conversationData, bs.privateConversationData);
+            var btv = new BotTestView() { conversationID = bs.conversationId, conversation = new List<string>(), darl = "" };
+            var responses = await bm.InteractTest(new DarlVar { Value = text, name = "text", dataType = DarlVar.DataType.textual }, bs.values, stores);
+            if (responses.Any())
+            {
+
+            }
+            else
+            {
+                resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Internal error", dataType = DarlVar.DataType.textual } });
+            }
+
+            await _conv.SaveBotState(bs);
+            return btv;
         }
     }
 }

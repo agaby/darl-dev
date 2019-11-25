@@ -1,0 +1,96 @@
+﻿@page
+@model Darl.GraphQL.Pages.DownloadModel
+@using  Darl.GraphQL.Pages
+
+@{
+    ViewData["Title"] = "Download";
+    Layout = "~/Pages/_layoutscrolling.cshtml";
+}
+
+<div class="space-70"></div>
+<div class="container margin-b-40">
+    <div class="row">
+        <div class="col-md-12 margin-b-40">
+            <h1>Model downloading</h1>
+            <p>Download models of different kinds to use on premises or in embedded systems.</p>
+            <hr />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 margin-b-40">
+            <form method="post" class="col-sm-6">
+                <div class="form-group row">
+                    <label asp-for="downloadType" class="col-sm-3 col-form-label"></label>
+                    <div class="col-sm-7">
+                        <select asp-for="downloadType" asp-items="Html.GetEnumSelectList<DownloadModel.DownloadType>()" class="form-control"></select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label asp-for="modelName" class="col-sm-3 col-form-label"></label>
+                    <div class="col-sm-7">
+                        <input asp-for="modelName" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-sm-7 offset-sm-3">
+                        <button class="btn btn-primary" id="submit" >Download</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section scripts{
+    <script>
+        $(function () {
+            var apiKey = findGetParameter("apikey");
+            $('<input>', { type: 'hidden', id: 'apiKey', name: 'apiKey', value: apiKey }).appendTo(document.forms[0]);
+            $('#submit').on('click', function (evt) {
+                evt.preventDefault();
+                $.ajax({
+                    url: '',
+                    data: new FormData(document.forms[0]),
+                    contentType: false,
+                    processData: false,
+                    type: 'post',
+                    success: function () {
+                        alert('Download complete');
+                    }
+                });
+            });
+            $('#downloadType').on('change', function () {
+/*                $.post("PostChoices", { dtype: $('#downloadType').val() }, function (data) {
+                    var dropdown = $('#modelName');
+                    dropdown.empty();
+                    dropdown.append('<option selected="true" disabled>Choose a model to download</option>');
+                    dropdown.prop('selectedIndex', 0);
+                    $.each(data, function (key, entry) {
+                        dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry).text(entry));
+                    });
+                });*/
+            });
+        });
+
+        function findGetParameter(parameterName) {
+            var result = null,
+                tmp = [];
+            location.search
+                .substr(1)
+                .split("&")
+                .forEach(function (item) {
+                    tmp = item.split("=");
+                    if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+                });
+            return result;
+        }
+    </script>
+}
+
+@section header{
+    <meta name="description" content="Upload files required for bots and ruleset in ther DARL GraphQL API." />
+}
