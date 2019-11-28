@@ -1705,11 +1705,26 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
         public async Task<List<Collateral>> GetCollaterals(string userId)
-        {
-            var mc = db.GetCollection<Collateral>("collateral");
-            var query = mc.AsQueryable()
-            .Where(p => p.userId == userId);
-            return await query.ToListAsync();
+        {//adapted to use cursors for large numbers and sizes of collateral
+           var list = new List<Collateral>();
+           try
+           {
+                var mc = db.GetCollection<Collateral>("collateral");
+                var filter = Builders<Collateral>.Filter.Where(x => x.userId == userId);
+                using (var cursor = await mc.FindAsync(filter))
+                {
+                    await cursor.ForEachAsync(doc =>
+                    {
+                        list.Add(doc);
+                    });
+                }
+                return list;
+            }
+            catch(Exception ex)
+            {
+                telemetry.TrackException(ex);
+            }
+            return list;
         }
 
         public async Task<DateTime> GetLastUpdate(string from, string to)

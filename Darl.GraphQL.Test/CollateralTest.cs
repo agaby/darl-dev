@@ -2,9 +2,12 @@
 using GraphQL.Client;
 using GraphQL.Common.Request;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -86,6 +89,15 @@ namespace Darl.GraphQL.Test
             resp = await client.PostAsync(req);
             collaterals = resp.GetDataFieldAs<List<Collateral>>("collateral");
             
+        }
+
+        [TestMethod]
+        public async Task TestGetCollaterals()
+        {
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.AppSettings.json"));
+            var source = reader.ReadToEnd();
+            var appSettings = JsonConvert.DeserializeObject<AppSettings>(source);
+
         }
 
     }
