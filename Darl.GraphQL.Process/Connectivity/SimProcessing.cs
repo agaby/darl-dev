@@ -38,7 +38,7 @@ namespace Darl.GraphQL.Models.Connectivity
             el.sample = daslSet.sampleTime;
             var sampled = sampleType == SampleType.events ? el.GetEventData() : el.SampleData();
             var res = await sruntime.Simulate(sampled, sampled.Count, tree);
-            telemetryClient.TrackEvent($"DaslSimulate used: userId = {userId}, usage = {res.Count}");
+            telemetryClient.TrackEvent($"Simulate", new Dictionary<string, string> { { nameof(userId), userId }, { nameof(ruleset), ruleset }, {"usage", res.Count.ToString() } });
             return new DaslSet { events = el.ConvertToEvents(res), description = daslSet.description, sampleTime = daslSet.sampleTime };
         }
     }

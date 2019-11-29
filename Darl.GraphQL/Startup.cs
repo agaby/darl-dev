@@ -253,6 +253,7 @@ namespace Darl.GraphQL
                         });*/
 
             services.AddRazorPages();
+            services.AddApplicationInsightsTelemetry();
 
         }
 

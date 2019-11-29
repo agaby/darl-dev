@@ -57,7 +57,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (rs != null)
             {
                 var qsp = await _formApi.Get(rs, language, questCount);
-                telemetryClient.TrackEvent($"Questionnaire interaction started. userId = {userId}, Ruleset name = {ruleSetName}, id = {qsp.ieToken}");
+                telemetryClient.TrackEvent($"BeginQuestionnaire", new Dictionary<string, string> { { nameof(userId), userId }, { nameof(ruleSetName), ruleSetName }, {nameof(qsp.ieToken), qsp.ieToken } });
                 return qsp;
             }
             return null;
@@ -83,7 +83,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 throw new ExecutionError($"ieToken {responses.ieToken} not found. Questionnaire timed out?");
             }
-            telemetryClient.TrackEvent($"Questionnaire interaction continued.  id = {r.ieToken}");
+            telemetryClient.TrackEvent($"ContinueQuestionnaire", new Dictionary<string, string> { { nameof(r.ieToken), r.ieToken } });
             return r;
         }
 
@@ -117,10 +117,26 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     case InputFormat.InputType.numeric:
                         {
-                            intent.name = $"{input.Name}Intent";
-                            intent.slots.Add(new Slot { type = "AMAZON.NUMBER", name = input.Name });
-                            intent.samples.Add($"{{{input.Name}}}");
-                            im.languageModel.intents.Add(intent);
+                            if(input.ShowSets)
+                            {
+                                foreach (var c in input.Categories)
+                                {
+                                    DetectYesNoNodes(c, im.languageModel.intents);
+                                    var catName = $"{input.Name}.{c}";
+                                    var displayedTextNode = rs.Contents.language.LanguageList.Where(a => a.Name == catName).FirstOrDefault();
+                                    if (displayedTextNode != null)
+                                    {
+                                        DetectYesNoNodes(displayedTextNode.Name, im.languageModel.intents);
+                                    }
+                                }
+                            }
+                            else 
+                            { 
+                                intent.name = $"{input.Name}Intent";
+                                intent.slots.Add(new Slot { type = "AMAZON.NUMBER", name = input.Name });
+                                intent.samples.Add($"{{{input.Name}}}");
+                                im.languageModel.intents.Add(intent);
+                            }
                         }
                         break;
                     case InputFormat.InputType.temporal:

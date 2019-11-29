@@ -917,7 +917,7 @@ namespace Darl.GraphQL.Models.Connectivity
                             return errors; //errors, just add them to the input and quit.
                         }
                         var res = await ProcessValues(DarlVarExtensions.Convert(DarlVarInput.Convert(inputs)), tree);
-                        telemetry.TrackEvent($"InferFromRuleSetDarlVar used. userId = {userId}, ruleset name = {ruleSetName}");
+                        telemetry.TrackEvent($"InferFromRuleSetDarlVar",new Dictionary<string, string> { {nameof(userId), userId }, {nameof(ruleSetName), ruleSetName } });
                         return DarlVarExtensions.Convert(res);
                     }
                     else
@@ -987,7 +987,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             var end = DateTime.Now;
             TimeSpan execTime = (end - start);
-            telemetry.TrackEvent($"Machine learning run used. userId = {userId}, mlmodel name = {mlmodelname}, seconds = {execTime.TotalSeconds}");
+            telemetry.TrackEvent($"MachineLearnModel", new Dictionary<string, string> { {nameof(userId), userId }, { nameof(mlmodelname), mlmodelname },{"seconds", execTime.TotalSeconds.ToString() } });
             //insert result into MLModel result array
             var mlr = new MLResult { code = rep.code, errorText = rep.errorText, executionDate = start, executionTime = execTime, trainPercent = rep.trainPercent, trainPerformance = rep.trainPerformance, testPerformance = rep.testPerformance, unknownResponsePercent = rep.unknownResponsePercent };
             var filter = Builders<MLModel>.Filter.Where(x => x.Name == mlmodelname && x.userId == userId);
@@ -2163,8 +2163,9 @@ namespace Darl.GraphQL.Models.Connectivity
                         }
                         //now convert the inputs to DarlVars
                         var res = await ProcessValues(DarlVarExtensions.Convert(DarlVarInput.Convert(inputs)), tree);
-                        telemetry.TrackEvent($"InferFromDarlDarlVar used. userId = {userId}");
-                        return DarlVarExtensions.Convert(res);
+                        telemetry.TrackEvent($"InferFromDarlDarlVar", new Dictionary<string, string> { { nameof(userId), userId } });
+
+                    return DarlVarExtensions.Convert(res);
                  }
             }
             catch (Exception ex)

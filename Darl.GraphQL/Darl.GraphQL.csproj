@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <PackageReference Include="GraphQL" Version="3.0.0-preview-1211" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.8.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureADB2C.UI" Version="3.0.0-preview8.19405.7" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0-preview9.19423.6" />
