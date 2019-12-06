@@ -13,12 +13,13 @@ namespace Darl.GraphQL.Models.Connectivity
     public class SimProcessing : ISimProcessing
     {
         DaslRunTime sruntime = new DaslRunTime();
-        private TelemetryClient telemetryClient = new TelemetryClient();
+        private TelemetryClient _telemetry;
         private IConnectivity _connectivity;
 
-        public SimProcessing(IConnectivity connectivity)
+        public SimProcessing(IConnectivity connectivity, TelemetryClient telemetry)
         {
             _connectivity = connectivity;
+            _telemetry = telemetry;
         }
 
         public async Task<DaslSet> Simulate(string userId, string ruleset, DaslSet daslSet, SampleType sampleType)
@@ -38,7 +39,7 @@ namespace Darl.GraphQL.Models.Connectivity
             el.sample = daslSet.sampleTime;
             var sampled = sampleType == SampleType.events ? el.GetEventData() : el.SampleData();
             var res = await sruntime.Simulate(sampled, sampled.Count, tree);
-            telemetryClient.TrackEvent($"Simulate", new Dictionary<string, string> { { nameof(userId), userId }, { nameof(ruleset), ruleset }, {"usage", res.Count.ToString() } });
+            _telemetry.TrackEvent($"Simulate", new Dictionary<string, string> { { nameof(userId), userId }, { nameof(ruleset), ruleset }, {"usage", res.Count.ToString() } });
             return new DaslSet { events = el.ConvertToEvents(res), description = daslSet.description, sampleTime = daslSet.sampleTime };
         }
     }

@@ -209,5 +209,9 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<long> GetConversationCount(string userId);
         Task<long> GetContactsDayCount(string userId);
         Task<long> GetContactsMonthCount(string userId);
+        Task<UserUsage> CreateSimulationUsage(DateTime date, int count, string userId, string model);
+        Task<UserUsage> CreateMLModelUsage(DateTime date, int count, string userId, string model);
+        Task<UserUsage> CreateRuleSetUsage(DateTime date, int count, string userId, string model);
+        Task<UserUsage> CreateBotModelUsage(DateTime date, int count, string userId, string model);
     }
 }

@@ -364,7 +364,6 @@ namespace Darl.GraphQL
 
         private async Task<DarlUser> AddNewUser(HttpContext context, string objectId, IConnectivity _rep)
         {
-            var tc = new TelemetryClient();
             try
             { 
                 //extract claims that may be present
@@ -389,12 +388,10 @@ namespace Darl.GraphQL
                     invoiceName = $"{firstName} {secondName}";
                 }
                 var provider = "aadb2c";
-                tc.TrackEvent("New registration", new Dictionary<string, string> { { "UserId", objectId }, { "provider", provider }, { "email", emailClaim } });
                 return await _rep.CreateAndProvisionNewUser(new DarlUserInput {userId = objectId, InvoiceEmail = emailClaim, Issuer = provider, InvoiceName = invoiceName, InvoiceOrganization = "" });
             }
-            catch(Exception ex)
+            catch
             {
-                tc.TrackException(ex, new Dictionary<string, string> { { "UserId", objectId } });
                 return null;
             }
         }

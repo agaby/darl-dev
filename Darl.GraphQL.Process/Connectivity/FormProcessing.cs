@@ -19,14 +19,15 @@ namespace Darl.GraphQL.Models.Connectivity
         private IConnectivity _connectivity;
         private IFormApi _formApi;
         private IOptions<AppSettings> _opt;
-        private TelemetryClient telemetryClient = new TelemetryClient();
+        private TelemetryClient _telemetry;
 
 
-        public FormProcessing(IConnectivity connectivity, IFormApi formApi, IOptions<AppSettings> optionsAccessor)
+        public FormProcessing(IConnectivity connectivity, IFormApi formApi, IOptions<AppSettings> optionsAccessor, TelemetryClient telemetry)
         {
             _connectivity = connectivity;
             _formApi = formApi;
             _opt = optionsAccessor;
+            _telemetry = telemetry;
         }
 
         public async Task<QuestionSetProxy> BacktrackQuestionnaire(string ieToken)
@@ -57,7 +58,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (rs != null)
             {
                 var qsp = await _formApi.Get(rs, language, questCount);
-                telemetryClient.TrackEvent($"BeginQuestionnaire", new Dictionary<string, string> { { nameof(userId), userId }, { nameof(ruleSetName), ruleSetName }, {nameof(qsp.ieToken), qsp.ieToken } });
+                _telemetry.TrackEvent($"BeginQuestionnaire", new Dictionary<string, string> { { nameof(userId), userId }, { nameof(ruleSetName), ruleSetName }, {nameof(qsp.ieToken), qsp.ieToken } });
                 return qsp;
             }
             return null;
@@ -83,7 +84,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 throw new ExecutionError($"ieToken {responses.ieToken} not found. Questionnaire timed out?");
             }
-            telemetryClient.TrackEvent($"ContinueQuestionnaire", new Dictionary<string, string> { { nameof(r.ieToken), r.ieToken } });
+            _telemetry.TrackEvent($"ContinueQuestionnaire", new Dictionary<string, string> { { nameof(r.ieToken), r.ieToken } });
             return r;
         }
 

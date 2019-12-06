@@ -28,17 +28,18 @@ namespace Darl.GraphQL.Models.Connectivity
         private ITrigger _trigger;
 
 
-        TelemetryClient telemetry = new TelemetryClient();
+        private TelemetryClient _telemetry;
 
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="cache"></param>
         /// <param name="rep"></param>
-        public FormApi(IDistributedCache cache, ITrigger trigger)
+        public FormApi(IDistributedCache cache, ITrigger trigger, TelemetryClient telemetry)
         {
             _cache = cache;
             _trigger = trigger;
+            _telemetry = telemetry;
         }
 
         /// <summary>
@@ -59,7 +60,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                telemetry.TrackException(ex);
+                _telemetry.TrackException(ex);
                 throw ex;
             }
         }
@@ -94,7 +95,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                telemetry.TrackException(ex);
+                _telemetry.TrackException(ex);
                 throw ex;
             }
 
@@ -117,7 +118,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                telemetry.TrackException(ex);
+                _telemetry.TrackException(ex);
                 throw ex;
             }
         }
@@ -137,7 +138,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
                 catch (Exception ex)
                 {
-                    telemetry.TrackException(ex);
+                    _telemetry.TrackException(ex);
                     return false;
                 }
             }

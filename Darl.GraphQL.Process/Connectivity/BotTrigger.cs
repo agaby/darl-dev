@@ -21,13 +21,14 @@ namespace Darl.GraphQL.Models.Connectivity
     {
 
         private IConnectivity _connectivity;
+        private TelemetryClient _telemetry;
 
-        public BotTrigger(IConnectivity connectivity)
+        public BotTrigger(IConnectivity connectivity, TelemetryClient telemetry)
         {
             _connectivity = connectivity;
+            _telemetry = telemetry;
         }
 
-        private TelemetryClient telemetry = new TelemetryClient();
 
 
         public async Task TriggerEvent(List<DarlVar> values, RuleForm rf, string user, ServiceConnectivity service)
@@ -77,7 +78,7 @@ namespace Darl.GraphQL.Models.Connectivity
                                 }
                                 catch (Exception ex)
                                 {
-                                    telemetry.TrackException(ex);
+                                    _telemetry.TrackException(ex);
                                     return;
                                 }
                             }
@@ -109,7 +110,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
                 catch (Exception ex)
                 {
-                    telemetry.TrackException(ex);
+                    _telemetry.TrackException(ex);
                 }
             }
         }

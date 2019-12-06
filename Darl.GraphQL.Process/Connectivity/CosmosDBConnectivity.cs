@@ -42,11 +42,11 @@ namespace Darl.GraphQL.Models.Connectivity
         public IMongoDatabase db { get; set; }
         private MongoClient mongoClient;
         private DarlRunTime runtime = new DarlRunTime();
-        private TelemetryClient telemetry = new TelemetryClient();
-        public CosmosDBConnectivity(IOptions<AppSettings> optionsAccessor)
+        private TelemetryClient _telemetry;
+        public CosmosDBConnectivity(IOptions<AppSettings> optionsAccessor, TelemetryClient telemetry)
         {
             _opt = optionsAccessor;
-
+            _telemetry = telemetry;
             string connectionString = _opt.Value.MongoConnectionString;
             MongoClientSettings settings = MongoClientSettings.FromUrl(
               new MongoUrl(connectionString)
@@ -109,7 +109,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                telemetry.TrackException(ex);
+                _telemetry.TrackException(ex);
                 throw new ExecutionError("Duplicate or malformed data");
             }
         }
@@ -246,7 +246,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
                 catch(Exception ex)
                 {
-                    throw new ExecutionError("Errors in Darl source");
+                    throw new ExecutionError("Errors in Darl source", ex);
                 }
             }
             return null;
@@ -324,7 +324,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                telemetry.TrackException(ex);
+                _telemetry.TrackException(ex);
                 throw new ExecutionError("Duplicate or malformed data");
             }
         }
@@ -411,7 +411,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                telemetry.TrackException(ex);
+                _telemetry.TrackException(ex);
                 throw new ExecutionError("Duplicate or malformed data");
             }
         }
@@ -561,7 +561,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                telemetry.TrackException(ex);
+                _telemetry.TrackException(ex);
                 throw new ExecutionError("Duplicate or malformed data");
             }
         }
@@ -841,7 +841,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                telemetry.TrackEvent($"Bad lineage lookup for word {word} message: {ex.Message}");
+                _telemetry.TrackEvent($"Bad lineage lookup for word {word} message: {ex.Message}");
                 return new List<LineageRecord>();
             }
         }
@@ -913,11 +913,11 @@ namespace Darl.GraphQL.Models.Connectivity
                                 var level = pm.Level == ErrorLevel.Error ? "error" : "warning";
                                 errors.Add(new DarlVar { name = $"error{errorCount++}", Value = $"line_no = {pm.Location.Line + 1}, column_no_start = {pm.Location.Column + 1}, column_no_stop = {pm.Location.Column + 2}, message = {pm.Message}, severity = {level}", dataType = DarlVar.DataType.textual });
                             }
-                            telemetry.TrackEvent("DarlInf used with errors");
+                            _telemetry.TrackEvent("DarlInf used with errors");
                             return errors; //errors, just add them to the input and quit.
                         }
                         var res = await ProcessValues(DarlVarExtensions.Convert(DarlVarInput.Convert(inputs)), tree);
-                        telemetry.TrackEvent($"InferFromRuleSetDarlVar",new Dictionary<string, string> { {nameof(userId), userId }, {nameof(ruleSetName), ruleSetName } });
+                        _telemetry.TrackEvent($"InferFromRuleSetDarlVar",new Dictionary<string, string> { {nameof(userId), userId }, {nameof(ruleSetName), ruleSetName } });
                         return DarlVarExtensions.Convert(res);
                     }
                     else
@@ -928,7 +928,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                telemetry.TrackEvent("DarlInf Exception");
+                _telemetry.TrackEvent("DarlInf Exception");
                 var errors = new List<DarlVar>();
                 errors.Add(new DarlVar { name = "error", Value = ex.Message });
                 return errors;
@@ -987,7 +987,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             var end = DateTime.Now;
             TimeSpan execTime = (end - start);
-            telemetry.TrackEvent($"MachineLearnModel", new Dictionary<string, string> { {nameof(userId), userId }, { nameof(mlmodelname), mlmodelname },{"seconds", execTime.TotalSeconds.ToString() } });
+            _telemetry.TrackEvent($"MachineLearnModel", new Dictionary<string, string> { {nameof(userId), userId }, { nameof(mlmodelname), mlmodelname },{"seconds", execTime.TotalSeconds.ToString() } });
             //insert result into MLModel result array
             var mlr = new MLResult { code = rep.code, errorText = rep.errorText, executionDate = start, executionTime = execTime, trainPercent = rep.trainPercent, trainPerformance = rep.trainPerformance, testPerformance = rep.testPerformance, unknownResponsePercent = rep.unknownResponsePercent };
             var filter = Builders<MLModel>.Filter.Where(x => x.Name == mlmodelname && x.userId == userId);
@@ -1488,6 +1488,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var mc = db.GetCollection<DarlUser>("user");
             var duser = new DarlUser { Created = DateTime.Now, current_period_end = DateTime.Now + new TimeSpan(_opt.Value.StripeTrialPeriodDays, 0, 0, 0, 0), InvoiceEmail = user.InvoiceEmail, InvoiceName = user.InvoiceName, InvoiceOrganization = user.InvoiceOrganization, Issuer = user.Issuer, PaidUsageStarted = DateTime.MaxValue, StripeCustomerId = stripeVals.Item1, UsageStripeSubscriptionItem = stripeVals.Item2, userId = user.userId };
             await mc.InsertOneAsync(duser);
+            _telemetry.TrackEvent("New registration", new Dictionary<string, string> { { "UserId", user.userId }, { "provider", user.Issuer }, { "email", user.InvoiceEmail } });
             return duser;
         }
 
@@ -1533,7 +1534,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                telemetry.TrackException(ex);
+                _telemetry.TrackException(ex);
             }
             return ("", "");
         }
@@ -1722,7 +1723,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch(Exception ex)
             {
-                telemetry.TrackException(ex);
+                _telemetry.TrackException(ex);
             }
             return list;
         }
@@ -2158,19 +2159,19 @@ namespace Darl.GraphQL.Models.Connectivity
                                 var level = pm.Level == ErrorLevel.Error ? "error" : "warning";
                                 errors.Add(new DarlVar { name = $"error{errorCount++}", Value = $"line_no = {pm.Location.Line + 1}, column_no_start = {pm.Location.Column + 1}, column_no_stop = {pm.Location.Column + 2}, message = {pm.Message}, severity = {level}", dataType = DarlVar.DataType.textual });
                             }
-                            telemetry.TrackEvent("DarlInf used with errors");
+                            _telemetry.TrackEvent("DarlInf used with errors");
                             return errors; //errors, just add them to the input and quit.
                         }
                         //now convert the inputs to DarlVars
                         var res = await ProcessValues(DarlVarExtensions.Convert(DarlVarInput.Convert(inputs)), tree);
-                        telemetry.TrackEvent($"InferFromDarlDarlVar", new Dictionary<string, string> { { nameof(userId), userId } });
+                        _telemetry.TrackEvent($"InferFromDarlDarlVar", new Dictionary<string, string> { { nameof(userId), userId } });
 
                     return DarlVarExtensions.Convert(res);
                  }
             }
             catch (Exception ex)
             {
-                telemetry.TrackEvent("DarlInf Exception");
+                _telemetry.TrackEvent("DarlInf Exception");
                 var errors = new List<DarlVar>();
                 errors.Add(new DarlVar { name = "error", Value = ex.Message });
                 return errors;
@@ -2274,6 +2275,57 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var mc = db.GetCollection<Conversation>("conversation");
             return await mc.CountDocumentsAsync(new BsonDocument());
+        }
+
+        public async Task<UserUsage> CreateSimulationUsage(DateTime date, int count, string userId, string model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<UserUsage> CreateMLModelUsage(DateTime date, int count, string userId, string model)
+        {
+            var usage = new UserUsage(date, count);
+            //add no overwrite facility 
+            var existing = await GetMlModel(userId, model);
+            if (existing == null)
+                return usage;
+            if (existing.UsageHistory.Any(x => x.Date == date))
+                return usage;
+            var collection = db.GetCollection<MLModel>("mlmodel");
+            var filter = Builders<MLModel>.Filter.Where(x => x.userId == userId && x.Name == model);
+            var update = Builders<MLModel>.Update.Push("usageHistory", usage);
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return usage;
+        }
+
+        public async Task<UserUsage> CreateRuleSetUsage(DateTime date, int count, string userId, string model)
+        {
+            var usage = new UserUsage(date, count);
+            var existing = await GetRuleSet(userId, model);
+            if (existing == null)
+                return usage;
+            if (existing.UsageHistory.Any(x => x.Date == date))
+                return usage;
+            var collection = db.GetCollection<RuleSet>("ruleset");
+            var filter = Builders<RuleSet>.Filter.Where(x => x.userId == userId && x.Name == model);
+            var update = Builders<RuleSet>.Update.Push("usageHistory", usage);
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return usage;
+        }
+
+        public async Task<UserUsage> CreateBotModelUsage(DateTime date, int count, string userId, string model)
+        {
+            var usage = new UserUsage(date, count);
+            var existing = await GetBotModel(userId, model);
+            if (existing == null)
+                return usage;
+            if (existing.UsageHistory.Any(x => x.Date == date))
+                return usage;
+            var collection = db.GetCollection<BotModel>("botmodel");
+            var filter = Builders<BotModel>.Filter.Where(x => x.userId == userId && x.Name == model);
+            var update = Builders<BotModel>.Update.Push("usageHistory", usage);
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return usage;
         }
     }
 }

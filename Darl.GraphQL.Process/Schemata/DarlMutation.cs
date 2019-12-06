@@ -850,6 +850,86 @@ namespace Darl.GraphQL.Models.Schemata
             ).AuthorizeWith("AdminPolicy");
 
             FieldAsync<UserUsageType>(
+                "createBotModelUsage",
+                "Attach a day of usage to a user's botmodel",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<DateTimeGraphType>> { Name = "date", Description = "The date of the usage" },
+                    new QueryArgument<NonNullGraphType<IntGraphType>> { Name = "count", Description = "The count of the usages" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId", Description = "The user responsible for the usages" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "model", Description = "The botmodel the usages relate to" }
+               ),
+                resolve: async context =>
+                {
+                    var date = context.GetArgument<DateTime>("date");
+                    var count = context.GetArgument<int>("count");
+                    var userId = context.GetArgument<string>("userId");
+                    var model = context.GetArgument<string>("model");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreateBotModelUsage(date, count, userId, model));
+                }
+            ).AuthorizeWith("AdminPolicy");
+
+            FieldAsync<UserUsageType>(
+                "createRulesetUsage",
+                "Attach a day of usage to a user's ruleset",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<DateTimeGraphType>> { Name = "date", Description = "The date of the usage" },
+                    new QueryArgument<NonNullGraphType<IntGraphType>> { Name = "count", Description = "The count of the usages" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId", Description = "The user responsible for the usages" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "model", Description = "The ruleset the usages relate to" }
+               ),
+                resolve: async context =>
+                {
+                    var date = context.GetArgument<DateTime>("date");
+                    var count = context.GetArgument<int>("count");
+                    var userId = context.GetArgument<string>("userId");
+                    var model = context.GetArgument<string>("model");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreateRuleSetUsage(date, count, userId, model));
+                }
+            ).AuthorizeWith("AdminPolicy");
+
+            FieldAsync<UserUsageType>(
+                "createMLModelUsage",
+                "Attach a day of usage to a user's ml model",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<DateTimeGraphType>> { Name = "date", Description = "The date of the usage" },
+                    new QueryArgument<NonNullGraphType<IntGraphType>> { Name = "count", Description = "The count of the usages" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId", Description = "The user responsible for the usages" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "model", Description = "The ml model the usages relate to" }
+               ),
+                resolve: async context =>
+                {
+                    var date = context.GetArgument<DateTime>("date");
+                    var count = context.GetArgument<int>("count");
+                    var userId = context.GetArgument<string>("userId");
+                    var model = context.GetArgument<string>("model");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreateMLModelUsage(date, count, userId, model));
+                }
+            ).AuthorizeWith("AdminPolicy");
+
+            FieldAsync<UserUsageType>(
+                "createSimulationUsage",
+                "Attach a day of usage to a user's simulation",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<DateTimeGraphType>> { Name = "date", Description = "The date of the usage" },
+                    new QueryArgument<NonNullGraphType<IntGraphType>> { Name = "count", Description = "The count of the usages" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId", Description = "The user responsible for the usages" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "model", Description = "The ruleset the usages relate to" }
+               ),
+                resolve: async context =>
+                {
+                    var date = context.GetArgument<DateTime>("date");
+                    var count = context.GetArgument<int>("count");
+                    var userId = context.GetArgument<string>("userId");
+                    var model = context.GetArgument<string>("model");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreateSimulationUsage(date, count, userId, model));
+                }
+            ).AuthorizeWith("AdminPolicy");
+
+            FieldAsync<UserUsageType>(
                 "createBotUsage",
                 "Attach a day of usage to a user",
                 arguments: new QueryArguments(
@@ -868,6 +948,7 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.CreateBotUsage(date, count, userId, botId));
                 }
             ).AuthorizeWith("AdminPolicy");
+
             FieldAsync<DocumentType>(
                 "deleteDocument",
                 "Delete a document used as a template",

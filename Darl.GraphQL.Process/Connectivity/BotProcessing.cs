@@ -20,20 +20,21 @@ namespace Darl.GraphQL.Models.Connectivity
         IFormApi _form;
         IRuleFormInterface _rfi;
         ITrigger _trigger;
-        private TelemetryClient telemetryClient = new TelemetryClient();
+        private TelemetryClient _telemetry;
 
 
-        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger)
+        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger, TelemetryClient telemetry)
         {
             _conv = conv;
             _form = form;
             _rfi = rfi;
             _trigger = trigger;
+            _telemetry = telemetry;
         }
 
         public async Task<List<InteractTestResponse>> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData)
         {
-            telemetryClient.TrackEvent($"InteractAsync", new Dictionary<string, string> { { nameof(userId), userId }, { nameof(botModelName), botModelName },{nameof(conversationId),conversationId} , {nameof(conversationData), conversationData.ToString() } });
+            _telemetry.TrackEvent($"InteractAsync", new Dictionary<string, string> { { nameof(userId), userId }, { nameof(botModelName), botModelName },{nameof(conversationId),conversationId} , {nameof(conversationData), conversationData.ToString() } });
             List<InteractTestResponse> resp = new List<InteractTestResponse>();
             //cache these?
             var bmt = await _conv.GetBotModel(userId, botModelName);

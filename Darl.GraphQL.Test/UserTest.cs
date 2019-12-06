@@ -97,6 +97,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task TestFactoryReset()
         {
             var req = new GraphQLRequest() { Query = @"mutation{ factoryReset() }" };
