@@ -34,7 +34,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<List<InteractTestResponse>> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData)
         {
-            _telemetry.TrackEvent($"InteractAsync", new Dictionary<string, string> { { nameof(userId), userId }, { nameof(botModelName), botModelName },{nameof(conversationId),conversationId} , {nameof(conversationData), conversationData.ToString() } });
+            _telemetry.TrackEvent($"InteractAsync", new Dictionary<string, string> { { nameof(userId), userId }, { nameof(botModelName), botModelName },{nameof(conversationId),conversationId} , {nameof(conversationData), conversationData.Value } });
             List<InteractTestResponse> resp = new List<InteractTestResponse>();
             //cache these?
             var bmt = await _conv.GetBotModel(userId, botModelName);
