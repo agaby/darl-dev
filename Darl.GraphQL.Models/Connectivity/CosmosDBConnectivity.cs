@@ -1652,7 +1652,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var usage = new UserUsage(date, count);
             var collection = db.GetCollection<DarlUser>("user");
             var filter = Builders<DarlUser>.Filter.Where(x => x.userId == userId);
-            var update = Builders<DarlUser>.Update.Push("usageHistory", usage);
+            var update = Builders<DarlUser>.Update.Push("UsageHistory", usage);
             await collection.FindOneAndUpdateAsync(filter, update);
             return usage;
         }
@@ -1662,7 +1662,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var usage = new UserUsage(date, count);
             var collection = db.GetCollection<BotConnection>("botconnection");
             var filter = Builders<BotConnection>.Filter.Where(x => x.AppId == botId && x.userId == userId);
-            var update = Builders<BotConnection>.Update.Push("usageHistory", usage);
+            var update = Builders<BotConnection>.Update.Push("UsageHistory", usage);
             await collection.FindOneAndUpdateAsync(filter, update);
             return usage;
         }

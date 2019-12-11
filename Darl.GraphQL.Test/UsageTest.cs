@@ -20,7 +20,7 @@ namespace Darl.GraphQL.Test
         [TestInitialize()]
         public void Initialize()
         {
-            client = new GraphQLClient("https://darl.dev/graphql/");
+            client = new GraphQLClient("https://darlgraphql-stagng.azurewebsites.net/graphql/");
             var authcode = "e438440e-9d90-46e8-87ed-080e19c43aed";
             client.DefaultRequestHeaders.Add("Authorization", $"Basic {authcode}");
             client.Options.JsonSerializerSettings.Converters.Add(new StringEnumConverter());
@@ -37,10 +37,10 @@ namespace Darl.GraphQL.Test
         public async Task TestRulesetUsage()
         {
             //create a dummy ruleset
-            var req = new GraphQLRequest() { Query = "mutation { createEmptyRuleset(name: \"stupidname.ruleset\"){name  }}" };
+            var req = new GraphQLRequest() { Query = "mutation { createEmptyRuleSet(name: \"stupidname.ruleset\"){name  }}" };
             var resp = await client.PostAsync(req);
             //add a usage or two
-            req = new GraphQLRequest() { Query = "mutation { createRulesetUsage(userId: \"5ee43551-c05c-4cff-8582-c08f23f84c1\",model: \"stupidname.ruleset\", date: \"06/11/1955\", count: 55 ){date count}}" };
+            req = new GraphQLRequest() { Query = "mutation { createRulesetUsage(userId: \"5ee43551-c05c-4cff-8582-c08f23f84c14\",model: \"stupidname.ruleset\", date: \"06/11/1955\", count: 55 ){date count}}" };
             resp = await client.PostAsync(req);
             //check it's there
             req = new GraphQLRequest() { Query = "query { rulesetByName(name: \"stupidname.ruleset\"){name usageHistory{date count}  }}" };

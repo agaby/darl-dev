@@ -1790,9 +1790,14 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<UserUsage> CreateUserUsage(DateTime date, int count, string userId)
         {
             var usage = new UserUsage(date, count);
+            var existing = await GetUserById(userId);
+            if (existing == null)
+                return usage;
+            if (existing.UsageHistory.Any(x => x.Date == date))
+                return usage;
             var collection = db.GetCollection<DarlUser>("user");
             var filter = Builders<DarlUser>.Filter.Where(x => x.userId == userId);
-            var update = Builders<DarlUser>.Update.Push("usageHistory", usage);
+            var update = Builders<DarlUser>.Update.Push("UsageHistory", usage);
             await collection.FindOneAndUpdateAsync(filter, update);
             return usage;
         }
@@ -2293,7 +2298,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 return usage;
             var collection = db.GetCollection<MLModel>("mlmodel");
             var filter = Builders<MLModel>.Filter.Where(x => x.userId == userId && x.Name == model);
-            var update = Builders<MLModel>.Update.Push("usageHistory", usage);
+            var update = Builders<MLModel>.Update.Push("UsageHistory", usage);
             await collection.FindOneAndUpdateAsync(filter, update);
             return usage;
         }
@@ -2308,7 +2313,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 return usage;
             var collection = db.GetCollection<RuleSet>("ruleset");
             var filter = Builders<RuleSet>.Filter.Where(x => x.userId == userId && x.Name == model);
-            var update = Builders<RuleSet>.Update.Push("usageHistory", usage);
+            var update = Builders<RuleSet>.Update.Push("UsageHistory", usage);
             await collection.FindOneAndUpdateAsync(filter, update);
             return usage;
         }
@@ -2323,7 +2328,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 return usage;
             var collection = db.GetCollection<BotModel>("botmodel");
             var filter = Builders<BotModel>.Filter.Where(x => x.userId == userId && x.Name == model);
-            var update = Builders<BotModel>.Update.Push("usageHistory", usage);
+            var update = Builders<BotModel>.Update.Push("UsageHistory", usage);
             await collection.FindOneAndUpdateAsync(filter, update);
             return usage;
         }
