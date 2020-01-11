@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authentication.AzureADB2C.UI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -52,6 +53,10 @@ namespace Darl.GraphQL
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
 
             services.Configure<IISServerOptions>(options =>
             {
@@ -202,6 +207,8 @@ namespace Darl.GraphQL
             services.AddSingleton<AlexaTypeType>();
             services.AddSingleton<StoreStateType>();
             services.AddSingleton<BotTestViewType>();
+            services.AddSingleton<GraphObjectType>();
+            services.AddSingleton<GraphConnectionType>();
 
 
             //root

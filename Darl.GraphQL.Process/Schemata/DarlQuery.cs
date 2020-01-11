@@ -11,7 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlQuery : ObjectGraphType<object>
     {
-        public DarlQuery(IConnectivity connectivity, IBotProcessing bot, IFormProcessing form, ISimProcessing sim)
+        public DarlQuery(IConnectivity connectivity, IBotProcessing bot, IFormProcessing form, ISimProcessing sim, IGraphProcessing graph)
         {
             Name = "Query";
             Description = "View the contents of your account.";
@@ -564,6 +564,66 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(async c => await bot.InteractTestAsync(userId, botModelName, conversationId, text, reset));
                 }
             );
+            FieldAsync<ListGraphType<GraphObjectType>>(
+                "getGraphObjects",
+                "get graph objects based on name and lineage",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "Name of the object" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "The parent lineage" }
+                ),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var lineage = context.GetArgument<string>("lineage");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjects(userId, name, lineage));
+                }
+            );
+            FieldAsync<ListGraphType<GraphObjectType>>(
+                "getGraphObjectsFuzzy",
+                "get graph objects based on name and lineage",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "Name of the object" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "The parent lineage" },
+                    new QueryArgument<FloatGraphType>{ Name = "distance", Description = "The maximum edit distance", DefaultValue = 2.0 }
+                ),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var lineage = context.GetArgument<string>("lineage");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    var distance = context.GetArgument<float>("distance");
+                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectsFuzzy(userId, name, lineage,distance));
+                }
+            );
+            FieldAsync<GraphObjectType>(
+                "getGraphObjectByid",
+                "get graph objects based on id",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the object" }
+                ),
+                resolve: async context =>
+                {
+                    var id = context.GetArgument<string>("id");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectById(userId, id));
+                }
+            );
+            FieldAsync<ListGraphType<GraphConnectionType>>(
+                "getGraphConnectionsByid",
+                "get graph connections to a node with a given id",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the object" },
+                    new QueryArgument<FloatGraphType> { Name = "distance", Description = "The maximum edit distance", DefaultValue = 2.0 }
+                ),
+                resolve: async context =>
+                {
+                    var id = context.GetArgument<string>("id");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectById(userId, id));
+                }
+            );
+
 
         }
 

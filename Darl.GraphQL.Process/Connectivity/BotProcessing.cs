@@ -1,9 +1,11 @@
-﻿using Darl.GraphQL.Models.Models;
+﻿using Darl.Dreamer;
+using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using DarlCommon;
 using Microsoft.ApplicationInsights;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -21,15 +23,17 @@ namespace Darl.GraphQL.Models.Connectivity
         IRuleFormInterface _rfi;
         ITrigger _trigger;
         private TelemetryClient _telemetry;
+        private IConfiguration _config;
 
 
-        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger, TelemetryClient telemetry)
+        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger, TelemetryClient telemetry, IConfiguration config)
         {
             _conv = conv;
             _form = form;
             _rfi = rfi;
             _trigger = trigger;
             _telemetry = telemetry;
+            _config = config;
         }
 
         public async Task<List<InteractTestResponse>> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData)
@@ -50,9 +54,15 @@ namespace Darl.GraphQL.Models.Connectivity
                 bs = new BotState { conversationId = conversationId, userId = userId, userData = new LocalBotData(new Dictionary<string, string>()), conversationData = new LocalBotData(new Dictionary<string, string>()), privateConversationData = new LocalBotData(new Dictionary<string, string>()), values = new List<DarlVar>(), ruleProcessing = new Stack<RuleSetHandler>() }; 
             }
             var stores = bm.CreateStores(userId, _rfi, bs.values, bs.userData, bs.conversationData, bs.privateConversationData );
+            //add extra stores defined locally
+            var botFormat = JsonConvert.DeserializeObject<BotFormat>(bm.form);
+            if(botFormat.Stores.Contains("graph"))
+            {
+                stores.Add("graph", new GraphStore(_config));
+            }
             if (bs.ruleProcessing.Count == 0) // conversational processing
             {
-                var responses = await bm.InteractTest(conversationData, bs.values, stores,true);
+                var responses = await bm.InteractTest(conversationData, bs.values, stores, true);
                 if(responses.Any())
                 {
                     var r = responses.Last();
