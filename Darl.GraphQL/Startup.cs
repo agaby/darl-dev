@@ -98,7 +98,8 @@ namespace Darl.GraphQL
             services.AddSingleton<IFormProcessing, FormProcessing>();
             services.AddSingleton<IEmailProcessing, EmailProcessing>();
             services.AddSingleton<ISimProcessing, SimProcessing>();
-            services.AddSingleton<IAuthChecker, AuthChecker>(); 
+            services.AddSingleton<IAuthChecker, AuthChecker>();
+            services.AddSingleton<IGraphProcessing, GraphProcessing>();
 
             //types
             services.AddSingleton<BotFormatType>();
@@ -209,6 +210,10 @@ namespace Darl.GraphQL
             services.AddSingleton<BotTestViewType>();
             services.AddSingleton<GraphObjectType>();
             services.AddSingleton<GraphConnectionType>();
+            services.AddSingleton<GraphObjectInputType>();
+            services.AddSingleton<GraphConnectionInputType>();
+            services.AddSingleton<GraphObjectUpdateType>();
+            services.AddSingleton<GraphConnectionUpdateType>();
 
 
             //root

@@ -581,7 +581,7 @@ namespace Darl.GraphQL.Models.Schemata
             );
             FieldAsync<ListGraphType<GraphObjectType>>(
                 "getGraphObjectsFuzzy",
-                "get graph objects based on name and lineage",
+                "get graph objects based on  a fuzzy match with name and lineage",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "Name of the object" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "The parent lineage" },
@@ -609,22 +609,6 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(async c => await graph.GetGraphObjectById(userId, id));
                 }
             );
-            FieldAsync<ListGraphType<GraphConnectionType>>(
-                "getGraphConnectionsByid",
-                "get graph connections to a node with a given id",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the object" },
-                    new QueryArgument<FloatGraphType> { Name = "distance", Description = "The maximum edit distance", DefaultValue = 2.0 }
-                ),
-                resolve: async context =>
-                {
-                    var id = context.GetArgument<string>("id");
-                    var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectById(userId, id));
-                }
-            );
-
-
         }
 
     }

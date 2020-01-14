@@ -21,6 +21,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.startId).Description("The object at the start of this connection");
             Field(c => c.endId).Description("The object at the end of this connection");
             Field(c => c.weight).Description("The degree of plausibility of this connection");
+            Field<ListGraphType<StringStringPairType>>("properties", "Other properties of this connection", resolve: c => c.Source.properties);
         }
     }
 }

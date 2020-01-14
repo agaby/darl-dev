@@ -10,7 +10,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlMutation : ObjectGraphType<object>
     {
-        public DarlMutation(IConnectivity connectivity, IEmailProcessing email)
+        public DarlMutation(IConnectivity connectivity, IEmailProcessing email, IGraphProcessing graph)
         {
             Name = "Mutation";
             Description = "Make changes to the contents of your account.";
@@ -218,7 +218,7 @@ namespace Darl.GraphQL.Models.Schemata
             //  Edit SellerCenter
             FieldAsync<SellerCenterCredentialsType>("updateSellerCenterCredentials",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "liveMode" },
+                new QueryArgument<NonNullGraphType<BooleanGraphType>> { Name = "liveMode" },
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "merchantId" },
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "stripeApiKey" },
                 new QueryArgument<NonNullGraphType<ModelTypeEnum>> { Name = "modelType" }
@@ -1070,17 +1070,78 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                                     async c => await connectivity.InferFromDarlDarlVar(userId, code, inputs));
                 });
-            FieldAsync<ModelDetailsType>("updateRulesetDetails", "Update the details of a rule set", arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "rulesetName", Description = "Name of the ruleset" },
-                    new QueryArgument<NonNullGraphType<ModelDetailsInputType>> { Name = "details", Description = "The details to update" }
+            FieldAsync<GraphObjectType>("createGraphObject", "Add a new graph object", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<GraphObjectInputType>> { Name = "graphObject", Description = "The object to add" },
+                    new QueryArgument<BooleanGraphType> { Name = "definitive", Description = "overrides checking", DefaultValue = false }
                ),
                 resolve: async context =>
                 {
-                    var rulesetName = context.GetArgument<String>("rulesetName");
-                    var details = context.GetArgument<ModelDetails>("details");
+                    var graphObject = context.GetArgument<GraphObjectInput>("graphObject");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    var definitive = context.GetArgument<bool>("definitive");
+                    return await context.TryAsyncResolve(
+                        async c => await graph.CreateGraphObject(userId, graphObject,definitive));
+                }
+            );
+            FieldAsync<GraphConnectionType>("createGraphConnection", "Add a new graph connection", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<GraphConnectionInputType>> { Name = "graphConnection", Description = "The connection to add" },
+                    new QueryArgument<BooleanGraphType> { Name = "definitive", Description = "overrides checking", DefaultValue = false }
+               ),
+                resolve: async context =>
+                {
+                    var graphConnection = context.GetArgument<GraphConnectionInput>("graphConnection");
+                    var definitive = context.GetArgument<bool>("definitive");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.CreateRulesetDetails(userId, rulesetName, details));
+                        async c => await graph.CreateGraphConnection(userId, graphConnection,definitive));
+                }
+            );
+            FieldAsync<GraphObjectType>("deleteGraphObject", "delete a graphObject", arguments: new QueryArguments(
+                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "The id of the object to delete" }
+                ),
+                 resolve: async context =>
+                 {
+                     var id = context.GetArgument<string>("id");
+                     var userId = connectivity.GetCurrentUserId(context.UserContext);
+                     return await context.TryAsyncResolve(
+                         async c => await graph.DeleteGraphObject(userId, id));
+                 }
+             );
+            FieldAsync<GraphConnectionType>("deleteGraphConnection", "delete a graph connection", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "The id of the connection to delete" }
+               ),
+                resolve: async context =>
+                {
+                    var id = context.GetArgument<string>("id");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await graph.DeleteGraphConnection(userId, id));
+                }
+            );
+            FieldAsync<GraphObjectType>("updateGraphObject", "Update a graph object", arguments: new QueryArguments(
+                     new QueryArgument<NonNullGraphType<GraphObjectUpdateType>> { Name = "graphObject", Description = "The object to update" },
+                    new QueryArgument<BooleanGraphType> { Name = "definitive", Description = "overrides checking", DefaultValue = false }
+                ),
+                 resolve: async context =>
+                 {
+                     var graphObject = context.GetArgument<GraphObjectUpdate>("graphObject");
+                     var userId = connectivity.GetCurrentUserId(context.UserContext);
+                     var definitive = context.GetArgument<bool>("definitive");
+                     return await context.TryAsyncResolve(
+                         async c => await graph.UpdateGraphObject(userId, graphObject,definitive));
+                 }
+             );
+            FieldAsync<GraphConnectionType>("updateGraphConnection", "Update a graph connection", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<GraphConnectionUpdateType>> { Name = "graphConnection", Description = "The connection to update" },
+                    new QueryArgument<BooleanGraphType> { Name = "definitive", Description = "overrides checking", DefaultValue = false }
+               ),
+                resolve: async context =>
+                {
+                    var graphConnection = context.GetArgument<GraphConnectionUpdate>("graphConnection");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    var definitive = context.GetArgument<bool>("definitive");
+                    return await context.TryAsyncResolve(
+                        async c => await graph.UpdateGraphConnection(userId, graphConnection,definitive));
                 }
             );
         }

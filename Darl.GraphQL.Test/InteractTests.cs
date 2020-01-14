@@ -55,6 +55,21 @@ namespace Darl.GraphQL.Test
             Assert.IsTrue(responses[0].response.approximate);
 
         }
+
+        [TestMethod]
+        public async Task TestGraphStore()
+        {
+            //create new botmodel 
+            var req = new GraphQLRequest()
+            {
+
+            };
+            var resp = await client.PostAsync(req);
+                //add A trigger and response
+                //test
+                //delete
+
+        }
     }
 
 }
