@@ -62,12 +62,21 @@ namespace Darl.GraphQL.Test
             //create new botmodel 
             var req = new GraphQLRequest()
             {
-
+                Query = "mutation {createEmptyBotModel(name: \"FarLeftGraph\"){name}}"
             };
             var resp = await client.PostAsync(req);
-                //add A trigger and response
-                //test
-                //delete
+            //add A trigger and response
+            req = new GraphQLRequest()
+            {
+                Query = "mutation {createPhrase(botModelName: \"FarLeftGraph\", path: \"who/is/value:text\", attribute: { darl: \"if anything then response will be Graph[\"text\",\"\",\"\"];\" }) {definition}}"
+            };
+            //test
+            //delete
+            req = new GraphQLRequest()
+            {
+                Query = "mutation {deleteBotModel(name: \"FarLeftGraph\"){name}}"
+            };
+
 
         }
     }
