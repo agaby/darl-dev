@@ -33,8 +33,9 @@ namespace Darl.GraphQL.Test
         {
 
         }
-
+ /* 
         [TestMethod]
+      
         public async Task TestDynamicRuleSet()
         {
             var m = new Mock<IDistributedCache>();
@@ -45,6 +46,6 @@ namespace Darl.GraphQL.Test
             var rs = await cosmos.GetRuleSet(adminuserId, "UK Tax and NI.rule");
             var tp = await cosmos.GetRuleSet(adminuserId, "ruleseteditor.rule");
             var res = await f.CreateDynamicRuleSetEditor(rs,tp);
-        }
+        }*/
     }
 }
