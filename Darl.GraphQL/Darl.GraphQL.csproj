@@ -67,7 +67,7 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="mkdocs build" />
+    <Exec Command="if $(ConfigurationName) == 'Debug' mkdocs build" />
   </Target>
 
 </Project>
