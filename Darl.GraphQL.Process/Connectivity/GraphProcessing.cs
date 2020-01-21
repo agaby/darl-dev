@@ -50,18 +50,24 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<GraphConnection> CreateGraphConnection(string userId, GraphConnectionInput graphConnection, bool definitive = false)
         {
-            if (!definitive)//ontological compliance checks
-            {
-                //Look for a preceding and a following association in this or higher verbs that permits this.
-                //This can be written as a gremlin query
-                //if no path found throw ExecutionError 
-                //for each property lineage 
-                //Look for a preceding and a following association in the verb 'has' that permits this.
-                //This can be written as a gremlin query
-                //if no path found throw ExecutionError 
-            }
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
+                if (!definitive)//ontological compliance checks
+                {
+                    var start = await GetGraphObjectById(userId, graphConnection.startId);
+                    var end = await GetGraphObjectById(userId, graphConnection.endId);
+                    if (!await OntologicalCompliance(gremlinClient, graphConnection, start,end))
+                    {
+                        throw new ExecutionError($"No association exists between {start.lineage}, the verb {graphConnection.lineage} and {end.lineage}\n if you are sure this is correct use the definitive flag in the call.");
+                    }
+                    foreach (var p in graphConnection.properties)
+                    {
+                        if (!await OntologicalCompliance(gremlinClient, graphConnection, p))
+                        {
+                            throw new ExecutionError($"No association exists between {graphConnection.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
+                        }
+                    }
+                }
                 var id = Guid.NewGuid().ToString();
                 var dict = new Dictionary<string, object> { { "start", graphConnection.startId }, { "end", graphConnection.endId }, { "label", graphConnection.name }, { "weight", graphConnection.weight }, { "id", id }, { "userId", userId }, { "lineage", graphConnection.lineage },{"inferred",graphConnection.inferred } };
                 var script = "g.V(start).addE(label).to(g.V(end)).property('id', id).property('weight', weight).property('userId',userId).property('lineage',lineage).property('inferred',inferred)";
@@ -85,9 +91,13 @@ namespace Darl.GraphQL.Models.Connectivity
                 if (!definitive)//ontological compliance checks
                 {
                     //for each property lineage 
-                    //Look for a preceding and a following association in the verb 'has' that permits this.
-                    //This can be written as a gremlin query
-                    //if no path found throw ExecutionError 
+                    foreach(var p in graphObject.properties)
+                    {
+                        if(! await OntologicalCompliance(gremlinClient, graphObject, p))
+                        {
+                            throw new ExecutionError($"No association exists between {graphObject.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
+                        }
+                    }
                 }
                 var id = Guid.NewGuid().ToString();
                 var dict = new Dictionary<string, object> { { "lineage", graphObject.lineage }, { "id", id }, { "name", graphObject.name }, { "userId", userId }, {"firstname",graphObject.firstname }, { "secondname", graphObject.secondname }, {"inferred",graphObject.inferred } };
@@ -116,6 +126,20 @@ namespace Darl.GraphQL.Models.Connectivity
                     index++;
                 }
             }
+        }
+
+        private async Task<bool> OntologicalCompliance(GremlinClient gremlinClient, GraphElementInput graphObject, StringStringPair property)
+        {
+            //Look for a preceding and a following association in the verb 'has' that permits this.
+            //This can be written as a gremlin query
+            return true;
+        }
+
+        private async Task<bool> OntologicalCompliance(GremlinClient gremlinClient, GraphConnectionInput graphConnection, GraphObject start, GraphObject end)
+        {
+            //Look for a preceding and a following association in this or higher verbs that permits this.
+            //This can be written as a gremlin query
+            return true;
         }
 
         /// <summary>
