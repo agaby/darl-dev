@@ -1,5 +1,4 @@
-﻿using Darl.Dreamer;
-using Darl.GraphQL.Models.Models;
+﻿using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
@@ -11,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
@@ -56,9 +54,9 @@ namespace Darl.GraphQL.Models.Connectivity
             var stores = bm.CreateStores(userId, _rfi, bs.values, bs.userData, bs.conversationData, bs.privateConversationData );
             //add extra stores defined locally
             var botFormat = JsonConvert.DeserializeObject<BotFormat>(bm.form);
-            if(botFormat.Stores.Contains("graph"))
+            if(botFormat.Stores.Contains("Graph"))
             {
-                stores.Add("graph", new GraphStore(_config));
+                stores.Add("Graph", new GraphProcessing(_config, _telemetry));
             }
             if (bs.ruleProcessing.Count == 0) // conversational processing
             {

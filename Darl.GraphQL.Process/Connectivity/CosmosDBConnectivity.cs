@@ -1506,16 +1506,16 @@ namespace Darl.GraphQL.Models.Connectivity
                 var service = new CustomerService();
                 Customer customer = await service.CreateAsync(options);
                 var items = corporate ?
-                    new List<SubscriptionItemOption> { new SubscriptionItemOption { PlanId = _opt.Value.StripeCorporateLicensePlan},
-                                                                new SubscriptionItemOption { PlanId = _opt.Value.StripeCorporateUsagePlan }} :
-                    new List<SubscriptionItemOption> { new SubscriptionItemOption { PlanId = _opt.Value.StripeIndividualLicensePlan},
-                                                                new SubscriptionItemOption { PlanId = _opt.Value.StripeIndividualUsagePlan }};
+                    new List<SubscriptionItemOptions> { new SubscriptionItemOptions { Plan = _opt.Value.StripeCorporateLicensePlan},
+                                                                new SubscriptionItemOptions { Plan = _opt.Value.StripeCorporateUsagePlan }} :
+                    new List<SubscriptionItemOptions> { new SubscriptionItemOptions { Plan = _opt.Value.StripeIndividualLicensePlan},
+                                                                new SubscriptionItemOptions { Plan = _opt.Value.StripeIndividualUsagePlan }};
                 var subsoptions = new SubscriptionCreateOptions
                 {
                     Items = items,
                     TrialPeriodDays = trialPeriodDays,
-                    CustomerId = customer.Id,
-                    Billing = Billing.SendInvoice,
+                    Customer = customer.Id,
+                    CollectionMethod = "send_invoice",
                     DaysUntilDue = 14,
                 };
                 var subsservice = new SubscriptionService();

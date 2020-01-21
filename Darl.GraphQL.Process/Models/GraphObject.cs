@@ -14,7 +14,7 @@ namespace Darl.GraphQL.Models.Models
         public string secondname { get; set; }//optional
         public List<DateTime> existence { get; set; }//existence
         public bool inferred { get; set; } = false;
-        public List<GraphConnection> connections { get; set; }
-        public List<StringStringPair> properties { get; set; }
+        public List<GraphConnection> connections { get; set; } = new List<GraphConnection>();
+        public List<StringStringPair> properties { get; set; } = new List<StringStringPair>();
     }
 }
