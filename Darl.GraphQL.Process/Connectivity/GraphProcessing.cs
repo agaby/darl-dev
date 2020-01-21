@@ -50,7 +50,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<GraphConnection> CreateGraphConnection(string userId, GraphConnectionInput graphConnection, bool definitive = false)
         {
-            if(!definitive)//ontological compliance checks
+            if (!definitive)//ontological compliance checks
             {
                 //Look for a preceding and a following association in this or higher verbs that permits this.
                 //This can be written as a gremlin query
@@ -60,7 +60,15 @@ namespace Darl.GraphQL.Models.Connectivity
                 //This can be written as a gremlin query
                 //if no path found throw ExecutionError 
             }
-            throw new NotImplementedException();
+            using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            {
+                var id = Guid.NewGuid().ToString();
+                var dict = new Dictionary<string, object> { { "start", graphConnection.startId }, { "end", graphConnection.endId }, { "label", graphConnection.name }, { "weight", graphConnection.weight }, { "id", id }, { "userId", userId }, { "lineage", graphConnection.lineage },{"inferred",graphConnection.inferred } };
+                var script = "g.V(start).addE(label).to(g.V(end)).property('id', id).property('weight', weight).property('userId',userId).property('lineage',lineage).property('inferred',inferred)";
+                AddCommonElements(graphConnection, dict, script);
+                await SubmitWithRetry(gremlinClient, script, dict);
+            }
+            return null;
         }
 
         /// <summary>
@@ -84,24 +92,29 @@ namespace Darl.GraphQL.Models.Connectivity
                 var id = Guid.NewGuid().ToString();
                 var dict = new Dictionary<string, object> { { "lineage", graphObject.lineage }, { "id", id }, { "name", graphObject.name }, { "userId", userId }, {"firstname",graphObject.firstname }, { "secondname", graphObject.secondname }, {"inferred",graphObject.inferred } };
                 var script = "g.addV(lineage).property('id', id).property('name', name).property('lineage',lineage).property('userId',userId).property('firstname',firstname).property('secondname',secondname).property('inferred',inferred)";
-                foreach (var p in graphObject.properties)
-                {
-                    dict.Add(p.Name, p.Value);
-                    script += $".property('{p.Name}', {p.Name})";
-                }
-                if(graphObject.existence != null)
-                { 
-                    int index = 0;
-                    foreach(var t in graphObject.existence)
-                    {
-                        var exName = $"existence{index}";
-                        dict.Add(exName, t);
-                        script += $".property('existence', {exName})";
-                        index++;
-                    }
-                }
+                AddCommonElements(graphObject, dict, script);
                 var res = await SubmitWithRetry(gremlinClient, script, dict);
                 return new GraphObject {id = id, userId = userId };
+            }
+        }
+
+        private void AddCommonElements(GraphElementInput elem, Dictionary<string,object> dict, string script)
+        {
+            foreach (var p in elem.properties)
+            {
+                dict.Add(p.Name, p.Value);
+                script += $".property('{p.Name}', {p.Name})";
+            }
+            if (elem.existence != null)
+            {
+                int index = 0;
+                foreach (var t in elem.existence)
+                {
+                    var exName = $"existence{index}";
+                    dict.Add(exName, t);
+                    script += $".property('existence', {exName})";
+                    index++;
+                }
             }
         }
 
