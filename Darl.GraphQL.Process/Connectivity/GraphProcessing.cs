@@ -56,13 +56,13 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     var start = await GetGraphObjectById(userId, graphConnection.startId);
                     var end = await GetGraphObjectById(userId, graphConnection.endId);
-                    if (!await OntologicalCompliance(gremlinClient, graphConnection, start,end))
+                    if (!await OntologicalCompliance(gremlinClient, graphConnection.lineage, start.lineage,end.lineage))
                     {
                         throw new ExecutionError($"No association exists between {start.lineage}, the verb {graphConnection.lineage} and {end.lineage}\n if you are sure this is correct use the definitive flag in the call.");
                     }
                     foreach (var p in graphConnection.properties)
                     {
-                        if (!await OntologicalCompliance(gremlinClient, graphConnection, p))
+                        if (!await OntologicalCompliance(gremlinClient, graphConnection.lineage, p.Name))
                         {
                             throw new ExecutionError($"No association exists between {graphConnection.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
                         }
@@ -93,7 +93,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     //for each property lineage 
                     foreach(var p in graphObject.properties)
                     {
-                        if(! await OntologicalCompliance(gremlinClient, graphObject, p))
+                        if(! await OntologicalCompliance(gremlinClient, graphObject.lineage, p.Name))
                         {
                             throw new ExecutionError($"No association exists between {graphObject.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
                         }
@@ -128,20 +128,23 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        private async Task<bool> OntologicalCompliance(GremlinClient gremlinClient, GraphElementInput graphObject, StringStringPair property)
+        private async Task<bool> OntologicalCompliance(GremlinClient gremlinClient, string graphObjectLineage, string propertyLineage)
         {
             //are these concepts connected?
-            var res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(out()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", graphObject.lineage }, { "lineage2", property.Name } });
-            return res.Count != 0;
+            var res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(out()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", graphObjectLineage }, { "lineage2", propertyLineage } });
+            if (res.Count != 0)
+                return true;
+            //check for 'has' relationship
+            return await OntologicalCompliance(gremlinClient, "verb:021", graphObjectLineage, propertyLineage);
         }
 
-        private async Task<bool> OntologicalCompliance(GremlinClient gremlinClient, GraphConnectionInput graphConnection, GraphObject start, GraphObject end)
+        private async Task<bool> OntologicalCompliance(GremlinClient gremlinClient, string graphConnectionLineage, string startLineage, string endLineage)
         {
             //Look for a preceding and a following association in this or higher verbs that permits this.
-            var res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(out()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", start.lineage }, { "lineage2", graphConnection.lineage } });
+            var res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(out()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", startLineage }, { "lineage2", graphConnectionLineage } });
             if(res.Count > 0)
             {
-                res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(out()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", end.lineage }, { "lineage2", graphConnection.lineage } });
+                res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(out()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", endLineage }, { "lineage2", graphConnectionLineage } });
                 if(res.Count > 0)
                 {
                     return true;
@@ -321,14 +324,22 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<GraphObject> UpdateGraphObject(string userId, GraphObjectUpdate graphObject, bool definitive = false)
         {
-            if (!definitive)//ontological compliance checks
+            using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
-                //for each property lineage 
-                //Look for a preceding and a following association in the verb 'has' that permits this.
-                //This can be written as a gremlin query
-                //if no path found throw ExecutionError 
-            }
-            throw new NotImplementedException();
+
+                if (!definitive)//ontological compliance checks
+                {
+                    foreach (var p in graphObject.properties)
+                    {
+                        if (!await OntologicalCompliance(gremlinClient, graphObject.lineage, p.Name))
+                        {
+                            throw new ExecutionError($"No association exists between {graphObject.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
+                        }
+                    }
+                }
+                //required are id and userId. Create scripts and dicts for non-null elements.
+                return null;
+            } 
         }
 
         public static async Task<ResultSet<dynamic>> SubmitWithRetry(GremlinClient gc, string script, Dictionary<string, object> dict)
