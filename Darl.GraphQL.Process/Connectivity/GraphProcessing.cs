@@ -130,16 +130,24 @@ namespace Darl.GraphQL.Models.Connectivity
 
         private async Task<bool> OntologicalCompliance(GremlinClient gremlinClient, GraphElementInput graphObject, StringStringPair property)
         {
-            //Look for a preceding and a following association in the verb 'has' that permits this.
-            //This can be written as a gremlin query
-            return true;
+            //are these concepts connected?
+            var res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(out()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", graphObject.lineage }, { "lineage2", property.Name } });
+            return res.Count != 0;
         }
 
         private async Task<bool> OntologicalCompliance(GremlinClient gremlinClient, GraphConnectionInput graphConnection, GraphObject start, GraphObject end)
         {
             //Look for a preceding and a following association in this or higher verbs that permits this.
-            //This can be written as a gremlin query
-            return true;
+            var res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(out()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", start.lineage }, { "lineage2", graphConnection.lineage } });
+            if(res.Count > 0)
+            {
+                res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(out()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", end.lineage }, { "lineage2", graphConnection.lineage } });
+                if(res.Count > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
