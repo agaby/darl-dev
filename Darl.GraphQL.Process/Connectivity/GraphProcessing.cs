@@ -52,6 +52,8 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
+                if(!graphConnection.lineage.StartsWith("verb:"))
+                    throw new ExecutionError($"Connections should have lineages of type 'verb'. This has a lineage of {graphConnection.lineage}.");
                 if (!definitive)//ontological compliance checks
                 {
                     var start = await GetGraphObjectById(userId, graphConnection.startId);
@@ -88,6 +90,8 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
+                if (!graphObject.lineage.StartsWith("noun:") || graphObject.lineage.StartsWith("proper_noun:"))
+                    throw new ExecutionError($"GraphObjects should have lineages of type 'noun' or 'proper_noun'. This has a lineage of {graphObject.lineage}.");
                 if (!definitive)//ontological compliance checks
                 {
                     //for each property lineage 
@@ -161,7 +165,11 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<GraphConnection> DeleteGraphConnection(string userId, string id)
         {
-            throw new NotImplementedException();
+            using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            {
+                await SubmitWithRetry(gremlinClient, "g.E(id).has('userId',userId).drop()", new Dictionary<string, object> { { "userId", userId }, { "id", id } });
+                return null;
+            }
         }
 
         /// <summary>
@@ -304,15 +312,30 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<GraphConnection> UpdateGraphConnection(string userId, GraphConnectionUpdate graphConnection, bool definitive = false)
         {
-            if (!definitive)//ontological compliance checks
+            using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
-                //
-                //for each property lineage 
-                //Look for a preceding and a following association in the verb 'has' that permits this.
-                //This can be written as a gremlin query
-                //if no path found throw ExecutionError 
+                if (!definitive)//ontological compliance checks
+                {
+                    foreach (var p in graphConnection.properties)
+                    {
+                        if (!await OntologicalCompliance(gremlinClient, graphConnection.lineage, p.Name))
+                        {
+                            throw new ExecutionError($"No association exists between {graphConnection.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
+                        }
+                    }
+                }
+                var dict = new Dictionary<string, object> { { "id", graphConnection.id }, { "userId", userId } };
+                var script = "g.E().property('id', id).property('userId',userId)";
+                if (graphConnection.weight != null)
+                {
+                    dict.Add(nameof(graphConnection.weight), graphConnection.weight);
+                    script += $".property('{nameof(graphConnection.weight)}',{nameof(graphConnection.weight)})";
+                }
+                AddConditionalElements(graphConnection, dict, script);
+                AddCommonElements(graphConnection, dict, script);
+                var res = await SubmitWithRetry(gremlinClient, script, dict);
+                return new GraphConnection { id = graphConnection.id, userId = userId };
             }
-            throw new NotImplementedException();
         }
 
         /// <summary>

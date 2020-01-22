@@ -6,7 +6,7 @@ namespace Darl.GraphQL.Models.Models
 {
     public class GraphConnectionInput  : GraphElementInput
     {
-        public double weight { get; set; } = 1.0;
+        public double? weight { get; set; }
         public string startId { get; set; }
         public string endId { get; set; }
     }
