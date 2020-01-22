@@ -338,8 +338,35 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                 }
                 //required are id and userId. Create scripts and dicts for non-null elements.
-                return null;
+                var dict = new Dictionary<string, object> { { "id", graphObject.id },{ "userId", userId } };
+                var script = "g.V().property('id', id).property('userId',userId)";
+                AddConditionalElement(nameof(graphObject.firstname), graphObject.firstname, dict, script);
+                AddConditionalElement(nameof(graphObject.secondname), graphObject.secondname, dict, script);
+                AddConditionalElements(graphObject,dict,script);
+                AddCommonElements(graphObject, dict, script);
+                var res = await SubmitWithRetry(gremlinClient, script, dict);
+                return new GraphObject { id = graphObject.id, userId = userId };
             } 
+        }
+
+        private void AddConditionalElements(GraphElementInput elem, Dictionary<string, object> dict, string script)
+        {
+            AddConditionalElement(nameof(elem.lineage), elem.lineage, dict, script);
+            AddConditionalElement(nameof(elem.name), elem.name, dict, script);
+            if(elem.inferred != null)
+            {
+                dict.Add(nameof(elem.inferred), elem.inferred);
+                script += $".property('{nameof(elem.inferred)}',{nameof(elem.inferred)})";
+            }
+        }
+
+        private void AddConditionalElement(string elemName, string elem, Dictionary<string, object> dict, string script)
+        {
+            if (!string.IsNullOrEmpty(elem))
+            {
+                dict.Add(elemName, elem);
+                script += $".property('{elemName}',{elemName})";
+            }
         }
 
         public static async Task<ResultSet<dynamic>> SubmitWithRetry(GremlinClient gc, string script, Dictionary<string, object> dict)
