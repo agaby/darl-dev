@@ -2,8 +2,10 @@
 using Darl.GraphQL.Models.Models;
 using GraphQL.Client;
 using GraphQL.Common.Request;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -36,7 +38,8 @@ namespace Darl.GraphQL.Test
         [TestMethod]
         public async Task TestModelDownload()
         {
-            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings));
+            var telemetry = new Mock<TelemetryClient>();
+            var cosmos = new CosmosDBConnectivity(new OptionsWrapper<AppSettings>(appSettings), telemetry.Object);
             var m = await cosmos.GetBotModel(userId, modelName);
             File.WriteAllBytes(modelName, m.Model);
         }

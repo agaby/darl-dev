@@ -17,15 +17,15 @@
   <ItemGroup>
     <PackageReference Include="Darl.Connectivity" Version="1.0.44" />
     <PackageReference Include="GraphQL.Client" Version="1.0.3" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageReference Include="Moq" Version="4.12.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+    <PackageReference Include="Moq" Version="4.13.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.0.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.0.0" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Darl.GraphQL.Models\Darl.GraphQL.Models.csproj" />
+    <ProjectReference Include="..\Darl.GraphQL.Process\Darl.GraphQL.Process.csproj" />
   </ItemGroup>
 
 </Project>
