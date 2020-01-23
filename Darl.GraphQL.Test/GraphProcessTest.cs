@@ -35,9 +35,10 @@ namespace Darl.GraphQL.Test
             _graph = new GraphProcessing(configuration.Object, telemetry.Object);
         }
 
+        [TestMethod]
         public  async Task CreateAndDeleteObjectTest()
         {
-            var res = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput { lineage = "noun:00,2,00", name = "Andrew Edmonds", firstname = "Andrew", secondname = "Edmonds", inferred  = false, existence = new List<DateTime> { } });
+            var res = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput { lineage = "noun:00,2,00", name = "Andrew Edmonds", firstname = "Andrew", secondname = "Edmonds", inferred  = false, existence = new List<DateTime> {new DateTime(1955,11,6), DateTime.MaxValue } });
         }
     }
 }

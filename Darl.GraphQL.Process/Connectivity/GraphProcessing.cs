@@ -52,7 +52,9 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
-                if(!graphConnection.lineage.StartsWith("verb:"))
+                if (!LineageLibrary.CheckLineage(graphConnection.lineage))
+                    throw new ExecutionError($"Malformed lineage: {graphConnection.lineage}.");
+                if (!graphConnection.lineage.StartsWith("verb:"))
                     throw new ExecutionError($"Connections should have lineages of type 'verb'. This has a lineage of {graphConnection.lineage}.");
                 if (!definitive)//ontological compliance checks
                 {
@@ -64,6 +66,8 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                     foreach (var p in graphConnection.properties)
                     {
+                        if (!LineageLibrary.CheckLineage(p.Name))
+                            throw new ExecutionError($"Malformed property lineage: {p.Name}.");
                         if (!await OntologicalCompliance(gremlinClient, graphConnection.lineage, p.Name))
                         {
                             throw new ExecutionError($"No association exists between {graphConnection.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
@@ -90,6 +94,8 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
+                if(!LineageLibrary.CheckLineage(graphObject.lineage))
+                    throw new ExecutionError($"Malformed lineage: {graphObject.lineage}.");
                 if (!graphObject.lineage.StartsWith("noun:") || graphObject.lineage.StartsWith("proper_noun:"))
                     throw new ExecutionError($"GraphObjects should have lineages of type 'noun' or 'proper_noun'. This has a lineage of {graphObject.lineage}.");
                 if (!definitive)//ontological compliance checks
@@ -99,6 +105,8 @@ namespace Darl.GraphQL.Models.Connectivity
                     {
                         if(! await OntologicalCompliance(gremlinClient, graphObject.lineage, p.Name))
                         {
+                            if (!LineageLibrary.CheckLineage(p.Name))
+                                throw new ExecutionError($"Malformed property lineage: {p.Name}.");
                             throw new ExecutionError($"No association exists between {graphObject.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
                         }
                     }
@@ -116,6 +124,8 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             foreach (var p in elem.properties)
             {
+                if (!LineageLibrary.CheckLineage(p.Name))
+                    throw new ExecutionError($"Malformed property lineage: {p.Name}.");
                 dict.Add(p.Name, p.Value);
                 script += $".property('{p.Name}', {p.Name})";
             }
