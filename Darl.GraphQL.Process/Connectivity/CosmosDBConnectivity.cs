@@ -846,6 +846,21 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
+        public async Task<string> GetTypeWordForLineage(string lineage, string isoLanguage = "en")
+        {
+            try
+            {
+                if(LineageLibrary.lineages.ContainsKey(lineage))
+                    return LineageLibrary.lineages[lineage].typeWord;
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                _telemetry.TrackEvent($"Bad lineage lookup for lineage {lineage} message: {ex.Message}");
+                return string.Empty;
+            }
+        }
+
         public async Task<Models.MLModel> GetMlModel(string userId, string name)
         {
             var mc = db.GetCollection<MLModel>("mlmodel");
