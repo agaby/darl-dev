@@ -1,5 +1,7 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
+using Gremlin.Net.Driver;
+using Gremlin.Net.Structure.IO.GraphSON;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -79,6 +81,46 @@ namespace Darl.GraphQL.Test
             var del2 = await _graph.DeleteGraphObject(_config["userId"], res2.id);
             obj = await _graph.GetGraphObjectById(_config["userId"], res.id);
             Assert.IsNull(obj);
+        }
+
+        [TestMethod]
+        public async Task TestRead1()
+        {
+            var res = await _graph.ReadAsync(new List<string> { "text", "jeremy corbyn", "noun:00,2,00" });
+            Assert.IsTrue(res.stringConstant.Length > 50);
+        }
+
+        [TestMethod]
+        public async Task TestRead2()
+        {
+            var res = await _graph.ReadAsync(new List<string> { "links", "Jeremy Corbyn", "noun:00,2,00" });
+            Assert.AreEqual(10, res.stringConstant.Split('\n').Length);
+        }
+
+        [TestMethod]
+        public async Task TestRead3()
+        {
+            var res = await _graph.ReadAsync(new List<string> { "links", "Jeremy Corbyn", "noun:01,2,07,10" });
+            Assert.AreEqual(15, res.stringConstant.Split('\n').Length);
+        }
+
+        [TestMethod]
+        public async Task TestRead4()
+        {
+            var res = await _graph.ReadAsync(new List<string> { "path", "Jeremy Corbyn", "Paul Mason" });
+            Assert.AreEqual(5, res.stringConstant.Split('\n').Length);
+        }
+        [TestMethod]
+        public async Task NearestVertexTest()
+        {
+            using (var gremlinClient = new GremlinClient(_graph.gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            {
+                var res = await _graph.FindNearestNameVertex(gremlinClient, "noun:00,2,00", "Corbyn", 0.7f, "Jeremy");
+                Assert.AreEqual(1, res.Count);
+                res = await _graph.FindNearestNameVertex(gremlinClient, "noun:00,2,00", "Corbin", 0.7f, "Jeremy");
+                Assert.AreEqual(1, res.Count);
+                Assert.AreEqual(res[0].name, "jeremy corbyn");
+            }
         }
     }
 }

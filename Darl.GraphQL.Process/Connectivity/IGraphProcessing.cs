@@ -10,7 +10,7 @@ namespace Darl.GraphQL.Models.Connectivity
     public interface IGraphProcessing
     {
         Task<List<GraphObject>> GetGraphObjects(string userId, string name, string lineage);
-        Task<List<GraphObject>> GetGraphObjectsFuzzy(string userId, string name, string lineage, float distance);
+        Task<List<GraphObject>> GetGraphObjectsFuzzy(string userId, string name, string lineage, float similaity);
         Task<GraphObject> GetGraphObjectById(string userId, string id);
         Task<GraphObject> CreateGraphObject(string userId, GraphObjectInput graphObject, bool definitive = false);
         Task<GraphConnection> CreateGraphConnection(string userId, GraphConnectionInput graphConnection, bool definitive = false);

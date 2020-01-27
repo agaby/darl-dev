@@ -369,13 +369,13 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <param name="userId">The user's id</param>
         /// <param name="name">The name to fuzzy match</param>
         /// <param name="lineage">The kind of the object</param>
-        /// <param name="distance">The max Levenshtein distance of a match</param>
+        /// <param name="similarity">The minimum similarity of a match</param>
         /// <returns></returns>
-        public async Task<List<GraphObject>> GetGraphObjectsFuzzy(string userId, string name, string lineage, float distance)
+        public async Task<List<GraphObject>> GetGraphObjectsFuzzy(string userId, string name, string lineage, float similarity)
         {
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
-                return await FindNearestNameVertex(gremlinClient, lineage, name, distance);
+                return await FindNearestNameVertex(gremlinClient, lineage, name, similarity);
             }
         }
 
@@ -630,14 +630,16 @@ namespace Darl.GraphQL.Models.Connectivity
         private static string CreateNotesText(Dictionary<string, object> node)
         {
             var properties = node["properties"] as Dictionary<string, object>;
-            string text = $"# {GetValueAsString(properties, "name")}\n";
-            if (!string.IsNullOrEmpty(GetValueAsString(properties, webpage)))
+            string text = $"# {GetPropertyAsString(properties, "name")}\n";
+            string webPage = GetPropertyAsString(properties, webpage);
+            if (!string.IsNullOrEmpty(webPage))
             {
-                text += $"# [Link]({GetValueAsString(properties, webpage)})\n";
+                text += $"# [Link]({webPage})\n";
             }
-            if (!string.IsNullOrEmpty(GetValueAsString(properties, biography)))
+            string bio = GetPropertyAsString(properties, biography);
+            if (!string.IsNullOrEmpty(bio))
             {
-                text += $"# Notes \n{GetValueAsString(properties, biography)}\n";
+                text += $"# Notes \n{bio}\n";
             }
             return text;
         }
@@ -648,14 +650,14 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
         /// <summary>
-        /// Find a vertex matching name(s) or the closest match with distance <= 2
+        /// Find a vertex matching name(s) or the closest match with similarity > 0.7
         /// </summary>
         /// <param name="gremlinClient">The client</param>
         /// <param name="lineage">The lineage parent of the vertices</param>
         /// <param name="name">name or lastname</param>
         /// <param name="firstname">where firstname and secondname are specified.</param>
         /// <returns>The vertex data or null</returns>
-        public async Task<List<GraphObject>> FindNearestNameVertex(GremlinClient gremlinClient, string lineage, string name, float minimumDistance = 2,string firstname = "")
+        public async Task<List<GraphObject>> FindNearestNameVertex(GremlinClient gremlinClient, string lineage, string name, float minimumSimilarity = 0.7f,string firstname = "")
         {
             var list = new List<GraphObject>();
             var res = await SubmitWithRetry(gremlinClient, "g.V().hasLabel(TextP.startingWith(lineage)).or(has('name',name),has('firstname',firstname).has('secondname',name))", new Dictionary<string, object> { { "name", name.ToLower() }, { "lineage", lineage }, { "firstname", firstname.ToLower() } });
@@ -664,16 +666,20 @@ namespace Darl.GraphQL.Models.Connectivity
                 res = await SubmitWithRetry(gremlinClient, "g.V().hasLabel(TextP.startingWith(lineage)).or(has('name',TextP.startingWith(name)),has('firstname',TextP.startingWith(firstname)).has('secondname',TextP.startingWith(name)))", new Dictionary<string, object> { { "name", name.ToLower().Substring(0, 1) }, { "lineage", lineage }, { "firstname", firstname.ToLower().Substring(0, 1) } });
                 if (res.Count == 0)
                     return list; //no vertices with that lineage with names starting with that/those letter(s)
+                var sought = string.IsNullOrEmpty(firstname) ? name : firstname + " " + name;
+                var distances = new List<(GraphObject,double)>();
                 foreach (var r in res)
                 {//calculate Levenshtein distance.
-                    var sought = string.IsNullOrEmpty(firstname) ? name : firstname + " " + name;
                     var found = GetCompositeName(r);
                     var dist = LineageLibrary.Similarity(sought, found);
-                    if (dist <= minimumDistance)
+                    if (dist >= minimumSimilarity)
                     {
-                        list.Add(ConvertGraphObject(r));
+                        var go = ConvertGraphObject(r);
+                        distances.Add((go, dist ));
                     }
                 }
+                distances.Sort((a, b) => b.Item2.CompareTo(a.Item2));
+                list = distances.Select(a => a.Item1).ToList();
             }
             else
             {

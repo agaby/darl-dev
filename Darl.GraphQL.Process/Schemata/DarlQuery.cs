@@ -585,15 +585,15 @@ namespace Darl.GraphQL.Models.Schemata
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "Name of the object" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "The parent lineage" },
-                    new QueryArgument<FloatGraphType>{ Name = "distance", Description = "The maximum edit distance", DefaultValue = 2.0 }
+                    new QueryArgument<FloatGraphType>{ Name = "similarity", Description = "The minimum similarity [0,1]", DefaultValue = 0.7f }
                 ),
                 resolve: async context =>
                 {
                     var name = context.GetArgument<string>("name");
                     var lineage = context.GetArgument<string>("lineage");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    var distance = context.GetArgument<float>("distance");
-                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectsFuzzy(userId, name, lineage,distance));
+                    var similarity = context.GetArgument<float>("similarity");
+                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectsFuzzy(userId, name, lineage,similarity));
                 }
             );
             FieldAsync<GraphObjectType>(
