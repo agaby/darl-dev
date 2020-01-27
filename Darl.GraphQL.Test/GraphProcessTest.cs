@@ -57,10 +57,28 @@ namespace Darl.GraphQL.Test
             Assert.AreEqual(res.existence.Count, 2);
             Assert.AreEqual(res.existence[0], new DateTime(1955, 11, 6));
             Assert.AreEqual(res.existence[1], DateTime.MaxValue);
+            //add a property
+            var up = await _graph.UpdateGraphObject(_config["userId"], new GraphObjectUpdate {id  = res.id, lineage = "noun:00,2,00", properties = new List<StringStringPair> { new StringStringPair("noun:01,4,09,01,3,4,5", "Andy is a bit of a dork, really." ) } },true);
+            Assert.AreEqual(1, up.properties.Count);
+            //add another 
+            var res2 = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput { lineage = "noun:00,2,00", name = "Anneke Edmonds", firstname = "Anneke", secondname = "Edmonds", inferred = false, existence = new List<DateTime> { new DateTime(1961, 8, 27), DateTime.MaxValue } });
+            var obj2 = await _graph.GetGraphObjectById(_config["userId"], res2.id);
+            Assert.AreEqual(res2.id, obj2.id);
+            //add a marry link
+            var conn1 = await _graph.CreateGraphConnection(_config["userId"], new GraphConnectionInput { lineage = "verb:197,6,07", existence = new List<DateTime> { new DateTime(1988, 8, 27), DateTime.MaxValue }, name = "married", startId = res.id, endId = res2.id },true);
+            Assert.AreEqual(conn1.startId, res.id);
+            Assert.AreEqual(conn1.endId, res2.id);
+            Assert.AreEqual(conn1.lineage, "verb:197,6,07");
+            Assert.AreEqual(conn1.existence.Count, 2);
+            //look for links in objects,
+            obj = await _graph.GetGraphObjectById(_config["userId"], res.id);
+            obj2 = await _graph.GetGraphObjectById(_config["userId"], res2.id);
+
+            //Update conn1
             var del = await _graph.DeleteGraphObject(_config["userId"], res.id);
+            var del2 = await _graph.DeleteGraphObject(_config["userId"], res2.id);
             obj = await _graph.GetGraphObjectById(_config["userId"], res.id);
             Assert.IsNull(obj);
-
         }
     }
 }

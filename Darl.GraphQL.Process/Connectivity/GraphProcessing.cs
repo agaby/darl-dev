@@ -75,12 +75,12 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                 }
                 var id = Guid.NewGuid().ToString();
-                var dict = new Dictionary<string, object> { { "start", graphConnection.startId }, { "end", graphConnection.endId }, { "label", graphConnection.name }, { "weight", graphConnection.weight }, { "id", id }, { "userId", userId }, { "lineage", graphConnection.lineage },{"inferred",graphConnection.inferred } };
+                var dict = new Dictionary<string, object> { { "start", graphConnection.startId }, { "end", graphConnection.endId }, { "label", graphConnection.name }, { "weight", graphConnection.weight ?? 1.0 }, { "id", id }, { "userId", userId }, { "lineage", graphConnection.lineage },{"inferred",graphConnection.inferred ?? false} };
                 var script = "g.V(start).addE(label).to(g.V(end)).property('id', id).property('weight', weight).property('userId',userId).property('lineage',lineage).property('inferred',inferred)";
                 AddCommonElements(graphConnection, dict, ref script);
-                await SubmitWithRetry(gremlinClient, script, dict);
+                var res = await SubmitWithRetry(gremlinClient, script, dict);
+                return ConvertGraphConnection(res.FirstOrDefault());
             }
-            return null;
         }
 
         /// <summary>
@@ -127,12 +127,14 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             if (elem.properties != null)
             {
+                int propCount = 0;
                 foreach (var p in elem.properties)
                 {
+                    var propHolder = $"prop{propCount++}";
                     if (!LineageLibrary.CheckLineage(p.Name))
                         throw new ExecutionError($"Malformed property lineage: {p.Name}.");
-                    dict.Add(p.Name, p.Value);
-                    script += $".property('{p.Name}', {p.Name})";
+                    dict.Add(propHolder, p.Value);
+                    script += $".property('{p.Name}', {propHolder})";
                 }
             }
             if (elem.existence != null)
@@ -142,7 +144,10 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     var exName = $"existence{index}";
                     dict.Add(exName, t);
-                    script += $".property('existence', {exName})";
+                    if(elem is GraphObjectInput)
+                        script += $".property('existence', {exName})";
+                    else
+                        script += $".property('{exName}', {exName})";
                     index++;
                 }
             }
@@ -151,7 +156,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private async Task<bool> OntologicalCompliance(GremlinClient gremlinClient, string graphObjectLineage, string propertyLineage)
         {
             //are these concepts connected?
-            var res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(out()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", graphObjectLineage }, { "lineage2", propertyLineage } });
+            var res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(both()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", graphObjectLineage }, { "lineage2", propertyLineage } });
             if (res.Count != 0)
                 return true;
             //check for 'has' relationship
@@ -161,10 +166,10 @@ namespace Darl.GraphQL.Models.Connectivity
         private async Task<bool> OntologicalCompliance(GremlinClient gremlinClient, string graphConnectionLineage, string startLineage, string endLineage)
         {
             //Look for a preceding and a following association in this or higher verbs that permits this.
-            var res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(out()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", startLineage }, { "lineage2", graphConnectionLineage } });
+            var res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(both()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", startLineage }, { "lineage2", graphConnectionLineage } });
             if(res.Count > 0)
             {
-                res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(out()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", endLineage }, { "lineage2", graphConnectionLineage } });
+                res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(both()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", endLineage }, { "lineage2", graphConnectionLineage } });
                 if(res.Count > 0)
                 {
                     return true;
@@ -265,6 +270,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
         private GraphObject ConvertGraphObject(dynamic r)
         {
+            if (r == null)
+                return null;
             var go = new GraphObject
             {
                 id = GetValueAsString(r, nameof(GraphObject.id)),
@@ -303,6 +310,57 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
             }
             return go;
+        }
+
+        private GraphConnection ConvertGraphConnection(dynamic r)
+        {
+            if (r == null)
+                return null;
+            var gc = new GraphConnection
+            {
+                id = GetValueAsString(r, nameof(GraphConnection.id)),
+                startId = GetValueAsString(r, "outV"),
+                endId = GetValueAsString(r, "inV"),
+                name = GetValueAsString(r, "label")
+            };
+            var props = GetValueOrDefault(r, nameof(GraphConnection.properties)) as IReadOnlyDictionary<string, object>;
+            foreach (var key in props.Keys)
+            {
+                switch (key)
+                {
+                    case nameof(GraphConnection.lineage):
+                        gc.lineage = GetValueAsString(props, key);
+                        break;
+                    case nameof(GraphConnection.weight):
+                        {
+                            if (double.TryParse(GetValueAsString(props, key), out double weight))
+                                gc.weight = weight;
+                            else
+                                gc.weight = 1.0;
+                        }
+                        break;
+                    case nameof(GraphConnection.userId):
+                        gc.userId = GetValueAsString(props, key);
+                        break;
+                    case nameof(GraphConnection.inferred):
+                        gc.inferred = Convert.ToBoolean(GetValueAsString(props, key));
+                        break;
+                    case "existence0":
+                    case "existence1":
+                    case "existence2":
+                    case "existence3":
+                        if (gc.existence == null)
+                            gc.existence = new List<DateTime>();
+                        gc.existence.Add((DateTime)GetValueOrDefault(props, key));
+                        break;
+                    default:
+                        if (gc.properties == null)
+                            gc.properties = new List<StringStringPair>();
+                        gc.properties.Add(new StringStringPair(key, GetPropertyAsString(props, key)));
+                        break;
+                }
+            }
+            return gc;
         }
 
         /// <summary>
@@ -367,7 +425,10 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
-
+                if (!LineageLibrary.CheckLineage(graphObject.lineage))
+                    throw new ExecutionError($"Malformed lineage: {graphObject.lineage}.");
+                if (!graphObject.lineage.StartsWith("noun:") || graphObject.lineage.StartsWith("proper_noun:"))
+                    throw new ExecutionError($"GraphObjects should have lineages of type 'noun' or 'proper_noun'. This has a lineage of {graphObject.lineage}.");
                 if (!definitive)//ontological compliance checks
                 {
                     foreach (var p in graphObject.properties)
@@ -380,13 +441,13 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
                 //required are id and userId. Create scripts and dicts for non-null elements.
                 var dict = new Dictionary<string, object> { { "id", graphObject.id },{ "userId", userId } };
-                var script = "g.V().property('id', id).property('userId',userId)";
+                var script = "g.V().has('id', id).has('userId',userId)";
                 AddConditionalElement(nameof(graphObject.firstname), graphObject.firstname, dict, script);
                 AddConditionalElement(nameof(graphObject.secondname), graphObject.secondname, dict, script);
                 AddConditionalElements(graphObject,dict,script);
                 AddCommonElements(graphObject, dict, ref script);
                 var res = await SubmitWithRetry(gremlinClient, script, dict);
-                return new GraphObject { id = graphObject.id, userId = userId };
+                return ConvertGraphObject(res.FirstOrDefault());
             } 
         }
 
