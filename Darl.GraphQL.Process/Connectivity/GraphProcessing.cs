@@ -557,7 +557,7 @@ namespace Darl.GraphQL.Models.Connectivity
                                 {
                                     throw new Exception("Text call to a graph store must have 3 parameters, 'text', the name and the lineage");
                                 }
-                                var res = await SubmitWithRetry(gremlinClient, "g.V().hasLabel(TextP.startingWith(lineage)).has('name',name)", new Dictionary<string, object> { { "name", address[1].ToLower() }, { "lineage", address[2] } });
+                                var res = await FindNearestNameVertex(gremlinClient,address[2].Trim().ToLower(), address[1].Trim().ToLower());
                                 if (res.Count == 0)
                                 {
                                     var defaultRes = new DarlResult("result", $"We don't have any data on {address[1]}.", DarlResult.DataType.textual);
@@ -568,11 +568,18 @@ namespace Darl.GraphQL.Models.Connectivity
                             }
                         case "links":
                             {
-                                if (address.Count != 3)
+                                if (address.Count != 4)
                                 {
-                                    throw new Exception("Links call to a graph store must have 3 parameters, 'links', the name and the lineage of the end vertex");
+                                    throw new Exception("Links call to a graph store must have 4 parameters, 'links', the name, lineage of the start vertex and the lineage of the end vertex");
                                 }
-                                var res = await SubmitWithRetry(gremlinClient, "g.V().has('name',name).outE().inv().hasLabel(TextP.startingWith(lineage)).dedup().properties('name')", new Dictionary<string, object> { { "name", address[1].ToLower() }, { "lineage", address[2] } });
+                                var lookup = await FindNearestNameVertex(gremlinClient, address[2].Trim().ToLower(), address[1].Trim().ToLower());
+                                if (lookup.Count == 0)
+                                {
+                                    var defaultRes = new DarlResult("result", $"We don't have any data on {address[1]}.", DarlResult.DataType.textual);
+                                    defaultRes.SetWeight(0.5);
+                                    return defaultRes;
+                                }
+                                var res = await SubmitWithRetry(gremlinClient, "g.V().hasLabel(TextP.startingWith(lineage1)).has('name',name).outE().inv().hasLabel(TextP.startingWith(lineage2)).dedup().properties('name')", new Dictionary<string, object> { { "name", lookup.First().name }, { "lineage1", address[2] }, { "lineage2", address[3] } });
                                 if (res.Count == 0)
                                 {
                                     return new DarlResult("result", $"We don't have any links from {address[1]}.", DarlResult.DataType.textual);
@@ -581,11 +588,25 @@ namespace Darl.GraphQL.Models.Connectivity
                             }
                         case "path":
                             {
-                                if (address.Count != 3)
+                                if (address.Count != 5)
                                 {
-                                    throw new Exception("Path call to a graph store must have 3 parameters, 'path', start name and end name");
+                                    throw new Exception("Path call to a graph store must have 5 parameters, 'path', start name, end name, start lineage and end linieage");
                                 }
-                                var res = await SubmitWithRetry(gremlinClient, "g.V().has('name',name1).repeat(out()).until(has('name', name2)).path().limit(1)", new Dictionary<string, object> { { "name1", address[1].ToLower() }, { "name2", address[2].ToLower() } });
+                                var start = await FindNearestNameVertex(gremlinClient, address[3].Trim().ToLower(), address[1].Trim().ToLower());
+                                var end = await FindNearestNameVertex(gremlinClient, address[4].Trim().ToLower(), address[2].Trim().ToLower());
+                                if (start.Count == 0)
+                                {
+                                    var defaultRes = new DarlResult("result", $"We don't have any data on {address[1]}.", DarlResult.DataType.textual);
+                                    defaultRes.SetWeight(0.5);
+                                    return defaultRes;
+                                }
+                                if (end.Count == 0)
+                                {
+                                    var defaultRes = new DarlResult("result", $"We don't have any data on {address[2]}.", DarlResult.DataType.textual);
+                                    defaultRes.SetWeight(0.5);
+                                    return defaultRes;
+                                }
+                                var res = await SubmitWithRetry(gremlinClient, "g.V().has('id',id1).repeat(out()).until(has('id', id2)).path().limit(1)", new Dictionary<string, object> { { "id1", start.First().id }, { "id2", end.First().id } });
                                 if (res.Count == 0)
                                 {
                                     return new DarlResult("result", $"We can't find a path between {address[1]} and {address[2]}.", DarlResult.DataType.textual);
@@ -627,19 +648,15 @@ namespace Darl.GraphQL.Models.Connectivity
             return sb.ToString();
         }
 
-        private static string CreateNotesText(Dictionary<string, object> node)
+        private static string CreateNotesText(GraphObject node)
         {
-            var properties = node["properties"] as Dictionary<string, object>;
-            string text = $"# {GetPropertyAsString(properties, "name")}\n";
-            string webPage = GetPropertyAsString(properties, webpage);
-            if (!string.IsNullOrEmpty(webPage))
+            string text = $"# {node.name}\n";
+            foreach(var p in node.properties)
             {
-                text += $"# [Link]({webPage})\n";
-            }
-            string bio = GetPropertyAsString(properties, biography);
-            if (!string.IsNullOrEmpty(bio))
-            {
-                text += $"# Notes \n{bio}\n";
+                if(p.Name == webpage)
+                    text += $"# [Link]({p.Value})\n";
+                else if(p.Name == biography)
+                    text += $"# Notes \n{p.Value}\n";
             }
             return text;
         }
@@ -663,7 +680,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var res = await SubmitWithRetry(gremlinClient, "g.V().hasLabel(TextP.startingWith(lineage)).or(has('name',name),has('firstname',firstname).has('secondname',name))", new Dictionary<string, object> { { "name", name.ToLower() }, { "lineage", lineage }, { "firstname", firstname.ToLower() } });
             if (res.Count == 0)
             {
-                res = await SubmitWithRetry(gremlinClient, "g.V().hasLabel(TextP.startingWith(lineage)).or(has('name',TextP.startingWith(name)),has('firstname',TextP.startingWith(firstname)).has('secondname',TextP.startingWith(name)))", new Dictionary<string, object> { { "name", name.ToLower().Substring(0, 1) }, { "lineage", lineage }, { "firstname", firstname.ToLower().Substring(0, 1) } });
+                res = await SubmitWithRetry(gremlinClient, "g.V().hasLabel(TextP.startingWith(lineage)).or(has('name',TextP.startingWith(name)),has('firstname',TextP.startingWith(firstname)).has('secondname',TextP.startingWith(name)))", new Dictionary<string, object> { { "name", name.ToLower().Substring(0, 1) }, { "lineage", lineage }, { "firstname", firstname.Length > 1 ? firstname.ToLower().Substring(0, 1) : "" } });
                 if (res.Count == 0)
                     return list; //no vertices with that lineage with names starting with that/those letter(s)
                 var sought = string.IsNullOrEmpty(firstname) ? name : firstname + " " + name;

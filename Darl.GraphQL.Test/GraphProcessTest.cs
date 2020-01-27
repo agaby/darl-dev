@@ -93,23 +93,62 @@ namespace Darl.GraphQL.Test
         [TestMethod]
         public async Task TestRead2()
         {
-            var res = await _graph.ReadAsync(new List<string> { "links", "Jeremy Corbyn", "noun:00,2,00" });
+            
+            var res = await _graph.ReadAsync(new List<string> { "links", "Jeremy Corbyn", "noun:00,2,00", "noun:00,2,00" });
             Assert.AreEqual(10, res.stringConstant.Split('\n').Length);
         }
 
         [TestMethod]
         public async Task TestRead3()
         {
-            var res = await _graph.ReadAsync(new List<string> { "links", "Jeremy Corbyn", "noun:01,2,07,10" });
+            var res = await _graph.ReadAsync(new List<string> { "links", "Jeremy Corbyn", "noun:00,2,00", "noun:01,2,07,10" });
             Assert.AreEqual(15, res.stringConstant.Split('\n').Length);
         }
 
         [TestMethod]
         public async Task TestRead4()
         {
-            var res = await _graph.ReadAsync(new List<string> { "path", "Jeremy Corbyn", "Paul Mason" });
+            var res = await _graph.ReadAsync(new List<string> { "path", "Jeremy Corbyn", "Paul Mason", "noun:00,2,00", "noun:00,2,00" });
             Assert.AreEqual(5, res.stringConstant.Split('\n').Length);
         }
+
+        [TestMethod]
+        public async Task TestRead5()
+        {
+            var res = await _graph.ReadAsync(new List<string> { "text", "jeremy corbin", "noun:00,2,00" });
+            Assert.IsTrue(res.stringConstant.Length > 50);
+        }
+
+        [TestMethod]
+        public async Task TestRead6()
+        {
+
+            var res = await _graph.ReadAsync(new List<string> { "links", "Jeremy Corbin", "noun:00,2,00", "noun:00,2,00" });
+            Assert.AreEqual(10, res.stringConstant.Split('\n').Length);
+        }
+
+        [TestMethod]
+        public async Task TestRead7()
+        {
+            var res = await _graph.ReadAsync(new List<string> { "links", "Jeremi Corbyn", "noun:00,2,00", "noun:01,2,07,10" });
+            Assert.AreEqual(15, res.stringConstant.Split('\n').Length);
+        }
+
+        [TestMethod]
+        public async Task TestRead8()
+        {
+            var res = await _graph.ReadAsync(new List<string> { "path", "Jeremy Corbin", "Paul Masoni", "noun:00,2,00", "noun:00,2,00" });
+            Assert.AreEqual(5, res.stringConstant.Split('\n').Length);
+        }
+
+        [TestMethod]
+        public async Task TestRead9()
+        {
+            var res = await _graph.ReadAsync(new List<string> { "path", "Jeremi Corbyn", "Pail Mason", "noun:00,2,00", "noun:00,2,00" });
+            Assert.AreEqual(5, res.stringConstant.Split('\n').Length);
+        }
+
+
         [TestMethod]
         public async Task NearestVertexTest()
         {
