@@ -10,8 +10,6 @@ namespace Darl.GraphQL.Models.Models
         public string id { get; set; }
         public string text { get; set; }
         public bool children { get; set; }
-        public string definition { get; set; }
-
         public LineageNodeAttributes attributes { get; set; }
 
     }

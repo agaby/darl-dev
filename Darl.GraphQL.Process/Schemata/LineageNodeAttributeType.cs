@@ -18,6 +18,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.present).DefaultValue(false).Description("true if this attribute and location in the tree exist");
             Field(c => c.randomResponse).Description("If true one of the random responses is chosen at random").DefaultValue(false);
             Field(c => c.response, true).Description("A single response returned when randomResponse is false").DefaultValue("");
+            Field(c => c.definition, true).Description("A textual description of the attached node").DefaultValue("");
             Field<ListGraphType<StringGraphType>>("accessRoles", "predefined roles that can access this attribute.",  resolve: context => context.Source.accessRoles);
             Field<ListGraphType<StringGraphType>>("implications", "Hints as to other relationships", resolve: context => context.Source.implications);
             Field<ListGraphType<StringGraphType>>("randomResponses", "A set of responses that will be selected at random if randomResponse is true", resolve: context => context.Source.randomResponses);

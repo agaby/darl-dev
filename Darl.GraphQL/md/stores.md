@@ -36,3 +36,23 @@ The bot system contains the following stores:
 |Word |Gets a word definition from WordNet |Read only |
 |Rest |Calls a remote REST interface if secured or current user has access |Read/Write |
 |Collateral |Gets a predefined piece of MarkDown and returns it |Read only|
+
+## Value Store
+
+The value store accesses values embedded in chat strings. Each value is a pair of the identifier for the kind of value, and the value itself.
+Identifiers are those defined in (). They start with the text _value:_ and they define the kind of value required in a hierarchical fashion like other lineages.
+To extract a value of a particular kind from the values extracted from the string use that indicator.
+For instance
+```darl
+Value["value:text"]
+```
+
+returns the first text value extracted from the string.
+
+### Multiple values of the same kind.
+If you want to access anything other than the first value of a type that is a kind of the type specified, you can supply a second integer parameter.
+That integer represents the zero-based index of the value sought.
+So, for instance to access the second text value in a chat string use:
+```darl
+Value["value:text",1]
+```

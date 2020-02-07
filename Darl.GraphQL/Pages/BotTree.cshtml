@@ -33,6 +33,8 @@
             <div class="container">
                 <div class="row">
                     <h4>Recognition Tree</h4>
+                    &nbsp;
+                    <button class="btn btn-info pull-right" id="addAtRoot">Add a root entry</button>
                 </div>
                 <div class="row">
                     <div id="botTree" class="col-md-6 margin-b-40">
@@ -68,7 +70,7 @@
                                     <hr />
                                     <div id="roleEdit">
                                         <label for="roles">Limit access using authorizations</label><br />
-                                        <select id="roles"></select>
+                                        <select id="roles" class="dropdown"></select>
                                     </div>
 
                                 </div>
@@ -128,9 +130,12 @@
         var phraseDelete;
         var getChildren;
         var deleteNode;
+        var createNode;
+        var renameNode;
         var tree;
         var editorResponse;
         var editorCall;
+        var lintCall;
 
 
         $(async function () {
@@ -174,14 +179,17 @@
             allbotmodels = graph(`{ botmodels { name }}`);
             var attPhrase = graph(`query getAttFromPhrase($model: String!, $phrase: String! ){getAttribute(botModelName: $model, phrase: $phrase ){response call darl accessRoles randomResponse randomResponses path present }}`);
             var attPath = graph(`query getAttFromPath($model: String!, $path: String! ){getAttributeFromPath(botModelName: $model, path: $path ){response call darl accessRoles randomResponse randomResponses path present }}`);
-            var attResource = graph(`query getAttResources($model: String!){getLineageNodeAttributeResources(botModelName: $model){allRoles allRulesets ruleSkeleton insertionPointText }}`);
+            attResource = graph(`query getAttResources($model: String!){getLineageNodeAttributeResources(botModelName: $model){allRoles allRulesets ruleSkeleton insertionPointText }}`);
             createDefault = graph('mutation cdbm($name: String!){createDefaultBotModel(name: $name){name }}');
             createEmpty = graph('mutation cebm($name: String!){createEmptyBotModel(name: $name){name }}');
             updateAtt = graph('mutation uab($name: String!, $path: String!, $att: lineageNodeAttributeUpdate!){updateAttribute(botModelName: $name, path: $path, attribute: $att){ path}}');
             phraseCreate = graph('mutation pc($name: String!, $path: String!, $att: lineageNodeAttributeUpdate!){createPhrase(botModelName: $name, path: $path, attribute: $att){ definition}}');
             phraseDelete = graph('mutation pd($name: String!, $phrase: String!){deletePhrase(botModelName: $name, phrase: $phrase){ path}}');
-            getChildren = graph('query gcln($model: String!, $path: String!, $root: Boolean!){getChildrenLineageNodes(botModelName: $model, path: $path, isRoot: $root){id text children definition attributes{ darl call } }}');
+            getChildren = graph('query gcln($model: String!, $path: String!, $root: Boolean!){getChildrenLineageNodes(botModelName: $model, path: $path, isRoot: $root){id text children data: attributes{ darl call response randomResponse randomResponses definition} }}');
             deleteNode = graph('mutation nd($model: String!, $path: String!){deleteLineageNode(botModelName: $model, id: $path){id text children}}');
+            createNode = graph('mutation nc($model: String!, $parent: String!, $text: String!){createLineageNode(botModelName: $model, parent: $parent, newName: $text){id text children}}');
+            renameNode = graph('mutation nr($model: String!, $id: String!, $text: String!){renameLineageNode(botModelName: $model, id: $id, newName: $text){id text children}}');
+            lintCall = graph('query lint($darl: String!, $skeleton: String!, $insertion: String!){  lintDarl(darl: $darl, skeleton: $skeleton, insertion: $insertion){ column_no_start column_no_stop line_no message severity }}');
             await updateDropdown();
             $('#botmodel-dropdown').on('change', async function () {
                 mdname = this.value;
@@ -203,24 +211,68 @@
                     "plugins": ["wholerow", "unique", "contextmenu"]
                 });
                 $("#botTree").on('hover_node.jstree', function (e, data) {
-                    data.instance.element.prop('title', data.node.definition);
+                    if(data.node.data.definition !== null)
+                        data.instance.element.prop('title', data.node.data.definition);
                 });
+
                 $("#botTree").on('delete_node.jstree', async function (e, data) {
                     var r = deleteNode({model: mdname, path: data.node.id})
-                    var parentNode = $("#botTree").jstree(true)._get_parent(data.node);
-                    $("#botTree").jstree(true).refresh_node(parentNode);
+                    if (data.node.parent == '#') { //deleting root node
+                        $("#botTree").jstree(true).refresh();
+                    }
+                    else {
+                        $("#botTree").jstree(true).refresh_node(data.node.parent);
+                    }
                 });
 
                 $("#botTree").on('select_node.jstree', function (e, data) {
-                    if (data.node.attributes != null) {
-                        darlCodeMirror.setValue(data.node.attributes.darl);
-                        rolesSelect.val(data.node.data.roles);
-//                    editorResponse.setValue(data.node.data.response);
-                        editorCall.setValue(data.node.attributes.call);
+                    if (data.node.data != null) {
+                        darlCodeMirror.setValue(data.node.data.darl);
+                        var dropdown = $('#roles');
+                        dropdown.empty();
+                        $.each(data.node.data.accessRoles, function (key, entry) {
+                            dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry).text(entry));
+                        });
+                        editorResponse.setValue(data.node.data);
+                        editorCall.setValue(data.node.data.call);
+                        darlCodeMirror.refresh();
+                    }
+                    else {
+                        darlCodeMirror.setValue("");
+                        editorResponse.setValue("");
+                        editorCall.setValue("");
+                        $('#roles').empty();
+                        darlCodeMirror.refresh();
                     }
                     $("#nodePathText").text(data.node.id);
                     $("#lineageList").empty();
                 });
+
+                $("#botTree").on('create_node.jstree', function (e, data) {
+                    var r = createNode({ model: mdname, parent: data.parent, text: data.node.text })
+                    if (data.node.parent == '#') { //creating root node
+                        $("#botTree").jstree(true).refresh();
+                    }
+                    else {
+                        $("#botTree").jstree(true).refresh_node(data.node.parent);
+                    }
+                });
+
+                $("#botTree").on('rename_node.jstree', function (e, data) {
+                    var r = renameNode({ model: mdname, id: data.node.id, text: data.node.text })
+                    if (data.node.parent == '#') { //renaming root node
+                        $("#botTree").jstree(true).refresh();
+                    }
+                    else {
+                        $("#botTree").jstree(true).refresh_node(data.node.parent);
+                    }
+                });
+
+                $("#botTree").on('paste.jstree', function (e, data) {
+
+                });
+
+                attResources = await attResource({model: mdname});
 
                 editorResponse = new JSONEditor(document.getElementById('responseedit'), {
                     theme: 'bootstrap4',
@@ -298,7 +350,9 @@
                     var path = $("#nodePathText").text(); //selected node path
                     var resp = editorResponse.getValue();
                     await updateAtt({ name: mdname, path: path, att: { darl: darlCodeMirror.getValue(), call: editorCall.getValue(), response: resp.response, randomResponse: resp.randomResponse, randomResponses: resp.randomResponses } });
-                }
+                    var sel = $("#botTree").jstree(true).get_selected();
+                    $("#botTree").jstree(true).refresh_node(sel[0]);
+               }
                 catch (err) {
                     alert(err[0].message);
                 }
@@ -330,13 +384,16 @@
                 }
             });
 
-           $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                darlCodeMirror.refresh();
-            });
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                    darlCodeMirror.refresh();
+               });
+
+             $('#addAtRoot').on('click', function (cm, event) {
+                    var res = $("#botTree").jstree('create_node', '#', {'id' : 'new_node', 'text' : 'new_node Text'}, 'last');;
+                });
         });
 
         async function check_syntax(code, result_cb) {
-            var lintCall = graph('query lint($darl: String!, $skeleton String!, $insertion String!){  lintDarl(darl: $darl, skeleton = $skeleton, insertion = $insertion){ column_no_start column_no_stop line_no message severity }}');
             var result = await lintCall({ darl: code, skeleton: attResources.getLineageNodeAttributeResources.ruleSkeleton, insertion: attResources.getLineageNodeAttributeResources.insertionPointText });
             result_cb(result.lintDarl);
         }

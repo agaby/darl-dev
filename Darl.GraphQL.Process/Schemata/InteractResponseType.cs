@@ -14,7 +14,7 @@ namespace Darl.GraphQL.Models.Schemata
             Description = "The bot's response to your input";
             Field(c => c.darl);
             Field<DarlVarType>("response", resolve:  c => c.Source.response);
-            Field<MatchedAnnotationType>("matches", resolve: c => c.Source.matches);
+            Field<ListGraphType<MatchedAnnotationType>>("matches", resolve: c => c.Source.matches);
         }
     }
 }

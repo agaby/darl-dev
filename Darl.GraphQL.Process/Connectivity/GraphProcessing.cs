@@ -560,9 +560,7 @@ namespace Darl.GraphQL.Models.Connectivity
                                 var res = await FindNearestNameVertex(gremlinClient,address[2].Trim().ToLower(), address[1].Trim().ToLower());
                                 if (res.Count == 0)
                                 {
-                                    var defaultRes = new DarlResult("result", $"We don't have any data on {address[1]}.", DarlResult.DataType.textual);
-                                    defaultRes.SetWeight(0.5);
-                                    return defaultRes;
+                                    return new DarlResult("result", 0.0, true);
                                 }
                                 return new DarlResult("result", CreateNotesText(res.First()), DarlResult.DataType.textual);
                             }
@@ -575,14 +573,12 @@ namespace Darl.GraphQL.Models.Connectivity
                                 var lookup = await FindNearestNameVertex(gremlinClient, address[2].Trim().ToLower(), address[1].Trim().ToLower());
                                 if (lookup.Count == 0)
                                 {
-                                    var defaultRes = new DarlResult("result", $"We don't have any data on {address[1]}.", DarlResult.DataType.textual);
-                                    defaultRes.SetWeight(0.5);
-                                    return defaultRes;
+                                    return new DarlResult("result", 0.0, true);
                                 }
                                 var res = await SubmitWithRetry(gremlinClient, "g.V().hasLabel(TextP.startingWith(lineage1)).has('name',name).outE().inv().hasLabel(TextP.startingWith(lineage2)).dedup().properties('name')", new Dictionary<string, object> { { "name", lookup.First().name }, { "lineage1", address[2] }, { "lineage2", address[3] } });
                                 if (res.Count == 0)
                                 {
-                                    return new DarlResult("result", $"We don't have any links from {address[1]}.", DarlResult.DataType.textual);
+                                    return new DarlResult("result", 0.0, true);
                                 }
                                 return new DarlResult("result", CreateLinksText(res), DarlResult.DataType.textual);
                             }
@@ -590,28 +586,41 @@ namespace Darl.GraphQL.Models.Connectivity
                             {
                                 if (address.Count != 5)
                                 {
-                                    throw new Exception("Path call to a graph store must have 5 parameters, 'path', start name, end name, start lineage and end linieage");
+                                    throw new Exception("Path call to a graph store must have 5 parameters, 'path', start name, end name, start lineage and end lineage");
                                 }
                                 var start = await FindNearestNameVertex(gremlinClient, address[3].Trim().ToLower(), address[1].Trim().ToLower());
                                 var end = await FindNearestNameVertex(gremlinClient, address[4].Trim().ToLower(), address[2].Trim().ToLower());
                                 if (start.Count == 0)
                                 {
-                                    var defaultRes = new DarlResult("result", $"We don't have any data on {address[1]}.", DarlResult.DataType.textual);
-                                    defaultRes.SetWeight(0.5);
-                                    return defaultRes;
+                                    return new DarlResult("result", 0.0, true);
                                 }
                                 if (end.Count == 0)
                                 {
-                                    var defaultRes = new DarlResult("result", $"We don't have any data on {address[2]}.", DarlResult.DataType.textual);
-                                    defaultRes.SetWeight(0.5);
-                                    return defaultRes;
+                                    return new DarlResult("result", 0.0, true);
                                 }
                                 var res = await SubmitWithRetry(gremlinClient, "g.V().has('id',id1).repeat(out()).until(has('id', id2)).path().limit(1)", new Dictionary<string, object> { { "id1", start.First().id }, { "id2", end.First().id } });
                                 if (res.Count == 0)
                                 {
-                                    return new DarlResult("result", $"We can't find a path between {address[1]} and {address[2]}.", DarlResult.DataType.textual);
+                                    return new DarlResult("result", 0.0, true);
                                 }
                                 return new DarlResult("result", CreatePathText(res), DarlResult.DataType.textual);
+                            }
+                        case "attribute":
+                            {
+                                if (address.Count != 4)
+                                {
+                                    throw new Exception("Attribute call to a graph store must have 4 parameters, 'text', the name, the object lineage and the attribute lineage");
+                                }
+                                var res = await FindNearestNameVertex(gremlinClient, address[2].Trim().ToLower(), address[1].Trim().ToLower());
+                                if (res.Count == 0)
+                                {
+                                    return new DarlResult("result", 0.0, true);
+                                }
+                                var prop = res.First().properties.Where(a => a.Name.StartsWith(address[3])).FirstOrDefault();
+                                if (prop != null)
+                                    return new DarlResult("result", prop.Value, DarlResult.DataType.textual);
+                                else
+                                    return new DarlResult("result", 0.0, true);
                             }
                     }
                 }

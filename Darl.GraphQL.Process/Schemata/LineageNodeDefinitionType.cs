@@ -13,7 +13,6 @@ namespace Darl.GraphQL.Models.Schemata
             Name = "lineageNodeDefinition";
             Description = "data required to build an editable tree of the text engine contents";
             Field(c => c.children);
-            Field(c => c.definition,true);
             Field(c => c.id,true);
             Field(c => c.text,true);
             Field<LineageNodeAttributeType>("attributes", resolve: c => c.Source.attributes);

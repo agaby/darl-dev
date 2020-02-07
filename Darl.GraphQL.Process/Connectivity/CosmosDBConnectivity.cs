@@ -193,7 +193,9 @@ namespace Darl.GraphQL.Models.Connectivity
             var currentModel = await GetLineageModel(userId, botModelName);
             var lmn = currentModel.tree.Add(parent, newName.Trim().ToLower());
             await SaveLineageModel(userId, botModelName, currentModel);
-            return new LineageNodeDefinition { text = lmn.element.lineage, id = lmn.element.lineage, definition = lmn.element.description, attributes = null, children = false };
+            var att = new LineageNodeAttributes();
+            att.definition = lmn.element.description;
+            return new LineageNodeDefinition { text = lmn.element.lineage, id = lmn.element.lineage, attributes = att, children = false };
         }
 
         public async Task<MLModel> CreateMLModel(string userId, string name, DarlCommon.MLModel model)
@@ -212,7 +214,9 @@ namespace Darl.GraphQL.Models.Connectivity
             var newCode = currentModel.ReconcileCode(attribute.darl, new BotFragment { CallRuleset = attribute.call, RandomResponses = attribute.randomResponses, Response = attribute.response }, path);
             currentModel.tree.SaveAttributes(path, newCode.Trim(), new List<string>(), attribute.accessRoles);
             await SaveLineageModel(userId, botModelName, currentModel);
-            return new LineageNodeDefinition { text = lmn.element.lineage, id = lmn.element.lineage, definition = lmn.element.description, attributes = null, children = false };
+            var att = new LineageNodeAttributes();
+            att.definition = lmn.element.description;
+            return new LineageNodeDefinition { text = lmn.element.lineage, id = lmn.element.lineage,  attributes = att, children = false };
         }
 
         public async Task<RuleForm> CreateRuleFormFromDarl(string userId, string name, string darl)
@@ -725,7 +729,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
             var notleaf = r.children.Any();
             LineageNodeAttributes att = ConvertFromLineageMatchNode(r, lm);
-            next.Add(new LineageNodeDefinition { id = id, text = r.element.lineage, children = notleaf, definition = r.element.description, attributes = att });
+            att.definition = r.element.description;
+            next.Add(new LineageNodeDefinition { id = id, text = r.element.lineage, children = notleaf, attributes = att });
         }
 
         private LineageNodeAttributes ConvertFromLineageMatchNode(LineageMatchNode r, LineageModel lm)
@@ -750,6 +755,10 @@ namespace Darl.GraphQL.Models.Connectivity
                     randomResponses = bf.RandomResponses,
                     response = bf.Response
                 };
+            }
+            else
+            {
+                att = new LineageNodeAttributes();
             }
             return att;
         }

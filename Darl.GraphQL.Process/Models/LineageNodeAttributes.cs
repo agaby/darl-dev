@@ -23,6 +23,6 @@ namespace Darl.GraphQL.Models.Models
 
         public bool present { get; set; } = false;
 
-
+        public string definition { get; set; } = string.Empty;
     }
 }

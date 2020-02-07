@@ -20,7 +20,7 @@ namespace Darl.GraphQL.Test
         [TestInitialize()]
         public void Initialize()
         {
-            client = new GraphQLClient("https://darl.dev/graphql/");
+            client = new GraphQLClient("https://darlgraphql-stagng.azurewebsites.net/graphql/");
             var authcode = "8952d1af-9d34-4866-a4bc-412bf51743d6";
             client.DefaultRequestHeaders.Add("Authorization", $"Basic {authcode}");
             client.Options.JsonSerializerSettings.Converters.Add(new StringEnumConverter());
@@ -62,25 +62,27 @@ namespace Darl.GraphQL.Test
             //create new botmodel 
             var req = new GraphQLRequest()
             {
-                Query = "mutation {createEmptyBotModel(name: \"FarLeftGraph.model\"){name}}"
+                Query = "mutation {createEmptyBotModel(name: \"FarLeftGraph.model\"){name}}" 
             };
             var resp = await client.PostAsync(req);
             //add a trigger and response
             req = new GraphQLRequest()
             {
                 Query = "mutation cp($path: String!, $darl: String!){createPhrase(botModelName: \"FarLeftGraph.model\", path: $path, attribute: { darl: $darl }) {definition}}",
-                Variables = new { path = "who/is/value:text", darl= "if anything then response will be Graph[\"text\",\"noun:00,2,00\",Value[\"value:text\"]];" }
+                Variables = new { path = "who/is/value:text", darl= "output textual val;\n if anything then val will be Value[\"value:text\"];\n if anything then response will be Graph[\"text\",\"noun:00,2,00\",val];" }
                 };
             resp = await client.PostAsync(req);
             //test 
             req = new GraphQLRequest()
             {
                 Query = "query interact($model: String!, $convId: String!, $data: darlVarUpdate!){interact(botModelName: $model, conversationId: $convId, conversationData: $data) {response{value dataType } }}",
-                Variables = new { model = "FarLeftGraph.model", convId = "aaabbb", data = new { name = "", Value = "who is Jeremy Corbyn", dataType = DarlVar.DataType.textual } }
+                Variables = new { model = "FarLeftGraph.model", convId = "aaabb", data = new { name = "", Value = "who is Jeremy Corbyn", dataType = DarlVar.DataType.textual } }
             };
             resp = await client.PostAsync(req);
 
             //delete
+            
+            
             req = new GraphQLRequest()
             {
                 Query = "mutation {deleteBotModel(name: \"FarLeftGraph.model\"){name}}"
