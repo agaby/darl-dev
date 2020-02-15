@@ -60,7 +60,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     var start = await GetGraphObjectById(userId, graphConnection.startId);
                     var end = await GetGraphObjectById(userId, graphConnection.endId);
-                    if (!await OntologicalCompliance(gremlinClient, graphConnection.lineage, start.lineage,end.lineage))
+                    if (!await OntologicalCompliance(gremlinClient, graphConnection.lineage, start.lineage, end.lineage))
                     {
                         throw new ExecutionError($"No association exists between {start.lineage}, the verb {graphConnection.lineage} and {end.lineage}\n if you are sure this is correct use the definitive flag in the call.");
                     }
@@ -75,7 +75,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                 }
                 var id = Guid.NewGuid().ToString();
-                var dict = new Dictionary<string, object> { { "start", graphConnection.startId }, { "end", graphConnection.endId }, { "label", graphConnection.name }, { "weight", graphConnection.weight ?? 1.0 }, { "id", id }, { "userId", userId }, { "lineage", graphConnection.lineage },{"inferred",graphConnection.inferred ?? false} };
+                var dict = new Dictionary<string, object> { { "start", graphConnection.startId }, { "end", graphConnection.endId }, { "label", graphConnection.name }, { "weight", graphConnection.weight ?? 1.0 }, { "id", id }, { "userId", userId }, { "lineage", graphConnection.lineage }, { "inferred", graphConnection.inferred ?? false } };
                 var script = "g.V(start).addE(label).to(g.V(end)).property('id', id).property('weight', weight).property('userId',userId).property('lineage',lineage).property('inferred',inferred)";
                 AddCommonElements(graphConnection, dict, ref script);
                 var res = await SubmitWithRetry(gremlinClient, script, dict);
@@ -94,18 +94,18 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
-                if(!LineageLibrary.CheckLineage(graphObject.lineage))
+                if (!LineageLibrary.CheckLineage(graphObject.lineage))
                     throw new ExecutionError($"Malformed lineage: {graphObject.lineage}.");
                 if (!graphObject.lineage.StartsWith("noun:") || graphObject.lineage.StartsWith("proper_noun:"))
                     throw new ExecutionError($"GraphObjects should have lineages of type 'noun' or 'proper_noun'. This has a lineage of {graphObject.lineage}.");
                 if (!definitive)//ontological compliance checks
                 {
                     //for each property lineage 
-                    if(graphObject.properties != null)
-                    { 
-                        foreach(var p in graphObject.properties)
+                    if (graphObject.properties != null)
+                    {
+                        foreach (var p in graphObject.properties)
                         {
-                            if(! await OntologicalCompliance(gremlinClient, graphObject.lineage, p.Name))
+                            if (!await OntologicalCompliance(gremlinClient, graphObject.lineage, p.Name))
                             {
                                 if (!LineageLibrary.CheckLineage(p.Name))
                                     throw new ExecutionError($"Malformed property lineage: {p.Name}.");
@@ -115,15 +115,15 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                 }
                 var id = Guid.NewGuid().ToString();
-                var dict = new Dictionary<string, object> { { "lineage", graphObject.lineage }, { "id", id }, { "name", graphObject.name.Trim().ToLower() }, { "userId", userId }, {"firstname",graphObject.firstname.Trim().ToLower() }, { "secondname", graphObject.secondname.Trim().ToLower() }, {"inferred",graphObject.inferred } };
+                var dict = new Dictionary<string, object> { { "lineage", graphObject.lineage }, { "id", id }, { "name", graphObject.name.Trim().ToLower() }, { "userId", userId }, { "firstname", graphObject.firstname.Trim().ToLower() }, { "secondname", graphObject.secondname.Trim().ToLower() }, { "inferred", graphObject.inferred } };
                 var script = "g.addV(lineage).property('id', id).property('name', name).property('lineage',lineage).property('userId',userId).property('firstname',firstname).property('secondname',secondname).property('inferred',inferred)";
                 AddCommonElements(graphObject, dict, ref script);
                 var res = await SubmitWithRetry(gremlinClient, script, dict);
                 return ConvertGraphObject(res.First());
-               }
+            }
         }
 
-        private void AddCommonElements(GraphElementInput elem, Dictionary<string,object> dict, ref string script)
+        private void AddCommonElements(GraphElementInput elem, Dictionary<string, object> dict, ref string script)
         {
             if (elem.properties != null)
             {
@@ -144,7 +144,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     var exName = $"existence{index}";
                     dict.Add(exName, t);
-                    if(elem is GraphObjectInput)
+                    if (elem is GraphObjectInput)
                         script += $".property('existence', {exName})";
                     else
                         script += $".property('{exName}', {exName})";
@@ -167,10 +167,10 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             //Look for a preceding and a following association in this or higher verbs that permits this.
             var res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(both()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", startLineage }, { "lineage2", graphConnectionLineage } });
-            if(res.Count > 0)
+            if (res.Count > 0)
             {
                 res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(both()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", endLineage }, { "lineage2", graphConnectionLineage } });
-                if(res.Count > 0)
+                if (res.Count > 0)
                 {
                     return true;
                 }
@@ -260,7 +260,7 @@ namespace Darl.GraphQL.Models.Connectivity
                         }
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     throw new ExecutionError("Error in reading from Graph database: ", ex);
                 }
@@ -440,22 +440,22 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                 }
                 //required are id and userId. Create scripts and dicts for non-null elements.
-                var dict = new Dictionary<string, object> { { "id", graphObject.id },{ "userId", userId } };
+                var dict = new Dictionary<string, object> { { "id", graphObject.id }, { "userId", userId } };
                 var script = "g.V().has('id', id).has('userId',userId)";
                 AddConditionalElement(nameof(graphObject.firstname), graphObject.firstname, dict, script);
                 AddConditionalElement(nameof(graphObject.secondname), graphObject.secondname, dict, script);
-                AddConditionalElements(graphObject,dict,script);
+                AddConditionalElements(graphObject, dict, script);
                 AddCommonElements(graphObject, dict, ref script);
                 var res = await SubmitWithRetry(gremlinClient, script, dict);
                 return ConvertGraphObject(res.FirstOrDefault());
-            } 
+            }
         }
 
         private void AddConditionalElements(GraphElementInput elem, Dictionary<string, object> dict, string script)
         {
             AddConditionalElement(nameof(elem.lineage), elem.lineage, dict, script);
             AddConditionalElement(nameof(elem.name), elem.name, dict, script);
-            if(elem.inferred != null)
+            if (elem.inferred != null)
             {
                 dict.Add(nameof(elem.inferred), elem.inferred);
                 script += $".property('{nameof(elem.inferred)}',{nameof(elem.inferred)})";
@@ -507,7 +507,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public static string GetPropertyAsString(IReadOnlyDictionary<string, object> dictionary, string key)
         {
             var prop = GetValueOrDefault(dictionary, key);
-            if(prop != null)
+            if (prop != null)
             {
                 foreach (var sp in prop as IEnumerable)
                 {
@@ -557,7 +557,7 @@ namespace Darl.GraphQL.Models.Connectivity
                                 {
                                     throw new Exception("Text call to a graph store must have 3 parameters, 'text', the name and the lineage");
                                 }
-                                var res = await FindNearestNameVertex(gremlinClient,address[2].Trim().ToLower(), address[1].Trim().ToLower());
+                                var res = await FindNearestNameVertex(gremlinClient, address[2].Trim().ToLower(), address[1].Trim().ToLower());
                                 if (res.Count == 0)
                                 {
                                     return new DarlResult("result", 0.0, true);
@@ -660,11 +660,11 @@ namespace Darl.GraphQL.Models.Connectivity
         private static string CreateNotesText(GraphObject node)
         {
             string text = $"# {node.name}\n";
-            foreach(var p in node.properties)
+            foreach (var p in node.properties)
             {
-                if(p.Name == webpage)
+                if (p.Name == webpage)
                     text += $"# [Link]({p.Value})\n";
-                else if(p.Name == biography)
+                else if (p.Name == biography)
                     text += $"# Notes \n{p.Value}\n";
             }
             return text;
@@ -683,7 +683,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <param name="name">name or lastname</param>
         /// <param name="firstname">where firstname and secondname are specified.</param>
         /// <returns>The vertex data or null</returns>
-        public async Task<List<GraphObject>> FindNearestNameVertex(GremlinClient gremlinClient, string lineage, string name, float minimumSimilarity = 0.7f,string firstname = "")
+        public async Task<List<GraphObject>> FindNearestNameVertex(GremlinClient gremlinClient, string lineage, string name, float minimumSimilarity = 0.7f, string firstname = "")
         {
             var list = new List<GraphObject>();
             var res = await SubmitWithRetry(gremlinClient, "g.V().hasLabel(TextP.startingWith(lineage)).or(has('name',name),has('firstname',firstname).has('secondname',name))", new Dictionary<string, object> { { "name", name.ToLower() }, { "lineage", lineage }, { "firstname", firstname.ToLower() } });
@@ -693,7 +693,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 if (res.Count == 0)
                     return list; //no vertices with that lineage with names starting with that/those letter(s)
                 var sought = string.IsNullOrEmpty(firstname) ? name : firstname + " " + name;
-                var distances = new List<(GraphObject,double)>();
+                var distances = new List<(GraphObject, double)>();
                 foreach (var r in res)
                 {//calculate Levenshtein distance.
                     var found = GetCompositeName(r);
@@ -701,7 +701,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     if (dist >= minimumSimilarity)
                     {
                         var go = ConvertGraphObject(r);
-                        distances.Add((go, dist ));
+                        distances.Add((go, dist));
                     }
                 }
                 distances.Sort((a, b) => b.Item2.CompareTo(a.Item2));

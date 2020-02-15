@@ -91,14 +91,7 @@ namespace Darl.GraphQL.Test
             
         }
 
-        [TestMethod]
-        public async Task TestGetCollaterals()
-        {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.AppSettings.json"));
-            var source = reader.ReadToEnd();
-            var appSettings = JsonConvert.DeserializeObject<AppSettings>(source);
 
-        }
 
     }
 }

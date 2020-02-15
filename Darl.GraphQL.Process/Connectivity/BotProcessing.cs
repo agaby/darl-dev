@@ -3,6 +3,7 @@ using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using DarlCommon;
+using GraphQL;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -40,6 +41,8 @@ namespace Darl.GraphQL.Models.Connectivity
             List<InteractTestResponse> resp = new List<InteractTestResponse>();
             //cache these?
             var bmt = await _conv.GetBotModel(userId, botModelName);
+            if (bmt == null)
+                throw new ExecutionError($"{botModelName} not found in this account.");
             LineageModel bm = null;
             using (var ms = new MemoryStream(bmt.Model))
             {

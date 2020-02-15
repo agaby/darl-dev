@@ -1,0 +1,211 @@
+{
+  "data": {
+    "botmodelByName": {
+      "model": {
+        "tree": {
+          "root": {
+            "children": [
+              {
+                "text": "default:",
+                "match": {
+                  "children": []
+                }
+              },
+              {
+                "text": "how",
+                "match": {
+                  "children": [
+                    {
+                      "text": "verb:487",
+                      "match": {
+                        "children": [
+                          {
+                            "text": "value:text",
+                            "match": {
+                              "children": [
+                                {
+                                  "text": "and",
+                                  "match": {
+                                    "children": [
+                                      {
+                                        "text": "value:text",
+                                        "match": {
+                                          "children": [
+                                            {
+                                              "text": "verb:248",
+                                              "match": {
+                                                "children": []
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "text": "noun:01,4,05,11,03",
+                "match": {
+                  "children": []
+                }
+              },
+              {
+                "text": "verb:397,2",
+                "match": {
+                  "children": []
+                }
+              },
+              {
+                "text": "what",
+                "match": {
+                  "children": [
+                    {
+                      "text": "verb:487",
+                      "match": {
+                        "children": [
+                          {
+                            "text": "default:",
+                            "match": {
+                              "children": []
+                            }
+                          },
+                          {
+                            "text": "value:text",
+                            "match": {
+                              "children": [
+                                {
+                                  "text": "verb:248",
+                                  "match": {
+                                    "children": []
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "text": "verb:248",
+                            "match": {
+                              "children": [
+                                {
+                                  "text": "to|from|with",
+                                  "match": {
+                                    "children": [
+                                      {
+                                        "text": "value:text",
+                                        "match": {
+                                          "children": []
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "text": "you|u",
+                            "match": {
+                              "children": []
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "text": "where",
+                "match": {
+                  "children": [
+                    {
+                      "text": "verb:487",
+                      "match": {
+                        "children": [
+                          {
+                            "text": "you|u",
+                            "match": {
+                              "children": []
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "text": "who",
+                "match": {
+                  "children": [
+                    {
+                      "text": "verb:487",
+                      "match": {
+                        "children": [
+                          {
+                            "text": "default:",
+                            "match": {
+                              "children": []
+                            }
+                          },
+                          {
+                            "text": "value:text",
+                            "match": {
+                              "children": [
+                                {
+                                  "text": "verb:248",
+                                  "match": {
+                                    "children": []
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "text": "verb:248",
+                            "match": {
+                              "children": [
+                                {
+                                  "text": "to|with|from",
+                                  "match": {
+                                    "children": [
+                                      {
+                                        "text": "value:text",
+                                        "match": {
+                                          "children": []
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "text": "you|u",
+                            "match": {
+                              "children": []
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

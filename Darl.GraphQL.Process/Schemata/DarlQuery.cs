@@ -160,6 +160,19 @@ namespace Darl.GraphQL.Models.Schemata
                          async c => await connectivity.GetLineagesForWord(word, isoLanguage));
                 });
 
+            FieldAsync<StringGraphType>("getTypeWordForLineage",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "The lineage to look up" },
+                    new QueryArgument<StringGraphType> { Name = "isoLanguage", DefaultValue = "en", Description = "language for lookup (Only en currently supported)" }
+                    ),
+                resolve: async context =>
+                {
+                    var isoLanguage = context.GetArgument<string>("isoLanguage");
+                    var lineage = context.GetArgument<string>("lineage");
+                    return await context.TryAsyncResolve(
+                         async c => await connectivity.GetTypeWordForLineage(lineage, isoLanguage));
+                });
+
             FieldAsync<LineageNodeAttributeType>("getAttribute",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
