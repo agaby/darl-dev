@@ -21,3 +21,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Darl.GraphQL.dll"]
+HEALTHCHECK CMD curl --fail http://localhost:80/health || exit

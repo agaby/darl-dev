@@ -31,8 +31,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<int> Mailshot(string userId, string collateral, string subject, string sendfrom, string filter, bool test)
         {
             var coll = await _connectivity.GetCollateral(userId, collateral);
-
-            var collection = _connectivity.db.GetCollection<Contact>("contact");
+            var collection = _connectivity.db.GetCollection<Contact>(CosmosDBConnectivity.contactCollection);
             int count = 0;
             var tp = new TextProcess();
             using (IAsyncCursor<Contact> cursor = await collection.FindAsync(string.IsNullOrEmpty(filter) ? FilterDefinition<Contact>.Empty : Builders<Contact>.Filter.Where(x => x.Sector == filter)))
