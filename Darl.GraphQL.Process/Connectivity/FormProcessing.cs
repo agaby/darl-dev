@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Darl.GraphQL.Models.Models;
+﻿using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Schemata;
 using Darl.GraphQL.Process.Models.Alexa;
 using DarlCommon;
 using GraphQL;
-using Microsoft.ApplicationInsights;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -18,16 +16,16 @@ namespace Darl.GraphQL.Models.Connectivity
     {
         private IConnectivity _connectivity;
         private IFormApi _formApi;
-        private IOptions<AppSettings> _opt;
-        private TelemetryClient _telemetry;
+        private IConfiguration _config;
+        private ILogger _logger;
 
 
-        public FormProcessing(IConnectivity connectivity, IFormApi formApi, IOptions<AppSettings> optionsAccessor, TelemetryClient telemetry)
+        public FormProcessing(IConnectivity connectivity, IFormApi formApi, IConfiguration config, ILogger logger)
         {
             _connectivity = connectivity;
             _formApi = formApi;
-            _opt = optionsAccessor;
-            _telemetry = telemetry;
+            _config = config;
+            _logger = logger;
         }
 
         public async Task<QuestionSetProxy> BacktrackQuestionnaire(string ieToken)
@@ -42,7 +40,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 case DQType.rule_edit:
                     {
                         var rs = await _connectivity.GetRuleSet(userId, selector);
-                        var tp = await _connectivity.GetRuleSet(_opt.Value.boaiuserid, "ruleseteditor.rule");
+                        var tp = await _connectivity.GetRuleSet(_config["boaiuserid"], "ruleseteditor.rule");
                         if (rs != null)
                             return await _formApi.CreateDynamicRuleSetEditor(rs, tp);
                         return null;
@@ -58,7 +56,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (rs != null)
             {
                 var qsp = await _formApi.Get(rs, language, questCount);
-                _telemetry.TrackEvent($"BeginQuestionnaire", new Dictionary<string, string> { { nameof(userId), userId }, { nameof(ruleSetName), ruleSetName }, {nameof(qsp.ieToken), qsp.ieToken } });
+                _logger.LogWarning(nameof(BeginQuestionnaire), new Dictionary<string, string> { { nameof(userId), userId }, { nameof(ruleSetName), ruleSetName }, {nameof(qsp.ieToken), qsp.ieToken } });
                 return qsp;
             }
             return null;
@@ -84,12 +82,12 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 throw new ExecutionError($"ieToken {responses.ieToken} not found. Questionnaire timed out?");
             }
-            _telemetry.TrackEvent($"ContinueQuestionnaire", new Dictionary<string, string> { { nameof(r.ieToken), r.ieToken } });
+            _logger.LogWarning(nameof(ContinueQuestionnaire), new Dictionary<string, string> { { nameof(r.ieToken), r.ieToken } });
             return r;
         }
 
         /// <summary>
-        /// Get a json string to use in setting up intents and slots in an Alexa Skill
+        /// Get a Json string to use in setting up intents and slots in an Alexa Skill
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="name"></param>

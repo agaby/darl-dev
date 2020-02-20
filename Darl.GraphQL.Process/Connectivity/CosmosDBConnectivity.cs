@@ -10,8 +10,8 @@ using DarlCompiler.Parsing;
 using DarlLanguage;
 using DarlLanguage.Processing;
 using GraphQL;
-using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
@@ -39,7 +39,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public IMongoDatabase db { get; set; }
         private MongoClient mongoClient;
         private DarlRunTime runtime = new DarlRunTime();
-        private TelemetryClient _telemetry;
+        private ILogger _logger;
         private string backgroundUserId;
 
         public static readonly string botModelCollection = "botmodel";
@@ -57,10 +57,10 @@ namespace Darl.GraphQL.Models.Connectivity
         public static readonly string documentCollection = "document";
 
 
-        public CosmosDBConnectivity(IConfiguration config, TelemetryClient telemetry)
+        public CosmosDBConnectivity(IConfiguration config, ILogger logger)
         {
             _config = config;
-            _telemetry = telemetry;
+            _logger = logger;
             string connectionString = _config["MongoConnectionString"];
             backgroundUserId = _config["boaiuserid"];
             MongoClientSettings settings = MongoClientSettings.FromUrl(
@@ -124,7 +124,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                _telemetry.TrackException(ex);
+                _logger.LogError(ex, nameof(CreateContactAsync));
                 throw new ExecutionError("Duplicate or malformed data");
             }
         }
@@ -343,7 +343,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                _telemetry.TrackException(ex);
+                _logger.LogError(ex, nameof(CreateUserAsync));
                 throw new ExecutionError("Duplicate or malformed data");
             }
         }
@@ -430,7 +430,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                _telemetry.TrackException(ex);
+                _logger.LogError(ex, nameof(DeleteContactAsync));
                 throw new ExecutionError("Duplicate or malformed data");
             }
         }
@@ -580,7 +580,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                _telemetry.TrackException(ex);
+                _logger.LogError(ex, nameof(DeleteUser));
                 throw new ExecutionError("Duplicate or malformed data");
             }
         }
@@ -865,7 +865,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                _telemetry.TrackEvent($"Bad lineage lookup for word {word} message: {ex.Message}");
+                _logger.LogError($"Bad lineage lookup for word {word} message: {ex.Message}");
                 return new List<LineageRecord>();
             }
         }
@@ -880,7 +880,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                _telemetry.TrackEvent($"Bad lineage lookup for lineage {lineage} message: {ex.Message}");
+                _logger.LogError($"Bad lineage lookup for lineage {lineage} message: {ex.Message}");
                 return string.Empty;
             }
         }
@@ -952,11 +952,11 @@ namespace Darl.GraphQL.Models.Connectivity
                                 var level = pm.Level == ErrorLevel.Error ? "error" : "warning";
                                 errors.Add(new DarlVar { name = $"error{errorCount++}", Value = $"line_no = {pm.Location.Line + 1}, column_no_start = {pm.Location.Column + 1}, column_no_stop = {pm.Location.Column + 2}, message = {pm.Message}, severity = {level}", dataType = DarlVar.DataType.textual });
                             }
-                            _telemetry.TrackEvent("DarlInf used with errors");
+                            _logger.LogError("DarlInf used with errors");
                             return errors; //errors, just add them to the input and quit.
                         }
                         var res = await ProcessValues(DarlVarExtensions.Convert(DarlVarInput.Convert(inputs)), tree);
-                        _telemetry.TrackEvent($"InferFromRuleSetDarlVar",new Dictionary<string, string> { {nameof(userId), userId }, {nameof(ruleSetName), ruleSetName } });
+                        _logger.LogWarning($"InferFromRuleSetDarlVar",new Dictionary<string, string> { {nameof(userId), userId }, {nameof(ruleSetName), ruleSetName } });
                         return DarlVarExtensions.Convert(res);
                     }
                     else
@@ -967,7 +967,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                _telemetry.TrackEvent("DarlInf Exception");
+                _logger.LogError("DarlInf Exception");
                 var errors = new List<DarlVar>();
                 errors.Add(new DarlVar { name = "error", Value = ex.Message });
                 return errors;
@@ -1026,7 +1026,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             var end = DateTime.Now;
             TimeSpan execTime = (end - start);
-            _telemetry.TrackEvent($"MachineLearnModel", new Dictionary<string, string> { {nameof(userId), userId }, { nameof(mlmodelname), mlmodelname },{"seconds", execTime.TotalSeconds.ToString() } });
+            _logger.LogWarning($"MachineLearnModel", new Dictionary<string, string> { {nameof(userId), userId }, { nameof(mlmodelname), mlmodelname },{"seconds", execTime.TotalSeconds.ToString() } });
             //insert result into MLModel result array
             var mlr = new MLResult { code = rep.code, errorText = rep.errorText, executionDate = start, executionTime = execTime, trainPercent = rep.trainPercent, trainPerformance = rep.trainPerformance, testPerformance = rep.testPerformance, unknownResponsePercent = rep.unknownResponsePercent };
             var filter = Builders<MLModel>.Filter.Where(x => x.Name == mlmodelname && x.userId == userId);
@@ -1527,53 +1527,57 @@ namespace Darl.GraphQL.Models.Connectivity
             var mc = db.GetCollection<DarlUser>(userCollection);
             var duser = new DarlUser { Created = DateTime.Now, current_period_end = DateTime.Now + new TimeSpan(_config.GetValue<int>("StripeTrialPeriodDays"), 0, 0, 0, 0), InvoiceEmail = user.InvoiceEmail, InvoiceName = user.InvoiceName, InvoiceOrganization = user.InvoiceOrganization, Issuer = user.Issuer, PaidUsageStarted = DateTime.MaxValue, StripeCustomerId = stripeVals.Item1, UsageStripeSubscriptionItem = stripeVals.Item2, userId = user.userId };
             await mc.InsertOneAsync(duser);
-            _telemetry.TrackEvent("New registration", new Dictionary<string, string> { { "UserId", user.userId }, { "provider", user.Issuer }, { "email", user.InvoiceEmail } });
+            _logger.LogWarning(nameof(CreateAndProvisionNewUser), new Dictionary<string, string> { { "UserId", user.userId }, { "provider", user.Issuer }, { "email", user.InvoiceEmail } });
             return duser;
         }
 
         private async Task<(string, string)> CreateStripeCustomer(string userId, string email, bool corporate, int trialPeriodDays, string name = "", string organization = "")
         {
-            StripeConfiguration.SetApiKey(_config["StripeAPIKey"]);
-            try
-            {
-                var options = new CustomerCreateOptions
+            var sak = _config["StripeAPIKey"];
+            if(!string.IsNullOrEmpty(sak))
+            { 
+                StripeConfiguration.ApiKey = sak;
+                try
                 {
-                    Email = email,
-                    Description = userId,
-                    Metadata = new Dictionary<string, string> { { nameof(userId), userId }, { nameof(name), name }, { nameof(organization), organization } }
-                };
-                var service = new CustomerService();
-                Customer customer = await service.CreateAsync(options);
-                var items = corporate ?
-                    new List<SubscriptionItemOptions> { new SubscriptionItemOptions { Plan = _config["StripeCorporateLicensePlan"]},
-                                                                new SubscriptionItemOptions { Plan = _config["StripeCorporateUsagePlan"] }} :
-                    new List<SubscriptionItemOptions> { new SubscriptionItemOptions { Plan = _config["StripeIndividualLicensePlan"]},
-                                                                new SubscriptionItemOptions { Plan = _config["StripeIndividualUsagePlan"] }};
-                var subsoptions = new SubscriptionCreateOptions
-                {
-                    Items = items,
-                    TrialPeriodDays = trialPeriodDays,
-                    Customer = customer.Id,
-                    CollectionMethod = "send_invoice",
-                    DaysUntilDue = 14,
-                };
-                var subsservice = new SubscriptionService();
-                Subscription subscription = await subsservice.CreateAsync(subsoptions);
-                //extract the subscription item id for the usage so we can register usages with stripe
-                string stripeUsageSubsItemId = "";
-                foreach (var subitem in subscription.Items)
-                {
-                    if (subitem.Plan.Id == (corporate ? _config["StripeCorporateUsagePlan"] : _config["StripeIndividualUsagePlan"]))
+                    var options = new CustomerCreateOptions
                     {
-                        stripeUsageSubsItemId = subitem.Id;
-                        break;
+                        Email = email,
+                        Description = userId,
+                        Metadata = new Dictionary<string, string> { { nameof(userId), userId }, { nameof(name), name }, { nameof(organization), organization } }
+                    };
+                    var service = new CustomerService();
+                    Customer customer = await service.CreateAsync(options);
+                    var items = corporate ?
+                        new List<SubscriptionItemOptions> { new SubscriptionItemOptions { Plan = _config["StripeCorporateLicensePlan"]},
+                                                                    new SubscriptionItemOptions { Plan = _config["StripeCorporateUsagePlan"] }} :
+                        new List<SubscriptionItemOptions> { new SubscriptionItemOptions { Plan = _config["StripeIndividualLicensePlan"]},
+                                                                    new SubscriptionItemOptions { Plan = _config["StripeIndividualUsagePlan"] }};
+                    var subsoptions = new SubscriptionCreateOptions
+                    {
+                        Items = items,
+                        TrialPeriodDays = trialPeriodDays,
+                        Customer = customer.Id,
+                        CollectionMethod = "send_invoice",
+                        DaysUntilDue = 14,
+                    };
+                    var subsservice = new SubscriptionService();
+                    Subscription subscription = await subsservice.CreateAsync(subsoptions);
+                    //extract the subscription item id for the usage so we can register usages with stripe
+                    string stripeUsageSubsItemId = "";
+                    foreach (var subitem in subscription.Items)
+                    {
+                        if (subitem.Plan.Id == (corporate ? _config["StripeCorporateUsagePlan"] : _config["StripeIndividualUsagePlan"]))
+                        {
+                            stripeUsageSubsItemId = subitem.Id;
+                            break;
+                        }
                     }
+                    return (customer.Id, stripeUsageSubsItemId);
                 }
-                return (customer.Id, stripeUsageSubsItemId);
-            }
-            catch (Exception ex)
-            {
-                _telemetry.TrackException(ex);
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, nameof(CreateStripeCustomer));
+                }
             }
             return ("", "");
         }
@@ -1762,7 +1766,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch(Exception ex)
             {
-                _telemetry.TrackException(ex);
+                _logger.LogError(ex, nameof(GetCollaterals));
             }
             return list;
         }
@@ -2203,19 +2207,18 @@ namespace Darl.GraphQL.Models.Connectivity
                                 var level = pm.Level == ErrorLevel.Error ? "error" : "warning";
                                 errors.Add(new DarlVar { name = $"error{errorCount++}", Value = $"line_no = {pm.Location.Line + 1}, column_no_start = {pm.Location.Column + 1}, column_no_stop = {pm.Location.Column + 2}, message = {pm.Message}, severity = {level}", dataType = DarlVar.DataType.textual });
                             }
-                            _telemetry.TrackEvent("DarlInf used with errors");
                             return errors; //errors, just add them to the input and quit.
                         }
                         //now convert the inputs to DarlVars
                         var res = await ProcessValues(DarlVarExtensions.Convert(DarlVarInput.Convert(inputs)), tree);
-                        _telemetry.TrackEvent($"InferFromDarlDarlVar", new Dictionary<string, string> { { nameof(userId), userId } });
+                        _logger.LogWarning($"InferFromDarlDarlVar", new Dictionary<string, string> { { nameof(userId), userId } });
 
                     return DarlVarExtensions.Convert(res);
                  }
             }
             catch (Exception ex)
             {
-                _telemetry.TrackEvent("DarlInf Exception");
+                _logger.LogError(ex, nameof(InferFromDarlDarlVar));
                 var errors = new List<DarlVar>();
                 errors.Add(new DarlVar { name = "error", Value = ex.Message });
                 return errors;

@@ -4,8 +4,8 @@ using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using DarlCommon;
 using GraphQL;
-using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -21,23 +21,23 @@ namespace Darl.GraphQL.Models.Connectivity
         IFormApi _form;
         IRuleFormInterface _rfi;
         ITrigger _trigger;
-        private TelemetryClient _telemetry;
+        private ILogger _logger;
         private IConfiguration _config;
 
 
-        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger, TelemetryClient telemetry, IConfiguration config)
+        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger, ILogger logger, IConfiguration config)
         {
             _conv = conv;
             _form = form;
             _rfi = rfi;
             _trigger = trigger;
-            _telemetry = telemetry;
+            _logger = logger;
             _config = config;
         }
 
         public async Task<List<InteractTestResponse>> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData)
         {
-            _telemetry.TrackEvent($"InteractAsync", new Dictionary<string, string> { { nameof(userId), userId }, { nameof(botModelName), botModelName },{nameof(conversationId),conversationId} , {nameof(conversationData), conversationData.Value } });
+            _logger.LogWarning($"InteractAsync", new Dictionary<string, string> { { nameof(userId), userId }, { nameof(botModelName), botModelName },{nameof(conversationId),conversationId} , {nameof(conversationData), conversationData.Value } });
             List<InteractTestResponse> resp = new List<InteractTestResponse>();
             //cache these?
             var bmt = await _conv.GetBotModel(userId, botModelName);
@@ -59,7 +59,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var botFormat = JsonConvert.DeserializeObject<BotFormat>(bm.form);
             if(botFormat.Stores.Contains("Graph"))
             {
-                stores.Add("Graph", new GraphProcessing(_config, _telemetry));
+                stores.Add("Graph", new GraphProcessing(_config, _logger));
             }
             if (bs.ruleProcessing.Count == 0) // conversational processing
             {

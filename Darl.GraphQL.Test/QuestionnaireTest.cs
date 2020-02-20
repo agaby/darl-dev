@@ -16,15 +16,12 @@ namespace Darl.GraphQL.Test
     [TestClass]
     public class QuestionnaireTest
     {
-        public AppSettings appSettings = null;
 
         [TestInitialize()]
         public void Initialize()
         {
             var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.AppSettings.json"));
             var source = reader.ReadToEnd();
-            appSettings = JsonConvert.DeserializeObject<AppSettings>(source);
-
         }
 
 

@@ -1,25 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using DarlCommon;
+﻿using DarlCommon;
 using Dasl.TemporalDb;
 using DaslLanguage;
 using GraphQL;
-using Microsoft.ApplicationInsights;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
     public class SimProcessing : ISimProcessing
     {
         DaslRunTime sruntime = new DaslRunTime();
-        private TelemetryClient _telemetry;
+        private ILogger _logger;
         private IConnectivity _connectivity;
 
-        public SimProcessing(IConnectivity connectivity, TelemetryClient telemetry)
+        public SimProcessing(IConnectivity connectivity, ILogger logger)
         {
             _connectivity = connectivity;
-            _telemetry = telemetry;
+            _logger = logger;
         }
 
         public async Task<DaslSet> Simulate(string userId, string ruleset, DaslSet daslSet, SampleType sampleType)
@@ -39,7 +37,7 @@ namespace Darl.GraphQL.Models.Connectivity
             el.sample = daslSet.sampleTime;
             var sampled = sampleType == SampleType.events ? el.GetEventData() : el.SampleData();
             var res = await sruntime.Simulate(sampled, sampled.Count, tree);
-            _telemetry.TrackEvent($"Simulate", new Dictionary<string, string> { { nameof(userId), userId }, { nameof(ruleset), ruleset }, {"usage", res.Count.ToString() } });
+            _logger.LogWarning(nameof(Simulate), new Dictionary<string, string> { { nameof(userId), userId }, { nameof(ruleset), ruleset }, {"usage", res.Count.ToString() } });
             return new DaslSet { events = el.ConvertToEvents(res), description = daslSet.description, sampleTime = daslSet.sampleTime };
         }
     }

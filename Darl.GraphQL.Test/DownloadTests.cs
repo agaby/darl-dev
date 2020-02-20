@@ -4,6 +4,7 @@ using GraphQL.Client;
 using GraphQL.Common.Request;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -21,8 +22,6 @@ namespace Darl.GraphQL.Test
     [TestClass]
     public class DownloadTests
     {
-        public AppSettings appSettings = null;
-        public Darl.Connectivity.AppSettings dAppSettings = null;
         string userId = "5ee43551-c05c-4cff-8582-c08f23f84c14";
         string modelName = "far_left.model";
 
@@ -32,16 +31,14 @@ namespace Darl.GraphQL.Test
         {
             var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.AppSettings.json"));
             var source = reader.ReadToEnd();
-            appSettings = JsonConvert.DeserializeObject<AppSettings>(source);
-            dAppSettings = JsonConvert.DeserializeObject<Darl.Connectivity.AppSettings>(source);
         }
 
         [TestMethod]
         public async Task TestModelDownload()
         {
-            var telemetry = new Mock<TelemetryClient>();
+            var logger = new Mock<ILogger>();
             var config = new Mock<IConfiguration>();
-            var cosmos = new CosmosDBConnectivity(config.Object, telemetry.Object);
+            var cosmos = new CosmosDBConnectivity(config.Object, logger.Object);
             var m = await cosmos.GetBotModel(userId, modelName);
             File.WriteAllBytes(modelName, m.Model);
         }

@@ -6,6 +6,7 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
@@ -33,12 +34,9 @@ namespace Darl.GraphQL.Test
             configuration.Setup(a => a[It.Is<string>(s => s == "darlDevAPiKey")]).Returns("e438440e-9d90-46e8-87ed-080e19c43aed");
             configuration.Setup(a => a[It.Is<string>(s => s == "darlDevUrl")]).Returns("https://darl.dev/graphql/");
             configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("5ee43551-c05c-4cff-8582-c08f23f84c14");
-            var telemetry = new TelemetryClient( new TelemetryConfiguration
-                {
-                    TelemetryChannel = new Mock<ITelemetryChannel>().Object
-                }) ;
+            var logger = new Mock<ILogger>();
             _config = configuration.Object;
-            _graph = new GraphProcessing(configuration.Object, telemetry);
+            _graph = new GraphProcessing(configuration.Object, logger.Object);
         }
 
         [TestMethod]

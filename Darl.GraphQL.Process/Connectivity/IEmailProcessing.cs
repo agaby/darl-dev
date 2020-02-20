@@ -1,7 +1,4 @@
-﻿using Darl.GraphQL.Models.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity

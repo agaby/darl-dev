@@ -1,29 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Darl.GraphQL.Models.Models;
+﻿using Darl.GraphQL.Models.Models;
 using Datl.Language;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Queue;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
     public class EmailProcessing : IEmailProcessing
     {
 
-        private IOptions<AppSettings> _opt;
+        private IConfiguration _config;
         IConnectivity _connectivity;
         private CloudQueue queue;
-        public EmailProcessing(IOptions<AppSettings> optionsAccessor, IConnectivity connectivity)
+        public EmailProcessing(IConfiguration config, IConnectivity connectivity)
         {
-            _opt = optionsAccessor;
+            _config = config;
             _connectivity = connectivity;
-            var csa = CloudStorageAccount.Parse(_opt.Value.StorageConnectionString);
+            var csa = CloudStorageAccount.Parse(_config["StorageConnectionString"]);
             queue = csa.CreateCloudQueueClient().GetQueueReference("support-messages");
         }
 

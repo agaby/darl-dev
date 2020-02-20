@@ -1,10 +1,9 @@
-﻿using Darl.GraphQL.Models.Models;
-using Darl.Lineage.Bot;
+﻿using Darl.Lineage.Bot;
 using DarlCommon;
 using Datl.Language;
 using GraphQL.Client;
 using GraphQL.Common.Request;
-using Microsoft.ApplicationInsights;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Converters;
 using SendGrid;
 using SendGrid.Helpers.Mail;
@@ -12,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
@@ -21,12 +19,12 @@ namespace Darl.GraphQL.Models.Connectivity
     {
 
         private IConnectivity _connectivity;
-        private TelemetryClient _telemetry;
+        private ILogger _logger;
 
-        public BotTrigger(IConnectivity connectivity, TelemetryClient telemetry)
+        public BotTrigger(IConnectivity connectivity, ILogger logger)
         {
             _connectivity = connectivity;
-            _telemetry = telemetry;
+            _logger = logger;
         }
 
 
@@ -78,7 +76,7 @@ namespace Darl.GraphQL.Models.Connectivity
                                 }
                                 catch (Exception ex)
                                 {
-                                    _telemetry.TrackException(ex);
+                                    _logger.LogError(ex,nameof(TriggerEvent));
                                     return;
                                 }
                             }
@@ -110,7 +108,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
                 catch (Exception ex)
                 {
-                    _telemetry.TrackException(ex);
+                    _logger.LogError(ex, nameof(TriggerEvent));
                 }
             }
         }

@@ -3,8 +3,8 @@ using Darl.Lineage.Bot;
 using Darl_standard.Darl.Forms;
 using DarlCommon;
 using Datl.Language;
-using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -28,18 +28,18 @@ namespace Darl.GraphQL.Models.Connectivity
         private ITrigger _trigger;
 
 
-        private TelemetryClient _telemetry;
+        private ILogger _logger;
 
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="cache"></param>
         /// <param name="rep"></param>
-        public FormApi(IDistributedCache cache, ITrigger trigger, TelemetryClient telemetry)
+        public FormApi(IDistributedCache cache, ITrigger trigger, ILogger logger)
         {
             _cache = cache;
             _trigger = trigger;
-            _telemetry = telemetry;
+            _logger = logger;
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                _telemetry.TrackException(ex);
+                _logger.LogError(ex, nameof(Get));
                 throw ex;
             }
         }
@@ -95,7 +95,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                _telemetry.TrackException(ex);
+                _logger.LogError(ex, nameof(Post));
                 throw ex;
             }
 
@@ -118,7 +118,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                _telemetry.TrackException(ex);
+                _logger.LogError(ex, nameof(Delete));
                 throw ex;
             }
         }
@@ -138,7 +138,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
                 catch (Exception ex)
                 {
-                    _telemetry.TrackException(ex);
+                    _logger.LogError(ex, nameof(Trigger));
                     return false;
                 }
             }

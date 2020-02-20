@@ -1,8 +1,6 @@
-﻿using System.Threading.Tasks;
-using Darl.GraphQL.Models.Models;
-using Darl.Lineage;
-using Darl.Lineage.Bot;
+﻿using Darl.GraphQL.Models.Models;
 using DarlCommon;
+using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
 {

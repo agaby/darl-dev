@@ -86,7 +86,6 @@ namespace Darl.GraphQL
             });
 
 
-            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             //services
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();

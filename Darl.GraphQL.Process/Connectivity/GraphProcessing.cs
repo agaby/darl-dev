@@ -5,9 +5,8 @@ using GraphQL;
 using Gremlin.Net.Driver;
 using Gremlin.Net.Driver.Exceptions;
 using Gremlin.Net.Structure.IO.GraphSON;
-using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,16 +21,16 @@ namespace Darl.GraphQL.Models.Connectivity
 
         private IConfiguration _config;
         public GremlinServer gremlinServer;
-        private TelemetryClient _telemetry;
+        private ILogger _logger;
         private static readonly int maxRetryAttempts = 2;
         private static readonly string biography = "noun:01,4,09,01,3,4,5";
         private static readonly string webpage = "noun:01,4,09,01,3,3,0,8,0";
 
 
-        public GraphProcessing(IConfiguration config, TelemetryClient telemetry)
+        public GraphProcessing(IConfiguration config, ILogger logger)
         {
             _config = config;
-            _telemetry = telemetry;
+            _logger = logger;
             var hostname = _config["gremlinHostname"];
             var database = _config["gremlinDatabase"];
             var collection = _config["gremlinCollection"];
