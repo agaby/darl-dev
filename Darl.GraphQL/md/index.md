@@ -110,5 +110,9 @@ The DARL engines are accessible via the API described in these pages so you can 
 
 [Text replacement and report generation](./text_replacement)
 
+#### Knowledge graphs (Thinkbase)
+
+[Using our knowledge graph technology](./knowledge_graphs)
+
 
 

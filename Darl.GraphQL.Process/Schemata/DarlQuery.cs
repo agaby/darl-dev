@@ -632,7 +632,7 @@ namespace Darl.GraphQL.Models.Schemata
             );
             FieldAsync<GraphObjectType>(
                 "getGraphObjectByid",
-                "get graph objects based on id",
+                "get a graph object based on id",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the object" }
                 ),
