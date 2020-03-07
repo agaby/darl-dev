@@ -1144,6 +1144,25 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await graph.UpdateGraphConnection(userId, graphConnection,definitive));
                 }
             );
+
+            FieldAsync<SubscriptionTypeEnum>("updateSubscriptionType", "Change your subscription type",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<SubscriptionTypeEnum>> { Name = "type" }), 
+                resolve: async context =>
+                {
+                    var type = context.GetArgument<DarlUser.SubscriptionType>("type");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.UpdateSubscriptionType(userId, type));
+                });
+            FieldAsync<BooleanGraphType>("closeAccount","Close your account. Charges incurred will be billed immediately.",
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CloseAccount(userId));
+                });
         }
     }
 }

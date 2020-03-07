@@ -57,19 +57,19 @@ namespace Darl.GraphQL.Models.Connectivity
         public static readonly string documentCollection = "document";
 
 
-        public CosmosDBConnectivity(IConfiguration config, ILogger logger)
+        public CosmosDBConnectivity(IConfiguration config, ILogger<CosmosDBConnectivity> logger)
         {
             _config = config;
             _logger = logger;
-            string connectionString = _config["MongoConnectionString"];
-            backgroundUserId = _config["boaiuserid"];
+            string connectionString = _config["AppSettings:MongoConnectionString"];
+            backgroundUserId = _config["AppSettings:boaiuserid"];
             MongoClientSettings settings = MongoClientSettings.FromUrl(
               new MongoUrl(connectionString)
             );
             settings.SslSettings =
               new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
             mongoClient = new MongoClient(settings);
-            db = mongoClient.GetDatabase(_config["MongoDatabase"]);
+            db = mongoClient.GetDatabase(_config["AppSettings:MongoDatabase"]);
             BsonClassMap.RegisterClassMap<BotTrigger>();
         }
 
@@ -146,7 +146,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 throw new ExecutionError($"A bot model with name {name} already exists in your account.");
             }
-            var bm = await GetBotModel(backgroundUserId, _config["ProvisionBotModel"]);
+            var bm = await GetBotModel(backgroundUserId, _config["AppSettings:ProvisionBotModel"]);
             var botModel = new BotModel { Name = name, userId = userId, Model = bm.Model };
             await mc.InsertOneAsync(botModel);
             return botModel;
@@ -1520,12 +1520,12 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<DarlUser> CreateAndProvisionNewUser(DarlUserInput user)
         {
             // create stripe account
-            var stripeVals = await CreateStripeCustomer(user.userId, user.InvoiceEmail, false, _config.GetValue<int>("StripeTrialPeriodDays"), user.InvoiceName);
+            var stripeVals = await CreateStripeCustomer(user.userId, user.InvoiceEmail, false, _config.GetValue<int>("AppSettings:StripeTrialPeriodDays"), user.InvoiceName);
             // provision account
             await ProvisionUser(user.userId);
             //create user
             var mc = db.GetCollection<DarlUser>(userCollection);
-            var duser = new DarlUser { Created = DateTime.Now, current_period_end = DateTime.Now + new TimeSpan(_config.GetValue<int>("StripeTrialPeriodDays"), 0, 0, 0, 0), InvoiceEmail = user.InvoiceEmail, InvoiceName = user.InvoiceName, InvoiceOrganization = user.InvoiceOrganization, Issuer = user.Issuer, PaidUsageStarted = DateTime.MaxValue, StripeCustomerId = stripeVals.Item1, UsageStripeSubscriptionItem = stripeVals.Item2, userId = user.userId };
+            var duser = new DarlUser { Created = DateTime.Now, current_period_end = DateTime.Now + new TimeSpan(_config.GetValue<int>("AppSettings:StripeTrialPeriodDays"), 0, 0, 0, 0), InvoiceEmail = user.InvoiceEmail, InvoiceName = user.InvoiceName, InvoiceOrganization = user.InvoiceOrganization, Issuer = user.Issuer, PaidUsageStarted = DateTime.MaxValue, StripeCustomerId = stripeVals.Item1, UsageStripeSubscriptionItem = stripeVals.Item2, userId = user.userId };
             await mc.InsertOneAsync(duser);
             _logger.LogWarning(nameof(CreateAndProvisionNewUser), new Dictionary<string, string> { { "UserId", user.userId }, { "provider", user.Issuer }, { "email", user.InvoiceEmail } });
             return duser;
@@ -1533,7 +1533,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         private async Task<(string, string)> CreateStripeCustomer(string userId, string email, bool corporate, int trialPeriodDays, string name = "", string organization = "")
         {
-            var sak = _config["StripeAPIKey"];
+            var sak = _config["AppSettings:StripeAPIKey"];
             if(!string.IsNullOrEmpty(sak))
             { 
                 StripeConfiguration.ApiKey = sak;
@@ -1547,32 +1547,8 @@ namespace Darl.GraphQL.Models.Connectivity
                     };
                     var service = new CustomerService();
                     Customer customer = await service.CreateAsync(options);
-                    var items = corporate ?
-                        new List<SubscriptionItemOptions> { new SubscriptionItemOptions { Plan = _config["StripeCorporateLicensePlan"]},
-                                                                    new SubscriptionItemOptions { Plan = _config["StripeCorporateUsagePlan"] }} :
-                        new List<SubscriptionItemOptions> { new SubscriptionItemOptions { Plan = _config["StripeIndividualLicensePlan"]},
-                                                                    new SubscriptionItemOptions { Plan = _config["StripeIndividualUsagePlan"] }};
-                    var subsoptions = new SubscriptionCreateOptions
-                    {
-                        Items = items,
-                        TrialPeriodDays = trialPeriodDays,
-                        Customer = customer.Id,
-                        CollectionMethod = "send_invoice",
-                        DaysUntilDue = 14,
-                    };
-                    var subsservice = new SubscriptionService();
-                    Subscription subscription = await subsservice.CreateAsync(subsoptions);
-                    //extract the subscription item id for the usage so we can register usages with stripe
-                    string stripeUsageSubsItemId = "";
-                    foreach (var subitem in subscription.Items)
-                    {
-                        if (subitem.Plan.Id == (corporate ? _config["StripeCorporateUsagePlan"] : _config["StripeIndividualUsagePlan"]))
-                        {
-                            stripeUsageSubsItemId = subitem.Id;
-                            break;
-                        }
-                    }
-                    return (customer.Id, stripeUsageSubsItemId);
+                    var su = await AddSubscriptions(customer.Id, new List<string> { _config["AppSettings:StripeIndividualLicensePlan"], _config["AppSettings:StripeIndividualUsagePlan"] });
+                    return (customer.Id, su);
                 }
                 catch (Exception ex)
                 {
@@ -1586,22 +1562,22 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             //copy just the thousandquestions botmodel from the master account
 
-            var bm = await GetBotModel(backgroundUserId, _config["ProvisionBotModel"]);
-            await CreateBotModel(userId, _config["ProvisionBotModel"], bm.Model);
+            var bm = await GetBotModel(backgroundUserId, _config["AppSettings:ProvisionBotModel"]);
+            await CreateBotModel(userId, _config["AppSettings:ProvisionBotModel"], bm.Model);
             // copy selected rulesets
-            foreach (var r in _config["ProvisionRulesets"].Split(','))
+            foreach (var r in _config["AppSettings:ProvisionRulesets"].Split(','))
             {
                 var rs = await GetRuleSet(backgroundUserId, r);
                 if(rs != null)
                     await CreateRuleSet(userId, r, rs.Contents, rs.serviceConnectivity);
             }
-            foreach (var r in _config["ProvisionMLModels"].Split(','))
+            foreach (var r in _config["AppSettings:ProvisionMLModels"].Split(','))
             {
                 var rs = await GetMlModel(backgroundUserId, r);
                 if (rs != null)
                     await CreateMLModel(userId, r, rs.model);
             }
-            foreach (var r in _config["ProvisionCollateral"].Split(','))
+            foreach (var r in _config["AppSettings:ProvisionCollateral"].Split(','))
             {
                 var rs = await GetCollateral(backgroundUserId, r);
                 if (rs != null)
@@ -1799,8 +1775,8 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             try
             { 
-                var urlBuilderFactory = new OnlineUrlBuilderFactory(_config["AzureDevopsAccount"]);
-                var client = VstsClient.Get(urlBuilderFactory, accessToken: _config["AzureDevopsPersonalAccessToken"]);
+                var urlBuilderFactory = new OnlineUrlBuilderFactory(_config["AppSettings:AzureDevopsAccount"]);
+                var client = VstsClient.Get(urlBuilderFactory, accessToken: _config["AppSettings:AzureDevopsPersonalAccessToken"]);
                 await client.CreateWorkItemAsync(project, "bug", new WorkItem
                 {
                     Fields = new Dictionary<string, string> {
@@ -2175,7 +2151,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<bool> CheckEmail(string email, string ipaddress = "")
         {
             var zeroBounceAPI = new ZeroBounce.ZeroBounceAPI();
-            zeroBounceAPI.api_key = _config["ZeroBounceAPIKey"];
+            zeroBounceAPI.api_key = _config["AppSettings:ZeroBounceAPIKey"];
             zeroBounceAPI.RequestTimeOut = 150000; // Any integer value in milliseconds
             zeroBounceAPI.EmailToValidate = email;
             zeroBounceAPI.ip_address = ipaddress;
@@ -2373,6 +2349,179 @@ namespace Darl.GraphQL.Models.Connectivity
             var update = Builders<BotModel>.Update.Push("UsageHistory", usage);
             await collection.FindOneAndUpdateAsync(filter, update);
             return usage;
+        }
+
+        public async Task<DarlUser.SubscriptionType> GetSubscriptionType(string userId)
+        {
+            var sak = _config["AppSettings:StripeAPIKey"];
+            if (String.IsNullOrEmpty(sak))
+                throw new ExecutionError("Subscriptions not enabled");
+            var user = await GetUserById(userId);
+            if(user != null)
+            {
+                // Get the userID Stripe subscription id
+                StripeConfiguration.ApiKey = sak;
+                var service = new CustomerService();
+                var cust = await service.GetAsync(user.StripeCustomerId);
+                var subsName = cust.Subscriptions.First().Items.First().Plan.Nickname;
+                if(subsName.Contains("individual",StringComparison.OrdinalIgnoreCase))
+                {
+                    return DarlUser.SubscriptionType.individual;
+                }
+                else if (subsName.Contains("corporate", StringComparison.OrdinalIgnoreCase))
+                {
+                    return DarlUser.SubscriptionType.corporate;
+                }
+                else if (subsName.Contains("embedded", StringComparison.OrdinalIgnoreCase))
+                {
+                    return DarlUser.SubscriptionType.embedded;
+                }
+                else if (subsName.Contains("inhouse", StringComparison.OrdinalIgnoreCase))
+                {
+                    return DarlUser.SubscriptionType.inhouse;
+                }
+            }
+            throw new ExecutionError("User not found");
+        }
+
+        /// <summary>
+        /// Updates subscriptions as permitted
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public async Task<DarlUser.SubscriptionType> UpdateSubscriptionType(string userId, DarlUser.SubscriptionType type)
+        {
+            var sak = _config["AppSettings:StripeAPIKey"];
+            if (String.IsNullOrEmpty(sak))
+                throw new ExecutionError("Subscriptions not enabled");
+            StripeConfiguration.ApiKey = sak;
+            var currentSubscription = await GetSubscriptionType(userId);
+            if (currentSubscription == type)
+                return type;
+            var user = await GetUserById(userId);
+            if (user != null)
+            {
+                switch (currentSubscription)
+                {
+                    case DarlUser.SubscriptionType.individual:
+                        {
+                            string newSubscription = string.Empty;
+                            switch (type)
+                            {
+                                case DarlUser.SubscriptionType.corporate:
+                                    await RemoveSubscriptions(user.StripeCustomerId);
+                                    newSubscription = await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["StripeCorporateLicensePlan"], _config["StripeCorporateUsagePlan"] });
+                                    await UpdateSubsciption(userId, newSubscription);
+                                    return type;
+                                case DarlUser.SubscriptionType.embedded:
+                                    await RemoveSubscriptions(user.StripeCustomerId);
+                                    await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["StripeEmbeddedPlan"] });
+                                    return type;
+                                case DarlUser.SubscriptionType.inhouse:
+                                    if(user.accountState == DarlUser.AccountState.admin)
+                                    { 
+                                        await RemoveSubscriptions(user.StripeCustomerId);
+                                        newSubscription = await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["StripeInHousePlan"], _config["StripeInHouseUsage"] });
+                                        await UpdateSubsciption(userId, newSubscription);
+                                        return type;
+                                    }
+                                    break;
+                            }
+                        }
+                        break;
+                    case DarlUser.SubscriptionType.corporate:
+                        {
+                            if (type == DarlUser.SubscriptionType.embedded)
+                            {
+                                await RemoveSubscriptions(user.StripeCustomerId);
+                                await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["StripeEmbeddedPlan"] });
+                                return type;
+                            }
+                        }
+                        break;
+                }
+                throw new ExecutionError($"You can't go from subscription type {currentSubscription} to {type}");
+            }
+            throw new ExecutionError("User not found");
+        }
+
+        private async Task UpdateSubsciption(string userId, string newSubscription)
+        {
+            await UpdateUserAsync(userId, new DarlUserUpdate { UsageStripeSubscriptionItem = newSubscription });
+        }
+
+        /// <summary>
+        /// Cancels all subscriptions and generates immediate prorata bills.
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
+        private async Task RemoveSubscriptions(string customerId)
+        {
+            var sak = _config["AppSettings:StripeAPIKey"];
+            if (String.IsNullOrEmpty(sak))
+                throw new ExecutionError("Subscriptions not enabled");
+            StripeConfiguration.ApiKey = sak;
+            var service = new CustomerService();
+            var cust = await service.GetAsync(customerId);
+            var subService = new SubscriptionService();
+            foreach (var sub in cust.Subscriptions)
+            {
+                subService.Cancel(sub.Id, new SubscriptionCancelOptions { InvoiceNow = true, Prorate = true });
+            }
+        }
+
+        /// <summary>
+        /// Adds the subscriptions based on the plans passed
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <param name="plans"></param>
+        /// <returns></returns>
+        private async Task<string> AddSubscriptions(string customerId, List<string> plans)
+        {
+            var items = new List<SubscriptionItemOptions>();
+            foreach(var p in plans)
+            {
+                items.Add(new SubscriptionItemOptions { Plan = p });
+            }            
+            var subsoptions = new SubscriptionCreateOptions
+            {
+                Items = items,
+                TrialPeriodDays = _config.GetValue<int>("AppSettings:StripeTrialPeriodDays"),
+                Customer = customerId,
+                CollectionMethod = "send_invoice",
+                DaysUntilDue = 14,
+            };
+            var subsservice = new SubscriptionService();
+            Subscription subscription = await subsservice.CreateAsync(subsoptions);
+            if (plans.Count == 2)
+            {
+                //extract the subscription item id for the usage so we can register usages with stripe
+                return subscription.Items.Last().Id;
+            }
+            return string.Empty;
+        }
+        /// <summary>
+        /// Closes an account and creates immediate billing.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<bool> CloseAccount(string userId)
+        {
+            var user = await GetUserById(userId);
+            if (user != null)
+            {
+                //if subscriptions enabled cancel all subscriptions and create final bills.
+                var sak = _config["AppSettings:StripeAPIKey"];
+                if (!String.IsNullOrEmpty(sak))
+                { 
+                    StripeConfiguration.ApiKey = sak;
+                    await RemoveSubscriptions(user.StripeCustomerId);
+                }
+                await UpdateUserAsync(userId, new DarlUserUpdate { accountState = DarlUser.AccountState.closed });
+                return true;
+            }
+            throw new ExecutionError("User does not exist");
         }
     }
 }

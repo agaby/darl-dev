@@ -21,7 +21,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private IConnectivity _connectivity;
         private ILogger _logger;
 
-        public BotTrigger(IConnectivity connectivity, ILogger logger)
+        public BotTrigger(IConnectivity connectivity, ILogger<BotTrigger> logger)
         {
             _connectivity = connectivity;
             _logger = logger;

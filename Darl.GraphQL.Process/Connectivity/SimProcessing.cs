@@ -14,7 +14,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private ILogger _logger;
         private IConnectivity _connectivity;
 
-        public SimProcessing(IConnectivity connectivity, ILogger logger)
+        public SimProcessing(IConnectivity connectivity, ILogger<SimProcessing> logger)
         {
             _connectivity = connectivity;
             _logger = logger;

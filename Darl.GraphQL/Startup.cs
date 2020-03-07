@@ -23,6 +23,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
@@ -30,6 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
+
 
 namespace Darl.GraphQL
 {
@@ -41,14 +43,15 @@ namespace Darl.GraphQL
         static readonly string firstNameClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname";
         static readonly string secondNameClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname";
 
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
+        private readonly ILogger _logger;
+
+        public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
-            Environment = environment;
+            _logger = logger;
             Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
-        public IWebHostEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -213,6 +216,7 @@ namespace Darl.GraphQL
             services.AddSingleton<GraphConnectionInputType>();
             services.AddSingleton<GraphObjectUpdateType>();
             services.AddSingleton<GraphConnectionUpdateType>();
+            services.AddSingleton<SubscriptionTypeEnum>();
 
 
             //root
@@ -306,9 +310,14 @@ namespace Darl.GraphQL
                         du = await AddNewUser(context, objectId, _rep);
                         if(du == null) //can't setup user
                         {
+                            _logger.LogError($"Can't setup user {context.User.Identity.Name}");
                             await next.Invoke();
                             return;
                         }
+                    }
+                    else
+                    {
+                        _logger.LogInformation($"logged in user {du.InvoiceEmail}");
                     }
                 }
                 else
@@ -320,8 +329,8 @@ namespace Darl.GraphQL
                         var token = authHeader.Substring("Basic ".Length).Trim();
                         du = await _rep.GetUserByApiKey(token);
                         objectId = du.userId;
+                        _logger.LogInformation($"User {du.InvoiceEmail} logged in via API key");
                     }
-
                 }
                 if (du != null)//found it from one or other
                 {
@@ -342,7 +351,7 @@ namespace Darl.GraphQL
                     //overwrite user 
                     var identity = new GenericIdentity(objectId);
                     identity.AddClaims(context.User.Claims);
-                    context.User = new GenericPrincipal(identity, string.IsNullOrEmpty(roles) ? new string[0] : roles.Split(','));
+                    context.User = new GenericPrincipal(identity, string.IsNullOrEmpty(roles) ? Array.Empty<string>() : roles.Split(','));
                 }
                 await next.Invoke();
             });

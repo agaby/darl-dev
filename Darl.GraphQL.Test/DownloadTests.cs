@@ -36,7 +36,7 @@ namespace Darl.GraphQL.Test
         [TestMethod]
         public async Task TestModelDownload()
         {
-            var logger = new Mock<ILogger>();
+            var logger = new Mock<ILogger<CosmosDBConnectivity>>();
             var config = new Mock<IConfiguration>();
             var cosmos = new CosmosDBConnectivity(config.Object, logger.Object);
             var m = await cosmos.GetBotModel(userId, modelName);

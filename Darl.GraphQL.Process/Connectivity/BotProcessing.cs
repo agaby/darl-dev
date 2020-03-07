@@ -21,11 +21,11 @@ namespace Darl.GraphQL.Models.Connectivity
         IFormApi _form;
         IRuleFormInterface _rfi;
         ITrigger _trigger;
-        private ILogger _logger;
+        private ILogger<BotProcessing> _logger;
         private IConfiguration _config;
 
 
-        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger, ILogger logger, IConfiguration config)
+        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger, ILogger<BotProcessing> logger, IConfiguration config)
         {
             _conv = conv;
             _form = form;
@@ -59,7 +59,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var botFormat = JsonConvert.DeserializeObject<BotFormat>(bm.form);
             if(botFormat.Stores.Contains("Graph"))
             {
-                stores.Add("Graph", new GraphProcessing(_config, _logger));
+                stores.Add("Graph", new GraphProcessing(_config, _logger as ILogger<GraphProcessing>));
             }
             if (bs.ruleProcessing.Count == 0) // conversational processing
             {

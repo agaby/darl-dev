@@ -35,7 +35,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// </summary>
         /// <param name="cache"></param>
         /// <param name="rep"></param>
-        public FormApi(IDistributedCache cache, ITrigger trigger, ILogger logger)
+        public FormApi(IDistributedCache cache, ITrigger trigger, ILogger<FormApi> logger)
         {
             _cache = cache;
             _trigger = trigger;

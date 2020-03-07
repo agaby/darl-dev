@@ -212,5 +212,8 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<UserUsage> CreateRuleSetUsage(DateTime date, int count, string userId, string model);
         Task<UserUsage> CreateBotModelUsage(DateTime date, int count, string userId, string model);
         Task<string> GetTypeWordForLineage(string lineage, string isoLanguage = "en");
+        Task<DarlUser.SubscriptionType> GetSubscriptionType(string userId);
+        Task<DarlUser.SubscriptionType> UpdateSubscriptionType(string userId, DarlUser.SubscriptionType type);
+        Task<bool> CloseAccount(string userId);
     }
 }

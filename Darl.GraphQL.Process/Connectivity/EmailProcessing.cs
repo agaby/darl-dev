@@ -20,7 +20,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             _config = config;
             _connectivity = connectivity;
-            var csa = CloudStorageAccount.Parse(_config["StorageConnectionString"]);
+            var csa = CloudStorageAccount.Parse(_config["AppSettings:StorageConnectionString"]);
             queue = csa.CreateCloudQueueClient().GetQueueReference("support-messages");
         }
 

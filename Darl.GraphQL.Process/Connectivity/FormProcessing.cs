@@ -20,7 +20,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private ILogger _logger;
 
 
-        public FormProcessing(IConnectivity connectivity, IFormApi formApi, IConfiguration config, ILogger logger)
+        public FormProcessing(IConnectivity connectivity, IFormApi formApi, IConfiguration config, ILogger<FormProcessing> logger)
         {
             _connectivity = connectivity;
             _formApi = formApi;

@@ -32,6 +32,7 @@ namespace Darl.GraphQL.Test
         public CloudTableClient client = null;
         public string userId = "";
         public CloudBlobClient blobClient = null;
+        public ILogger<CosmosDBConnectivity> logger;
 
         [TestInitialize()]
         public void Initialize()
@@ -45,6 +46,8 @@ namespace Darl.GraphQL.Test
             client = storageAccount.CreateCloudTableClient();
             blobClient = storageAccount.CreateCloudBlobClient();
             userId = appSettings.boaiuserid;
+            logger = new Mock<ILogger<CosmosDBConnectivity>>().Object;
+
         }
 
         [TestCleanup()]
@@ -62,9 +65,8 @@ namespace Darl.GraphQL.Test
             TableQuery<TableContacts> defQuery = new TableQuery<TableContacts>().Where(
                 TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, appSettings.boaiuserid));
             TableContinuationToken continuationToken = null;
-            var logger = new Mock<ILogger>();
             var config = new Mock<IConfiguration>();
-            var cosmos = new CosmosDBConnectivity(config.Object, logger.Object);
+            var cosmos = new CosmosDBConnectivity(config.Object, logger);
             int count = 0;
             do
             {
@@ -140,9 +142,8 @@ namespace Darl.GraphQL.Test
         public async Task CopyDarlBotModels()
         {
             var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
-            var logger = new Mock<ILogger>();
             var config = new Mock<IConfiguration>();
-            var cosmos = new CosmosDBConnectivity(config.Object,logger.Object);
+            var cosmos = new CosmosDBConnectivity(config.Object,logger);
             var c = "cubebot.model";
             var mm = await dr.GetModel(userId, c);
 
@@ -182,9 +183,8 @@ namespace Darl.GraphQL.Test
                                await cosmos.UpdateCollateral(userId, c, rf);
                            }
                        }*/
-            var logger = new Mock<ILogger>();
             var config = new Mock<IConfiguration>();
-            var cosmos = new CosmosDBConnectivity(config.Object,logger.Object);
+            var cosmos = new CosmosDBConnectivity(config.Object,logger);
             await cosmos.UpdateCollateral(userId, "suggestions.md", File.ReadAllText(@"C:\Users\Andrew\Downloads\suggestions.md"));
             await cosmos.UpdateCollateral(userId, "bot_help.md", File.ReadAllText(@"C:\Users\Andrew\Downloads\bot_help.md"));
         }
@@ -197,9 +197,8 @@ namespace Darl.GraphQL.Test
         [Ignore]
         public async Task CloneCollateral()
         {
-            var logger = new Mock<ILogger>();
             var config = new Mock<IConfiguration>();
-            var cosmos = new CosmosDBConnectivity(config.Object,logger.Object);
+            var cosmos = new CosmosDBConnectivity(config.Object,logger);
             foreach (var c in await cosmos.GetCollaterals(userId))
             {
                 await cosmos.UpdateCollateral("786e46c2-fa33-4124-af67-1bb14625c216", c.Name, c.Value);
@@ -211,9 +210,8 @@ namespace Darl.GraphQL.Test
         public async Task CreateBotConnections()
         {
             var adminuserId = "786e46c2-fa33-4124-af67-1bb14625c216";
-            var logger = new Mock<ILogger>();
             var config = new Mock<IConfiguration>();
-            var cosmos = new CosmosDBConnectivity(config.Object, logger.Object);
+            var cosmos = new CosmosDBConnectivity(config.Object, logger);
             //            await cosmos.FactoryReset(adminuserId);
             var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
             var creds = await dr.GetAllCredentialsAsync();
@@ -227,10 +225,9 @@ namespace Darl.GraphQL.Test
         [Ignore]
         public async Task CreateDocuments()
         {
-            var logger = new Mock<ILogger>();
             var config = new Mock<IConfiguration>();
             var dr = new DarlRepository(new OptionsWrapper<Darl.Connectivity.AppSettings>(dAppSettings));
-            var cosmos = new CosmosDBConnectivity(config.Object, logger.Object);
+            var cosmos = new CosmosDBConnectivity(config.Object, logger);
             foreach (var doc in await dr.GetDocuments(userId))
             {
                 using (var ms = new MemoryStream())
@@ -249,9 +246,8 @@ namespace Darl.GraphQL.Test
         {
             var adminuserId = "786e46c2-fa33-4124-af67-1bb14625c216";
             var slawUserId = "8a14e17b-268a-4dc8-84fc-95d1a558e737";
-            var logger = new Mock<ILogger>();
             var config = new Mock<IConfiguration>();
-            var cosmos = new CosmosDBConnectivity(config.Object,logger.Object);
+            var cosmos = new CosmosDBConnectivity(config.Object,logger);
             var d = await cosmos.GetDocument(userId, "modernslaverytest.docx");
             d.userId = adminuserId;
             await cosmos.UpdateDocument(d);
@@ -264,9 +260,8 @@ namespace Darl.GraphQL.Test
         public async Task WriteOutRuleFile()
         {
             var slawUserId = "8a14e17b-268a-4dc8-84fc-95d1a558e737";
-            var logger = new Mock<ILogger>();
             var config = new Mock<IConfiguration>();
-            var cosmos = new CosmosDBConnectivity(config.Object,logger.Object);
+            var cosmos = new CosmosDBConnectivity(config.Object,logger);
             await cosmos.WriteRuleFormForTest(slawUserId, "military_service.rule", "military_service.rule");
         }
     }

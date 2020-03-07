@@ -9,6 +9,7 @@ namespace Darl.GraphQL.Models.Models
     {
         public ObjectId id { get; set; }
         public enum AccountState { trial, trial_expired, paying, delinquent, suspended, closed, admin }
+        public enum SubscriptionType { individual, corporate, embedded, inhouse }
         public string userId { get; set; }
 
         /// <summary>

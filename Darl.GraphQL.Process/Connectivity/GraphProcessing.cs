@@ -27,7 +27,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private static readonly string webpage = "noun:01,4,09,01,3,3,0,8,0";
 
 
-        public GraphProcessing(IConfiguration config, ILogger logger)
+        public GraphProcessing(IConfiguration config, ILogger<GraphProcessing> logger)
         {
             _config = config;
             _logger = logger;

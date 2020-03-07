@@ -338,10 +338,31 @@ namespace Darl.GraphQL.Models.Schemata
                        async c => (await connectivity.GetUserById(userId)).APIKey);
                }
             ).AuthorizeWith("UserPolicy");
+            FieldAsync<AccountStateEnum>(
+               "getAccountState",
+               "Gets the account status for this account. Only accessible to logged in users.",
+               resolve: async context =>
+               {
+                   var userId = connectivity.GetCurrentUserId(context.UserContext);
 
+                   return await context.TryAsyncResolve(
+                       async c => (await connectivity.GetUserById(userId)).accountState);
+               }
+            ).AuthorizeWith("UserPolicy");
+            FieldAsync<SubscriptionTypeEnum>(
+               "getSubscriptionType",
+               "Gets the subscription type for this account. Only accessible to logged in users.",
+               resolve: async context =>
+               {
+                   var userId = connectivity.GetCurrentUserId(context.UserContext);
+
+                   return await context.TryAsyncResolve(
+                       async c => (await connectivity.GetSubscriptionType(userId)));
+               }
+            ).AuthorizeWith("UserPolicy");
             FieldAsync<LineageNodeAttributeResourceType>(
                 "getLineageNodeAttributeResources",
-                "Get the resources needed to edit ar create lineageNodeAttributes",
+                "Get the resources needed to edit or create lineageNodeAttributes",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName", Description = "The bot model to run" }),
                 resolve: async context =>
                 {
