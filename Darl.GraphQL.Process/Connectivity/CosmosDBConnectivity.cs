@@ -1785,8 +1785,9 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
                 });
             }
-            catch
+            catch(Exception ex)
             {
+                _logger.LogError(ex, "Error inside of CreateSupportRequest");
                 return false;
             }
             return true;

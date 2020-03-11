@@ -57,8 +57,14 @@
     </Content>
   </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="mkdocs build" />
-  </Target>
+  <ItemGroup>
+    <None Include="wwwroot\knowledg-graph\scripts\editGraph.js" />
+    <None Include="wwwroot\knowledg-graph\scripts\graphConf.js" />
+    <None Include="wwwroot\knowledg-graph\scripts\graphioGremlin.js" />
+    <None Include="wwwroot\knowledg-graph\scripts\graphShapes.js" />
+    <None Include="wwwroot\knowledg-graph\scripts\graph_viz.js" />
+    <None Include="wwwroot\knowledg-graph\scripts\infobox.js" />
+    <None Include="wwwroot\knowledg-graph\scripts\utils.js" />
+  </ItemGroup>
 
 </Project>

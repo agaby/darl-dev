@@ -1,7 +1,7 @@
 ﻿Knowledge graphs (Beta)
 ========
 
-Dr Andy created the one of the first integrated knowledge graph software products, called Thinkbase, in 1998. Unfortunately it was way before it's time...
+Dr Andy created one of the first integrated knowledge graph software products, called Thinkbase, in 1998. Unfortunately it was way before it's time...
 
 Now the rest of technology has caught up we can start again.
 

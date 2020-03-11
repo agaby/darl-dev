@@ -3,6 +3,7 @@ using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
 using DarlCommon;
 using GraphQL.Types;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 
@@ -10,7 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlMutation : ObjectGraphType<object>
     {
-        public DarlMutation(IConnectivity connectivity, IEmailProcessing email, IGraphProcessing graph)
+        public DarlMutation(IConnectivity connectivity, IEmailProcessing email, IGraphProcessing graph, IConfiguration _config)
         {
             Name = "Mutation";
             Description = "Make changes to the contents of your account.";
@@ -816,7 +817,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var customerEmail = context.GetArgument<string>("customerEmail");
                     var text = context.GetArgument<string>("text");
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.CreateSupportRequest(customerName, customerEmail,text, "GraphQL trial site"));
+                        async c => await connectivity.CreateSupportRequest(customerName, customerEmail,text, _config["AppSettings:AzureProjectForWorkItem"]));
                 }
             );
             FieldAsync<ConversationType>(
