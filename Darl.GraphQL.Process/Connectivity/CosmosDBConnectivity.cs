@@ -3,7 +3,7 @@ using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Schemata;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
-using Darl_standard.Darl.Forms;
+using Darl.Forms;
 using DarlCommon;
 using DarlCompiler;
 using DarlCompiler.Parsing;
@@ -36,6 +36,7 @@ namespace Darl.GraphQL.Models.Connectivity
     public class CosmosDBConnectivity : IConnectivity
     {
         private IConfiguration _config;
+        private ILicensing _licensing;
         public IMongoDatabase db { get; set; }
         private MongoClient mongoClient;
         private DarlRunTime runtime = new DarlRunTime();
@@ -57,10 +58,11 @@ namespace Darl.GraphQL.Models.Connectivity
         public static readonly string documentCollection = "document";
 
 
-        public CosmosDBConnectivity(IConfiguration config, ILogger<CosmosDBConnectivity> logger)
+        public CosmosDBConnectivity(IConfiguration config, ILogger<CosmosDBConnectivity> logger, ILicensing licensing)
         {
             _config = config;
             _logger = logger;
+            _licensing = licensing;
             string connectionString = _config["AppSettings:MongoConnectionString"];
             backgroundUserId = _config["AppSettings:boaiuserid"];
             MongoClientSettings settings = MongoClientSettings.FromUrl(
@@ -2149,6 +2151,27 @@ namespace Darl.GraphQL.Models.Connectivity
             return purchase;
         }
 
+        //create contact if not found, add purchase.
+        public async Task<DarlLicense> ReportLicense(string email, string company, string licensekey, DateTime endDate)
+        {
+            var dlicense = new DarlLicense { created = DateTime.UtcNow, licensekey = licensekey, terminates = endDate };
+            var contact = await GetContactByEmail(email);
+            if (contact != null) //existing contact
+            {
+                //add purchase - handle empty purchases list
+                var collection = db.GetCollection<Contact>(contactCollection);
+                var filter = Builders<Contact>.Filter.Where(x => x.Email == email);
+                var update = Builders<Contact>.Update.Push("licenses", dlicense);
+                await collection.FindOneAndUpdateAsync(filter, update);
+            }
+            else
+            {
+                contact = new Contact { Email = email, Company = company, Created = DateTime.UtcNow, Source = "Online license", Sector = "Advice", IntroSent = true, licenses = new List<DarlLicense> { dlicense } };
+                await CreateContactAsync(contact);
+            }
+            return dlicense;
+        }
+
         public async Task<bool> CheckEmail(string email, string ipaddress = "")
         {
             var zeroBounceAPI = new ZeroBounce.ZeroBounceAPI();
@@ -2523,6 +2546,19 @@ namespace Darl.GraphQL.Models.Connectivity
                 return true;
             }
             throw new ExecutionError("User does not exist");
+        }
+
+        public async Task<string> CreateKey(string userId, string company, string email, DateTime endDate)
+        {
+            var key = _licensing.CreateKey(endDate, company, email);
+            await ReportLicense(email, company, key, endDate);
+            return key;
+        }
+
+        public async Task<bool> CheckKey(string userId, string key)
+        {
+            await GetUserById(userId);
+            return _licensing.CheckKey(key);
         }
     }
 }

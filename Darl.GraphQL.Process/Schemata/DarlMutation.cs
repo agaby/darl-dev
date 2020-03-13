@@ -1164,6 +1164,23 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await connectivity.CloseAccount(userId));
                 });
+
+            FieldAsync<StringGraphType>("createKey", "Create a licensing key", arguments: new QueryArguments(
+                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "company", Description = "The company granted the license" },
+                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email", Description = "The email address of the company" },
+                        new QueryArgument<NonNullGraphType<DateTimeGraphType>> { Name = "endDate", Description = "The date the license ends" }
+                   ),
+                    resolve: async context =>
+                    {
+                        var company = context.GetArgument<string>("company");
+                        var userId = connectivity.GetCurrentUserId(context.UserContext);
+                        var email = context.GetArgument<string>("email");
+                        var endDate = context.GetArgument<DateTime>("endDate");
+
+                        return await context.TryAsyncResolve(
+                            async c => await connectivity.CreateKey(userId,company,email,endDate));
+                    }
+                ).AuthorizeWith("AdminPolicy");
         }
     }
 }

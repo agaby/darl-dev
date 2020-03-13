@@ -215,5 +215,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<DarlUser.SubscriptionType> GetSubscriptionType(string userId);
         Task<DarlUser.SubscriptionType> UpdateSubscriptionType(string userId, DarlUser.SubscriptionType type);
         Task<bool> CloseAccount(string userId);
+        Task<string> CreateKey(string userId, string company, string email, DateTime endDate);
+        Task<bool> CheckKey(string userId, string key);
     }
 }

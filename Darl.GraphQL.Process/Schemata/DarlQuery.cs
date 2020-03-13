@@ -643,6 +643,19 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(async c => await graph.GetGraphObjectById(userId, id));
                 }
             );
+            FieldAsync<BooleanGraphType>(
+                "checkKey",
+                "Check a license key is valid",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "key", Description = "the license key to check" }
+                ),
+                resolve: async context =>
+                {
+                    var key = context.GetArgument<string>("key");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await connectivity.CheckKey(userId, key));
+                }
+            );
         }
 
     }

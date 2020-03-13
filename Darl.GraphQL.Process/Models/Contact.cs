@@ -33,5 +33,7 @@ namespace Darl.GraphQL.Models.Models
         public bool IntroSent { get; set; } = false;
 
         public List<Purchase> purchases { get; set; } = new List<Purchase>();
+        public List<DarlLicense> licenses { get; set; } = new List<DarlLicense>();
+
     }
 }

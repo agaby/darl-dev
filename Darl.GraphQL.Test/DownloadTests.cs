@@ -38,7 +38,8 @@ namespace Darl.GraphQL.Test
         {
             var logger = new Mock<ILogger<CosmosDBConnectivity>>();
             var config = new Mock<IConfiguration>();
-            var cosmos = new CosmosDBConnectivity(config.Object, logger.Object);
+            var licensing = new Mock<ILicensing>();
+            var cosmos = new CosmosDBConnectivity(config.Object, logger.Object, licensing.Object);
             var m = await cosmos.GetBotModel(userId, modelName);
             File.WriteAllBytes(modelName, m.Model);
         }

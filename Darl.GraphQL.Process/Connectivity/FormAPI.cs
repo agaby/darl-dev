@@ -1,6 +1,6 @@
 ﻿using Darl.GraphQL.Models.Models;
 using Darl.Lineage.Bot;
-using Darl_standard.Darl.Forms;
+using Darl.Forms;
 using DarlCommon;
 using Datl.Language;
 using Microsoft.Extensions.Caching.Distributed;
@@ -22,7 +22,7 @@ namespace Darl.GraphQL.Models.Connectivity
     /// </summary>
     public class FormApi : IFormApi
     {
-        Forms form = new Forms();
+        Darl.Forms.DarlForms form = new DarlForms();
 
         private IDistributedCache _cache;
         private ITrigger _trigger;

@@ -102,6 +102,7 @@ namespace Darl.GraphQL
             services.AddSingleton<ISimProcessing, SimProcessing>();
             services.AddSingleton<IAuthChecker, AuthChecker>();
             services.AddSingleton<IGraphProcessing, GraphProcessing>();
+            services.AddSingleton<ILicensing, ProductLicensing>();
 
             //types
             services.AddSingleton<BotFormatType>();
@@ -217,6 +218,7 @@ namespace Darl.GraphQL
             services.AddSingleton<GraphObjectUpdateType>();
             services.AddSingleton<GraphConnectionUpdateType>();
             services.AddSingleton<SubscriptionTypeEnum>();
+            services.AddSingleton<DarlLicenseType>();
 
 
             //root
@@ -245,27 +247,6 @@ namespace Darl.GraphQL
             {
                 return new DocumentWriter(Formatting.None, new JsonSerializerSettings());
             });
-
-
-            /*            services.AddSingleton<IDependencyResolver>(
-                            c => new FuncDependencyResolver(type => c.GetRequiredService(type)));
-                        services.AddGraphQL(options => {
-                            options.EnableMetrics = true;
-                            options.ExposeExceptions = Environment.IsDevelopment();
-                        })
-                        .AddGraphQLAuthorization(options =>
-                        {
-                            options.AddPolicy("AdminPolicy", policy =>
-                               policy.RequireRole("Admin"));
-                            options.AddPolicy("UserPolicy", policy =>
-                                policy.RequireRole("User"));                          
-                        })
-                        .AddGraphTypes()
-                        .AddDataLoader()
-                        .AddUserContextBuilder(ctx => new GraphQLUserContext
-                        {
-                            User = ctx.User
-                        });*/
 
             services.AddRazorPages();
             services.AddApplicationInsightsTelemetry();
