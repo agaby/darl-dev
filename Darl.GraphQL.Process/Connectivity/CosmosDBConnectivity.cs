@@ -2417,57 +2417,64 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<DarlUser.SubscriptionType> UpdateSubscriptionType(string userId, DarlUser.SubscriptionType type)
         {
             var sak = _config["AppSettings:StripeAPIKey"];
-            if (String.IsNullOrEmpty(sak))
-                throw new ExecutionError("Subscriptions not enabled");
-            StripeConfiguration.ApiKey = sak;
-            var currentSubscription = await GetSubscriptionType(userId);
-            if (currentSubscription == type)
-                return type;
-            var user = await GetUserById(userId);
-            if (user != null)
+            try
             {
-                switch (currentSubscription)
+                if (String.IsNullOrEmpty(sak))
+                    throw new ExecutionError("Subscriptions not enabled");
+                StripeConfiguration.ApiKey = sak;
+                var currentSubscription = await GetSubscriptionType(userId);
+                if (currentSubscription == type)
+                    return type;
+                var user = await GetUserById(userId);
+                if (user != null)
                 {
-                    case DarlUser.SubscriptionType.individual:
-                        {
-                            string newSubscription = string.Empty;
-                            switch (type)
+                    switch (currentSubscription)
+                    {
+                        case DarlUser.SubscriptionType.individual:
                             {
-                                case DarlUser.SubscriptionType.corporate:
-                                    await RemoveSubscriptions(user.StripeCustomerId);
-                                    newSubscription = await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["StripeCorporateLicensePlan"], _config["StripeCorporateUsagePlan"] });
-                                    await UpdateSubsciption(userId, newSubscription);
-                                    return type;
-                                case DarlUser.SubscriptionType.embedded:
+                                string newSubscription = string.Empty;
+                                switch (type)
+                                {
+                                    case DarlUser.SubscriptionType.corporate:
+                                        await RemoveSubscriptions(user.StripeCustomerId);
+                                        newSubscription = await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["StripeCorporateLicensePlan"], _config["StripeCorporateUsagePlan"] });
+                                        await UpdateSubsciption(userId, newSubscription);
+                                        return type;
+                                    case DarlUser.SubscriptionType.embedded:
+                                        await RemoveSubscriptions(user.StripeCustomerId);
+                                        await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["StripeEmbeddedPlan"] });
+                                        return type;
+                                    case DarlUser.SubscriptionType.inhouse:
+                                        if (user.accountState == DarlUser.AccountState.admin)
+                                        {
+                                            await RemoveSubscriptions(user.StripeCustomerId);
+                                            newSubscription = await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["StripeInHousePlan"], _config["StripeInHouseUsage"] });
+                                            await UpdateSubsciption(userId, newSubscription);
+                                            return type;
+                                        }
+                                        break;
+                                }
+                            }
+                            break;
+                        case DarlUser.SubscriptionType.corporate:
+                            {
+                                if (type == DarlUser.SubscriptionType.embedded)
+                                {
                                     await RemoveSubscriptions(user.StripeCustomerId);
                                     await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["StripeEmbeddedPlan"] });
                                     return type;
-                                case DarlUser.SubscriptionType.inhouse:
-                                    if(user.accountState == DarlUser.AccountState.admin)
-                                    { 
-                                        await RemoveSubscriptions(user.StripeCustomerId);
-                                        newSubscription = await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["StripeInHousePlan"], _config["StripeInHouseUsage"] });
-                                        await UpdateSubsciption(userId, newSubscription);
-                                        return type;
-                                    }
-                                    break;
+                                }
                             }
-                        }
-                        break;
-                    case DarlUser.SubscriptionType.corporate:
-                        {
-                            if (type == DarlUser.SubscriptionType.embedded)
-                            {
-                                await RemoveSubscriptions(user.StripeCustomerId);
-                                await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["StripeEmbeddedPlan"] });
-                                return type;
-                            }
-                        }
-                        break;
+                            break;
+                    }
+                    throw new ExecutionError($"You can't go from subscription type {currentSubscription} to {type}");
                 }
-                throw new ExecutionError($"You can't go from subscription type {currentSubscription} to {type}");
+                throw new ExecutionError("User not found");
             }
-            throw new ExecutionError("User not found");
+            catch(Exception ex)
+            {
+                throw new ExecutionError($"Update subscriptionType failed: {ex.Message}", ex);
+            }
         }
 
         private async Task UpdateSubsciption(string userId, string newSubscription)

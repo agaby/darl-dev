@@ -5,38 +5,73 @@ using GraphQL;
 using Gremlin.Net.Driver;
 using Gremlin.Net.Driver.Exceptions;
 using Gremlin.Net.Structure.IO.GraphSON;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
-    public class GraphProcessing : IGraphProcessing, ILocalStore
+    public class GraphProcessing : IGraphProcessing, ILocalStore, IDisposable
     {
 
         private IConfiguration _config;
-        public GremlinServer gremlinServer;
+        public GremlinServer gremlinDreamerServer;
+        private GremlinClient gremlinDreamerClient;
         private ILogger _logger;
+        private IHttpContextAccessor _context;
         private static readonly int maxRetryAttempts = 2;
         private static readonly string biography = "noun:01,4,09,01,3,4,5";
         private static readonly string webpage = "noun:01,4,09,01,3,3,0,8,0";
+        private string hostname;
+        private string database;
+        private string authKey;
+        private int port;
 
 
-        public GraphProcessing(IConfiguration config, ILogger<GraphProcessing> logger)
+
+        public GraphProcessing(IConfiguration config, ILogger<GraphProcessing> logger, IHttpContextAccessor context)
         {
+            _context = context;
             _config = config;
             _logger = logger;
-            var hostname = _config["gremlinHostname"];
-            var database = _config["gremlinDatabase"];
+            hostname = _config["gremlinHostname"];
+            database = _config["gremlinDatabase"];
             var collection = _config["gremlinCollection"];
-            var authKey = _config["gremlinAuthKey"];
-            var port = int.Parse(_config["gremlinPort"]);
-            gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + collection, password: authKey);
+            authKey = _config["gremlinAuthKey"];
+            port = int.Parse(_config["gremlinPort"]);
+            gremlinDreamerServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + collection, password: authKey);
+            gremlinDreamerClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType);
+        }
+
+        public async Task<bool> CreateNewGraph(string userId)
+        {
+            ConnectionPolicy ConnectionPolicy = new ConnectionPolicy
+            {
+                ConnectionMode = ConnectionMode.Direct,
+                ConnectionProtocol = Protocol.Tcp
+            };
+            using (var client = new DocumentClient(new Uri($"https://{hostname}:{port}/"), authKey, ConnectionPolicy))
+            {
+                try 
+                {
+                    await client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(database), new DocumentCollection { Id = userId, PartitionKey = new PartitionKeyDefinition { Paths = new Collection<string> { "/lineage" } } }, new RequestOptions { OfferThroughput = 400 });
+                }
+                catch(Exception ex )
+                {
+                    throw new ExecutionError($"Error in creating a new Graph for user {userId}", ex);
+                }
+            }
+            return true;
         }
 
 
@@ -49,6 +84,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<GraphConnection> CreateGraphConnection(string userId, GraphConnectionInput graphConnection, bool definitive = false)
         {
+            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 if (!LineageLibrary.CheckLineage(graphConnection.lineage))
@@ -59,7 +95,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     var start = await GetGraphObjectById(userId, graphConnection.startId);
                     var end = await GetGraphObjectById(userId, graphConnection.endId);
-                    if (!await OntologicalCompliance(gremlinClient, graphConnection.lineage, start.lineage, end.lineage))
+                    if (!await OntologicalCompliance(graphConnection.lineage, start.lineage, end.lineage))
                     {
                         throw new ExecutionError($"No association exists between {start.lineage}, the verb {graphConnection.lineage} and {end.lineage}\n if you are sure this is correct use the definitive flag in the call.");
                     }
@@ -67,7 +103,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     {
                         if (!LineageLibrary.CheckLineage(p.Name))
                             throw new ExecutionError($"Malformed property lineage: {p.Name}.");
-                        if (!await OntologicalCompliance(gremlinClient, graphConnection.lineage, p.Name))
+                        if (!await OntologicalCompliance(graphConnection.lineage, p.Name))
                         {
                             throw new ExecutionError($"No association exists between {graphConnection.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
                         }
@@ -91,6 +127,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<GraphObject> CreateGraphObject(string userId, GraphObjectInput graphObject, bool definitive = false)
         {
+            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 if (!LineageLibrary.CheckLineage(graphObject.lineage))
@@ -104,7 +141,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     {
                         foreach (var p in graphObject.properties)
                         {
-                            if (!await OntologicalCompliance(gremlinClient, graphObject.lineage, p.Name))
+                            if (!await OntologicalCompliance(graphObject.lineage, p.Name))
                             {
                                 if (!LineageLibrary.CheckLineage(p.Name))
                                     throw new ExecutionError($"Malformed property lineage: {p.Name}.");
@@ -152,23 +189,23 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        private async Task<bool> OntologicalCompliance(GremlinClient gremlinClient, string graphObjectLineage, string propertyLineage)
+        private async Task<bool> OntologicalCompliance(string graphObjectLineage, string propertyLineage)
         {
             //are these concepts connected?
-            var res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(both()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", graphObjectLineage }, { "lineage2", propertyLineage } });
+            var res = await SubmitWithRetry(gremlinDreamerClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(both()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", graphObjectLineage }, { "lineage2", propertyLineage } });
             if (res.Count != 0)
                 return true;
             //check for 'has' relationship
-            return await OntologicalCompliance(gremlinClient, "verb:021", graphObjectLineage, propertyLineage);
+            return await OntologicalCompliance("verb:021", graphObjectLineage, propertyLineage);
         }
 
-        private async Task<bool> OntologicalCompliance(GremlinClient gremlinClient, string graphConnectionLineage, string startLineage, string endLineage)
+        private async Task<bool> OntologicalCompliance(string graphConnectionLineage, string startLineage, string endLineage)
         {
             //Look for a preceding and a following association in this or higher verbs that permits this.
-            var res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(both()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", startLineage }, { "lineage2", graphConnectionLineage } });
+            var res = await SubmitWithRetry(gremlinDreamerClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(both()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", startLineage }, { "lineage2", graphConnectionLineage } });
             if (res.Count > 0)
             {
-                res = await SubmitWithRetry(gremlinClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(both()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", endLineage }, { "lineage2", graphConnectionLineage } });
+                res = await SubmitWithRetry(gremlinDreamerClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(both()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", endLineage }, { "lineage2", graphConnectionLineage } });
                 if (res.Count > 0)
                 {
                     return true;
@@ -185,6 +222,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<GraphConnection> DeleteGraphConnection(string userId, string id)
         {
+            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 await SubmitWithRetry(gremlinClient, "g.E(id).has('userId',userId).drop()", new Dictionary<string, object> { { "userId", userId }, { "id", id } });
@@ -200,6 +238,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<GraphObject> DeleteGraphObject(string userId, string id)
         {
+            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 var res = await SubmitWithRetry(gremlinClient, "g.V(id).has('userId',userId).drop()", new Dictionary<string, object> { { "userId", userId }, { "id", id } });
@@ -215,6 +254,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns>The object</returns>
         public async Task<GraphObject> GetGraphObjectById(string userId, string id)
         {
+            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 try
@@ -245,6 +285,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<List<GraphObject>> GetGraphObjects(string userId, string name, string lineage)
         {
+            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 var list = new List<GraphObject>();
@@ -372,6 +413,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<List<GraphObject>> GetGraphObjectsFuzzy(string userId, string name, string lineage, float similarity)
         {
+            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 return await FindNearestNameVertex(gremlinClient, lineage, name, similarity);
@@ -387,13 +429,14 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<GraphConnection> UpdateGraphConnection(string userId, GraphConnectionUpdate graphConnection, bool definitive = false)
         {
+            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 if (!definitive)//ontological compliance checks
                 {
                     foreach (var p in graphConnection.properties)
                     {
-                        if (!await OntologicalCompliance(gremlinClient, graphConnection.lineage, p.Name))
+                        if (!await OntologicalCompliance(graphConnection.lineage, p.Name))
                         {
                             throw new ExecutionError($"No association exists between {graphConnection.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
                         }
@@ -422,6 +465,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<GraphObject> UpdateGraphObject(string userId, GraphObjectUpdate graphObject, bool definitive = false)
         {
+            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 if (!LineageLibrary.CheckLineage(graphObject.lineage))
@@ -432,7 +476,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     foreach (var p in graphObject.properties)
                     {
-                        if (!await OntologicalCompliance(gremlinClient, graphObject.lineage, p.Name))
+                        if (!await OntologicalCompliance(graphObject.lineage, p.Name))
                         {
                             throw new ExecutionError($"No association exists between {graphObject.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
                         }
@@ -541,7 +585,8 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
         public async Task<DarlResult> ReadAsync(List<string> address)
-        {
+        {           
+            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + _context.HttpContext.User.Identity.Name, password: authKey);
             using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 //add name lookup for fuzzy match
@@ -734,6 +779,34 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
             }
             return string.Empty;
+        }
+
+        public async Task<string> gremlinPassThrough(string userId, string query)
+        {
+            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
+            using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            {
+                var res = await SubmitWithRetry(gremlinClient, query, new Dictionary<string, object> { });
+                return JsonConvert.SerializeObject(res);
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private bool _disposed = false;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                    gremlinDreamerClient.Dispose();
+                _disposed = true;
+            }
         }
     }
 }

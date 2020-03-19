@@ -11,8 +11,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public DarlLicenseType()
         {
-            Name = "DarlLicense";
-            this.AuthorizeWith("AdminPolicy");
+            Name = "darlLicense";
+ //           this.AuthorizeWith("AdminPolicy");
 
             Description = "A License issued for DARL products.";
             Field(c => c.licensekey);

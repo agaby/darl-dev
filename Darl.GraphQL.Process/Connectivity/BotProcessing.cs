@@ -4,6 +4,7 @@ using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using DarlCommon;
 using GraphQL;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -20,16 +21,18 @@ namespace Darl.GraphQL.Models.Connectivity
         IConnectivity _conv;
         IFormApi _form;
         IRuleFormInterface _rfi;
+        IHttpContextAccessor _context;
         ITrigger _trigger;
         private ILogger<BotProcessing> _logger;
         private IConfiguration _config;
 
 
-        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger, ILogger<BotProcessing> logger, IConfiguration config)
+        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger, ILogger<BotProcessing> logger, IConfiguration config, IHttpContextAccessor context)
         {
             _conv = conv;
             _form = form;
             _rfi = rfi;
+            _context = context;
             _trigger = trigger;
             _logger = logger;
             _config = config;
@@ -59,7 +62,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var botFormat = JsonConvert.DeserializeObject<BotFormat>(bm.form);
             if(botFormat.Stores.Contains("Graph"))
             {
-                stores.Add("Graph", new GraphProcessing(_config, _logger as ILogger<GraphProcessing>));
+                stores.Add("Graph", new GraphProcessing(_config, _logger as ILogger<GraphProcessing>, _context));
             }
             if (bs.ruleProcessing.Count == 0) // conversational processing
             {

@@ -5,6 +5,7 @@ using Gremlin.Net.Structure.IO.GraphSON;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -35,14 +36,15 @@ namespace Darl.GraphQL.Test
             configuration.Setup(a => a[It.Is<string>(s => s == "darlDevUrl")]).Returns("https://darl.dev/graphql/");
             configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("5ee43551-c05c-4cff-8582-c08f23f84c14");
             var logger = new Mock<ILogger<GraphProcessing>>();
+            var context = new Mock<IHttpContextAccessor>();
             _config = configuration.Object;
-            _graph = new GraphProcessing(configuration.Object, logger.Object);
+            _graph = new GraphProcessing(configuration.Object, logger.Object, context.Object);
         }
 
         [TestMethod]
-        public  async Task CreateAndDeleteObjectTest()
+        public async Task CreateAndDeleteObjectTest()
         {
-            var res = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput { lineage = "noun:00,2,00", name = "Andrew Edmonds", firstname = "Andrew", secondname = "Edmonds", inferred  = false, existence = new List<DateTime> {new DateTime(1955,11,6), DateTime.MaxValue } });
+            var res = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput { lineage = "noun:00,2,00", name = "Andrew Edmonds", firstname = "Andrew", secondname = "Edmonds", inferred = false, existence = new List<DateTime> { new DateTime(1955, 11, 6), DateTime.MaxValue } });
             Assert.AreEqual(res.inferred, false);
             Assert.AreEqual(res.lineage, "noun:00,2,00");
             Assert.AreEqual(res.name, "andrew edmonds");
@@ -58,14 +60,14 @@ namespace Darl.GraphQL.Test
             Assert.AreEqual(res.existence[0], new DateTime(1955, 11, 6));
             Assert.AreEqual(res.existence[1], DateTime.MaxValue);
             //add a property
-            var up = await _graph.UpdateGraphObject(_config["userId"], new GraphObjectUpdate {id  = res.id, lineage = "noun:00,2,00", properties = new List<StringStringPair> { new StringStringPair("noun:01,4,09,01,3,4,5", "Andy is a bit of a dork, really." ) } },true);
+            var up = await _graph.UpdateGraphObject(_config["userId"], new GraphObjectUpdate { id = res.id, lineage = "noun:00,2,00", properties = new List<StringStringPair> { new StringStringPair("noun:01,4,09,01,3,4,5", "Andy is a bit of a dork, really.") } }, true);
             Assert.AreEqual(1, up.properties.Count);
             //add another 
             var res2 = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput { lineage = "noun:00,2,00", name = "Anneke Edmonds", firstname = "Anneke", secondname = "Edmonds", inferred = false, existence = new List<DateTime> { new DateTime(1961, 8, 27), DateTime.MaxValue } });
             var obj2 = await _graph.GetGraphObjectById(_config["userId"], res2.id);
             Assert.AreEqual(res2.id, obj2.id);
             //add a marry link
-            var conn1 = await _graph.CreateGraphConnection(_config["userId"], new GraphConnectionInput { lineage = "verb:197,6,07", existence = new List<DateTime> { new DateTime(1988, 8, 27), DateTime.MaxValue }, name = "married", startId = res.id, endId = res2.id },true);
+            var conn1 = await _graph.CreateGraphConnection(_config["userId"], new GraphConnectionInput { lineage = "verb:197,6,07", existence = new List<DateTime> { new DateTime(1988, 8, 27), DateTime.MaxValue }, name = "married", startId = res.id, endId = res2.id }, true);
             Assert.AreEqual(conn1.startId, res.id);
             Assert.AreEqual(conn1.endId, res2.id);
             Assert.AreEqual(conn1.lineage, "verb:197,6,07");
@@ -91,7 +93,7 @@ namespace Darl.GraphQL.Test
         [TestMethod]
         public async Task TestRead2()
         {
-            
+
             var res = await _graph.ReadAsync(new List<string> { "links", "Jeremy Corbyn", "noun:00,2,00", "noun:00,2,00" });
             Assert.AreEqual(10, res.stringConstant.Split('\n').Length);
         }
@@ -150,7 +152,7 @@ namespace Darl.GraphQL.Test
         [TestMethod]
         public async Task NearestVertexTest()
         {
-            using (var gremlinClient = new GremlinClient(_graph.gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            using (var gremlinClient = new GremlinClient(_graph.gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 var res = await _graph.FindNearestNameVertex(gremlinClient, "noun:00,2,00", "Corbyn", 0.7f, "Jeremy");
                 Assert.AreEqual(1, res.Count);
@@ -159,5 +161,12 @@ namespace Darl.GraphQL.Test
                 Assert.AreEqual(res[0].name, "jeremy corbyn");
             }
         }
+
+        [TestMethod]
+        public async Task TestCreateGraph()
+        {
+            await _graph.CreateNewGraph("33db770b-29e9-46ae-8a19-c1947bd775d8");
+        }
+
     }
 }

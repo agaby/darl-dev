@@ -235,6 +235,8 @@ namespace Darl.GraphQL
                        policy.RequireRole("Admin"));
                     options.AddPolicy("UserPolicy", policy =>
                         policy.RequireRole("User"));
+                    options.AddPolicy("CorpPolicy", policy =>
+                       policy.RequireRole("Corp"));
                 });
 
             services.AddSingleton<IUserContextBuilder>(new UserContextBuilder<GraphQLUserContext>(ctx => new GraphQLUserContext{ User = ctx.User}));
@@ -251,6 +253,7 @@ namespace Darl.GraphQL
             services.AddRazorPages();
             services.AddApplicationInsightsTelemetry();
             services.AddHealthChecks();
+            
 
         }
 
@@ -318,12 +321,22 @@ namespace Darl.GraphQL
                     switch (du.accountState)
                     {
                         case DarlUser.AccountState.admin:
-                            roles = "Admin,User";
+                            roles = "Admin,Corp,User";
                             break;
                         case DarlUser.AccountState.trial:
                         case DarlUser.AccountState.paying:
                         case DarlUser.AccountState.delinquent:
-                            roles = "User";
+                            switch(await _rep.GetSubscriptionType(du.userId))
+                            {
+                                case DarlUser.SubscriptionType.inhouse:
+                                case DarlUser.SubscriptionType.embedded:
+                                case DarlUser.SubscriptionType.corporate:
+                                    roles = "Corp,User";
+                                    break;
+                                case DarlUser.SubscriptionType.individual:
+                                    roles = "User";
+                                    break;
+                            }
                             break;
                         default:
                             roles = string.Empty;

@@ -15,7 +15,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "Mutation";
             Description = "Make changes to the contents of your account.";
-            this.AuthorizeWith("UserPolicy");
+//            this.AuthorizeWith("UserPolicy");
             // BotModel
             //    create an empty model
             FieldAsync<BotModelType>("createEmptyBotModel", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
@@ -1083,7 +1083,7 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await graph.CreateGraphObject(userId, graphObject,definitive));
                 }
-            );
+            ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphConnectionType>("createGraphConnection", "Add a new graph connection", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<GraphConnectionInputType>> { Name = "graphConnection", Description = "The connection to add" },
                     new QueryArgument<BooleanGraphType> { Name = "definitive", Description = "overrides checking", DefaultValue = false }
@@ -1096,7 +1096,7 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await graph.CreateGraphConnection(userId, graphConnection,definitive));
                 }
-            );
+            ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphObjectType>("deleteGraphObject", "delete a graphObject", arguments: new QueryArguments(
                      new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "The id of the object to delete" }
                 ),
@@ -1107,7 +1107,7 @@ namespace Darl.GraphQL.Models.Schemata
                      return await context.TryAsyncResolve(
                          async c => await graph.DeleteGraphObject(userId, id));
                  }
-             );
+             ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphConnectionType>("deleteGraphConnection", "delete a graph connection", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "The id of the connection to delete" }
                ),
@@ -1118,7 +1118,7 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await graph.DeleteGraphConnection(userId, id));
                 }
-            );
+            ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphObjectType>("updateGraphObject", "Update a graph object", arguments: new QueryArguments(
                      new QueryArgument<NonNullGraphType<GraphObjectUpdateType>> { Name = "graphObject", Description = "The object to update" },
                     new QueryArgument<BooleanGraphType> { Name = "definitive", Description = "overrides checking", DefaultValue = false }
@@ -1131,7 +1131,7 @@ namespace Darl.GraphQL.Models.Schemata
                      return await context.TryAsyncResolve(
                          async c => await graph.UpdateGraphObject(userId, graphObject,definitive));
                  }
-             );
+             ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphConnectionType>("updateGraphConnection", "Update a graph connection", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<GraphConnectionUpdateType>> { Name = "graphConnection", Description = "The connection to update" },
                     new QueryArgument<BooleanGraphType> { Name = "definitive", Description = "overrides checking", DefaultValue = false }
@@ -1144,7 +1144,7 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await graph.UpdateGraphConnection(userId, graphConnection,definitive));
                 }
-            );
+            ).AuthorizeWith("CorpPolicy");
 
             FieldAsync<SubscriptionTypeEnum>("updateSubscriptionType", "Change your subscription type",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<SubscriptionTypeEnum>> { Name = "type" }), 

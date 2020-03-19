@@ -612,7 +612,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(async c => await graph.GetGraphObjects(userId, name, lineage));
                 }
-            );
+            ).AuthorizeWith("CorpPolicy");
             FieldAsync<ListGraphType<GraphObjectType>>(
                 "getGraphObjectsFuzzy",
                 "get graph objects based on  a fuzzy match with name and lineage",
@@ -629,7 +629,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var similarity = context.GetArgument<float>("similarity");
                     return await context.TryAsyncResolve(async c => await graph.GetGraphObjectsFuzzy(userId, name, lineage,similarity));
                 }
-            );
+            ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphObjectType>(
                 "getGraphObjectByid",
                 "get a graph object based on id",
@@ -642,7 +642,8 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(async c => await graph.GetGraphObjectById(userId, id));
                 }
-            );
+            ).AuthorizeWith("CorpPolicy");
+
             FieldAsync<BooleanGraphType>(
                 "checkKey",
                 "Check a license key is valid",
@@ -656,6 +657,19 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(async c => await connectivity.CheckKey(userId, key));
                 }
             );
+            FieldAsync<StringGraphType>(
+                "gremlinPassThrough",
+                "pass gremlin queries through to the underlying database - unsafe!",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "query", Description = "the gremlin query" }
+                ),
+                resolve: async context =>
+                {
+                    var query = context.GetArgument<string>("query");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await graph.gremlinPassThrough(userId, query));
+                }
+            ).AuthorizeWith("CorpPolicy");
         }
 
     }

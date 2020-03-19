@@ -15,5 +15,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<GraphConnection> DeleteGraphConnection(string userId, string id);
         Task<GraphObject> UpdateGraphObject(string userId, GraphObjectUpdate graphObject, bool definitive = false);
         Task<GraphConnection> UpdateGraphConnection(string userId, GraphConnectionUpdate graphConnection, bool definitive = false);
+        Task<string> gremlinPassThrough(string userId, string query);
+        Task<bool> CreateNewGraph(string userId);
     }
 }
