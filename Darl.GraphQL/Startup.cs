@@ -312,6 +312,11 @@ namespace Darl.GraphQL
                     {
                         var token = authHeader.Substring("Basic ".Length).Trim();
                         du = await _rep.GetUserByApiKey(token);
+                        if (du == null)// can indicate user is barred
+                        {
+                            await next.Invoke();
+                            return;
+                        }
                         objectId = du.userId;
                         _logger.LogInformation($"User {du.InvoiceEmail} logged in via API key");
                     }
@@ -326,7 +331,7 @@ namespace Darl.GraphQL
                         case DarlUser.AccountState.trial:
                         case DarlUser.AccountState.paying:
                         case DarlUser.AccountState.delinquent:
-                            switch(await _rep.GetSubscriptionType(du.userId))
+                            switch(du.subscriptionType ?? DarlUser.SubscriptionType.individual)
                             {
                                 case DarlUser.SubscriptionType.inhouse:
                                 case DarlUser.SubscriptionType.embedded:

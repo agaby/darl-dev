@@ -24,6 +24,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.UsageStripeSubscriptionItem);
             Field(c => c.userId);
             Field(c => c.APIKey);
+            Field<SubscriptionTypeEnum>("subscriptionType", resolve: c => c.Source.subscriptionType);
             Field<ListGraphType<UserUsageType>>("usageHistory", resolve: context => context.Source.UsageHistory);
 
         }

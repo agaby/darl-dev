@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>GraphQL examples - Darl.dev documentation</title>
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+            ga('create', 'UA-117408682-1', 'darl.ai');
+            ga('send', 'pageview');
+        </script> 
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+
+                <!-- Collapsed navigation -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="..">Darl.dev documentation</a>
+                </div>
+
+                <!-- Expanded navigation -->
+                <div class="navbar-collapse collapse">
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#graphql-examples">GraphQL Examples</a></li>
+        <li class="main "><a href="#queries">Queries</a></li>
+            <li><a href="#viewing-a-list-of-rulesets">Viewing a list of rulesets</a></li>
+            <li><a href="#viewing-a-list-of-machine-learning-models">Viewing a list of Machine learning models</a></li>
+            <li><a href="#finding-your-api-key">Finding your API key</a></li>
+            <li><a href="#listing-collateral">listing collateral</a></li>
+            <li><a href="#seeing-the-language-elements-set-in-a-ruleset">Seeing the language elements set in a ruleset</a></li>
+            <li><a href="#see-a-list-of-preloaded-data-items-in-a-rule-set">See a list of preloaded data items in a rule set</a></li>
+            <li><a href="#start-a-questionnaire">Start a questionnaire</a></li>
+            <li><a href="#continue-a-questionnaire">Continue a questionnaire</a></li>
+            <li><a href="#go-back-a-step-with-a-questionnaire">Go Back a step with a questionnaire</a></li>
+            <li><a href="#interact-with-a-bot">Interact with a Bot</a></li>
+            <li><a href="#get-lineages-for-a-word">Get lineages for a word</a></li>
+            <li><a href="#investigate-the-bot-text-recognition-tree">Investigate the bot text recognition tree</a></li>
+            <li><a href="#use-the-darl-linter">Use the DARL linter</a></li>
+            <li><a href="#getting-an-alexa-interactionmodel-to-build-an-alexa-skill">Getting an Alexa InteractionModel to build an Alexa skill</a></li>
+        <li class="main "><a href="#mutations">Mutations</a></li>
+            <li><a href="#setting-the-text-for-a-ruleset-question">Setting the text for a ruleset question</a></li>
+            <li><a href="#setting-a-preloaded-data-value-for-a-rule-set">Setting a preloaded data value for a rule set</a></li>
+            <li><a href="#run-a-machine-learning-model">Run a machine learning model</a></li>
+            <li><a href="#factory-reset-dangerous">Factory reset - Dangerous!</a></li>
+            <li><a href="#update-the-darl-code-in-a-rulesset">Update the DARL code in a rulesset</a></li>
+            <li><a href="#update-sendgrid-credentials">Update SendGrid credentials</a></li>
+            <li><a href="#add-a-phrase-to-botmodel">Add a phrase to botmodel</a></li>
+            <li><a href="#update-a-ruleset-trigger">Update a ruleset trigger</a></li>
+            <li><a href="#exclude-a-ruleset-output-from-the-visible-results">Exclude a Ruleset output from the visible results</a></li>
+            <li><a href="#infer-a-ruleset-using-darl-code">Infer a ruleset using DARL code</a></li>
+            <li><a href="#upgrade-your-account">Upgrade your account</a></li>
+            <li><a href="#close-your-account">Close your account</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="graphql-examples">GraphQL Examples</h1>
+<p>The GraphQL interface permits you to create, maintain and edit your models programmatically. The following are pieces of example GraphQL that you can copy to help you perform various tasks.</p>
+<h1 id="queries">Queries</h1>
+<h2 id="viewing-a-list-of-rulesets">Viewing a list of rulesets</h2>
+<pre><code class="json">{
+  rulesets
+  {
+    name
+  }
+}
+</code></pre>
+
+<h2 id="viewing-a-list-of-machine-learning-models">Viewing a list of Machine learning models</h2>
+<pre><code class="json">{
+  mlmodels
+  {
+    name
+  }
+}
+</code></pre>
+
+<h2 id="finding-your-api-key">Finding your API key</h2>
+<pre><code class="json">{
+  getApiKey
+}
+</code></pre>
+
+<h2 id="listing-collateral">listing collateral</h2>
+<pre><code class="json">{
+ collateral
+  {
+    name
+    value
+  }
+}
+</code></pre>
+
+<h2 id="seeing-the-language-elements-set-in-a-ruleset">Seeing the language elements set in a ruleset</h2>
+<pre><code class="json">{
+  rulesetByName(name: &quot;military_service.rule&quot;)
+  {
+    ruleform
+    {
+      language
+      {
+        languageList
+        {
+          name
+          text
+        }
+      }
+    }
+  }
+}
+</code></pre>
+
+<h2 id="see-a-list-of-preloaded-data-items-in-a-rule-set">See a list of preloaded data items in a rule set</h2>
+<pre><code class="json">{
+  rulesetByName(name: &quot;military_service.rule&quot;)
+  {
+    ruleform{
+      preload{
+        name
+        dataType
+        value
+      }
+    }
+  }
+}
+</code></pre>
+
+<h2 id="start-a-questionnaire">Start a questionnaire</h2>
+<pre><code class="json">{
+  beginQuestionnaire(ruleSetName: &quot;military_service.rule&quot;)
+  {
+    ieToken
+    questionHeader
+    values
+    {
+      name
+      value
+    }
+    questions
+    {
+      text
+      categories
+      reference
+      qType
+    }
+    responses
+    {
+      rType
+      mainText
+      annotation
+    }
+  }
+}
+</code></pre>
+
+<h2 id="continue-a-questionnaire">Continue a questionnaire</h2>
+<pre><code class="json">{
+  continueQuestionnaire(responses:{
+     ieToken: &quot;&lt;ieToken value returned by begin questionnaire&gt;&quot;,
+    questions:
+    [
+    {
+      reference: &quot;name&quot;,
+      sResponse: &quot;Yes&quot;,
+      qType: textual
+    }
+  ]
+  })
+  {
+    complete
+    ieToken
+    questionHeader
+    values
+    {
+      name
+      value
+    }
+    questions
+    {
+      text
+      categories
+      reference
+      qType
+    }
+    responses
+    {
+      mainText
+      annotation
+      rType
+    }
+  }
+}
+</code></pre>
+
+<h2 id="go-back-a-step-with-a-questionnaire">Go Back a step with a questionnaire</h2>
+<pre><code class="json">query back($ieToken: String!)
+{
+  backtrackQuestionnaire(ieToken: $ieToken)
+  {
+    complete 
+    ieToken 
+    questionHeader 
+    percentComplete 
+    canUnwind
+    values {
+      name 
+      value 
+    } 
+    questions 
+    { 
+      text 
+      categories  
+      reference 
+      qType 
+      sResponse  
+      dResponse
+    } 
+    responses 
+    { 
+      mainText
+      annotation 
+      rType 
+      preamble
+    }
+  }
+}
+</code></pre>
+
+<h2 id="interact-with-a-bot">Interact with a Bot</h2>
+<pre><code class="json">query interact($model: String!, $convId: String!, $data: darlVarUpdate!)
+{
+  interact(botModelName: $model, conversationId: $convId, conversationData: $data)
+  {
+    response
+    {
+      value
+      dataType
+      categories
+    }
+  }
+}
+</code></pre>
+
+<h2 id="get-lineages-for-a-word">Get lineages for a word</h2>
+<pre><code class="json">{
+  getLineagesForWord(word: &quot;immigration&quot;)
+  {
+    description
+    lineage
+    typeWord
+  }
+}
+</code></pre>
+
+<h2 id="investigate-the-bot-text-recognition-tree">Investigate the bot text recognition tree</h2>
+<pre><code class="json">{
+  getChildrenLineageNodes(botModelName: &quot;thousandquestions.model&quot;, path: &quot;&quot;, isRoot: true )
+  {
+    text
+  }
+}
+</code></pre>
+
+<h2 id="use-the-darl-linter">Use the DARL linter</h2>
+<pre><code class="json">query lint($darl: String!)
+{
+  lintDarl(darl: $darl)
+  {
+    column_no_start
+    column_no_stop
+    line_no
+    message
+    severity
+  }
+}
+</code></pre>
+
+<h2 id="getting-an-alexa-interactionmodel-to-build-an-alexa-skill">Getting an Alexa InteractionModel to build an Alexa skill</h2>
+<pre><code class="json">alexaInteractionModel(name: &quot;is_it_using_AI.rule&quot; invocationName: &quot;using AI&quot;)
+  {
+    languageModel
+    {
+      invocationName
+      intents
+      {
+        name
+        samples
+        slots
+        {
+          name
+          samples
+          type
+        }
+      }
+      types
+      {
+        name
+      }
+    }
+  }
+</code></pre>
+
+<p>note: In the returned Json, rename <em>alexaInteractionModel</em> to <em>interactionModel</em> and remove the outer braces and <em>data:</em> . You can then drop the Json into the Alexa Developer Console Json editor.
+_</p>
+<h1 id="mutations">Mutations</h1>
+<h2 id="setting-the-text-for-a-ruleset-question">Setting the text for a ruleset question</h2>
+<pre><code class="json">mutation{
+  updateRuleSetLanguageText(ruleSetName: &quot;military_service.rule&quot;, 
+    languageName: &quot;military&quot;, languageText: &quot;Did you serve in the US military?&quot;)
+  {
+    name
+    text
+  }
+}
+</code></pre>
+
+<h2 id="setting-a-preloaded-data-value-for-a-rule-set">Setting a preloaded data value for a rule set</h2>
+<pre><code class="json">mutation{
+  updateRulesetPreload(rulesetName: &quot;military_service.rule&quot;, preloadData: 
+    { name: &quot;comply_text&quot;, dataType:  textual, value: &quot;Thanks, that looks great. Expect an email in the near future.&quot;
+  })
+  {
+    name
+    value
+  }
+}
+</code></pre>
+
+<h2 id="run-a-machine-learning-model">Run a machine learning model</h2>
+<pre><code class="json">mutation
+{
+  machineLearnModel(mlmodelname: &quot;iris.mlmodel&quot;)
+  {
+    results{
+      trainPerformance
+      code
+    }
+  }
+}
+</code></pre>
+
+<h2 id="factory-reset-dangerous">Factory reset - Dangerous!</h2>
+<pre><code class="json">mutation
+{
+  factoryReset
+}
+</code></pre>
+
+<h2 id="update-the-darl-code-in-a-rulesset">Update the DARL code in a rulesset</h2>
+<pre><code class="json">mutation
+{
+  updateRuleSetDarl(name: &quot;military_service.rule&quot;, darl: &quot;ruleset military_service {} &quot;)
+  {
+    name
+  }
+}
+</code></pre>
+
+<h2 id="update-sendgrid-credentials">Update SendGrid credentials</h2>
+<pre><code class="json">mutation
+{
+  updateSendgridCredentials(botModelName: &quot;thousandquestions.model&quot;, 
+    sendGridAPIKey: &quot;SG.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&quot;)
+  {
+    sendGridAPIKey
+  }
+}
+</code></pre>
+
+<h2 id="add-a-phrase-to-botmodel">Add a phrase to botmodel</h2>
+<pre><code class="json">mutation
+{
+  createPhrase(botModelName: &quot;thousandquestions.model&quot;,
+    path: &quot;verb:067,4,0|noun:01,0,2,00,00,15,20,19,1&quot;,
+    attribute: {
+      call: &quot;military_service.rule&quot;
+    }
+  )
+  {
+    darl
+  }
+}
+</code></pre>
+
+<h2 id="update-a-ruleset-trigger">Update a ruleset trigger</h2>
+<pre><code class="json">mutation
+{
+  updateRuleSetTrigger(ruleSetName: &quot;military_service.rule&quot;, trigger: {
+    sendEmailSource: RESULTS,
+    sendEmail: &quot;trigger.true&quot;,
+    addressSource: FIXED,
+    addressText: &quot;andy@darl.ai&quot;,
+    emailFrom: &quot;support@darl.ai&quot;,
+    subjectSource: FIXED,
+    subjectText: &quot;Application on website&quot; ,
+    bodySource: RESULTS,
+    bodyText: &quot;emailText&quot;
+  })
+  {
+    sendEmail
+  }
+}
+</code></pre>
+
+<h2 id="exclude-a-ruleset-output-from-the-visible-results">Exclude a Ruleset output from the visible results</h2>
+<pre><code class="json">mutation
+{
+ updateRuleSetOutputFormat(ruleSetName: &quot;military_service.rule&quot;, outputName: &quot;emailText&quot;, outputUpdate:
+  {
+    hide: true
+  })
+  {
+    hide
+  }
+}
+</code></pre>
+
+<h2 id="infer-a-ruleset-using-darl-code">Infer a ruleset using DARL code</h2>
+<pre><code class="json">mutation ifd($code: String!, $inputs: [darlVarUpdate]!)
+{
+  inferFromDarl(code: $code, inputs: $inputs)
+  {
+    name
+    value
+    dataType
+    unknown
+    weight
+  }
+}
+
+</code></pre>
+
+<h2 id="upgrade-your-account">Upgrade your account</h2>
+<p>You can upgrade your account to <em>corporate</em> or <em>embedded</em> in order to use more facilities.
+Charges for these levels can be found <a href="https://darl.ai/#pricing">here</a>.
+<strong>Warning</strong>, upgrading will incur charges, considerable charges in the case of <em>embedded</em>. </p>
+<pre><code>mutation
+{
+  updateSubscriptionType(type: corporate)
+}
+</code></pre>
+
+<h2 id="close-your-account">Close your account</h2>
+<p>This process will generate a bill for unpaid charges to date and close your account immediately.
+Models will not be immediately destroyed, but will only be accessible through agreement with ourselves, so please ensure you download all models before closing your account.</p>
+<pre><code>mutation
+{
+  closeAccount
+}
+</code></pre></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>(c) Dr Andy`s IP 2019, all rights reserved. DARL(r) is a registered trademark</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

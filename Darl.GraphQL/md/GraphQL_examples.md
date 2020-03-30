@@ -400,3 +400,25 @@ mutation ifd($code: String!, $inputs: [darlVarUpdate]!)
 }
 
 ```
+
+## Upgrade your account
+You can upgrade your account to _corporate_ or _embedded_ in order to use more facilities.
+Charges for these levels can be found [here](https://darl.ai/#pricing).
+__Warning__, upgrading will incur charges, considerable charges in the case of _embedded_. 
+```
+mutation
+{
+  updateSubscriptionType(type: corporate)
+}
+```
+
+## Close your account
+This process will generate a bill for unpaid charges to date and close your account immediately.
+Models will not be immediately destroyed, but will only be accessible through agreement with ourselves, so please ensure you download all models before closing your account.
+
+```
+mutation
+{
+  closeAccount
+}
+```

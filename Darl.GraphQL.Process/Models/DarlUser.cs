@@ -53,5 +53,7 @@ namespace Darl.GraphQL.Models.Models
 
         public string APIKey { get; set; } = Guid.NewGuid().ToString();
 
+        public SubscriptionType? subscriptionType { get; set; }
+
     }
 }

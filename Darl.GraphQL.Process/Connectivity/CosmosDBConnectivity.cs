@@ -905,6 +905,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<RuleSet> GetRuleSet(string userId, string name)
         {
+            if (string.IsNullOrEmpty(name))
+                throw new ExecutionError("Name is empty in GetRuleSet");
             var mc = db.GetCollection<RuleSet>(rulesetCollection);
             var query = mc.AsQueryable()
             .Where(p => p.Name == name && p.userId == userId);
@@ -921,10 +923,17 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<DarlUser> GetUserById(string id)
         {
+            try { 
             var mc = db.GetCollection<DarlUser>(userCollection);
             var query = mc.AsQueryable()
             .Where(p => p.userId == id);
             return await query.FirstOrDefaultAsync();
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Internal error in GetUserById {id}");
+                throw new ExecutionError("Internal error in GetUserById");
+            }
         }
 
         public async Task<List<DarlUser>> GetUsersByEmail(string email)
@@ -958,7 +967,7 @@ namespace Darl.GraphQL.Models.Connectivity
                             return errors; //errors, just add them to the input and quit.
                         }
                         var res = await ProcessValues(DarlVarExtensions.Convert(DarlVarInput.Convert(inputs)), tree);
-                        _logger.LogWarning($"InferFromRuleSetDarlVar",new Dictionary<string, string> { {nameof(userId), userId }, {nameof(ruleSetName), ruleSetName } });
+                        _logger.LogWarning($"{nameof(InferFromRuleSetDarlVar)}: {userId}, {ruleSetName}");
                         return DarlVarExtensions.Convert(res);
                     }
                     else
@@ -1028,7 +1037,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             var end = DateTime.Now;
             TimeSpan execTime = (end - start);
-            _logger.LogWarning($"MachineLearnModel", new Dictionary<string, string> { {nameof(userId), userId }, { nameof(mlmodelname), mlmodelname },{"seconds", execTime.TotalSeconds.ToString() } });
+            _logger.LogWarning($"{nameof(MachineLearnModel)}: {userId}, {mlmodelname}, {execTime.TotalSeconds.ToString()}");
             //insert result into MLModel result array
             var mlr = new MLResult { code = rep.code, errorText = rep.errorText, executionDate = start, executionTime = execTime, trainPercent = rep.trainPercent, trainPerformance = rep.trainPerformance, testPerformance = rep.testPerformance, unknownResponsePercent = rep.unknownResponsePercent };
             var filter = Builders<MLModel>.Filter.Where(x => x.Name == mlmodelname && x.userId == userId);
@@ -1416,6 +1425,8 @@ namespace Darl.GraphQL.Models.Connectivity
                 updList.Add(Builders<DarlUser>.Update.Set(x => x.UsageStripeSubscriptionItem, user.UsageStripeSubscriptionItem));
             if (user.apiKey != null)
                 updList.Add(Builders<DarlUser>.Update.Set(x => x.APIKey, user.apiKey));
+            if (user.subscriptionType != null)
+                updList.Add(Builders<DarlUser>.Update.Set(x => x.subscriptionType, user.subscriptionType));
             var update = Builders<DarlUser>.Update.Combine(updList);
             var newUser = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<DarlUser, DarlUser> { IsUpsert = false, ReturnDocument= ReturnDocument.After });
             return newUser;
@@ -1529,7 +1540,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var mc = db.GetCollection<DarlUser>(userCollection);
             var duser = new DarlUser { Created = DateTime.Now, current_period_end = DateTime.Now + new TimeSpan(_config.GetValue<int>("AppSettings:StripeTrialPeriodDays"), 0, 0, 0, 0), InvoiceEmail = user.InvoiceEmail, InvoiceName = user.InvoiceName, InvoiceOrganization = user.InvoiceOrganization, Issuer = user.Issuer, PaidUsageStarted = DateTime.MaxValue, StripeCustomerId = stripeVals.Item1, UsageStripeSubscriptionItem = stripeVals.Item2, userId = user.userId };
             await mc.InsertOneAsync(duser);
-            _logger.LogWarning(nameof(CreateAndProvisionNewUser), new Dictionary<string, string> { { "UserId", user.userId }, { "provider", user.Issuer }, { "email", user.InvoiceEmail } });
+            _logger.LogWarning($"{nameof(CreateAndProvisionNewUser)}: {user.userId}, {user.Issuer}, {user.InvoiceEmail}");
             return duser;
         }
 
@@ -1660,10 +1671,19 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns>the user</returns>
         public async Task<DarlUser> GetUserByApiKey(string apiKey)
         {
-            var mc = db.GetCollection<DarlUser>(userCollection);
-            var query = mc.AsQueryable()
-            .Where(p => p.APIKey == apiKey  && p.accountState != DarlUser.AccountState.suspended && p.accountState != DarlUser.AccountState.closed);
-            return await query.FirstOrDefaultAsync();
+            try
+            {
+                var mc = db.GetCollection<DarlUser>(userCollection);
+                var query = mc.AsQueryable()
+                .Where(p => p.APIKey == apiKey && p.accountState != DarlUser.AccountState.suspended && p.accountState != DarlUser.AccountState.closed);
+                return await query.FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Internal error in GetUserByApiKey {apiKey}");
+                throw new ExecutionError("Internal error in GetUserByApiKey");
+            }
+
         }
 
         public async Task<string> UpdateUserAPIKey(string userId)
@@ -2211,7 +2231,7 @@ namespace Darl.GraphQL.Models.Connectivity
                         }
                         //now convert the inputs to DarlVars
                         var res = await ProcessValues(DarlVarExtensions.Convert(DarlVarInput.Convert(inputs)), tree);
-                        _logger.LogWarning($"InferFromDarlDarlVar", new Dictionary<string, string> { { nameof(userId), userId } });
+                        _logger.LogWarning($"{nameof(InferFromDarlDarlVar)}: {userId}");
 
                     return DarlVarExtensions.Convert(res);
                  }
@@ -2383,27 +2403,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var user = await GetUserById(userId);
             if(user != null)
             {
-                // Get the userID Stripe subscription id
-                StripeConfiguration.ApiKey = sak;
-                var service = new CustomerService();
-                var cust = await service.GetAsync(user.StripeCustomerId);
-                var subsName = cust.Subscriptions.First().Items.First().Plan.Nickname;
-                if(subsName.Contains("individual",StringComparison.OrdinalIgnoreCase))
-                {
-                    return DarlUser.SubscriptionType.individual;
-                }
-                else if (subsName.Contains("corporate", StringComparison.OrdinalIgnoreCase))
-                {
-                    return DarlUser.SubscriptionType.corporate;
-                }
-                else if (subsName.Contains("embedded", StringComparison.OrdinalIgnoreCase))
-                {
-                    return DarlUser.SubscriptionType.embedded;
-                }
-                else if (subsName.Contains("inhouse", StringComparison.OrdinalIgnoreCase))
-                {
-                    return DarlUser.SubscriptionType.inhouse;
-                }
+                return user.subscriptionType ?? DarlUser.SubscriptionType.individual;
             }
             throw new ExecutionError("User not found");
         }
@@ -2422,54 +2422,60 @@ namespace Darl.GraphQL.Models.Connectivity
                 if (String.IsNullOrEmpty(sak))
                     throw new ExecutionError("Subscriptions not enabled");
                 StripeConfiguration.ApiKey = sak;
+                var user = await GetUserById(userId);
+                if(user == null)
+                {
+                    throw new ExecutionError($"user {userId} doesn't exist");
+                }
+                if(string.IsNullOrEmpty(user.StripeCustomerId)) //somehow a customerId was not created.
+                {
+                    var stripeVals = await CreateStripeCustomer(user.userId, user.InvoiceEmail, false, _config.GetValue<int>("AppSettings:StripeTrialPeriodDays"), user.InvoiceName);
+                    await UpdateUserAsync(userId, new DarlUserUpdate { StripeCustomerId = stripeVals.Item1, UsageStripeSubscriptionItem = stripeVals.Item2 });
+                }
                 var currentSubscription = await GetSubscriptionType(userId);
                 if (currentSubscription == type)
                     return type;
-                var user = await GetUserById(userId);
-                if (user != null)
+                switch (currentSubscription)
                 {
-                    switch (currentSubscription)
-                    {
-                        case DarlUser.SubscriptionType.individual:
+                    case DarlUser.SubscriptionType.individual:
+                        {
+                            string newSubscription = string.Empty;
+                            switch (type)
                             {
-                                string newSubscription = string.Empty;
-                                switch (type)
-                                {
-                                    case DarlUser.SubscriptionType.corporate:
-                                        await RemoveSubscriptions(user.StripeCustomerId);
-                                        newSubscription = await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["StripeCorporateLicensePlan"], _config["StripeCorporateUsagePlan"] });
-                                        await UpdateSubsciption(userId, newSubscription);
-                                        return type;
-                                    case DarlUser.SubscriptionType.embedded:
-                                        await RemoveSubscriptions(user.StripeCustomerId);
-                                        await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["StripeEmbeddedPlan"] });
-                                        return type;
-                                    case DarlUser.SubscriptionType.inhouse:
-                                        if (user.accountState == DarlUser.AccountState.admin)
-                                        {
-                                            await RemoveSubscriptions(user.StripeCustomerId);
-                                            newSubscription = await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["StripeInHousePlan"], _config["StripeInHouseUsage"] });
-                                            await UpdateSubsciption(userId, newSubscription);
-                                            return type;
-                                        }
-                                        break;
-                                }
-                            }
-                            break;
-                        case DarlUser.SubscriptionType.corporate:
-                            {
-                                if (type == DarlUser.SubscriptionType.embedded)
-                                {
+                                case DarlUser.SubscriptionType.corporate:
                                     await RemoveSubscriptions(user.StripeCustomerId);
-                                    await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["StripeEmbeddedPlan"] });
+                                    newSubscription = await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["AppSettings:StripeCorporateLicensePlan"], _config["AppSettings:StripeCorporateUsagePlan"] });
+                                    await UpdateSubsciption(userId, newSubscription, type);
                                     return type;
-                                }
+                                case DarlUser.SubscriptionType.embedded:
+                                    await RemoveSubscriptions(user.StripeCustomerId);
+                                    await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["AppSettings:StripeEmbeddedPlan"] });
+                                    return type;
+                                case DarlUser.SubscriptionType.inhouse:
+                                    if (user.accountState == DarlUser.AccountState.admin)
+                                    {
+                                        await RemoveSubscriptions(user.StripeCustomerId);
+                                        newSubscription = await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["AppSettings:StripeInHousePlan"], _config["AppSettings:StripeInHouseUsage"] });
+                                        await UpdateSubsciption(userId, newSubscription, type);
+                                        return type;
+                                    }
+                                    break;
                             }
-                            break;
-                    }
-                    throw new ExecutionError($"You can't go from subscription type {currentSubscription} to {type}");
+                        }
+                        break;
+                    case DarlUser.SubscriptionType.corporate:
+                        {
+                            if (type == DarlUser.SubscriptionType.embedded)
+                            {
+                                await RemoveSubscriptions(user.StripeCustomerId);
+                                var newSubscription = await AddSubscriptions(user.StripeCustomerId, new List<string> { _config["StripeEmbeddedPlan"] });
+                                await UpdateSubsciption(userId, newSubscription, type);
+                                return type;
+                            }
+                        }
+                        break;
                 }
-                throw new ExecutionError("User not found");
+                throw new ExecutionError($"You can't go from subscription type {currentSubscription} to {type}");
             }
             catch(Exception ex)
             {
@@ -2477,9 +2483,9 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        private async Task UpdateSubsciption(string userId, string newSubscription)
+        private async Task UpdateSubsciption(string userId, string newSubscription, DarlUser.SubscriptionType subsType)
         {
-            await UpdateUserAsync(userId, new DarlUserUpdate { UsageStripeSubscriptionItem = newSubscription });
+            await UpdateUserAsync(userId, new DarlUserUpdate { UsageStripeSubscriptionItem = newSubscription, subscriptionType = subsType });
         }
 
         /// <summary>

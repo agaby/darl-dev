@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Stores in the bot system - Darl.dev documentation</title>
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+            ga('create', 'UA-117408682-1', 'darl.ai');
+            ga('send', 'pageview');
+        </script> 
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+
+                <!-- Collapsed navigation -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="..">Darl.dev documentation</a>
+                </div>
+
+                <!-- Expanded navigation -->
+                <div class="navbar-collapse collapse">
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#stores-in-the-bot-system">Stores in the bot system</a></li>
+        <li class="main "><a href="#stores">Stores</a></li>
+            <li><a href="#value-store">Value Store</a></li>
+            <li><a href="#graph-store">Graph store</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="stores-in-the-bot-system">Stores in the bot system</h1>
+<h1 id="stores">Stores</h1>
+<p>Stores are general mechanisms for getting data into and out of a ruleset.
+The act as a "lookup" mechanism, and can be used to call external rulesets or log results.</p>
+<p>A Store has the general format:</p>
+<pre><code class="darl">&lt;store name&gt;[&lt;list of parameters&gt;]
+</code></pre>
+
+<p>where the list of parameters resolve to a list of strings.</p>
+<p>The bot system contains the following stores:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Usage</th>
+<th>Read/Write</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UserData</td>
+<td>Bot user data collected by the Bot Framework</td>
+<td>Read/Write</td>
+</tr>
+<tr>
+<td>ConversationData</td>
+<td>Bot conversation data collected by the Bot Framework</td>
+<td>Read/Write</td>
+</tr>
+<tr>
+<td>PrivateConversationData</td>
+<td>Bot private conversation data collected by the Bot Framework</td>
+<td>Read/Write</td>
+</tr>
+<tr>
+<td>Bot</td>
+<td>Constants, like the name of the bot or your website set through bot model editing.</td>
+<td>Read only</td>
+</tr>
+<tr>
+<td>Value</td>
+<td>Values collected through the current text sequence</td>
+<td>Read only</td>
+</tr>
+<tr>
+<td>Call</td>
+<td>Interface to call a ruleset</td>
+<td>Write only</td>
+</tr>
+<tr>
+<td>Word</td>
+<td>Gets a word definition from WordNet</td>
+<td>Read only</td>
+</tr>
+<tr>
+<td>Rest</td>
+<td>Calls a remote REST interface if secured or current user has access</td>
+<td>Read/Write</td>
+</tr>
+<tr>
+<td>Collateral</td>
+<td>Gets a predefined piece of MarkDown and returns it</td>
+<td>Read only</td>
+</tr>
+</tbody>
+</table>
+<h2 id="value-store">Value Store</h2>
+<p>The value store accesses values embedded in chat strings. Each value is a pair of the identifier for the kind of value, and the value itself.
+Identifiers are those defined in (). They start with the text <em>value:</em> and they define the kind of value required in a hierarchical fashion like other lineages.
+To extract a value of a particular kind from the values extracted from the string use that indicator.
+For instance</p>
+<pre><code class="darl">Value[&quot;value:text&quot;]
+</code></pre>
+
+<p>returns the first text value extracted from the string.</p>
+<h3 id="multiple-values-of-the-same-kind">Multiple values of the same kind.</h3>
+<p>If you want to access anything other than the first value of a type that is a kind of the type specified, you can supply a second integer parameter.
+That integer represents the zero-based index of the value sought.
+So, for instance to access the second text value in a chat string use:</p>
+<pre><code class="darl">Value[&quot;value:text&quot;,&quot;1&quot;]
+</code></pre>
+
+<p>Note that all parameters to a store are strings.</p>
+<h2 id="graph-store">Graph store</h2>
+<p>The graph store accesses a graph database built into Darl.Dev. This is configured as a knowledge store and is accessible to all users.
+The graph store makes great use of lineages, and all objects stored in the knowledge stores are annotated with the lineages of the kind of object they are.
+For instance people are annotated as
+<em>noun:00,2,00</em>
+and organizations are annotated as:
+<em>noun:01,2,07,10</em>
+This is to permit the system to reason and draw inferences based on the kind of objects referenced.</p>
+<p>There are four operations defined on the Graph store that you can use. 
+In each case if an object of a particular kind is not found a Darl value of <em>unknown</em> is returned:</p>
+<h3 id="attribute">Attribute</h3>
+<p>This returns attributes that are a kind of the given lineage associated with the object.</p>
+<pre><code class="darl">output textual val;
+if anything then val will be Value[&quot;value:text&quot;];
+if anything then response will be Graph[&quot;attribute&quot;,val,&quot;noun:00,2,00&quot;,&quot;noun:01,4,09,01,3,4,5&quot;]
+</code></pre>
+
+<p>This will look for a person with the name in <em>val</em> extracted from the incoming text, who is also a person, responding with any attributes recorded for that person that are a kind of the lineage given as the last parameter.
+The lineage <em>noun:01,4,09,01,3,4,5</em> corresponds to a biography, so this will return any biographical data.</p>
+<h3 id="text">Text</h3>
+<p>This returns all the attributes associated with the object as text.</p>
+<pre><code class="darl">output textual val;
+if anything then val will be Value[&quot;value:text&quot;];
+if anything then response will be Graph[&quot;text&quot;,val,&quot;noun:00,2,00&quot;]
+</code></pre>
+
+<p>This will look for a person with the name in <em>val</em> extracted from the incoming text, who is also a person, responding with all the attributes recorded for that person.</p>
+<h3 id="links">Links</h3>
+<p>This returns a list of the names of objects linked to the given object.</p>
+<pre><code class="darl">output textual val;
+if anything then val will be Value[\&quot;value:text\&quot;];
+if anything then response will be Graph[&quot;links&quot;,val,&quot;noun:00,2,00&quot;];
+</code></pre>
+
+<h3 id="path">Path</h3>
+<p>This details the names of the objects that form a path between any two given objects.</p>
+<pre><code class="darl">output textual val1;
+output textual val2;
+if anything then val1 will be Value[&quot;value:text&quot;,&quot;0&quot;];
+if anything then val2 will be Value[&quot;value:text&quot;,&quot;1&quot;];
+if anything then response will be Graph[&quot;path&quot;,val1,val2,&quot;noun:&quot;,&quot;noun:&quot;];
+</code></pre>
+
+<p>This extracts two text values from the input text and seeks to find a path between them. the values can be any kind of <em>thing</em>.</p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+                <p>(c) Dr Andy`s IP 2019, all rights reserved. DARL(r) is a registered trademark</p>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

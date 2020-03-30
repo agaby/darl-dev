@@ -56,7 +56,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (rs != null)
             {
                 var qsp = await _formApi.Get(rs, language, questCount);
-                _logger.LogWarning(nameof(BeginQuestionnaire), new Dictionary<string, string> { { nameof(userId), userId }, { nameof(ruleSetName), ruleSetName }, {nameof(qsp.ieToken), qsp.ieToken } });
+                _logger.LogWarning($"{nameof(BeginQuestionnaire)}: {userId}, {ruleSetName}, {qsp.ieToken}");
                 return qsp;
             }
             return null;
@@ -82,7 +82,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 throw new ExecutionError($"ieToken {responses.ieToken} not found. Questionnaire timed out?");
             }
-            _logger.LogWarning(nameof(ContinueQuestionnaire), new Dictionary<string, string> { { nameof(r.ieToken), r.ieToken } });
+            _logger.LogWarning($"{nameof(ContinueQuestionnaire)}: {r.ieToken}");
             return r;
         }
 

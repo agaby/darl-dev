@@ -47,4 +47,18 @@ Lineage lookups can be done using _getLineageForWord_.  Although this is an over
 
 See [Knowledge graphs and Chatbots — An analytical approach](https://chatbotslife.com/knowledge-graphs-and-chatbots-an-analytical-approach-a8dcc8649100) for an overview of the process.
 
-To make use of the knowledge graph data you have loaded in a ruleset or chatbot, use the __Value__ and __Graph__ stores. See [Stores](stores.md)
+To make use of the knowledge graph data you have loaded in a ruleset or chatbot, use the __Value__ and __Graph__ stores. See [Stores](stores.md).
+
+## Corporate users only
+Knowledge graphs require far more resources than other DARL offerings, so we are restricting use of ThinkBase to users who sign up to corporate usage.
+
+To upgrade your account to _corporate_ use the following mutation:
+
+```
+mutation
+{
+  updateSubscriptionType(type: corporate)
+}
+```
+
+Pricing for corporate usage can be found [here](//https://darl.ai/#pricing).

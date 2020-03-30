@@ -37,5 +37,8 @@ namespace Darl.GraphQL.Models.Models
         public string UsageStripeSubscriptionItem { get; set; }
 
         public string apiKey { get; set; }
+
+        public SubscriptionType? subscriptionType { get; set; }
+
     }
 }

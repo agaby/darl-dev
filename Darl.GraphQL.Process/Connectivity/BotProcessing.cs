@@ -40,7 +40,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<List<InteractTestResponse>> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData)
         {
-            _logger.LogWarning($"InteractAsync", new Dictionary<string, string> { { nameof(userId), userId }, { nameof(botModelName), botModelName },{nameof(conversationId),conversationId} , {nameof(conversationData), conversationData.Value } });
+            _logger.LogWarning($"{nameof(InteractAsync)}: {userId}, {botModelName}, {conversationId}, {conversationData.Value}");
             List<InteractTestResponse> resp = new List<InteractTestResponse>();
             //cache these?
             var bmt = await _conv.GetBotModel(userId, botModelName);
@@ -123,7 +123,17 @@ namespace Darl.GraphQL.Models.Connectivity
                         break;
                 }
                 //pass on to ruleset
-                var responses = await rsh.RuleSetPass(bs.values, stores, bmt.serviceConnectivity);
+                List<InteractTestResponse> responses = null;
+                try 
+                {
+                    if(rsh.rf.preload == null)
+                        rsh.rf.preload = new List<DarlVar>();
+                    responses = await rsh.RuleSetPass(bs.values, stores, bmt.serviceConnectivity);
+                }
+                catch(Exception ex)
+                {
+                    throw new ExecutionError("Error in rule set processing", ex);
+                }
                 //add to resp;
                 foreach (var r in responses)
                 {
