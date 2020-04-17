@@ -11,7 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
 
         public InputFormatUpdateType()
         {
-            Name = "inputFormatInput";
+            Name = "inputFormatUpdate";
             Description = "Format for an input used in a questionnaire";
             Field<FloatGraphType>("increment","the size of the increment used in an editor for numeric inputs");
             Field<IntGraphType>("maxLength", "Maximum length for textual inputs");

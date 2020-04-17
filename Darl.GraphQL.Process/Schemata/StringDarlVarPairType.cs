@@ -10,7 +10,7 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public StringDarlVarPairType()
         {
-            Name = "StringStringPair";
+            Name = "StringDarlVarPair";
             Description = "a name value pair where the value is a DarlVar.";
             Field(c => c.Name);
             Field<DarlVarType>("value", resolve: c => c.Source.Value);

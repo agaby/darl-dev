@@ -10,7 +10,7 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public SetGraphType()
         {
-            Name = "SetDefinition";
+            Name = "SetGraphType";
         }
 
         public override object ParseValue(object value)

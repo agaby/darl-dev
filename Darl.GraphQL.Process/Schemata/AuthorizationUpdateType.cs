@@ -10,7 +10,7 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public AuthorizationUpdateType()
         {
-            Name = "authorization";
+            Name = "authorizationUpdate";
             Field<NonNullGraphType<StringGraphType>>("name");
             Field<NonNullGraphType<StringGraphType>>("param1");
             Field<NonNullGraphType<StringGraphType>>("param2");

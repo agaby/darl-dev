@@ -12,7 +12,7 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public DarlVarInputType()
         {
-            Name = "darlVarUpdate";
+            Name = "darlVarInput";
             Field(c => c.approximate, true).Description("For numeric inputs reports that alpha cuts approximations have been made.").DefaultValue(false);
             Field(c => c.unknown, true).Description("If true the value of this input is unknown.").DefaultValue(false);
             Field<ListGraphType<StringDoublePairInputType>>("categories", "possible categories of this input if categorical");
