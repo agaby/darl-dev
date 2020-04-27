@@ -1,5 +1,7 @@
-﻿using Darl.GraphQL.Models.Models;
+﻿using Chronic;
+using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
+using DarlLanguage;
 using DarlLanguage.Processing;
 using GraphQL;
 using Gremlin.Net.Driver;
@@ -53,7 +55,7 @@ namespace Darl.GraphQL.Models.Connectivity
             gremlinDreamerClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType);
         }
 
-        public async Task<bool> CreateNewGraph(string userId)
+        public async Task<bool> CreateNewGraph(string graphName, string partitionKey)
         {
             ConnectionPolicy ConnectionPolicy = new ConnectionPolicy
             {
@@ -64,15 +66,16 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 try 
                 {
-                    await client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(database), new DocumentCollection { Id = userId, PartitionKey = new PartitionKeyDefinition { Paths = new Collection<string> { "/lineage" } } }, new RequestOptions { OfferThroughput = 400 });
+                    await client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(database), new DocumentCollection { Id = graphName, PartitionKey = new PartitionKeyDefinition { Paths = new Collection<string> { partitionKey } } }, new RequestOptions { OfferThroughput = 400 });
                 }
                 catch(Exception ex )
                 {
-                    throw new ExecutionError($"Error in creating a new Graph for user {userId}", ex);
+                    throw new ExecutionError($"Error in creating a new Graph for user {graphName}", ex);
                 }
             }
             return true;
         }
+
 
 
         /// <summary>
@@ -150,27 +153,39 @@ namespace Darl.GraphQL.Models.Connectivity
                         }
                     }
                 }
-                var id = Guid.NewGuid().ToString();
-                var dict = new Dictionary<string, object> { { "lineage", graphObject.lineage }, { "id", id }, { "name", graphObject.name.Trim().ToLower() }, { "userId", userId }, { "firstname", graphObject.firstname.Trim().ToLower() }, { "secondname", graphObject.secondname.Trim().ToLower() }, { "inferred", graphObject.inferred } };
-                var script = "g.addV(lineage).property('id', id).property('name', name).property('lineage',lineage).property('userId',userId).property('firstname',firstname).property('secondname',secondname).property('inferred',inferred)";
-                AddCommonElements(graphObject, dict, ref script);
-                var res = await SubmitWithRetry(gremlinClient, script, dict);
-                return ConvertGraphObject(res.First());
+                try
+                {
+                    var id = Guid.NewGuid().ToString();
+                    var dict = new Dictionary<string, object> { { "lineage", graphObject.lineage }, { "id", id }, { "name", graphObject.name.Trim().ToLower() }, { "userId", userId }, { "inferred", graphObject.inferred }, { "virtual", graphObject._virtual ?? false } };
+                    var script = "g.addV(lineage).property('id', id).property('name', name).property('lineage',lineage).property('userId',userId).property('inferred',inferred).property('virtual',virtual)";
+                    AddCommonElements(graphObject, dict, ref script);
+                    var res = await SubmitWithRetry(gremlinClient, script, dict);
+                    return ConvertGraphObject(res.First());
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"CreateGraphObject error writing to Gremlin {ex.Message}");
+                    throw ex;
+                }
             }
         }
 
         private void AddCommonElements(GraphElementInput elem, Dictionary<string, object> dict, ref string script)
         {
-            if (elem.properties != null)
+            if (elem is GraphObjectInput)
             {
-                int propCount = 0;
-                foreach (var p in elem.properties)
+                var gelem = elem as GraphObjectInput;
+                if (gelem.properties != null)
                 {
-                    var propHolder = $"prop{propCount++}";
-                    if (!LineageLibrary.CheckLineage(p.Name))
-                        throw new ExecutionError($"Malformed property lineage: {p.Name}.");
-                    dict.Add(propHolder, p.Value);
-                    script += $".property('{p.Name}', {propHolder})";
+                    int propCount = 0;
+                    foreach (var p in gelem.properties)
+                    {
+                        var propHolder = $"prop{propCount++}";
+                        if (!LineageLibrary.CheckLineage(p.Name))
+                            throw new ExecutionError($"Malformed property lineage: {p.Name}.");
+                        dict.Add(propHolder, p.Value);
+                        script += $".property('{p.Name}', {propHolder})";
+                    }
                 }
             }
             if (elem.existence != null)
@@ -790,6 +805,237 @@ namespace Darl.GraphQL.Models.Connectivity
                 return JsonConvert.SerializeObject(res);
             }
         }
+        public async Task<InferenceRecord> InferPath(GraphObjectInput start, GraphObjectInput end, string userId, string targetOutput)
+        {
+            var ir = new InferenceRecord();
+            try
+            {
+                var startObjects = await GetGraphObjects(userId, start.name, start.lineage);
+                if (startObjects.Count < 1)
+                {
+                    throw new Exception($"A matching object to start does not exist in the Knowledge graph.");
+                }
+                if (startObjects.Count > 1)
+                {
+                    throw new Exception($"Multiple matching objects to start exist in the Knowledge graph.");
+                }
+                var startObject = startObjects.First();
+                var startId = startObject.id;
+
+                var endObjects = await GetGraphObjects(userId, end.name, end.lineage);
+                if (endObjects.Count < 1)
+                {
+                    throw new Exception($"A matching object to end does not exist in the Knowledge graph.");
+                }
+                if (endObjects.Count > 1)
+                {
+                    throw new Exception($"Multiple matching objects to end exist in the Knowledge graph.");
+                }
+                var endObject = endObjects.First();
+                var endId = endObject.id;
+
+                var vertices = new Dictionary<string, GraphObject>();
+                var edges = new Dictionary<string, List<GraphConnection>>();
+                var inputs = new HashSet<string>();
+                var outputs = new HashSet<string>();
+                var rules = new HashSet<string>();
+                var lineages = new HashSet<string>();
+                var all = new Dictionary<string, string>();
+                var any = new Dictionary<string, string>();
+                var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
+                using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+                {
+                    //get all the paths between the start and end objects and then collect the vertices that occur in those paths.
+                    var query = $"g.V().has('id',id1).repeat(outE().inV()).until(has('id', id2)).path().unfold().dedup()";
+                    var res1 = await SubmitWithRetry(gremlinClient, query, new Dictionary<string, object> { { "id1", startId }, { "id2", endId } });
+                    //results contain all edges and all vertices
+                    if (res1.Count != 0)
+                    {
+                        foreach (var r in res1)
+                        {
+                            if (IsVertex(r))
+                            {
+                                GraphObject go = ConvertGraphObject(r);
+                                vertices.Add(go.id, go);
+                                lineages.Add(go.lineage);
+                            }
+                            else
+                            {
+                                GraphConnection conn = ConvertGraphConnection(r);
+                                if (!edges.ContainsKey(conn.endId))
+                                    edges.Add(conn.endId, new List<GraphConnection>());
+                                edges[conn.endId].Add(conn);
+                            }
+                        }
+                    }
+                    foreach (var l in lineages)
+                    {
+                        var lquery = "g.V().has('lineage',lin1).has('virtual',true)";
+                        var lres = await SubmitWithRetry(gremlinClient, lquery, new Dictionary<string, object> { { "lin1", l } });
+                        if (lres.Count > 0)
+                        {
+                            GraphObject gv = ConvertGraphObject(lres.First());
+                            if (gv.properties != null)
+                            {
+                                if (gv.properties.Any(a => a.Name == "all"))
+                                {
+                                    all.Add(l, gv.properties.First(a => a.Name == "all").Value);
+                                }
+                                if (gv.properties.Any(a => a.Name == "any"))
+                                {
+                                    any.Add(l, gv.properties.First(a => a.Name == "any").Value);
+                                }
+                            }
+                        }
+                    }
+                }
+                var rootName = ConvertToDarl(endObject, inputs, outputs, rules, edges, vertices, all, any);
+                var rulesetName = "compliance";
+                var darl = new StringBuilder($"ruleset {rulesetName}\n{{\n");
+                darl.AppendLine(string.Join('\n', inputs));
+                darl.AppendLine();
+                darl.AppendLine(string.Join('\n', outputs));
+                darl.AppendLine();
+                darl.AppendLine(string.Join('\n', rules));
+                darl.AppendLine("\n}");
+                var runtime = new DarlRunTime();
+                var darlSource = darl.ToString();
+                var tree = runtime.CreateTree(darlSource);
+                //assume the properties are name - degree of truth pairs
+                if (startObject.properties == null)
+                    startObject.properties = start.properties ?? new List<StringStringPair>();
+                else
+                {
+                    if(start.properties != null)
+                        startObject.properties.AddRange(start.properties);
+                }
+                var values = new List<DarlResult>();
+                if (startObject.properties != null)
+                {
+                    foreach (var p in startObject.properties)
+                    {
+                        if (double.TryParse(p.Value, out double dval))
+                        {
+                            if (dval >= 0.5)
+                                values.Add(new DarlResult(p.Name, "true", DarlResult.DataType.categorical, dval));
+                            else
+                                values.Add(new DarlResult(p.Name, "false", DarlResult.DataType.categorical, 1.0 - dval));
+                        }
+                    }
+                }
+                var outs = runtime.GetOutputNames(tree);
+                var res = await runtime.Evaluate(tree, values);
+                foreach (var r in res)
+                {
+                    if (!r.IsUnknown())
+                    {
+                        var degreeOfTruth = ((string)r.Value == "true" ? r.GetWeight() : 1.0 - r.GetWeight());
+                        var newProp = new StringStringPair(r.name, degreeOfTruth.ToString());
+                        if (startObject.properties.Any(a => a.Name == r.name))
+                        {
+                            var existing = startObject.properties.First(a => a.Name == r.name);
+                            startObject.properties.Remove(existing);
+                            startObject.properties.Add(newProp);
+                        }
+                        else if (!r.name.StartsWith(rulesetName)) //ignore local values
+                        {
+                            startObject.properties.Add(newProp);
+                        }
+                        if (r.name == targetOutput)
+                        {
+                            ir.unknown = false;
+                            ir.confidence = degreeOfTruth;
+                        }
+                    }
+                }
+                var saliences = runtime.CalculateSaliences(res, tree);
+                var sortedSaliences = saliences.OrderByDescending(a => a.Value).ThenBy(a => a.Key).ToList();
+                ir.source = startObject;
+                ir.recommendations = new List<StringStringPair>();
+                //update confidence and unknown status based on target result.
+                foreach (var s in sortedSaliences)
+                {
+                    ir.recommendations.Add(new StringStringPair(s.Key, s.Value.ToString()));
+                }
+                _logger.LogWarning($"{nameof(InferPath)}: {userId}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in InferPath", ex);
+                throw new ExecutionError($"Error in InferPath: {ex.Message}", ex);
+            }
+            return ir;
+        }
+        public string ConvertToDarl(GraphObject go, HashSet<string> inputs, HashSet<string> outputs, HashSet<string> rules, Dictionary<string, List<GraphConnection>> edges, Dictionary<string, GraphObject> vertices, Dictionary<string, string> all, Dictionary<string, string> any)
+        {
+            var fullOutName = $"{ConvertNameToDarlName(go.name)}_inferred";
+            var fullInName = $"{ConvertNameToDarlName(go.name)}_achieved";
+            bool isLeaf = true;
+            if (all.ContainsKey(go.lineage))
+            {
+                var lineage = all[go.lineage];
+                string rule = "if ";
+                List<string> operands = new List<string>();
+                foreach (var c in edges[go.id])
+                {
+                    var start = vertices[c.startId];
+                    if (start.lineage == lineage)
+                        operands.Add($" {ConvertToDarl(start, inputs, outputs, rules, edges, vertices, all, any)} is true ");
+                }
+                rule += string.Join("and", operands);
+                rule += $" then {fullOutName} will be true;";
+                if (operands.Any())
+                {
+                    rules.Add(rule);
+                    isLeaf = false;
+                }
+            }
+            if (any.ContainsKey(go.lineage))
+            {
+                var lineage = any[go.lineage];
+                string rule = "if ";
+                List<string> operands = new List<string>();
+                foreach (var c in edges[go.id])
+                {
+                    var start = vertices[c.startId];
+                    if (start.lineage == lineage)
+                        operands.Add($" {ConvertToDarl(start, inputs, outputs, rules, edges, vertices, all, any)} is true ");
+                }
+                rule += string.Join("or", operands);
+                rule += $" then {fullOutName} will be true;";
+                if (operands.Any())
+                {
+                    rules.Add(rule);
+                    isLeaf = false;
+                }
+            }
+            if (isLeaf)
+            {
+                inputs.Add($"input categorical {fullInName} {{true,false}};");
+                return fullInName;
+            }
+            else
+            {
+                if (!go.inferred)
+                {
+                    rules.Add($"if {fullInName} is true then {fullOutName} will be true;");
+                    inputs.Add($"input categorical {fullInName} {{true,false}};");
+                }
+                outputs.Add($"output categorical {fullOutName} {{true,false}};");
+                return fullOutName;
+            }
+        }
+
+
+        private bool IsVertex(dynamic r)
+        {
+            return GetValueAsString(r, "type") == "vertex";
+        }
+
+        static string ConvertNameToDarlName(string name)
+        {
+            return name.Replace(' ', '_').Replace("&", "and");
+        }
 
         public void Dispose()
         {
@@ -808,5 +1054,6 @@ namespace Darl.GraphQL.Models.Connectivity
                 _disposed = true;
             }
         }
+
     }
 }

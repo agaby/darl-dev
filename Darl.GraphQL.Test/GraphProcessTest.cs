@@ -163,10 +163,126 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task TestCreateGraph()
         {
-            await _graph.CreateNewGraph("33db770b-29e9-46ae-8a19-c1947bd775d8");
+            await _graph.CreateNewGraph("33db770b-29e9-46ae-8a19-c1947bd775d8", "/lineage");
         }
+        [TestMethod]
+        public async Task TestInferPath()
+        {
+            var userId = "33db770b-29e9-46ae-8a19-c1947bd775d8";
+            var startId = "bd7fab60-4657-4a05-bda6-a025f19e432a";
+            var endId = "aaf09adf-9550-417a-a539-b713a32ed725";
+            var end = new GraphObjectInput { name = "artist manager", lineage = "noun:01,0,2,00,23,19" };
+            var start = new GraphObjectInput { name = "applicant", lineage = "noun:00,2,00" };
+            var res = await _graph.InferPath(start, end, userId, "artist_manager_inferred");
+            Assert.IsTrue(res.unknown);
+            Assert.AreEqual(0.0, res.confidence);
+            Assert.AreEqual(43, res.recommendations.Count);
+            start = new GraphObjectInput
+            {
+                name = "applicant",
+                lineage = "noun:00,2,00",
+                properties = new List<StringStringPair> {
+                    new StringStringPair("management_assistant_achieved","1"),
+                    new StringStringPair("budgeting_achieved", "0"),
+                    new StringStringPair("music_business_experience_achieved", "0"),
+                    new StringStringPair("music_licensing_and_performing_rights_achieved", "0"),
+                    new StringStringPair("music_publishing_achieved", "0"),
+                    new StringStringPair("negotiation_achieved", "0"),
+                    new StringStringPair("networking_achieved", "0"),
+                    new StringStringPair("organizational_skills_achieved", "0"),
+                    new StringStringPair("record_industry_contacts_achieved", "0"),
+                    new StringStringPair("record_production_process_achieved", "0"),
+                    new StringStringPair("schedule_management_achieved", "0"),
+                    new StringStringPair("tour_planning_achieved", "0"),
+                    new StringStringPair("verbal_communication_achieved", "0"),
+                    new StringStringPair("local_Artist_Manager_achieved", "0")
+            }
+            };
+            res = await _graph.InferPath(start, end, userId, "artist_manager_inferred");
+            Assert.AreEqual(29, res.recommendations.Count);
+            Assert.IsFalse(res.unknown);
+            Assert.AreEqual(1.0, res.confidence);
+            start = new GraphObjectInput
+            {
+                name = "applicant",
+                lineage = "noun:00,2,00",
+                properties = new List<StringStringPair> {
+                    new StringStringPair("unit_1_achieved","1"),
+                    new StringStringPair("unit_2_achieved","1"),
+                    new StringStringPair("unit_3_achieved","1"),
+                    new StringStringPair("unit_4_achieved","1"),
+                    new StringStringPair("unit_5_achieved","1"),
+                    new StringStringPair("unit_6_achieved","1"),
+                    new StringStringPair("unit_7_achieved","1"),
+                    new StringStringPair("unit_8_achieved","1"),
+                    new StringStringPair("unit_9_achieved","1"),
+                    new StringStringPair("unit_10_achieved","1"),
+                    new StringStringPair("unit_11_achieved","1"),
+                    new StringStringPair("unit_12_achieved","1"),
+                    new StringStringPair("unit_13_achieved","1"),
+                    new StringStringPair("unit_14_achieved","1"),
+                    new StringStringPair("unit_15_achieved","1"),
+                    new StringStringPair("unit_16_achieved","1"),
+                    new StringStringPair("unit_17_achieved","1"),
+                    new StringStringPair("unit_18_achieved","1"),
+                    new StringStringPair("unit_19_achieved","1"),
+                    new StringStringPair("unit_20_achieved","1"),
+                    new StringStringPair("unit_21_achieved","1"),
+                    new StringStringPair("unit_22_achieved","1"),
+                    new StringStringPair("unit_23_achieved","1"),
+                    new StringStringPair("unit_24_achieved","1"),
+                    new StringStringPair("unit_25_achieved","1"),
+                    new StringStringPair("unit_26_achieved","1"),
+                    new StringStringPair("unit_27_achieved","1"),
+                    new StringStringPair("unit_28_achieved","1"),
+                    new StringStringPair("unit_29_achieved","1")
+            }
+            };
+            res = await _graph.InferPath(start, end, userId, "artist_manager_inferred");
+            Assert.AreEqual(0, res.recommendations.Count);
+            Assert.IsFalse(res.unknown);
+            Assert.AreEqual(1.0, res.confidence);
+            start = new GraphObjectInput
+            {
+                name = "applicant",
+                lineage = "noun:00,2,00",
+                properties = new List<StringStringPair> {
+
+                    new StringStringPair("unit_2_achieved","1"),
+                    new StringStringPair("unit_4_achieved","1"),
+                    new StringStringPair("unit_5_achieved","1"),
+                    new StringStringPair("unit_6_achieved","1"),
+                    new StringStringPair("unit_7_achieved","1"),
+                    new StringStringPair("unit_8_achieved","1"),
+                    new StringStringPair("unit_9_achieved","1"),
+                    new StringStringPair("unit_10_achieved","1"),
+                    new StringStringPair("unit_11_achieved","1"),
+                    new StringStringPair("unit_13_achieved","1"),
+                    new StringStringPair("unit_16_achieved","1"),
+                    new StringStringPair("unit_17_achieved","1"),
+                    new StringStringPair("unit_18_achieved","1"),
+                    new StringStringPair("unit_19_achieved","1"),
+                    new StringStringPair("unit_20_achieved","1"),
+                    new StringStringPair("unit_21_achieved","1"),
+                    new StringStringPair("unit_22_achieved","1"),
+                    new StringStringPair("unit_23_achieved","1"),
+                    new StringStringPair("unit_24_achieved","1"),
+                    new StringStringPair("unit_25_achieved","1"),
+                    new StringStringPair("unit_26_achieved","1"),
+                    new StringStringPair("unit_27_achieved","1"),
+                    new StringStringPair("unit_28_achieved","1"),
+                    new StringStringPair("unit_29_achieved","1")
+            }
+            };
+            res = await _graph.InferPath(start, end, userId, "artist_manager_inferred");
+            Assert.AreEqual(17, res.recommendations.Count);
+            Assert.IsTrue(res.unknown);
+            Assert.AreEqual(0.0, res.confidence);
+        }
+
 
     }
 }

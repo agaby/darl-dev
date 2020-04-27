@@ -1,0 +1,3878 @@
+[
+	{
+		"Id": "C22,U147,LO36",
+		"Text": "Sound & Music Production Creative Mix Techniques Ability to create a mix that translates well across different mediums (speakers, headphones, laptops etc.)"
+	},
+	{
+		"Id": "C22,U134,LO37",
+		"Text": "Sound & Music Production Audio Fundamentals Implement the terminology associated with this field."
+	},
+	{
+		"Id": "C22,U136,LO39",
+		"Text": "Sound & Music Production Audio Capture Methods & Equipment Implement correct, industry specific terminology to explain equipment and processes."
+	},
+	{
+		"Id": "C22,U28,LO40",
+		"Text": "Sound & Music Production Live Sound and Events Implement correct terminology to communicate technical information accurately"
+	},
+	{
+		"Id": "C22,U32,LO41",
+		"Text": "Sound & Music Production Answering a Creative Brief Implement arranging methods that support the musical ideas effectively."
+	},
+	{
+		"Id": "C21,U130,LO42",
+		"Text": "Electronic Music Production Concept Led Practical Production Implement a wide range of editing, recording and sound manipulation techniques to create an intended aesthetic"
+	},
+	{
+		"Id": "C24,U56,LO48",
+		"Text": "Songwriting Songwriting Portfolio Illustrate creative decisions for this assessment"
+	},
+	{
+		"Id": "C18,U107,LO49",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration If the activity you originally agreed to execute has significantly changed or was not successful, explain why"
+	},
+	{
+		"Id": "C17,U123,LO51",
+		"Text": "Music Business The Business & Culture of Electronic Music Identify, describe & explain the impact of orthodox dance music business practice on developments in conventional popular music business operations"
+	},
+	{
+		"Id": "C18,U3,LO52",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Finding Your Path Identify your unique strengths and areas for development in your ‘About Me’ digital presentation, relating these to potential career routes"
+	},
+	{
+		"Id": "C22,U31,LO55",
+		"Text": "Sound & Music Production Vocal Capture and Production Illustrate genre specific techniques and explain their implementation within own work"
+	},
+	{
+		"Id": "C19,U25,LO56",
+		"Text": "Music Marketing, Media & Communication Fashion and Music Independently gather, sift and organise a range of relevant research material and deploy this as supporting evidence for a focused academic investigation or argument concerning the relationship between fashion and music."
+	},
+	{
+		"Id": "C19,U25,LO57",
+		"Text": "Music Marketing, Media & Communication Fashion and Music Independently gather, sift and organise a range of relevant research material in order to appraise the contemporary relationship between fashion and music."
+	},
+	{
+		"Id": "C20,U160,LO60",
+		"Text": "Event Management Crowd Psychology & Management Interpret the impact of crowd behaviour on event planning"
+	},
+	{
+		"Id": "C17,U116,LO61",
+		"Text": "Music Business Music Publishing Interpret standard terms found within a musicpublishing contract."
+	},
+	{
+		"Id": "C21,U145,LO62",
+		"Text": "Electronic Music Production Foley and Location Recording Interpret narrative context"
+	},
+	{
+		"Id": "C19,U91,LO64",
+		"Text": "Music Marketing, Media & Communication Social Media & Digital Marketing Interpret data to develop and evolve an ongoing marketing strategy"
+	},
+	{
+		"Id": "C19,U24,LO69",
+		"Text": "Music Marketing, Media & Communication Gaming Culture Interpret and analyse trends based in gaming behaviour"
+	},
+	{
+		"Id": "C20,U160,LO70",
+		"Text": "Event Management Crowd Psychology & Management Interpret and analyse crowd psychology and the impact of crowd behaviour on an event"
+	},
+	{
+		"Id": "C25,U38,LO79",
+		"Text": "Performing Arts The Voice Fundamentals Identify the vocal limitations and habits that block you as a performer"
+	},
+	{
+		"Id": "C20,U102,LO81",
+		"Text": "Event Management Event Concept and Design Identify the stakeholders in an event"
+	},
+	{
+		"Id": "C19,U155,LO82",
+		"Text": "Music Marketing, Media & Communication The Creative Entrepreneur Identify relevant needs and expectations for your chosen market"
+	},
+	{
+		"Id": "C20,U125,LO83",
+		"Text": "Event Management Live Music 1: Booking & Promotion Identify relevant event management tools and documentation."
+	},
+	{
+		"Id": "C17,U115,LO84",
+		"Text": "Music Business Releasing Music Identify practical skills and tasks specific to the creative industries"
+	},
+	{
+		"Id": "C18,U108,LO85",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Professional Portfolio Identify potential opportunities and risks, and how you will address/mitigate for these"
+	},
+	{
+		"Id": "C20,U149,LO86",
+		"Text": "Event Management Event Enterprise Identify potential income streams and contingency allowances"
+	},
+	{
+		"Id": "C18,U107,LO87",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration Identify potential complications, contingency and creative problem solving"
+	},
+	{
+		"Id": "C18,U3,LO88",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Finding Your Path Identify potential career routes, engaging with <insert Institute here> and industry resources to inform your work"
+	},
+	{
+		"Id": "C22,U136,LO90",
+		"Text": "Sound & Music Production Audio Capture Methods & Equipment Identify personal strengths and weaknesses to address areas for development:"
+	},
+	{
+		"Id": "C17,U115,LO91",
+		"Text": "Music Business Releasing Music Identify opportunities for collaborative work"
+	},
+	{
+		"Id": "C19,U155,LO92",
+		"Text": "Music Marketing, Media & Communication The Creative Entrepreneur Identify key techniques relating to media consumption"
+	},
+	{
+		"Id": "C19,U140,LO93",
+		"Text": "Music Marketing, Media & Communication Youth, Music and Social Change Identify key social movements and rebellions."
+	},
+	{
+		"Id": "C20,U125,LO94",
+		"Text": "Event Management Live Music 1: Booking & Promotion Identify key personnel in the live event business and the connecting relationships between them"
+	},
+	{
+		"Id": "C17,U113,LO95",
+		"Text": "Music Business Music Business Identify key music industry businesses organisations and professionals"
+	},
+	{
+		"Id": "C19,U152,LO96",
+		"Text": "Music Marketing, Media & Communication Introduction to Digital Media & Communication Identify key methods of digital communication suitable for different purposes"
+	},
+	{
+		"Id": "C17,U115,LO97",
+		"Text": "Music Business Releasing Music Identify key income streams and revenue generation within the contemporary music industry"
+	},
+	{
+		"Id": "C20,U124,LO98",
+		"Text": "Event Management Events & Society Identify key historical developments which have shaped the events industry"
+	},
+	{
+		"Id": "C19,U97,LO99",
+		"Text": "Music Marketing, Media & Communication Gender and Sexuality Identify key academic theories and constructs"
+	},
+	{
+		"Id": "C22,U139,LO100",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Identify issues within a production (composition, arrangement, choice of sounds, recording quality, performance related issues…)."
+	},
+	{
+		"Id": "C21,U131,LO101",
+		"Text": "Electronic Music Production Electroacoustic Composition Identify relevant sonic theories and key compositional strategies and analyse own work in relation to these within the diary."
+	},
+	{
+		"Id": "C19,U63,LO103",
+		"Text": "Music Marketing, Media & Communication Celebrity Culture Identify relevant theories for their chosen topic"
+	},
+	{
+		"Id": "C17,U112,LO106",
+		"Text": "Music Business Artist Management Identify the roles, core responsibilities and actions of the artist manager within an artist development plan."
+	},
+	{
+		"Id": "C25,U37,LO108",
+		"Text": "Performing Arts The Body Fundamentals Identify the physical limitations that block you as a performer"
+	},
+	{
+		"Id": "C17,U114,LO109",
+		"Text": "Music Business Live Music Industry Identify the personnel required in the planning, promotion and production of a live event"
+	},
+	{
+		"Id": "C25,U39,LO110",
+		"Text": "Performing Arts Performance Fundamentals Identify the personal habits that block you as a performer"
+	},
+	{
+		"Id": "C18,U103,LO111",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 1 Identify the needs of a specified learner and create relevant Learning Outcomes for a module of 3 linked lessons that are relevant to these needs."
+	},
+	{
+		"Id": "C18,U99,LO112",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 2 Identify the needs of a specified group of learners (suggested minimum 4) and create relevant Learning Outcomes for a module of 3 linked lessons that are relevant to these needs."
+	},
+	{
+		"Id": "C18,U99,LO113",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 2 Identify the needs of a specified group of learners (suggested minimum 4) and create Learning Outcomes that are relevant to these needs."
+	},
+	{
+		"Id": "C17,U105,LO114",
+		"Text": "Music Business Creative Economics Identify the micro and macroeconomic factors that influence the business of music organisations"
+	},
+	{
+		"Id": "C25,U39,LO117",
+		"Text": "Performing Arts Performance Fundamentals identify the individual habits and modes of working that block you as a performer"
+	},
+	{
+		"Id": "C20,U102,LO119",
+		"Text": "Event Management Event Concept and Design Identify the external parameters which affect the event concept and design process."
+	},
+	{
+		"Id": "C17,U87,LO120",
+		"Text": "Music Business Business Ethics & Music Law Identify the evaluate ethical practices and/or operations within business"
+	},
+	{
+		"Id": "C17,U122,LO121",
+		"Text": "Music Business Rights Management & Secondary Exploitation Identify terminologies used in music briefs and how they can be interpreted to create bespoke playlists."
+	},
+	{
+		"Id": "C18,U107,LO122",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration Identify team achievements and explain why you were successful."
+	},
+	{
+		"Id": "C17,U112,LO123",
+		"Text": "Music Business Artist Management Identify strengths and weaknesses in the artist’s current practice"
+	},
+	{
+		"Id": "C22,U136,LO124",
+		"Text": "Sound & Music Production Audio Capture Methods & Equipment Identify specific areas for development"
+	},
+	{
+		"Id": "C20,U149,LO125",
+		"Text": "Event Management Event Enterprise Investigate and appraise appropriate event fundraising methods"
+	},
+	{
+		"Id": "C20,U161,LO126",
+		"Text": "Event Management Socioeconomics: Event Impact and Legacy Investigate and appraise important developments in the evolution of the event industry"
+	},
+	{
+		"Id": "C21,U133,LO127",
+		"Text": "Electronic Music Production Interactive Music Applications Investigate and evaluate interactive music applications"
+	},
+	{
+		"Id": "C20,U149,LO128",
+		"Text": "Event Management Event Enterprise Offer strong rationale for the use (or not) of a particular fundraising option"
+	},
+	{
+		"Id": "C19,U97,LO129",
+		"Text": "Music Marketing, Media & Communication Gender and Sexuality Offer new perspectives by exploring your interpretations on current representations"
+	},
+	{
+		"Id": "C19,U97,LO130",
+		"Text": "Music Marketing, Media & Communication Gender and Sexuality Offer a balanced exploration of a chosen example"
+	},
+	{
+		"Id": "C20,U159,LO133",
+		"Text": "Event Management Community, Cultural & Sports Events Observe appropriate Health & Safety protocols"
+	},
+	{
+		"Id": "C19,U144,LO134",
+		"Text": "Music Marketing, Media & Communication Fans and Social Media Influencers New approaches considered. You can write about and critically reflect on the impact of your adopted methods in the Portfolio"
+	},
+	{
+		"Id": "C22,U35,LO135",
+		"Text": "Sound & Music Production Convolution and Sound Modelling Negotiate the technical and creative concepts of acoustics and audio theory in relation to music production"
+	},
+	{
+		"Id": "C20,U159,LO139",
+		"Text": "Event Management Community, Cultural & Sports Events Monitor progress and, where necessary, adjust to changing circumstances and contingencies"
+	},
+	{
+		"Id": "C22,U34,LO141",
+		"Text": "Sound & Music Production Game Sound & Music Meet the sound design brief"
+	},
+	{
+		"Id": "C22,U29,LO143",
+		"Text": "Sound & Music Production Practical Acoustics Measure and analyse the properties of an enclosed space"
+	},
+	{
+		"Id": "C19,U152,LO145",
+		"Text": "Music Marketing, Media & Communication Introduction to Digital Media & Communication Manipulate a media and messages using a variety of digital tools"
+	},
+	{
+		"Id": "C22,U134,LO149",
+		"Text": "Sound & Music Production Audio Fundamentals Operate recording equipment to capture audio & midi e.g. operate a DAW."
+	},
+	{
+		"Id": "C17,U113,LO150",
+		"Text": "Music Business Music Business Organise the businesses onto a diagram that clearly depicts the interconnected relationships and revenue flow"
+	},
+	{
+		"Id": "C19,U153,LO160",
+		"Text": "Music Marketing, Media & Communication Finding Your Voice Participate in class discussions and inclass writing sessions"
+	},
+	{
+		"Id": "C22,U31,LO162",
+		"Text": "Sound & Music Production Vocal Capture and Production Outline your intended direction for the finished vocal production, with reference to existing released material."
+	},
+	{
+		"Id": "C17,U89,LO163",
+		"Text": "Music Business Consultancy and Market Research Outline the problem or situation that the research is seeking to address."
+	},
+	{
+		"Id": "C17,U117,LO164",
+		"Text": "Music Business Business & Entreprise Outline strategies to manage business operations successfully"
+	},
+	{
+		"Id": "C18,U93,LO165",
+		"Text": "Creative Industries Entrepreneurship Touring And Live Events Outline positive elements and challenges presented in at least one of your chosen venues."
+	},
+	{
+		"Id": "C17,U115,LO166",
+		"Text": "Music Business Releasing Music Outline examples of current economic, operational, organisational and/or technological problems in contemporary business and entrepreneurship."
+	},
+	{
+		"Id": "C18,U93,LO167",
+		"Text": "Creative Industries Entrepreneurship Touring And Live Events Outline a suitable show design and discuss appropriate audio, lighting and set."
+	},
+	{
+		"Id": "C19,U86,LO168",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Originate, apply and propose clear strategies for the development of an audiovisual production"
+	},
+	{
+		"Id": "C19,U86,LO168",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Originate, apply and propose clear strategies for the development of an audiovisual production"
+	},
+	{
+		"Id": "C19,U86,LO168",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Originate, apply and propose clear strategies for the development of an audiovisual production"
+	},
+	{
+		"Id": "C22,U31,LO169",
+		"Text": "Sound & Music Production Vocal Capture and Production Organise vocal recording sessions by communicating with vocalists"
+	},
+	{
+		"Id": "C17,U121,LO170",
+		"Text": "Music Business Studio Sound & Recording Technology Operate studio equipment and/or software"
+	},
+	{
+		"Id": "C19,U155,LO171",
+		"Text": "Music Marketing, Media & Communication The Creative Entrepreneur Identify industry needs and expectations as a creative entrepreneur"
+	},
+	{
+		"Id": "C20,U159,LO172",
+		"Text": "Event Management Community, Cultural & Sports Events Manage the time and resources available to achieve your goals"
+	},
+	{
+		"Id": "C22,U30,LO174",
+		"Text": "Sound & Music Production Creating Sample Libraries Justify the product through market analysis and end user requirements"
+	},
+	{
+		"Id": "C22,U32,LO176",
+		"Text": "Sound & Music Production Answering a Creative Brief Justify the creative concepts and production methods employed and evaluate their effectiveness."
+	},
+	{
+		"Id": "C18,U92,LO177",
+		"Text": "Creative Industries Entrepreneurship Creative Video Production Justify the creative and technical desires of their project with a solid foundation of research and theory"
+	},
+	{
+		"Id": "C18,U103,LO178",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 1 Justify the choices made in your planning, including reference to core pedagogical elements where appropriate"
+	},
+	{
+		"Id": "C22,U139,LO182",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Justify creative and technical decisions in relation to the chosen stylistic reference, referencing external sources of knowledge where appropriate."
+	},
+	{
+		"Id": "C22,U30,LO184",
+		"Text": "Sound & Music Production Creating Sample Libraries Justify choice and use of equipment to create the product"
+	},
+	{
+		"Id": "C19,U144,LO190",
+		"Text": "Music Marketing, Media & Communication Fans and Social Media Influencers It is necessary for you to identify, contact and establish relationships with existing online practitioners for advice and assistance on new approaches which are evidenced and written about in the Portfolio"
+	},
+	{
+		"Id": "C17,U118,LO191",
+		"Text": "Music Business Financing Creativity Investigate how aims and objectives are applied to secure funding for a creative project."
+	},
+	{
+		"Id": "C21,U133,LO192",
+		"Text": "Electronic Music Production Interactive Music Applications Investigate and evaluate interactive music systems"
+	},
+	{
+		"Id": "C20,U127,LO193",
+		"Text": "Event Management Live Music 2: Events & Tours Justify your choice of artists and venues."
+	},
+	{
+		"Id": "C20,U159,LO194",
+		"Text": "Event Management Community, Cultural & Sports Events Manage responsibilities and/or resources"
+	},
+	{
+		"Id": "C22,U33,LO195",
+		"Text": "Sound & Music Production The Art of Mastering Justify your choices with relation to achieving a desired aesthetic and the medium of distribution"
+	},
+	{
+		"Id": "C22,U134,LO197",
+		"Text": "Sound & Music Production Audio Fundamentals Manage a recording session."
+	},
+	{
+		"Id": "C22,U31,LO198",
+		"Text": "Sound & Music Production Vocal Capture and Production Make use of appropriate technical and musical terminology and references to communicate information effectively and invite external feedback to critically evaluate your own work"
+	},
+	{
+		"Id": "C18,U101,LO199",
+		"Text": "Creative Industries Entrepreneurship Psychology of Music Make recommendations for further study and investigation relating to field of personal or professional interest."
+	},
+	{
+		"Id": "C20,U151,LO200",
+		"Text": "Event Management Event Sustainability Make informed reference to relvant supporting source material."
+	},
+	{
+		"Id": "C22,U35,LO201",
+		"Text": "Sound & Music Production Convolution and Sound Modelling Make informed creative decisions in the construction of a convolution effect"
+	},
+	{
+		"Id": "C19,U140,LO202",
+		"Text": "Music Marketing, Media & Communication Youth, Music and Social Change Make informed analytical and evaluative judgments about significant trends and themes in the study of youth, culture and social change."
+	},
+	{
+		"Id": "C22,U29,LO203",
+		"Text": "Sound & Music Production Practical Acoustics Make appropriate recommendations for acoustic treatment based on own research:"
+	},
+	{
+		"Id": "C17,U120,LO204",
+		"Text": "Music Business The Business & Culture of Hip Hop Locate and organize information regarding current developments within Hip Hop that has led to its growth in global popularity."
+	},
+	{
+		"Id": "C22,U137,LO205",
+		"Text": "Sound & Music Production Industry Toolkit Locate and organise information relating to industry institutions and practitioners and assess their relevance to their chosen career path"
+	},
+	{
+		"Id": "C22,U137,LO206",
+		"Text": "Sound & Music Production Industry Toolkit Locate and organise information relating to industry institutions and discuss their relevance to a chosen career path"
+	},
+	{
+		"Id": "C17,U123,LO207",
+		"Text": "Music Business The Business & Culture of Electronic Music Locate and organise information regarding current developments in Dance Music that have led to its growth in global popularity."
+	},
+	{
+		"Id": "C22,U137,LO208",
+		"Text": "Sound & Music Production Industry Toolkit Locate and organise information about the various modules on their course and to analyse and interpret their relevance to their chosen career path."
+	},
+	{
+		"Id": "C19,U153,LO209",
+		"Text": "Music Marketing, Media & Communication Finding Your Voice Locate and discuss relevant academic literature relating to the classes"
+	},
+	{
+		"Id": "C20,U165,LO210",
+		"Text": "Event Management Technical Event Production LO1. Critically evaluate the key components of effective technical production at events"
+	},
+	{
+		"Id": "C22,U135,LO211",
+		"Text": "Sound & Music Production Music & Listening Skills LO1:Communicate using professional music terminology when working with industry practitioners"
+	},
+	{
+		"Id": "C22,U138,LO212",
+		"Text": "Sound & Music Production Approaches to Production & Workflow List and use a variety of digital productivity tools for communication & connection of ideas and approaches."
+	},
+	{
+		"Id": "C22,U147,LO213",
+		"Text": "Sound & Music Production Creative Mix Techniques Links with external knowledge to aid developing understanding of working within a style or genre."
+	},
+	{
+		"Id": "C18,U92,LO214",
+		"Text": "Creative Industries Entrepreneurship Creative Video Production Link their creative and technical decisions to a foundation of research"
+	},
+	{
+		"Id": "C21,U131,LO215",
+		"Text": "Electronic Music Production Electroacoustic Composition Keep a diary of sounds that outlines the development of your sound design processes and compositional strategies employed in the development of the final composition."
+	},
+	{
+		"Id": "C17,U113,LO218",
+		"Text": "Music Business Music Business Identify how these organisations, businesses and professionals are interconnected and describe how revenue flows between them."
+	},
+	{
+		"Id": "C19,U90,LO219",
+		"Text": "Music Marketing, Media & Communication Marketing & PR Identify how PR and marketing are used within the music and events industries"
+	},
+	{
+		"Id": "C20,U161,LO220",
+		"Text": "Event Management Socioeconomics: Event Impact and Legacy Examine large events and their impact and legacy"
+	},
+	{
+		"Id": "C17,U87,LO221",
+		"Text": "Music Business Business Ethics & Music Law Examine how business manage conflicting legal and/or ethical claims"
+	},
+	{
+		"Id": "C22,U26,LO222",
+		"Text": "Sound & Music Production Music Production in Context Examine an area in the history of recorded sound outlining connections between technological development, musical and cultural change."
+	},
+	{
+		"Id": "C19,U142,LO228",
+		"Text": "Music Marketing, Media & Communication Artist Development & PR Examine marketing and communications in the music industry"
+	},
+	{
+		"Id": "C17,U104,LO230",
+		"Text": "Music Business Globalisation Evidence strong research practice resulting in a clear and informed set of conclusions and recommendations"
+	},
+	{
+		"Id": "C21,U132,LO232",
+		"Text": "Electronic Music Production Immersive Audio Techniques Evidence research on relevant/current practitioners and areas of future development"
+	},
+	{
+		"Id": "C19,U63,LO235",
+		"Text": "Music Marketing, Media & Communication Celebrity Culture Evidence a thorough understanding of how celebrity is marketed"
+	},
+	{
+		"Id": "C19,U97,LO239",
+		"Text": "Music Marketing, Media & Communication Gender and Sexuality Examine responses to current industry developments"
+	},
+	{
+		"Id": "C17,U118,LO241",
+		"Text": "Music Business Financing Creativity Examine the application of budgeting and scheduling in the manage of a creative project from inception through to completion."
+	},
+	{
+		"Id": "C22,U134,LO248",
+		"Text": "Sound & Music Production Audio Fundamentals Explain fundamental concepts related to the digital and analogue audio domain:"
+	},
+	{
+		"Id": "C21,U128,LO250",
+		"Text": "Electronic Music Production Digital Composition in Context Explain and communicate technical information, established technologies, and production processes within electronic music"
+	},
+	{
+		"Id": "C22,U27,LO256",
+		"Text": "Sound & Music Production Studio Practice & Engineering Execute established industry practice to realise a studio quality multitrack session"
+	},
+	{
+		"Id": "C18,U107,LO257",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration Execute an agreed achievable element of your collaborative project plan"
+	},
+	{
+		"Id": "C17,U118,LO259",
+		"Text": "Music Business Financing Creativity Examine the various sources of income available to fund a creative project."
+	},
+	{
+		"Id": "C18,U109,LO260",
+		"Text": "Creative Industries Entrepreneurship Context & Culture of the Creative Industries Examine the relationship between context and creative practice and/or an area of industry using cultural theory"
+	},
+	{
+		"Id": "C22,U135,LO261",
+		"Text": "Sound & Music Production Music & Listening Skills Evaluate your process working with industry practitioners and highlight areas for future development"
+	},
+	{
+		"Id": "C18,U103,LO262",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 1 Evaluate your planning and delivery, identifying areas for future development"
+	},
+	{
+		"Id": "C18,U107,LO264",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration Evaluate your collaborative ways of working and communicating, your individual contribution to the group, and make suggestions for improvements"
+	},
+	{
+		"Id": "C20,U149,LO265",
+		"Text": "Event Management Event Enterprise Evaluate the potential impact of financial trends and the economic climate on your event"
+	},
+	{
+		"Id": "C20,U164,LO266",
+		"Text": "Event Management Creative Commercial Events Evaluate the planning, communication and management techniques utilised."
+	},
+	{
+		"Id": "C17,U121,LO267",
+		"Text": "Music Business Studio Sound & Recording Technology Evaluate the opportunities provided by new technology in the recording and mastering of contemporary music."
+	},
+	{
+		"Id": "C19,U91,LO268",
+		"Text": "Music Marketing, Media & Communication Social Media & Digital Marketing Evaluate the market by applying relevant tools and frameworks"
+	},
+	{
+		"Id": "C17,U118,LO269",
+		"Text": "Music Business Financing Creativity Evaluate the management of a creative project from inception through to completion."
+	},
+	{
+		"Id": "C19,U154,LO270",
+		"Text": "Music Marketing, Media & Communication Popular Culture & Identity Evaluate the interaction of culture and identity in specific contexts/situations"
+	},
+	{
+		"Id": "C17,U122,LO271",
+		"Text": "Music Business Rights Management & Secondary Exploitation Evaluate the importance of music and how licensors can strive to get a return on their investment in music."
+	},
+	{
+		"Id": "C18,U95,LO272",
+		"Text": "Creative Industries Entrepreneurship Working in the Creative Industries Evaluate the impact of workbased learning on your professional development"
+	},
+	{
+		"Id": "C17,U106,LO273",
+		"Text": "Music Business Audience Experience and Motivation Evaluate the impact of psychology on audience behaviour"
+	},
+	{
+		"Id": "C17,U87,LO274",
+		"Text": "Music Business Business Ethics & Music Law Evaluate the impact of ethical and legal concerns"
+	},
+	{
+		"Id": "C20,U150,LO275",
+		"Text": "Event Management Festival Management Evaluate the impact and influences of key stakeholders and personnel in festival design"
+	},
+	{
+		"Id": "C19,U146,LO276",
+		"Text": "Music Marketing, Media & Communication Global Communication Evaluate the global voice and cultural reflexivity."
+	},
+	{
+		"Id": "C22,U36,LO280",
+		"Text": "Sound & Music Production Audio Post Production Evaluate the effectiveness of your final artefact when compared to other contemporary works."
+	},
+	{
+		"Id": "C22,U32,LO281",
+		"Text": "Sound & Music Production Answering a Creative Brief Evaluate the effectiveness of production and creative choices made through the project."
+	},
+	{
+		"Id": "C22,U31,LO282",
+		"Text": "Sound & Music Production Vocal Capture and Production Evaluate the effectiveness of established practices implemented"
+	},
+	{
+		"Id": "C20,U126,LO283",
+		"Text": "Event Management Event Safety Evaluate the concept of risk and how to identify it in the planning phase of an event"
+	},
+	{
+		"Id": "C22,U27,LO285",
+		"Text": "Sound & Music Production Studio Practice & Engineering Explain the recording and mixing process, detailing the techniques used."
+	},
+	{
+		"Id": "C17,U87,LO286",
+		"Text": "Music Business Business Ethics & Music Law Evaluate the purpose and use of contractual agreements and/or government legislation in the music industry"
+	},
+	{
+		"Id": "C19,U91,LO288",
+		"Text": "Music Marketing, Media & Communication Social Media & Digital Marketing Evaluate your campaign strategy based on your market research and target audience"
+	},
+	{
+		"Id": "C18,U110,LO289",
+		"Text": "Creative Industries Entrepreneurship Creativity, Identity & Agency Evaluate theoretical concepts of creativity, identity and/or agency within the creative industries and artistic traditions"
+	},
+	{
+		"Id": "C22,U34,LO290",
+		"Text": "Sound & Music Production Game Sound & Music Evaluate their use of compositional and arrangement techniques in video game music."
+	},
+	{
+		"Id": "C20,U162,LO291",
+		"Text": "Event Management Event Video Production Evaluate their success in creating a clear and coherent blend of video"
+	},
+	{
+		"Id": "C19,U86,LO292",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Evaluate their success in creating a clear and coherent blend of multimedia around a single topic"
+	},
+	{
+		"Id": "C19,U86,LO292",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Evaluate their success in creating a clear and coherent blend of multimedia around a single topic"
+	},
+	{
+		"Id": "C22,U34,LO293",
+		"Text": "Sound & Music Production Game Sound & Music Evaluate their ability to meet the requirements of video game music"
+	},
+	{
+		"Id": "C17,U121,LO294",
+		"Text": "Music Business Studio Sound & Recording Technology Evaluate the usefulness of various options in the selection of appropriate recording technologies"
+	},
+	{
+		"Id": "C22,U138,LO295",
+		"Text": "Sound & Music Production Approaches to Production & Workflow Evaluate the use of critical listening skills, creativity and artistic mindsets in a media project."
+	},
+	{
+		"Id": "C22,U138,LO296",
+		"Text": "Sound & Music Production Approaches to Production & Workflow Evaluate the use of critical listening in an audiofocussed project."
+	},
+	{
+		"Id": "C21,U145,LO298",
+		"Text": "Electronic Music Production Foley and Location Recording Evaluate the technical parameters of a brief"
+	},
+	{
+		"Id": "C20,U124,LO299",
+		"Text": "Event Management Events & Society Evaluate the sustainability and potential legacy that events leave on the industry"
+	},
+	{
+		"Id": "C18,U107,LO300",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration Evaluate the success of your project and collaborative working methods"
+	},
+	{
+		"Id": "C21,U128,LO301",
+		"Text": "Electronic Music Production Digital Composition in Context Evaluate the stylistic practices and compositional approaches in the realisation of electronic music"
+	},
+	{
+		"Id": "C20,U159,LO302",
+		"Text": "Event Management Community, Cultural & Sports Events Evaluate the sociocultural context of your event"
+	},
+	{
+		"Id": "C20,U125,LO303",
+		"Text": "Event Management Live Music 1: Booking & Promotion Evaluate the roles and responsibilities of key personnel in the live events industry"
+	},
+	{
+		"Id": "C22,U34,LO304",
+		"Text": "Sound & Music Production Game Sound & Music Evaluate the results of their composition and arrangement in the context of contemporary game music"
+	},
+	{
+		"Id": "C22,U134,LO305",
+		"Text": "Sound & Music Production Audio Fundamentals Evaluate the result and suggest appropriate post recording editing adjustments."
+	},
+	{
+		"Id": "C22,U33,LO306",
+		"Text": "Sound & Music Production The Art of Mastering Evaluate the relative success of the process you have implemented"
+	},
+	{
+		"Id": "C22,U27,LO308",
+		"Text": "Sound & Music Production Studio Practice & Engineering Explain the recording process detailing equipment used."
+	},
+	{
+		"Id": "C18,U93,LO310",
+		"Text": "Creative Industries Entrepreneurship Touring And Live Events Explain the use of revenue streams such as ticket sales, grants and sponsorship."
+	},
+	{
+		"Id": "C18,U108,LO313",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Professional Portfolio Identify and evidence your skills, attributes and achievements through a range of different mediums"
+	},
+	{
+		"Id": "C20,U160,LO314",
+		"Text": "Event Management Crowd Psychology & Management Identify and evaluate the importance of audience motivation and profiling"
+	},
+	{
+		"Id": "C20,U127,LO315",
+		"Text": "Event Management Live Music 2: Events & Tours Identify and evaluate personnel and the roles they perform in the process."
+	},
+	{
+		"Id": "C18,U109,LO316",
+		"Text": "Creative Industries Entrepreneurship Context & Culture of the Creative Industries Identify and engage with a range of highquality research resources in relation to your question"
+	},
+	{
+		"Id": "C17,U112,LO317",
+		"Text": "Music Business Artist Management Identify and describe the key roles, responsibilities and attributes of the artist manager"
+	},
+	{
+		"Id": "C21,U128,LO318",
+		"Text": "Electronic Music Production Digital Composition in Context Identify and communicate where theory relates to practice in the analysis of a digital composition."
+	},
+	{
+		"Id": "C20,U126,LO319",
+		"Text": "Event Management Event Safety Identify and categorise potential risks at an event"
+	},
+	{
+		"Id": "C20,U151,LO320",
+		"Text": "Event Management Event Sustainability Identify and assess the sustainability impacts associated with events"
+	},
+	{
+		"Id": "C17,U120,LO322",
+		"Text": "Music Business The Business & Culture of Hip Hop Identify and appraise genre specific business practice"
+	},
+	{
+		"Id": "C20,U150,LO323",
+		"Text": "Event Management Festival Management Identify and apply sustainable practices to festival planning and management"
+	},
+	{
+		"Id": "C22,U36,LO324",
+		"Text": "Sound & Music Production Audio Post Production Identify and apply appropriate techniques and principles utilised within postproduction."
+	},
+	{
+		"Id": "C17,U120,LO325",
+		"Text": "Music Business The Business & Culture of Hip Hop Identify and analyse the structure of the industry that supports the genre and discuss their streams of income"
+	},
+	{
+		"Id": "C17,U123,LO326",
+		"Text": "Music Business The Business & Culture of Electronic Music Identify and analyse the structure of the industry that supports the chosen genre and discuss the streams of income"
+	},
+	{
+		"Id": "C20,U150,LO327",
+		"Text": "Event Management Festival Management Identify and analyse the core concepts underpinning safe onsite festival operations"
+	},
+	{
+		"Id": "C19,U142,LO328",
+		"Text": "Music Marketing, Media & Communication Artist Development & PR Identify and analyse key principles & theories in music marketing and promotions"
+	},
+	{
+		"Id": "C20,U162,LO329",
+		"Text": "Event Management Event Video Production Identify a video based need for an event or artist"
+	},
+	{
+		"Id": "C20,U127,LO330",
+		"Text": "Event Management Live Music 2: Events & Tours Identify and organise the key elements of a successful event and/or tour"
+	},
+	{
+		"Id": "C19,U86,LO331",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Identify a niche market currently not being catered for by media channels"
+	},
+	{
+		"Id": "C19,U86,LO331",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Identify a niche market currently not being catered for by media channels"
+	},
+	{
+		"Id": "C20,U125,LO332",
+		"Text": "Event Management Live Music 1: Booking & Promotion Identify and organise the key elements of a successful live music event."
+	},
+	{
+		"Id": "C17,U105,LO334",
+		"Text": "Music Business Creative Economics Identify how micro and macroeconomic theories explain this evolution"
+	},
+	{
+		"Id": "C20,U102,LO336",
+		"Text": "Event Management Event Concept and Design Identify discourse around historical and current factors impacting on event design."
+	},
+	{
+		"Id": "C19,U155,LO337",
+		"Text": "Music Marketing, Media & Communication The Creative Entrepreneur Identify developments in the representation of creative entrepreneurship"
+	},
+	{
+		"Id": "C17,U119,LO338",
+		"Text": "Music Business Record Label Management Identify cultural and technological trends which have impacted the recorded music sector"
+	},
+	{
+		"Id": "C17,U89,LO339",
+		"Text": "Music Business Consultancy and Market Research Identify credible sources of secondary data."
+	},
+	{
+		"Id": "C17,U117,LO340",
+		"Text": "Music Business Business & Entreprise Identify core operations required to manage your chosen business"
+	},
+	{
+		"Id": "C17,U106,LO341",
+		"Text": "Music Business Audience Experience and Motivation Identify core dynamics of audience experience"
+	},
+	{
+		"Id": "C19,U63,LO342",
+		"Text": "Music Marketing, Media & Communication Celebrity Culture Identify core academic theories and reading"
+	},
+	{
+		"Id": "C22,U28,LO343",
+		"Text": "Sound & Music Production Live Sound and Events Identify constituent parts of typical sound systems and demonstrate safe and proficient operation."
+	},
+	{
+		"Id": "C22,U28,LO343",
+		"Text": "Sound & Music Production Live Sound and Events Identify constituent parts of typical sound systems and demonstrate safe and proficient operation."
+	},
+	{
+		"Id": "C20,U151,LO344",
+		"Text": "Event Management Event Sustainability Identify compliance requirements and comply with these obligations."
+	},
+	{
+		"Id": "C18,U3,LO345",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Finding Your Path Identify career routes that interest you in your ‘About Me’ digital presentation, drawing on industry resources explored in class"
+	},
+	{
+		"Id": "C20,U160,LO346",
+		"Text": "Event Management Crowd Psychology & Management Identify audience motivation including why people attend events, their needs and expectations"
+	},
+	{
+		"Id": "C22,U139,LO352",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Identify areas for improvement."
+	},
+	{
+		"Id": "C17,U112,LO353",
+		"Text": "Music Business Artist Management Identify and respond to the challenges you anticipate in implementing your development plan"
+	},
+	{
+		"Id": "C17,U119,LO354",
+		"Text": "Music Business Record Label Management Identify how small independent, large independent and major record labels differ in their structure and use examples to illustrate these"
+	},
+	{
+		"Id": "C17,U113,LO355",
+		"Text": "Music Business Music Business Identify a current development in the industry and analyse how a selected music business has responded to the development to ensure profitability or effectiveness"
+	},
+	{
+		"Id": "C17,U123,LO356",
+		"Text": "Music Business The Business & Culture of Electronic Music Identify & appraise genre specific business procedure and its significance in shaping in popular music commercial operations"
+	},
+	{
+		"Id": "C17,U105,LO357",
+		"Text": "Music Business Creative Economics For the music organisation you have chosen, identify how the sector they are working in has evolved using examples and statistics to highlight key trends"
+	},
+	{
+		"Id": "C22,U31,LO358",
+		"Text": "Sound & Music Production Vocal Capture and Production Follow established industry practices and procedures"
+	},
+	{
+		"Id": "C17,U121,LO360",
+		"Text": "Music Business Studio Sound & Recording Technology Facilitate and contribute to a recording session using industry standard studio equipment and software"
+	},
+	{
+		"Id": "C19,U100,LO361",
+		"Text": "Music Marketing, Media & Communication Diversity in the Creative Industries Explore the way issues of diversity might impact on your own creative practice"
+	},
+	{
+		"Id": "C18,U3,LO362",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Finding Your Path Explore the resources and opportunities available to you at <insert Institute here> and within the city, in your ‘Creative Communities’ map"
+	},
+	{
+		"Id": "C19,U100,LO363",
+		"Text": "Music Marketing, Media & Communication Diversity in the Creative Industries Explore the implications of their findings for their future practice, and on the implications of current issues in music and diversity both as a content creator and listener."
+	},
+	{
+		"Id": "C21,U133,LO364",
+		"Text": "Electronic Music Production Interactive Music Applications Explore the capabilities of the chosen techniques to a sufficient extent"
+	},
+	{
+		"Id": "C22,U32,LO365",
+		"Text": "Sound & Music Production Answering a Creative Brief Explore production and arranging techniques that are relevant to the given genre."
+	},
+	{
+		"Id": "C19,U97,LO366",
+		"Text": "Music Marketing, Media & Communication Gender and Sexuality Explore key academic gender and/or sexuality theories and constructs"
+	},
+	{
+		"Id": "C19,U97,LO367",
+		"Text": "Music Marketing, Media & Communication Gender and Sexuality Explore how theories and constructs offer new sites for representation"
+	},
+	{
+		"Id": "C20,U161,LO368",
+		"Text": "Event Management Socioeconomics: Event Impact and Legacy Explore how shared cultural experiences can have a great socioeconomic and cultural impact and legacy"
+	},
+	{
+		"Id": "C17,U118,LO369",
+		"Text": "Music Business Financing Creativity Explore how modes of persuasion are utilised to secure funding for a creative project."
+	},
+	{
+		"Id": "C20,U161,LO370",
+		"Text": "Event Management Socioeconomics: Event Impact and Legacy Explore how culture and society are interlinked with the behaviours of the population"
+	},
+	{
+		"Id": "C21,U145,LO374",
+		"Text": "Electronic Music Production Foley and Location Recording Explore and develop appropriate responses to visual cue"
+	},
+	{
+		"Id": "C17,U105,LO375",
+		"Text": "Music Business Creative Economics Explain what solutions economic theory can offer for these challenges"
+	},
+	{
+		"Id": "C18,U110,LO376",
+		"Text": "Creative Industries Entrepreneurship Creativity, Identity & Agency Formulate a position based on your evaluation"
+	},
+	{
+		"Id": "C18,U107,LO377",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration Identify a charitable cause to support that aligns with your team’s values"
+	},
+	{
+		"Id": "C18,U96,LO378",
+		"Text": "Creative Industries Entrepreneurship Culture & Society Formulate and interpret complex and contested ideas at the forefront of their discipline"
+	},
+	{
+		"Id": "C20,U151,LO380",
+		"Text": "Event Management Event Sustainability Hypothesise how appropriate strategies and practical responses might make an event more sustainable"
+	},
+	{
+		"Id": "C20,U151,LO381",
+		"Text": "Event Management Event Sustainability Hypothesise and apply potential sustainability strategies using an appropriate management system."
+	},
+	{
+		"Id": "C21,U129,LO382",
+		"Text": "Electronic Music Production Digital Performance Skills How have you addressed audience expectations regarding genre and idiom?"
+	},
+	{
+		"Id": "C21,U129,LO383",
+		"Text": "Electronic Music Production Digital Performance Skills How are you planning to use advanced music technology hardware and software in a live performance?"
+	},
+	{
+		"Id": "C18,U108,LO384",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Professional Portfolio Highlight your significant achievements and growth areas (personal and/or professional) reflecting on how you will apply what have learned from these positive experiences in a professional context"
+	},
+	{
+		"Id": "C17,U121,LO386",
+		"Text": "Music Business Studio Sound & Recording Technology Help set up a recording session using appropriate equipment and/or software"
+	},
+	{
+		"Id": "C22,U138,LO387",
+		"Text": "Sound & Music Production Approaches to Production & Workflow Give examples of how creativity can be used to achieve an audiofocussed project."
+	},
+	{
+		"Id": "C18,U99,LO389",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 2 Generate resources that are relevant and wellpresented, that will support learning and teaching in the lesson and independent learning outside the lesson for all learners."
+	},
+	{
+		"Id": "C18,U103,LO390",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 1 Generate resources that are relevant and wellpresented, that will support learning and teaching in the lesson and independent learning outside the lesson"
+	},
+	{
+		"Id": "C18,U107,LO393",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration Generate creative ideas to support, raise awareness or raise funds for your chosen cause"
+	},
+	{
+		"Id": "C19,U157,LO394",
+		"Text": "Music Marketing, Media & Communication Communications Techniques Generate a range of established communication theories and practices to suit contrasting contexts and clearly communicate a given message."
+	},
+	{
+		"Id": "C18,U109,LO395",
+		"Text": "Creative Industries Entrepreneurship Context & Culture of the Creative Industries Gather evidence and justify your position on all of the above factors"
+	},
+	{
+		"Id": "C19,U140,LO396",
+		"Text": "Music Marketing, Media & Communication Youth, Music and Social Change Gather and sift a range of relevant research material and deploy this as supporting evidence for a focused, cogent academic investigation or argument concerning social movements and rebellions."
+	},
+	{
+		"Id": "C22,U35,LO397",
+		"Text": "Sound & Music Production Convolution and Sound Modelling Gather and manipulate appropriate resources and audio artefacts to demonstrate the properties of the effect at a professional standard"
+	},
+	{
+		"Id": "C21,U133,LO399",
+		"Text": "Electronic Music Production Interactive Music Applications Formulate musical and sonic ideas through the use of programming"
+	},
+	{
+		"Id": "C25,U39,LO402",
+		"Text": "Performing Arts Performance Fundamentals Perform in a practical project"
+	},
+	{
+		"Id": "C25,U39,LO402",
+		"Text": "Performing Arts Performance Fundamentals Perform in a practical project"
+	},
+	{
+		"Id": "C17,U121,LO403",
+		"Text": "Music Business Studio Sound & Recording Technology Show how new technology can impact of the aesthetic choices in recorded music"
+	},
+	{
+		"Id": "C17,U122,LO404",
+		"Text": "Music Business Rights Management & Secondary Exploitation Show how music rights owner practices are reflected in their legal agreements with potential licensors."
+	},
+	{
+		"Id": "C17,U116,LO405",
+		"Text": "Music Business Music Publishing Show how music publishing company practices are reflected in their legal agreements with songwriters and composers"
+	},
+	{
+		"Id": "C20,U102,LO406",
+		"Text": "Event Management Event Concept and Design Show how event designers accommodate and prioritise stakeholder interests"
+	},
+	{
+		"Id": "C17,U87,LO407",
+		"Text": "Music Business Business Ethics & Music Law Show how core values, ethical policies and/or legal principles permeate business operations"
+	},
+	{
+		"Id": "C17,U87,LO408",
+		"Text": "Music Business Business Ethics & Music Law Show how business operations are influenced by contractual agreements and/or legislative restrictions."
+	},
+	{
+		"Id": "C21,U128,LO410",
+		"Text": "Electronic Music Production Digital Composition in Context Show critical awareness of how their work is situated within the context of others."
+	},
+	{
+		"Id": "C19,U157,LO411",
+		"Text": "Music Marketing, Media & Communication Communications Techniques Show that your portfolio has been informed by at least two established communications theories."
+	},
+	{
+		"Id": "C19,U154,LO412",
+		"Text": "Music Marketing, Media & Communication Popular Culture & Identity Show awareness of all aspects of identity formation as they were discussed in class."
+	},
+	{
+		"Id": "C22,U29,LO413",
+		"Text": "Sound & Music Production Practical Acoustics Show accurate knowledge of the components of sound"
+	},
+	{
+		"Id": "C22,U29,LO414",
+		"Text": "Sound & Music Production Practical Acoustics Show a working knowledge of the underlying principles of sound propagation"
+	},
+	{
+		"Id": "C20,U159,LO415",
+		"Text": "Event Management Community, Cultural & Sports Events Set and meet targets, prioritise and delegate tasks"
+	},
+	{
+		"Id": "C22,U137,LO417",
+		"Text": "Sound & Music Production Industry Toolkit Selfreflection and the use of existing theories and reflective models to reinforce a decided outcome, as to the relevance of the areas for progression"
+	},
+	{
+		"Id": "C18,U99,LO418",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 2 Selfassess their planning and teaching for this lesson, identifying strengths and areas for development"
+	},
+	{
+		"Id": "C22,U137,LO419",
+		"Text": "Sound & Music Production Industry Toolkit Self reflect on their use of existing theories and reflective models to reinforce their decided outcome as to the relevance of their modules."
+	},
+	{
+		"Id": "C18,U110,LO425",
+		"Text": "Creative Industries Entrepreneurship Creativity, Identity & Agency Summarise the key principles relating to theoretical concepts and ideas of creativity, identity and/or agency within the creative industries and/or artistry"
+	},
+	{
+		"Id": "C18,U109,LO426",
+		"Text": "Creative Industries Entrepreneurship Context & Culture of the Creative Industries Summarise the key principles of at least one critical perspective grounded in cultural theory that you have explored throughout the module"
+	},
+	{
+		"Id": "C17,U106,LO427",
+		"Text": "Music Business Audience Experience and Motivation Summarise the difference between customer segments and psychological factors"
+	},
+	{
+		"Id": "C17,U106,LO428",
+		"Text": "Music Business Audience Experience and Motivation Summarise and evaluate the psychology and behaviour of different customer segments to appraise what motivates people to engage with a product or service"
+	},
+	{
+		"Id": "C18,U109,LO429",
+		"Text": "Creative Industries Entrepreneurship Context & Culture of the Creative Industries Summarise and critique a range of research resources to help you form and structure your argument"
+	},
+	{
+		"Id": "C22,U33,LO431",
+		"Text": "Sound & Music Production The Art of Mastering Suggest possible alternative processes to achieve a successful outcome with relation to the desired aesthetic"
+	},
+	{
+		"Id": "C22,U29,LO432",
+		"Text": "Sound & Music Production Practical Acoustics Suggest appropriate acoustic treatment to improve the frequency and modal/RT response of a room or space"
+	},
+	{
+		"Id": "C22,U27,LO433",
+		"Text": "Sound & Music Production Studio Practice & Engineering Successfully load and present a multitrack recording of an artist featuring live instruments or vocals."
+	},
+	{
+		"Id": "C22,U27,LO434",
+		"Text": "Sound & Music Production Studio Practice & Engineering Successfully interpret production guidance in the role of engineer."
+	},
+	{
+		"Id": "C17,U94,LO435",
+		"Text": "Music Business Digital Arts & Branding Successfully interpret a design brief for a brand"
+	},
+	{
+		"Id": "C22,U32,LO436",
+		"Text": "Sound & Music Production Answering a Creative Brief Successfully contextualise your work using references to relevant work from other composers/producers in the chosen field."
+	},
+	{
+		"Id": "C21,U133,LO437",
+		"Text": "Electronic Music Production Interactive Music Applications Successfully contextualise their ideas with prior work from other composers and developers."
+	},
+	{
+		"Id": "C22,U27,LO438",
+		"Text": "Sound & Music Production Studio Practice & Engineering Successfully apply changes to your production under the guidance of another (Producer) using the equipment available to you."
+	},
+	{
+		"Id": "C18,U92,LO440",
+		"Text": "Creative Industries Entrepreneurship Creative Video Production Source and utilise research to justify the equipment selected for the piece."
+	},
+	{
+		"Id": "C18,U92,LO441",
+		"Text": "Creative Industries Entrepreneurship Creative Video Production Source and reference conventional methods utilised in the sources of inspiration for the video project the aim to create"
+	},
+	{
+		"Id": "C18,U101,LO443",
+		"Text": "Creative Industries Entrepreneurship Psychology of Music Situate your work within the context of music psychology literature and scholarly activity."
+	},
+	{
+		"Id": "C21,U145,LO445",
+		"Text": "Electronic Music Production Foley and Location Recording Select appropriate recording technologies"
+	},
+	{
+		"Id": "C17,U89,LO446",
+		"Text": "Music Business Consultancy and Market Research Select appropriate methods for collecting primary data."
+	},
+	{
+		"Id": "C21,U148,LO447",
+		"Text": "Electronic Music Production Creative Production Techniques Select and utilise variety of contemporary production tools, techniques or processes that are relevant to your own practice"
+	},
+	{
+		"Id": "C17,U87,LO448",
+		"Text": "Music Business Business Ethics & Music Law Research relevant legislation and appraise how businesses work within the parameters this sets out"
+	},
+	{
+		"Id": "C22,U31,LO450",
+		"Text": "Sound & Music Production Vocal Capture and Production Research industry practitioners to influence your own practice"
+	},
+	{
+		"Id": "C20,U165,LO451",
+		"Text": "Event Management Technical Event Production Research current industry technical standards in the use of audio, lighting, backline and/or SFX equipment."
+	},
+	{
+		"Id": "C22,U35,LO453",
+		"Text": "Sound & Music Production Convolution and Sound Modelling Research and utilise appropriate recording equipment and practices in the production of impulse responses"
+	},
+	{
+		"Id": "C18,U95,LO454",
+		"Text": "Creative Industries Entrepreneurship Working in the Creative Industries Research and identify workbased learning opportunities to develop your employability"
+	},
+	{
+		"Id": "C19,U142,LO455",
+		"Text": "Music Marketing, Media & Communication Artist Development & PR Research and evaluate previous PR campaign examples"
+	},
+	{
+		"Id": "C21,U148,LO456",
+		"Text": "Electronic Music Production Creative Production Techniques Research and employ creative production techniques to develop works that are relevant to contemporary music practices."
+	},
+	{
+		"Id": "C19,U142,LO457",
+		"Text": "Music Marketing, Media & Communication Artist Development & PR Research and critically evaluate current and past or similar strategies"
+	},
+	{
+		"Id": "C22,U33,LO458",
+		"Text": "Sound & Music Production The Art of Mastering Research and analyse the key creative and technical methodologies employed within commercial references and apply them to your own production in relation to an intended aesthetic outcome."
+	},
+	{
+		"Id": "C22,U138,LO459",
+		"Text": "Sound & Music Production Approaches to Production & Workflow Research and analyse how artistic visions affect an audiofocused project"
+	},
+	{
+		"Id": "C17,U122,LO460",
+		"Text": "Music Business Rights Management & Secondary Exploitation Research and analyse assorted music styles and genres based on their interpretation of creative music briefs."
+	},
+	{
+		"Id": "C21,U148,LO461",
+		"Text": "Electronic Music Production Creative Production Techniques Research a variety of contemporary production tools, techniques or processes"
+	},
+	{
+		"Id": "C18,U110,LO464",
+		"Text": "Creative Industries Entrepreneurship Creativity, Identity & Agency Relate your argument to your own creative/professional practice, reflecting on potential implications and/or summarising how you have developed your own practical understanding of the subject area"
+	},
+	{
+		"Id": "C19,U63,LO465",
+		"Text": "Music Marketing, Media & Communication Celebrity Culture Relate to their chosen example"
+	},
+	{
+		"Id": "C19,U97,LO466",
+		"Text": "Music Marketing, Media & Communication Gender and Sexuality Relate theories and constructs to the creative industries"
+	},
+	{
+		"Id": "C21,U132,LO467",
+		"Text": "Electronic Music Production Immersive Audio Techniques Research relevant practitioners and evaluate areas of future development and market opportunities."
+	},
+	{
+		"Id": "C18,U110,LO468",
+		"Text": "Creative Industries Entrepreneurship Creativity, Identity & Agency Support your approach with reference to highquality academic scholarship, and adhere to standard academic conventions"
+	},
+	{
+		"Id": "C22,U36,LO469",
+		"Text": "Sound & Music Production Audio Post Production Research the effective use of microphone choice and placement for on location recording."
+	},
+	{
+		"Id": "C21,U148,LO471",
+		"Text": "Electronic Music Production Creative Production Techniques Select and use appropriate production analysis tools to analyse structural content"
+	},
+	{
+		"Id": "C21,U148,LO472",
+		"Text": "Electronic Music Production Creative Production Techniques Select and use appropriate production analysis tools to analyse spectral and spatial content"
+	},
+	{
+		"Id": "C21,U148,LO473",
+		"Text": "Electronic Music Production Creative Production Techniques Select and use appropriate production analysis tools to analyse dynamic content"
+	},
+	{
+		"Id": "C18,U92,LO474",
+		"Text": "Creative Industries Entrepreneurship Creative Video Production Select and justify appropriate project development strategies in the planning and creation of a video artefact"
+	},
+	{
+		"Id": "C22,U136,LO475",
+		"Text": "Sound & Music Production Audio Capture Methods & Equipment Select and employ recognised, appropriate equipment and methods when capturing audio"
+	},
+	{
+		"Id": "C22,U33,LO476",
+		"Text": "Sound & Music Production The Art of Mastering Select and demonstrate the manipulation of equalisation and sound manipulation techniques to realise an agreed aesthetic"
+	},
+	{
+		"Id": "C22,U33,LO477",
+		"Text": "Sound & Music Production The Art of Mastering Select and demonstrate the application of dynamic processes to realise an agreed aesthetic"
+	},
+	{
+		"Id": "C18,U96,LO479",
+		"Text": "Creative Industries Entrepreneurship Culture & Society Select and apply relevant cultural theory in the analysis of an influential practitioner in their field."
+	},
+	{
+		"Id": "C19,U156,LO481",
+		"Text": "Music Marketing, Media & Communication Critical and Creative Writing Select and apply appropriate media approaches, forms and ‘voices’ to specified platforms and audiences."
+	},
+	{
+		"Id": "C17,U118,LO485",
+		"Text": "Music Business Financing Creativity Scrutinise the application of the various sources of income available to fund a creative project."
+	},
+	{
+		"Id": "C19,U85,LO487",
+		"Text": "Music Marketing, Media & Communication Digital Content Creation Review the promotion and cross platform success of your website"
+	},
+	{
+		"Id": "C18,U109,LO491",
+		"Text": "Creative Industries Entrepreneurship Context & Culture of the Creative Industries Support your argument with evidence gathered from your research"
+	},
+	{
+		"Id": "C17,U87,LO492",
+		"Text": "Music Business Business Ethics & Music Law Support your decisions or assertions with relevant data"
+	},
+	{
+		"Id": "C19,U142,LO494",
+		"Text": "Music Marketing, Media & Communication Artist Development & PR Utilise print and digital media to assist with creative planning"
+	},
+	{
+		"Id": "C19,U90,LO498",
+		"Text": "Music Marketing, Media & Communication Marketing & PR Utilise key branding theory in designing a marketing plan for a music/event brand"
+	},
+	{
+		"Id": "C17,U117,LO500",
+		"Text": "Music Business Business & Entreprise Utilise effective business enterprise strategies to develop a music industry product or service"
+	},
+	{
+		"Id": "C21,U148,LO502",
+		"Text": "Electronic Music Production Creative Production Techniques Utilise contemporary technologies to develop creative compositional techniques."
+	},
+	{
+		"Id": "C22,U36,LO509",
+		"Text": "Sound & Music Production Audio Post Production Utilise appropriate mic techniques, audio editing and visual cues to facilitate effective ADR recording."
+	},
+	{
+		"Id": "C22,U29,LO510",
+		"Text": "Sound & Music Production Practical Acoustics Utilise appropriate hardware and software to carry out acoustic measurements"
+	},
+	{
+		"Id": "C21,U133,LO513",
+		"Text": "Electronic Music Production Interactive Music Applications Utilise programming language effectively on a technical level"
+	},
+	{
+		"Id": "C22,U137,LO514",
+		"Text": "Sound & Music Production Industry Toolkit Utilise a model of selfreflection to identify their skills currently and use as a device to explain areas they need to develop."
+	},
+	{
+		"Id": "C22,U32,LO515",
+		"Text": "Sound & Music Production Answering a Creative Brief Utilise relevant compositional and production techniques to successfully meet the creative requirements of the chosen brief."
+	},
+	{
+		"Id": "C22,U29,LO516",
+		"Text": "Sound & Music Production Practical Acoustics Utilise research to reach conclusions and recommendations for the basis of a report"
+	},
+	{
+		"Id": "C19,U63,LO517",
+		"Text": "Music Marketing, Media & Communication Celebrity Culture Write industryappropriate reports on celebrity culture"
+	},
+	{
+		"Id": "C18,U3,LO518",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Finding Your Path Write a short case study profiling an inspiring creative industries professional, referencing industry data and relevant research resources."
+	},
+	{
+		"Id": "C19,U158,LO524",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Work as a team to produce multimedia content that adheres to current industry standard technical requirements"
+	},
+	{
+		"Id": "C21,U129,LO525",
+		"Text": "Electronic Music Production Digital Performance Skills What constitutes a professional level for your performance?"
+	},
+	{
+		"Id": "C21,U129,LO526",
+		"Text": "Electronic Music Production Digital Performance Skills What collaboration options have you addressed?"
+	},
+	{
+		"Id": "C21,U129,LO527",
+		"Text": "Electronic Music Production Digital Performance Skills What challenges did you encounter when researching, and planning for the performance?"
+	},
+	{
+		"Id": "C22,U134,LO528",
+		"Text": "Sound & Music Production Audio Fundamentals Visualise, explain & justify microphone and performer positions."
+	},
+	{
+		"Id": "C22,U134,LO529",
+		"Text": "Sound & Music Production Audio Fundamentals Visualise, explain & justify audio signal routings including technical specifications e.g. sample rates, phase considerations, microphone types."
+	},
+	{
+		"Id": "C22,U32,LO533",
+		"Text": "Sound & Music Production Answering a Creative Brief Utilise suitable production and arranging techniques to achieve a production quality of appropriate professional standards."
+	},
+	{
+		"Id": "C19,U97,LO537",
+		"Text": "Music Marketing, Media & Communication Gender and Sexuality Relate theories and constructs to representations in the creative industries"
+	},
+	{
+		"Id": "C22,U137,LO538",
+		"Text": "Sound & Music Production Industry Toolkit Utilise a model of selfreflection and apply the findings to chosen area of progression."
+	},
+	{
+		"Id": "C17,U114,LO539",
+		"Text": "Music Business Live Music Industry Using industry statistics and data identify current trends in the live music sector"
+	},
+	{
+		"Id": "C22,U138,LO540",
+		"Text": "Sound & Music Production Approaches to Production & Workflow Use audio capturing & editing tools to create a media product e.g. DAWs, sound equipment etc"
+	},
+	{
+		"Id": "C20,U149,LO541",
+		"Text": "Event Management Event Enterprise Use appropriate spreadsheet software"
+	},
+	{
+		"Id": "C22,U134,LO543",
+		"Text": "Sound & Music Production Audio Fundamentals Use accurate terminology linked to theory when describing music production processes."
+	},
+	{
+		"Id": "C20,U125,LO544",
+		"Text": "Event Management Live Music 1: Booking & Promotion Use a budget, timeline, schedules and other relevant planning tools for events"
+	},
+	{
+		"Id": "C18,U107,LO545",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration Update your SMART targets and timeline for your intended activity"
+	},
+	{
+		"Id": "C18,U107,LO546",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration Update your PPDP to reflect how you have developed as a Creative Industries Professional through this process."
+	},
+	{
+		"Id": "C18,U95,LO548",
+		"Text": "Creative Industries Entrepreneurship Working in the Creative Industries Undertake and digitally document workbased learning in response to a specified learning agreement."
+	},
+	{
+		"Id": "C18,U93,LO549",
+		"Text": "Creative Industries Entrepreneurship Touring And Live Events Undertake a site visit to at least one location, and create an accompanying suitability report."
+	},
+	{
+		"Id": "C24,U56,LO550",
+		"Text": "Songwriting Songwriting Portfolio Troubleshoot issues in selfdirected project responding to a realworld context."
+	},
+	{
+		"Id": "C17,U105,LO553",
+		"Text": "Music Business Creative Economics This should include microeconomic factors such as supply and demand and consumer behaviour, as well as macroeconomic factors such as inflation, government policy and international trade"
+	},
+	{
+		"Id": "C22,U147,LO556",
+		"Text": "Sound & Music Production Creative Mix Techniques Synthesize and demonstrate genrespecific audio editing and mix techniques within a DAW."
+	},
+	{
+		"Id": "C18,U96,LO559",
+		"Text": "Creative Industries Entrepreneurship Culture & Society Use critical theory to appraise a cultural artefact of their own choosing such as a collection of music, a cultural event, or a live theatrical or musical performance."
+	},
+	{
+		"Id": "C19,U98,LO560",
+		"Text": "Music Marketing, Media & Communication Film Studies Using the work in your Presentation as your starting point, you will expand your ideas by engaging in further discussion, reading and research to create a written essay. Your essay will show an indepth awareness and appreciation of film"
+	},
+	{
+		"Id": "C22,U136,LO561",
+		"Text": "Sound & Music Production Audio Capture Methods & Equipment Use essential concepts and techniques involved within a typical recording environment whilst operating studio recording equipment:"
+	},
+	{
+		"Id": "C19,U144,LO563",
+		"Text": "Music Marketing, Media & Communication Fans and Social Media Influencers Using ‘cues’ provided in lesson and through independent study, students consider, reflect on and write about ideas applied to your own projects in the Portfolio"
+	},
+	{
+		"Id": "C22,U138,LO564",
+		"Text": "Sound & Music Production Approaches to Production & Workflow Use visualisation tools such as mindmaps, pictograms, images and other media to illustrate planning and workflows of a project."
+	},
+	{
+		"Id": "C19,U85,LO566",
+		"Text": "Music Marketing, Media & Communication Digital Content Creation Use theoretical perspectives on audience participation to strategise engagement"
+	},
+	{
+		"Id": "C20,U164,LO567",
+		"Text": "Event Management Creative Commercial Events Use the evidence in your portfolio to justify the delegation of team roles and responsibilities when delivering the stakeholder requirements and hospitality needs identified during client consultation process for a selected corporate event or exhibition."
+	},
+	{
+		"Id": "C19,U63,LO570",
+		"Text": "Music Marketing, Media & Communication Celebrity Culture Use systematic critical analysis to support a thorough investigation into examples of celebrity"
+	},
+	{
+		"Id": "C18,U108,LO571",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Professional Portfolio Use sector appropriate digital tools to create and present your CV and chosen assets"
+	},
+	{
+		"Id": "C22,U26,LO572",
+		"Text": "Sound & Music Production Music Production in Context Use research to interrogate how your chosen area in the history of recorded sound clearly interlinks the available technology and technical approaches of said area."
+	},
+	{
+		"Id": "C22,U26,LO573",
+		"Text": "Sound & Music Production Music Production in Context Use research to interrogate how your chosen area in the history of recorded sound clearly interlinks and connects with culture and society with relation to musical development."
+	},
+	{
+		"Id": "C18,U107,LO574",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration Use research skills to identify your target audience and design appropriate project activity"
+	},
+	{
+		"Id": "C19,U85,LO575",
+		"Text": "Music Marketing, Media & Communication Digital Content Creation Use reciprocal approaches to create a twoway conversation with their audience"
+	},
+	{
+		"Id": "C21,U148,LO576",
+		"Text": "Electronic Music Production Creative Production Techniques Use production analysis theories to analyse and judge production techniques used in chosen works"
+	},
+	{
+		"Id": "C19,U85,LO578",
+		"Text": "Music Marketing, Media & Communication Digital Content Creation Use peer feedback to plan engaging content for niche audiences"
+	},
+	{
+		"Id": "C22,U147,LO580",
+		"Text": "Sound & Music Production Creative Mix Techniques Use of effective audio editing and manipulation."
+	},
+	{
+		"Id": "C21,U129,LO581",
+		"Text": "Electronic Music Production Digital Performance Skills Use music technology software and hardware to produce a live performance that is confident, engaging and technically proficient"
+	},
+	{
+		"Id": "C18,U95,LO582",
+		"Text": "Creative Industries Entrepreneurship Working in the Creative Industries Use industry resources and networks of contacts to find opportunities for work based learning placements or projects which will develop their career action plan."
+	},
+	{
+		"Id": "C19,U25,LO583",
+		"Text": "Music Marketing, Media & Communication Fashion and Music Relate theoretical knowledge and industrybased data to applied music and fashion business outcomes."
+	},
+	{
+		"Id": "C19,U140,LO584",
+		"Text": "Music Marketing, Media & Communication Youth, Music and Social Change Relate theoretical knowledge and historical research material and commentaries about social movements and youth rebellions to the contemporary sociocultural landscape"
+	},
+	{
+		"Id": "C22,U33,LO585",
+		"Text": "Sound & Music Production The Art of Mastering Relate the suggested remedial process to those implemented by established industry practitioners"
+	},
+	{
+		"Id": "C22,U139,LO586",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Produce a cohesive sounding mix from multiple audio sources that conforms to a chosen aesthetic."
+	},
+	{
+		"Id": "C20,U165,LO587",
+		"Text": "Event Management Technical Event Production Produce a coherent Technical Rider outlining an artist / client on stage and back stage requirements."
+	},
+	{
+		"Id": "C22,U36,LO588",
+		"Text": "Sound & Music Production Audio Post Production Produce a clear narrative aesthetic through the manipulation of audio and visual material."
+	},
+	{
+		"Id": "C18,U108,LO589",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Professional Portfolio Present your journey so far, your career goals and future personal and professional development plans, relating this to what you have learned about yourself and creative industries"
+	},
+	{
+		"Id": "C18,U101,LO591",
+		"Text": "Creative Industries Entrepreneurship Psychology of Music Present work that is informed by literature and scholarly activity in the field of music psychology."
+	},
+	{
+		"Id": "C19,U142,LO592",
+		"Text": "Music Marketing, Media & Communication Artist Development & PR Present work appropriately according to professional and academic standards"
+	},
+	{
+		"Id": "C19,U90,LO593",
+		"Text": "Music Marketing, Media & Communication Marketing & PR Present work appropriately according to academic and professional standards"
+	},
+	{
+		"Id": "C21,U132,LO595",
+		"Text": "Electronic Music Production Immersive Audio Techniques Present clearly with wellprepared material within time limits"
+	},
+	{
+		"Id": "C18,U111,LO596",
+		"Text": "Creative Industries Entrepreneurship Final Project Present clear reasoning for the choice made in your project plan"
+	},
+	{
+		"Id": "C18,U107,LO597",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration Present basic budgetary and resource requirements"
+	},
+	{
+		"Id": "C18,U108,LO598",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Professional Portfolio Present an ongoing personal and professional development plan, and justify your proposed actions"
+	},
+	{
+		"Id": "C18,U111,LO601",
+		"Text": "Creative Industries Entrepreneurship Final Project Present an achievable timeline of project milestones"
+	},
+	{
+		"Id": "C18,U92,LO602",
+		"Text": "Creative Industries Entrepreneurship Creative Video Production Present a well formulated and paced project proposal which includes a clearly detailed and defined storyboard."
+	},
+	{
+		"Id": "C18,U107,LO603",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration Present a collaborative project plan that supports a charitable cause of your choice"
+	},
+	{
+		"Id": "C22,U36,LO604",
+		"Text": "Sound & Music Production Audio Post Production Present a clear topic and structure to the feature that is engaging to the listener."
+	},
+	{
+		"Id": "C18,U111,LO606",
+		"Text": "Creative Industries Entrepreneurship Final Project Present a clear objective for the project, identifying the intended artefact/s"
+	},
+	{
+		"Id": "C21,U128,LO607",
+		"Text": "Electronic Music Production Digital Composition in Context Produce a composition which Illustrates industry standard creative practices within the context of the chosen genre.​"
+	},
+	{
+		"Id": "C22,U147,LO608",
+		"Text": "Sound & Music Production Creative Mix Techniques Produce a mix from musical components that is coherent to the listener."
+	},
+	{
+		"Id": "C18,U93,LO609",
+		"Text": "Creative Industries Entrepreneurship Touring And Live Events Produce relevant media for evaluation following your site visit."
+	},
+	{
+		"Id": "C19,U155,LO610",
+		"Text": "Music Marketing, Media & Communication The Creative Entrepreneur Produce relevant and timely pitches that clearly identify legal, ethical, financial and budgeting issues relating to the chosen subject"
+	},
+	{
+		"Id": "C22,U32,LO612",
+		"Text": "Sound & Music Production Answering a Creative Brief Produce original and innovative work without stepping outside the brief’s creative requirements."
+	},
+	{
+		"Id": "C18,U93,LO613",
+		"Text": "Creative Industries Entrepreneurship Touring And Live Events Produce coherent budgetary information for all aspects of the series or tour."
+	},
+	{
+		"Id": "C20,U162,LO614",
+		"Text": "Event Management Event Video Production Produce audiovisual creative artefacts in the construction of an eventsbased video production project"
+	},
+	{
+		"Id": "C21,U166,LO615",
+		"Text": "Electronic Music Production Synthesis & Sampling Produce and apply audio manipulation, editing and processing techniques within sampling"
+	},
+	{
+		"Id": "C21,U130,LO616",
+		"Text": "Electronic Music Production Concept Led Practical Production Produce an original audio production which includes varied and advanced music production approaches."
+	},
+	{
+		"Id": "C21,U166,LO617",
+		"Text": "Electronic Music Production Synthesis & Sampling Produce an original audio production which demonstrates the methodologies and processes included in sampling and processing techniques."
+	},
+	{
+		"Id": "C21,U130,LO618",
+		"Text": "Electronic Music Production Concept Led Practical Production Produce an original audio production which demonstrates a range of production methodologies and processes from contemporary practitioners."
+	},
+	{
+		"Id": "C21,U166,LO619",
+		"Text": "Electronic Music Production Synthesis & Sampling Produce an original audio production that uses your three designed synthesis patches, utilising three different models of synthesis. Consider appropriate synthesis methods in relation to musical output."
+	},
+	{
+		"Id": "C18,U111,LO620",
+		"Text": "Creative Industries Entrepreneurship Final Project Produce an extended piece of work as part of your practice and/or enquiry in your field through selfdirected study"
+	},
+	{
+		"Id": "C18,U93,LO621",
+		"Text": "Creative Industries Entrepreneurship Touring And Live Events Produce an event plan appropriate for a specific creative discipline."
+	},
+	{
+		"Id": "C19,U143,LO622",
+		"Text": "Music Marketing, Media & Communication Mobile Apps - Design and User Culture Produce an app mockup and/or prototype for use as a communication tool or business tool in the creative/media industry."
+	},
+	{
+		"Id": "C21,U133,LO623",
+		"Text": "Electronic Music Production Interactive Music Applications Produce a successful musical outcome through creative use of programming"
+	},
+	{
+		"Id": "C19,U90,LO624",
+		"Text": "Music Marketing, Media & Communication Marketing & PR Produce a strategy that explores and utilises key marketing & PR concepts"
+	},
+	{
+		"Id": "C22,U26,LO625",
+		"Text": "Sound & Music Production Music Production in Context Produce a Reflective Essay which highlights and crossreferences the chosen practitioner and their production methodologies and how they were used to realise your production."
+	},
+	{
+		"Id": "C20,U149,LO626",
+		"Text": "Event Management Event Enterprise Produce a realistic event budget"
+	},
+	{
+		"Id": "C22,U32,LO627",
+		"Text": "Sound & Music Production Answering a Creative Brief Produce a practical project in response to the requirements of a professional creative brief."
+	},
+	{
+		"Id": "C18,U92,LO628",
+		"Text": "Creative Industries Entrepreneurship Creative Video Production Produce a creative video artefact that adheres to industry standards and technical requirements"
+	},
+	{
+		"Id": "C22,U32,LO629",
+		"Text": "Sound & Music Production Answering a Creative Brief Produce work that meets all the technical requirements of the chosen brief."
+	},
+	{
+		"Id": "C22,U137,LO630",
+		"Text": "Sound & Music Production Industry Toolkit Present a clear and defined plan of action surrounding an upcoming release or project that demonstrates knowledge of resources and skills required for its success"
+	},
+	{
+		"Id": "C20,U126,LO631",
+		"Text": "Event Management Event Safety Prepare strategies to mitigate potential health & safety concerns at an event"
+	},
+	{
+		"Id": "C21,U129,LO640",
+		"Text": "Electronic Music Production Digital Performance Skills Perform with advanced music technology hardware and software which addresses audience expectations depending on genre and idiom"
+	},
+	{
+		"Id": "C22,U137,LO652",
+		"Text": "Sound & Music Production Industry Toolkit Present a clear and defined Gant Chart/ Project Timeline that considers the knowledge, skills and resources required to ensure success in the desired job role."
+	},
+	{
+		"Id": "C22,U30,LO654",
+		"Text": "Sound & Music Production Creating Sample Libraries Place the product in context of application"
+	},
+	{
+		"Id": "C18,U111,LO655",
+		"Text": "Creative Industries Entrepreneurship Final Project Prepare a project plan using established methodologies from industry and research practice"
+	},
+	{
+		"Id": "C19,U142,LO656",
+		"Text": "Music Marketing, Media & Communication Artist Development & PR Practice PR concepts in developing a strategy"
+	},
+	{
+		"Id": "C22,U138,LO657",
+		"Text": "Sound & Music Production Approaches to Production & Workflow Populate and manage an online portfolio that tracks and visualises your project."
+	},
+	{
+		"Id": "C22,U30,LO658",
+		"Text": "Sound & Music Production Creating Sample Libraries Playback recorded artefacts through the sampler instrument of choice"
+	},
+	{
+		"Id": "C22,U134,LO660",
+		"Text": "Sound & Music Production Audio Fundamentals Plan, manage and construct a method for a selfcontained audio capturing project."
+	},
+	{
+		"Id": "C22,U138,LO661",
+		"Text": "Sound & Music Production Approaches to Production & Workflow Plan, execute & manage recording, processing and post editing session to achieve a media product."
+	},
+	{
+		"Id": "C22,U31,LO662",
+		"Text": "Sound & Music Production Vocal Capture and Production Plan the sessions with regards to genre, equipment and vocalist‘s needs"
+	},
+	{
+		"Id": "C20,U126,LO663",
+		"Text": "Event Management Event Safety Plan suitable provision of facilities to ensure the welfare of employees and the public"
+	},
+	{
+		"Id": "C22,U27,LO664",
+		"Text": "Sound & Music Production Studio Practice & Engineering Plan recording sessions that answer the requirements of a provided brief, working within the given parameters"
+	},
+	{
+		"Id": "C22,U136,LO665",
+		"Text": "Sound & Music Production Audio Capture Methods & Equipment Plan and manage recording sessions with regards to resources, staffing and timescale"
+	},
+	{
+		"Id": "C22,U31,LO666",
+		"Text": "Sound & Music Production Vocal Capture and Production Plan and execute studio quality vocal recordings in collaboration with a vocalist, and demonstrate your application of industry practices utilising professional music production hardware and software"
+	},
+	{
+		"Id": "C17,U104,LO668",
+		"Text": "Music Business Globalisation Plan and carry out research demonstrating a considered approach to data gathering and analysis."
+	},
+	{
+		"Id": "C19,U85,LO669",
+		"Text": "Music Marketing, Media & Communication Digital Content Creation Plan a website or online channel suitable for a defined and profiled audience"
+	},
+	{
+		"Id": "C17,U115,LO670",
+		"Text": "Music Business Releasing Music Plan a music release for an artist of your choice"
+	},
+	{
+		"Id": "C18,U99,LO671",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 2 Plan a module of 3 linked lessons which are constructively aligned with these Learning Outcomes, and which will scaffold and stimulate learning towards these Outcomes, demonstrating knowledge of core pedagogical elements including differentiation"
+	},
+	{
+		"Id": "C18,U103,LO672",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 1 Plan a module of 3 linked lessons which are constructively aligned with these Learning Outcomes, and which will scaffold and stimulate learning towards these Outcomes, demonstrating knowledge of core pedagogical elements"
+	},
+	{
+		"Id": "C18,U99,LO673",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 2 Plan a lesson which is constructively aligned with these Learning Outcomes, and which will scaffold and stimulate learning towards these Outcomes, demonstrating knowledge of core pedagogical elements including differentiation"
+	},
+	{
+		"Id": "C20,U127,LO675",
+		"Text": "Event Management Live Music 2: Events & Tours Evaluate the artist's target audience."
+	},
+	{
+		"Id": "C22,U32,LO676",
+		"Text": "Sound & Music Production Answering a Creative Brief Produce work that meets the expected professional standards of the chosen brief."
+	},
+	{
+		"Id": "C20,U159,LO678",
+		"Text": "Event Management Community, Cultural & Sports Events Reflect on what elements of the event went well and how things could have been improved."
+	},
+	{
+		"Id": "C22,U139,LO679",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Reflect on their learning journey overall and how this module will help achieve some of their selfdefined goals."
+	},
+	{
+		"Id": "C25,U39,LO681",
+		"Text": "Performing Arts Performance Fundamentals Reflect on the work appropriately"
+	},
+	{
+		"Id": "C22,U136,LO682",
+		"Text": "Sound & Music Production Audio Capture Methods & Equipment Reflect on the sonic outcomes of your recording sessions"
+	},
+	{
+		"Id": "C19,U63,LO683",
+		"Text": "Music Marketing, Media & Communication Celebrity Culture Reflect on the relevance of those discourses"
+	},
+	{
+		"Id": "C22,U26,LO684",
+		"Text": "Sound & Music Production Music Production in Context Reflect on the production methodologies and asses the success of your implementation of these methodologies."
+	},
+	{
+		"Id": "C19,U98,LO687",
+		"Text": "Music Marketing, Media & Communication Film Studies Reflect on the impact and importance of social, political and cultural change on film"
+	},
+	{
+		"Id": "C20,U165,LO689",
+		"Text": "Event Management Technical Event Production Reflect on the challenges of producing technical documentation"
+	},
+	{
+		"Id": "C22,U135,LO697",
+		"Text": "Sound & Music Production Music & Listening Skills Reflect on what you have learned, both in terms of your own communication skills and your ability to use musical terminology."
+	},
+	{
+		"Id": "C17,U114,LO698",
+		"Text": "Music Business Live Music Industry Reflect on how current trends in the Live Music Industry can impact the success of live events"
+	},
+	{
+		"Id": "C18,U3,LO699",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Finding Your Path Reflect on why you chose to study at <insert Institute here> and the career pathways that inspire you in your first audio report, ‘My Connection to the Creative Arts‘"
+	},
+	{
+		"Id": "C22,U36,LO700",
+		"Text": "Sound & Music Production Audio Post Production Reflect on your audio capture and editing – how well do your audio artefacts support the narrative and visual aesthetic of your clip?"
+	},
+	{
+		"Id": "C18,U109,LO701",
+		"Text": "Creative Industries Entrepreneurship Context & Culture of the Creative Industries Relate the key principles of your chosen critical perspective/lens to your chosen subject area"
+	},
+	{
+		"Id": "C17,U106,LO702",
+		"Text": "Music Business Audience Experience and Motivation Relate market trends of a product or service to a particular customer segment"
+	},
+	{
+		"Id": "C17,U113,LO704",
+		"Text": "Music Business Music Business Relate a current societal, political or technological development relevant to the music industry to an organisation detailed in the diagram."
+	},
+	{
+		"Id": "C22,U147,LO705",
+		"Text": "Sound & Music Production Creative Mix Techniques Reflection and evaluation of the mix process – both preproduction and mix methodology."
+	},
+	{
+		"Id": "C18,U92,LO709",
+		"Text": "Creative Industries Entrepreneurship Creative Video Production Reflect upon the successes and failures of their work"
+	},
+	{
+		"Id": "C22,U28,LO710",
+		"Text": "Sound & Music Production Live Sound and Events Reflect upon the effectiveness of procedures followed"
+	},
+	{
+		"Id": "C22,U28,LO711",
+		"Text": "Sound & Music Production Live Sound and Events Reflect upon and justify decisions made whilst working in reallife live sound scenarios"
+	},
+	{
+		"Id": "C22,U28,LO711",
+		"Text": "Sound & Music Production Live Sound and Events Reflect upon and justify decisions made whilst working in reallife live sound scenarios"
+	},
+	{
+		"Id": "C18,U3,LO713",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Finding Your Path Reflect on your unique strengths, areas for development, selfbeliefs and ways of communicating in your ‘About Me’ digital presentation"
+	},
+	{
+		"Id": "C22,U136,LO714",
+		"Text": "Sound & Music Production Audio Capture Methods & Equipment Reflect on your process and how the recordings or sessions could have been improved."
+	},
+	{
+		"Id": "C20,U125,LO715",
+		"Text": "Event Management Live Music 1: Booking & Promotion Reflect on your performance as a team member and contributor"
+	},
+	{
+		"Id": "C18,U3,LO718",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Finding Your Path Reflect on your journey as a higher education student and developing creative industries professional through the creation of a Personal and Professional Development Portfolio"
+	},
+	{
+		"Id": "C25,U39,LO720",
+		"Text": "Performing Arts Performance Fundamentals Reflect on work during a Q&A session"
+	},
+	{
+		"Id": "C21,U130,LO721",
+		"Text": "Electronic Music Production Concept Led Practical Production Produce work which documents and highlights chosen contemporary practitioners,"
+	},
+	{
+		"Id": "C22,U139,LO722",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Reflect critically on the strengths and weaknesses of the source material, propose strategies to address issues and evaluate their effectiveness."
+	},
+	{
+		"Id": "C22,U139,LO722",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Reflect critically on the strengths and weaknesses of the source material, propose strategies to address issues and evaluate their effectiveness."
+	},
+	{
+		"Id": "C25,U38,LO723",
+		"Text": "Performing Arts The Voice Fundamentals Reflect appropriately on the work"
+	},
+	{
+		"Id": "C25,U38,LO723",
+		"Text": "Performing Arts The Voice Fundamentals Reflect appropriately on the work"
+	},
+	{
+		"Id": "C20,U165,LO724",
+		"Text": "Event Management Technical Event Production Rationalise technical choices based on the specific artist or client."
+	},
+	{
+		"Id": "C17,U112,LO726",
+		"Text": "Music Business Artist Management Provide wellevidenced support for the choices and decisions you have made."
+	},
+	{
+		"Id": "C20,U165,LO728",
+		"Text": "Event Management Technical Event Production Provide flexible solutions that can be scaled up or down to meet technical challenges in venues."
+	},
+	{
+		"Id": "C20,U159,LO729",
+		"Text": "Event Management Community, Cultural & Sports Events Provide evidence for community engagement such as your accounts, attendance records, etc."
+	},
+	{
+		"Id": "C21,U128,LO730",
+		"Text": "Electronic Music Production Digital Composition in Context Provide clear information relating to the contextual analysis of a specific genre within electronic music."
+	},
+	{
+		"Id": "C21,U128,LO731",
+		"Text": "Electronic Music Production Digital Composition in Context Provide clear information relating to song structure and arrangement"
+	},
+	{
+		"Id": "C22,U29,LO732",
+		"Text": "Sound & Music Production Practical Acoustics Provide clear information relating to acoustic theory"
+	},
+	{
+		"Id": "C18,U111,LO733",
+		"Text": "Creative Industries Entrepreneurship Final Project Provide a rationale for the resources required to achieve your project aims"
+	},
+	{
+		"Id": "C20,U126,LO735",
+		"Text": "Event Management Event Safety Propose realistic and welljustified solutions to event safety concerns"
+	},
+	{
+		"Id": "C22,U139,LO736",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Propose realistic and effective solutions to these issues, in keeping with the stylistic expectations of a selfselected reference."
+	},
+	{
+		"Id": "C20,U150,LO737",
+		"Text": "Event Management Festival Management Propose justified solutions to logistical and procedural challenges of a festival"
+	},
+	{
+		"Id": "C19,U141,LO738",
+		"Text": "Music Marketing, Media & Communication Mobile Technology & Music Propose an effective mobilestrategy that maximises the reach, and longevity, of a new artist."
+	},
+	{
+		"Id": "C17,U114,LO739",
+		"Text": "Music Business Live Music Industry Propose a live music event, such as a gig or festival and produce a written plan outlining what the event is, and how the event could be successfully delivered"
+	},
+	{
+		"Id": "C22,U138,LO741",
+		"Text": "Sound & Music Production Approaches to Production & Workflow Proficiently use online productivity tools such as file sharing, planning and schedule, communications applications."
+	},
+	{
+		"Id": "C18,U93,LO743",
+		"Text": "Creative Industries Entrepreneurship Touring And Live Events Rationalise your expenditure."
+	},
+	{
+		"Id": "C22,U36,LO745",
+		"Text": "Sound & Music Production Audio Post Production Recognise and acknowledge the visual cues within a chosen clip"
+	},
+	{
+		"Id": "C22,U147,LO747",
+		"Text": "Sound & Music Production Creative Mix Techniques Reference to external knowledge to aid in understanding of and replication of key methodologies."
+	},
+	{
+		"Id": "C22,U147,LO748",
+		"Text": "Sound & Music Production Creative Mix Techniques Reference to contemporary practitioners"
+	},
+	{
+		"Id": "C22,U147,LO749",
+		"Text": "Sound & Music Production Creative Mix Techniques Reference to contemporary engineers or seminal works within a genre."
+	},
+	{
+		"Id": "C22,U147,LO750",
+		"Text": "Sound & Music Production Creative Mix Techniques Reference to contemporary engineers and producers within a chosen genre."
+	},
+	{
+		"Id": "C17,U112,LO751",
+		"Text": "Music Business Artist Management Reference the opinion and experience of professionals in the field, theory, opinion and relevant scholarship that has informed your decisions"
+	},
+	{
+		"Id": "C19,U90,LO752",
+		"Text": "Music Marketing, Media & Communication Marketing & PR Reference supporting academic ideas and terminology"
+	},
+	{
+		"Id": "C18,U3,LO761",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Finding Your Path Recognise your strengths and areas for personal and professional development relating to career routes in the creative industries"
+	},
+	{
+		"Id": "C17,U115,LO762",
+		"Text": "Music Business Releasing Music Recognise the roles and responsibilities of key music industry business and professionals and describe the flow of revenue between them."
+	},
+	{
+		"Id": "C17,U122,LO763",
+		"Text": "Music Business Rights Management & Secondary Exploitation Recognise the overall process of sync licensing with awareness of key terminologies"
+	},
+	{
+		"Id": "C17,U116,LO764",
+		"Text": "Music Business Music Publishing Recognise the fundamental concepts in music publishing."
+	},
+	{
+		"Id": "C18,U107,LO765",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration Recognise team tensions or missed targets and reflect on these, drawing on peer/tutor/external feedback and applying theories explored in class to gain a more objective understanding of these issues."
+	},
+	{
+		"Id": "C19,U90,LO766",
+		"Text": "Music Marketing, Media & Communication Marketing & PR Recognise and define existing and emerging PR and marketing principles"
+	},
+	{
+		"Id": "C20,U125,LO768",
+		"Text": "Event Management Live Music 1: Booking & Promotion Evaluate the ‘success’ of an event and identify areas for improvement or development"
+	},
+	{
+		"Id": "C22,U33,LO769",
+		"Text": "Sound & Music Production The Art of Mastering Evaluate suitable approaches to enable the delivery of artefacts that will comply to Industry standards and meet the specifications of the client i.e. technical brief and desired aesthetic."
+	},
+	{
+		"Id": "C22,U135,LO770",
+		"Text": "Sound & Music Production Music & Listening Skills Communicate using professional music terminology when working with industry practitioners"
+	},
+	{
+		"Id": "C22,U135,LO771",
+		"Text": "Sound & Music Production Music & Listening Skills Communicate using musical terminology relating to music production and traditional music theory."
+	},
+	{
+		"Id": "C21,U132,LO772",
+		"Text": "Electronic Music Production Immersive Audio Techniques Communicate technical concepts, present work in a formal matter, create technical documentation."
+	},
+	{
+		"Id": "C19,U140,LO773",
+		"Text": "Music Marketing, Media & Communication Youth, Music and Social Change Communicate nuanced concepts, theories and debates relating to youth, culture and social change."
+	},
+	{
+		"Id": "C18,U109,LO774",
+		"Text": "Creative Industries Entrepreneurship Context & Culture of the Creative Industries Communicate how your chosen critical perspective/lens helps you to explain, understand, or alter your position on your chosen subject area"
+	},
+	{
+		"Id": "C17,U112,LO775",
+		"Text": "Music Business Artist Management Communicate effectively with fellow industry professionals."
+	},
+	{
+		"Id": "C22,U28,LO777",
+		"Text": "Sound & Music Production Live Sound and Events Communicate effectively and efficiently with other industry professionals and manage tasks both individually and as part of a team."
+	},
+	{
+		"Id": "C22,U28,LO777",
+		"Text": "Sound & Music Production Live Sound and Events Communicate effectively and efficiently with other industry professionals and manage tasks both individually and as part of a team."
+	},
+	{
+		"Id": "C21,U148,LO778",
+		"Text": "Electronic Music Production Creative Production Techniques Communicate your findings in a coherent piece of writing"
+	},
+	{
+		"Id": "C17,U88,LO779",
+		"Text": "Music Business Music & Event Futures Communicate complex concepts and arguments, acknowledging the uncertainty of knowledge.​"
+	},
+	{
+		"Id": "C21,U132,LO780",
+		"Text": "Electronic Music Production Immersive Audio Techniques Communicate cohesive information which shows development of product."
+	},
+	{
+		"Id": "C17,U116,LO781",
+		"Text": "Music Business Music Publishing Communicate and Negotiate publishing deal terms clearly in a live scenario."
+	},
+	{
+		"Id": "C18,U96,LO782",
+		"Text": "Creative Industries Entrepreneurship Culture & Society Communicate and evaluate complex concepts and arguments drawing on scholarship at the forefront of their discipline"
+	},
+	{
+		"Id": "C22,U27,LO783",
+		"Text": "Sound & Music Production Studio Practice & Engineering Communicate and collaborate with performers to plan and execute a recording session"
+	},
+	{
+		"Id": "C17,U104,LO788",
+		"Text": "Music Business Globalisation Communicate complex concepts and arguments arising from the globalisation debate, acknowledging the uncertainty of knowledge.​"
+	},
+	{
+		"Id": "C22,U135,LO789",
+		"Text": "Sound & Music Production Music & Listening Skills Communicate your ideas and opinions using the correct, appropriate terminology and listening skills"
+	},
+	{
+		"Id": "C22,U135,LO790",
+		"Text": "Sound & Music Production Music & Listening Skills Communicate your ideas effectively and professionally to industry practitioners."
+	},
+	{
+		"Id": "C21,U148,LO792",
+		"Text": "Electronic Music Production Creative Production Techniques Compose and produce a coherent piece that stretches your abilities and develops your unique production signature"
+	},
+	{
+		"Id": "C20,U164,LO796",
+		"Text": "Event Management Creative Commercial Events Compose a reflective report demonstrating critically reflection on your role within the life cycle of the event."
+	},
+	{
+		"Id": "C18,U93,LO798",
+		"Text": "Creative Industries Entrepreneurship Touring And Live Events Complete detailed research on your chosen discipline, and outline industry standards."
+	},
+	{
+		"Id": "C17,U117,LO799",
+		"Text": "Music Business Business & Entreprise Complete a Business Model Canvas"
+	},
+	{
+		"Id": "C20,U164,LO800",
+		"Text": "Event Management Creative Commercial Events Compile a portfolio evaluating the planning, communication and management techniques your group has utilised"
+	},
+	{
+		"Id": "C21,U128,LO801",
+		"Text": "Electronic Music Production Digital Composition in Context Competently demonstrate the practical skills to record, mix and produce a digital composition, employing strategic planning and key technical parameters:"
+	},
+	{
+		"Id": "C22,U28,LO802",
+		"Text": "Sound & Music Production Live Sound and Events Competently demonstrate the implementation of health & safety procedures"
+	},
+	{
+		"Id": "C20,U161,LO804",
+		"Text": "Event Management Socioeconomics: Event Impact and Legacy Compare the societal landscape before and after events formed"
+	},
+	{
+		"Id": "C19,U91,LO806",
+		"Text": "Music Marketing, Media & Communication Social Media & Digital Marketing Compare and contrast current research and discourse on social media and apply these to a campaign"
+	},
+	{
+		"Id": "C19,U25,LO807",
+		"Text": "Music Marketing, Media & Communication Fashion and Music Compare and contrast contemporary themes in the relationship between fashion and music with pertinent and resonant examples/models from the past."
+	},
+	{
+		"Id": "C17,U87,LO808",
+		"Text": "Music Business Business Ethics & Music Law Compare and appraise ethical legal and/or ethical issues in the use and ownership of music"
+	},
+	{
+		"Id": "C17,U119,LO809",
+		"Text": "Music Business Record Label Management Compare and analyse the structure and key components of different kinds of record labels"
+	},
+	{
+		"Id": "C18,U108,LO810",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Professional Portfolio Communicate your professional identity/personal brand throughout your portfolio, demonstrating a considered approach which reflects your values, industry expectations and branding concepts/practices."
+	},
+	{
+		"Id": "C21,U148,LO813",
+		"Text": "Electronic Music Production Creative Production Techniques Combine a variety of tools and techniques as covered within the module with those that you use in your current practice"
+	},
+	{
+		"Id": "C18,U96,LO814",
+		"Text": "Creative Industries Entrepreneurship Culture & Society Collate and evaluate examples of research drawn from appropriate highlevel sources."
+	},
+	{
+		"Id": "C18,U107,LO816",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration Assign roles and responsibilities to each team member, considering each person’s skills and attributes"
+	},
+	{
+		"Id": "C18,U108,LO817",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Professional Portfolio Assess your shortterm and longterm career options and the skills and experience required"
+	},
+	{
+		"Id": "C19,U85,LO819",
+		"Text": "Music Marketing, Media & Communication Digital Content Creation Assess the success of peer feedback in your process"
+	},
+	{
+		"Id": "C21,U130,LO820",
+		"Text": "Electronic Music Production Concept Led Practical Production Assess the key creative methodologies employed within production in relation to an intended aesthetic"
+	},
+	{
+		"Id": "C17,U88,LO822",
+		"Text": "Music Business Music & Event Futures Assess the future of an area of the music and/or events industry by drawing from appropriate research and data"
+	},
+	{
+		"Id": "C17,U89,LO823",
+		"Text": "Music Business Consultancy and Market Research Assess reliable data for a contemporary company in the music industries."
+	},
+	{
+		"Id": "C17,U94,LO826",
+		"Text": "Music Business Digital Arts & Branding Assess how your designs fulfil the brand’s brief"
+	},
+	{
+		"Id": "C21,U130,LO827",
+		"Text": "Electronic Music Production Concept Led Practical Production Assess how successfully the methodologies were assimilated to synthesize an original production."
+	},
+	{
+		"Id": "C17,U119,LO828",
+		"Text": "Music Business Record Label Management Assess how record labels have adapted to cultural and technological trends"
+	},
+	{
+		"Id": "C19,U100,LO829",
+		"Text": "Music Marketing, Media & Communication Diversity in the Creative Industries Assess how issues of diversity have an impact on their practice in the creative industries."
+	},
+	{
+		"Id": "C24,U56,LO830",
+		"Text": "Songwriting Songwriting Portfolio Assess creative decisions when responding to a professionallevel writing brief"
+	},
+	{
+		"Id": "C18,U101,LO831",
+		"Text": "Creative Industries Entrepreneurship Psychology of Music Assess and interpret concepts of music psychology in relation to proposed area of investigation via a review of the literature."
+	},
+	{
+		"Id": "C18,U101,LO832",
+		"Text": "Creative Industries Entrepreneurship Psychology of Music Assess and interpret concepts of music psychology in relation to a relevant field of professional interest."
+	},
+	{
+		"Id": "C17,U87,LO833",
+		"Text": "Music Business Business Ethics & Music Law Assess and evaluate legal and/or ethical disputes or challenges"
+	},
+	{
+		"Id": "C22,U31,LO840",
+		"Text": "Sound & Music Production Vocal Capture and Production Cleary and concisely communicate technical terminology to the recipient"
+	},
+	{
+		"Id": "C22,U26,LO841",
+		"Text": "Sound & Music Production Music Production in Context Clearly evidence and reference research carried out."
+	},
+	{
+		"Id": "C17,U106,LO842",
+		"Text": "Music Business Audience Experience and Motivation Clear professional and academic research to strengthen industry knowledge"
+	},
+	{
+		"Id": "C17,U117,LO843",
+		"Text": "Music Business Business & Entreprise Clear professional and academic research"
+	},
+	{
+		"Id": "C20,U161,LO844",
+		"Text": "Event Management Socioeconomics: Event Impact and Legacy Classify events in terms of their impact and legacy"
+	},
+	{
+		"Id": "C18,U111,LO846",
+		"Text": "Creative Industries Entrepreneurship Final Project Clarify how your project will build on/work within established frameworks of your chosen field"
+	},
+	{
+		"Id": "C22,U136,LO847",
+		"Text": "Sound & Music Production Audio Capture Methods & Equipment Choose and operate hardware and software to achieve correct gain structuring"
+	},
+	{
+		"Id": "C21,U148,LO848",
+		"Text": "Electronic Music Production Creative Production Techniques Choose and implement technologies, processes and techniques with creative and aesthetic intent"
+	},
+	{
+		"Id": "C17,U105,LO849",
+		"Text": "Music Business Creative Economics Choose a specific music organisation and determine what economic factors affect their business"
+	},
+	{
+		"Id": "C18,U107,LO850",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration Carry out at least one aspect of your planned project activity and evidence this in your portfolio"
+	},
+	{
+		"Id": "C19,U98,LO853",
+		"Text": "Music Marketing, Media & Communication Film Studies By watching films from the resources list and beyond and recording your own critical thoughts on them you will become an informed observer able to break down the elements of a piece of work and consider its relative merits."
+	},
+	{
+		"Id": "C22,U147,LO857",
+		"Text": "Sound & Music Production Creative Mix Techniques Automation employed to help support the musical arrangement of the track."
+	},
+	{
+		"Id": "C17,U117,LO862",
+		"Text": "Music Business Business & Entreprise Create a new product or service or develop an existing one"
+	},
+	{
+		"Id": "C22,U26,LO863",
+		"Text": "Sound & Music Production Music Production in Context Create a music production project that is informed by the research of key creative strategies and technological processes of a significant genre in the history of recorded sound."
+	},
+	{
+		"Id": "C18,U107,LO865",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration Create a mission statement, demonstrating consideration of ethical, environmental, political and/or community constraints."
+	},
+	{
+		"Id": "C20,U150,LO866",
+		"Text": "Event Management Festival Management Create a meaningful and realistic Site Plan"
+	},
+	{
+		"Id": "C22,U28,LO867",
+		"Text": "Sound & Music Production Live Sound and Events Create a flowchart to demonstrate recognition of parts of a sound system, and the paths of the main audio signals"
+	},
+	{
+		"Id": "C19,U98,LO868",
+		"Text": "Music Marketing, Media & Communication Film Studies Create a detailed, correctly referenced and structured argument based on reading and research"
+	},
+	{
+		"Id": "C21,U131,LO870",
+		"Text": "Electronic Music Production Electroacoustic Composition Create a contemporary electroacoustic composition."
+	},
+	{
+		"Id": "C17,U116,LO872",
+		"Text": "Music Business Music Publishing Correctly identify mechanical and performance royalty collection societies and evaluate their roles"
+	},
+	{
+		"Id": "C21,U148,LO873",
+		"Text": "Electronic Music Production Creative Production Techniques Correctly identify and index your work"
+	},
+	{
+		"Id": "C17,U116,LO874",
+		"Text": "Music Business Music Publishing Correctly identify and evaluate key terms in music publishing contracts"
+	},
+	{
+		"Id": "C17,U121,LO876",
+		"Text": "Music Business Studio Sound & Recording Technology Contribute to the engineering decisions during a recording session"
+	},
+	{
+		"Id": "C17,U121,LO877",
+		"Text": "Music Business Studio Sound & Recording Technology Contribute to aesthetic and practical decisions in mastering a recording"
+	},
+	{
+		"Id": "C17,U123,LO879",
+		"Text": "Music Business The Business & Culture of Electronic Music Contextualise the relevance of pivotal artists/producers and assess the level of impact of their sound on wider popular music culture."
+	},
+	{
+		"Id": "C17,U120,LO881",
+		"Text": "Music Business The Business & Culture of Hip Hop contextualise the relevance of pivotal artists lyrical content and or production value, then assess the level of impact on the wider culture."
+	},
+	{
+		"Id": "C19,U157,LO882",
+		"Text": "Music Marketing, Media & Communication Communications Techniques Create an engaging suite of communications using a variety of media and channels to reach a variety of recipients."
+	},
+	{
+		"Id": "C24,U56,LO889",
+		"Text": "Songwriting Songwriting Portfolio Create original and imaginative work and justify the writing methodologies used in this musical setting"
+	},
+	{
+		"Id": "C19,U100,LO891",
+		"Text": "Music Marketing, Media & Communication Diversity in the Creative Industries Create media content that analyses historical and contemporary issues in music and diversity."
+	},
+	{
+		"Id": "C19,U146,LO892",
+		"Text": "Music Marketing, Media & Communication Global Communication Create industryappropriate digital content in a variety of styles – written copy and broadcast for a regional or transnational audience."
+	},
+	{
+		"Id": "C20,U162,LO893",
+		"Text": "Event Management Event Video Production Create industry standard multimedia content that responds to the needs of an intended event or artist, and its audience"
+	},
+	{
+		"Id": "C19,U86,LO894",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Create industry standard multimedia content that responds to the interests and concerns of an intended audience"
+	},
+	{
+		"Id": "C19,U86,LO894",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Create industry standard multimedia content that responds to the interests and concerns of an intended audience"
+	},
+	{
+		"Id": "C18,U93,LO895",
+		"Text": "Creative Industries Entrepreneurship Touring And Live Events Create discipline appropriate event plans adhering to industry protocols"
+	},
+	{
+		"Id": "C19,U85,LO896",
+		"Text": "Music Marketing, Media & Communication Digital Content Creation Create content to an industry standard suitable for webbased audiences"
+	},
+	{
+		"Id": "C18,U93,LO898",
+		"Text": "Creative Industries Entrepreneurship Touring And Live Events Create appropriate budgetary documentation and rationalise costings."
+	},
+	{
+		"Id": "C20,U159,LO899",
+		"Text": "Event Management Community, Cultural & Sports Events Create and/or collaborate on a community, cultural or sports event."
+	},
+	{
+		"Id": "C20,U165,LO900",
+		"Text": "Event Management Technical Event Production Create and rationalise lighting and rigging plots, stage plans and channel lists, and an event schedule."
+	},
+	{
+		"Id": "C18,U95,LO902",
+		"Text": "Creative Industries Entrepreneurship Working in the Creative Industries Create and compile digital artefacts which add content and context to the work based learning report."
+	},
+	{
+		"Id": "C20,U160,LO903",
+		"Text": "Event Management Crowd Psychology & Management Create and audience profile using demographics and psychographics"
+	},
+	{
+		"Id": "C20,U126,LO904",
+		"Text": "Event Management Event Safety Assess and categorise associated risks based on the event type, location and audience profile"
+	},
+	{
+		"Id": "C21,U132,LO905",
+		"Text": "Electronic Music Production Immersive Audio Techniques Contextualise research through practical implementation coursework"
+	},
+	{
+		"Id": "C20,U159,LO907",
+		"Text": "Event Management Community, Cultural & Sports Events Consider the economic impact of this event on the wider community"
+	},
+	{
+		"Id": "C18,U101,LO908",
+		"Text": "Creative Industries Entrepreneurship Psychology of Music Consider potential findings and directions for study based on current knowledge. Define an area of music psychology to explore, making use of music psychology principles in an area relevant to personal interest or field of study."
+	},
+	{
+		"Id": "C17,U114,LO911",
+		"Text": "Music Business Live Music Industry Consider how these trends could impact the success of your proposed event"
+	},
+	{
+		"Id": "C17,U119,LO912",
+		"Text": "Music Business Record Label Management Consider how record labels have changed their strategies and business models in order to adapt to these trends"
+	},
+	{
+		"Id": "C17,U105,LO913",
+		"Text": "Music Business Creative Economics Consider how economic theory can offer solutions to current challenges faced by the music industry"
+	},
+	{
+		"Id": "C22,U136,LO914",
+		"Text": "Sound & Music Production Audio Capture Methods & Equipment Consider both microphone techniques and processing within a recording session"
+	},
+	{
+		"Id": "C17,U120,LO915",
+		"Text": "Music Business The Business & Culture of Hip Hop Consider artists such as Nipsey Hussle, Jay z, Master P and identify and analyse how their practice has led to their success in their ventures"
+	},
+	{
+		"Id": "C20,U160,LO916",
+		"Text": "Event Management Crowd Psychology & Management Consider applicable crowd management strategies in the planning of an event"
+	},
+	{
+		"Id": "C20,U161,LO917",
+		"Text": "Event Management Socioeconomics: Event Impact and Legacy Connect the cultural to the political to the economic in terms of Impact and Legacy"
+	},
+	{
+		"Id": "C19,U91,LO918",
+		"Text": "Music Marketing, Media & Communication Social Media & Digital Marketing Conduct primary research into the marketplace and your competitors"
+	},
+	{
+		"Id": "C18,U103,LO921",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 1 Conceive and plan one to one / individual tutorial lessons which are suitable for a specified learner, demonstrating engagement with core pedagogical elements"
+	},
+	{
+		"Id": "C18,U99,LO922",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 2 Conceive and plan lessons which are appropriate for a specified group of learners, demonstrating engagement with core pedagogical elements including differentiation"
+	},
+	{
+		"Id": "C20,U150,LO926",
+		"Text": "Event Management Festival Management Consider the impact of festivals on stakeholders and the community"
+	},
+	{
+		"Id": "C21,U128,LO927",
+		"Text": "Electronic Music Production Digital Composition in Context Contextualise and critically evaluate a digital composition utilising intellectual skills to make wellreasoned judgments based on research, incorporating terminology and references:"
+	},
+	{
+		"Id": "C22,U136,LO929",
+		"Text": "Sound & Music Production Audio Capture Methods & Equipment Consider the placement of equipment and the recording environment on the sonic outcome"
+	},
+	{
+		"Id": "C17,U94,LO930",
+		"Text": "Music Business Digital Arts & Branding Constructively critique the professionalism and presentation of your work"
+	},
+	{
+		"Id": "C21,U133,LO932",
+		"Text": "Electronic Music Production Interactive Music Applications Construct creative solutions to technical problems relating to interactive music systems"
+	},
+	{
+		"Id": "C19,U24,LO933",
+		"Text": "Music Marketing, Media & Communication Gaming Culture Construct communications centred around gamification"
+	},
+	{
+		"Id": "C18,U109,LO934",
+		"Text": "Creative Industries Entrepreneurship Context & Culture of the Creative Industries Construct an evidencebased argument in written form"
+	},
+	{
+		"Id": "C22,U138,LO935",
+		"Text": "Sound & Music Production Approaches to Production & Workflow Construct an audio and/ or visual digital media product that combines techniques and approaches across a range of subjects."
+	},
+	{
+		"Id": "C18,U110,LO936",
+		"Text": "Creative Industries Entrepreneurship Creativity, Identity & Agency Construct an argument relating the theoretical concepts of agency and originality to a stylistic or industrybased development"
+	},
+	{
+		"Id": "C22,U134,LO937",
+		"Text": "Sound & Music Production Audio Fundamentals Construct a schedule for a recording session including equipment used."
+	},
+	{
+		"Id": "C18,U109,LO938",
+		"Text": "Creative Industries Entrepreneurship Context & Culture of the Creative Industries Construct a logical and coherent essay, following standard academic conventions"
+	},
+	{
+		"Id": "C22,U138,LO939",
+		"Text": "Sound & Music Production Approaches to Production & Workflow Construct a fully functional prototype product that combines inputs from multiple disciplines e.g. sample library, recording project, live performance etc"
+	},
+	{
+		"Id": "C18,U3,LO941",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Finding Your Path Consolidate your reflective work and research into career routes in your final Personal and Professional Development Plan, creating a set of measurable and achievable actions that will set you on the path to success."
+	},
+	{
+		"Id": "C18,U3,LO944",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Finding Your Path Consider what motivates and inspires you to do your best work in your first audio report submission, ‘My Connection to the Creative Arts’"
+	},
+	{
+		"Id": "C22,U31,LO945",
+		"Text": "Sound & Music Production Vocal Capture and Production Consider vocal aesthetics within a musical genre and direct your musical, technical and creative production through critical engagement with research"
+	},
+	{
+		"Id": "C17,U120,LO946",
+		"Text": "Music Business The Business & Culture of Hip Hop Consider the wider cultural/societal issues that is referenced in the lyrics and judge its relation to the interpretation of the song"
+	},
+	{
+		"Id": "C17,U123,LO947",
+		"Text": "Music Business The Business & Culture of Electronic Music Consider the wider cultural/societal issues & locational factors that influence the sound of Dance Music genres and how this is interpreted by the listener"
+	},
+	{
+		"Id": "C22,U29,LO948",
+		"Text": "Sound & Music Production Practical Acoustics Consider the qualities of sound relating to a physical space"
+	},
+	{
+		"Id": "C17,U121,LO949",
+		"Text": "Music Business Studio Sound & Recording Technology Consider the implications of new technologies for various recorded formats and/or streamed audio"
+	},
+	{
+		"Id": "C18,U92,LO950",
+		"Text": "Creative Industries Entrepreneurship Creative Video Production Create the project they defined in their initial creative video project proposal."
+	},
+	{
+		"Id": "C25,U37,LO953",
+		"Text": "Performing Arts The Body Fundamentals Answer questions about their work, considering the challenges they encountered, the areas to focus on physically for next semester, their engagement and work ethic."
+	},
+	{
+		"Id": "C21,U131,LO954",
+		"Text": "Electronic Music Production Electroacoustic Composition Annotate your sounds to communicate the range of advanced software tools and techniques used throughout the development of the final composition."
+	},
+	{
+		"Id": "C22,U147,LO955",
+		"Text": "Sound & Music Production Creative Mix Techniques Analysis of and reflection upon the key methodologies within a chosen genre."
+	},
+	{
+		"Id": "C20,U127,LO958",
+		"Text": "Event Management Live Music 2: Events & Tours Analyse your finances including income streams, costs, cash flow, breakeven, profit and loss."
+	},
+	{
+		"Id": "C19,U143,LO960",
+		"Text": "Music Marketing, Media & Communication Mobile Apps - Design and User Culture Analyse use of apps in a variety of contexts in media production and consumption, including GUI & UX."
+	},
+	{
+		"Id": "C20,U149,LO961",
+		"Text": "Event Management Event Enterprise Anticipate possible profit and loss, cash flow and breakeven points."
+	},
+	{
+		"Id": "C17,U114,LO962",
+		"Text": "Music Business Live Music Industry Analyse their role and plan to for appropriate personnel deployment."
+	},
+	{
+		"Id": "C22,U33,LO963",
+		"Text": "Sound & Music Production The Art of Mastering Analyse the techniques and processes implemented in existing material with attention to proposed remedial processes"
+	},
+	{
+		"Id": "C20,U125,LO964",
+		"Text": "Event Management Live Music 1: Booking & Promotion Analyse the target audience and venue choice"
+	},
+	{
+		"Id": "C20,U149,LO965",
+		"Text": "Event Management Event Enterprise Analyse the suitability of financial management techniques and tools for a specific event"
+	},
+	{
+		"Id": "C18,U93,LO966",
+		"Text": "Creative Industries Entrepreneurship Touring And Live Events Analyse the specific needs of your chosen discipline including production, and the audience experience."
+	},
+	{
+		"Id": "C20,U150,LO968",
+		"Text": "Event Management Festival Management Analyse the responsibilities and legal duties of key event personnel with regards to festival and site logistics"
+	},
+	{
+		"Id": "C17,U89,LO969",
+		"Text": "Music Business Consultancy and Market Research Analyse the research data for emerging themes."
+	},
+	{
+		"Id": "C18,U93,LO970",
+		"Text": "Creative Industries Entrepreneurship Touring And Live Events Analyse the requirements for producing an event in a specific venue or venue(s)."
+	},
+	{
+		"Id": "C17,U118,LO971",
+		"Text": "Music Business Financing Creativity Analyse the tools and techniques employed to secure funding for a creative project."
+	},
+	{
+		"Id": "C22,U147,LO972",
+		"Text": "Sound & Music Production Creative Mix Techniques Application of effective subtractive and additive EQ to support the musical arrangement of the track."
+	},
+	{
+		"Id": "C22,U147,LO973",
+		"Text": "Sound & Music Production Creative Mix Techniques Application of genrespecific effects and processing to help support the arrangement."
+	},
+	{
+		"Id": "C20,U150,LO974",
+		"Text": "Event Management Festival Management Apply a range of appropriate health and safety and licensing legislation to an event"
+	},
+	{
+		"Id": "C22,U29,LO975",
+		"Text": "Sound & Music Production Practical Acoustics Apply calculations to a treatment plan, which is beneficial and purposeful"
+	},
+	{
+		"Id": "C19,U90,LO976",
+		"Text": "Music Marketing, Media & Communication Marketing & PR Apply branding theory and relate previous brand examples to your own campaigns"
+	},
+	{
+		"Id": "C20,U127,LO982",
+		"Text": "Event Management Live Music 2: Events & Tours Apply appropriate planning tools to the logistical scheduling of a tour, including transport, accommodation and equipment."
+	},
+	{
+		"Id": "C20,U126,LO983",
+		"Text": "Event Management Event Safety Apply appropriate management tools in the development of an event risk assessment"
+	},
+	{
+		"Id": "C20,U127,LO984",
+		"Text": "Event Management Live Music 2: Events & Tours Apply appropriate legislation and prepare necessary documentation for a gig and/or tour."
+	},
+	{
+		"Id": "C20,U125,LO985",
+		"Text": "Event Management Live Music 1: Booking & Promotion Apply appropriate legislation and documentation to the effective planning of an event"
+	},
+	{
+		"Id": "C22,U30,LO986",
+		"Text": "Sound & Music Production Creating Sample Libraries Apply appropriate audio production, editing and organisational techniques to produce a bespoke library of audio samples."
+	},
+	{
+		"Id": "C21,U133,LO987",
+		"Text": "Electronic Music Production Interactive Music Applications Apply appropriate and effective solutions in response to technical problems."
+	},
+	{
+		"Id": "C21,U133,LO989",
+		"Text": "Electronic Music Production Interactive Music Applications Apply and attempt to improve relevant concepts or techniques from similar projects."
+	},
+	{
+		"Id": "C20,U161,LO990",
+		"Text": "Event Management Socioeconomics: Event Impact and Legacy Apply analytical tools to event case studies"
+	},
+	{
+		"Id": "C20,U161,LO991",
+		"Text": "Event Management Socioeconomics: Event Impact and Legacy Apply analytical tools and methods to evaluate impact and legacy"
+	},
+	{
+		"Id": "C19,U91,LO992",
+		"Text": "Music Marketing, Media & Communication Social Media & Digital Marketing Apply a range of social media and digital communication strategies to a marketing campaign"
+	},
+	{
+		"Id": "C20,U126,LO993",
+		"Text": "Event Management Event Safety Apply a range of appropriate health and safety legislation to an event"
+	},
+	{
+		"Id": "C17,U104,LO994",
+		"Text": "Music Business Globalisation Analyse the relationships and structure of transnational music businesses, drawing on appropriate research and opinion.​"
+	},
+	{
+		"Id": "C17,U118,LO995",
+		"Text": "Music Business Financing Creativity Analyse the project manager’s role in managing and leading a creative project from inception through to completion."
+	},
+	{
+		"Id": "C17,U122,LO997",
+		"Text": "Music Business Rights Management & Secondary Exploitation Analyse the multiple forms of intellectual property rights surrounding the music industry relating to secondary exploitation"
+	},
+	{
+		"Id": "C19,U63,LO998",
+		"Text": "Music Marketing, Media & Communication Celebrity Culture Analyse core constructs"
+	},
+	{
+		"Id": "C18,U101,LO1000",
+		"Text": "Creative Industries Entrepreneurship Psychology of Music Analyse appropriate theoretical concepts in the field of music psychology to create an informed and valid argument."
+	},
+	{
+		"Id": "C20,U150,LO1001",
+		"Text": "Event Management Festival Management Analyse and utilise appropriate event planning tools, including a Production Schedule"
+	},
+	{
+		"Id": "C21,U133,LO1002",
+		"Text": "Electronic Music Production Interactive Music Applications Analyse and justify the technical mechanisms of their work."
+	},
+	{
+		"Id": "C18,U93,LO1003",
+		"Text": "Creative Industries Entrepreneurship Touring And Live Events Analyse and identify key challenges when producing live events."
+	},
+	{
+		"Id": "C21,U128,LO1004",
+		"Text": "Electronic Music Production Digital Composition in Context Analyse and communicate the key structural, technical and stylistic components of a genre specific digital composition.:"
+	},
+	{
+		"Id": "C17,U89,LO1005",
+		"Text": "Music Business Consultancy and Market Research Analyse an authentic issue to be addressed for a contemporary company in the music industries."
+	},
+	{
+		"Id": "C18,U110,LO1006",
+		"Text": "Creative Industries Entrepreneurship Creativity, Identity & Agency Analyse a key artistic or industryrelated development using cultural theory to articulate its influence on practice"
+	},
+	{
+		"Id": "C20,U162,LO1008",
+		"Text": "Event Management Event Video Production Align the values and aesthetics of a target audience to their project’s content"
+	},
+	{
+		"Id": "C19,U158,LO1009",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Align the values and aesthetics of a niche audience or subject with their project’s content"
+	},
+	{
+		"Id": "C18,U3,LO1011",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Finding Your Path Address the most important areas for development in your final Personal and Professional Development Plan by creating a set of realistic goals and related actions"
+	},
+	{
+		"Id": "C20,U160,LO1014",
+		"Text": "Event Management Crowd Psychology & Management Acknowledge the importance of crowd behaviour on event safety"
+	},
+	{
+		"Id": "C20,U160,LO1017",
+		"Text": "Event Management Crowd Psychology & Management Analyse crowd psychology theories and relate to a case study"
+	},
+	{
+		"Id": "C19,U142,LO1018",
+		"Text": "Music Marketing, Media & Communication Artist Development & PR Apply communication skills and demonstrate creative planning to create a PR strategy for an artist or music event"
+	},
+	{
+		"Id": "C19,U91,LO1020",
+		"Text": "Music Marketing, Media & Communication Social Media & Digital Marketing Analyse data to help inform an effective social media and digital marketing strategy"
+	},
+	{
+		"Id": "C22,U29,LO1021",
+		"Text": "Sound & Music Production Practical Acoustics Analyse the modal response and RT 60 of a room using appropriate calculations"
+	},
+	{
+		"Id": "C17,U87,LO1024",
+		"Text": "Music Business Business Ethics & Music Law Analyse the effectiveness of the response and/or negotiation process"
+	},
+	{
+		"Id": "C20,U162,LO1025",
+		"Text": "Event Management Event Video Production Analyse the effectiveness of teamwork in the production process"
+	},
+	{
+		"Id": "C19,U86,LO1026",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Analyse the effectiveness of teamwork in the disintermediated production process"
+	},
+	{
+		"Id": "C19,U86,LO1026",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Analyse the effectiveness of teamwork in the disintermediated production process"
+	},
+	{
+		"Id": "C17,U106,LO1027",
+		"Text": "Music Business Audience Experience and Motivation Analyse the dynamics of audience experience and the experience economy"
+	},
+	{
+		"Id": "C22,U35,LO1028",
+		"Text": "Sound & Music Production Convolution and Sound Modelling Analyse the creative results of your project with attention to stylistic considerations and music production practices"
+	},
+	{
+		"Id": "C22,U134,LO1030",
+		"Text": "Sound & Music Production Audio Fundamentals Analyse technical specifications and details of audio capturing equipment e.g. microphones, signal processing"
+	},
+	{
+		"Id": "C17,U113,LO1032",
+		"Text": "Music Business Music Business Analyse how the organisation has responded operationally and evaluate it success in doing so."
+	},
+	{
+		"Id": "C17,U106,LO1033",
+		"Text": "Music Business Audience Experience and Motivation Analyse how audience experience has created the experience economy"
+	},
+	{
+		"Id": "C19,U98,LO1035",
+		"Text": "Music Marketing, Media & Communication Film Studies Analyse film content and critically evaluate its success with reference to related examples"
+	},
+	{
+		"Id": "C17,U104,LO1036",
+		"Text": "Music Business Globalisation Analyse emerging global industry practice"
+	},
+	{
+		"Id": "C17,U117,LO1039",
+		"Text": "Music Business Business & Entreprise Analyse data to inform decision making"
+	},
+	{
+		"Id": "C20,U165,LO1040",
+		"Text": "Event Management Technical Event Production Analyse current industry best practice for staging live events."
+	},
+	{
+		"Id": "C19,U144,LO1041",
+		"Text": "Music Marketing, Media & Communication Fans and Social Media Influencers Apply core theories to modify your own online presence"
+	},
+	{
+		"Id": "C22,U33,LO1044",
+		"Text": "Sound & Music Production The Art of Mastering Appraise, select and implement an appropriate combination of, compression, equalisation and sound manipulation techniques in order to create an intended artistic aesthetic."
+	},
+	{
+		"Id": "C22,U36,LO1045",
+		"Text": "Sound & Music Production Audio Post Production Appraise your production process (e.g. your planning, timemanagement, collaboration with musicians, voice actors and asset gathering)."
+	},
+	{
+		"Id": "C19,U24,LO1046",
+		"Text": "Music Marketing, Media & Communication Gaming Culture Appraise various gaming strategies in helping to engage audiences"
+	},
+	{
+		"Id": "C22,U139,LO1047",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Appraise this piece of work as a whole in relation to your original intentions."
+	},
+	{
+		"Id": "C22,U34,LO1048",
+		"Text": "Sound & Music Production Game Sound & Music Appraise their use of parameter implementation in game sound and music."
+	},
+	{
+		"Id": "C22,U34,LO1049",
+		"Text": "Sound & Music Production Game Sound & Music Appraise their use of parameter control and implementation"
+	},
+	{
+		"Id": "C20,U165,LO1050",
+		"Text": "Event Management Technical Event Production Appraise the skills required for a variety of disciplines within Technical Production"
+	},
+	{
+		"Id": "C17,U114,LO1051",
+		"Text": "Music Business Live Music Industry Appraise the roles and responsibilities of key personnel in concerts and/ or live events"
+	},
+	{
+		"Id": "C22,U34,LO1052",
+		"Text": "Sound & Music Production Game Sound & Music Appraise the requirement for further parameter control in the game"
+	},
+	{
+		"Id": "C17,U106,LO1053",
+		"Text": "Music Business Audience Experience and Motivation Appraise the links between motivation and engagement with products and/or services"
+	},
+	{
+		"Id": "C17,U123,LO1054",
+		"Text": "Music Business The Business & Culture of Electronic Music Appraise the impact of the production values of the genre and evaluate its subsequent impact on contemporary popular music"
+	},
+	{
+		"Id": "C17,U120,LO1055",
+		"Text": "Music Business The Business & Culture of Hip Hop Appraise the impact of the genre and evaluate its impact on wider society"
+	},
+	{
+		"Id": "C20,U161,LO1056",
+		"Text": "Event Management Socioeconomics: Event Impact and Legacy Appraise the impact and legacy of a selection of events"
+	},
+	{
+		"Id": "C17,U94,LO1058",
+		"Text": "Music Business Digital Arts & Branding Appraise relevant design theories and frameworks for a brand"
+	},
+	{
+		"Id": "C17,U117,LO1059",
+		"Text": "Music Business Business & Entreprise Appraise operations required to effectively run a business"
+	},
+	{
+		"Id": "C17,U122,LO1060",
+		"Text": "Music Business Rights Management & Secondary Exploitation Appraise music and musical IP"
+	},
+	{
+		"Id": "C17,U94,LO1061",
+		"Text": "Music Business Digital Arts & Branding Appraise key principles, frameworks and practices of design and branding"
+	},
+	{
+		"Id": "C22,U147,LO1062",
+		"Text": "Sound & Music Production Creative Mix Techniques Appraise industry standard mix techniques and their effectiveness in creating an appropriate mix."
+	},
+	{
+		"Id": "C18,U108,LO1072",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Professional Portfolio Articulate your skills and achievements via sector appropriate digital outputs, communicating your unique professional identity"
+	},
+	{
+		"Id": "C22,U31,LO1073",
+		"Text": "Sound & Music Production Vocal Capture and Production Articulate your production style and direction using appropriate terminology."
+	},
+	{
+		"Id": "C17,U89,LO1076",
+		"Text": "Music Business Consultancy and Market Research Articulate the purpose of the research as a question or as a statement."
+	},
+	{
+		"Id": "C22,U35,LO1085",
+		"Text": "Sound & Music Production Convolution and Sound Modelling Articulate an engagement with spectral analysis for design and measurement"
+	},
+	{
+		"Id": "C22,U35,LO1086",
+		"Text": "Sound & Music Production Convolution and Sound Modelling Articulate a critical awareness of how such effects may be applied within a production context"
+	},
+	{
+		"Id": "C17,U119,LO1088",
+		"Text": "Music Business Record Label Management Appraise current paradigms in releasing music"
+	},
+	{
+		"Id": "C21,U145,LO1089",
+		"Text": "Electronic Music Production Foley and Location Recording Appraise and critically evaluate process and outcome"
+	},
+	{
+		"Id": "C21,U166,LO1092",
+		"Text": "Electronic Music Production Synthesis & Sampling Apply models of synthesis in the construction and design of musical components"
+	},
+	{
+		"Id": "C20,U124,LO1095",
+		"Text": "Event Management Events & Society Apply key sociological perspectives to the critical study of events"
+	},
+	{
+		"Id": "C20,U102,LO1096",
+		"Text": "Event Management Event Concept and Design Apply key processes of event creation to the design of an event experience"
+	},
+	{
+		"Id": "C20,U102,LO1097",
+		"Text": "Event Management Event Concept and Design Apply key event design frameworks and theories to your findings."
+	},
+	{
+		"Id": "C21,U132,LO1098",
+		"Text": "Electronic Music Production Immersive Audio Techniques Apply industry related principles involved in the design, production, and management of the proposed output."
+	},
+	{
+		"Id": "C18,U109,LO1099",
+		"Text": "Creative Industries Entrepreneurship Context & Culture of the Creative Industries Apply Harvard citation standards to a variety of sources and include a complete reference list"
+	},
+	{
+		"Id": "C17,U94,LO1100",
+		"Text": "Music Business Digital Arts & Branding Apply fundamental principles and conventions of design to your work"
+	},
+	{
+		"Id": "C17,U105,LO1101",
+		"Text": "Music Business Creative Economics Apply economic theory to explain the evolution of a particular sector of the music industry"
+	},
+	{
+		"Id": "C17,U94,LO1102",
+		"Text": "Music Business Digital Arts & Branding Apply digital design skills to a brief using industry standard software"
+	},
+	{
+		"Id": "C20,U165,LO1103",
+		"Text": "Event Management Technical Event Production Apply current legislation and/or training in technical aspects of event production"
+	},
+	{
+		"Id": "C22,U27,LO1109",
+		"Text": "Sound & Music Production Studio Practice & Engineering Apply practical technical skills in the production of a multitrack master"
+	},
+	{
+		"Id": "C20,U127,LO1111",
+		"Text": "Event Management Live Music 2: Events & Tours Apply relevant legislation and health and safety procedures to a tour"
+	},
+	{
+		"Id": "C20,U127,LO1112",
+		"Text": "Event Management Live Music 2: Events & Tours Apply relevant logistics, planning, teamwork and technical production skills."
+	},
+	{
+		"Id": "C17,U117,LO1113",
+		"Text": "Music Business Business & Entreprise Appraisal of industry standards to inform decision making"
+	},
+	{
+		"Id": "C19,U90,LO1116",
+		"Text": "Music Marketing, Media & Communication Marketing & PR Apply theoretical tools and concepts to your campaign"
+	},
+	{
+		"Id": "C21,U132,LO1117",
+		"Text": "Electronic Music Production Immersive Audio Techniques Apply theoretical knowledge of immersive audio techniques/environments."
+	},
+	{
+		"Id": "C20,U162,LO1119",
+		"Text": "Event Management Event Video Production Apply the principles of teamwork in the production process of a video project"
+	},
+	{
+		"Id": "C22,U35,LO1120",
+		"Text": "Sound & Music Production Convolution and Sound Modelling Apply the principles of convolution and sound modelling for production and sound design"
+	},
+	{
+		"Id": "C19,U86,LO1121",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Apply the principles of a disintermediated production process to a multimedia project"
+	},
+	{
+		"Id": "C19,U86,LO1121",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Apply the principles of a disintermediated production process to a multimedia project"
+	},
+	{
+		"Id": "C19,U154,LO1122",
+		"Text": "Music Marketing, Media & Communication Popular Culture & Identity Apply the concept of cultural hegemony and hegemonic identities."
+	},
+	{
+		"Id": "C19,U85,LO1125",
+		"Text": "Music Marketing, Media & Communication Digital Content Creation Apply teamwork in the creation of content for the modern requirements"
+	},
+	{
+		"Id": "C22,U136,LO1130",
+		"Text": "Sound & Music Production Audio Capture Methods & Equipment Apply researched recording techniques that complement the live instrumentation captured:"
+	},
+	{
+		"Id": "C21,U130,LO1131",
+		"Text": "Electronic Music Production Concept Led Practical Production Apply relevant research in the development of bespoke technical solutions to creative problems"
+	},
+	{
+		"Id": "C20,U126,LO1132",
+		"Text": "Event Management Event Safety Apply relevant legislation and procedures to ensure the safe planning and delivery of an event"
+	},
+	{
+		"Id": "C22,U26,LO1133",
+		"Text": "Sound & Music Production Music Production in Context Create your own version of a song which demonstrates a consistent approach to production that you have researched."
+	},
+	{
+		"Id": "C19,U141,LO1135",
+		"Text": "Music Marketing, Media & Communication Mobile Technology & Music Create, write, edit and deliver an industrystandard presentation exploring the relationship between mobile technology and music, for artists, the music industry and listeners."
+	},
+	{
+		"Id": "C24,U56,LO1136",
+		"Text": "Songwriting Songwriting Portfolio Develop and apply a clear artistic ‘voice’ within a commercial writing context."
+	},
+	{
+		"Id": "C20,U102,LO1137",
+		"Text": "Event Management Event Concept and Design Develop an original event concept and corresponding design strategy of your own"
+	},
+	{
+		"Id": "C22,U27,LO1139",
+		"Text": "Sound & Music Production Studio Practice & Engineering Develop a recording's aesthetic quality and apply the required technical approach for a suitable audio production"
+	},
+	{
+		"Id": "C24,U56,LO1142",
+		"Text": "Songwriting Songwriting Portfolio Develop a portfolio of contrasting and original creative work written from a variety of commercial perspectives"
+	},
+	{
+		"Id": "C18,U107,LO1146",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 2 - Creative Collaboration Design methods of collaborative working, evidencing engagement with new tech tools"
+	},
+	{
+		"Id": "C22,U34,LO1147",
+		"Text": "Sound & Music Production Game Sound & Music Design and critique interactive game sound artefacts."
+	},
+	{
+		"Id": "C20,U164,LO1148",
+		"Text": "Event Management Creative Commercial Events Design and complete a plan demonstrating an ability to create a comprehensive event activity plan."
+	},
+	{
+		"Id": "C19,U142,LO1149",
+		"Text": "Music Marketing, Media & Communication Artist Development & PR Design and appraise a PR plan for an artist or music event"
+	},
+	{
+		"Id": "C17,U112,LO1150",
+		"Text": "Music Business Artist Management Design an effective artist development strategy drawing on theory, professional and scholarly opinion"
+	},
+	{
+		"Id": "C17,U94,LO1152",
+		"Text": "Music Business Digital Arts & Branding Design a portfolio of digital art for a brand"
+	},
+	{
+		"Id": "C21,U129,LO1153",
+		"Text": "Electronic Music Production Digital Performance Skills Design a plan to collaborate and integrate advanced music technology hardware and software into a live performance approaching a professional level."
+	},
+	{
+		"Id": "C18,U111,LO1154",
+		"Text": "Creative Industries Entrepreneurship Final Project Design, test and develop methods of work supported by established professional practices, to inform and enhance your project"
+	},
+	{
+		"Id": "C19,U155,LO1155",
+		"Text": "Music Marketing, Media & Communication The Creative Entrepreneur Develop and practise a range of techniques based on established principles and practices of media consumption"
+	},
+	{
+		"Id": "C17,U112,LO1156",
+		"Text": "Music Business Artist Management Develop clear and considered plans for development of the artist"
+	},
+	{
+		"Id": "C19,U142,LO1157",
+		"Text": "Music Marketing, Media & Communication Artist Development & PR Develop communication skills appropriate to the creation of a PR proposal"
+	},
+	{
+		"Id": "C17,U113,LO1158",
+		"Text": "Music Business Music Business Differentiate between compositional, recorded and mechanical royalties"
+	},
+	{
+		"Id": "C17,U119,LO1159",
+		"Text": "Music Business Record Label Management Differentiate and rationalise the marketing and release strategies employed by small independent, large independent and major record labels"
+	},
+	{
+		"Id": "C21,U131,LO1160",
+		"Text": "Electronic Music Production Electroacoustic Composition Devise contemporary electroacoustic compositions using a combination of practice as research and established sonic theories."
+	},
+	{
+		"Id": "C20,U125,LO1166",
+		"Text": "Event Management Live Music 1: Booking & Promotion Devise a marketing strategy for an event"
+	},
+	{
+		"Id": "C20,U149,LO1167",
+		"Text": "Event Management Event Enterprise Devise a fundraising strategy for the appropriate option(s)"
+	},
+	{
+		"Id": "C24,U56,LO1168",
+		"Text": "Songwriting Songwriting Portfolio Devise a contrasting, creative and commercially relevant highlevel songwriting portfolio"
+	},
+	{
+		"Id": "C20,U151,LO1170",
+		"Text": "Event Management Event Sustainability Develop sustainable plans as part of the event management cycle."
+	},
+	{
+		"Id": "C20,U162,LO1175",
+		"Text": "Event Management Event Video Production Develop creative ideas from a storyboard or project plan in the construction of a video project"
+	},
+	{
+		"Id": "C19,U86,LO1176",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Develop creative ideas from a storyboard or project plan in the construction of a multimedia project"
+	},
+	{
+		"Id": "C19,U86,LO1176",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Develop creative ideas from a storyboard or project plan in the construction of a multimedia project"
+	},
+	{
+		"Id": "C18,U3,LO1177",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Finding Your Path Design a personal and professional development action plan, highlighting key <insert Institute here> resources that will help you to achieve your goals."
+	},
+	{
+		"Id": "C19,U91,LO1178",
+		"Text": "Music Marketing, Media & Communication Social Media & Digital Marketing Design a creative marketing campaign using a variety of social media and digital communication channels over time"
+	},
+	{
+		"Id": "C20,U164,LO1179",
+		"Text": "Event Management Creative Commercial Events Design a comprehensive event activity plan."
+	},
+	{
+		"Id": "C22,U29,LO1181",
+		"Text": "Sound & Music Production Practical Acoustics Demonstrate understanding of theory and knowledge relating to the nature of sound and the principles of acoustic theory:"
+	},
+	{
+		"Id": "C18,U92,LO1182",
+		"Text": "Creative Industries Entrepreneurship Creative Video Production Demonstrate understanding of theoretical approaches to creative video production and identify and appraise their impact on their final project."
+	},
+	{
+		"Id": "C19,U154,LO1183",
+		"Text": "Music Marketing, Media & Communication Popular Culture & Identity Demonstrate understanding of the discursive formation of personal, artistic and group identities"
+	},
+	{
+		"Id": "C18,U92,LO1184",
+		"Text": "Creative Industries Entrepreneurship Creative Video Production Demonstrate understanding of the consumption habits and preferences of their target audience."
+	},
+	{
+		"Id": "C19,U152,LO1185",
+		"Text": "Music Marketing, Media & Communication Introduction to Digital Media & Communication Demonstrate understanding of a variety of digital communication methods through practical application"
+	},
+	{
+		"Id": "C22,U137,LO1186",
+		"Text": "Sound & Music Production Industry Toolkit Demonstrate their knowledge and understanding of the music industry institutions"
+	},
+	{
+		"Id": "C19,U157,LO1187",
+		"Text": "Music Marketing, Media & Communication Communications Techniques Demonstrate the suitability of a given communication channel/method to its goal."
+	},
+	{
+		"Id": "C22,U30,LO1188",
+		"Text": "Sound & Music Production Creating Sample Libraries Demonstrate the recording processes employed"
+	},
+	{
+		"Id": "C22,U30,LO1189",
+		"Text": "Sound & Music Production Creating Sample Libraries Demonstrate the product’s functionality"
+	},
+	{
+		"Id": "C19,U90,LO1190",
+		"Text": "Music Marketing, Media & Communication Marketing & PR Demonstrate the principles of marketing in developing a campaign concept and strategy"
+	},
+	{
+		"Id": "C22,U30,LO1191",
+		"Text": "Sound & Music Production Creating Sample Libraries Demonstrate the organisational processes employed"
+	},
+	{
+		"Id": "C22,U26,LO1192",
+		"Text": "Sound & Music Production Music Production in Context Demonstrate the key production processes and trademarks, essentially emulating the styles of the chosen practitioner and approaches within them."
+	},
+	{
+		"Id": "C22,U36,LO1194",
+		"Text": "Sound & Music Production Audio Post Production Demonstrate the effective use of denoising software and subtractive EQ to remove unwanted noise from production sound."
+	},
+	{
+		"Id": "C22,U36,LO1195",
+		"Text": "Sound & Music Production Audio Post Production Demonstrate the appropriate use of dynamic and stereo processing suitable for video playback."
+	},
+	{
+		"Id": "C22,U33,LO1198",
+		"Text": "Sound & Music Production The Art of Mastering Demonstrate the ability to deliver an audio artefact to established industry standards"
+	},
+	{
+		"Id": "C17,U113,LO1201",
+		"Text": "Music Business Music Business Differentiate between independent and major businesses and UK organisations that have international counterparts"
+	},
+	{
+		"Id": "C17,U113,LO1204",
+		"Text": "Music Business Music Business Describe the sector of operation, roles, responsibilities and typical business model of each"
+	},
+	{
+		"Id": "C17,U113,LO1210",
+		"Text": "Music Business Music Business Describe roles, responsibilities of key music industry organisations, businesses and professionals"
+	},
+	{
+		"Id": "C17,U121,LO1213",
+		"Text": "Music Business Studio Sound & Recording Technology Describe and select appropriate mastering techniques for the distribution of various formats"
+	},
+	{
+		"Id": "C20,U150,LO1215",
+		"Text": "Event Management Festival Management Describe and evaluate contemporary best practice in logistical planning and site management tools"
+	},
+	{
+		"Id": "C20,U149,LO1216",
+		"Text": "Event Management Event Enterprise Describe and apply financial management tools and techniques"
+	},
+	{
+		"Id": "C22,U139,LO1217",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Deploy tools and techniques following industry standard protocols to create a unique and creative product."
+	},
+	{
+		"Id": "C19,U25,LO1218",
+		"Text": "Music Marketing, Media & Communication Fashion and Music Deploy the totality of their research to predict likely short and longterm future trends, developments and evolutions in the relationship between fashion and music."
+	},
+	{
+		"Id": "C19,U25,LO1219",
+		"Text": "Music Marketing, Media & Communication Fashion and Music Deploy effective written academic communication skills."
+	},
+	{
+		"Id": "C19,U140,LO1220",
+		"Text": "Music Marketing, Media & Communication Youth, Music and Social Change Deploy effective written academic communication skills (not applicable to Creative Work option)"
+	},
+	{
+		"Id": "C22,U35,LO1221",
+		"Text": "Sound & Music Production Convolution and Sound Modelling Deploy and evaluate software resources in the analysis and emulation of sonic environments"
+	},
+	{
+		"Id": "C22,U147,LO1222",
+		"Text": "Sound & Music Production Creative Mix Techniques Demonstration of audio processing techniques within a DAW."
+	},
+	{
+		"Id": "C18,U109,LO1224",
+		"Text": "Creative Industries Entrepreneurship Context & Culture of the Creative Industries Differentiate between sources based on format, quality, bias, and critical perspective."
+	},
+	{
+		"Id": "C19,U91,LO1227",
+		"Text": "Music Marketing, Media & Communication Social Media & Digital Marketing Evaluate and apply regulations and ethical concerns around data protection"
+	},
+	{
+		"Id": "C19,U91,LO1228",
+		"Text": "Music Marketing, Media & Communication Social Media & Digital Marketing Evaluate and apply appropriate tools, frameworks and theories"
+	},
+	{
+		"Id": "C20,U124,LO1229",
+		"Text": "Event Management Events & Society Evaluate an event in relation to its historical context"
+	},
+	{
+		"Id": "C20,U149,LO1230",
+		"Text": "Event Management Event Enterprise Evaluate a variety of funding options for a specific event"
+	},
+	{
+		"Id": "C19,U85,LO1232",
+		"Text": "Music Marketing, Media & Communication Digital Content Creation Engage with existing social media networks to show you are able to interpret and address the needs and desires of your audience"
+	},
+	{
+		"Id": "C19,U144,LO1233",
+		"Text": "Music Marketing, Media & Communication Fans and Social Media Influencers Engage with existing online communities to help further your professional goals"
+	},
+	{
+		"Id": "C21,U145,LO1234",
+		"Text": "Electronic Music Production Foley and Location Recording Engage with contemporary sound designers process and workflow"
+	},
+	{
+		"Id": "C17,U121,LO1235",
+		"Text": "Music Business Studio Sound & Recording Technology Engage with a recording/mastering engineer and demonstrate familiarity with the processes involved"
+	},
+	{
+		"Id": "C25,U38,LO1236",
+		"Text": "Performing Arts The Voice Fundamentals Engage in a practical project"
+	},
+	{
+		"Id": "C22,U36,LO1237",
+		"Text": "Sound & Music Production Audio Post Production Employ suitable and accurate audio editing to facilitate ADR recording"
+	},
+	{
+		"Id": "C21,U128,LO1245",
+		"Text": "Electronic Music Production Digital Composition in Context Employ planning and management strategies, alongside technical manipulation of equipment, which demonstrate ability to create a digital composition to a given brief."
+	},
+	{
+		"Id": "C20,U165,LO1246",
+		"Text": "Event Management Technical Event Production Evaluate and apply the technical aspects of live events in theory and practice."
+	},
+	{
+		"Id": "C22,U147,LO1247",
+		"Text": "Sound & Music Production Creative Mix Techniques Employ genrespecific audio editing and mix techniques."
+	},
+	{
+		"Id": "C19,U146,LO1248",
+		"Text": "Music Marketing, Media & Communication Global Communication Evaluate and critically analyse current developments in global communication practice."
+	},
+	{
+		"Id": "C20,U151,LO1249",
+		"Text": "Event Management Event Sustainability Evaluate contemporary issues in event sustainability"
+	},
+	{
+		"Id": "C20,U161,LO1250",
+		"Text": "Event Management Socioeconomics: Event Impact and Legacy Evaluate specific events in relation to its socioeconomic impact and legacy"
+	},
+	{
+		"Id": "C17,U89,LO1251",
+		"Text": "Music Business Consultancy and Market Research Evaluate significant findings for a contemporary company in the music industries."
+	},
+	{
+		"Id": "C19,U63,LO1252",
+		"Text": "Music Marketing, Media & Communication Celebrity Culture Evaluate responses to relevant discourse and offer new perspectives"
+	},
+	{
+		"Id": "C17,U104,LO1253",
+		"Text": "Music Business Globalisation Evaluate relevant research in the context of the globalisation debate."
+	},
+	{
+		"Id": "C20,U102,LO1254",
+		"Text": "Event Management Event Concept and Design Evaluate relevant frameworks and theories of event concept and design"
+	},
+	{
+		"Id": "C18,U109,LO1255",
+		"Text": "Creative Industries Entrepreneurship Context & Culture of the Creative Industries Evaluate qualitative sources in accordance with prescribed citation conventions"
+	},
+	{
+		"Id": "C21,U130,LO1256",
+		"Text": "Electronic Music Production Concept Led Practical Production Evaluate production methodologies."
+	},
+	{
+		"Id": "C18,U92,LO1257",
+		"Text": "Creative Industries Entrepreneurship Creative Video Production Evaluate on your artefact and the approaches taken"
+	},
+	{
+		"Id": "C20,U150,LO1258",
+		"Text": "Event Management Festival Management Evaluate management and communication structures for festivals"
+	},
+	{
+		"Id": "C22,U147,LO1259",
+		"Text": "Sound & Music Production Creative Mix Techniques Evaluate key methodologies utilised within the mix process, with links to contemporary practitioners and reference material."
+	},
+	{
+		"Id": "C17,U104,LO1260",
+		"Text": "Music Business Globalisation Evaluate key areas of current operation in the global music industries"
+	},
+	{
+		"Id": "C20,U124,LO1261",
+		"Text": "Event Management Events & Society Evaluate key academic frameworks in event management"
+	},
+	{
+		"Id": "C20,U126,LO1262",
+		"Text": "Event Management Event Safety Evaluate insurance cover requirements for a given event"
+	},
+	{
+		"Id": "C20,U160,LO1263",
+		"Text": "Event Management Crowd Psychology & Management Evaluate how to effectively create an audience profile when planning for an event"
+	},
+	{
+		"Id": "C22,U139,LO1264",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Evaluate how successful each proposed strategy was at resolving an identified issue."
+	},
+	{
+		"Id": "C19,U97,LO1265",
+		"Text": "Music Marketing, Media & Communication Gender and Sexuality Evaluate how developments may hinder or progress gender and/or sexuality representations in the creative industries"
+	},
+	{
+		"Id": "C20,U151,LO1266",
+		"Text": "Event Management Event Sustainability Evaluate event sustainability within a local and global frame of reference."
+	},
+	{
+		"Id": "C21,U132,LO1267",
+		"Text": "Electronic Music Production Immersive Audio Techniques Evaluate established and emerging technologies, approaches and practices within the immersive audio realm."
+	},
+	{
+		"Id": "C20,U151,LO1269",
+		"Text": "Event Management Event Sustainability Evaluate barriers to progress in developing and delivering event sustainability"
+	},
+	{
+		"Id": "C18,U96,LO1272",
+		"Text": "Creative Industries Entrepreneurship Culture & Society Employ appropriate research tools to produce a coherent and wellpresented submission that demonstrates a critical approach to creative professional practice"
+	},
+	{
+		"Id": "C25,U38,LO1275",
+		"Text": "Performing Arts The Voice Fundamentals Discuss their vocal anatomy, their discoveries on how they have been using their voice and vocal strategies they could utilise to address specific issues."
+	},
+	{
+		"Id": "C17,U122,LO1276",
+		"Text": "Music Business Rights Management & Secondary Exploitation Discuss the terms of a standard license agreement & Communicate and negotiate the terms within."
+	},
+	{
+		"Id": "C19,U90,LO1277",
+		"Text": "Music Marketing, Media & Communication Marketing & PR Discuss the importance of marketing and PR and its wider impact on the music/events industry"
+	},
+	{
+		"Id": "C20,U160,LO1278",
+		"Text": "Event Management Crowd Psychology & Management Discuss the importance of crowd dynamics in crowd management"
+	},
+	{
+		"Id": "C17,U122,LO1279",
+		"Text": "Music Business Rights Management & Secondary Exploitation Discuss the importance and impact that music and musical IP can have on other forms of media."
+	},
+	{
+		"Id": "C17,U121,LO1280",
+		"Text": "Music Business Studio Sound & Recording Technology Discuss the implications of different mastering techniques"
+	},
+	{
+		"Id": "C20,U124,LO1281",
+		"Text": "Event Management Events & Society Discuss the impact events have on communities"
+	},
+	{
+		"Id": "C19,U98,LO1282",
+		"Text": "Music Marketing, Media & Communication Film Studies Discuss the history of film, its genres and auteurs, with specific consideration of the relationship between film and music"
+	},
+	{
+		"Id": "C22,U139,LO1283",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Discuss the globalisation and diversity of events"
+	},
+	{
+		"Id": "C22,U139,LO1283",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Discuss the globalisation and diversity of events"
+	},
+	{
+		"Id": "C20,U159,LO1284",
+		"Text": "Event Management Community, Cultural & Sports Events Discuss the design of the event"
+	},
+	{
+		"Id": "C17,U120,LO1285",
+		"Text": "Music Business The Business & Culture of Hip Hop Discuss how artists interaction with industry institutions differ from the usual approach within the music business."
+	},
+	{
+		"Id": "C20,U102,LO1286",
+		"Text": "Event Management Event Concept and Design Discuss examples of event design that focus either on artist or experience concepts"
+	},
+	{
+		"Id": "C20,U125,LO1287",
+		"Text": "Event Management Live Music 1: Booking & Promotion Discuss effective management strategies and communication between key live event roles"
+	},
+	{
+		"Id": "C19,U63,LO1288",
+		"Text": "Music Marketing, Media & Communication Celebrity Culture Discuss developments in the representation of celebrity culture"
+	},
+	{
+		"Id": "C17,U105,LO1290",
+		"Text": "Music Business Creative Economics Discuss current challenges for the sector in which your chosen organisation is working in"
+	},
+	{
+		"Id": "C19,U98,LO1292",
+		"Text": "Music Marketing, Media & Communication Film Studies Discussion, reading, research and your work in bringing together this exploratory Presentation will help show a growing understanding of the relationship between film and its social, political and cultural contexts"
+	},
+	{
+		"Id": "C19,U154,LO1294",
+		"Text": "Music Marketing, Media & Communication Popular Culture & Identity Display awareness of the interdependence between popular culture and identity"
+	},
+	{
+		"Id": "C22,U136,LO1295",
+		"Text": "Sound & Music Production Audio Capture Methods & Equipment Document the use of research to reach a desired aesthetic"
+	},
+	{
+		"Id": "C21,U148,LO1297",
+		"Text": "Electronic Music Production Creative Production Techniques Employ appropriate established production analysis theories and tools to analyse and judge contemporary production works."
+	},
+	{
+		"Id": "C20,U162,LO1298",
+		"Text": "Event Management Event Video Production Employ and appraise creative strategies in the development of an eventsbased video production project"
+	},
+	{
+		"Id": "C19,U158,LO1299",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Employ and appraise creative strategies in the development of a cohesive multimedia project for a specified target market or niche"
+	},
+	{
+		"Id": "C18,U110,LO1300",
+		"Text": "Creative Industries Entrepreneurship Creativity, Identity & Agency Employ academic resources to develop, support and communicate an argument"
+	},
+	{
+		"Id": "C21,U133,LO1301",
+		"Text": "Electronic Music Production Interactive Music Applications Employ a range of programming techniques"
+	},
+	{
+		"Id": "C21,U131,LO1302",
+		"Text": "Electronic Music Production Electroacoustic Composition Employ a range of advanced software tools and techniques to create contemporary electroacoustic compositions."
+	},
+	{
+		"Id": "C21,U131,LO1303",
+		"Text": "Electronic Music Production Electroacoustic Composition Employ a range of advanced software tools and techniques as necessary to the development of your contemporary electroacoustic composition."
+	},
+	{
+		"Id": "C22,U30,LO1305",
+		"Text": "Sound & Music Production Creating Sample Libraries Effectively implement audio samples into a bespoke library within a software sampler"
+	},
+	{
+		"Id": "C19,U156,LO1306",
+		"Text": "Music Marketing, Media & Communication Critical and Creative Writing Effectively deploy written language in a creative, coherent and authoritative manner."
+	},
+	{
+		"Id": "C22,U35,LO1307",
+		"Text": "Sound & Music Production Convolution and Sound Modelling Effectively deploy hardware and software resources to capture, analyse and apply the properties of physical spaces"
+	},
+	{
+		"Id": "C22,U147,LO1308",
+		"Text": "Sound & Music Production Creative Mix Techniques Effective application of core mix techniques (appropriate level alterations, EQ, panning, reverb)."
+	},
+	{
+		"Id": "C22,U35,LO1312",
+		"Text": "Sound & Music Production Convolution and Sound Modelling Draw on personal and professional values to critically evaluate your own work and justify creative decisions"
+	},
+	{
+		"Id": "C18,U108,LO1313",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Professional Portfolio Draw on appropriate theories of personal and professional development to explain and defend your personal and professional development plan"
+	},
+	{
+		"Id": "C17,U89,LO1314",
+		"Text": "Music Business Consultancy and Market Research Draw evidencebased conclusions and recommends."
+	},
+	{
+		"Id": "C19,U153,LO1319",
+		"Text": "Music Marketing, Media & Communication Finding Your Voice Debate a wide range of work developed and encountered during the module"
+	},
+	{
+		"Id": "C22,U34,LO1320",
+		"Text": "Sound & Music Production Game Sound & Music Critique their approach and results of their sound design"
+	},
+	{
+		"Id": "C18,U110,LO1321",
+		"Text": "Creative Industries Entrepreneurship Creativity, Identity & Agency Critique a range of resources and perspectives and relate these to your argument"
+	},
+	{
+		"Id": "C19,U25,LO1323",
+		"Text": "Music Marketing, Media & Communication Fashion and Music Critically reflect upon and evaluate ongoing trends and developments in the relationship between fashion and music."
+	},
+	{
+		"Id": "C20,U164,LO1324",
+		"Text": "Event Management Creative Commercial Events Critically reflect on your role within the life cycle of the event."
+	},
+	{
+		"Id": "C18,U108,LO1325",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Professional Portfolio Critically reflect on your personal learning journey, applying theories and concepts of personal and professional development"
+	},
+	{
+		"Id": "C18,U108,LO1326",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Professional Portfolio Critically reflect on your own skill set and preparedness for your chosen path"
+	},
+	{
+		"Id": "C17,U94,LO1327",
+		"Text": "Music Business Digital Arts & Branding Critically reflect on your design development process and technique"
+	},
+	{
+		"Id": "C20,U160,LO1329",
+		"Text": "Event Management Crowd Psychology & Management Critically reflect on the use of appropriate crowd management tools and strategies, including crowd dynamics"
+	},
+	{
+		"Id": "C19,U85,LO1330",
+		"Text": "Music Marketing, Media & Communication Digital Content Creation Critically reflect on the usability of your website or channel using theories of web navigation"
+	},
+	{
+		"Id": "C22,U26,LO1332",
+		"Text": "Sound & Music Production Music Production in Context Critically reflect on the success of your creative work using appropriate established theories and compositional models."
+	},
+	{
+		"Id": "C22,U36,LO1333",
+		"Text": "Sound & Music Production Audio Post Production Critically reflect on the key creative and technical production processes employed within a postproduction project and the impact on the outcome."
+	},
+	{
+		"Id": "C19,U100,LO1334",
+		"Text": "Music Marketing, Media & Communication Diversity in the Creative Industries Critically reflect on the implications of issues of diversity for future work in the creative industries."
+	},
+	{
+		"Id": "C20,U160,LO1336",
+		"Text": "Event Management Crowd Psychology & Management Critically reflect on strategies by offering suggestions for improvement or recommendations"
+	},
+	{
+		"Id": "C17,U106,LO1337",
+		"Text": "Music Business Audience Experience and Motivation Critically reflect on key industry trends and developments in experience by developing a specific business idea in the music or event industry"
+	},
+	{
+		"Id": "C17,U118,LO1338",
+		"Text": "Music Business Financing Creativity Debate the appropriateness of the various sources of income available to fund a creative project."
+	},
+	{
+		"Id": "C19,U91,LO1340",
+		"Text": "Music Marketing, Media & Communication Social Media & Digital Marketing Define a target market using audience segmentation"
+	},
+	{
+		"Id": "C19,U142,LO1341",
+		"Text": "Music Marketing, Media & Communication Artist Development & PR Define and explain existing & emerging marketing & PR principles and theories"
+	},
+	{
+		"Id": "C20,U163,LO1342",
+		"Text": "Event Management Live Sound Demonstate an ability to problem solve and make choices based upon the situation presented (e.g. genre specific features)"
+	},
+	{
+		"Id": "C18,U99,LO1343",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 2 Deliver this lesson to a specified group of learners (suggested minimum 4) in a safe, supportive and inclusive environment, responding to student needs and stimulating learning"
+	},
+	{
+		"Id": "C22,U136,LO1344",
+		"Text": "Sound & Music Production Audio Capture Methods & Equipment Deliver multitrack masters that demonstrate the attributes of techniques explored in class."
+	},
+	{
+		"Id": "C22,U136,LO1345",
+		"Text": "Sound & Music Production Audio Capture Methods & Equipment Deliver multi track recordings of live instrumentation that conforms to industry standard protocols:"
+	},
+	{
+		"Id": "C22,U136,LO1346",
+		"Text": "Sound & Music Production Audio Capture Methods & Equipment Deliver audio/project files that adhere to industry standards, file types, bit depth and sample rate"
+	},
+	{
+		"Id": "C22,U139,LO1347",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Deliver an unmastered mix that is a stereo interleaved WAV file, 44.1kHz sample rate, 24 bit resolution, with levels never exceeding 3dBfs (peak)."
+	},
+	{
+		"Id": "C22,U139,LO1349",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Deliver an early mix for comparison, correctly labelled."
+	},
+	{
+		"Id": "C22,U27,LO1351",
+		"Text": "Sound & Music Production Studio Practice & Engineering Deliver a studio quality multitrack recording in collaboration with an artist demonstrating your use of industry practices"
+	},
+	{
+		"Id": "C22,U139,LO1352",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Deliver a reflective statement in PDF format with no more than 10 annotated screenshots."
+	},
+	{
+		"Id": "C18,U103,LO1353",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 1 Deliver a one to one / individual tutorial lesson to a specified learner, demonstrating engagement with core pedagogical elements"
+	},
+	{
+		"Id": "C22,U139,LO1354",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Deliver a mix that is original, where creativity is boundaried by the norms of the chosen reference."
+	},
+	{
+		"Id": "C22,U139,LO1355",
+		"Text": "Sound & Music Production Mixing Multi-tracked Audio Deliver a mix that exhibits the characteristics of the chosen reference in terms of level and frequency balance and spatial imaging."
+	},
+	{
+		"Id": "C18,U99,LO1356",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 2 Deliver a lesson to a specified group of learners, demonstrating engagement with core pedagogical elements including differentiation"
+	},
+	{
+		"Id": "C17,U104,LO1357",
+		"Text": "Music Business Globalisation Deliver a balanced, detailed and wellinformed analytical case study."
+	},
+	{
+		"Id": "C19,U155,LO1358",
+		"Text": "Music Marketing, Media & Communication The Creative Entrepreneur Define markets for different music platforms, and identify digital content creation styles needed to relate ideas and features"
+	},
+	{
+		"Id": "C20,U161,LO1359",
+		"Text": "Event Management Socioeconomics: Event Impact and Legacy Define Impact and Legacy from a socioeconomic perspective"
+	},
+	{
+		"Id": "C19,U146,LO1360",
+		"Text": "Music Marketing, Media & Communication Global Communication Define globalisation with reference to the media, communications, and popular music"
+	},
+	{
+		"Id": "C18,U101,LO1361",
+		"Text": "Creative Industries Entrepreneurship Psychology of Music Define an area of music psychology to explore, making use of music psychology principles in an area relevant to personal interest or field of study."
+	},
+	{
+		"Id": "C22,U137,LO1362",
+		"Text": "Sound & Music Production Industry Toolkit Demonstrate a clear level of selfreflection to justify the areas of development needed to make progress on chosen path"
+	},
+	{
+		"Id": "C18,U111,LO1365",
+		"Text": "Creative Industries Entrepreneurship Final Project Critically engage with established knowledge/conceptual frameworks to inform, contextualise and shape your project"
+	},
+	{
+		"Id": "C22,U135,LO1366",
+		"Text": "Sound & Music Production Music & Listening Skills Critically comment on your performance through the exercises, both practical and with regards to terminology to highlight areas for future development"
+	},
+	{
+		"Id": "C17,U123,LO1368",
+		"Text": "Music Business The Business & Culture of Electronic Music Critically assess the impact of orthodox dance music business practice on developments in conventional popular music business operations"
+	},
+	{
+		"Id": "C22,U35,LO1369",
+		"Text": "Sound & Music Production Convolution and Sound Modelling Critically assess the creative and technical application of convolution in sound production"
+	},
+	{
+		"Id": "C21,U145,LO1370",
+		"Text": "Electronic Music Production Foley and Location Recording Critically appraise their process and outcome"
+	},
+	{
+		"Id": "C21,U129,LO1372",
+		"Text": "Electronic Music Production Digital Performance Skills Critically analyse your performance in regards to technology, delivery and technical prowess in accordance with industry standards"
+	},
+	{
+		"Id": "C19,U97,LO1374",
+		"Text": "Music Marketing, Media & Communication Gender and Sexuality Critically analyse representations of gender and/or sexuality"
+	},
+	{
+		"Id": "C17,U104,LO1375",
+		"Text": "Music Business Globalisation Critically analyse issues, opportunities and tensions arising from globalisation of the music industries"
+	},
+	{
+		"Id": "C19,U100,LO1376",
+		"Text": "Music Marketing, Media & Communication Diversity in the Creative Industries Critically analyse issues of diversity in the contemporary creative industries."
+	},
+	{
+		"Id": "C19,U97,LO1377",
+		"Text": "Music Marketing, Media & Communication Gender and Sexuality Critically analyse gender and/or sexuality representations in the creative industries"
+	},
+	{
+		"Id": "C21,U131,LO1378",
+		"Text": "Electronic Music Production Electroacoustic Composition Critically analyse electroacoustic compositions using appropriate established sonic theories and key compositional strategies."
+	},
+	{
+		"Id": "C21,U131,LO1379",
+		"Text": "Electronic Music Production Electroacoustic Composition Critically analyse electroacoustic compositions by selecting and utilising appropriate established sonic theories and key compositional strategies."
+	},
+	{
+		"Id": "C19,U63,LO1380",
+		"Text": "Music Marketing, Media & Communication Celebrity Culture Critically analyse contemporary and historical discourses"
+	},
+	{
+		"Id": "C17,U94,LO1382",
+		"Text": "Music Business Digital Arts & Branding Critically analyse a range of design styles and practices"
+	},
+	{
+		"Id": "C19,U91,LO1383",
+		"Text": "Music Marketing, Media & Communication Social Media & Digital Marketing Critically analyse a brand using theory and research"
+	},
+	{
+		"Id": "C19,U85,LO1384",
+		"Text": "Music Marketing, Media & Communication Digital Content Creation Critically engage with social, economic, cultural and political theory in planning, applying and reflecting on your campaign"
+	},
+	{
+		"Id": "C21,U145,LO1385",
+		"Text": "Electronic Music Production Foley and Location Recording Critically own process and outcome"
+	},
+	{
+		"Id": "C18,U99,LO1386",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 2 Critically engage with the process of giving, receiving and responding to feedback on planning and delivery"
+	},
+	{
+		"Id": "C19,U97,LO1387",
+		"Text": "Music Marketing, Media & Communication Gender and Sexuality Critically evaluate current industry developments and responses"
+	},
+	{
+		"Id": "C17,U87,LO1388",
+		"Text": "Music Business Business Ethics & Music Law Critically examine the outcome of negotiations and/or challenges to claims and rights"
+	},
+	{
+		"Id": "C18,U108,LO1389",
+		"Text": "Creative Industries Entrepreneurship Creative Industry & You 1 - Professional Portfolio Critically evaluate your readiness for a career in the creative industries, identifying future development opportunities"
+	},
+	{
+		"Id": "C18,U99,LO1390",
+		"Text": "Creative Industries Entrepreneurship Practical Learning and Teaching in the Creative Arts 2 Critically evaluate your planning and delivery in a group, identifying areas for future development"
+	},
+	{
+		"Id": "C17,U94,LO1391",
+		"Text": "Music Business Digital Arts & Branding Critically evaluate your digital designs"
+	},
+	{
+		"Id": "C20,U162,LO1392",
+		"Text": "Event Management Event Video Production Critically evaluate theoretical approaches to video production projects and reflect upon the success of your own work in this context"
+	},
+	{
+		"Id": "C19,U158,LO1393",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Critically evaluate theoretical approaches to multimedia production projects and reflect upon the success of your own work in this context"
+	},
+	{
+		"Id": "C21,U129,LO1395",
+		"Text": "Electronic Music Production Digital Performance Skills Critically evaluate the production and performance process in accordance with industry standards relating to equipment use and performance"
+	},
+	{
+		"Id": "C22,U30,LO1396",
+		"Text": "Sound & Music Production Creating Sample Libraries Critically evaluate the processes and resultant outcomes within your library"
+	},
+	{
+		"Id": "C19,U144,LO1397",
+		"Text": "Music Marketing, Media & Communication Fans and Social Media Influencers Critically evaluate the impact of the changes"
+	},
+	{
+		"Id": "C20,U162,LO1398",
+		"Text": "Event Management Event Video Production Critically evaluate the effectiveness of video production techniques utilised with respect to industry professional standards"
+	},
+	{
+		"Id": "C19,U158,LO1399",
+		"Text": "Music Marketing, Media & Communication Communication In Practice Critically evaluate the effectiveness of video and audio production techniques utilised with respect to industry professional standards"
+	},
+	{
+		"Id": "C20,U165,LO1402",
+		"Text": "Event Management Technical Event Production Critically evaluate realworld examples of technical event production"
+	},
+	{
+		"Id": "C22,U31,LO1404",
+		"Text": "Sound & Music Production Vocal Capture and Production Critically evaluate own performance through the use of external feedback"
+	},
+	{
+		"Id": "C19,U25,LO1405",
+		"Text": "Music Marketing, Media & Communication Fashion and Music Critically evaluate ongoing trends and developments, whether aesthetic, sociocultural, commercial or political, in the relationship between fashion and music, reaching insightful, articulate and predicative conclusions."
+	},
+	{
+		"Id": "C17,U119,LO1406",
+		"Text": "Music Business Record Label Management Critically evaluate current protocols and practices in releasing and marketing music"
+	},
+	{
+		"Id": "C17,U88,LO1407",
+		"Text": "Music Business Music & Event Futures Critically evaluate a range of perspectives on current and future trends and influences in the music and/or events industry"
+	},
+	{
+		"Id": "C21,U133,LO1408",
+		"Text": "Electronic Music Production Interactive Music Applications Evaluate technical problems correctly."
+	},
+	{
+		"Id": "C17,U116,LO1412",
+		"Text": "Music Business Music Publishing Demonstrate knowledge of the difference between assignment and license of copyright"
+	},
+	{
+		"Id": "C17,U122,LO1413",
+		"Text": "Music Business Rights Management & Secondary Exploitation Demonstrate knowledge of the core rights that surround intellectual property (specifically music)"
+	},
+	{
+		"Id": "C17,U120,LO1415",
+		"Text": "Music Business The Business & Culture of Hip Hop Demonstrate knowledge and understanding of the current development within the genre, these can be cultural, political or technological"
+	},
+	{
+		"Id": "C17,U123,LO1416",
+		"Text": "Music Business The Business & Culture of Electronic Music Demonstrate knowledge and understanding of the current development within the cornerstone genres, these can be cultural, political or technological"
+	},
+	{
+		"Id": "C17,U104,LO1417",
+		"Text": "Music Business Globalisation Demonstrate knowledge and critical understanding of the opportunities and tensions arising from global business practices"
+	},
+	{
+		"Id": "C18,U101,LO1418",
+		"Text": "Creative Industries Entrepreneurship Psychology of Music Demonstrate knowledge and competence in music psychology principles by presenting an appropriate area for investigation accompanied by an effective rationale."
+	},
+	{
+		"Id": "C22,U135,LO1419",
+		"Text": "Sound & Music Production Music & Listening Skills Demonstrate key listening and communication skills when critically analysing recordings"
+	},
+	{
+		"Id": "C20,U159,LO1420",
+		"Text": "Event Management Community, Cultural & Sports Events Demonstrate key event management skills and expertise"
+	},
+	{
+		"Id": "C21,U132,LO1422",
+		"Text": "Electronic Music Production Immersive Audio Techniques Demonstrate innovation in the use of tools / techniques / application"
+	},
+	{
+		"Id": "C18,U111,LO1426",
+		"Text": "Creative Industries Entrepreneurship Final Project Demonstrate how current theory and contemporary research in your chosen field has informed your project"
+	},
+	{
+		"Id": "C25,U38,LO1428",
+		"Text": "Performing Arts The Voice Fundamentals Demonstrate fundamental vocal technique"
+	},
+	{
+		"Id": "C25,U37,LO1429",
+		"Text": "Performing Arts The Body Fundamentals Demonstrate fundamental physical techniques"
+	},
+	{
+		"Id": "C25,U39,LO1431",
+		"Text": "Performing Arts Performance Fundamentals Demonstrate fundamental performance technique"
+	},
+	{
+		"Id": "C22,U29,LO1432",
+		"Text": "Sound & Music Production Practical Acoustics Demonstrate knowledge of the underlying principles of sound propagation"
+	},
+	{
+		"Id": "C17,U94,LO1438",
+		"Text": "Music Business Digital Arts & Branding Demonstrate technical expertise and skill in using suitable design software"
+	},
+	{
+		"Id": "C22,U28,LO1439",
+		"Text": "Sound & Music Production Live Sound and Events Demonstrate technical competence to complete a soundcheck with an ensemble"
+	},
+	{
+		"Id": "C20,U163,LO1440",
+		"Text": "Event Management Live Sound Demonstrate technical competence to complete a soundcheck with an artist/band in a safe and efficient manner"
+	},
+	{
+		"Id": "C18,U95,LO1443",
+		"Text": "Creative Industries Entrepreneurship Working in the Creative Industries Demonstrate specifically how this work based learning has increased employability and provided a deeper understanding of the realities of professional practice and the skills required to successfully achieve career goals."
+	},
+	{
+		"Id": "C17,U114,LO1446",
+		"Text": "Music Business Live Music Industry Demonstrate robust planning of a live music event"
+	},
+	{
+		"Id": "C20,U149,LO1448",
+		"Text": "Event Management Event Enterprise Demonstrate research into your costings"
+	},
+	{
+		"Id": "C21,U130,LO1451",
+		"Text": "Electronic Music Production Concept Led Practical Production Demonstrate methodologies and processes that you have created through the merging and assimilation of existing processes."
+	},
+	{
+		"Id": "C19,U156,LO1452",
+		"Text": "Music Marketing, Media & Communication Critical and Creative Writing Demonstrate lucidity and concision in critical or creative writing."
+	},
+	{
+		"Id": "C20,U126,LO1454",
+		"Text": "Event Management Event Safety Demonstrate a critical approach to problemsolving health & safety issues at a live event"
+	},
+	{
+		"Id": "C22,U36,LO1456",
+		"Text": "Sound & Music Production Audio Post Production Demonstrate effective use of room tone and atmos tracks, reverb to match visual cues and sample capture or manipulation and layering"
+	},
+	{
+		"Id": "C19,U98,LO1457",
+		"Text": "Music Marketing, Media & Communication Film Studies Demonstrate an awareness of the history of film, its themes, genres and auteurs"
+	},
+	{
+		"Id": "C24,U56,LO1458",
+		"Text": "Songwriting Songwriting Portfolio Demonstrate an artistic voice within the creative interpretation of realworld songwriting briefs"
+	},
+	{
+		"Id": "C24,U56,LO1460",
+		"Text": "Songwriting Songwriting Portfolio Demonstrate an advanced level of versatility in writing style and genre, based upon interpretation of a given writing brief."
+	},
+	{
+		"Id": "C18,U101,LO1465",
+		"Text": "Creative Industries Entrepreneurship Psychology of Music Demonstrate academic rigour by presenting fully referenced work accompanied by a bibliography, which makes appropriate use of literature and scholarly activity in the field."
+	},
+	{
+		"Id": "C22,U28,LO1466",
+		"Text": "Sound & Music Production Live Sound and Events Demonstrate ability to work with, and communicate effectively with performers in order to achieve the best possible result"
+	},
+	{
+		"Id": "C22,U28,LO1467",
+		"Text": "Sound & Music Production Live Sound and Events Demonstrate ability to work with, and communicate effectively with peers in order to achieve the best possible result"
+	},
+	{
+		"Id": "C20,U163,LO1468",
+		"Text": "Event Management Live Sound Demonstrate ability to work with, and communicate effectively with an artist/band in order to achieve the best possible result onstage and for front of house"
+	},
+	{
+		"Id": "C19,U143,LO1469",
+		"Text": "Music Marketing, Media & Communication Mobile Apps - Design and User Culture Demonstrate ability to reflect knowledge of media consumption, communication theory and UX in app design."
+	},
+	{
+		"Id": "C22,U28,LO1470",
+		"Text": "Sound & Music Production Live Sound and Events Demonstrate ability to problem solve and make choices based upon the situation presented (e.g. genre specific features)"
+	},
+	{
+		"Id": "C22,U27,LO1474",
+		"Text": "Sound & Music Production Studio Practice & Engineering Demonstrate a range of industry standard hardware and software studio tools and illustrate their application in your recordings with appropriate terminology and references"
+	},
+	{
+		"Id": "C18,U110,LO1476",
+		"Text": "Creative Industries Entrepreneurship Creativity, Identity & Agency Demonstrate an emergent ability to reconceptualise material by formulating a position based on your evaluation"
+	},
+	{
+		"Id": "C19,U156,LO1482",
+		"Text": "Music Marketing, Media & Communication Critical and Creative Writing Demonstrate effective skills of communication, rhetoric and argument."
+	},
+	{
+		"Id": "C17,U112,LO1483",
+		"Text": "Music Business Artist Management Demonstrate effective research and understanding of current management and industry practice."
+	},
+	{
+		"Id": "C21,U132,LO1487",
+		"Text": "Electronic Music Production Immersive Audio Techniques Demonstrate depth of research on techniques and technologies to develop an immersive audio experience."
+	},
+	{
+		"Id": "C22,U32,LO1488",
+		"Text": "Sound & Music Production Answering a Creative Brief Demonstrate convincingly how your choices are supporting the brief’s demands."
+	},
+	{
+		"Id": "C18,U92,LO1489",
+		"Text": "Creative Industries Entrepreneurship Creative Video Production Demonstrate consideration for the conventions of style of video that they aim to create."
+	},
+	{
+		"Id": "C20,U150,LO1490",
+		"Text": "Event Management Festival Management Demonstrate consideration for local authority concerns and priorities"
+	},
+	{
+		"Id": "C21,U132,LO1492",
+		"Text": "Electronic Music Production Immersive Audio Techniques Demonstrate comprehension of own ideas."
+	},
+	{
+		"Id": "C21,U128,LO1494",
+		"Text": "Electronic Music Production Digital Composition in Context Demonstrate competent use of music production hardware and software to produce a digital composition at an appropriate creative and technical level."
+	},
+	{
+		"Id": "C19,U155,LO1496",
+		"Text": "Music Marketing, Media & Communication The Creative Entrepreneur Demonstrate awareness of various markets"
+	},
+	{
+		"Id": "C19,U155,LO1497",
+		"Text": "Music Marketing, Media & Communication The Creative Entrepreneur Demonstrate awareness of key legal, ethical, financial and budgeting issues facing participants in The Portfolio Career"
+	},
+	{
+		"Id": "C19,U155,LO1498",
+		"Text": "Music Marketing, Media & Communication The Creative Entrepreneur Demonstrate awareness of established principles and practices of media consumption"
+	},
+	{
+		"Id": "C17,U116,LO1499",
+		"Text": "Music Business Music Publishing Demonstrate an understanding of music copyright"
+	}
+]

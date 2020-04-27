@@ -9,5 +9,6 @@ namespace Darl.GraphQL.Models.Models
         public double? weight { get; set; }
         public string startId { get; set; }
         public string endId { get; set; }
+
     }
 }

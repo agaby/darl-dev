@@ -103,6 +103,8 @@ namespace Darl.GraphQL
             services.AddSingleton<IAuthChecker, AuthChecker>();
             services.AddSingleton<IGraphProcessing, GraphProcessing>();
             services.AddSingleton<ILicensing, ProductLicensing>();
+            services.AddSingleton<IBlobConnectivity, BlobConnectivity>();
+            services.AddSingleton<IConceptMapProcessing, ConceptMatchProcessing>();
 
             //types
             services.AddSingleton<BotFormatType>();
@@ -219,6 +221,9 @@ namespace Darl.GraphQL
             services.AddSingleton<GraphConnectionUpdateType>();
             services.AddSingleton<SubscriptionTypeEnum>();
             services.AddSingleton<DarlLicenseType>();
+            services.AddSingleton<MatchResultType>();
+            services.AddSingleton<InferenceRecordType>();
+
 
 
             //root

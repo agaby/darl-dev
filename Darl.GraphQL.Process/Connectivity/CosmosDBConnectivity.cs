@@ -30,6 +30,11 @@ using VSTS.Net.Models.WorkItems;
 using VSTS.Net.Types;
 using Default = Darl.GraphQL.Models.Models.Default;
 using MLModel = Darl.GraphQL.Models.Models.MLModel;
+using Newtonsoft.Json.Linq;
+using QuickGraph.Serialization;
+using QuickGraph.Algorithms.Search;
+using Darl.GraphQL.Process.Middleware;
+using QuickGraph.Algorithms;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -1894,7 +1899,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task SaveBotState(BotState bs)
         {
             var collection = db.GetCollection<BotState>(botStateCollection);
-            await collection.ReplaceOneAsync( doc => doc.id == bs.id && doc.userId == bs.userId , bs, new UpdateOptions { IsUpsert = true });
+            await collection.ReplaceOneAsync(doc => doc.conversationId == bs.conversationId && doc.userId == bs.userId, bs, new UpdateOptions { IsUpsert = true });
         }
 
         public async Task CreateDefaultResponse(DefaultResponse response)
@@ -2573,5 +2578,6 @@ namespace Darl.GraphQL.Models.Connectivity
             await GetUserById(userId);
             return _licensing.CheckKey(key);
         }
+
     }
 }

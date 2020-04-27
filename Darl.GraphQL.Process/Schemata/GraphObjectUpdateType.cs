@@ -20,6 +20,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.name,true).Description("The name of this object");
             Field(c => c.secondname, true).Description("The second name if human");
             Field<ListGraphType<StringStringPairInputType>>("properties", "Other properties of this object", resolve: c => c.Source.properties);
+            Field<BooleanGraphType>("virtual", "if true the object is a representative of a type, rather than a real world object", resolve: c => c.Source._virtual);
         }
     }
 }

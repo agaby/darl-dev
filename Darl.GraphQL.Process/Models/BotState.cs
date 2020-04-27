@@ -12,7 +12,7 @@ namespace Darl.GraphQL.Models.Models
     [BsonIgnoreExtraElements]
     public class BotState
     {
-        public ObjectId id { get; set; }
+//        public ObjectId id { get; set; }
 
         public string userId { get; set; }
 

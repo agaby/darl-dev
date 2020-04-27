@@ -13,6 +13,7 @@ namespace Darl.GraphQL.Models.Models
         public string userId { get; set; }
         public List<DateTime> existence { get; set; }
         public bool inferred { get; set; } = false;
+        public bool? _virtual { get; set; }
         public List<StringStringPair> properties { get; set; }
     }
 }

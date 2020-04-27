@@ -11,7 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlQuery : ObjectGraphType<object>
     {
-        public DarlQuery(IConnectivity connectivity, IBotProcessing bot, IFormProcessing form, ISimProcessing sim, IGraphProcessing graph)
+        public DarlQuery(IConnectivity connectivity, IBotProcessing bot, IFormProcessing form, ISimProcessing sim, IGraphProcessing graph, IConceptMapProcessing cmp)
         {
             Name = "Query";
             Description = "View the contents of your account.";
@@ -668,6 +668,39 @@ namespace Darl.GraphQL.Models.Schemata
                     var query = context.GetArgument<string>("query");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(async c => await graph.gremlinPassThrough(userId, query));
+                }
+            ).AuthorizeWith("CorpPolicy");
+
+            FieldAsync<ListGraphType<MatchResultType>>(
+                "inferFromConceptMatchTree",
+                "Find the nearest matches in a given concept match tree to the given set of texts",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "treeName", Description = "The concept match tree name" },
+                    new QueryArgument<NonNullGraphType<ListGraphType<StringGraphType>>> { Name = "texts", Description = "The texts to match. Maximum 50 at a time." }
+                ),
+                resolve: async context =>
+                {
+                    var treeName = context.GetArgument<string>("treeName");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    var texts = context.GetArgument<List<string>>("texts");
+                    return await context.TryAsyncResolve(async c => await cmp.InferFromConceptMatchTree(userId, treeName, texts));
+                }
+            ).AuthorizeWith("CorpPolicy");
+            FieldAsync<InferenceRecordType>(
+                "inferFromKnowledgeGraph",
+                "Make an 1nference using the knowledge graph",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<GraphObjectInputType>> { Name = "start", Description = "The object to make the inference for" },
+                    new QueryArgument<NonNullGraphType<GraphObjectInputType>> { Name = "target", Description = "The target object to make an inference to." },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "targetOutput", Description = "The dominant output to report on." }
+                ),
+                resolve: async context =>
+                {
+                    var start = context.GetArgument<GraphObjectInput>("start");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    var target = context.GetArgument<GraphObjectInput>("target");
+                    var targetOutput = context.GetArgument<string>("targetOutput");
+                    return await context.TryAsyncResolve(async c => await graph.InferPath(start, target, userId, targetOutput));
                 }
             ).AuthorizeWith("CorpPolicy");
         }

@@ -11,7 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlMutation : ObjectGraphType<object>
     {
-        public DarlMutation(IConnectivity connectivity, IEmailProcessing email, IGraphProcessing graph, IConfiguration _config)
+        public DarlMutation(IConnectivity connectivity, IEmailProcessing email, IGraphProcessing graph, IConfiguration _config, IConceptMapProcessing cmp)
         {
             Name = "Mutation";
             Description = "Make changes to the contents of your account.";
@@ -1181,6 +1181,21 @@ namespace Darl.GraphQL.Models.Schemata
                             async c => await connectivity.CreateKey(userId,company,email,endDate));
                     }
                 ).AuthorizeWith("AdminPolicy");
+            FieldAsync<StringGraphType>("createConceptMatchTree", "Create a concept matching tree based on a json source containing an array in collateral", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "treeName", Description = "The unique name of the stored match tree for later reuse " },
+                    new QueryArgument<NonNullGraphType<ListGraphType<StringStringPairInputType>>> { Name = "data", Description = "The data to add to the Concept Match Tree" },
+                    new QueryArgument<BooleanGraphType> { Name = "rebuild", Description = "if false (default) add to existing tree, otherwise create a new tree.", DefaultValue = false }
+                ),
+                resolve: async context =>
+                {
+                    var treeName = context.GetArgument<string>("treeName");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    var data = context.GetArgument<List<StringStringPair>>("data");
+
+                    return await context.TryAsyncResolve(
+                        async c => await cmp.CreateConceptMatchTree(userId, treeName, data));
+                }
+            ).AuthorizeWith("CorpPolicy");
         }
     }
 }
