@@ -12,6 +12,7 @@
     <None Remove="input2.json" />
     <None Remove="learning_outcomes.txt" />
     <None Remove="msr_paraphrase_train.txt" />
+    <None Remove="WM_MusicIndustry.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +21,7 @@
     <EmbeddedResource Include="input2.json" />
     <EmbeddedResource Include="learning_outcomes.txt" />
     <EmbeddedResource Include="msr_paraphrase_train.txt" />
+    <EmbeddedResource Include="WM_MusicIndustry.json" />
   </ItemGroup>
 
   <ItemGroup>
