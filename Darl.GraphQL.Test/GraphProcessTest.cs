@@ -10,8 +10,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Test
@@ -21,6 +25,25 @@ namespace Darl.GraphQL.Test
     {
         private GraphProcessing _graph;
         private IConfiguration _config;
+
+        private static string industryLineage = "noun:01,2,07,10,14,3,1";
+        private static string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";
+        private static string jobLineage = "noun:01,0,2,00,23,19";
+        private static string areaLineage = "noun:01,1,00,10,09,5";
+        private static string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
+        private static string courseLineage = "noun:01,0,2,00,23,29,02";
+        private static string abilityLineage = "noun:01,0,0,04";
+        private static string enableLineage = "verb:013,210";
+        private static string ruleLineage = "noun:01,0,2,00,23,44,15";
+        private static string personLineage = "noun:00,2,00";
+        private static string universityLineage = "noun:01,2,07,10,13,7,4";
+        private static string learningOutcomeLineage = "noun:01,0,0,15,16,2";
+        private static string ownLineage = "verb:393";
+        private static string consistsLineage = "verb:019,031";
+        private static string teachLineage = "verb:034,30,01,09,01";
+        private static string topicLineage = "noun:01,4,05,06";
+        private static string skillLineage = "noun:01,0,0,04";
+        private static string createLineage = "verb:023";
 
         [TestInitialize()]
         public void Initialize()
@@ -35,6 +58,7 @@ namespace Darl.GraphQL.Test
             configuration.Setup(a => a[It.Is<string>(s => s == "darlDevAPiKey")]).Returns("e438440e-9d90-46e8-87ed-080e19c43aed");
             configuration.Setup(a => a[It.Is<string>(s => s == "darlDevUrl")]).Returns("https://darl.dev/graphql/");
             configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("5ee43551-c05c-4cff-8582-c08f23f84c14");
+            configuration.Setup(a => a[It.Is<string>(s => s == "gremlinLocation")]).Returns("local");
             var logger = new Mock<ILogger<GraphProcessing>>();
             var context = new Mock<IHttpContextAccessor>();
             _config = configuration.Object;
@@ -60,14 +84,14 @@ namespace Darl.GraphQL.Test
             Assert.AreEqual(res.existence[0], new DateTime(1955, 11, 6));
             Assert.AreEqual(res.existence[1], DateTime.MaxValue);
             //add a property
-            var up = await _graph.UpdateGraphObject(_config["userId"], new GraphObjectUpdate { id = res.id, lineage = "noun:00,2,00", properties = new List<StringStringPair> { new StringStringPair("noun:01,4,09,01,3,4,5", "Andy is a bit of a dork, really.") } }, true);
+            var up = await _graph.UpdateGraphObject(_config["userId"], new GraphObjectUpdate { id = res.id, lineage = "noun:00,2,00", properties = new List<StringStringPair> { new StringStringPair("noun:01,4,09,01,3,4,5", "Andy is a bit of a dork, really.") } }, IGraphProcessing.OntologyAction.build);
             Assert.AreEqual(1, up.properties.Count);
             //add another 
             var res2 = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput { lineage = "noun:00,2,00", name = "Anneke Edmonds", firstname = "Anneke", secondname = "Edmonds", inferred = false, existence = new List<DateTime> { new DateTime(1961, 8, 27), DateTime.MaxValue } });
             var obj2 = await _graph.GetGraphObjectById(_config["userId"], res2.id);
             Assert.AreEqual(res2.id, obj2.id);
             //add a marry link
-            var conn1 = await _graph.CreateGraphConnection(_config["userId"], new GraphConnectionInput { lineage = "verb:197,6,07", existence = new List<DateTime> { new DateTime(1988, 8, 27), DateTime.MaxValue }, name = "married", startId = res.id, endId = res2.id }, true);
+            var conn1 = await _graph.CreateGraphConnection(_config["userId"], new GraphConnectionInput { lineage = "verb:197,6,07", existence = new List<DateTime> { new DateTime(1988, 8, 27), DateTime.MaxValue }, name = "married", startId = res.id, endId = res2.id }, IGraphProcessing.OntologyAction.build);
             Assert.AreEqual(conn1.startId, res.id);
             Assert.AreEqual(conn1.endId, res2.id);
             Assert.AreEqual(conn1.lineage, "verb:197,6,07");
@@ -283,6 +307,271 @@ namespace Darl.GraphQL.Test
             Assert.AreEqual(0.0, res.confidence);
         }
 
+        [TestMethod]
+        public async Task TestCreateJobsAnd()
+        {
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.WM_MusicIndustry.json"));
+            var doc = docsource.ReadToEnd();
+            var industries = JArray.Parse(doc);
+//            var res = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput { lineage = industryLineage, name = "Music industry", inferred = false });
+            var sectors = industries.SelectTokens("$..Sectors").First().ToList();
+            foreach(var sector in sectors)
+            {
+                //get name
+                var sectorName = sector.SelectToken("$.Name").ToString();
+                //get id
+                //Add an object
+                var areas = sector.SelectTokens("$.Areas").First().ToList();
+                foreach(var area in areas)
+                {
+                    var AreaName = area.SelectToken("$.Name").ToString();
+                    //add an object
+                    var types = area.SelectTokens("$.Types").First().ToList();
+                    foreach(var t in types)
+                    {
+                        var typeName = t.SelectToken("$.Name").ToString();
+                        //add an object
+                        var roles = t.SelectTokens("$.Roles").First().ToList();
+                        foreach (var r in roles)
+                        {
+                            if(r.HasValues)
+                            { 
+                                var jobName = r.SelectToken("$.Name").ToString();
+                                //add an object
+                                var res = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput
+                                {
+                                    lineage = jobLineage,
+                                    name = jobName,
+                                    inferred = false,
+                                    properties =
+                                    new List<StringStringPair>
+                                    {
+                                        new StringStringPair(sectorLineage,sectorName),
+                                        new StringStringPair(areaLineage, AreaName),
+                                        new StringStringPair(typeLineage, typeName),
+                                        new StringStringPair(industryLineage, "Music industry")
+                                   }
+                                }, IGraphProcessing.OntologyAction.build);
+                            }
+
+                        }
+                    }
+                }
+            }
+            docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.CourseUnitsJson.json"));
+            doc = docsource.ReadToEnd();
+            var courses = JArray.Parse(doc);
+            //add institution object
+            var instRes = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput
+            {
+                lineage = universityLineage,
+                name = "University",
+                inferred = false
+            }, IGraphProcessing.OntologyAction.build);
+            var institutionId = instRes.id;   
+            foreach (var course in courses)
+            {
+                var courseName = course.SelectToken("$.Name").ToString();
+                var courseId = course.SelectToken("$.Id").ToString();
+                var courseUnits = course.SelectTokens("$.CourseUnits").First().ToList();
+                //add course object
+                var courseRes = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput
+                {
+                    lineage = courseLineage,
+                    name = courseName,
+                    inferred = false,
+                    _virtual = false,
+                    externalId = courseId
+                }, IGraphProcessing.OntologyAction.build);
+                var courseGraphId = courseRes.id;
+                //add link back to institution
+                await _graph.CreateGraphConnection(_config["userId"],
+                    new GraphConnectionInput
+                    {
+                        startId = institutionId,
+                        endId = courseGraphId,
+                        inferred = false,
+                        _virtual = false,
+                        name = "owns",
+                        lineage = ownLineage,
+                        weight = 1.0
+                    },
+                    IGraphProcessing.OntologyAction.ignore); ;
+                foreach (var cunit in courseUnits)
+                {
+                    var unit = cunit.SelectToken("$.Unit");
+                    var unitName = unit.SelectToken("$.Name").ToString();
+                    var unitId = unit.SelectToken("$.Id").ToString();
+                    //add unit object
+                    var unitRes = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput
+                    {
+                        lineage = courseLineage,
+                        name = unitName,
+                        inferred = false,
+                        _virtual = false,
+                        externalId = unitId
+                    }, IGraphProcessing.OntologyAction.build);
+                    var unitGraphId = unitRes.id;
+                    //add link back to course
+                    await _graph.CreateGraphConnection(_config["userId"],
+                        new GraphConnectionInput
+                        {
+                            startId = courseGraphId,
+                            endId = unitGraphId,
+                            inferred = false,
+                            _virtual = false,
+                            name = "consists of",
+                            lineage = consistsLineage,
+                            weight = 1.0
+                        },
+                        IGraphProcessing.OntologyAction.build);
+                    //now learning outcomes
+                    var learningOutcomes = unit.SelectTokens("$.UnitLearningOutcomes").First().ToList();
+                    foreach(var lo in learningOutcomes)
+                    {
+                        //get subobject
+                        var los = lo.SelectToken("$.LearningOutcome");
+                        var loName = los.SelectToken("$.Name").ToString();
+                        var loId = los.SelectToken("$.Id").ToString();
+                        //add lo object
+                        var loRes = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput
+                        {
+                            lineage = learningOutcomeLineage,
+                            name = loName,
+                            inferred = false,
+                            _virtual = false,
+                            externalId = loId
+                        }, IGraphProcessing.OntologyAction.build);
+                        var loGraphId = loRes.id;
+                        //add link back to unit
+                        await _graph.CreateGraphConnection(_config["userId"],
+                            new GraphConnectionInput
+                            {
+                                startId = unitGraphId,
+                                endId = loGraphId,
+                                inferred = false,
+                                _virtual = false,
+                                name = "teaches",
+                                lineage = teachLineage,
+                                weight = 1.0
+                            },
+                            IGraphProcessing.OntologyAction.build);
+                    }
+                    //Subject topics
+                    var subjectTopics = unit.SelectTokens("$.UnitSubjectTopics").First().ToList();
+                    foreach (var st in subjectTopics)
+                    {
+                        //get subobject
+                        var sts = st.SelectToken("$.SubjectTopic");
+                        var stName = sts.SelectToken("$.Name").ToString();
+                        var stId = sts.SelectToken("$.Id").ToString();
+                        //add subject topic object
+                        var stsRes = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput
+                        {
+                            lineage = topicLineage,
+                            name = stName,
+                            inferred = false,
+                            _virtual = false,
+                            externalId = stId
+                        }, IGraphProcessing.OntologyAction.build);
+                        var stsGraphId = stsRes.id;
+                        //add link back to unit
+                        await _graph.CreateGraphConnection(_config["userId"],
+                             new GraphConnectionInput
+                             {
+                                 startId = unitGraphId,
+                                 endId = stsGraphId,
+                                 inferred = false,
+                                 _virtual = false,
+                                 name = "consists of",
+                                 lineage = consistsLineage,
+                                 weight = 1.0
+                             },
+                             IGraphProcessing.OntologyAction.build);
+                    }
+                    //transferable Skills
+                    var TransferableSkill = unit.SelectTokens("$.UnitTransferableSkills").First().ToList();
+                    foreach (var ts in TransferableSkill)
+                    {
+                        //get subobject
+                        var tss = ts.SelectToken("$.TransferableSkill");
+                        var stName = tss.SelectToken("$.Name").ToString();
+                        var stId = tss.SelectToken("$.Id").ToString();
+                        //add transferable skill object
+                        var tssRes = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput
+                        {
+                            lineage = skillLineage,
+                            name = stName,
+                            inferred = false,
+                            _virtual = false,
+                            externalId = stId
+                        }, IGraphProcessing.OntologyAction.build);
+                        var tssGraphId = tssRes.id;
+                        //add link back to unit
+                        await _graph.CreateGraphConnection(_config["userId"],
+                             new GraphConnectionInput
+                             {
+                                 startId = unitGraphId,
+                                 endId = tssGraphId,
+                                 inferred = false,
+                                 _virtual = false,
+                                 name = "creates",
+                                 lineage = createLineage,
+                                 weight = 1.0
+                             },
+                             IGraphProcessing.OntologyAction.build);
+                    }
+
+                }
+            }
+        }
+
+        [TestMethod]
+        public async Task TestSoftMatchJobs()
+        {
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.musicbusinessworldwide.json"));
+            var doc = docsource.ReadToEnd();
+            var jobs = JArray.Parse(doc).ToList();
+            var values = new List<List<string>>();
+            var indexes  = new List<List<string>>();
+
+            foreach(var job in jobs)
+            {
+                var jobTitle = job.SelectToken("$.Title").ToString();
+                indexes.Add(new List<string> { jobTitle });
+                var data = job.SelectToken("$.Data");
+                // The format of the data is an array of arrays of strings.
+                // Each subarray has a title text which varies from  one job listing to the next. In the best of all worlds we would 
+                // read these to determine the intent of the sub section. For instance, "about us" is not relevant. 
+                // "previous experience" is relevant for building the "leads to" job to job relationships, but not skills, etc.
+                // since these titles themselves are textual and vary from agent to agent we will need to softmatch them.
+                // in this first pass we will try to match all the text items.
+                var list = new List<String>();
+                var sections = data.ToList();
+                foreach(var section in sections)
+                {
+                    var subsections = section.First().ToList();
+                    foreach(var s in subsections)
+                    {
+                        list.Add(s.ToString());
+                    }
+ 
+                }
+                values.Add(list);
+            }
+
+            var report = await _graph.UpdateKGFromAssociationData(_config["userId"], new List<KGTrainingValue> { 
+            new KGTrainingValue{ index = true, valueLineages = new List<string>{ jobLineage }, valueProperty = new List<string>{sectorLineage, areaLineage, typeLineage, "name" }, values= indexes },
+            new KGTrainingValue{ index = false, valueLineages = new List<string>{ courseLineage }, valueProperty = new List<string>{"name" }, values= values }
+            });
+
+        }
+
+        [TestMethod]
+        public async Task TestGettingProperties()
+        {
+            var res = await _graph.GetGraphObjectProperty(_config["userId"], "5aba5cea-7c7e-4b1e-8abc-057c445cdaee","lineage");
+        }
 
     }
 }

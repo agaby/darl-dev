@@ -223,6 +223,9 @@ namespace Darl.GraphQL
             services.AddSingleton<DarlLicenseType>();
             services.AddSingleton<MatchResultType>();
             services.AddSingleton<InferenceRecordType>();
+            services.AddSingleton<OntologyActionEnum>();
+            services.AddSingleton<KGTrainingSpecType>();
+            services.AddSingleton<KGTrainingValueType>();
 
 
 

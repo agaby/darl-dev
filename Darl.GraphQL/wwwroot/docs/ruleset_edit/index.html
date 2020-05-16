@@ -9,18 +9,13 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Editing Rulesets - Darl.dev documentation</title>
-        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="../js/bootstrap.min.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script>
         <script>
@@ -35,21 +30,16 @@
     </head>
 
     <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-
-                <!-- Collapsed navigation -->
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="..">Darl.dev documentation</a>
-                </div>
+                <a class="navbar-brand" href="..">Darl.dev documentation</a>
 
                 <!-- Expanded navigation -->
-                <div class="navbar-collapse collapse">
+                <div id="navbar-collapse" class="navbar-collapse collapse">
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
@@ -59,45 +49,170 @@
         </div>
 
         <div class="container">
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#editing-rulesets">Editing Rulesets</a></li>
-        <li class="main "><a href="#rules">Rules</a></li>
-        <li class="main "><a href="#io-format">IO Format</a></li>
-        <li class="main "><a href="#default-questions">Default questions</a></li>
-        <li class="main "><a href="#inputs">inputs</a></li>
-            <li><a href="#edit-increment">Edit increment</a></li>
-            <li><a href="#max-length">Max length</a></li>
-            <li><a href="#min-value">Min value</a></li>
-            <li><a href="#max-value">Max value</a></li>
-            <li><a href="#regular-expression">Regular expression</a></li>
-            <li><a href="#show-sets">Show sets</a></li>
-        <li class="main "><a href="#outputs">Outputs</a></li>
-            <li><a href="#hide-result">Hide result</a></li>
-            <li><a href="#display-type">Display Type</a></li>
-            <li><a href="#value-format">Value format</a></li>
-        <li class="main "><a href="#language">Language</a></li>
-            <li><a href="#categorical-io">Categorical io</a></li>
-            <li><a href="#variants">Variants</a></li>
-            <li><a href="#default-language">Default language</a></li>
-        <li class="main "><a href="#preloaded-data">Preloaded Data</a></li>
-        <li class="main "><a href="#actions-at-completion">Actions at completion</a></li>
-        <li class="main "><a href="#test-data">Test data</a></li>
-        <li class="main "><a href="#metadata">Metadata</a></li>
-            <li><a href="#name">Name</a></li>
-            <li><a href="#description">Description</a></li>
-            <li><a href="#version">Version</a></li>
-            <li><a href="#author">Author</a></li>
-            <li><a href="#copyright">Copyright</a></li>
-            <li><a href="#license">License</a></li>
-            <li><a href="#image-url">Image Url</a></li>
-            <li><a href="#price">Price</a></li>
-            <li><a href="#currency">Currency</a></li>
-        <li class="main "><a href="#save-rulest">Save Rulest</a></li>
-        <li class="main "><a href="#run-the-form">Run the Form</a></li>
-    </ul>
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#editing-rulesets" class="nav-link">Editing Rulesets</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#rules" class="nav-link">Rules</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#io-format" class="nav-link">IO Format</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#default-questions" class="nav-link">Default questions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#inputs" class="nav-link">inputs</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#edit-increment" class="nav-link">Edit increment</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#max-length" class="nav-link">Max length</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#min-value" class="nav-link">Min value</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#max-value" class="nav-link">Max value</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#regular-expression" class="nav-link">Regular expression</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#show-sets" class="nav-link">Show sets</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#outputs" class="nav-link">Outputs</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#hide-result" class="nav-link">Hide result</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#display-type" class="nav-link">Display Type</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#value-format" class="nav-link">Value format</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#language" class="nav-link">Language</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#categorical-io" class="nav-link">Categorical io</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#variants" class="nav-link">Variants</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#default-language" class="nav-link">Default language</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#preloaded-data" class="nav-link">Preloaded Data</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#actions-at-completion" class="nav-link">Actions at completion</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#test-data" class="nav-link">Test data</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#metadata" class="nav-link">Metadata</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#name" class="nav-link">Name</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#description" class="nav-link">Description</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#version" class="nav-link">Version</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#author" class="nav-link">Author</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#copyright" class="nav-link">Copyright</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#license" class="nav-link">License</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#image-url" class="nav-link">Image Url</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#price" class="nav-link">Price</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#currency" class="nav-link">Currency</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#save-rulest" class="nav-link">Save Rulest</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#run-the-form" class="nav-link">Run the Form</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
 </div></div>
-                <div class="col-md-9" role="main">
+                    <div class="col-md-9" role="main">
 
 <h1 id="editing-rulesets">Editing Rulesets</h1>
 <p>A ruleset consists of darl code and various ancillary items, such as input/output formatting, the text to display for data elicitation and ruleset metadata.
@@ -228,6 +343,7 @@ You can preload the data that is supplied to one or more inputs.</p>
 <p>Saves all changes to the current loaded ruleset model. The changes will only become permanent once the whole model is saved.</p>
 <h1 id="run-the-form">Run the Form</h1>
 <p>This has the same affect as selecting <em>Run</em> on the side bar.</p></div>
+            </div>
         </div>
 
         <footer class="col-md-12">
@@ -242,19 +358,19 @@ You can preload the data that is supplied to one or more inputs.</p>
         <script src="../js/base.js" defer></script>
         <script src="../search/main.js" defer></script>
 
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
-    <div class="modal-dialog">
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
             </div>
             <div class="modal-body">
                 <p>
                     From here you can search these documents. Enter
                     your search terms below.
                 </p>
-                <form role="form">
+                <form>
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
                     </div>
@@ -265,12 +381,12 @@ You can preload the data that is supplied to one or more inputs.</p>
             </div>
         </div>
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
             </div>
             <div class="modal-body">
               <table class="table">

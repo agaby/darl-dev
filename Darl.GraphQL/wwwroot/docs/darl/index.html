@@ -9,18 +9,13 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>The Darl Language - Darl.dev documentation</title>
-        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="../js/bootstrap.min.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script>
         <script>
@@ -35,21 +30,16 @@
     </head>
 
     <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-
-                <!-- Collapsed navigation -->
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="..">Darl.dev documentation</a>
-                </div>
+                <a class="navbar-brand" href="..">Darl.dev documentation</a>
 
                 <!-- Expanded navigation -->
-                <div class="navbar-collapse collapse">
+                <div id="navbar-collapse" class="navbar-collapse collapse">
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
@@ -59,48 +49,175 @@
         </div>
 
         <div class="container">
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#the-darl-language">The Darl Language</a></li>
-        <li class="main "><a href="#introduction">Introduction</a></li>
-        <li class="main "><a href="#primitive-elements">Primitive elements</a></li>
-            <li><a href="#identifiers">Identifiers</a></li>
-            <li><a href="#numeric-literals">Numeric literals</a></li>
-            <li><a href="#string-literals">String literals</a></li>
-            <li><a href="#terminators">Terminators</a></li>
-            <li><a href="#keywords">Keywords</a></li>
-            <li><a href="#composite-identifiers">Composite identifiers</a></li>
-            <li><a href="#comments">Comments</a></li>
-        <li class="main "><a href="#top-level-elements">Top level elements</a></li>
-            <li><a href="#mapinputs">Mapinputs</a></li>
-            <li><a href="#mapoutputs">Mapoutputs</a></li>
-            <li><a href="#wires">Wires</a></li>
-            <li><a href="#rulesets">Rulesets</a></li>
-            <li><a href="#the-pattern">The pattern</a></li>
-        <li class="main "><a href="#ruleset-level-elements">Ruleset level elements</a></li>
-            <li><a href="#inputs">inputs</a></li>
-            <li><a href="#fuzzy-set-definitions">Fuzzy set definitions</a></li>
-            <li><a href="#category-definitions">Category definitions</a></li>
-            <li><a href="#outputs">Outputs</a></li>
-            <li><a href="#fuzzy-set-definitions_1">Fuzzy set definitions</a></li>
-            <li><a href="#category-definitions_1">Category definitions</a></li>
-            <li><a href="#constants">Constants</a></li>
-            <li><a href="#string-constants">String Constants</a></li>
-            <li><a href="#sequence-constants">Sequence Constants</a></li>
-            <li><a href="#duration-constants">Duration constants</a></li>
-        <li class="main "><a href="#rule-level-elements">Rule level elements</a></li>
-            <li><a href="#conditional-expressions">Conditional Expressions</a></li>
-            <li><a href="#numeric-expressions">Numeric Expressions</a></li>
-            <li><a href="#temporal-expressions">Temporal expressions</a></li>
-            <li><a href="#temporal-helpers">Temporal helpers</a></li>
-            <li><a href="#temporal-operators">Temporal operators</a></li>
-            <li><a href="#built-in-functions">Built in functions</a></li>
-            <li><a href="#optional-confidence-value">Optional Confidence Value</a></li>
-            <li><a href="#default-handling">Default handling</a></li>
-            <li><a href="#stores">Stores</a></li>
-    </ul>
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#the-darl-language" class="nav-link">The Darl Language</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#primitive-elements" class="nav-link">Primitive elements</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#identifiers" class="nav-link">Identifiers</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#numeric-literals" class="nav-link">Numeric literals</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#string-literals" class="nav-link">String literals</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#terminators" class="nav-link">Terminators</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#keywords" class="nav-link">Keywords</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#composite-identifiers" class="nav-link">Composite identifiers</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#comments" class="nav-link">Comments</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#top-level-elements" class="nav-link">Top level elements</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#mapinputs" class="nav-link">Mapinputs</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#mapoutputs" class="nav-link">Mapoutputs</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#wires" class="nav-link">Wires</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#rulesets" class="nav-link">Rulesets</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#the-pattern" class="nav-link">The pattern</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#ruleset-level-elements" class="nav-link">Ruleset level elements</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#inputs" class="nav-link">inputs</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#fuzzy-set-definitions" class="nav-link">Fuzzy set definitions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#category-definitions" class="nav-link">Category definitions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#outputs" class="nav-link">Outputs</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#fuzzy-set-definitions_1" class="nav-link">Fuzzy set definitions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#category-definitions_1" class="nav-link">Category definitions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#constants" class="nav-link">Constants</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#string-constants" class="nav-link">String Constants</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#sequence-constants" class="nav-link">Sequence Constants</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#duration-constants" class="nav-link">Duration constants</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#rule-level-elements" class="nav-link">Rule level elements</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#conditional-expressions" class="nav-link">Conditional Expressions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#numeric-expressions" class="nav-link">Numeric Expressions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#temporal-expressions" class="nav-link">Temporal expressions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#temporal-helpers" class="nav-link">Temporal helpers</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#temporal-operators" class="nav-link">Temporal operators</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#built-in-functions" class="nav-link">Built in functions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#optional-confidence-value" class="nav-link">Optional Confidence Value</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#default-handling" class="nav-link">Default handling</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#stores" class="nav-link">Stores</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
 </div></div>
-                <div class="col-md-9" role="main">
+                    <div class="col-md-9" role="main">
 
 <h1 id="the-darl-language">The Darl Language</h1>
 <p>'Darl' stands for <strong>D</strong>octor <strong>A</strong>ndy's <strong>R</strong>ule <strong>L</strong>anguage.
@@ -590,6 +707,7 @@ Parameters can be string constants, strings, textual outputs or other stores.</p
 
 <p>Stores can be read-only or write-only, in which case reading or writing the wrong way round will not create a syntax error, but will have no effect.
 A read to a store that is write-only, or a read of a data item that does not exist will return an <em>unknown</em> value.</p></div>
+            </div>
         </div>
 
         <footer class="col-md-12">
@@ -604,19 +722,19 @@ A read to a store that is write-only, or a read of a data item that does not exi
         <script src="../js/base.js" defer></script>
         <script src="../search/main.js" defer></script>
 
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
-    <div class="modal-dialog">
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
             </div>
             <div class="modal-body">
                 <p>
                     From here you can search these documents. Enter
                     your search terms below.
                 </p>
-                <form role="form">
+                <form>
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
                     </div>
@@ -627,12 +745,12 @@ A read to a store that is write-only, or a read of a data item that does not exi
             </div>
         </div>
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
             </div>
             <div class="modal-body">
               <table class="table">

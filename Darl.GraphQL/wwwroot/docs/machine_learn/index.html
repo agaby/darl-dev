@@ -9,18 +9,13 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Machine Learning - Darl.dev documentation</title>
-        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="../js/bootstrap.min.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script>
         <script>
@@ -35,21 +30,16 @@
     </head>
 
     <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-
-                <!-- Collapsed navigation -->
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="..">Darl.dev documentation</a>
-                </div>
+                <a class="navbar-brand" href="..">Darl.dev documentation</a>
 
                 <!-- Expanded navigation -->
-                <div class="navbar-collapse collapse">
+                <div id="navbar-collapse" class="navbar-collapse collapse">
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
@@ -59,22 +49,69 @@
         </div>
 
         <div class="container">
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#machine-learning">Machine Learning</a></li>
-        <li class="main "><a href="#machine-learning-to-a-rule-set">Machine learning to a rule set</a></li>
-        <li class="main "><a href="#controls">Controls</a></li>
-            <li><a href="#fuzzy-set-count">Fuzzy set count</a></li>
-            <li><a href="#percent-to-train-on">Percent to train on</a></li>
-        <li class="main "><a href="#locating-data">Locating data</a></li>
-            <li><a href="#navigating-data">Navigating data</a></li>
-            <li><a href="#locating-patterns">Locating patterns</a></li>
-            <li><a href="#missing-data">Missing data</a></li>
-            <li><a href="#wiring">Wiring</a></li>
-            <li><a href="#common-mistakes">Common mistakes</a></li>
-    </ul>
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#machine-learning" class="nav-link">Machine Learning</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#machine-learning-to-a-rule-set" class="nav-link">Machine learning to a rule set</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#controls" class="nav-link">Controls</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#fuzzy-set-count" class="nav-link">Fuzzy set count</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#percent-to-train-on" class="nav-link">Percent to train on</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#locating-data" class="nav-link">Locating data</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#navigating-data" class="nav-link">Navigating data</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#locating-patterns" class="nav-link">Locating patterns</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#missing-data" class="nav-link">Missing data</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#wiring" class="nav-link">Wiring</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#common-mistakes" class="nav-link">Common mistakes</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
 </div></div>
-                <div class="col-md-9" role="main">
+                    <div class="col-md-9" role="main">
 
 <h1 id="machine-learning">Machine Learning</h1>
 <p>You can machine learn DARL rulesets. Not only that, but the quality of machine learning is very high.
@@ -186,6 +223,7 @@ Use an XML or Json editor to ensure that your paths are correct.</p>
 A generalization of Occam's razor predicts that there is an optimum complexity for any model. This means that you may find that as you increase the number of fuzzy sets the performance on the training data may improve, but at some point the test data performance may start to get worse. You may therefore choose to experiment with the number of fuzzy sets.</p>
 <p>Finally, Lotfi Zadeh, the now deceased inventor of Fuzzy Logic, thought of it as <em>Granular</em> computing. By this he meant that you could use relatively simple and few blocks to represent quite complex systems. This is one of the surprising things about fuzzy logic, that the models created are often much simpler and more robust than those created by purely boolean rule induction.
 If you find yourself worrying too much about the exact definitions of fuzzy sets, you are probably applying machine learning to a system capable of analytic modeling. Machine learning is for noisy, ill defined or ephemeral relationships.</p></div>
+            </div>
         </div>
 
         <footer class="col-md-12">
@@ -200,19 +238,19 @@ If you find yourself worrying too much about the exact definitions of fuzzy sets
         <script src="../js/base.js" defer></script>
         <script src="../search/main.js" defer></script>
 
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
-    <div class="modal-dialog">
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
             </div>
             <div class="modal-body">
                 <p>
                     From here you can search these documents. Enter
                     your search terms below.
                 </p>
-                <form role="form">
+                <form>
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
                     </div>
@@ -223,12 +261,12 @@ If you find yourself worrying too much about the exact definitions of fuzzy sets
             </div>
         </div>
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
             </div>
             <div class="modal-body">
               <table class="table">

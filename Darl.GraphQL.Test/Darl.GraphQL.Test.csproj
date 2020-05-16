@@ -8,19 +8,23 @@
 
   <ItemGroup>
     <None Remove="AppSettings.json" />
+    <None Remove="CourseUnitsJson.json" />
     <None Remove="input.json" />
     <None Remove="input2.json" />
     <None Remove="learning_outcomes.txt" />
     <None Remove="msr_paraphrase_train.txt" />
+    <None Remove="musicbusinessworldwide.json" />
     <None Remove="WM_MusicIndustry.json" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="AppSettings.json" />
+    <EmbeddedResource Include="CourseUnitsJson.json" />
     <EmbeddedResource Include="input.json" />
     <EmbeddedResource Include="input2.json" />
     <EmbeddedResource Include="learning_outcomes.txt" />
     <EmbeddedResource Include="msr_paraphrase_train.txt" />
+    <EmbeddedResource Include="musicbusinessworldwide.json" />
     <EmbeddedResource Include="WM_MusicIndustry.json" />
   </ItemGroup>
 

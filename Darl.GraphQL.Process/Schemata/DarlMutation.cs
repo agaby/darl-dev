@@ -6,6 +6,7 @@ using GraphQL.Types;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using static Darl.GraphQL.Models.Connectivity.IGraphProcessing;
 
 namespace Darl.GraphQL.Models.Schemata
 {
@@ -1073,28 +1074,28 @@ namespace Darl.GraphQL.Models.Schemata
                 });
             FieldAsync<GraphObjectType>("createGraphObject", "Add a new graph object", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<GraphObjectInputType>> { Name = "graphObject", Description = "The object to add" },
-                    new QueryArgument<BooleanGraphType> { Name = "definitive", Description = "overrides checking", DefaultValue = false }
+                    new QueryArgument<OntologyActionEnum> { Name = "ontology", Description = "builds, checks against or ignores ontology" }
                ),
                 resolve: async context =>
                 {
                     var graphObject = context.GetArgument<GraphObjectInput>("graphObject");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    var definitive = context.GetArgument<bool>("definitive");
+                    var ontology = context.GetArgument<OntologyAction>("ontology");
                     return await context.TryAsyncResolve(
-                        async c => await graph.CreateGraphObject(userId, graphObject,definitive));
+                        async c => await graph.CreateGraphObject(userId, graphObject, ontology));
                 }
             ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphConnectionType>("createGraphConnection", "Add a new graph connection", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<GraphConnectionInputType>> { Name = "graphConnection", Description = "The connection to add" },
-                    new QueryArgument<BooleanGraphType> { Name = "definitive", Description = "overrides checking", DefaultValue = false }
+                    new QueryArgument<OntologyActionEnum> { Name = "ontology", Description = "builds, checks against or ignores ontology" }
                ),
                 resolve: async context =>
                 {
                     var graphConnection = context.GetArgument<GraphConnectionInput>("graphConnection");
-                    var definitive = context.GetArgument<bool>("definitive");
+                    var ontology = context.GetArgument<OntologyAction>("ontology");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await graph.CreateGraphConnection(userId, graphConnection,definitive));
+                        async c => await graph.CreateGraphConnection(userId, graphConnection,ontology));
                 }
             ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphObjectType>("deleteGraphObject", "delete a graphObject", arguments: new QueryArguments(
@@ -1121,28 +1122,28 @@ namespace Darl.GraphQL.Models.Schemata
             ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphObjectType>("updateGraphObject", "Update a graph object", arguments: new QueryArguments(
                      new QueryArgument<NonNullGraphType<GraphObjectUpdateType>> { Name = "graphObject", Description = "The object to update" },
-                    new QueryArgument<BooleanGraphType> { Name = "definitive", Description = "overrides checking", DefaultValue = false }
+                    new QueryArgument<OntologyActionEnum> { Name = "ontology", Description = "builds, checks against or ignores ontology" }
                 ),
                  resolve: async context =>
                  {
                      var graphObject = context.GetArgument<GraphObjectUpdate>("graphObject");
                      var userId = connectivity.GetCurrentUserId(context.UserContext);
-                     var definitive = context.GetArgument<bool>("definitive");
+                     var ontology = context.GetArgument<OntologyAction>("ontology");
                      return await context.TryAsyncResolve(
-                         async c => await graph.UpdateGraphObject(userId, graphObject,definitive));
+                         async c => await graph.UpdateGraphObject(userId, graphObject,ontology));
                  }
              ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphConnectionType>("updateGraphConnection", "Update a graph connection", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<GraphConnectionUpdateType>> { Name = "graphConnection", Description = "The connection to update" },
-                    new QueryArgument<BooleanGraphType> { Name = "definitive", Description = "overrides checking", DefaultValue = false }
+                    new QueryArgument<OntologyActionEnum> { Name = "ontology", Description = "builds, checks against or ignores ontology" }
                ),
                 resolve: async context =>
                 {
                     var graphConnection = context.GetArgument<GraphConnectionUpdate>("graphConnection");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    var definitive = context.GetArgument<bool>("definitive");
+                    var ontology = context.GetArgument<OntologyAction>("ontology");
                     return await context.TryAsyncResolve(
-                        async c => await graph.UpdateGraphConnection(userId, graphConnection,definitive));
+                        async c => await graph.UpdateGraphConnection(userId, graphConnection,ontology));
                 }
             ).AuthorizeWith("CorpPolicy");
 

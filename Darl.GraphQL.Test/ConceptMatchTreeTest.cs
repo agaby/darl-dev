@@ -111,23 +111,26 @@ namespace Darl.GraphQL.Test
             }
             var res = await cmp.InferFromConceptMatchTree(_config["userId"], "learning_outcomes_2", textList);
             for(int n = 0; n < records.Count; n++)
-            { 
-                if (res[n].index == records[n].Id)
+            {
+                if (res[n] != null)
                 {
-                    correct++;
-                    topThree++;
-                }
-                else
-                {
-                    if (res[n].tieCount == 1)
+                    if (res[n].index == records[n].Id)
                     {
-                        noTieError++;
-                    }
-                    if (res[n].alternatives.ContainsKey(records[n].Id))
+                        correct++;
                         topThree++;
+                    }
                     else
                     {
-                        failures.Add(records[n]);
+                        if (res[n].tieCount == 1)
+                        {
+                            noTieError++;
+                        }
+                        if (res[n].alternatives.ContainsKey(records[n].Id))
+                            topThree++;
+                        else
+                        {
+                            failures.Add(records[n]);
+                        }
                     }
                 }
             }

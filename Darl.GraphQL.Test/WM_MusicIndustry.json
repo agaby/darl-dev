@@ -381,7 +381,7 @@
                 "Roles": [
                   {
                     "Id": "ab83bc89-04a1-4447-a168-b2e616daead2",
-                    "Name": "Head of Adminstration",
+                    "Name": "Head of Administration",
                     "TypeId": "d9aa25e4-f325-4b76-bc59-8600e88436a7"
                   }
                 ],
@@ -502,7 +502,7 @@
                   },
                   {
                     "Id": "ccd55d85-901f-4175-bd65-658bd161295d",
-                    "Name": "Agent - Composers, Arangers, Musical Directors",
+                    "Name": "Agent - Composers, Arrangers, Musical Directors",
                     "TypeId": "04557dc8-f0a7-4a1a-8e6c-1621cf87e88f"
                   },
                   {
@@ -590,7 +590,7 @@
                   },
                   {
                     "Id": "a01f5aa7-d9f9-431b-b683-65dc55f383b6",
-                    "Name": "Agent - Sound Engineers/Techcnicians",
+                    "Name": "Agent - Sound Engineers/Technicians",
                     "TypeId": "8e19e444-88b3-4661-9a1e-6719b0b5f947"
                   },
                   {
@@ -810,7 +810,7 @@
                   },
                   {
                     "Id": "789ae5f9-7115-4aa5-8588-134c93a6a226",
-                    "Name": "Repar Engineer",
+                    "Name": "Repair Engineer",
                     "TypeId": "ae7b157b-70bb-4d65-889e-8c092851b1d5"
                   },
                   {
@@ -860,7 +860,7 @@
                 "Roles": [
                   {
                     "Id": "4be280ad-8115-434b-a8f7-1694efeea7c4",
-                    "Name": "Deisgn Manager",
+                    "Name": "Design Manager",
                     "TypeId": "263fee16-3dd4-475e-af79-a8e01f3553a7"
                   }
                 ],
@@ -1172,7 +1172,7 @@
                   },
                   {
                     "Id": "d2f60025-f3b5-46fb-b41d-5c25b0251661",
-                    "Name": "Specialist - Mixin Desks",
+                    "Name": "Specialist - Mixing Desks",
                     "TypeId": "ef2f587d-4856-4024-aa99-1d602e771027"
                   },
                   {
@@ -1818,7 +1818,7 @@
                 ],
                 "Id": "197cf4e1-3cf3-4904-b507-0a5ac3492cbf",
                 "AreaId": "7fe2b494-0769-49ce-9888-7f0e1eb89a31",
-                "Name": "Creative - Sync & Liceninsing"
+                "Name": "Creative - Sync & Licensing"
               },
               {
                 "Roles": [],
@@ -1981,7 +1981,7 @@
                 "Roles": [
                   {
                     "Id": "b75d37b5-4867-4b3a-9c77-1d253ada7df5",
-                    "Name": "Lead Developler",
+                    "Name": "Lead Developer",
                     "TypeId": "a92132d8-ea4f-4d26-a4d5-c6c810619073"
                   }
                 ],
@@ -4023,7 +4023,7 @@
                   },
                   {
                     "Id": "0c1de5a2-0f14-4dbf-a86a-5726a77bfd77",
-                    "Name": "Bango (4 String)",
+                    "Name": "Banjo (4 String)",
                     "TypeId": "bece2da4-5cb8-45e5-b7d5-6aa295b1f0dd"
                   },
                   {
@@ -4038,7 +4038,7 @@
                   },
                   {
                     "Id": "6b067434-64ab-4024-9b25-71c8477277c2",
-                    "Name": "Bango (5 String)",
+                    "Name": "Banjo (5 String)",
                     "TypeId": "bece2da4-5cb8-45e5-b7d5-6aa295b1f0dd"
                   },
                   {
@@ -4483,7 +4483,7 @@
                 "Roles": [
                   {
                     "Id": "2042fe4e-bc61-4005-b10e-2be2d51b0693",
-                    "Name": "Senior Academic Administor",
+                    "Name": "Senior Academic Administrator",
                     "TypeId": "c3485ee9-50ca-4788-b0ad-4928a82bcc1a"
                   }
                 ],
@@ -4631,33 +4631,33 @@
                   },
                   {
                     "Id": "910dff38-44db-430c-9dc1-4b2aa4bf4985",
-                    "Name": "Music Aquisitions Manager",
+                    "Name": "Music Acquisitions Manager",
                     "TypeId": "9faec7cc-798c-4054-9972-6a36a75ce35f"
                   },
                   {
                     "Id": "5b980441-2e4d-40b8-be72-4c94397b2b7b",
-                    "Name": "Junior Cataloguer ",
+                    "Name": "Junior Cataloger ",
                     "TypeId": "9faec7cc-798c-4054-9972-6a36a75ce35f"
                   },
                   {
                     "Id": "521413db-2c28-4836-b5e0-53aaa9c8ade3",
-                    "Name": "Senior Cataloguer",
+                    "Name": "Senior Cataloger",
                     "TypeId": "9faec7cc-798c-4054-9972-6a36a75ce35f"
                   },
                   {
                     "Id": "aa09131b-696d-4cf5-b161-9927e46419b4",
-                    "Name": "Head of Catalogue",
+                    "Name": "Head of Catalog",
                     "TypeId": "9faec7cc-798c-4054-9972-6a36a75ce35f"
                   },
                   {
                     "Id": "d4766722-c096-4950-a9bd-da0503939ca2",
-                    "Name": "Senior Catalogue Product Manager ",
+                    "Name": "Senior Catalog Product Manager ",
                     "TypeId": "9faec7cc-798c-4054-9972-6a36a75ce35f"
                   }
                 ],
                 "Id": "9faec7cc-798c-4054-9972-6a36a75ce35f",
                 "AreaId": "c6f54ebd-b120-4f79-ad4d-3343b7fc93c1",
-                "Name": "Catalogue"
+                "Name": "Catalog"
               },
               {
                 "Roles": [
@@ -4883,7 +4883,7 @@
                   },
                   {
                     "Id": "be0ac19c-193a-4db5-89ae-3164a5df6a77",
-                    "Name": "Surround Mastering Engnineer",
+                    "Name": "Surround Mastering Engineer",
                     "TypeId": "a4d4e10a-6c6c-4974-958e-58127cd960d3"
                   },
                   {
@@ -5132,7 +5132,7 @@
                   },
                   {
                     "Id": "ec09cfbb-5e7e-4954-af71-58f7d5eef76b",
-                    "Name": "Barritone Saxophone Tutor",
+                    "Name": "Baritone Saxophone Tutor",
                     "TypeId": "b242dffc-608d-4c1d-8c62-7f76baf0b77b"
                   },
                   {
@@ -5513,7 +5513,7 @@
                   },
                   {
                     "Id": "f0aa5ceb-337a-435d-8364-1755ea86e85f",
-                    "Name": "Yodeller ",
+                    "Name": "Yodeler ",
                     "TypeId": "9df74af2-c598-4e90-a463-7e9a246c0bd4"
                   },
                   {
@@ -5773,7 +5773,7 @@
                   },
                   {
                     "Id": "720337ce-e24d-4f21-9bf4-a3c7f7118e5f",
-                    "Name": "Barritone Saxophonist",
+                    "Name": "Baritone Saxophonist",
                     "TypeId": "9df74af2-c598-4e90-a463-7e9a246c0bd4"
                   },
                   {
@@ -6510,7 +6510,7 @@
                 "Roles": [
                   {
                     "Id": "d33b2d9e-01be-40f2-a5cd-4ee517402323",
-                    "Name": "Marketing Coordinatior",
+                    "Name": "Marketing Coordinator",
                     "TypeId": "b30c3679-0305-4565-b705-214a489a555e"
                   }
                 ],
@@ -7035,7 +7035,7 @@
                 ],
                 "Id": "eab6ff32-b97f-4df1-b2b0-55c6bc3d3ec1",
                 "AreaId": "7607bd58-ee78-4bc1-8488-899ca535251f",
-                "Name": "Secutity"
+                "Name": "Security"
               },
               {
                 "Roles": [],
@@ -7314,7 +7314,7 @@
                 "Roles": [
                   {
                     "Id": "c25a636b-8e40-41b9-b927-5921918aeb67",
-                    "Name": "Event Plannier",
+                    "Name": "Event Planner",
                     "TypeId": "8cbff514-5a9a-4e00-8f02-05a774196b5a"
                   }
                 ],
@@ -8506,7 +8506,7 @@
                 "Roles": [
                   {
                     "Id": "493e94fd-ce56-464d-b38e-6d362274dd9a",
-                    "Name": "Techincal Coordinator",
+                    "Name": "Technical Coordinator",
                     "TypeId": "f3b3198f-377f-4c0a-80a7-d589744e474d"
                   },
                   {
@@ -10491,7 +10491,7 @@
               }
             ],
             "Id": "fe1351e3-953e-44b9-a25f-8040496ccab8",
-            "Name": "Excercise & Workout",
+            "Name": "Exercise & Workout",
             "SectorId": "702beb4a-bef7-4536-a701-d3a347b6c7f3"
           },
           {
@@ -10500,12 +10500,12 @@
                 "Roles": [
                   {
                     "Id": "913ec7e3-8b89-40db-a5f7-4c19ed835a32",
-                    "Name": "Ambulance Nuse",
+                    "Name": "Ambulance Nurse",
                     "TypeId": "5c16edb0-4cf6-40a4-a689-1378e24caf72"
                   },
                   {
                     "Id": "553a8069-bb60-4040-b38a-a803623e9660",
-                    "Name": "Nutriotionist",
+                    "Name": "Nutritionist",
                     "TypeId": "5c16edb0-4cf6-40a4-a689-1378e24caf72"
                   }
                 ],
@@ -11456,17 +11456,17 @@
                 "Roles": [
                   {
                     "Id": "e7986f16-20f4-4350-940c-65b2620cb36f",
-                    "Name": "Privacy & Reputation Management Solictior",
+                    "Name": "Privacy & Reputation Management Solicitor",
                     "TypeId": "4a374c4d-a4a9-4d72-893b-1b761ed41d8e"
                   },
                   {
                     "Id": "1831f607-5d86-43b9-847c-9152928f5996",
-                    "Name": "Digital Media & Interactive Content Solictior",
+                    "Name": "Digital Media & Interactive Content Solicitor",
                     "TypeId": "4a374c4d-a4a9-4d72-893b-1b761ed41d8e"
                   },
                   {
                     "Id": "c7d3b65f-b184-495f-b817-a7a2fa8209bb",
-                    "Name": "Theatre Solictior",
+                    "Name": "Theatre Solicitor",
                     "TypeId": "4a374c4d-a4a9-4d72-893b-1b761ed41d8e"
                   }
                 ],
@@ -11681,7 +11681,7 @@
                 "Roles": [],
                 "Id": "454c2950-ca47-46f7-8d14-b84ccaf9c873",
                 "AreaId": "aa328f0c-9cfe-4e5b-b854-6f8f27f7a7b3",
-                "Name": "Regional Commitee"
+                "Name": "Regional Committee"
               },
               {
                 "Roles": [],
@@ -11697,7 +11697,7 @@
               }
             ],
             "Id": "aa328f0c-9cfe-4e5b-b854-6f8f27f7a7b3",
-            "Name": "Practictioner Union",
+            "Name": "Practitioner Union",
             "SectorId": "17103d2c-1f9d-4884-b65b-dc405ae62a69"
           },
           {
@@ -12734,7 +12734,7 @@
                 "Roles": [],
                 "Id": "23831f31-675e-4ab6-b8fe-8bb636727466",
                 "AreaId": "61f9ebd9-1709-465f-9bd7-ddda04bf4339",
-                "Name": "Opearations"
+                "Name": "Operations"
               },
               {
                 "Roles": [],
@@ -13245,7 +13245,7 @@
                   },
                   {
                     "Id": "177fa7c5-a3dd-431d-9d3b-2604d5be2046",
-                    "Name": "Financial Advisor - Mortages",
+                    "Name": "Financial Advisor - Mortgages",
                     "TypeId": "c2e64994-2f5a-43a8-9ddd-afa393e9500e"
                   },
                   {

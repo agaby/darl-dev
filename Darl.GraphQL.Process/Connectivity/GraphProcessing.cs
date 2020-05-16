@@ -13,13 +13,16 @@ using Microsoft.Azure.Documents.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using QuickGraph.Serialization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using static Darl.GraphQL.Models.Connectivity.IGraphProcessing;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -28,7 +31,6 @@ namespace Darl.GraphQL.Models.Connectivity
 
         private IConfiguration _config;
         public GremlinServer gremlinDreamerServer;
-        private GremlinClient gremlinDreamerClient;
         private ILogger _logger;
         private IHttpContextAccessor _context;
         private static readonly int maxRetryAttempts = 2;
@@ -41,36 +43,50 @@ namespace Darl.GraphQL.Models.Connectivity
 
 
 
+
         public GraphProcessing(IConfiguration config, ILogger<GraphProcessing> logger, IHttpContextAccessor context)
         {
             _context = context;
             _config = config;
             _logger = logger;
-            hostname = _config["gremlinHostname"];
-            database = _config["gremlinDatabase"];
-            var collection = _config["gremlinCollection"];
-            authKey = _config["gremlinAuthKey"];
-            port = int.Parse(_config["gremlinPort"]);
-            gremlinDreamerServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + collection, password: authKey);
-            gremlinDreamerClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType);
+            if (_config["gremlinLocation"] == "azure")
+            {
+                hostname = _config["gremlinHostname"];
+                database = _config["gremlinDatabase"];
+                var collection = _config["gremlinCollection"];
+                authKey = _config["gremlinAuthKey"];
+                port = int.Parse(_config["gremlinPort"]);
+                gremlinDreamerServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + collection, password: authKey);
+            }
+            else if(_config["gremlinLocation"] == "local") //defaults will work
+            {
+                gremlinDreamerServer = new GremlinServer();
+            }
+            else
+            {
+                throw new ExecutionError($"Configuration error. gremlinLocation must be 'azure' or 'local', was {_config["gremlinLocation"]}");
+            }
         }
 
         public async Task<bool> CreateNewGraph(string graphName, string partitionKey)
         {
-            ConnectionPolicy ConnectionPolicy = new ConnectionPolicy
+            if (_config["gremlinLocation"] == "azure")
             {
-                ConnectionMode = ConnectionMode.Direct,
-                ConnectionProtocol = Protocol.Tcp
-            };
-            using (var client = new DocumentClient(new Uri($"https://{hostname}:{port}/"), authKey, ConnectionPolicy))
-            {
-                try 
+                ConnectionPolicy ConnectionPolicy = new ConnectionPolicy
                 {
-                    await client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(database), new DocumentCollection { Id = graphName, PartitionKey = new PartitionKeyDefinition { Paths = new Collection<string> { partitionKey } } }, new RequestOptions { OfferThroughput = 400 });
-                }
-                catch(Exception ex )
+                    ConnectionMode = ConnectionMode.Direct,
+                    ConnectionProtocol = Protocol.Tcp
+                };
+                using (var client = new DocumentClient(new Uri($"https://{hostname}:{port}/"), authKey, ConnectionPolicy))
                 {
-                    throw new ExecutionError($"Error in creating a new Graph for user {graphName}", ex);
+                    try
+                    {
+                        await client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(database), new DocumentCollection { Id = graphName, PartitionKey = new PartitionKeyDefinition { Paths = new Collection<string> { partitionKey } } }, new RequestOptions { OfferThroughput = 400 });
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ExecutionError($"Error in creating a new Graph for user {graphName}", ex);
+                    }
                 }
             }
             return true;
@@ -83,38 +99,50 @@ namespace Darl.GraphQL.Models.Connectivity
         /// </summary>
         /// <param name="userId">The user</param>
         /// <param name="graphConnection">The connection description</param>
-        /// <param name="definitive">if false check for ontological compliance and throw an exception if non-compliant, if true force the addition </param>
+        /// <param name="ontology"> build, check against or ignore ontology </param>
         /// <returns></returns>
-        public async Task<GraphConnection> CreateGraphConnection(string userId, GraphConnectionInput graphConnection, bool definitive = false)
+        public async Task<GraphConnection> CreateGraphConnection(string userId, GraphConnectionInput graphConnection, OntologyAction ontology = OntologyAction.ignore)
         {
-            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
-            using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 if (!LineageLibrary.CheckLineage(graphConnection.lineage))
                     throw new ExecutionError($"Malformed lineage: {graphConnection.lineage}.");
                 if (!graphConnection.lineage.StartsWith("verb:"))
                     throw new ExecutionError($"Connections should have lineages of type 'verb'. This has a lineage of {graphConnection.lineage}.");
-                if (!definitive)//ontological compliance checks
+                if (ontology != OntologyAction.ignore)//ontological compliance checks
                 {
-                    var start = await GetGraphObjectById(userId, graphConnection.startId);
-                    var end = await GetGraphObjectById(userId, graphConnection.endId);
-                    if (!await OntologicalCompliance(graphConnection.lineage, start.lineage, end.lineage))
+                    var startLineage = await GetGraphObjectProperty(userId, graphConnection.startId,"lineage");
+                    var endLineage = await GetGraphObjectProperty(userId, graphConnection.endId, "lineage");
+                    if (ontology == OntologyAction.check)
                     {
-                        throw new ExecutionError($"No association exists between {start.lineage}, the verb {graphConnection.lineage} and {end.lineage}\n if you are sure this is correct use the definitive flag in the call.");
+                        if (!await OntologicalCompliance(gremlinClient, graphConnection.lineage, startLineage, endLineage))
+                        {
+                            throw new ExecutionError($"No association exists between {startLineage}, the verb {graphConnection.lineage} and {endLineage}\n if you are sure this is correct use the definitive flag in the call.");
+                        }
+                    }
+                    else
+                    {
+                        await BuildOntology(gremlinClient, graphConnection.lineage, startLineage, endLineage);
                     }
                     foreach (var p in graphConnection.properties)
                     {
                         if (!LineageLibrary.CheckLineage(p.Name))
                             throw new ExecutionError($"Malformed property lineage: {p.Name}.");
-                        if (!await OntologicalCompliance(graphConnection.lineage, p.Name))
+                        if (ontology == OntologyAction.check)
                         {
-                            throw new ExecutionError($"No association exists between {graphConnection.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
+                            if (!await OntologicalCompliance(gremlinClient, graphConnection.lineage, p.Name))
+                            {
+                                throw new ExecutionError($"No association exists between {graphConnection.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
+                            }
+                        }
+                        else
+                        {
+                            await BuildOntology(gremlinClient, graphConnection.lineage, p.Name);
                         }
                     }
                 }
-                var id = Guid.NewGuid().ToString();
-                var dict = new Dictionary<string, object> { { "start", graphConnection.startId }, { "end", graphConnection.endId }, { "label", graphConnection.name }, { "weight", graphConnection.weight ?? 1.0 }, { "id", id }, { "userId", userId }, { "lineage", graphConnection.lineage }, { "inferred", graphConnection.inferred ?? false } };
-                var script = "g.V(start).addE(label).to(g.V(end)).property('id', id).property('weight', weight).property('userId',userId).property('lineage',lineage).property('inferred',inferred)";
+                var dict = new Dictionary<string, object> { { "start", graphConnection.startId }, { "end", graphConnection.endId }, { "connlabel", graphConnection.name }, { "weight", graphConnection.weight ?? 1.0 }, { "lineage", graphConnection.lineage }, { "inferred", graphConnection.inferred ?? false } };
+                var script = "g.V(start).addE(connlabel).to(g.V(end)).property('weight', weight).property('lineage',lineage).property('inferred',inferred).property('virtual',false)";
                 AddCommonElements(graphConnection, dict, ref script);
                 var res = await SubmitWithRetry(gremlinClient, script, dict);
                 return ConvertGraphConnection(res.FirstOrDefault());
@@ -126,38 +154,46 @@ namespace Darl.GraphQL.Models.Connectivity
         /// </summary>
         /// <param name="userId">The user</param>
         /// <param name="graphObject">The object description</param>
-        /// <param name="definitive">if false check for ontological compliance and throw an exception if non-compliant, if true force the addition </param>
+        /// <param name="ontology"> build, check against or ignore ontology </param>
         /// <returns></returns>
-        public async Task<GraphObject> CreateGraphObject(string userId, GraphObjectInput graphObject, bool definitive = false)
+        public async Task<GraphObject> CreateGraphObject(string userId, GraphObjectInput graphObject, OntologyAction ontology = OntologyAction.ignore)
         {
-            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
-            using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 if (!LineageLibrary.CheckLineage(graphObject.lineage))
                     throw new ExecutionError($"Malformed lineage: {graphObject.lineage}.");
                 if (!graphObject.lineage.StartsWith("noun:") || graphObject.lineage.StartsWith("proper_noun:"))
                     throw new ExecutionError($"GraphObjects should have lineages of type 'noun' or 'proper_noun'. This has a lineage of {graphObject.lineage}.");
-                if (!definitive)//ontological compliance checks
+                if (ontology != OntologyAction.ignore)//ontological compliance checks
                 {
                     //for each property lineage 
                     if (graphObject.properties != null)
                     {
                         foreach (var p in graphObject.properties)
                         {
-                            if (!await OntologicalCompliance(graphObject.lineage, p.Name))
+                            if (!LineageLibrary.CheckLineage(p.Name))
+                                throw new ExecutionError($"Malformed property lineage: {p.Name}.");
+                            if (ontology == OntologyAction.check)
                             {
-                                if (!LineageLibrary.CheckLineage(p.Name))
-                                    throw new ExecutionError($"Malformed property lineage: {p.Name}.");
-                                throw new ExecutionError($"No association exists between {graphObject.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
+                                if (!await OntologicalCompliance(gremlinClient, graphObject.lineage, p.Name))
+                                {
+                                    throw new ExecutionError($"No association exists between {graphObject.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
+                                }
+                            }
+                            else
+                            {
+                               await BuildOntology(gremlinClient, graphObject.lineage, p.Name);
                             }
                         }
                     }
                 }
                 try
                 {
-                    var id = Guid.NewGuid().ToString();
-                    var dict = new Dictionary<string, object> { { "lineage", graphObject.lineage }, { "id", id }, { "name", graphObject.name.Trim().ToLower() }, { "userId", userId }, { "inferred", graphObject.inferred }, { "virtual", graphObject._virtual ?? false } };
-                    var script = "g.addV(lineage).property('id', id).property('name', name).property('lineage',lineage).property('userId',userId).property('inferred',inferred).property('virtual',virtual)";
+                    var dict = new Dictionary<string, object> { { "lineage", graphObject.lineage }, { "name", graphObject.name.Trim().ToLower() }, { "inferred", graphObject.inferred }, { "virtual", graphObject._virtual ?? false } };
+                    var script = "g.addV(name).property('name', name).property('lineage',lineage).property('inferred',inferred).property('virtual',virtual)";
+                    AddConditionalElement(nameof(graphObject.firstname), graphObject.firstname, dict, ref script);
+                    AddConditionalElement(nameof(graphObject.secondname), graphObject.secondname, dict, ref script);
+                    AddConditionalElement(nameof(graphObject.externalId), graphObject.externalId, dict, ref script);
                     AddCommonElements(graphObject, dict, ref script);
                     var res = await SubmitWithRetry(gremlinClient, script, dict);
                     return ConvertGraphObject(res.First());
@@ -204,29 +240,119 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        private async Task<bool> OntologicalCompliance(string graphObjectLineage, string propertyLineage)
+        private async Task<bool> OntologicalCompliance(GremlinClient gremlinClient, string graphObjectLineage, string propertyLineage)
         {
             //are these concepts connected?
-            var res = await SubmitWithRetry(gremlinDreamerClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(both()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", graphObjectLineage }, { "lineage2", propertyLineage } });
+            var res = await SubmitWithRetry(gremlinClient, "g.V().has('lineage',lineage1).has('virtual',true).repeat(both()).until(has('lineage', lineage2).has('virtual',true)).path().limit(1)", new Dictionary<string, object> { { "lineage1", graphObjectLineage }, { "lineage2", propertyLineage } });
             if (res.Count != 0)
                 return true;
             //check for 'has' relationship
-            return await OntologicalCompliance("verb:021", graphObjectLineage, propertyLineage);
+            return await OntologicalCompliance(gremlinClient, "verb:021", graphObjectLineage, propertyLineage);
         }
 
-        private async Task<bool> OntologicalCompliance(string graphConnectionLineage, string startLineage, string endLineage)
+        private async Task<bool> OntologicalCompliance(GremlinClient gremlinClient, string graphConnectionLineage, string startLineage, string endLineage)
         {
             //Look for a preceding and a following association in this or higher verbs that permits this.
-            var res = await SubmitWithRetry(gremlinDreamerClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(both()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", startLineage }, { "lineage2", graphConnectionLineage } });
+            var res = await SubmitWithRetry(gremlinClient, "g.V().has('lineage',lineage1).has('virtual',true).repeat(both()).until(has('lineage', lineage2).has('virtual',true)).path().limit(1)", new Dictionary<string, object> { { "lineage1", startLineage }, { "lineage2", graphConnectionLineage } });
             if (res.Count > 0)
             {
-                res = await SubmitWithRetry(gremlinDreamerClient, "g.V('noun:01,2,08,48,24').has('lineage',lineage1).repeat(both()).until(has('lineage', lineage2)).path().limit(1)", new Dictionary<string, object> { { "lineage1", endLineage }, { "lineage2", graphConnectionLineage } });
+                res = await SubmitWithRetry(gremlinClient, "g.V().has('lineage',lineage1).has('virtual',true).repeat(both()).until(has('lineage', lineage2).has('virtual',true)).path().limit(1)", new Dictionary<string, object> { { "lineage1", endLineage }, { "lineage2", graphConnectionLineage } });
                 if (res.Count > 0)
                 {
                     return true;
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Add the ontology elements for this object
+        /// </summary>
+        /// <param name="gremlinClient"></param>
+        /// <param name="graphObjectLineage"></param>
+        /// <param name="propertyLineage"></param>
+        /// <returns></returns>
+        private async Task BuildOntology(GremlinClient gremlinClient, string graphObjectLineage, string propertyLineage)
+        {
+            if(! await LineageExists(gremlinClient, graphObjectLineage))
+            {
+                await AddObjectToOntology(gremlinClient, graphObjectLineage);
+            }
+            if (!await LineageExists(gremlinClient, propertyLineage))
+            {
+                //add the property to the ontology
+                await AddObjectToOntology(gremlinClient, propertyLineage);
+                if(propertyLineage.StartsWith("noun:"))
+                {
+                    //add the "has" link to the ontology
+                    var dict = new Dictionary<string, object> { { "start", graphObjectLineage }, { "end", propertyLineage }, { "weight", 1.0 } };
+                    var script = "g.V().has('lineage',start).addE('has').to(g.V().has('lineage',end)).property('weight', weight).property('virtual',true).property('inferred',false)";
+                    await SubmitWithRetry(gremlinClient, script, dict);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Add the ontology elements for this connection
+        /// </summary>
+        /// <param name="gremlinClient"></param>
+        /// <param name="graphConnectionLineage"></param>
+        /// <param name="startLineage"></param>
+        /// <param name="endLineage"></param>
+        /// <returns></returns>
+        private async Task BuildOntology(GremlinClient gremlinClient, string graphConnectionLineage, string startLineage, string endLineage)
+        {
+            if (!await LineageExists(gremlinClient, graphConnectionLineage))
+            {
+                await AddObjectToOntology(gremlinClient, graphConnectionLineage);
+            }
+            //now add precedes and follows links
+            var dict = new Dictionary<string, object> { { "start", startLineage }, { "end", graphConnectionLineage }, { "weight", 1.0 }, {"object", endLineage } };
+            var script = "g.V().has('lineage',start).addE('precedes').to(g.V().has('lineage',end)).property('weight', weight).property('object',object).property('virtual',true).property('inferred',false)";
+            await SubmitWithRetry(gremlinClient, script, dict);
+            dict = new Dictionary<string, object> { { "start", graphConnectionLineage }, { "end", endLineage }, { "weight", 1.0 }, { "subject", startLineage } };
+            script = "g.V().has('lineage',start).addE('follows').to(g.V().has('lineage',end)).property('weight', weight).property('subject',subject).property('virtual',true).property('inferred',false)";
+            await SubmitWithRetry(gremlinClient, script, dict);
+        }
+
+        private async Task<bool> LineageExists(GremlinClient gremlinClient, string lineage)
+        {
+            var res = await SubmitWithRetry(gremlinClient, "g.V().has('lineage',lineage1).has('virtual',true)", new Dictionary<string, object> { { "lineage1", lineage }});
+            return res.Any();
+        }
+
+        /// <summary>
+        /// Recursively add an object to an ontology and all its parents
+        /// </summary>
+        /// <param name="gremlinClient"></param>
+        /// <param name="lineage"></param>
+        /// <returns></returns>
+        private async Task AddObjectToOntology(GremlinClient gremlinClient, string lineage, string child = null)
+        {
+            if(! await LineageExists(gremlinClient,lineage))
+            {
+                //Add this lineage element
+                if (LineageLibrary.lineages.ContainsKey(lineage))
+                {
+                    var l = LineageLibrary.lineages[lineage];
+                    var dict = new Dictionary<string, object> { { "lineage", lineage }, { "name", l.typeWord }, { "inferred", false }, { "virtual", true }, {"description", l.description} };
+                    var script = "g.addV(name).property('name', name).property('lineage',lineage).property('inferred',inferred).property('virtual',virtual).property('description', description)";
+                    var res = await SubmitWithRetry(gremlinClient, script, dict);
+                    if(lineage.Contains(','))
+                    {
+                        //remove last element
+                        //call this function recursively with 
+                        await AddObjectToOntology(gremlinClient, lineage.Substring(0, lineage.LastIndexOf(',')),lineage);
+                    }
+                }
+            }
+            if(child != null)
+            {
+                //connect the child to this object.
+                var dict = new Dictionary<string, object> { { "start", child }, { "end", lineage }, { "weight", 1.0 }};
+                var script = "g.V().has('lineage',start).addE('kind_of').to(g.V().has('lineage',end)).property('weight', weight).property('virtual',true).property('inferred',false)";
+                await SubmitWithRetry(gremlinClient, script, dict);
+            }           
         }
 
         /// <summary>
@@ -237,10 +363,9 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<GraphConnection> DeleteGraphConnection(string userId, string id)
         {
-            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
-            using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
-                await SubmitWithRetry(gremlinClient, "g.E(id).has('userId',userId).drop()", new Dictionary<string, object> { { "userId", userId }, { "id", id } });
+                await SubmitWithRetry(gremlinClient, "g.E(id).drop()", new Dictionary<string, object> { { "id", id } });
                 return null;
             }
         }
@@ -253,10 +378,9 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<GraphObject> DeleteGraphObject(string userId, string id)
         {
-            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
-            using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
-                var res = await SubmitWithRetry(gremlinClient, "g.V(id).has('userId',userId).drop()", new Dictionary<string, object> { { "userId", userId }, { "id", id } });
+                var res = await SubmitWithRetry(gremlinClient, "g.V(id).drop()", new Dictionary<string, object> { { "id", id } });
                 return null;
             }
         }
@@ -269,17 +393,45 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns>The object</returns>
         public async Task<GraphObject> GetGraphObjectById(string userId, string id)
         {
-            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
-            using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 try
                 {
-                    var res = await SubmitWithRetry(gremlinClient, "g.V().has('id',id).has('userId',userId)", new Dictionary<string, object> { { "id", id }, { "userId", userId } });
+                    var res = await SubmitWithRetry(gremlinClient, "g.V(objectid)", new Dictionary<string, object> { { "objectid", id }});
                     if (res.Count != 0)
                     {
                         foreach (var r in res)
                         {
                             return ConvertGraphObject(r);
+                        }
+                    }
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    throw new ExecutionError("Error in reading from Graph database: ", ex);
+                }
+            }
+        }
+
+        public async Task<string> GetGraphObjectProperty(string userId, string id, string property)
+        {
+            using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            {
+                try
+                {
+                    var res = await SubmitWithRetry(gremlinClient, "g.V(objectid).properties()", new Dictionary<string, object> { { "objectid", id } });
+                    if (res.Count != 0)
+                    {
+                        foreach (IReadOnlyDictionary<string, object> r in res)
+                        {
+                            if (r.ContainsKey("label"))
+                            {
+                                if((string)r["label"] == property)
+                                {
+                                    return r["value"].ToString();
+                                }
+                            }
                         }
                     }
                     return null;
@@ -300,13 +452,12 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<List<GraphObject>> GetGraphObjects(string userId, string name, string lineage)
         {
-            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
-            using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 var list = new List<GraphObject>();
                 try
                 {
-                    var res = await SubmitWithRetry(gremlinClient, "g.V().hasLabel(TextP.startingWith(lineage)).has('name',name).has('userId',userId)", new Dictionary<string, object> { { "name", name.ToLower() }, { "lineage", lineage }, { "userId", userId } });
+                    var res = await SubmitWithRetry(gremlinClient, "g.V().hasLabel(TextP.startingWith(lineage)).has('name',name)", new Dictionary<string, object> { { "name", name.ToLower() }, { "lineage", lineage } });
                     if (res.Count != 0)
                     {
                         foreach (var r in res)
@@ -329,39 +480,45 @@ namespace Darl.GraphQL.Models.Connectivity
                 return null;
             var go = new GraphObject
             {
-                id = GetValueAsString(r, nameof(GraphObject.id)),
+                id = GetValueAsString(r, nameof(GraphObject.id))
             };
             var props = GetValueOrDefault(r, nameof(GraphObject.properties)) as IReadOnlyDictionary<string, object>;
-            foreach (var key in props.Keys)
+            if (props != null)
             {
-                switch (key)
+                foreach (var key in props.Keys)
                 {
-                    case nameof(GraphObject.name):
-                        go.name = GetPropertyAsString(props, key);
-                        break;
-                    case nameof(GraphObject.lineage):
-                        go.lineage = GetPropertyAsString(props, key);
-                        break;
-                    case nameof(GraphObject.firstname):
-                        go.firstname = GetPropertyAsString(props, key);
-                        break;
-                    case nameof(GraphObject.secondname):
-                        go.secondname = GetPropertyAsString(props, key);
-                        break;
-                    case nameof(GraphObject.userId):
-                        go.userId = GetPropertyAsString(props, key);
-                        break;
-                    case nameof(GraphObject.inferred):
-                        go.inferred = Convert.ToBoolean(GetPropertyAsString(props, key));
-                        break;
-                    case nameof(GraphObject.existence):
-                        go.existence = GetPropertyAsListOfDateTime(props, key);
-                        break;
-                    default:
-                        if (go.properties == null)
-                            go.properties = new List<StringStringPair>();
-                        go.properties.Add(new StringStringPair(key, GetPropertyAsString(props, key)));
-                        break;
+                    switch (key)
+                    {
+                        case nameof(GraphObject.name):
+                            go.name = GetPropertyAsString(props, key);
+                            break;
+                        case nameof(GraphObject.lineage):
+                            go.lineage = GetPropertyAsString(props, key);
+                            break;
+                        case nameof(GraphObject.firstname):
+                            go.firstname = GetPropertyAsString(props, key);
+                            break;
+                        case nameof(GraphObject.secondname):
+                            go.secondname = GetPropertyAsString(props, key);
+                            break;
+                        case nameof(GraphObject.externalId):
+                            go.externalId = GetPropertyAsString(props, key);
+                            break;
+                        case nameof(GraphObject.inferred):
+                            go.inferred = Convert.ToBoolean(GetPropertyAsString(props, key));
+                            break;
+                        case "virtual":
+                            go._virtual = Convert.ToBoolean(GetPropertyAsString(props, key));
+                            break;
+                        case nameof(GraphObject.existence):
+                            go.existence = GetPropertyAsListOfDateTime(props, key);
+                            break;
+                        default:
+                            if (go.properties == null)
+                                go.properties = new List<StringStringPair>();
+                            go.properties.Add(new StringStringPair(key, GetPropertyAsString(props, key)));
+                            break;
+                    }
                 }
             }
             return go;
@@ -379,40 +536,40 @@ namespace Darl.GraphQL.Models.Connectivity
                 name = GetValueAsString(r, "label")
             };
             var props = GetValueOrDefault(r, nameof(GraphConnection.properties)) as IReadOnlyDictionary<string, object>;
-            foreach (var key in props.Keys)
+            if (props != null)
             {
-                switch (key)
+                foreach (var key in props.Keys)
                 {
-                    case nameof(GraphConnection.lineage):
-                        gc.lineage = GetValueAsString(props, key);
-                        break;
-                    case nameof(GraphConnection.weight):
-                        {
-                            if (double.TryParse(GetValueAsString(props, key), out double weight))
-                                gc.weight = weight;
-                            else
-                                gc.weight = 1.0;
-                        }
-                        break;
-                    case nameof(GraphConnection.userId):
-                        gc.userId = GetValueAsString(props, key);
-                        break;
-                    case nameof(GraphConnection.inferred):
-                        gc.inferred = Convert.ToBoolean(GetValueAsString(props, key));
-                        break;
-                    case "existence0":
-                    case "existence1":
-                    case "existence2":
-                    case "existence3":
-                        if (gc.existence == null)
-                            gc.existence = new List<DateTime>();
-                        gc.existence.Add((DateTime)GetValueOrDefault(props, key));
-                        break;
-                    default:
-                        if (gc.properties == null)
-                            gc.properties = new List<StringStringPair>();
-                        gc.properties.Add(new StringStringPair(key, GetPropertyAsString(props, key)));
-                        break;
+                    switch (key)
+                    {
+                        case nameof(GraphConnection.lineage):
+                            gc.lineage = GetValueAsString(props, key);
+                            break;
+                        case nameof(GraphConnection.weight):
+                            {
+                                if (double.TryParse(GetValueAsString(props, key), out double weight))
+                                    gc.weight = weight;
+                                else
+                                    gc.weight = 1.0;
+                            }
+                            break;
+                        case nameof(GraphConnection.inferred):
+                            gc.inferred = Convert.ToBoolean(GetValueAsString(props, key));
+                            break;
+                        case "existence0":
+                        case "existence1":
+                        case "existence2":
+                        case "existence3":
+                            if (gc.existence == null)
+                                gc.existence = new List<DateTime>();
+                            gc.existence.Add((DateTime)GetValueOrDefault(props, key));
+                            break;
+                        default:
+                            if (gc.properties == null)
+                                gc.properties = new List<StringStringPair>();
+                            gc.properties.Add(new StringStringPair(key, GetPropertyAsString(props, key)));
+                            break;
+                    }
                 }
             }
             return gc;
@@ -428,8 +585,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<List<GraphObject>> GetGraphObjectsFuzzy(string userId, string name, string lineage, float similarity)
         {
-            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
-            using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 return await FindNearestNameVertex(gremlinClient, lineage, name, similarity);
             }
@@ -440,34 +596,43 @@ namespace Darl.GraphQL.Models.Connectivity
         /// </summary>
         /// <param name="userId">The user's id</param>
         /// <param name="graphConnection">The connection definition - all included fields are updated</param>
-        /// <param name="definitive">if false check for ontological compliance and throw an exception if non-compliant, if true force the addition </param>
+        /// <param name="ontology"> build, check against or ignore ontology </param>
         /// <returns></returns>
-        public async Task<GraphConnection> UpdateGraphConnection(string userId, GraphConnectionUpdate graphConnection, bool definitive = false)
+        public async Task<GraphConnection> UpdateGraphConnection(string userId, GraphConnectionUpdate graphConnection, OntologyAction ontology = OntologyAction.ignore)
         {
-            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
-            using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
-                if (!definitive)//ontological compliance checks
+                if (ontology != OntologyAction.ignore)//ontological compliance checks
                 {
-                    foreach (var p in graphConnection.properties)
+                    if (graphConnection.properties != null)
                     {
-                        if (!await OntologicalCompliance(graphConnection.lineage, p.Name))
+                        foreach (var p in graphConnection.properties)
                         {
-                            throw new ExecutionError($"No association exists between {graphConnection.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
+                            if (ontology == OntologyAction.check)
+                            {
+                                if (!await OntologicalCompliance(gremlinClient, graphConnection.lineage, p.Name))
+                                {
+                                    throw new ExecutionError($"No association exists between {graphConnection.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
+                                }
+                            }
+                            else
+                            {
+                                await BuildOntology(gremlinClient, graphConnection.lineage, p.Name);
+                            }
                         }
                     }
                 }
-                var dict = new Dictionary<string, object> { { "id", graphConnection.id }, { "userId", userId } };
-                var script = "g.E().property('id', id).property('userId',userId)";
+                var dict = new Dictionary<string, object> { { "id", graphConnection.id } };
+                var script = "g.E().property('id', id)";
                 if (graphConnection.weight != null)
                 {
                     dict.Add(nameof(graphConnection.weight), graphConnection.weight);
                     script += $".property('{nameof(graphConnection.weight)}',{nameof(graphConnection.weight)})";
                 }
-                AddConditionalElements(graphConnection, dict, script);
+                AddConditionalElements(graphConnection, dict, ref script);
                 AddCommonElements(graphConnection, dict, ref script);
                 var res = await SubmitWithRetry(gremlinClient, script, dict);
-                return new GraphConnection { id = graphConnection.id, userId = userId };
+                return new GraphConnection { id = graphConnection.id };
             }
         }
 
@@ -476,51 +641,66 @@ namespace Darl.GraphQL.Models.Connectivity
         /// </summary>
         /// <param name="userId">The user's id</param>
         /// <param name="graphObject">The object definition - all included fields are updated</param>
-        /// <param name="definitive">if false check for ontological compliance and throw an exception if non-compliant, if true force the addition </param>
+        /// <param name="ontology"> build, check against or ignore ontology </param>
         /// <returns></returns>
-        public async Task<GraphObject> UpdateGraphObject(string userId, GraphObjectUpdate graphObject, bool definitive = false)
+        public async Task<GraphObject> UpdateGraphObject(string userId, GraphObjectUpdate graphObject, OntologyAction ontology = OntologyAction.ignore)
         {
-            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
-            using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 if (!LineageLibrary.CheckLineage(graphObject.lineage))
                     throw new ExecutionError($"Malformed lineage: {graphObject.lineage}.");
                 if (!graphObject.lineage.StartsWith("noun:") || graphObject.lineage.StartsWith("proper_noun:"))
                     throw new ExecutionError($"GraphObjects should have lineages of type 'noun' or 'proper_noun'. This has a lineage of {graphObject.lineage}.");
-                if (!definitive)//ontological compliance checks
+                if (ontology != OntologyAction.ignore)//ontological compliance checks
                 {
-                    foreach (var p in graphObject.properties)
+                    if (graphObject.properties != null)
                     {
-                        if (!await OntologicalCompliance(graphObject.lineage, p.Name))
+                        foreach (var p in graphObject.properties)
                         {
-                            throw new ExecutionError($"No association exists between {graphObject.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
+                            if (ontology == OntologyAction.check)
+                            {
+                                if (!await OntologicalCompliance(gremlinClient, graphObject.lineage, p.Name))
+                                {
+                                    throw new ExecutionError($"No association exists between {graphObject.lineage} and {p.Name}\n if you are sure this is correct use the definitive flag in the call.");
+                                }
+                            }
+                            else
+                            {
+                                await BuildOntology(gremlinClient, graphObject.lineage, p.Name);
+                            }
                         }
                     }
                 }
-                //required are id and userId. Create scripts and dicts for non-null elements.
-                var dict = new Dictionary<string, object> { { "id", graphObject.id }, { "userId", userId } };
-                var script = "g.V().has('id', id).has('userId',userId)";
-                AddConditionalElement(nameof(graphObject.firstname), graphObject.firstname, dict, script);
-                AddConditionalElement(nameof(graphObject.secondname), graphObject.secondname, dict, script);
-                AddConditionalElements(graphObject, dict, script);
+                //required is id . Create scripts and dicts for non-null elements.
+                var dict = new Dictionary<string, object> { { "id", graphObject.id } };
+                var script = "g.V().has(id, id)";
+                AddConditionalElement(nameof(graphObject.firstname), graphObject.firstname, dict, ref script);
+                AddConditionalElement(nameof(graphObject.secondname), graphObject.secondname, dict, ref script);
+                AddConditionalElement(nameof(graphObject.externalId), graphObject.externalId, dict, ref script);
+                AddConditionalElements(graphObject, dict, ref script);
                 AddCommonElements(graphObject, dict, ref script);
                 var res = await SubmitWithRetry(gremlinClient, script, dict);
                 return ConvertGraphObject(res.FirstOrDefault());
             }
         }
 
-        private void AddConditionalElements(GraphElementInput elem, Dictionary<string, object> dict, string script)
+        private void AddConditionalElements(GraphElementInput elem, Dictionary<string, object> dict, ref string script)
         {
-            AddConditionalElement(nameof(elem.lineage), elem.lineage, dict, script);
-            AddConditionalElement(nameof(elem.name), elem.name, dict, script);
+            AddConditionalElement(nameof(elem.lineage), elem.lineage, dict, ref script);
+            AddConditionalElement(nameof(elem.name), elem.name, dict, ref script);
             if (elem.inferred != null)
             {
                 dict.Add(nameof(elem.inferred), elem.inferred);
                 script += $".property('{nameof(elem.inferred)}',{nameof(elem.inferred)})";
             }
+            if (elem._virtual != null)
+            {
+                dict.Add("virtual", elem._virtual);
+                script += $".property('virtual',virtual)";
+            }
         }
 
-        private void AddConditionalElement(string elemName, string elem, Dictionary<string, object> dict, string script)
+        private void AddConditionalElement(string elemName, string elem, Dictionary<string, object> dict, ref string script)
         {
             if (!string.IsNullOrEmpty(elem))
             {
@@ -559,7 +739,10 @@ namespace Darl.GraphQL.Models.Connectivity
         }
         public static string GetValueAsString(IReadOnlyDictionary<string, object> dictionary, string key)
         {
-            return GetValueOrDefault(dictionary, key) as string;
+            var val =  GetValueOrDefault(dictionary, key);
+            if (val == null)
+                return null;
+            return val.ToString();
         }
 
         public static string GetPropertyAsString(IReadOnlyDictionary<string, object> dictionary, string key)
@@ -601,8 +784,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<DarlResult> ReadAsync(List<string> address)
         {           
-            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + _context.HttpContext.User.Identity.Name, password: authKey);
-            using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 //add name lookup for fuzzy match
                 if (address.Count > 1)
@@ -798,8 +980,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<string> gremlinPassThrough(string userId, string query)
         {
-            var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
-            using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 var res = await SubmitWithRetry(gremlinClient, query, new Dictionary<string, object> { });
                 return JsonConvert.SerializeObject(res);
@@ -842,8 +1023,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 var lineages = new HashSet<string>();
                 var all = new Dictionary<string, string>();
                 var any = new Dictionary<string, string>();
-                var gremlinServer = new GremlinServer(hostname, port, enableSsl: true, username: "/dbs/" + database + "/colls/" + userId, password: authKey);
-                using (var gremlinClient = new GremlinClient(gremlinServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+                using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
                 {
                     //get all the paths between the start and end objects and then collect the vertices that occur in those paths.
                     var query = $"g.V().has('id',id1).repeat(outE().inV()).until(has('id', id2)).path().unfold().dedup()";
@@ -1026,6 +1206,171 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
+        /// <summary>
+        /// Update connections and weights within a knowledge graph based on associations
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="values">A list of specifications, one of which indexes the associations.</param>
+        /// <returns>A report on what has been done.</returns>
+        /// <remarks>values contains a list of KGTrainingValue objects, each of which identifies a group of objects by lineage, and the property that contains the text to be matched.
+        /// Also contained in each is a set of example texts. One KGTrainingValue is set to be the index by a flag. The nearest node to each example text is found and the match, and index of the node recorded.
+        /// This set is returned for 
+        /// </remarks>
+        public async Task<string> UpdateKGFromAssociationData(string userId, List<KGTrainingValue> values)
+        {
+            //check all arrays are the same length
+            int arrayLength = -1;
+            bool indexFound = false;
+            if(values.Count < 2)
+            {
+                throw new ExecutionError($"Two or more values in the list expected: one index and at least one associated value");
+            }
+            foreach (var v in values)
+            {
+                if (v.values.Count != arrayLength)
+                {
+                    if (arrayLength == -1)
+                    {
+                        arrayLength = v.values.Count;
+                    }
+                    else
+                    {
+                        throw new ExecutionError($"The first value contains {arrayLength} values, but one of the values arrays has a different length.");
+                    }
+                }
+                if(v.index)
+                {
+                    if(indexFound)
+                    {
+                        throw new ExecutionError($"More than one value set as index");
+                    }
+                    indexFound = true;
+                }
+            }
+            if (!indexFound)
+            {
+                throw new ExecutionError($"No value set as index");
+            }
+
+            //process each set of nodes individually
+            var aggregatedResults = new List<KGMatchResult>();
+            var lockObject = new object();
+            Parallel.ForEach(values,
+                () => new KGMatchResult(),
+                (match, loopState, results) =>
+                {
+                    //get all the labels for objects in the KG with one of those lineages
+                    var labels = new List<StringStringPair>();
+                    using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+                    {
+                        foreach (var l in match.valueLineages)
+                        {
+                            try
+                            {
+                                var dict = new Dictionary<string, object> { { "lineage", l }};
+                                string extension = string.Empty;
+                                string inclusion = string.Empty;
+                                foreach (var vp in match.valueProperty)
+                                {
+                                    extension += $".by('{vp}')";
+                                    inclusion += $"'{vp}',";
+                                }
+                                inclusion = inclusion.Substring(0, inclusion.Length - 1); //trim final','
+                                var script = $"g.V().has('lineage',TextP.startingWith(lineage)).has('virtual',false).project('id',{inclusion}).by(id){extension}";
+                                var res = SubmitWithRetry(gremlinClient, script, dict).Result;
+                                if (res.Count != 0)
+                                {
+                                    foreach (IReadOnlyDictionary<string, object> r in res)
+                                    {
+                                        var sb = new StringBuilder();
+                                        foreach (var vp in match.valueProperty)
+                                        {
+                                            if (r.ContainsKey(vp))
+                                            {
+                                                sb.AppendFormat("{0} ", r[vp].ToString());
+                                            }
+                                        }
+                                        labels.Add(new StringStringPair(r["id"].ToString(), sb.ToString()));
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new ExecutionError("Internal error in Association processing", ex);
+                            }
+                        }
+                        //build the match tree
+ //                       match.graph = new MatchGraph();
+ //                       match.graph.CreateTree(labels);
+                        //Match up the values
+                        results.index = match.index;
+                        //make this parallel too.
+                        //preset the result with null pointers
+                        for(int n = 0; n < match.values.Count; n++)
+                        {
+                            results.results.Add(null);
+                        }
+                        //use a parallel for
+/*                       for (int n = 0; n < match.values.Count; n++)
+                        {
+                            var s = match.values[n];
+                            var resList = new List<MatchResult>();
+                            foreach(var t in s)
+                            {
+                                resList.Add(match.graph.Find(t));
+                            }
+                            results.results[n] = resList;
+                        }*/
+                        Parallel.For(0, match.values.Count,
+                            () => new FindLoopRecord(),
+                            (n,loop,resList) => {
+                                var graph = new MatchGraph();
+                                graph.CreateTree(labels);
+                                var s = match.values[n];
+                                foreach (var t in s)
+                                {
+                                    resList.res.Add(graph.Find(t));
+                                    resList.index = n;
+                                }
+                                return resList;
+                            },
+                            (resList) =>
+                            {
+                                lock (lockObject) { results.results[resList.index] = resList.res; }
+                            }
+                            );
+                    }
+                    return results;
+                },
+                (results) => { lock (lockObject) { aggregatedResults.Add(results); } }
+                ); 
+            var report = new StringBuilder();
+            report.AppendLine($"Association learning run at {DateTime.UtcNow} UTC.");
+            report.AppendLine($"{values.Count - 1} associations possible with {values[0].values.Count} examples.");
+            // now modify the knowledge graph
+            //first find the index record
+            var index = aggregatedResults.Where(a => a.index).FirstOrDefault();
+            aggregatedResults.Remove(index); //take it out of the list
+            for(int n = 0; n < index.results.Count; n++)
+            {
+                if (index.results[n] != null && index.results[n].Any() && index.results[n][0] != null)
+                {
+                    var matchedText = await GetGraphObjectProperty(userId, index.results[n][0].index, "name");
+                    report.AppendLine($"index text: '{index.results[n][0].sourceText}' matches text '{matchedText}' associated with node index { index.results[n][0].index} weight: {index.results[n][0].confidence} ");
+
+                    foreach(var v in aggregatedResults)
+                    {
+                        if(v.results[n] != null)
+                        {
+ //                           report.AppendLine($"\t Has an association with text: {v.results[n].sourceText} associated with node index { v.results[n].index} weight: {v.results[n].confidence} ");
+                            //see if connection exists, if so, add weight, if not add connection with weight
+                            //Hierarchical update here
+                        }
+                    }
+                }
+            }
+            return report.ToString();
+        }
 
         private bool IsVertex(dynamic r)
         {
@@ -1049,10 +1394,16 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             if (!_disposed)
             {
-                if (disposing)
-                    gremlinDreamerClient.Dispose();
                 _disposed = true;
             }
+        }
+
+        internal class FindLoopRecord
+        {
+            internal int index { get; set; }
+
+            internal List<MatchResult> res { get; set; } = new List<MatchResult>();
+
         }
 
     }

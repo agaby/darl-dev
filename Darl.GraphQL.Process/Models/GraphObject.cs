@@ -9,6 +9,7 @@ namespace Darl.GraphQL.Models.Models
 
         public string firstname { get; set; }//optional
         public string secondname { get; set; }//optional
+        public string externalId { get; set; }//optional
         public List<GraphConnection> connections { get; set; } = new List<GraphConnection>();
    }
 }
