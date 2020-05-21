@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -44,6 +45,7 @@ namespace Darl.GraphQL.Test
         private static string topicLineage = "noun:01,4,05,06";
         private static string skillLineage = "noun:01,0,0,04";
         private static string createLineage = "verb:023";
+        private static string requireLineage = "verb:145";
 
         [TestInitialize()]
         public void Initialize()
@@ -66,6 +68,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task CreateAndDeleteObjectTest()
         {
             var res = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput { lineage = "noun:00,2,00", name = "Andrew Edmonds", firstname = "Andrew", secondname = "Edmonds", inferred = false, existence = new List<DateTime> { new DateTime(1955, 11, 6), DateTime.MaxValue } });
@@ -108,6 +111,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task TestRead1()
         {
             var res = await _graph.ReadAsync(new List<string> { "text", "jeremy corbyn", "noun:00,2,00" });
@@ -115,6 +119,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task TestRead2()
         {
 
@@ -123,6 +128,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task TestRead3()
         {
             var res = await _graph.ReadAsync(new List<string> { "links", "Jeremy Corbyn", "noun:00,2,00", "noun:01,2,07,10" });
@@ -130,6 +136,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task TestRead4()
         {
             var res = await _graph.ReadAsync(new List<string> { "path", "Jeremy Corbyn", "Paul Mason", "noun:00,2,00", "noun:00,2,00" });
@@ -137,6 +144,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task TestRead5()
         {
             var res = await _graph.ReadAsync(new List<string> { "text", "jeremy corbin", "noun:00,2,00" });
@@ -144,6 +152,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task TestRead6()
         {
 
@@ -152,6 +161,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task TestRead7()
         {
             var res = await _graph.ReadAsync(new List<string> { "links", "Jeremi Corbyn", "noun:00,2,00", "noun:01,2,07,10" });
@@ -159,6 +169,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task TestRead8()
         {
             var res = await _graph.ReadAsync(new List<string> { "path", "Jeremy Corbin", "Paul Masoni", "noun:00,2,00", "noun:00,2,00" });
@@ -166,6 +177,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task TestRead9()
         {
             var res = await _graph.ReadAsync(new List<string> { "path", "Jeremi Corbyn", "Pail Mason", "noun:00,2,00", "noun:00,2,00" });
@@ -174,6 +186,7 @@ namespace Darl.GraphQL.Test
 
 
         [TestMethod]
+        [Ignore]
         public async Task NearestVertexTest()
         {
             using (var gremlinClient = new GremlinClient(_graph.gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
@@ -193,6 +206,7 @@ namespace Darl.GraphQL.Test
             await _graph.CreateNewGraph("33db770b-29e9-46ae-8a19-c1947bd775d8", "/lineage");
         }
         [TestMethod]
+        [Ignore]
         public async Task TestInferPath()
         {
             var userId = "33db770b-29e9-46ae-8a19-c1947bd775d8";
@@ -529,16 +543,19 @@ namespace Darl.GraphQL.Test
         [TestMethod]
         public async Task TestSoftMatchJobs()
         {
-            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.musicbusinessworldwide.json"));
+//            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.musicbusinessworldwide.json"));
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.jobs.json"));
             var doc = docsource.ReadToEnd();
             var jobs = JArray.Parse(doc).ToList();
             var values = new List<List<string>>();
             var indexes  = new List<List<string>>();
+            var filtergraph = new MatchGraph();
+            var dict = new List<StringStringPair> { new StringStringPair("use", "skills qualifications responsibilities knowledge experience job requirements role") };
+            filtergraph.CreateTree(dict);
 
-            foreach(var job in jobs)
+            foreach (var job in jobs)
             {
                 var jobTitle = job.SelectToken("$.Title").ToString();
-                indexes.Add(new List<string> { jobTitle });
                 var data = job.SelectToken("$.Data");
                 // The format of the data is an array of arrays of strings.
                 // Each subarray has a title text which varies from  one job listing to the next. In the best of all worlds we would 
@@ -550,28 +567,72 @@ namespace Darl.GraphQL.Test
                 var sections = data.ToList();
                 foreach(var section in sections)
                 {
-                    var subsections = section.First().ToList();
-                    foreach(var s in subsections)
+                    if (filtergraph.Find(section.ToObject<JProperty>().Name.ToLower()) != null) //try to filter irrelevant subsections
                     {
-                        list.Add(s.ToString());
+                        var subsections = section.First().ToList();
+                        foreach (var s in subsections)
+                        {
+                            list.Add(s.ToString());
+                        }
                     }
- 
-                }
-                values.Add(list);
-            }
 
+                }
+                if (list.Any())
+                {
+                    values.Add(list);
+                    indexes.Add(new List<string> { jobTitle });
+                }
+            }
             var report = await _graph.UpdateKGFromAssociationData(_config["userId"], new List<KGTrainingValue> { 
             new KGTrainingValue{ index = true, valueLineages = new List<string>{ jobLineage }, valueProperty = new List<string>{sectorLineage, areaLineage, typeLineage, "name" }, values= indexes },
             new KGTrainingValue{ index = false, valueLineages = new List<string>{ courseLineage }, valueProperty = new List<string>{"name" }, values= values }
-            });
+            },requireLineage, "requires");
 
         }
 
         [TestMethod]
+        [Ignore]
         public async Task TestGettingProperties()
         {
             var res = await _graph.GetGraphObjectProperty(_config["userId"], "5aba5cea-7c7e-4b1e-8abc-057c445cdaee","lineage");
         }
 
+        [TestMethod]
+        [Ignore]
+        public void TestDataFieldNameDetection()
+        {
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.datafieldnames.json"));
+            var doc = docsource.ReadToEnd();
+            var records = JsonConvert.DeserializeObject<List<string>>(doc);
+            
+            var filtergraph = new MatchGraph();
+            var dict = new List<StringStringPair> { new StringStringPair("use", "skills qualifications responsibilities knowledge experience job requirements role") };
+            filtergraph.CreateTree(dict);
+            var trainingData = new List<Classification>();
+            foreach(var r in records)
+            {
+                var res = filtergraph.Find(r);
+            }
+        }
+
+        [TestMethod]
+        [Ignore]
+        public async Task TestGetConnectionByIDs()
+        {
+            var res = await _graph.GetConnectionByIds(_config["userId"], "3dc5afec-457a-4d79-bb81-abfd764f1c2e", "4bf1c3c4-a919-4c8d-a662-597b423743cf", teachLineage);
+            Assert.AreEqual(teachLineage, res.lineage);
+            var weight = await _graph.GetGraphConnectionProperty(_config["userId"], "3dc5afec-457a-4d79-bb81-abfd764f1c2e", "4bf1c3c4-a919-4c8d-a662-597b423743cf", teachLineage, "weight");
+            await _graph.SetGraphConnectionProperty(_config["userId"], "3dc5afec-457a-4d79-bb81-abfd764f1c2e", "4bf1c3c4-a919-4c8d-a662-597b423743cf", teachLineage, "weight", "2.0");
+            weight = await _graph.GetGraphConnectionProperty(_config["userId"], "3dc5afec-457a-4d79-bb81-abfd764f1c2e", "4bf1c3c4-a919-4c8d-a662-597b423743cf", teachLineage, "weight");
+            res = await _graph.GetConnectionByIds(_config["userId"], "3dc5afec-457a-4d79-bb81-abfd764f1c2e", "7a00d122-50ba-471b-8fbc-8a033f5f267c", teachLineage);
+           Assert.IsNull(res);
+        }
+
+    }
+    class Classification
+    {
+        public string text { get; set; }
+
+        public string category { get; set; }
     }
 }

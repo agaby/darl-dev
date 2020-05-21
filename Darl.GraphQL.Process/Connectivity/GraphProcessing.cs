@@ -19,6 +19,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -414,6 +415,38 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
+        /// <summary>
+        /// Get a connection based on the node ids and the lineage
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="startId"></param>
+        /// <param name="endId"></param>
+        /// <param name="lineage"></param>
+        /// <returns>The partially filled in connection</returns>
+        public async Task<GraphConnection> GetConnectionByIds(string userId, string startId, string endId, string lineage )
+        {
+            using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            {
+                try
+                {
+                    var res = await SubmitWithRetry(gremlinClient, "g.V(startId).outE().has('lineage',lineage).where(otherV().hasId(endId))", new Dictionary<string, object> { { "startId", startId }, { "endId", endId }, { "lineage", lineage } });
+                    if (res.Count != 0)
+                    {
+                        foreach (var r in res)
+                        {
+                            return new GraphConnection { id = GetValueAsString(r, nameof(GraphObject.id)), startId = startId, endId = endId, name = GetValueAsString(r, "label"), lineage = lineage };                      
+                        }
+                    }
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    throw new ExecutionError("Error in reading from Graph database: ", ex);
+                }
+            }
+
+        }
+
         public async Task<string> GetGraphObjectProperty(string userId, string id, string property)
         {
             using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
@@ -435,6 +468,50 @@ namespace Darl.GraphQL.Models.Connectivity
                         }
                     }
                     return null;
+                }
+                catch (Exception ex)
+                {
+                    throw new ExecutionError("Error in reading from Graph database: ", ex);
+                }
+            }
+        }
+
+        public async Task<string> GetGraphConnectionProperty(string userId, string startId, string endId, string lineage, string property)
+        {
+            using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            {
+                try
+                {
+                    var res = await SubmitWithRetry(gremlinClient, "g.V(startId).outE().has('lineage',lineage).where(otherV().hasId(endId)).properties()", new Dictionary<string, object> { { "startId", startId }, { "endId", endId }, { "lineage", lineage } });
+                    if (res.Count != 0)
+                    {
+                        foreach (IReadOnlyDictionary<string, object> r in res)
+                        {
+                            if (r.ContainsKey("key"))
+                            {
+                                if ((string)r["key"] == property)
+                                {
+                                    return r["value"].ToString();
+                                }
+                            }
+                        }
+                    }
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    throw new ExecutionError("Error in reading from Graph database: ", ex);
+                }
+            }
+        }
+
+        public async Task SetGraphConnectionProperty(string userId, string startId, string endId, string lineage, string property, string value)
+        {
+            using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            {
+                try
+                {
+                    var res = await SubmitWithRetry(gremlinClient, "g.V(startId).outE().has('lineage',lineage).where(otherV().hasId(endId)).property(prop,val)", new Dictionary<string, object> { { "startId", startId }, { "endId", endId }, { "lineage", lineage }, { "prop", property }, {"val", value } });
                 }
                 catch (Exception ex)
                 {
@@ -1216,7 +1293,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// Also contained in each is a set of example texts. One KGTrainingValue is set to be the index by a flag. The nearest node to each example text is found and the match, and index of the node recorded.
         /// This set is returned for 
         /// </remarks>
-        public async Task<string> UpdateKGFromAssociationData(string userId, List<KGTrainingValue> values)
+        public async Task<string> UpdateKGFromAssociationData(string userId, List<KGTrainingValue> values, string connectionLineage, string connectionName)
         {
             //check all arrays are the same length
             int arrayLength = -1;
@@ -1260,6 +1337,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 (match, loopState, results) =>
                 {
                     //get all the labels for objects in the KG with one of those lineages
+                    results.valueProperty.AddRange(match.valueProperty);
                     var labels = new List<StringStringPair>();
                     using (var gremlinClient = new GremlinClient(gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
                     {
@@ -1300,8 +1378,8 @@ namespace Darl.GraphQL.Models.Connectivity
                             }
                         }
                         //build the match tree
- //                       match.graph = new MatchGraph();
- //                       match.graph.CreateTree(labels);
+                        match.graph = new MatchGraph();//remove for parallel
+                        match.graph.CreateTree(labels);
                         //Match up the values
                         results.index = match.index;
                         //make this parallel too.
@@ -1311,8 +1389,8 @@ namespace Darl.GraphQL.Models.Connectivity
                             results.results.Add(null);
                         }
                         //use a parallel for
-/*                       for (int n = 0; n < match.values.Count; n++)
-                        {
+                       for (int n = 0; n < match.values.Count; n++)
+                       {
                             var s = match.values[n];
                             var resList = new List<MatchResult>();
                             foreach(var t in s)
@@ -1320,8 +1398,8 @@ namespace Darl.GraphQL.Models.Connectivity
                                 resList.Add(match.graph.Find(t));
                             }
                             results.results[n] = resList;
-                        }*/
-                        Parallel.For(0, match.values.Count,
+                        }
+/*                        Parallel.For(0, match.values.Count,
                             () => new FindLoopRecord(),
                             (n,loop,resList) => {
                                 var graph = new MatchGraph();
@@ -1338,7 +1416,7 @@ namespace Darl.GraphQL.Models.Connectivity
                             {
                                 lock (lockObject) { results.results[resList.index] = resList.res; }
                             }
-                            );
+                            );*/
                     }
                     return results;
                 },
@@ -1351,20 +1429,42 @@ namespace Darl.GraphQL.Models.Connectivity
             //first find the index record
             var index = aggregatedResults.Where(a => a.index).FirstOrDefault();
             aggregatedResults.Remove(index); //take it out of the list
-            for(int n = 0; n < index.results.Count; n++)
+            int resultCount = 0;
+            for (int n = 0; n < index.results.Count; n++)
             {
                 if (index.results[n] != null && index.results[n].Any() && index.results[n][0] != null)
                 {
+                    resultCount++;
                     var matchedText = await GetGraphObjectProperty(userId, index.results[n][0].index, "name");
                     report.AppendLine($"index text: '{index.results[n][0].sourceText}' matches text '{matchedText}' associated with node index { index.results[n][0].index} weight: {index.results[n][0].confidence} ");
-
                     foreach(var v in aggregatedResults)
                     {
                         if(v.results[n] != null)
                         {
- //                           report.AppendLine($"\t Has an association with text: {v.results[n].sourceText} associated with node index { v.results[n].index} weight: {v.results[n].confidence} ");
-                            //see if connection exists, if so, add weight, if not add connection with weight
-                            //Hierarchical update here
+                            foreach(var a in v.results[n])
+                            {
+                                if (a != null)
+                                {
+                                    var matchedsubText = await GetGraphObjectProperty(userId, a.index, v.valueProperty[0]);
+                                    report.AppendLine($"\t Has an association with text: '{a.sourceText}', original text '{matchedsubText}',  associated with node index { a.index} weight: {a.confidence} ");
+                                    //see if connection exists, if so, add weight, if not add connection with weight
+                                    var conn = await GetConnectionByIds(userId, index.results[n][0].index, a.index, connectionLineage);
+                                    if(conn == null)
+                                    {
+                                        await CreateGraphConnection(userId, new GraphConnectionInput { startId = index.results[n][0].index, endId = a.index, _virtual = false, inferred = false, name = connectionName, lineage = connectionLineage, weight = a.confidence }, OntologyAction.build);
+                                    }
+                                    else
+                                    {
+                                        var weight = await GetGraphConnectionProperty(userId, index.results[n][0].index, a.index, connectionLineage, "weight");
+                                        if(!string.IsNullOrEmpty(weight))
+                                        {
+                                            var newWeight = double.Parse(weight) + a.confidence;
+                                            await SetGraphConnectionProperty(userId, index.results[n][0].index, a.index, connectionLineage, "weight", newWeight.ToString());
+                                        }
+                                    }
+                                    //Hierarchical update here
+                                }
+                            }
                         }
                     }
                 }
