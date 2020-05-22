@@ -1377,51 +1377,13 @@ namespace Darl.GraphQL.Models.Connectivity
                                 throw new ExecutionError("Internal error in Association processing", ex);
                             }
                         }
-                        //build the match tree
-                        match.graph = new MatchGraph();//remove for parallel
-                        match.graph.CreateTree(labels);
-                        //Match up the values
-                        results.index = match.index;
-                        //make this parallel too.
-                        //preset the result with null pointers
-                        for(int n = 0; n < match.values.Count; n++)
-                        {
-                            results.results.Add(null);
-                        }
-                        //use a parallel for
-                       for (int n = 0; n < match.values.Count; n++)
-                       {
-                            var s = match.values[n];
-                            var resList = new List<MatchResult>();
-                            foreach(var t in s)
-                            {
-                                resList.Add(match.graph.Find(t));
-                            }
-                            results.results[n] = resList;
-                        }
-/*                        Parallel.For(0, match.values.Count,
-                            () => new FindLoopRecord(),
-                            (n,loop,resList) => {
-                                var graph = new MatchGraph();
-                                graph.CreateTree(labels);
-                                var s = match.values[n];
-                                foreach (var t in s)
-                                {
-                                    resList.res.Add(graph.Find(t));
-                                    resList.index = n;
-                                }
-                                return resList;
-                            },
-                            (resList) =>
-                            {
-                                lock (lockObject) { results.results[resList.index] = resList.res; }
-                            }
-                            );*/
+                        InferMatchParallel(results, match, labels);
                     }
                     return results;
                 },
                 (results) => { lock (lockObject) { aggregatedResults.Add(results); } }
                 ); 
+            //Create report and update the Knowledge graph
             var report = new StringBuilder();
             report.AppendLine($"Association learning run at {DateTime.UtcNow} UTC.");
             report.AppendLine($"{values.Count - 1} associations possible with {values[0].values.Count} examples.");
@@ -1430,49 +1392,114 @@ namespace Darl.GraphQL.Models.Connectivity
             var index = aggregatedResults.Where(a => a.index).FirstOrDefault();
             aggregatedResults.Remove(index); //take it out of the list
             int resultCount = 0;
-            for (int n = 0; n < index.results.Count; n++)
-            {
-                if (index.results[n] != null && index.results[n].Any() && index.results[n][0] != null)
+            var innerLock = new object();
+            Parallel.For(0, index.results.Count,
+                () => new StringBuilder(),
+                (n, loop, report) =>
                 {
-                    resultCount++;
-                    var matchedText = await GetGraphObjectProperty(userId, index.results[n][0].index, "name");
-                    report.AppendLine($"index text: '{index.results[n][0].sourceText}' matches text '{matchedText}' associated with node index { index.results[n][0].index} weight: {index.results[n][0].confidence} ");
-                    foreach(var v in aggregatedResults)
+                    if (index.results[n] != null && index.results[n].Any() && index.results[n][0] != null)
                     {
-                        if(v.results[n] != null)
+                        resultCount++;
+                        var matchedText = GetGraphObjectProperty(userId, index.results[n][0].index, "name").Result;
+                        report.AppendLine($"index text: '{index.results[n][0].sourceText}' matches text '{matchedText}' associated with node index { index.results[n][0].index} weight: {index.results[n][0].confidence} ");
+                        foreach (var v in aggregatedResults)
                         {
-                            foreach(var a in v.results[n])
+                            if (v.results[n] != null)
                             {
-                                if (a != null)
+                                foreach (var a in v.results[n])
                                 {
-                                    var matchedsubText = await GetGraphObjectProperty(userId, a.index, v.valueProperty[0]);
-                                    report.AppendLine($"\t Has an association with text: '{a.sourceText}', original text '{matchedsubText}',  associated with node index { a.index} weight: {a.confidence} ");
-                                    //see if connection exists, if so, add weight, if not add connection with weight
-                                    var conn = await GetConnectionByIds(userId, index.results[n][0].index, a.index, connectionLineage);
-                                    if(conn == null)
+                                    if (a != null)
                                     {
-                                        await CreateGraphConnection(userId, new GraphConnectionInput { startId = index.results[n][0].index, endId = a.index, _virtual = false, inferred = false, name = connectionName, lineage = connectionLineage, weight = a.confidence }, OntologyAction.build);
-                                    }
-                                    else
-                                    {
-                                        var weight = await GetGraphConnectionProperty(userId, index.results[n][0].index, a.index, connectionLineage, "weight");
-                                        if(!string.IsNullOrEmpty(weight))
+                                        var matchedsubText = GetGraphObjectProperty(userId, a.index, v.valueProperty[0]).Result;
+                                        report.AppendLine($"\t Has an association with text: '{a.sourceText}', original text '{matchedsubText}',  associated with node index { a.index} weight: {a.confidence} ");
+                                        //see if connection exists, if so, add weight, if not add connection with weight
+                                        var conn = GetConnectionByIds(userId, index.results[n][0].index, a.index, connectionLineage).Result;
+                                        if (conn == null)
                                         {
-                                            var newWeight = double.Parse(weight) + a.confidence;
-                                            await SetGraphConnectionProperty(userId, index.results[n][0].index, a.index, connectionLineage, "weight", newWeight.ToString());
+                                            lock (innerLock)
+                                            {
+                                                CreateGraphConnection(userId, new GraphConnectionInput { startId = index.results[n][0].index, endId = a.index, _virtual = false, inferred = false, name = connectionName, lineage = connectionLineage, weight = a.confidence }, OntologyAction.build).Wait();
+                                            }
                                         }
+                                        else
+                                        {
+                                            lock (innerLock) //needs to be atomic
+                                            {
+                                                var weight = GetGraphConnectionProperty(userId, index.results[n][0].index, a.index, connectionLineage, "weight").Result;
+                                                if (!string.IsNullOrEmpty(weight))
+                                                {
+                                                    var newWeight = double.Parse(weight) + a.confidence;
+                                                    SetGraphConnectionProperty(userId, index.results[n][0].index, a.index, connectionLineage, "weight", newWeight.ToString()).Wait();
+                                                }
+                                            }
+                                        }
+                                        //Hierarchical update here
                                     }
-                                    //Hierarchical update here
                                 }
                             }
                         }
                     }
-                }
-            }
+                    return report;
+                },
+                (subreport) => { lock (lockObject) { report.Append(subreport.ToString()); } }
+                );
             return report.ToString();
         }
 
-        private bool IsVertex(dynamic r)
+        private void InferMatch(KGMatchResult results, KGTrainingValue match, List<StringStringPair> labels)
+        {
+            match.graph = new MatchGraph();//remove for parallel
+            match.graph.CreateTree(labels);
+            //Match up the values
+            results.index = match.index;
+            //make this parallel too.
+            //preset the result with null pointers
+            for (int n = 0; n < match.values.Count; n++)
+            {
+                results.results.Add(null);
+            }
+            for (int n = 0; n < match.values.Count; n++)
+            {
+                var s = match.values[n];
+                var resList = new List<MatchResult>();
+                foreach (var t in s)
+                {
+                    resList.Add(match.graph.Find(t));
+                }
+                results.results[n] = resList;
+            }
+        }
+
+        private void InferMatchParallel(KGMatchResult results, KGTrainingValue match, List<StringStringPair> labels)
+        {
+            var lockObject = new object();
+            results.index = match.index;
+            //preset the result with null pointers
+            for (int n = 0; n < match.values.Count; n++)
+            {
+                results.results.Add(null);
+            }
+            Parallel.For(0, match.values.Count,
+             () => new FindLoopRecord(),
+             (n, loop, resList) => {
+                 var graph = new MatchGraph();
+                 graph.CreateTree(labels);
+                 var s = match.values[n];
+                 foreach (var t in s)
+                 {
+                     resList.res.Add(graph.Find(t));
+                     resList.index = n;
+                 }
+                 return resList;
+             },
+             (resList) =>
+             {
+                 lock (lockObject) { results.results[resList.index] = resList.res; }
+             }
+             );
+        }
+
+            private bool IsVertex(dynamic r)
         {
             return GetValueAsString(r, "type") == "vertex";
         }
