@@ -183,7 +183,7 @@ query back($ieToken: String!)
 
 ## Interact with a Bot
 ```json
-query interact($model: String!, $convId: String!, $data: darlVarUpdate!)
+query interact($model: String!, $convId: String!, $data: darlVarInput!)
 {
   interact(botModelName: $model, conversationId: $convId, conversationData: $data)
   {
@@ -387,7 +387,7 @@ mutation
 
 ## Infer a ruleset using DARL code
 ```json
-mutation ifd($code: String!, $inputs: [darlVarUpdate]!)
+mutation ifd($code: String!, $inputs: [darlVarInput]!)
 {
   inferFromDarl(code: $code, inputs: $inputs)
   {

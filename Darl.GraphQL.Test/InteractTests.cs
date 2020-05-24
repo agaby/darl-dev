@@ -31,8 +31,8 @@ namespace Darl.GraphQL.Test
         {
             var req = new GraphQLRequest()
             {
-                Variables = new { model = "thousandquestions.model", convId = "aaabbb", data = new { name = "", Value = "hi", dataType = DarlVar.DataType.textual } },
-                Query = @"query Interact($model: String!, $convId: String!, $data: darlVarUpdate!){ interact(botModelName: $model, conversationId: $convId, conversationData: $data){ response { value dataType } }}",
+                Variables = new { model = "thousandquestions.model", convId = "aaabbb", data = new { name = "", Value = "who are tyou", dataType = DarlVar.DataType.textual } },
+                Query = @"query Interact($model: String!, $convId: String!, $data: darlVarInput!){ interact(botModelName: $model, conversationId: $convId, conversationData: $data){ response { value dataType } }}",
                 OperationName = "Interact"
             };
             var resp = await client.PostAsync(req);
@@ -47,7 +47,7 @@ namespace Darl.GraphQL.Test
             var req = new GraphQLRequest()
             {
                 Variables = new { model = "thousandquestions.model", convId = "aaabbb", data = new { name = "", Value = "schnerbblewerble", dataType = DarlVar.DataType.textual } },
-                Query = @"query Interact($model: String!, $convId: String!, $data: darlVarUpdate!){ interact(botModelName: $model, conversationId: $convId, conversationData: $data){ response { value dataType approximate} }}",
+                Query = @"query Interact($model: String!, $convId: String!, $data: darlVarInput!){ interact(botModelName: $model, conversationId: $convId, conversationData: $data){ response { value dataType approximate} }}",
                 OperationName = "Interact"
             };
             var resp = await client.PostAsync(req);
@@ -75,7 +75,7 @@ namespace Darl.GraphQL.Test
             //test 
             req = new GraphQLRequest()
             {
-                Query = "query interact($model: String!, $convId: String!, $data: darlVarUpdate!){interact(botModelName: $model, conversationId: $convId, conversationData: $data) {response{value dataType } }}",
+                Query = "query interact($model: String!, $convId: String!, $data: darlVarInput!){interact(botModelName: $model, conversationId: $convId, conversationData: $data) {response{value dataType } }}",
                 Variables = new { model = "FarLeftGraph.model", convId = "aaabb", data = new { name = "", Value = "who is Jeremy Corbyn", dataType = DarlVar.DataType.textual } }
             };
             resp = await client.PostAsync(req);

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -357,7 +357,7 @@
 </code></pre>
 
 <h2 id="interact-with-a-bot">Interact with a Bot</h2>
-<pre><code class="json">query interact($model: String!, $convId: String!, $data: darlVarUpdate!)
+<pre><code class="json">query interact($model: String!, $convId: String!, $data: darlVarInput!)
 {
   interact(botModelName: $model, conversationId: $convId, conversationData: $data)
   {
@@ -546,7 +546,7 @@ _</p>
 </code></pre>
 
 <h2 id="infer-a-ruleset-using-darl-code">Infer a ruleset using DARL code</h2>
-<pre><code class="json">mutation ifd($code: String!, $inputs: [darlVarUpdate]!)
+<pre><code class="json">mutation ifd($code: String!, $inputs: [darlVarInput]!)
 {
   inferFromDarl(code: $code, inputs: $inputs)
   {
