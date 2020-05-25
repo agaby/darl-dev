@@ -214,10 +214,14 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var currentModel = await GetLineageModel(userId, botModelName);
             var lmn = currentModel.tree.Add(parent, newName.Trim().ToLower());
-            await SaveLineageModel(userId, botModelName, currentModel);
-            var att = new LineageNodeAttributes();
-            att.definition = lmn.element.description;
-            return new LineageNodeDefinition { text = lmn.element.lineage, id = lmn.element.lineage, attributes = att, children = false };
+            if (lmn != null)
+            {
+                await SaveLineageModel(userId, botModelName, currentModel);
+                var att = new LineageNodeAttributes();
+                att.definition = lmn.element.description;
+                return new LineageNodeDefinition { text = lmn.element.lineage, id = lmn.element.lineage, attributes = att, children = false };
+            }
+            return new LineageNodeDefinition { children = false };
         }
 
         public async Task<MLModel> CreateMLModel(string userId, string name, DarlCommon.MLModel model)
@@ -752,7 +756,15 @@ namespace Darl.GraphQL.Models.Connectivity
             var notleaf = r.children.Any();
             LineageNodeAttributes att = ConvertFromLineageMatchNode(r, lm);
             att.definition = r.element.description;
-            next.Add(new LineageNodeDefinition { id = id, text = r.element.lineage, children = notleaf, attributes = att });
+            next.Add(new LineageNodeDefinition
+            {
+                id = id,
+                text = r.element.lineage,
+                children = notleaf,
+                attributes = att,
+                icon = r.element.type == LineageType.Default ? "fa fa-stop-circle-o" : "fa fa-angle-right",
+                type = r.element.type == LineageType.Default ? "nochild" : "default"
+            });
         }
 
         private LineageNodeAttributes ConvertFromLineageMatchNode(LineageMatchNode r, LineageModel lm)

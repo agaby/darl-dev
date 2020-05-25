@@ -67,4 +67,8 @@
     <None Include="wwwroot\knowledge-graph\scripts\utils.js" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\jstree\themes\" />
+  </ItemGroup>
+
 </Project>

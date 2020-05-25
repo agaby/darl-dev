@@ -116,7 +116,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 
 
-    <script>
+    <script language="JavaScript">
         var darlCodeMirror;
         var timeout;
         var mdname;
@@ -132,6 +132,7 @@
         var deleteNode;
         var createNode;
         var renameNode;
+        var pasteNodes;
         var tree;
         var editorResponse;
         var editorCall;
@@ -185,10 +186,11 @@
             updateAtt = graph('mutation uab($name: String!, $path: String!, $att: lineageNodeAttributeUpdate!){updateAttribute(botModelName: $name, path: $path, attribute: $att){ path}}');
             phraseCreate = graph('mutation pc($name: String!, $path: String!, $att: lineageNodeAttributeUpdate!){createPhrase(botModelName: $name, path: $path, attribute: $att){ definition}}');
             phraseDelete = graph('mutation pd($name: String!, $phrase: String!){deletePhrase(botModelName: $name, phrase: $phrase){ path}}');
-            getChildren = graph('query gcln($model: String!, $path: String!, $root: Boolean!){getChildrenLineageNodes(botModelName: $model, path: $path, isRoot: $root){id text children data: attributes{ darl call response randomResponse randomResponses definition} }}');
+            getChildren = graph('query gcln($model: String!, $path: String!, $root: Boolean!){getChildrenLineageNodes(botModelName: $model, path: $path, isRoot: $root){id text children icon data: attributes{ darl call response randomResponse randomResponses definition} }}');
             deleteNode = graph('mutation nd($model: String!, $path: String!){deleteLineageNode(botModelName: $model, id: $path){id text children}}');
             createNode = graph('mutation nc($model: String!, $parent: String!, $text: String!){createLineageNode(botModelName: $model, parent: $parent, newName: $text){id text children}}');
             renameNode = graph('mutation nr($model: String!, $id: String!, $text: String!){renameLineageNode(botModelName: $model, id: $id, newName: $text){id text children}}');
+            pasteNodes = graph('mutation pn($model: String!, $parent: String!, $nodes: [String]!, $mode: String!){pasteLineageNode(botModelName: $model, parent: $parent, nodes: $nodes, mode: $mode){id text children}}');
             lintCall = graph('query lint($darl: String!, $skeleton: String!, $insertion: String!){  lintDarl(darl: $darl, skeleton: $skeleton, insertion: $insertion){ column_no_start column_no_stop line_no message severity }}');
             await updateDropdown();
             $('#botmodel-dropdown').on('change', async function () {
@@ -206,9 +208,17 @@
                                 }
                                 var r = await getChildren({ model: mdname, path: key, root: isRoot });
                                 cb.call(this, r.getChildrenLineageNodes);
+                            },
+                        "types": {
+                            "nochild": {
+                                "max_children": 0
+                            },
+                        "themes": {
+                                "icons": false
                             }
+                        }
                     },
-                    "plugins": ["wholerow", "unique", "contextmenu"]
+                    "plugins": ["wholerow", "unique", "contextmenu", "types"]
                 });
                 $("#botTree").on('hover_node.jstree', function (e, data) {
                     if(data.node.data.definition !== null)
@@ -216,13 +226,9 @@
                 });
 
                 $("#botTree").on('delete_node.jstree', async function (e, data) {
-                    var r = deleteNode({model: mdname, path: data.node.id})
-                    if (data.node.parent == '#') { //deleting root node
-                        $("#botTree").jstree(true).refresh();
-                    }
-                    else {
-                        $("#botTree").jstree(true).refresh_node(data.node.parent);
-                    }
+                    await deleteNode({model: mdname, path: data.node.id})
+                    var instance = $('#botTree').jstree(true);
+                    instance.delete_node(instance.get_selected());
                 });
 
                 $("#botTree").on('select_node.jstree', function (e, data) {
@@ -248,28 +254,46 @@
                     $("#lineageList").empty();
                 });
 
-                $("#botTree").on('create_node.jstree', function (e, data) {
-                    var r = createNode({ model: mdname, parent: data.parent, text: data.node.text })
-                    if (data.node.parent == '#') { //creating root node
-                        $("#botTree").jstree(true).refresh();
+                $("#botTree").on('create_node.jstree', async function (e, data) {
+                    try {
+                        await createNode({ model: mdname, parent: data.parent, text: data.node.text });
                     }
-                    else {
-                        $("#botTree").jstree(true).refresh_node(data.node.parent);
-                    }
-                });
-
-                $("#botTree").on('rename_node.jstree', function (e, data) {
-                    var r = renameNode({ model: mdname, id: data.node.id, text: data.node.text })
-                    if (data.node.parent == '#') { //renaming root node
-                        $("#botTree").jstree(true).refresh();
-                    }
-                    else {
-                        $("#botTree").jstree(true).refresh_node(data.node.parent);
+                    catch (err) {
+                        alert(err[0].message);
                     }
                 });
 
-                $("#botTree").on('paste.jstree', function (e, data) {
+                $("#botTree").on('rename_node.jstree', async function (e, data) {
+                    try {
+                        var path;
+                        var oldpath;
+                        if (data.node.parent === "#") {
+                            path = data.node.text.trim();
+                            oldpath = data.old.trim();
+                        }
+                        else {
+                            path = data.node.parent + "/" + data.node.text.trim();
+                            oldpath = data.node.parent + "/" + data.old.trim();
+                        }
+                        await renameNode({ model: mdname, id: oldpath.toLowerCase(), text: data.node.text });
+                        $('#botTree').jstree(true).set_id(data.node, path.toLowerCase());
+                        $('#botTree').jstree(true).refresh_node(data.node);
+                    }
+                    catch (err) {
+                        alert(err[0].message);
+                    }
+                });
 
+                $("#botTree").on('paste.jstree', async function (e, data) {
+                    try {
+                        var paths = new Array();
+                        for (var i = 0; i < data.node.length; i++)
+                            paths[i] = data.node[i].id;
+                        await pasteNodes({ model: mdname, parent: data.parent, nodes: paths, mode: data.mode });
+                    }
+                    catch (err) {
+                        alert(err[0].message);
+                    }
                 });
 
                 attResources = await attResource({model: mdname});
@@ -389,8 +413,8 @@
                });
 
              $('#addAtRoot').on('click', function (cm, event) {
-                    var res = $("#botTree").jstree('create_node', '#', {'id' : 'new_node', 'text' : 'new_node Text'}, 'last');;
-                });
+                 $("#botTree").jstree('create_node', '#', { 'id': 'new_node', 'text': 'new_node Text' }, 'last');
+             });
         });
 
         async function check_syntax(code, result_cb) {
