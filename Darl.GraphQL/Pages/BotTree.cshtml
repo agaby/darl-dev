@@ -5,6 +5,67 @@
     Layout = "~/Pages/_layoutscrolling.cshtml";
 }
 
+<div class="modal" id="singleResponseModal" tabindex="-1" role="dialog" aria-labelledby="singleResponseModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="singleResponseModalLabel">Single text response</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label>Text to return</label>
+                <textarea id="singleResponseTextInput"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="singleResponseDarl">Create DARL</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="multiResponseModal" tabindex="-1" role="dialog" aria-labelledby="multiResponseModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="multiResponseModalLabel">Random text response</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label>Texts to return - separate responses with "///" on a new line.</label>
+                <textarea id="multiResponseTextInput"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Create DARL</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="callResponseModal" tabindex="-1" role="dialog" aria-labelledby="callResponseModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="multiResponseModalLabel">Call a ruleset</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label>Select a ruleset from your account</label>
+                <select id="ruleset-dropdown" name="rulesets" class="dropdown"></select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Create DARL</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <div class="space-70"></div>
 <div class="container margin-b-40">
     <div class="row">
@@ -32,9 +93,13 @@
             <hr />
             <div class="container">
                 <div class="row">
-                    <h4>Recognition Tree</h4>
-                    &nbsp;
-                    <button class="btn btn-info pull-right" id="addAtRoot">Add a root entry</button>
+                    <div class="col-md-3">
+                        <h4>Recognition Tree</h4>
+                    </div>
+                    <div class="col-md-3 ">
+                        <button class="btn btn-info pull-right" id="addAtRoot">Add a root entry</button>
+                    </div>
+
                 </div>
                 <div class="row">
                     <div id="botTree" class="col-md-6 margin-b-40">
@@ -43,37 +108,22 @@
                     <div class="col-md-6 margin-b-40">
                         <div>
                             <h4>Attributes for <i><span id="nodePathText"></span></i></h4>
-                            <!-- Nav tabs -->
-                            <ul class="nav nav-tabs" role="tablist">
-                                <li class="nav-item"><a class="nav-link active" href="#response" role="tab" data-toggle="tab">Response</a></li>
-                                <li class="nav-item"><a class="nav-link" href="#calltab" role="tab" data-toggle="tab">Call</a></li>
-                                <li class="nav-item"><a class="nav-link" href="#advanced" role="tab" data-toggle="tab" id="advancedTab">Advanced</a></li>
-                            </ul>
-
-                            <!-- Tab panes -->
-                            <div class="tab-content">
-                                <div class="tab-pane container active" id="response">
-                                    <div id="responseedit">
-
-                                    </div>
+                            <div>
+                                <label>Darl code</label>
+                                <textarea id="code"></textarea>
+                            </div>
+                            <div>
+                                <h4>Templates</h4>
+                                <div class="btn-group" role="group" aria-label="Templates">
+                                    <button class="btn btn-info" data-toggle="modal" data-target="#singleResponseModal">Text response</button>
+                                    <button class="btn btn-info" data-toggle="modal" data-target="#multiResponseModal">Range of responses</button>
+                                    <button class="btn btn-info" data-toggle="modal" data-target="#callResponseModal">Call a ruleset</button>
                                 </div>
-                                <div class="tab-pane container" id="calltab">
-                                    <div id="calledit">
-
-                                    </div>
-                                </div>
-                                <div class="tab-pane container" id="advanced">
-                                    <div>
-                                        <label>Darl code</label>
-                                        <textarea id="code"></textarea>
-                                    </div>
-                                    <hr />
-                                    <div id="roleEdit">
-                                        <label for="roles">Limit access using authorizations</label><br />
-                                        <select id="roles" class="dropdown"></select>
-                                    </div>
-
-                                </div>
+                            </div>
+                            <hr />
+                            <div id="roleEdit">
+                                <label for="roles">Limit access using authorizations</label><br />
+                                <select id="roles" class="dropdown"></select>
                             </div>
                             <div>
                                 <button class="btn btn-info pull-right" id="saveAttributes">Save attributes</button>
@@ -86,6 +136,7 @@
     </div>
 </div>
 
+
 @section StyleSheets
 {
     <link rel="stylesheet" href="/codemirror/theme/neat.css" />
@@ -96,6 +147,7 @@
     <link rel="stylesheet" href="/codemirror/addon/fold/foldgutter.css" />
     <link rel='stylesheet' href='//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
 }
 
 @section Scripts
@@ -114,7 +166,7 @@
     <script src="/darl-codemirror/darl-codemirror.js"></script>
     <script src="/graphql/graphql.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
 
     <script language="JavaScript">
         var darlCodeMirror;
@@ -137,6 +189,8 @@
         var editorResponse;
         var editorCall;
         var lintCall;
+        var allrulesets;
+
 
 
         $(async function () {
@@ -154,7 +208,8 @@
                 viewportMargin: Infinity
 
             });
-            //JSONEditor.defaults.options.iconlib = "fontawesome4";
+
+
 
             darlCodeMirror.on("inputRead", function (cm) {
                 if (timeout) clearTimeout(timeout);
@@ -173,11 +228,19 @@
                 }
             });
 
+            var singleMDE = new SimpleMDE({ element: $("#singleResponseTextInput")[0] });
+            var multiMDE = new SimpleMDE({ element: $("#multiResponseTextInput")[0] });
+
+            $('#singleResponseDarl').click( function () {
+                darlCodeMirror.setValue('if anything then response will be "' + singleMDE.value() + '";');
+            });
+
             graph = graphql("/graphql");
             var apiKey = findGetParameter("apikey");
-            if(apiKey !== null)
+            if (apiKey !== null)
                 graph = graphql("/graphql", { headers: { "Authorization": "Basic " + apiKey } });
             allbotmodels = graph(`{ botmodels { name }}`);
+            allrulesets = graph(`{ rulesets { name }}`);
             var attPhrase = graph(`query getAttFromPhrase($model: String!, $phrase: String! ){getAttribute(botModelName: $model, phrase: $phrase ){response call darl accessRoles randomResponse randomResponses path present }}`);
             var attPath = graph(`query getAttFromPath($model: String!, $path: String! ){getAttributeFromPath(botModelName: $model, path: $path ){response call darl accessRoles randomResponse randomResponses path present }}`);
             attResource = graph(`query getAttResources($model: String!){getLineageNodeAttributeResources(botModelName: $model){allRoles allRulesets ruleSkeleton insertionPointText }}`);
@@ -193,12 +256,13 @@
             pasteNodes = graph('mutation pn($model: String!, $parent: String!, $nodes: [String]!, $mode: String!){pasteLineageNode(botModelName: $model, parent: $parent, nodes: $nodes, mode: $mode){id text children}}');
             lintCall = graph('query lint($darl: String!, $skeleton: String!, $insertion: String!){  lintDarl(darl: $darl, skeleton: $skeleton, insertion: $insertion){ column_no_start column_no_stop line_no message severity }}');
             await updateDropdown();
+            await updateRulesetDropdown();
             $('#botmodel-dropdown').on('change', async function () {
                 mdname = this.value;
                 tree = $("#botTree");
                 tree.jstree({
                     "core": {
-                        "check_callback" : true,
+                        "check_callback": true,
                         "data":
                             async function (node, cb) {
                                 var isRoot = false;
@@ -213,7 +277,7 @@
                             "nochild": {
                                 "max_children": 0
                             },
-                        "themes": {
+                            "themes": {
                                 "icons": false
                             }
                         }
@@ -221,12 +285,12 @@
                     "plugins": ["wholerow", "unique", "contextmenu", "types"]
                 });
                 $("#botTree").on('hover_node.jstree', function (e, data) {
-                    if(data.node.data.definition !== null)
+                    if (data.node.data.definition !== null)
                         data.instance.element.prop('title', data.node.data.definition);
                 });
 
                 $("#botTree").on('delete_node.jstree', async function (e, data) {
-                    await deleteNode({model: mdname, path: data.node.id})
+                    await deleteNode({ model: mdname, path: data.node.id })
                     var instance = $('#botTree').jstree(true);
                     instance.delete_node(instance.get_selected());
                 });
@@ -236,22 +300,18 @@
                         darlCodeMirror.setValue(data.node.data.darl);
                         var dropdown = $('#roles');
                         dropdown.empty();
+                        dropdown.append('<option selected="true" disabled>Choose an authorization role.</option>');
                         $.each(data.node.data.accessRoles, function (key, entry) {
                             dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry).text(entry));
                         });
-                        editorResponse.setValue(data.node.data);
-                        editorCall.setValue(data.node.data.call);
                         darlCodeMirror.refresh();
                     }
                     else {
                         darlCodeMirror.setValue("");
-                        editorResponse.setValue("");
-                        editorCall.setValue("");
                         $('#roles').empty();
                         darlCodeMirror.refresh();
                     }
                     $("#nodePathText").text(data.node.id);
-                    $("#lineageList").empty();
                 });
 
                 $("#botTree").on('create_node.jstree', async function (e, data) {
@@ -296,98 +356,26 @@
                     }
                 });
 
-                attResources = await attResource({model: mdname});
-
-                editorResponse = new JSONEditor(document.getElementById('responseedit'), {
-                    theme: 'bootstrap4',
-                    schema: {
-                        "$schema": "http://json-schema.org/draft-04/schema#",
-                        "title": "Edit text responses",
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                            "randomResponse": {
-                                "title": "Randomly selected responses",
-                                "type": "boolean",
-                                "format": "checkbox",
-                                "description": "If checked one of the random responses will be given, otherwise the single response."
-                            },
-                           "response": {
-                                "title": "A single response",
-                                "type": "string",
-                               "description": "The text you want to use to respond. Use MarkDown for any formatting.",
-                                "format": "textarea",
-                                "options": {
-                                    "input_width": "500px"
-                                }
-                            },
-                            "randomResponses": {
-                                "title": "Possible responses",
-                                "type": "array",
-                                "format": "table",
-                                "description": "The text you want to use to respond. Use MarkDown for any formatting.",
-                                "items": {
-                                    "type": "string",
-                                    "format": "textarea",
-                                    "options": {
-                                        "input_width": "500px"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    collapsed: true,
-                    disable_edit_json: true,
-                    disable_properties: true,
-                    disable_collapse: true,
-                    disable_array_add: false,
-                    disable_array_delete: false,
-                    disable_array_reorder: true,
-                    form_name_root: "responses",
-                    iconlib: 'fontawesome4'
-                });
-
-                editorCall = new JSONEditor(document.getElementById('calledit'), {
-                    theme: 'bootstrap4',
-                    schema: {
-                        "$schema": "http://json-schema.org/draft-04/schema#",
-                        "type": "string",
-                        "format": "table",
-                        "title": "Called ruleset",
-                        "description": "Ruleset that will be called when the phrase is recognized.",
-                        "enum": ""
-                        },
-                    collapsed: true,
-                    disable_edit_json: true,
-                    disable_properties: true,
-                    disable_collapse: true,
-                    disable_array_add: true,
-                    disable_array_delete: true,
-                    disable_array_reorder: true,
-                    form_name_root: "rulesets",
-                    iconlib: 'fontawesome4'
-                });
-
+                attResources = await attResource({ model: mdname });
 
                 $("#saveAttributes").on("click", async function (cm, event) {
-                try {
-                    var path = $("#nodePathText").text(); //selected node path
-                    var resp = editorResponse.getValue();
-                    await updateAtt({ name: mdname, path: path, att: { darl: darlCodeMirror.getValue(), call: editorCall.getValue(), response: resp.response, randomResponse: resp.randomResponse, randomResponses: resp.randomResponses } });
-                    var sel = $("#botTree").jstree(true).get_selected();
-                    $("#botTree").jstree(true).refresh_node(sel[0]);
-               }
-                catch (err) {
-                    alert(err[0].message);
-                }
-            });
+                    try {
+                        var path = $("#nodePathText").text(); //selected node path
+                        await updateAtt({ name: mdname, path: path, att: { darl: darlCodeMirror.getValue(), call: "", response: "", randomResponse: false } });
+                        var sel = $("#botTree").jstree(true).get_selected(true);
+                        if (sel[0].parent === "#") //root node
+                            $("#botTree").jstree(true).refresh();
+                        else
+                            $("#botTree").jstree(true).refresh_node(sel[0].parent);
+                    }
+                    catch (err) {
+                        alert(err[0].message);
+                    }
+                });
+
+
 
             });
-
-
-//            $('.nav-tabs a').on('shown.bs.tab', function () {
-//            darlCodeMirror.refresh();
-//            });
 
             CodeMirror.commands.autocomplete = function (cm) { cm.showHint({ hint: CodeMirror.hint.darl }); }
 
@@ -408,13 +396,10 @@
                 }
             });
 
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                    darlCodeMirror.refresh();
-               });
+            $('#addAtRoot').on('click', function (cm, event) {
+                $("#botTree").jstree('create_node', '#', { 'id': 'new_node', 'text': 'new_node Text' }, 'last');
+            });
 
-             $('#addAtRoot').on('click', function (cm, event) {
-                 $("#botTree").jstree('create_node', '#', { 'id': 'new_node', 'text': 'new_node Text' }, 'last');
-             });
         });
 
         async function check_syntax(code, result_cb) {
@@ -429,8 +414,8 @@
                 .substr(1)
                 .split("&")
                 .forEach(function (item) {
-                  tmp = item.split("=");
-                  if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+                    tmp = item.split("=");
+                    if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
                 });
             return result;
         }
@@ -446,7 +431,16 @@
             });
         }
 
-
+        async function updateRulesetDropdown() {
+            const rs = await allrulesets();
+            var dropdown = $('#ruleset-dropdown');
+            dropdown.empty();
+            dropdown.append('<option selected="true" disabled>Choose a ruleset to call</option>');
+            dropdown.prop('selectedIndex', 0);
+            $.each(rs.rulesets, function (key, entry) {
+                dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
+            });
+        }
 
 
     </script>
