@@ -35,11 +35,11 @@
                 </button>
             </div>
             <div class="modal-body">
-                <label>Texts to return - separate responses with "///" on a new line.</label>
+                <label>Texts to return - separate responses with "///".</label>
                 <textarea id="multiResponseTextInput"></textarea>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Create DARL</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="multiResponseDarl">Create DARL</button>
             </div>
         </div>
     </div>
@@ -59,7 +59,7 @@
                 <select id="ruleset-dropdown" name="rulesets" class="dropdown"></select>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Create DARL</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="callResponseDarl">Create DARL</button>
             </div>
         </div>
     </div>
@@ -234,6 +234,16 @@
             $('#singleResponseDarl').click( function () {
                 darlCodeMirror.setValue('if anything then response will be "' + singleMDE.value() + '";');
             });
+
+            $('#multiResponseDarl').click(function () {
+                var responses = multiMDE.value().split("///");
+                darlCodeMirror.setValue('if anything then response will be randomtext("' + responses.join('","') + '");');
+            });
+
+            $('#callResponseDarl').click(function () {
+                darlCodeMirror.setValue('if anything then Call[""] will be "' + $('#ruleset-dropdown').val() + '";');
+            });
+
 
             graph = graphql("/graphql");
             var apiKey = findGetParameter("apikey");
