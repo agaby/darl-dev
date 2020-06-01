@@ -13,5 +13,7 @@ namespace Darl.GraphQL.Models.Models
         public bool? _virtual { get; set; }
 
         public List<StringStringPair> properties { get; set; } = new List<StringStringPair>();
+        public string partition { get { return _virtual ?? false ? GraphElement.partitionType.dreaming.ToString() : GraphElement.partitionType.reality.ToString(); } }
+
     }
 }

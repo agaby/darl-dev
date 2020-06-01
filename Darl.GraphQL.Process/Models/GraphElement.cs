@@ -7,6 +7,7 @@ namespace Darl.GraphQL.Models.Models
 {
     public abstract class GraphElement
     {
+        public enum partitionType { dreaming, reality }
         public string id { get; set; }
         public string name { get; set; }
         public string lineage { get; set; }
@@ -14,5 +15,6 @@ namespace Darl.GraphQL.Models.Models
         public bool inferred { get; set; } = false;
         public bool? _virtual { get; set; }
         public List<StringStringPair> properties { get; set; }
+        public string partition { get { return _virtual ?? false ? partitionType.dreaming.ToString() : partitionType.reality.ToString(); } }
     }
 }

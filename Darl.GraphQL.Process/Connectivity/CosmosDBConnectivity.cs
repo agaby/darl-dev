@@ -1555,7 +1555,7 @@ namespace Darl.GraphQL.Models.Connectivity
             await ProvisionUser(user.userId);
             //create user
             var mc = db.GetCollection<DarlUser>(userCollection);
-            var duser = new DarlUser { Created = DateTime.Now, current_period_end = DateTime.Now + new TimeSpan(_config.GetValue<int>("AppSettings:StripeTrialPeriodDays"), 0, 0, 0, 0), InvoiceEmail = user.InvoiceEmail, InvoiceName = user.InvoiceName, InvoiceOrganization = user.InvoiceOrganization, Issuer = user.Issuer, PaidUsageStarted = DateTime.MaxValue, StripeCustomerId = stripeVals.Item1, UsageStripeSubscriptionItem = stripeVals.Item2, userId = user.userId };
+            var duser = new DarlUser { Created = DateTime.Now, current_period_end = DateTime.Now + new TimeSpan(_config.GetValue<int>("AppSettings:StripeTrialPeriodDays"), 0, 0, 0, 0), InvoiceEmail = user.InvoiceEmail, InvoiceName = user.InvoiceName, InvoiceOrganization = user.InvoiceOrganization, Issuer = user.Issuer, PaidUsageStarted = DateTime.MaxValue, StripeCustomerId = stripeVals.Item1, UsageStripeSubscriptionItem = stripeVals.Item2, userId = user.userId, subscriptionType = DarlUser.SubscriptionType.individual };
             await mc.InsertOneAsync(duser);
             _logger.LogWarning($"{nameof(CreateAndProvisionNewUser)}: {user.userId}, {user.Issuer}, {user.InvoiceEmail}");
             return duser;

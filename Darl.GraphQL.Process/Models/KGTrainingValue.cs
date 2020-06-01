@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Darl.SoftMatch;
+using System.Collections.Generic;
 
 namespace Darl.GraphQL.Models.Models
 {
@@ -22,7 +23,7 @@ namespace Darl.GraphQL.Models.Models
         /// <summary>
         /// The graph to hold the trained model
         /// </summary>
-        public MatchGraph graph { get; set; }
+        public MatchList graph { get; set; }
 
         /// <summary>
         /// If true this is the index - only one index allowed.

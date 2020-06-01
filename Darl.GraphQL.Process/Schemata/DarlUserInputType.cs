@@ -21,7 +21,6 @@ namespace Darl.GraphQL.Models.Schemata
             Field<DateTimeGraphType>("current_period_end");
             Field<StringGraphType>("stripeCustomerId");
             Field<StringGraphType>("usageStripeSubscriptionItem");
-
         }
     }
 }

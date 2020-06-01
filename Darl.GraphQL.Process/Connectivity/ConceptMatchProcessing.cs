@@ -1,5 +1,6 @@
 ﻿using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
+using Darl.SoftMatch;
 using GraphQL;
 using Gremlin.Net.Structure;
 using Microsoft.Extensions.Logging;
@@ -25,17 +26,22 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<string> CreateConceptMatchTree(string userId, string treeName, List<StringStringPair> data, bool rebuild = false)
         {
-            MatchGraph graph;
+            MatchList graph;
             var blobName = GenerateGraphName(userId, treeName);
             if (!rebuild && await _blob.Exists(blobName))
             {
-                graph = MatchGraph.DeserializeGraph(await _blob.Read(blobName));
+                graph = MatchList.DeserializeGraph(await _blob.Read(blobName));
             }
             else
             {
-                graph = new MatchGraph();
+                graph = new MatchList();
             }
-            graph.CreateTree(data);
+            var intLabels = new List<KeyValuePair<string, string>>();
+            foreach (var l in data)
+            {
+                intLabels.Add(new KeyValuePair<string, string>(l.Name, l.Value));
+            }
+            graph.CreateTree(intLabels);
             await _blob.Write(blobName, graph.SerializeGraph());
             return $"Match Model {treeName} created containing {data.Count()} texts.";
         }
@@ -53,7 +59,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
             if(!await _blob.Exists(blobName))
                 throw new ExecutionError($"Concept match tree {treeName} not found in this account.");
-            var graph = MatchGraph.DeserializeGraph(await _blob.Read(blobName));
+            var graph = MatchList.DeserializeGraph(await _blob.Read(blobName));
             var responses = new List<MatchResult>(texts.Count);
             int index = 0;
             foreach (var text in texts)

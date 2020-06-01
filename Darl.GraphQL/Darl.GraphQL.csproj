@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Pages\boteditor.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\boteditor.cshtml" />
     <Content Remove="Ui\Internal\graphiql.cshtml" />
     <Content Remove="Ui\Internal\playground.cshtml" />
     <Content Remove="Ui\Internal\voyager.cshtml" />

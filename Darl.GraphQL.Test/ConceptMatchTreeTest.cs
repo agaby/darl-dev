@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using Darl.SoftMatch;
 
 namespace Darl.GraphQL.Test
 {
@@ -77,7 +78,7 @@ namespace Darl.GraphQL.Test
         [TestMethod]
         public async Task TestInference()
         {
-            await cmp.InferFromConceptMatchTree(_config["userId"], "learning_outcomes", new List<string> {"who are you fuckwad" });
+            await cmp.InferFromConceptMatchTree(_config["userId"], "learning_outcomes", new List<string> { "who are you fuckwad" });
         }
 
         [TestMethod]
@@ -105,12 +106,12 @@ namespace Darl.GraphQL.Test
             int noTieError = 0;
             int topThree = 0;
             var textList = new List<string>();
-            foreach(var r in records)
+            foreach (var r in records)
             {
                 textList.Add(r.Text);
             }
             var res = await cmp.InferFromConceptMatchTree(_config["userId"], "learning_outcomes_2", textList);
-            for(int n = 0; n < records.Count; n++)
+            for (int n = 0; n < records.Count; n++)
             {
                 if (res[n] != null)
                 {
@@ -134,28 +135,28 @@ namespace Darl.GraphQL.Test
                     }
                 }
             }
- /*           foreach (var r in records)
-            {
-                var res = await cmp.InferFromConceptMatchTree(_config["userId"], "learning_outcomes_2", new List<string> { r.Text });
-                if (res[0].index == r.Id)
-                {
-                    correct++;
-                    topThree++;
-                }
-                else
-                {
-                    if (res[0].tieCount == 1)
-                    {
-                        noTieError++;
-                    }
-                    if (res[0].alternatives.ContainsKey(r.Id))
-                        topThree++;
-                    else
-                    {
-                        failures.Add(r);
-                    }
-                }
-            }*/
+            /*           foreach (var r in records)
+                       {
+                           var res = await cmp.InferFromConceptMatchTree(_config["userId"], "learning_outcomes_2", new List<string> { r.Text });
+                           if (res[0].index == r.Id)
+                           {
+                               correct++;
+                               topThree++;
+                           }
+                           else
+                           {
+                               if (res[0].tieCount == 1)
+                               {
+                                   noTieError++;
+                               }
+                               if (res[0].alternatives.ContainsKey(r.Id))
+                                   topThree++;
+                               else
+                               {
+                                   failures.Add(r);
+                               }
+                           }
+                       }*/
 
             /*            foreach (var r in failures)
                         {
@@ -181,7 +182,7 @@ namespace Darl.GraphQL.Test
                 foreach (var line in lines.Skip(offset).Take(blockSize))
                 {
                     var elements = line.Split('\t');
-                    if(elements.Count() != 5)
+                    if (elements.Count() != 5)
                     {
                         continue;
                     }
@@ -196,7 +197,7 @@ namespace Darl.GraphQL.Test
             }
             var indices = new List<string>();
             var textList = new List<string>();
-            foreach(var i in equivalents.Keys)
+            foreach (var i in equivalents.Keys)
             {
                 indices.Add(i);
                 textList.Add(equivalents[i]);

@@ -1,5 +1,6 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
+using Darl.SoftMatch;
 using Gremlin.Net.Driver;
 using Gremlin.Net.Structure.IO.GraphSON;
 using Microsoft.ApplicationInsights;
@@ -56,11 +57,14 @@ namespace Darl.GraphQL.Test
             configuration.Setup(a => a[It.Is<string>(s => s == "gremlinPort")]).Returns("443");
             configuration.Setup(a => a[It.Is<string>(s => s == "gremlinAuthKey")]).Returns("ffWKZWMJro4JHBaJAi4yG1o35ujaDvj0pIkrqsYEz4hCoHR9jvHr6YR3Pb2dxr8rw4obuO4ZvnJetejwJyrYQA==");
             configuration.Setup(a => a[It.Is<string>(s => s == "gremlinDatabase")]).Returns("farleft");
-            configuration.Setup(a => a[It.Is<string>(s => s == "gremlinCollection")]).Returns("hypernymy");
-            configuration.Setup(a => a[It.Is<string>(s => s == "darlDevAPiKey")]).Returns("e438440e-9d90-46e8-87ed-080e19c43aed");
-            configuration.Setup(a => a[It.Is<string>(s => s == "darlDevUrl")]).Returns("https://darl.dev/graphql/");
-            configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("5ee43551-c05c-4cff-8582-c08f23f84c14");
-            configuration.Setup(a => a[It.Is<string>(s => s == "gremlinLocation")]).Returns("local");
+//            configuration.Setup(a => a[It.Is<string>(s => s == "gremlinCollection")]).Returns("hypernymy");
+            configuration.Setup(a => a[It.Is<string>(s => s == "gremlinCollection")]).Returns("7d1a254f-d405-4385-acbc-308c8376f2e3");
+            configuration.Setup(a => a[It.Is<string>(s => s == "darlDevAPiKey")]).Returns("4110279c-956d-4532-a31e-c8dbd5052eb3");
+//            configuration.Setup(a => a[It.Is<string>(s => s == "darlDevAPiKey")]).Returns("e438440e-9d90-46e8-87ed-080e19c43aed");
+            configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("7d1a254f-d405-4385-acbc-308c8376f2e3");
+//            configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("5ee43551-c05c-4cff-8582-c08f23f84c14");
+            configuration.Setup(a => a[It.Is<string>(s => s == "gremlinLocation")]).Returns("azure");
+//            configuration.Setup(a => a[It.Is<string>(s => s == "gremlinLocation")]).Returns("local");
             var logger = new Mock<ILogger<GraphProcessing>>();
             var context = new Mock<IHttpContextAccessor>();
             _config = configuration.Object;
@@ -203,7 +207,7 @@ namespace Darl.GraphQL.Test
         [Ignore]
         public async Task TestCreateGraph()
         {
-            await _graph.CreateNewGraph("33db770b-29e9-46ae-8a19-c1947bd775d8", "/lineage");
+            await _graph.CreateNewGraph("7d1a254f-d405-4385-acbc-308c8376f2e3", "/lineage");
         }
         [TestMethod]
         [Ignore]
@@ -549,8 +553,8 @@ namespace Darl.GraphQL.Test
             var jobs = JArray.Parse(doc).ToList();
             var values = new List<List<string>>();
             var indexes  = new List<List<string>>();
-            var filtergraph = new MatchGraph();
-            var dict = new List<StringStringPair> { new StringStringPair("use", "skills qualifications responsibilities knowledge experience job requirements role") };
+            var filtergraph = new MatchList();
+            var dict = new List<KeyValuePair<string,string>> { new KeyValuePair<string, string>("use", "skills qualifications responsibilities knowledge experience job requirements role") };
             filtergraph.CreateTree(dict);
 
             foreach (var job in jobs)
@@ -605,8 +609,8 @@ namespace Darl.GraphQL.Test
             var doc = docsource.ReadToEnd();
             var records = JsonConvert.DeserializeObject<List<string>>(doc);
             
-            var filtergraph = new MatchGraph();
-            var dict = new List<StringStringPair> { new StringStringPair("use", "skills qualifications responsibilities knowledge experience job requirements role") };
+            var filtergraph = new MatchList();
+            var dict = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("use", "skills qualifications responsibilities knowledge experience job requirements role") };
             filtergraph.CreateTree(dict);
             var trainingData = new List<Classification>();
             foreach(var r in records)

@@ -1,6 +1,7 @@
 ﻿using Chronic;
 using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
+using Darl.SoftMatch;
 using DarlLanguage;
 using DarlLanguage.Processing;
 using GraphQL;
@@ -142,8 +143,8 @@ namespace Darl.GraphQL.Models.Connectivity
                         }
                     }
                 }
-                var dict = new Dictionary<string, object> { { "start", graphConnection.startId }, { "end", graphConnection.endId }, { "connlabel", graphConnection.name }, { "weight", graphConnection.weight ?? 1.0 }, { "lineage", graphConnection.lineage }, { "inferred", graphConnection.inferred ?? false } };
-                var script = "g.V(start).addE(connlabel).to(g.V(end)).property('weight', weight).property('lineage',lineage).property('inferred',inferred).property('virtual',false)";
+                var dict = new Dictionary<string, object> { { "start", graphConnection.startId }, { "end", graphConnection.endId }, { "connlabel", graphConnection.name }, { "weight", graphConnection.weight ?? 1.0 }, { "lineage", graphConnection.lineage }, { "inferred", graphConnection.inferred ?? false }, { "partition", graphConnection.partition } };
+                var script = "g.V(start).addE(connlabel).to(g.V(end)).property('weight', weight).property('lineage',lineage).property('inferred',inferred).property('virtual',false).property('partition',partition)";
                 AddCommonElements(graphConnection, dict, ref script);
                 var res = await SubmitWithRetry(gremlinClient, script, dict);
                 return ConvertGraphConnection(res.FirstOrDefault());
@@ -190,8 +191,8 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
                 try
                 {
-                    var dict = new Dictionary<string, object> { { "lineage", graphObject.lineage }, { "name", graphObject.name.Trim().ToLower() }, { "inferred", graphObject.inferred }, { "virtual", graphObject._virtual ?? false } };
-                    var script = "g.addV(name).property('name', name).property('lineage',lineage).property('inferred',inferred).property('virtual',virtual)";
+                    var dict = new Dictionary<string, object> { { "lineage", graphObject.lineage }, { "name", graphObject.name.Trim().ToLower() }, { "inferred", graphObject.inferred }, { "virtual", graphObject._virtual ?? false },{ "partition", graphObject.partition } };
+                    var script = "g.addV(name).property('name', name).property('lineage',lineage).property('inferred',inferred).property('virtual',virtual).property('partition',partition)";
                     AddConditionalElement(nameof(graphObject.firstname), graphObject.firstname, dict, ref script);
                     AddConditionalElement(nameof(graphObject.secondname), graphObject.secondname, dict, ref script);
                     AddConditionalElement(nameof(graphObject.externalId), graphObject.externalId, dict, ref script);
@@ -286,8 +287,8 @@ namespace Darl.GraphQL.Models.Connectivity
                 if(propertyLineage.StartsWith("noun:"))
                 {
                     //add the "has" link to the ontology
-                    var dict = new Dictionary<string, object> { { "start", graphObjectLineage }, { "end", propertyLineage }, { "weight", 1.0 } };
-                    var script = "g.V().has('lineage',start).addE('has').to(g.V().has('lineage',end)).property('weight', weight).property('virtual',true).property('inferred',false)";
+                    var dict = new Dictionary<string, object> { { "start", graphObjectLineage }, { "end", propertyLineage }, { "weight", 1.0 }, {"partition", GraphElement.partitionType.dreaming.ToString() } };
+                    var script = "g.V().has('lineage',start).has('virtual',true).addE('has').to(g.V().has('lineage',end).has('virtual',true)).property('weight', weight).property('virtual',true).property('inferred',false).property('partition',partition)";
                     await SubmitWithRetry(gremlinClient, script, dict);
                 }
             }
@@ -308,17 +309,17 @@ namespace Darl.GraphQL.Models.Connectivity
                 await AddObjectToOntology(gremlinClient, graphConnectionLineage);
             }
             //now add precedes and follows links
-            var dict = new Dictionary<string, object> { { "start", startLineage }, { "end", graphConnectionLineage }, { "weight", 1.0 }, {"object", endLineage } };
-            var script = "g.V().has('lineage',start).addE('precedes').to(g.V().has('lineage',end)).property('weight', weight).property('object',object).property('virtual',true).property('inferred',false)";
+            var dict = new Dictionary<string, object> { { "start", startLineage }, { "end", graphConnectionLineage }, { "weight", 1.0 }, {"object", endLineage }, {"partition", GraphElement.partitionType.dreaming.ToString() } };
+            var script = "g.V().has('lineage',start).has('virtual',true).has('partition','dreaming').addE('precedes').to(g.V().has('lineage',end).has('virtual',true).has('partition','dreaming')).property('weight', weight).property('object',object).property('virtual',true).property('inferred',false).property('partition',partition)";
             await SubmitWithRetry(gremlinClient, script, dict);
-            dict = new Dictionary<string, object> { { "start", graphConnectionLineage }, { "end", endLineage }, { "weight", 1.0 }, { "subject", startLineage } };
-            script = "g.V().has('lineage',start).addE('follows').to(g.V().has('lineage',end)).property('weight', weight).property('subject',subject).property('virtual',true).property('inferred',false)";
+            dict = new Dictionary<string, object> { { "start", graphConnectionLineage }, { "end", endLineage }, { "weight", 1.0 }, { "subject", startLineage }, { "partition", GraphElement.partitionType.dreaming.ToString() } };
+            script = "g.V().has('lineage',start).has('virtual',true).has('partition','dreaming').addE('follows').to(g.V().has('lineage',end).has('virtual',true).has('partition','dreaming')).property('weight', weight).property('subject',subject).property('virtual',true).property('inferred',false).property('partition',partition)";
             await SubmitWithRetry(gremlinClient, script, dict);
         }
 
         private async Task<bool> LineageExists(GremlinClient gremlinClient, string lineage)
         {
-            var res = await SubmitWithRetry(gremlinClient, "g.V().has('lineage',lineage1).has('virtual',true)", new Dictionary<string, object> { { "lineage1", lineage }});
+            var res = await SubmitWithRetry(gremlinClient, "g.V().has('lineage',lineage1).has('virtual',true).has('partition','dreaming')", new Dictionary<string, object> { { "lineage1", lineage }});
             return res.Any();
         }
 
@@ -336,8 +337,8 @@ namespace Darl.GraphQL.Models.Connectivity
                 if (LineageLibrary.lineages.ContainsKey(lineage))
                 {
                     var l = LineageLibrary.lineages[lineage];
-                    var dict = new Dictionary<string, object> { { "lineage", lineage }, { "name", l.typeWord }, { "inferred", false }, { "virtual", true }, {"description", l.description} };
-                    var script = "g.addV(name).property('name', name).property('lineage',lineage).property('inferred',inferred).property('virtual',virtual).property('description', description)";
+                    var dict = new Dictionary<string, object> { { "lineage", lineage }, { "name", l.typeWord }, { "inferred", false }, { "virtual", true }, {"description", l.description}, { "partition", GraphElement.partitionType.dreaming.ToString() } };
+                    var script = "g.addV(name).property('name', name).property('lineage',lineage).property('inferred',inferred).property('virtual',virtual).property('description', description).property('partition',partition)";
                     var res = await SubmitWithRetry(gremlinClient, script, dict);
                     if(lineage.Contains(','))
                     {
@@ -350,8 +351,8 @@ namespace Darl.GraphQL.Models.Connectivity
             if(child != null)
             {
                 //connect the child to this object.
-                var dict = new Dictionary<string, object> { { "start", child }, { "end", lineage }, { "weight", 1.0 }};
-                var script = "g.V().has('lineage',start).addE('kind_of').to(g.V().has('lineage',end)).property('weight', weight).property('virtual',true).property('inferred',false)";
+                var dict = new Dictionary<string, object> { { "start", child }, { "end", lineage }, { "weight", 1.0 }, { "partition", GraphElement.partitionType.dreaming.ToString() } };
+                var script = "g.V().has('lineage',start).has('virtual',true).has('partition','dreaming').addE('kind_of').to(g.V().has('lineage',end).has('virtual',true).has('partition','dreaming')).property('weight', weight).property('virtual',true).property('inferred',false).property('partition',partition)";
                 await SubmitWithRetry(gremlinClient, script, dict);
             }           
         }
@@ -589,7 +590,7 @@ namespace Darl.GraphQL.Models.Connectivity
                             break;
                         case nameof(GraphObject.existence):
                             go.existence = GetPropertyAsListOfDateTime(props, key);
-                            break;
+                            break;                            
                         default:
                             if (go.properties == null)
                                 go.properties = new List<StringStringPair>();
@@ -640,6 +641,9 @@ namespace Darl.GraphQL.Models.Connectivity
                             if (gc.existence == null)
                                 gc.existence = new List<DateTime>();
                             gc.existence.Add((DateTime)GetValueOrDefault(props, key));
+                            break;
+                        case "virtual":
+                            gc._virtual = Convert.ToBoolean(GetValueAsString(props, key));
                             break;
                         default:
                             if (gc.properties == null)
@@ -825,6 +829,8 @@ namespace Darl.GraphQL.Models.Connectivity
         public static string GetPropertyAsString(IReadOnlyDictionary<string, object> dictionary, string key)
         {
             var prop = GetValueOrDefault(dictionary, key);
+            if (prop is string)
+                return prop as string;
             if (prop != null)
             {
                 foreach (var sp in prop as IEnumerable)
@@ -1377,7 +1383,7 @@ namespace Darl.GraphQL.Models.Connectivity
                                 throw new ExecutionError("Internal error in Association processing", ex);
                             }
                         }
-                        InferMatchParallel(results, match, labels);
+                        InferMatch(results, match, labels);
                     }
                     return results;
                 },
@@ -1392,12 +1398,9 @@ namespace Darl.GraphQL.Models.Connectivity
             var index = aggregatedResults.Where(a => a.index).FirstOrDefault();
             aggregatedResults.Remove(index); //take it out of the list
             int resultCount = 0;
-            var innerLock = new object();
-            Parallel.For(0, index.results.Count,
-                () => new StringBuilder(),
-                (n, loop, report) =>
-                {
-                    if (index.results[n] != null && index.results[n].Any() && index.results[n][0] != null)
+            for (int n = 0; n < index.results.Count; n++ )
+            {
+                   if (index.results[n] != null && index.results[n].Any() && index.results[n][0] != null)
                     {
                         resultCount++;
                         var matchedText = GetGraphObjectProperty(userId, index.results[n][0].index, "name").Result;
@@ -1413,7 +1416,7 @@ namespace Darl.GraphQL.Models.Connectivity
                                         var matchedsubText = GetGraphObjectProperty(userId, a.index, v.valueProperty[0]).Result;
                                         report.AppendLine($"\t Has an association with text: '{a.sourceText}', original text '{matchedsubText}',  associated with node index { a.index} weight: {a.confidence} ");
                                         //see if connection exists, if so, add weight, if not add connection with weight
-                                        var conn = GetConnectionByIds(userId, index.results[n][0].index, a.index, connectionLineage).Result;
+/*                                        var conn = GetConnectionByIds(userId, index.results[n][0].index, a.index, connectionLineage).Result;
                                         if (conn == null)
                                         {
                                             lock (innerLock)
@@ -1429,30 +1432,32 @@ namespace Darl.GraphQL.Models.Connectivity
                                                 if (!string.IsNullOrEmpty(weight))
                                                 {
                                                     var newWeight = double.Parse(weight) + a.confidence;
-                                                    SetGraphConnectionProperty(userId, index.results[n][0].index, a.index, connectionLineage, "weight", newWeight.ToString()).Wait();
+/                                                   SetGraphConnectionProperty(userId, index.results[n][0].index, a.index, connectionLineage, "weight", newWeight.ToString()).Wait();
                                                 }
                                             }
                                         }
                                         //Hierarchical update here
+*/
                                     }
                                 }
                             }
                         }
                     }
-                    return report;
-                },
-                (subreport) => { lock (lockObject) { report.Append(subreport.ToString()); } }
-                );
+            }
             return report.ToString();
         }
 
         private void InferMatch(KGMatchResult results, KGTrainingValue match, List<StringStringPair> labels)
         {
-            match.graph = new MatchGraph();//remove for parallel
-            match.graph.CreateTree(labels);
+            match.graph = new MatchList();//remove for parallel
+            var intLabels = new List<KeyValuePair<string, string>>();
+            foreach (var l in labels)
+            {
+                intLabels.Add(new KeyValuePair<string, string>(l.Name, l.Value));
+            }
+            match.graph.CreateTree(intLabels);
             //Match up the values
             results.index = match.index;
-            //make this parallel too.
             //preset the result with null pointers
             for (int n = 0; n < match.values.Count; n++)
             {
@@ -1474,6 +1479,11 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var lockObject = new object();
             results.index = match.index;
+            var intLabels = new List<KeyValuePair<string, string>>();
+            foreach(var l in labels)
+            {
+                intLabels.Add(new KeyValuePair<string, string>(l.Name, l.Value));
+            }
             //preset the result with null pointers
             for (int n = 0; n < match.values.Count; n++)
             {
@@ -1482,8 +1492,8 @@ namespace Darl.GraphQL.Models.Connectivity
             Parallel.For(0, match.values.Count,
              () => new FindLoopRecord(),
              (n, loop, resList) => {
-                 var graph = new MatchGraph();
-                 graph.CreateTree(labels);
+                 var graph = new MatchList();
+                 graph.CreateTree(intLabels);
                  var s = match.values[n];
                  foreach (var t in s)
                  {
@@ -1499,7 +1509,7 @@ namespace Darl.GraphQL.Models.Connectivity
              );
         }
 
-            private bool IsVertex(dynamic r)
+        private bool IsVertex(dynamic r)
         {
             return GetValueAsString(r, "type") == "vertex";
         }
