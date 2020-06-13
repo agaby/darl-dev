@@ -1,29 +1,25 @@
 ﻿using Darl.GraphQL.Models.Models;
-using GraphQL.Client;
-using GraphQL.Common.Request;
+using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.Newtonsoft;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Converters;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Test
 {
 
 
-    [TestClass]
+/*   [TestClass]
     public class UsageTest
     {
-        GraphQLClient client = null;
+        GraphQLHttpClient client = null;
 
         [TestInitialize()]
         public void Initialize()
         {
-            client = new GraphQLClient("https://darlgraphql-stagng.azurewebsites.net/graphql/");
+            client = new GraphQLHttpClient("https://darlgraphql-stagng.azurewebsites.net/graphql/", new NewtonsoftJsonSerializer());
             var authcode = "e438440e-9d90-46e8-87ed-080e19c43aed";
-            client.DefaultRequestHeaders.Add("Authorization", $"Basic {authcode}");
-            client.Options.JsonSerializerSettings.Converters.Add(new StringEnumConverter());
+
         }
 
 
@@ -58,5 +54,5 @@ namespace Darl.GraphQL.Test
             req = new GraphQLRequest() { Query = "mutation { deleteRuleSet(name: \"stupidname.ruleset\"){name  }}" };
             resp = await client.PostAsync(req);
         }
-    }
+    }*/
 }

@@ -1,6 +1,4 @@
-﻿using GraphQL.Client;
-using GraphQL.Common.Request;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Test
 {
-    [TestClass]
+/*    [TestClass]
     public class DefaultTest
     {
 
@@ -66,5 +64,5 @@ namespace Darl.GraphQL.Test
             Assert.IsTrue(resp.Errors == null || resp.Errors.Length == 0);
         }
 
-    }
+    }*/
 }

@@ -104,7 +104,7 @@ namespace Darl.GraphQL
             services.AddSingleton<IGraphProcessing, GraphProcessing>();
             services.AddSingleton<ILicensing, ProductLicensing>();
             services.AddSingleton<IBlobConnectivity, BlobConnectivity>();
-            services.AddSingleton<IConceptMapProcessing, ConceptMatchProcessing>();
+            services.AddSingleton<ISoftMatchProcessing, SoftMatchProcessing>();
 
             //types
             services.AddSingleton<BotFormatType>();

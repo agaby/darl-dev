@@ -10,8 +10,10 @@
     <None Remove="AppSettings.json" />
     <None Remove="CourseUnitsJson.json" />
     <None Remove="datafieldnames.json" />
+    <None Remove="Ians_jobs.graphml" />
     <None Remove="input.json" />
     <None Remove="input2.json" />
+    <None Remove="JobRoles.json" />
     <None Remove="jobs.json" />
     <None Remove="learning_outcomes.txt" />
     <None Remove="msr_paraphrase_train.txt" />
@@ -23,8 +25,10 @@
     <EmbeddedResource Include="AppSettings.json" />
     <EmbeddedResource Include="CourseUnitsJson.json" />
     <EmbeddedResource Include="datafieldnames.json" />
+    <EmbeddedResource Include="Ians_jobs.graphml" />
     <EmbeddedResource Include="input.json" />
     <EmbeddedResource Include="input2.json" />
+    <EmbeddedResource Include="JobRoles.json" />
     <EmbeddedResource Include="jobs.json" />
     <EmbeddedResource Include="learning_outcomes.txt" />
     <EmbeddedResource Include="msr_paraphrase_train.txt" />
@@ -34,11 +38,13 @@
 
   <ItemGroup>
     <PackageReference Include="Darl.Connectivity" Version="1.0.44" />
-    <PackageReference Include="GraphQL.Client" Version="1.0.3" />
+    <PackageReference Include="GraphQL.Client" Version="3.1.2" />
+    <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="3.1.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
     <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.0.0" />
     <PackageReference Include="MSTest.TestFramework" Version="2.0.0" />
+    <PackageReference Include="QuickGraph.NETStandard" Version="3.8.0" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
 

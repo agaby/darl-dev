@@ -11,7 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlQuery : ObjectGraphType<object>
     {
-        public DarlQuery(IConnectivity connectivity, IBotProcessing bot, IFormProcessing form, ISimProcessing sim, IGraphProcessing graph, IConceptMapProcessing cmp)
+        public DarlQuery(IConnectivity connectivity, IBotProcessing bot, IFormProcessing form, ISimProcessing sim, IGraphProcessing graph, ISoftMatchProcessing cmp)
         {
             Name = "Query";
             Description = "View the contents of your account.";
@@ -672,18 +672,18 @@ namespace Darl.GraphQL.Models.Schemata
             ).AuthorizeWith("CorpPolicy");
 
             FieldAsync<ListGraphType<MatchResultType>>(
-                "inferFromConceptMatchTree",
-                "Find the nearest matches in a given concept match tree to the given set of texts",
+                "InferFromSoftMatchModel",
+                "Find the nearest matches in a given SoftMatch model to the given set of texts",
                 arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "treeName", Description = "The concept match tree name" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "modelName", Description = "The concept match model name" },
                     new QueryArgument<NonNullGraphType<ListGraphType<StringGraphType>>> { Name = "texts", Description = "The texts to match. Maximum 50 at a time." }
                 ),
                 resolve: async context =>
                 {
-                    var treeName = context.GetArgument<string>("treeName");
+                    var treeName = context.GetArgument<string>("modelName");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     var texts = context.GetArgument<List<string>>("texts");
-                    return await context.TryAsyncResolve(async c => await cmp.InferFromConceptMatchTree(userId, treeName, texts));
+                    return await context.TryAsyncResolve(async c => await cmp.InferFromSoftMatchModel(userId, treeName, texts));
                 }
             ).AuthorizeWith("CorpPolicy");
             FieldAsync<InferenceRecordType>(
@@ -703,6 +703,15 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(async c => await graph.InferPath(start, target, userId, targetOutput));
                 }
             ).AuthorizeWith("CorpPolicy");
+            FieldAsync<ListGraphType<StringGraphType>>(
+                "softMatchModels",
+                "Get the names of the SoftMatch models in your account",                          
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await cmp.ListSoftMatchModels(userId));
+                }
+            );
         }
 
     }

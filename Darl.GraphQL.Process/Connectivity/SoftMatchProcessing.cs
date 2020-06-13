@@ -4,6 +4,7 @@ using Darl.SoftMatch;
 using GraphQL;
 using Gremlin.Net.Structure;
 using Microsoft.Extensions.Logging;
+using Org.BouncyCastle.Asn1.Cmp;
 using QuickGraph.Algorithms.Search;
 using System;
 using System.Collections.Generic;
@@ -14,17 +15,17 @@ using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
-    public class ConceptMatchProcessing : IConceptMapProcessing
+    public class SoftMatchProcessing : ISoftMatchProcessing
     {
         private IBlobConnectivity _blob;
         private ILogger _logger;
-        public ConceptMatchProcessing(IBlobConnectivity blob, ILogger<ConceptMatchProcessing> logger)
+        public SoftMatchProcessing(IBlobConnectivity blob, ILogger<SoftMatchProcessing> logger)
         {
             _blob = blob;
             _logger = logger;
         }
 
-        public async Task<string> CreateConceptMatchTree(string userId, string treeName, List<StringStringPair> data, bool rebuild = false)
+        public async Task<string> CreateSoftMatchModel(string userId, string treeName, List<StringStringPair> data, bool rebuild = false)
         {
             MatchList graph;
             var blobName = GenerateGraphName(userId, treeName);
@@ -53,7 +54,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
 
  
-        public async Task<List<MatchResult>> InferFromConceptMatchTree(string userId, string treeName, List<string> texts)
+        public async Task<List<MatchResult>> InferFromSoftMatchModel(string userId, string treeName, List<string> texts)
         {
             var blobName = GenerateGraphName(userId, treeName);
 
@@ -69,6 +70,19 @@ namespace Darl.GraphQL.Models.Connectivity
                 index++;
             }
             return responses;
+        }
+
+        public async Task<List<string>> ListSoftMatchModels(string userId)
+        {
+            return _blob.List(userId);
+        }
+
+        public async Task<string> DeleteSoftMatchModel(string userId, string name)
+        {
+            if (await _blob.Delete(GenerateGraphName(userId, name)))
+                return "Deleted";
+            else
+                return $"{name} not found";
         }
     }
 }

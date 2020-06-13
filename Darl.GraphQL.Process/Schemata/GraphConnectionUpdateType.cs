@@ -14,12 +14,10 @@ namespace Darl.GraphQL.Models.Schemata
             Description = "Updating a connection representing a real world relationship in the graph database";
             Field(c => c.id).Description("The id of the connection to update");
             Field<ListGraphType<DateTimeGraphType>>("existence", "The period of existence of the connection", resolve: c => c.Source.existence);
-            Field(c => c.inferred, true).Description("If true, the existence of this connection is inferred from other sources");
             Field(c => c.lineage,true).Description("The type of this connection in the verb hypernymy hierarchy");
             Field(c => c.name,true).Description("The name of this connection");
             Field(c => c.weight,true).Description("The degree of plausibility of this connection");
             Field<ListGraphType<StringStringPairInputType>>("properties", "Other properties of this connection", resolve: c => c.Source.properties);
-            Field<BooleanGraphType>("virtual", "if true the connection is a representative of a fundamental relationship, rather than a real world connection", resolve: c => c.Source._virtual);
         }
     }
 }

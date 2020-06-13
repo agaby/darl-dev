@@ -9,11 +9,7 @@ namespace Darl.GraphQL.Models.Models
         public string name { get; set; }
         public string lineage { get; set; }
         public List<DateTime> existence { get; set; }//existence
-        public bool? inferred { get; set; }
-        public bool? _virtual { get; set; }
-
         public List<StringStringPair> properties { get; set; } = new List<StringStringPair>();
-        public string partition { get { return _virtual ?? false ? GraphElement.partitionType.dreaming.ToString() : GraphElement.partitionType.reality.ToString(); } }
 
     }
 }

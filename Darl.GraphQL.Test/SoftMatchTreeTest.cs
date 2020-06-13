@@ -1,7 +1,6 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
-using GraphQL.Client;
-using GraphQL.Common.Request;
+using GraphQL.Client.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,28 +10,22 @@ using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Linq;
-using Darl.SoftMatch;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Test
 {
     [TestClass]
-    public class ConceptMatchTreeTest
+    public class SoftMatchTreeTest
     {
-        GraphQLClient client = null;
-        IConceptMapProcessing cmp;
+        GraphQLHttpClient client = null;
+        ISoftMatchProcessing cmp;
         IConfiguration _config;
 
         [TestInitialize()]
         public void Initialize()
         {
-            client = new GraphQLClient("https://darl.dev/graphql/");
-            var authcode = "7ecb39be-fb44-4c13-92df-68ec152a4edb";
-            client.DefaultRequestHeaders.Add("Authorization", $"Basic {authcode}");
-            client.Options.JsonSerializerSettings.Converters.Add(new StringEnumConverter());
             var configuration = new Mock<IConfiguration>();
 
             configuration.Setup(a => a[It.Is<string>(s => s == "gremlinHostname")]).Returns("thinkbase.gremlin.cosmosdb.azure.com");
@@ -46,10 +39,10 @@ namespace Darl.GraphQL.Test
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StorageConnectionString")]).Returns("DefaultEndpointsProtocol=https;AccountName=darlai;AccountKey=errnwefiVeXcDr0aKbHDxXjblOQhwFwHkeG4qR4caChkABnzp9MNeBBX0FP1jc4DnXPGztI67pbEBXDqA1dPCw==");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:BlobContainer")]).Returns("darldevblobs");
             var bloblogger = new Mock<ILogger<BlobConnectivity>>();
-            var cmplogger = new Mock<ILogger<ConceptMatchProcessing>>();
+            var cmplogger = new Mock<ILogger<SoftMatchProcessing>>();
             //            var bc = new BlobConnectivity(configuration.Object, bloblogger.Object);
             var bc = new LocalBlob();
-            cmp = new ConceptMatchProcessing(bc, cmplogger.Object);
+            cmp = new SoftMatchProcessing(bc, cmplogger.Object);
             _config = configuration.Object;
         }
 
@@ -72,13 +65,13 @@ namespace Darl.GraphQL.Test
                 dict.Add(new StringStringPair(index.ToString(), line));
                 index++;
             }
-            await cmp.CreateConceptMatchTree(_config["userId"], "learning_outcomes", dict, true);
+            await cmp.CreateSoftMatchModel(_config["userId"], "learning_outcomes", dict, true);
         }
 
         [TestMethod]
         public async Task TestInference()
         {
-            await cmp.InferFromConceptMatchTree(_config["userId"], "learning_outcomes", new List<string> { "who are you fuckwad" });
+            await cmp.InferFromSoftMatchModel(_config["userId"], "learning_outcomes", new List<string> { "who are you fuckwad" });
         }
 
         [TestMethod]
@@ -97,7 +90,7 @@ namespace Darl.GraphQL.Test
                 {
                     dict.Add(new StringStringPair(rec.Id, rec.Text));
                 }
-                await cmp.CreateConceptMatchTree(_config["userId"], "learning_outcomes_2", dict, offset == 0);
+                await cmp.CreateSoftMatchModel(_config["userId"], "learning_outcomes_2", dict, offset == 0);
                 offset += blockSize;
             }
             // test recall
@@ -110,7 +103,7 @@ namespace Darl.GraphQL.Test
             {
                 textList.Add(r.Text);
             }
-            var res = await cmp.InferFromConceptMatchTree(_config["userId"], "learning_outcomes_2", textList);
+            var res = await cmp.InferFromSoftMatchModel(_config["userId"], "learning_outcomes_2", textList);
             for (int n = 0; n < records.Count; n++)
             {
                 if (res[n] != null)
@@ -192,7 +185,7 @@ namespace Darl.GraphQL.Test
                         equivalents.Add(elements[1], elements[4].Trim());
                     }
                 }
-                await cmp.CreateConceptMatchTree(_config["userId"], "learning_outcomes_2", dict, offset == 0);
+                await cmp.CreateSoftMatchModel(_config["userId"], "learning_outcomes_2", dict, offset == 0);
                 offset += blockSize;
             }
             var indices = new List<string>();
@@ -202,7 +195,7 @@ namespace Darl.GraphQL.Test
                 indices.Add(i);
                 textList.Add(equivalents[i]);
             }
-            var res = await cmp.InferFromConceptMatchTree(_config["userId"], "learning_outcomes_2", textList);
+            var res = await cmp.InferFromSoftMatchModel(_config["userId"], "learning_outcomes_2", textList);
             int correct = 0;
             int noTieError = 0;
             int topThree = 0;
@@ -240,9 +233,20 @@ namespace Darl.GraphQL.Test
     public class LocalBlob : IBlobConnectivity
     {
         Dictionary<string, byte[]> localData = new Dictionary<string, byte[]>();
+
+        public Task<bool> Delete(string name)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<bool> Exists(string name)
         {
             return localData.ContainsKey(name);
+        }
+
+        public List<string> List(string prefix)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<byte[]> Read(string name)

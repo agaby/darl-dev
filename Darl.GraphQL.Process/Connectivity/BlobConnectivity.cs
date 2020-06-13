@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -44,6 +45,25 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var b = _container.GetBlockBlobReference(name);
             return await b.ExistsAsync();
+        }
+
+        public async Task<bool> Delete(string name)
+        {
+            var b = _container.GetBlockBlobReference(name);
+            return await b.DeleteIfExistsAsync();
+        }
+
+        public List<string> List(string prefix)
+        {
+            var list = _container.ListBlobs(prefix).Select(a => a.Uri.ToString()).ToList();
+            //response is full url, remove all but the model name.
+            var abbreviatedList = new List<string>();
+            foreach(var l in list)
+            {
+                int loc = l.LastIndexOf(prefix);
+                abbreviatedList.Add(l.Substring(loc + prefix.Length + 1));
+            }
+            return abbreviatedList;
         }
     }
 }

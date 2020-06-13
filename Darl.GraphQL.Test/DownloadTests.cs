@@ -1,20 +1,10 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
-using Darl.GraphQL.Models.Models;
-using GraphQL.Client;
-using GraphQL.Common.Request;
-using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Test

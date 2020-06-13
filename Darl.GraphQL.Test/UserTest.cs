@@ -1,20 +1,17 @@
 ﻿using Darl.GraphQL.Models.Models;
-using GraphQL.Client;
-using GraphQL.Common.Request;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using static Darl.GraphQL.Models.Models.DarlUser;
 
 namespace Darl.GraphQL.Test
 {
-    [TestClass]
+/*    [TestClass]
     public class UserTest
     {
-        GraphQLClient client = null;
+        GraphQLHttpClient client = null;
 
 
         [TestInitialize()]
@@ -103,5 +100,5 @@ namespace Darl.GraphQL.Test
             var req = new GraphQLRequest() { Query = @"mutation{ factoryReset() }" };
             var resp = await client.PostAsync(req);
         }
-    }
+    }*/
 }

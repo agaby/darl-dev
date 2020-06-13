@@ -12,7 +12,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlMutation : ObjectGraphType<object>
     {
-        public DarlMutation(IConnectivity connectivity, IEmailProcessing email, IGraphProcessing graph, IConfiguration _config, IConceptMapProcessing cmp)
+        public DarlMutation(IConnectivity connectivity, IEmailProcessing email, IGraphProcessing graph, IConfiguration _config, ISoftMatchProcessing cmp)
         {
             Name = "Mutation";
             Description = "Make changes to the contents of your account.";
@@ -1182,21 +1182,32 @@ namespace Darl.GraphQL.Models.Schemata
                             async c => await connectivity.CreateKey(userId,company,email,endDate));
                     }
                 ).AuthorizeWith("AdminPolicy");
-            FieldAsync<StringGraphType>("createConceptMatchTree", "Create a concept matching tree based on a json source containing an array in collateral", arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "treeName", Description = "The unique name of the stored match tree for later reuse " },
-                    new QueryArgument<NonNullGraphType<ListGraphType<StringStringPairInputType>>> { Name = "data", Description = "The data to add to the Concept Match Tree" },
-                    new QueryArgument<BooleanGraphType> { Name = "rebuild", Description = "if false (default) add to existing tree, otherwise create a new tree.", DefaultValue = false }
+            FieldAsync<StringGraphType>("createSoftMatchModel", "Create a SoftMatch model from text/index pairs", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "modelName", Description = "The unique name of the stored model for later reuse " },
+                    new QueryArgument<NonNullGraphType<ListGraphType<StringStringPairInputType>>> { Name = "data", Description = "The text/index data to add to the SoftMatch model" },
+                    new QueryArgument<BooleanGraphType> { Name = "rebuild", Description = "if false (default) add to existing model, otherwise create a new model.", DefaultValue = false }
                 ),
                 resolve: async context =>
                 {
-                    var treeName = context.GetArgument<string>("treeName");
+                    var treeName = context.GetArgument<string>("modelName");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     var data = context.GetArgument<List<StringStringPair>>("data");
 
                     return await context.TryAsyncResolve(
-                        async c => await cmp.CreateConceptMatchTree(userId, treeName, data));
+                        async c => await cmp.CreateSoftMatchModel(userId, treeName, data));
                 }
-            ).AuthorizeWith("CorpPolicy");
+            );
+            FieldAsync<StringGraphType>("deleteSoftMatchModel", "delete a SoftMatch model", arguments: new QueryArguments(
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the SoftMatch model to delete" }
+                ),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await cmp.DeleteSoftMatchModel(userId, name));
+                }
+            );
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
 using Darl.SoftMatch;
+using GraphQL;
 using Gremlin.Net.Driver;
 using Gremlin.Net.Structure.IO.GraphSON;
 using Microsoft.ApplicationInsights;
@@ -75,7 +76,7 @@ namespace Darl.GraphQL.Test
         [Ignore]
         public async Task CreateAndDeleteObjectTest()
         {
-            var res = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput { lineage = "noun:00,2,00", name = "Andrew Edmonds", firstname = "Andrew", secondname = "Edmonds", inferred = false, existence = new List<DateTime> { new DateTime(1955, 11, 6), DateTime.MaxValue } });
+            var res = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput { lineage = "noun:00,2,00", name = "Andrew Edmonds", firstname = "Andrew", secondname = "Edmonds", existence = new List<DateTime> { new DateTime(1955, 11, 6), DateTime.MaxValue } });
             Assert.AreEqual(res.inferred, false);
             Assert.AreEqual(res.lineage, "noun:00,2,00");
             Assert.AreEqual(res.name, "andrew edmonds");
@@ -94,7 +95,7 @@ namespace Darl.GraphQL.Test
             var up = await _graph.UpdateGraphObject(_config["userId"], new GraphObjectUpdate { id = res.id, lineage = "noun:00,2,00", properties = new List<StringStringPair> { new StringStringPair("noun:01,4,09,01,3,4,5", "Andy is a bit of a dork, really.") } }, IGraphProcessing.OntologyAction.build);
             Assert.AreEqual(1, up.properties.Count);
             //add another 
-            var res2 = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput { lineage = "noun:00,2,00", name = "Anneke Edmonds", firstname = "Anneke", secondname = "Edmonds", inferred = false, existence = new List<DateTime> { new DateTime(1961, 8, 27), DateTime.MaxValue } });
+            var res2 = await _graph.CreateGraphObject(_config["userId"], new GraphObjectInput { lineage = "noun:00,2,00", name = "Anneke Edmonds", firstname = "Anneke", secondname = "Edmonds", existence = new List<DateTime> { new DateTime(1961, 8, 27), DateTime.MaxValue } });
             var obj2 = await _graph.GetGraphObjectById(_config["userId"], res2.id);
             Assert.AreEqual(res2.id, obj2.id);
             //add a marry link
@@ -193,7 +194,7 @@ namespace Darl.GraphQL.Test
         [Ignore]
         public async Task NearestVertexTest()
         {
-            using (var gremlinClient = new GremlinClient(_graph.gremlinDreamerServer, new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            using (var gremlinClient = new GremlinClient(_graph.ServerFactory(_config["userId"]), new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 var res = await _graph.FindNearestNameVertex(gremlinClient, "noun:00,2,00", "Corbyn", 0.7f, "Jeremy");
                 Assert.AreEqual(1, res.Count);
@@ -360,7 +361,6 @@ namespace Darl.GraphQL.Test
                                 {
                                     lineage = jobLineage,
                                     name = jobName,
-                                    inferred = false,
                                     properties =
                                     new List<StringStringPair>
                                     {
@@ -384,7 +384,6 @@ namespace Darl.GraphQL.Test
             {
                 lineage = universityLineage,
                 name = "University",
-                inferred = false
             }, IGraphProcessing.OntologyAction.build);
             var institutionId = instRes.id;   
             foreach (var course in courses)
@@ -397,8 +396,6 @@ namespace Darl.GraphQL.Test
                 {
                     lineage = courseLineage,
                     name = courseName,
-                    inferred = false,
-                    _virtual = false,
                     externalId = courseId
                 }, IGraphProcessing.OntologyAction.build);
                 var courseGraphId = courseRes.id;
@@ -408,8 +405,6 @@ namespace Darl.GraphQL.Test
                     {
                         startId = institutionId,
                         endId = courseGraphId,
-                        inferred = false,
-                        _virtual = false,
                         name = "owns",
                         lineage = ownLineage,
                         weight = 1.0
@@ -425,8 +420,6 @@ namespace Darl.GraphQL.Test
                     {
                         lineage = courseLineage,
                         name = unitName,
-                        inferred = false,
-                        _virtual = false,
                         externalId = unitId
                     }, IGraphProcessing.OntologyAction.build);
                     var unitGraphId = unitRes.id;
@@ -436,8 +429,6 @@ namespace Darl.GraphQL.Test
                         {
                             startId = courseGraphId,
                             endId = unitGraphId,
-                            inferred = false,
-                            _virtual = false,
                             name = "consists of",
                             lineage = consistsLineage,
                             weight = 1.0
@@ -456,8 +447,6 @@ namespace Darl.GraphQL.Test
                         {
                             lineage = learningOutcomeLineage,
                             name = loName,
-                            inferred = false,
-                            _virtual = false,
                             externalId = loId
                         }, IGraphProcessing.OntologyAction.build);
                         var loGraphId = loRes.id;
@@ -467,8 +456,6 @@ namespace Darl.GraphQL.Test
                             {
                                 startId = unitGraphId,
                                 endId = loGraphId,
-                                inferred = false,
-                                _virtual = false,
                                 name = "teaches",
                                 lineage = teachLineage,
                                 weight = 1.0
@@ -488,8 +475,6 @@ namespace Darl.GraphQL.Test
                         {
                             lineage = topicLineage,
                             name = stName,
-                            inferred = false,
-                            _virtual = false,
                             externalId = stId
                         }, IGraphProcessing.OntologyAction.build);
                         var stsGraphId = stsRes.id;
@@ -499,8 +484,6 @@ namespace Darl.GraphQL.Test
                              {
                                  startId = unitGraphId,
                                  endId = stsGraphId,
-                                 inferred = false,
-                                 _virtual = false,
                                  name = "consists of",
                                  lineage = consistsLineage,
                                  weight = 1.0
@@ -520,8 +503,6 @@ namespace Darl.GraphQL.Test
                         {
                             lineage = skillLineage,
                             name = stName,
-                            inferred = false,
-                            _virtual = false,
                             externalId = stId
                         }, IGraphProcessing.OntologyAction.build);
                         var tssGraphId = tssRes.id;
@@ -531,8 +512,6 @@ namespace Darl.GraphQL.Test
                              {
                                  startId = unitGraphId,
                                  endId = tssGraphId,
-                                 inferred = false,
-                                 _virtual = false,
                                  name = "creates",
                                  lineage = createLineage,
                                  weight = 1.0
@@ -571,13 +550,21 @@ namespace Darl.GraphQL.Test
                 var sections = data.ToList();
                 foreach(var section in sections)
                 {
-                    if (filtergraph.Find(section.ToObject<JProperty>().Name.ToLower()) != null) //try to filter irrelevant subsections
+                    var filterString = section.ToObject<JProperty>().Name.ToLower();
+                    try
                     {
-                        var subsections = section.First().ToList();
-                        foreach (var s in subsections)
+                        if (filtergraph.Find(filterString) != null) //try to filter irrelevant subsections
                         {
-                            list.Add(s.ToString());
+                            var subsections = section.First().ToList();
+                            foreach (var s in subsections)
+                            {
+                                list.Add(s.ToString());
+                            }
                         }
+                    }
+                    catch(Exception ex)
+                    {
+                        throw new ExecutionError($"Filter error on text '{filterString}' exception {ex.Message}");
                     }
 
                 }
