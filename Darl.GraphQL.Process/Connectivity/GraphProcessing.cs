@@ -1402,8 +1402,7 @@ namespace Darl.GraphQL.Models.Connectivity
                    if (index.results[n] != null && index.results[n].Any() && index.results[n][0] != null)
                     {
                         resultCount++;
-                        var matchedText = GetGraphObjectProperty(userId, index.results[n][0].index, "name").Result;
-                        report.AppendLine($"index text: '{index.results[n][0].sourceText}' matches text '{matchedText}' associated with node index { index.results[n][0].index} weight: {index.results[n][0].confidence} ");
+                        report.AppendLine($"index text: '{index.results[n][0].sourceText}' associated with node index { index.results[n][0].index} weight: {index.results[n][0].confidence} ");
                         foreach (var v in aggregatedResults)
                         {
                             if (v.results[n] != null)
@@ -1412,8 +1411,7 @@ namespace Darl.GraphQL.Models.Connectivity
                                 {
                                     if (a != null)
                                     {
-                                        var matchedsubText = GetGraphObjectProperty(userId, a.index, v.valueProperty[0]).Result;
-                                        report.AppendLine($"\t Has an association with text: '{a.sourceText}', original text '{matchedsubText}',  associated with node index { a.index} weight: {a.confidence} ");
+                                        report.AppendLine($"\t Has an association with text: '{a.sourceText}',  associated with node index { a.index} weight: {a.confidence} ");
                                         //see if connection exists, if so, add weight, if not add connection with weight
 /*                                        var conn = GetConnectionByIds(userId, index.results[n][0].index, a.index, connectionLineage).Result;
                                         if (conn == null)
