@@ -2591,5 +2591,28 @@ namespace Darl.GraphQL.Models.Connectivity
             return _licensing.CheckKey(key);
         }
 
+        public async Task<ModelDetails> UpdateRuleFormDetails(string userId, string ruleSetName, ModelDetails details)
+        {
+            var collection = db.GetCollection<RuleSet>(rulesetCollection);
+            var filter = Builders<RuleSet>.Filter.Where(x => x.Name == ruleSetName && x.userId == userId );
+            var updList = new List<UpdateDefinition<RuleSet>>();
+            if (details.author != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.author, details.author));
+            if (details.copyright != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.copyright, details.copyright));
+            if (details.currency != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.currency, details.currency));
+            if (details.description != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.description, details.description));
+            if (details.license != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.license, details.license));
+            if (details.price != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.price, details.price));
+            if (details.version != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.version, details.version));
+            var update = Builders<RuleSet>.Update.Combine(updList);
+            var rs = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<RuleSet, RuleSet> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
+            return new ModelDetails { author = rs.Contents.author, copyright = rs.Contents.copyright, currency = rs.Contents.currency, description = rs.Contents.description, license = rs.Contents.license, price = rs.Contents.price, version = rs.Contents.version };
+        }
     }
 }

@@ -647,6 +647,18 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await connectivity.UpdateRuleFormTrigger(userId, ruleSetName, trigger));
                 });
+            FieldAsync<ModelDetailsType>("updateRuleSetDetails", "Update the details, author, copyright, pricing etc. of a ruleset",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ruleSetName", Description = "The name of the ruleset to update" },
+                new QueryArgument<NonNullGraphType<ModelDetailsInputType>> { Name = "details", Description = "the details to change"}
+                ),
+                resolve: async context =>
+                {
+                    var ruleSetName = context.GetArgument<string>("ruleSetName");
+                    var details = context.GetArgument<ModelDetails>("details");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.UpdateRuleFormDetails(userId, ruleSetName, details));
+                });
             // RuleSet
             //  Create Empty
             FieldAsync<RuleSetType>("createEmptyRuleSet", "Create an empty rule set and set default values",

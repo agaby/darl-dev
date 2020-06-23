@@ -3,7 +3,9 @@ using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
 using DarlCommon;
+using DarlLanguage.Processing;
 using GraphQL.Types;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -11,7 +13,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlQuery : ObjectGraphType<object>
     {
-        public DarlQuery(IConnectivity connectivity, IBotProcessing bot, IFormProcessing form, ISimProcessing sim, IGraphProcessing graph, ISoftMatchProcessing cmp)
+        public DarlQuery(IConnectivity connectivity, IBotProcessing bot, IFormProcessing form, ISimProcessing sim, IGraphProcessing graph, ISoftMatchProcessing cmp, ILocalStore graphStore)
         {
             Name = "Query";
             Description = "View the contents of your account.";
@@ -712,6 +714,38 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(async c => await cmp.ListSoftMatchModels(userId));
                 }
             );
+            FieldAsync<ListGraphType<StringGraphType>>(
+                "readGraph",
+                "Test graph calls used in the graph store",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "action", Description = "The name of the action to perform" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "param1", Description = "The first parameter" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "param2", Description = "The second parameter" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "param3", Description = "The third parameter" },                   
+                    new QueryArgument<StringGraphType> { Name = "param4", Description = "The fourth parameter" },                    
+                    new QueryArgument<StringGraphType> { Name = "param5", Description = "The fifth parameter" }),
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    var action = context.GetArgument<string>("action");
+                    var param1 = context.GetArgument<string>("param1");
+                    var param2 = context.GetArgument<string>("param2");
+                    var param3 = context.GetArgument<string>("param3");
+                    var param4 = context.GetArgument<string>("param4");
+                    var param5 = context.GetArgument<string>("param5");
+                    var list = new List<string> { action, param1, param2, param3 };
+                    if (!string.IsNullOrEmpty(param4))
+                    {
+                        list.Add(param4);
+                        if (!string.IsNullOrEmpty(param5))
+                        {
+                            list.Add(param5);
+                        }
+                    }
+                    return JsonConvert.SerializeObject(await graphStore.ReadAsync(list));
+                }
+            ).AuthorizeWith("CorpPolicy");
+
         }
 
     }

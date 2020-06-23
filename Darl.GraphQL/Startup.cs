@@ -8,6 +8,7 @@ using Darl.GraphQL.Ui.Playground;
 using Darl.GraphQL.Ui.Voyager;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
+using DarlLanguage.Processing;
 using GraphQL;
 using GraphQL.Http;
 using GraphQL.Types;
@@ -105,6 +106,7 @@ namespace Darl.GraphQL
             services.AddSingleton<ILicensing, ProductLicensing>();
             services.AddSingleton<IBlobConnectivity, BlobConnectivity>();
             services.AddSingleton<ISoftMatchProcessing, SoftMatchProcessing>();
+            services.AddSingleton<ILocalStore, GraphProcessing>();
 
             //types
             services.AddSingleton<BotFormatType>();

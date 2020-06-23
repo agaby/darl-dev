@@ -217,5 +217,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<bool> CloseAccount(string userId);
         Task<string> CreateKey(string userId, string company, string email, DateTime endDate);
         Task<bool> CheckKey(string userId, string key);
+        Task<ModelDetails> UpdateRuleFormDetails(string userId, string ruleSetName, ModelDetails details);
     }
 }

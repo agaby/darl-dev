@@ -866,7 +866,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<DarlResult> ReadAsync(List<string> address)
         {           
-            using (var gremlinClient = new GremlinClient(ServerFactory("hypernymy"), new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            using (var gremlinClient = new GremlinClient(ServerFactory(_context.HttpContext.User.Identity.Name), new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
             {
                 //add name lookup for fuzzy match
                 if (address.Count > 1)
@@ -932,7 +932,7 @@ namespace Darl.GraphQL.Models.Connectivity
                             {
                                 if (address.Count != 4)
                                 {
-                                    throw new Exception("Attribute call to a graph store must have 4 parameters, 'text', the name, the object lineage and the attribute lineage");
+                                    throw new Exception("Attribute call to a graph store must have 4 parameters, 'attribute', the name, the object lineage and the attribute lineage");
                                 }
                                 var res = await FindNearestNameVertex(gremlinClient, address[2].Trim().ToLower(), address[1].Trim().ToLower());
                                 if (res.Count == 0)
@@ -945,10 +945,48 @@ namespace Darl.GraphQL.Models.Connectivity
                                 else
                                     return new DarlResult("result", 0.0, true);
                             }
+                        case "categories":
+                            {
+                                if (address.Count != 4)
+                                {
+                                    throw new Exception("Categories call to a graph store must have 4 parameters, 'categories', the root externalId, the children lineage and the attribute value name/lineage");
+                                }
+                                var res = await FindChildAttributes(gremlinClient, address[1].Trim(), address[2].Trim(), address[3].Trim());
+                                var result = new DarlResult("result",DarlResult.DataType.categorical, 1.0);
+                                foreach(var c in res)
+                                {
+                                    result.categories.Add(c, 1.0);
+                                }
+                                return result;
+                            }
                     }
                 }
             }
             return new DarlResult(0.0, true);
+        }
+
+        public async Task<List<string>> FindChildAttributes(GremlinClient gremlinClient, string rootName, string childLineage, string childValueAttribute)
+        {
+            var list = new List<string>();
+            var res = await SubmitWithRetry(gremlinClient, "g.V().has('externalId',rootName).out().has('lineage',childLineage).properties('externalId',childValueAttribute)", 
+                    new Dictionary<string, object> { { "rootName", rootName }, { "childLineage", childLineage }, { "childValueAttribute", childValueAttribute } });
+            if (res.Count != 0)
+            {
+                string text = string.Empty;
+                foreach (Dictionary<string,object> r in res)
+                {
+                    if(r["label"].ToString() == "externalId")
+                    {
+                        text = r["value"].ToString();
+                    }
+                    else if(r["label"].ToString() == childValueAttribute)
+                    {
+                        text = $"{text}%%{r["value"]}%%";
+                        list.Add(text);
+                    }
+                }
+            }
+            return list;
         }
 
         private string CreatePathText(ResultSet<dynamic> res)

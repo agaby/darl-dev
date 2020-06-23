@@ -46,7 +46,7 @@
                 graph = graphql("/graphql", { headers: { "Authorization": "Basic " + apiKey } });
             var allrulesets = graph(`{ rulesets { name }}`);
             var extraContent = graph(`query getruleset($name: String!){ rulesetByName(name: $name){ ruleform { author currency copyright description license price version trigger{ addressSource addressText attachmentName attachmentUri bodySource bodyText emailFrom postData postDataSource postDataUri postType queueData queueName queueDataSource sendAttachment sendAttachmentSource sendBug sendBugSource sendEmail sendEmailSource subjectSource subjectText graphqlData graphqlDataSource } preload{ name dataType value }}}}`);
-            var updateDetails = graph('mutation urd($name: String!, $details: modelDetailsInput!){updateRulesetDetails(rulesetName: $name, details: $details ){author}}');
+            var updateDetails = graph('mutation urd($name: String!, $details: modelDetailsInput!){updateRuleSetDetails(ruleSetName: $name, details: $details ){author}}');
             var updateTrigger = graph('mutation urt($name: String!, $trigger: triggerInput!){updateRuleSetTrigger(ruleSetName: $name, trigger: $trigger ){addressText }}');
             var updatePreload = graph('mutation urp($name: String! $val: darlVarInput!){updateRulesetPreload(rulesetName: $name, preloadData: $val){name}}');
             const rs = await allrulesets();

@@ -619,6 +619,28 @@ namespace Darl.GraphQL.Test
            Assert.IsNull(res);
         }
 
+        [TestMethod]
+        public async Task TestFindChildAttributes()
+        {
+            string industryLineage = "noun:01,2,07,10,14,3,1";
+            string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";
+            string jobLineage = "noun:01,0,2,00,23,19";
+            string areaLineage = "noun:01,1,00,10,09,5";
+            string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
+            string courseLineage = "noun:01,0,2,00,23,29,02";
+            string abilityLineage = "noun:01,0,0,04";
+            string enableLineage = "verb:013,210";
+            string consistsLineage = "verb:019,031";
+
+
+            using (var gremlinClient = new GremlinClient(_graph.ServerFactory("a26560b3-7778-410b-a54b-b65da6a9649a"), new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            {
+                var res = await _graph.FindChildAttributes(gremlinClient, "I1", sectorLineage, "name");
+                Assert.AreEqual(10, res.Count);
+                var res2 = await _graph.ReadAsync(new List<string> { "categories", "I1", sectorLineage, "name" });
+            }
+        }
+
     }
     class Classification
     {
