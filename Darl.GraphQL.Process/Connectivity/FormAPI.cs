@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DarlLanguage.Processing;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -26,6 +27,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         private IDistributedCache _cache;
         private ITrigger _trigger;
+        private ILocalStore _graph;
 
 
         private ILogger _logger;
@@ -35,11 +37,12 @@ namespace Darl.GraphQL.Models.Connectivity
         /// </summary>
         /// <param name="cache"></param>
         /// <param name="rep"></param>
-        public FormApi(IDistributedCache cache, ITrigger trigger, ILogger<FormApi> logger)
+        public FormApi(IDistributedCache cache, ITrigger trigger, ILogger<FormApi> logger, ILocalStore graph)
         {
             _cache = cache;
             _trigger = trigger;
             _logger = logger;
+            _graph = graph;
         }
 
         /// <summary>
@@ -55,6 +58,20 @@ namespace Darl.GraphQL.Models.Connectivity
             try
             {
                 var qstate = new QuestionCache { currentIteration = 0, SessionKey = Guid.NewGuid(), projectId = ruleSet.Name, currentData = DarlVarExtensions.Convert(ruleSet.Contents.preload) };
+                if (ruleSet.Contents.storeNames != null)
+                {
+                    qstate.stores = new Dictionary<string, ILocalStore>();
+                    foreach(var s in ruleSet.Contents.storeNames)
+                    {
+                        switch(s)
+                        {
+                            case "graph":
+                                qstate.stores.Add(s, _graph);
+                                break;
+
+                        }
+                    }
+                }
                 await SetCache(new CombinedCache {  questionCache = qstate, ruleForm = ruleSet.Contents, userId = ruleSet.userId, serviceConnectivity = ruleSet.serviceConnectivity});
                 return await form.Start(ruleSet.Contents, qstate);
             }

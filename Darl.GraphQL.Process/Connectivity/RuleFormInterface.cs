@@ -17,6 +17,8 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var names = SplitAddress(address);
             var rf = await _connectivity.GetRuleSet(names.Item1, names.Item2);
+            if (rf == null)
+                return null;
             return rf.Contents;
         }
 

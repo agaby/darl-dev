@@ -62,7 +62,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var botFormat = JsonConvert.DeserializeObject<BotFormat>(bm.form);
             if(botFormat.Stores.Contains("Graph"))
             {
-                stores.Add("Graph", new GraphProcessing(_config, _logger as ILogger<GraphProcessing>, _context));
+                stores.Add("graph", new GraphProcessing(_config, _logger as ILogger<GraphProcessing>, _context));
             }
             if (bs.ruleProcessing.Count == 0) // conversational processing
             {
@@ -148,6 +148,10 @@ namespace Darl.GraphQL.Models.Connectivity
                             //clear out values etc here
                             bs.values.Clear();
                             bs.ruleProcessing.Pop();
+                            break;
+                        case DarlVar.DataType.categorical:
+                            //consider dynamic
+                            resp.Add(r);
                             break;
                         default:
                             resp.Add(r);

@@ -12,7 +12,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "interactionResponse";
             Description = "The bot's response to your input";
-            Field(c => c.darl);
+            Field(c => c.darl, true);
             Field<DarlVarType>("response", resolve:  c => c.Source.response);
             Field<ListGraphType<MatchedAnnotationType>>("matches", resolve: c => c.Source.matches);
         }
