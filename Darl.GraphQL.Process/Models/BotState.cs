@@ -1,4 +1,5 @@
-﻿using Darl.Lineage.Bot;
+﻿using Darl.GraphQL.Process.Connectivity;
+using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using DarlCommon;
 using MongoDB.Bson;
@@ -22,10 +23,12 @@ namespace Darl.GraphQL.Models.Models
 
         public List<DarlVar> values { get; set; } = new List<DarlVar>();
 
-        public LocalBotData userData { get; set; }
+        public StoredBotData userData { get; set; }
 
-        public LocalBotData conversationData { get; set; }
+        public StoredBotData conversationData { get; set; }
 
-        public LocalBotData privateConversationData { get; set; }
+        public StoredBotData privateConversationData { get; set; }
+
+        public DateTime? updated { get; set; }
     }
 }

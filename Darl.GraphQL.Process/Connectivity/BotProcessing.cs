@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Models.Models;
+using Darl.GraphQL.Process.Connectivity;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
@@ -55,7 +56,7 @@ namespace Darl.GraphQL.Models.Connectivity
             BotState bs = await _conv.GetBotState(userId, conversationId);
             if(bs == null)//first call for this conversation
             {
-                bs = new BotState { conversationId = conversationId, userId = userId, userData = new LocalBotData(new Dictionary<string, string>()), conversationData = new LocalBotData(new Dictionary<string, string>()), privateConversationData = new LocalBotData(new Dictionary<string, string>()), values = new List<DarlVar>(), ruleProcessing = new Stack<RuleSetHandler>() }; 
+                bs = new BotState { conversationId = conversationId, userId = userId, userData = new StoredBotData(), conversationData = new StoredBotData(), privateConversationData = new StoredBotData(), values = new List<DarlVar>(), ruleProcessing = new Stack<RuleSetHandler>(), updated = DateTime.UtcNow }; 
             }
             var stores = bm.CreateStores(userId, _rfi, bs.values, bs.userData, bs.conversationData, bs.privateConversationData );
             //add extra stores defined locally
@@ -97,6 +98,8 @@ namespace Darl.GraphQL.Models.Connectivity
                     resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Internal error", dataType = DarlVar.DataType.textual } });
                 }
             }
+            bool recursive = false;
+            DarlVar recursiveRuleSet = null;
             if (bs.ruleProcessing.Count > 0) //ruleset processing
             {
                 var rsh = bs.ruleProcessing.Peek();
@@ -140,8 +143,15 @@ namespace Darl.GraphQL.Models.Connectivity
                     switch (r.response.dataType)
                     {
                         case DarlVar.DataType.ruleset:
-                            resp.Add(r);
-                            var newRF = ((CallStore)stores["Call"]).currentRF; if (newRF != null)
+                            //                           var newRF = ((CallStore)stores["Call"]).currentRF; 
+                            //                           if (newRF != null)
+                            //                                bs.ruleProcessing.Push(new RuleSetHandler { user = userId, rf = newRF, modelId = conversationId });
+                            recursive = true;
+                            recursiveRuleSet = r.response;
+                            bs.values.Clear();
+                            bs.ruleProcessing.Pop();
+                            var newRF = ((CallStore)stores["Call"]).currentRF;
+                            if (newRF != null)
                                 bs.ruleProcessing.Push(new RuleSetHandler { user = userId, rf = newRF, modelId = conversationId });
                             break;
                         case DarlVar.DataType.complete:
@@ -159,7 +169,12 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                 }
             }
-            await _conv.SaveBotState(bs);
+            await _conv.SaveBotState(bs);            
+            if(recursive)
+            {
+                resp.AddRange(await InteractAsync(userId, botModelName, conversationId, recursiveRuleSet));
+            }
+
             return resp;
         }
 
@@ -177,7 +192,7 @@ namespace Darl.GraphQL.Models.Connectivity
             BotState bs = await _conv.GetBotState(userId, conversationId);
             if (bs == null)//first call for this conversation
             {
-                bs = new BotState { conversationId = conversationId, userId = userId, userData = new LocalBotData(new Dictionary<string, string>()), conversationData = new LocalBotData(new Dictionary<string, string>()), privateConversationData = new LocalBotData(new Dictionary<string, string>()), values = new List<DarlVar>(), ruleProcessing = new Stack<RuleSetHandler>() };
+                bs = new BotState { conversationId = conversationId, userId = userId, userData = new StoredBotData(), conversationData = new StoredBotData(), privateConversationData = new StoredBotData(), values = new List<DarlVar>(), ruleProcessing = new Stack<RuleSetHandler>() };
             }
             var stores = bm.CreateStores(userId, _rfi, bs.values, bs.userData, bs.conversationData, bs.privateConversationData);
             var btv = new BotTestView() { conversationID = bs.conversationId, conversation = new List<string>(), darl = "" };

@@ -1911,7 +1911,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task SaveBotState(BotState bs)
         {
             var collection = db.GetCollection<BotState>(botStateCollection);
-            await collection.ReplaceOneAsync(doc => doc.conversationId == bs.conversationId && doc.userId == bs.userId, bs, new UpdateOptions { IsUpsert = true });
+            var res = await collection.ReplaceOneAsync(doc => doc.conversationId == bs.conversationId && doc.userId == bs.userId, bs, new ReplaceOptions { IsUpsert = true });
         }
 
         public async Task CreateDefaultResponse(DefaultResponse response)
