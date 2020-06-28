@@ -1,18 +1,25 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.GraphQL.Models.Models;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using DarlCommon;
 using DarlLanguage.Processing;
+using Gremlin.Net.Process.Traversal.Strategy.Verification;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using QuickGraph;
+using QuickGraph.Serialization;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Darl.GraphQL.Test
 {
@@ -20,13 +27,20 @@ namespace Darl.GraphQL.Test
     public class BotRegressionTests
     {
 
-        private ILocalStore _graph;
+        private ILocalStore _graphStore;
         private IConfiguration _config;
         private IBotProcessing _bot;
         private IConnectivity _conv;
         private IRuleFormInterface _rform;
+        private IGraphProcessing _graph;
 
-
+        private readonly string songLineage = "noun:01,4,14,1,10,33";
+        private readonly string artistLineage = "noun:00,2,00,015,01";
+        private readonly string followedByLineage = "verb:429";
+        private readonly string sungByLineage = "verb:034,30,01,17,40";
+        private readonly string writtenByLineage = "verb:023,36";
+        private readonly string songTypeLineage = "noun:01,0,0,15,07,02,02,0,01";
+        private readonly string performanceCountLineage = "noun:01,5,04,3,07";
 
         [TestInitialize()]
         public void Initialize()
@@ -59,12 +73,15 @@ namespace Darl.GraphQL.Test
             var botLogger = new Mock<ILogger<BotProcessing>>();
             var connLogger = new Mock<ILogger<CosmosDBConnectivity>>();
             var context = new Mock<IHttpContextAccessor>();
+            context.Setup(a => a.HttpContext.User.Identity.Name).Returns(_config["userId"]);
             var licensing = new Mock<ILicensing>();
             _conv = new CosmosDBConnectivity(_config, connLogger.Object, licensing.Object);
             var trigger = new Mock<ITrigger>();
             var cache = new Mock<IDistributedCache>();
-            var formApi = new FormApi(cache.Object, trigger.Object, formLogger.Object, _graph);
-            _graph = new GraphProcessing(configuration.Object, logger.Object, context.Object);
+            var gp = new GraphProcessing(configuration.Object, logger.Object, context.Object);
+            _graphStore = gp;
+            _graph = gp;
+            var formApi = new FormApi(cache.Object, trigger.Object, formLogger.Object, _graphStore);
             _rform = new RuleFormInterface(_conv);
             _bot = new BotProcessing(_conv, formApi, _rform, trigger.Object, botLogger.Object, _config, context.Object);
         }
@@ -74,7 +91,7 @@ namespace Darl.GraphQL.Test
         {
             var conversationId = Guid.NewGuid().ToString();
             //simplest interaction
-            var resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar {dataType = DarlVar.DataType.textual, Value = "Hi", name = "" });
+            var resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "Hi", name = "" });
             Assert.IsTrue(resp[0].response.Value == "hi, what can I do for you?" || resp[0].response.Value == "hello, can I help?");
             //value storage
             resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "my name is andy", name = "" });
@@ -113,6 +130,308 @@ namespace Darl.GraphQL.Test
             Assert.IsTrue(resp[0].response.Value == "hi, what can I do for you?" || resp[0].response.Value == "hello, can I help?");
         }
 
+        [TestMethod]
+        public async Task TestGraphInteractions()
+        {
+            //using the grateful dead graph create choices based on the contents.
+            var conversationId = Guid.NewGuid().ToString();
+            var resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "grateful dead song", name = "" });
+            Assert.AreEqual(2, resp.Count);
+            Assert.AreEqual("Demo of graph processing using the grateful dead graph of songs, artists and playlists.", resp[0].response.Value);
+            Assert.AreEqual("Select an artist", resp[1].response.Value);
+            Assert.AreEqual(224, resp[1].response.categories.Count);
+            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "hunter", name = "" });
+            Assert.AreEqual("Now pick a song by that artist", resp[0].response.Value);
+            Assert.AreEqual("Songs:", resp[1].response.Value);
+            Assert.AreEqual(96, resp[1].response.categories.Count);
+            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "althea", name = "" });
+            Assert.AreEqual(1, resp.Count);
+            Assert.AreEqual("Response You selected song 'althea' of type original, performed 272 times.", resp[0].response.Value);
+            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "Hi", name = "" });
+            Assert.IsTrue(resp[0].response.Value == "hi, what can I do for you?" || resp[0].response.Value == "hello, can I help?");
+        }
 
+
+        /// <summary>
+        /// Load grateful dead graph
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        [Ignore]
+        public async Task TestLoadGraphMLForTesting()
+        {
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.grateful-dead.xml"));
+            var ivf = new IdentifiableVertexFactory<SimpleVertex>(MakeVertex);
+            var ief = new IdentifiableEdgeFactory<SimpleVertex, SimpleEdge>(MakeEdge);
+            var graph = new TempGraph();
+            graph.DeserializeFromGraphML<SimpleVertex, SimpleEdge, TempGraph>(docsource, ivf, ief);
+            //now fill in vertices with lineages, etc.
+            foreach(var v  in graph.vertices.Values)
+            {
+                if(v.labelV == "song")
+                {
+                    v.lineage = songLineage;
+                }
+                else if (v.labelV == "artist")
+                {
+                    v.lineage = artistLineage;
+                }
+                if(!string.IsNullOrEmpty(v.songType))
+                    v.properties.Add(new StringStringPair(songTypeLineage, v.songType));
+                if(v.performances > 0)
+                    v.properties.Add(new StringStringPair(performanceCountLineage, v.performances.ToString()));
+            }
+            //same with edges
+            foreach (var e in graph.edges.Values)
+            {
+                if (e.labelE == "followedBy")
+                {
+                    e.lineage = followedByLineage;
+                }
+                else if (e.labelE == "sungBy")
+                {
+                    e.lineage = sungByLineage;
+                }
+                else if (e.labelE == "writtenBy")
+                {
+                    e.lineage = writtenByLineage;
+                }
+            }
+            //upload
+            var nameIdLookup = new Dictionary<string, string>();
+            foreach (var lv in graph.vertices.Values)
+            {
+                var v = new GraphObjectInput { lineage = lv.lineage, name = lv.name ?? lv.id, externalId = lv.id, properties = lv.properties };
+                try
+                {
+                    var res = await _graph.CreateGraphObject(_config["userId"], v, IGraphProcessing.OntologyAction.build);
+                    nameIdLookup.Add(lv.id, res.id);
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+            foreach (var le in graph.edges.Values)
+            {
+                var e = new GraphConnectionInput { lineage = le.lineage, name = le.labelE, weight = le.weight, startId = nameIdLookup[le.Source.id], endId = nameIdLookup[le.Target.id] };
+                try
+                {
+                    await _graph.CreateGraphConnection(_config["userId"], e, IGraphProcessing.OntologyAction.build);
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+
+        }
+
+
+
+
+        SimpleVertex MakeVertex(String id)
+        {
+            return new SimpleVertex { id = id };
+        }
+
+        SimpleEdge MakeEdge(SimpleVertex source, SimpleVertex target, String id)
+        {
+            //define lineage and label based on source and target
+            var lineage = "";
+            var name = "";
+            lineage = "";
+            return new SimpleEdge { id = id, Source = source, Target = target, lineage = lineage};
+        }
+
+        public class TempGraph : QuickGraph.IMutableVertexAndEdgeListGraph<SimpleVertex, SimpleEdge>
+        {
+            public Dictionary<string, SimpleVertex> vertices { get; set; } = new Dictionary<string, SimpleVertex>();
+            public Dictionary<string, SimpleEdge> edges { get; set; } = new Dictionary<string, SimpleEdge>();
+
+            public bool IsEdgesEmpty => throw new NotImplementedException();
+
+            public int EdgeCount => throw new NotImplementedException();
+
+            public IEnumerable<SimpleEdge> Edges => throw new NotImplementedException();
+
+            public bool IsDirected => throw new NotImplementedException();
+
+            public bool AllowParallelEdges => throw new NotImplementedException();
+
+            public bool IsVerticesEmpty => throw new NotImplementedException();
+
+            public int VertexCount => throw new NotImplementedException();
+
+            public IEnumerable<SimpleVertex> Vertices => throw new NotImplementedException();
+
+            public event VertexAction<SimpleVertex> VertexAdded;
+            public event VertexAction<SimpleVertex> VertexRemoved;
+            public event EdgeAction<SimpleVertex, SimpleEdge> EdgeAdded;
+            public event EdgeAction<SimpleVertex, SimpleEdge> EdgeRemoved;
+
+            public bool AddEdge(SimpleEdge edge)
+            {
+                edges.Add(edge.id, edge);
+                return true;
+            }
+
+            public int AddEdgeRange(IEnumerable<SimpleEdge> edges)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool AddVertex(SimpleVertex v)
+            {
+                vertices.Add(v.id, v);
+                return true;
+            }
+
+            public int AddVertexRange(IEnumerable<SimpleVertex> vertices)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool AddVerticesAndEdge(SimpleEdge edge)
+            {
+                throw new NotImplementedException();
+            }
+
+            public int AddVerticesAndEdgeRange(IEnumerable<SimpleEdge> edges)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Clear()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void ClearOutEdges(SimpleVertex v)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool ContainsEdge(SimpleEdge edge)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool ContainsEdge(SimpleVertex source, SimpleVertex target)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool ContainsVertex(SimpleVertex vertex)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool IsOutEdgesEmpty(SimpleVertex v)
+            {
+                throw new NotImplementedException();
+            }
+
+            public int OutDegree(SimpleVertex v)
+            {
+                throw new NotImplementedException();
+            }
+
+            public SimpleEdge OutEdge(SimpleVertex v, int index)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IEnumerable<SimpleEdge> OutEdges(SimpleVertex v)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool RemoveEdge(SimpleEdge edge)
+            {
+                throw new NotImplementedException();
+            }
+
+            public int RemoveEdgeIf(EdgePredicate<SimpleVertex, SimpleEdge> predicate)
+            {
+                throw new NotImplementedException();
+            }
+
+            public int RemoveOutEdgeIf(SimpleVertex v, EdgePredicate<SimpleVertex, SimpleEdge> predicate)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool RemoveVertex(SimpleVertex v)
+            {
+                throw new NotImplementedException();
+            }
+
+            public int RemoveVertexIf(VertexPredicate<SimpleVertex> pred)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void TrimEdgeExcess()
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool TryGetEdge(SimpleVertex source, SimpleVertex target, out SimpleEdge edge)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool TryGetEdges(SimpleVertex source, SimpleVertex target, out IEnumerable<SimpleEdge> edges)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool TryGetOutEdges(SimpleVertex v, out IEnumerable<SimpleEdge> edges)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+
+        [Serializable]
+        public class SimpleVertex
+        {
+            [XmlAttribute]
+            public string id { get; set; }
+
+            [XmlAttribute]
+            public string labelV { get; set; }
+
+            [XmlAttribute]
+            public string name { get; set; }
+
+           [XmlAttribute]
+            public string songType { get; set; }
+
+            [XmlAttribute]
+            public int performances { get; set; }
+
+            public string lineage { get; set; }
+
+            public List<StringStringPair> properties { get; set; } = new List<StringStringPair>();
+
+        }
+
+        public class SimpleEdge : IEdge<SimpleVertex>
+        {
+            [XmlAttribute]
+            public string labelE { get; set; }
+            [XmlAttribute]
+            public double weight { get; set; }
+            [XmlAttribute]
+            public string id { get; set; }
+
+            public SimpleVertex Source { get; set; }
+
+            public SimpleVertex Target { get; set; }
+
+            public string lineage { get; set; }
+        }
     }
 }

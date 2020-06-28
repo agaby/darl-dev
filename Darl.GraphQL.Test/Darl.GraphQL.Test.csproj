@@ -10,6 +10,7 @@
     <None Remove="AppSettings.json" />
     <None Remove="CourseUnitsJson.json" />
     <None Remove="datafieldnames.json" />
+    <None Remove="grateful-dead.xml" />
     <None Remove="Ians_jobs.graphml" />
     <None Remove="input.json" />
     <None Remove="input2.json" />
@@ -25,6 +26,7 @@
     <EmbeddedResource Include="AppSettings.json" />
     <EmbeddedResource Include="CourseUnitsJson.json" />
     <EmbeddedResource Include="datafieldnames.json" />
+    <EmbeddedResource Include="grateful-dead.xml" />
     <EmbeddedResource Include="Ians_jobs.graphml" />
     <EmbeddedResource Include="input.json" />
     <EmbeddedResource Include="input2.json" />

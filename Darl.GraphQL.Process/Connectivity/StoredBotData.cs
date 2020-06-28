@@ -35,7 +35,7 @@ namespace Darl.GraphQL.Process.Connectivity
                     if(double.TryParse(data[v], out double dvalo))
                     {
                         dval = (T)Convert.ChangeType(data[v], typeof(T));
-                        return true;
+                        return false;
                     }
                     else
                     {

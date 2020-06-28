@@ -63,7 +63,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var botFormat = JsonConvert.DeserializeObject<BotFormat>(bm.form);
             if(botFormat.Stores.Contains("Graph"))
             {
-                stores.Add("graph", new GraphProcessing(_config, _logger as ILogger<GraphProcessing>, _context));
+                stores.Add("Graph", new GraphProcessing(_config, _logger as ILogger<GraphProcessing>, _context));
             }
             if (bs.ruleProcessing.Count == 0) // conversational processing
             {

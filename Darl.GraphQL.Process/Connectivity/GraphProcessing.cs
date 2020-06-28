@@ -930,20 +930,44 @@ namespace Darl.GraphQL.Models.Connectivity
                             }
                         case "attribute":
                             {
-                                if (address.Count != 4)
+                                var emptyResult = new DarlResult("result", "", DarlResult.DataType.textual);
+                                emptyResult.SetWeight(0.0);
+                                if (address.Count != 4 && address.Count != 3)
                                 {
-                                    throw new Exception("Attribute call to a graph store must have 4 parameters, 'attribute', the name, the object lineage and the attribute lineage");
+                                    throw new Exception("Attribute call to a graph store must have 3 or 4 parameters, 'attribute', the name, the object lineage and the attribute lineage, or 'attribute', the external ID and the attribute lineage");
                                 }
-                                var res = await FindNearestNameVertex(gremlinClient, address[2].Trim().ToLower(), address[1].Trim().ToLower());
-                                if (res.Count == 0)
+                                List<GraphObject> res;
+                                if (address.Count == 4)
                                 {
-                                    return new DarlResult("result", 0.0, true);
+                                    res = await FindNearestNameVertex(gremlinClient, address[2].Trim().ToLower(), address[1].Trim().ToLower());
                                 }
-                                var prop = res.First().properties.Where(a => a.Name.StartsWith(address[3])).FirstOrDefault();
+                                else
+                                {
+                                    res = new List<GraphObject>{ await FindVertexByExternalID(gremlinClient, address[1].Trim().ToLower()) };
+                                }
+                                if (res.Count == 0 || res[0] == null)
+                                {
+                                    return emptyResult;
+                                }
+                                var propertyName = address.Last();
+                                switch(propertyName)
+                                {
+                                    case "name":
+                                        return new DarlResult("result", res.First().name, DarlResult.DataType.textual);
+                                    case "externalId":
+                                        return new DarlResult("result", res.First().externalId, DarlResult.DataType.textual);
+                                    case "lineage":
+                                        return new DarlResult("result", res.First().lineage, DarlResult.DataType.textual);
+                                    case "id":
+                                        return new DarlResult("result", res.First().lineage, DarlResult.DataType.textual);
+                                    case "existence":
+                                        return new DarlResult("result", res.First().existence, DarlResult.DataType.temporal);
+                                }
+                                var prop = res.First().properties.Where(a => a.Name.StartsWith(propertyName)).FirstOrDefault();
                                 if (prop != null)
                                     return new DarlResult("result", prop.Value, DarlResult.DataType.textual);
                                 else
-                                    return new DarlResult("result", 0.0, true);
+                                    return emptyResult;
                             }
                         case "categories":
                             {
@@ -965,11 +989,33 @@ namespace Darl.GraphQL.Models.Connectivity
             return new DarlResult(0.0, true);
         }
 
+        public async Task<GraphObject> FindVertexByExternalID(GremlinClient gremlinClient, string v)
+        {
+            var res = await SubmitWithRetry(gremlinClient, "g.V().has('externalId',rootName)", new Dictionary<string, object> { { "rootName", v } });
+            if (res.Count != 0)
+            {
+                foreach (var r in res)
+                {
+                    return ConvertGraphObject(r);
+                }
+            }
+            return null;
+        }
+
         public async Task<List<string>> FindChildAttributes(GremlinClient gremlinClient, string rootName, string childLineage, string childValueAttribute)
         {
-            var list = new List<string>();
-            var res = await SubmitWithRetry(gremlinClient, "g.V().has('externalId',rootName).out().has('lineage',childLineage).properties('externalId',childValueAttribute)", 
-                    new Dictionary<string, object> { { "rootName", rootName }, { "childLineage", childLineage }, { "childValueAttribute", childValueAttribute } });
+            var list = new HashSet<string>();
+            ResultSet<dynamic> res;
+            if(!string.IsNullOrEmpty(rootName))
+            {
+                res = await SubmitWithRetry(gremlinClient, "g.V().has('externalId',rootName).both().has('lineage',childLineage).properties('externalId',childValueAttribute)",
+                        new Dictionary<string, object> { { "rootName", rootName }, { "childLineage", childLineage }, { "childValueAttribute", childValueAttribute } });
+            }
+            else
+            {
+                res = await SubmitWithRetry(gremlinClient, "g.V().has('lineage',childLineage).has('virtual',false).properties('externalId',childValueAttribute)",
+                        new Dictionary<string, object> { { "childLineage", childLineage }, { "childValueAttribute", childValueAttribute } });
+            }
             if (res.Count != 0)
             {
                 string text = string.Empty;
@@ -986,7 +1032,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                 }
             }
-            return list;
+            return list.ToList();
         }
 
         private string CreatePathText(ResultSet<dynamic> res)

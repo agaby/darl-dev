@@ -65,7 +65,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     {
                         switch(s)
                         {
-                            case "graph":
+                            case "Graph":
                                 qstate.stores.Add(s, _graph);
                                 break;
 
