@@ -943,7 +943,7 @@ namespace Darl.GraphQL.Models.Connectivity
                                 }
                                 else
                                 {
-                                    res = new List<GraphObject>{ await FindVertexByExternalID(gremlinClient, address[1].Trim().ToLower()) };
+                                    res = new List<GraphObject>{ await FindVertexByExternalID(gremlinClient, address[1].Trim()) };
                                 }
                                 if (res.Count == 0 || res[0] == null)
                                 {
