@@ -1,12 +1,12 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
+using Darl.Thinkbase;
 using DarlCommon;
 using GraphQL.Types;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using static Darl.GraphQL.Models.Connectivity.IGraphProcessing;
 
 namespace Darl.GraphQL.Models.Schemata
 {

@@ -3,6 +3,7 @@ using Darl.GraphQL.Process.Connectivity;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
+using Darl_standard.Darl.Thinkbase;
 using DarlCommon;
 using GraphQL;
 using Microsoft.AspNetCore.Http;
@@ -63,7 +64,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var botFormat = JsonConvert.DeserializeObject<BotFormat>(bm.form);
             if(botFormat.Stores.Contains("Graph"))
             {
-                stores.Add("Graph", new GraphProcessing(_config, _logger as ILogger<GraphProcessing>, _context));
+                stores.Add("Graph", new GraphLocalStore(_config, _logger as ILogger<GraphLocalStore>, _context));
             }
             if (bs.ruleProcessing.Count == 0) // conversational processing
             {

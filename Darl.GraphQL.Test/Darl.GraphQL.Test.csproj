@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="GraphProcessTest.cs" />
+    <Compile Remove="LoadTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="AppSettings.json" />
     <None Remove="CourseUnitsJson.json" />
     <None Remove="datafieldnames.json" />
@@ -39,7 +44,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Darl.Connectivity" Version="1.0.44" />
     <PackageReference Include="GraphQL.Client" Version="3.1.2" />
     <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="3.1.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />

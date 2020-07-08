@@ -35,6 +35,7 @@ using QuickGraph.Serialization;
 using QuickGraph.Algorithms.Search;
 using Darl.GraphQL.Process.Middleware;
 using QuickGraph.Algorithms;
+using Darl.Thinkbase;
 
 namespace Darl.GraphQL.Models.Connectivity
 {

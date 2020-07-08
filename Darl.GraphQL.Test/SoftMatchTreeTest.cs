@@ -1,5 +1,6 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
+using Darl.Thinkbase;
 using GraphQL.Client.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

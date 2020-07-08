@@ -1,6 +1,7 @@
 ﻿using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
 using Darl.SoftMatch;
+using Darl.Thinkbase;
 using GraphQL;
 using Gremlin.Net.Structure;
 using Microsoft.Extensions.Logging;
@@ -47,7 +48,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return $"Match Model {treeName} created containing {data.Count()} texts.";
         }
 
-        private string GenerateGraphName(string userId, string treeName)
+        public static string GenerateGraphName(string userId, string treeName)
         {
             return userId + "_" + treeName.Replace(" ", "_");
         }

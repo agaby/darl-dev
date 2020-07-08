@@ -1,9 +1,5 @@
-using Darl.Connectivity;
-using Darl.Connectivity.Models;
 using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
-using Darl.Lineage;
-using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -13,12 +9,10 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
 using Moq;
 using Newtonsoft.Json;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using static Darl.GraphQL.Models.Models.DarlUser;
 
 namespace Darl.GraphQL.Test
 {

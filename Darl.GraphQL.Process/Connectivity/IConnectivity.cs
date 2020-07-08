@@ -2,6 +2,7 @@
 using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Schemata;
 using Darl.Lineage;
+using Darl.Thinkbase;
 using DarlCommon;
 using MongoDB.Driver;
 using System;

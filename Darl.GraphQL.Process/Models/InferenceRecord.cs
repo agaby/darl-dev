@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Darl.Thinkbase;
+using System.Collections.Generic;
 
 namespace Darl.GraphQL.Models.Models
 {

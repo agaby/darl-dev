@@ -2,6 +2,7 @@
 using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
+using Darl.Thinkbase;
 using DarlCommon;
 using DarlLanguage.Processing;
 using GraphQL.Types;
@@ -615,23 +616,6 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(async c => await graph.GetGraphObjects(userId, name, lineage));
                 }
             ).AuthorizeWith("CorpPolicy");
-            FieldAsync<ListGraphType<GraphObjectType>>(
-                "getGraphObjectsFuzzy",
-                "get graph objects based on  a fuzzy match with name and lineage",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "Name of the object" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "The parent lineage" },
-                    new QueryArgument<FloatGraphType>{ Name = "similarity", Description = "The minimum similarity [0,1]", DefaultValue = 0.7f }
-                ),
-                resolve: async context =>
-                {
-                    var name = context.GetArgument<string>("name");
-                    var lineage = context.GetArgument<string>("lineage");
-                    var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    var similarity = context.GetArgument<float>("similarity");
-                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectsFuzzy(userId, name, lineage,similarity));
-                }
-            ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphObjectType>(
                 "getGraphObjectByid",
                 "get a graph object based on id",
@@ -659,20 +643,6 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(async c => await connectivity.CheckKey(userId, key));
                 }
             );
-            FieldAsync<StringGraphType>(
-                "gremlinPassThrough",
-                "pass gremlin queries through to the underlying database - unsafe!",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "query", Description = "the gremlin query" }
-                ),
-                resolve: async context =>
-                {
-                    var query = context.GetArgument<string>("query");
-                    var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.gremlinPassThrough(userId, query));
-                }
-            ).AuthorizeWith("CorpPolicy");
-
             FieldAsync<ListGraphType<MatchResultType>>(
                 "InferFromSoftMatchModel",
                 "Find the nearest matches in a given SoftMatch model to the given set of texts",
@@ -686,23 +656,6 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     var texts = context.GetArgument<List<string>>("texts");
                     return await context.TryAsyncResolve(async c => await cmp.InferFromSoftMatchModel(userId, treeName, texts));
-                }
-            ).AuthorizeWith("CorpPolicy");
-            FieldAsync<InferenceRecordType>(
-                "inferFromKnowledgeGraph",
-                "Make an 1nference using the knowledge graph",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<GraphObjectInputType>> { Name = "start", Description = "The object to make the inference for" },
-                    new QueryArgument<NonNullGraphType<GraphObjectInputType>> { Name = "target", Description = "The target object to make an inference to." },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "targetOutput", Description = "The dominant output to report on." }
-                ),
-                resolve: async context =>
-                {
-                    var start = context.GetArgument<GraphObjectInput>("start");
-                    var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    var target = context.GetArgument<GraphObjectInput>("target");
-                    var targetOutput = context.GetArgument<string>("targetOutput");
-                    return await context.TryAsyncResolve(async c => await graph.InferPath(start, target, userId, targetOutput));
                 }
             ).AuthorizeWith("CorpPolicy");
             FieldAsync<ListGraphType<StringGraphType>>(

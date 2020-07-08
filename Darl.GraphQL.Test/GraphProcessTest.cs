@@ -1,6 +1,8 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
 using Darl.SoftMatch;
+using Darl.Thinkbase;
+using Darl_standard.Darl.Thinkbase;
 using GraphQL;
 using Gremlin.Net.Driver;
 using Gremlin.Net.Structure.IO.GraphSON;
@@ -210,7 +212,7 @@ namespace Darl.GraphQL.Test
         {
             await _graph.CreateNewGraph("7d1a254f-d405-4385-acbc-308c8376f2e3", "/lineage");
         }
-        [TestMethod]
+/*       [TestMethod]
         [Ignore]
         public async Task TestInferPath()
         {
@@ -324,7 +326,7 @@ namespace Darl.GraphQL.Test
             Assert.AreEqual(17, res.recommendations.Count);
             Assert.IsTrue(res.unknown);
             Assert.AreEqual(0.0, res.confidence);
-        }
+        }*/
 
         [TestMethod]
         public async Task TestCreateJobsAnd()

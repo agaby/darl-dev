@@ -2,6 +2,8 @@
 using Darl.GraphQL.Models.Models;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
+using Darl.Thinkbase;
+using Darl_standard.Darl.Thinkbase;
 using DarlCommon;
 using DarlLanguage.Processing;
 using Gremlin.Net.Process.Traversal.Strategy.Verification;
@@ -68,19 +70,21 @@ namespace Darl.GraphQL.Test
 
 
             _config = configuration.Object;
-            var logger = new Mock<ILogger<GraphProcessing>>();
+            var logger = new Mock<ILogger<GraphLocalStore>>();
             var formLogger = new Mock<ILogger<FormApi>>();
             var botLogger = new Mock<ILogger<BotProcessing>>();
             var connLogger = new Mock<ILogger<CosmosDBConnectivity>>();
+            var blobLogger = new Mock<ILogger<BlobConnectivity>>();
             var context = new Mock<IHttpContextAccessor>();
             context.Setup(a => a.HttpContext.User.Identity.Name).Returns(_config["userId"]);
             var licensing = new Mock<ILicensing>();
             _conv = new CosmosDBConnectivity(_config, connLogger.Object, licensing.Object);
             var trigger = new Mock<ITrigger>();
             var cache = new Mock<IDistributedCache>();
-            var gp = new GraphProcessing(configuration.Object, logger.Object, context.Object);
-            _graphStore = gp;
-            _graph = gp;
+            _graphStore = new GraphLocalStore(configuration.Object, logger.Object, context.Object);
+            var bc = new BlobConnectivity(_config, blobLogger.Object);
+            var blob = new BlobGraphPrimitives(bc,cache.Object);
+            _graph = new GraphProcessing(blob);
             var formApi = new FormApi(cache.Object, trigger.Object, formLogger.Object, _graphStore);
             _rform = new RuleFormInterface(_conv);
             _bot = new BotProcessing(_conv, formApi, _rform, trigger.Object, botLogger.Object, _config, context.Object);
@@ -204,7 +208,7 @@ namespace Darl.GraphQL.Test
                 var v = new GraphObjectInput { lineage = lv.lineage, name = lv.name ?? lv.id, externalId = lv.id, properties = lv.properties };
                 try
                 {
-                    var res = await _graph.CreateGraphObject(_config["userId"], v, IGraphProcessing.OntologyAction.build);
+                    var res = await _graph.CreateGraphObject(_config["userId"], v, OntologyAction.build);
                     nameIdLookup.Add(lv.id, res.id);
                 }
                 catch (Exception ex)
@@ -214,10 +218,10 @@ namespace Darl.GraphQL.Test
             }
             foreach (var le in graph.edges.Values)
             {
-                var e = new GraphConnectionInput { lineage = le.lineage, name = le.labelE, weight = le.weight, startId = nameIdLookup[le.Source.id], endId = nameIdLookup[le.Target.id] };
+                var e = new Thinkbase.GraphConnectionInput { lineage = le.lineage, name = le.labelE, weight = le.weight, startId = nameIdLookup[le.Source.id], endId = nameIdLookup[le.Target.id] };
                 try
                 {
-                    await _graph.CreateGraphConnection(_config["userId"], e, IGraphProcessing.OntologyAction.build);
+                    await _graph.CreateGraphConnection(_config["userId"], e, OntologyAction.build);
                 }
                 catch (Exception ex)
                 {

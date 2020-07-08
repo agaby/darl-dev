@@ -557,6 +557,30 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
+        public async Task<List<GraphObject>> GetRealGraphObjectsByLineage(string userId, string lineage)
+        {
+            using (var gremlinClient = new GremlinClient(ServerFactory(userId), new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+            {
+                var list = new List<GraphObject>();
+                try
+                {
+                    var res = await SubmitWithRetry(gremlinClient, "g.V().has('lineage',TextP.startingWith(lineage)).has('virtual',false)", new Dictionary<string, object> { { "lineage", lineage } });
+                    if (res.Count != 0)
+                    {
+                        foreach (var r in res)
+                        {
+                            list.Add(ConvertGraphObject(r));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new ExecutionError("Error in reading from Graph database: ", ex);
+                }
+                return list;
+            }
+        }
+
         private GraphObject ConvertGraphObject(dynamic r)
         {
             if (r == null)
@@ -865,128 +889,162 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
         public async Task<DarlResult> ReadAsync(List<string> address)
-        {           
-            using (var gremlinClient = new GremlinClient(ServerFactory(_context.HttpContext.User.Identity.Name), new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
+        {
+            try
             {
-                //add name lookup for fuzzy match
-                if (address.Count > 1)
+                var userId = _context.HttpContext.User.Identity.Name;
+                using (var gremlinClient = new GremlinClient(ServerFactory(userId), new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
                 {
-                    switch (address[0].ToLower())
+                    //add name lookup for fuzzy match
+                    if (address.Count > 1)
                     {
-                        case "text":
-                            {
-                                //3 parameters
-                                if (address.Count != 3)
+                        switch (address[0].ToLower())
+                        {
+                            case "text":
                                 {
-                                    throw new Exception("Text call to a graph store must have 3 parameters, 'text', the name and the lineage");
+                                    //3 parameters
+                                    if (address.Count != 3)
+                                    {
+                                        throw new Exception("Text call to a graph store must have 3 parameters, 'text', the name and the lineage");
+                                    }
+                                    var res = await FindNearestNameVertex(gremlinClient, address[2].Trim().ToLower(), address[1].Trim().ToLower());
+                                    if (res.Count == 0)
+                                    {
+                                        return new DarlResult("result", 0.0, true);
+                                    }
+                                    return new DarlResult("result", CreateNotesText(res.First()), DarlResult.DataType.textual);
                                 }
-                                var res = await FindNearestNameVertex(gremlinClient, address[2].Trim().ToLower(), address[1].Trim().ToLower());
-                                if (res.Count == 0)
+                            case "links":
                                 {
-                                    return new DarlResult("result", 0.0, true);
+                                    if (address.Count != 4)
+                                    {
+                                        throw new Exception("Links call to a graph store must have 4 parameters, 'links', the name, lineage of the start vertex and the lineage of the end vertex");
+                                    }
+                                    var lookup = await FindNearestNameVertex(gremlinClient, address[2].Trim().ToLower(), address[1].Trim().ToLower());
+                                    if (lookup.Count == 0)
+                                    {
+                                        return new DarlResult("result", 0.0, true);
+                                    }
+                                    var res = await SubmitWithRetry(gremlinClient, "g.V().hasLabel(TextP.startingWith(lineage1)).has('name',name).outE().inv().hasLabel(TextP.startingWith(lineage2)).dedup().properties('name')", new Dictionary<string, object> { { "name", lookup.First().name }, { "lineage1", address[2] }, { "lineage2", address[3] } });
+                                    if (res.Count == 0)
+                                    {
+                                        return new DarlResult("result", 0.0, true);
+                                    }
+                                    return new DarlResult("result", CreateLinksText(res), DarlResult.DataType.textual);
                                 }
-                                return new DarlResult("result", CreateNotesText(res.First()), DarlResult.DataType.textual);
-                            }
-                        case "links":
-                            {
-                                if (address.Count != 4)
+                            case "path":
                                 {
-                                    throw new Exception("Links call to a graph store must have 4 parameters, 'links', the name, lineage of the start vertex and the lineage of the end vertex");
+                                    if (address.Count != 5 && address.Count != 3)
+                                    {
+                                        throw new Exception("Path call to a graph store must have 5 parameters, 'path', start name, end name, start lineage and end lineage");
+                                    }
+                                    if (address.Count == 5)
+                                    {
+                                        var start = await FindNearestNameVertex(gremlinClient, address[3].Trim().ToLower(), address[1].Trim().ToLower());
+                                        var end = await FindNearestNameVertex(gremlinClient, address[4].Trim().ToLower(), address[2].Trim().ToLower());
+                                        if (start.Count == 0)
+                                        {
+                                            return new DarlResult("result", 0.0, true);
+                                        }
+                                        if (end.Count == 0)
+                                        {
+                                            return new DarlResult("result", 0.0, true);
+                                        }
+                                        var res = await SubmitWithRetry(gremlinClient, "g.V().has('id',id1).repeat(out()).until(has('id', id2)).path().limit(1)", new Dictionary<string, object> { { "id1", start.First().id }, { "id2", end.First().id } });
+                                        if (res.Count == 0)
+                                        {
+                                            return new DarlResult("result", 0.0, true);
+                                        }
+                                        return new DarlResult("result", CreatePathText(res), DarlResult.DataType.textual);
+                                    }
+                                    else
+                                    {
+                                        var rootToSkill = await SubmitWithRetry(gremlinClient, "g.V().has('externalId',id2).in().has('lineage','noun:01,0,0,04').has('virtual',false)", new Dictionary<string, object> { { "id1", address[1].Trim() }, { "id2", address[2].Trim() } });
+                                        if(rootToSkill.Count == 0 )
+                                        {
+                                            return new DarlResult("result", "There is no path to this job", DarlResult.DataType.textual);
+                                        }
+                                        var res = await SubmitWithRetry(gremlinClient, "g.V().has('externalId',id1).repeat(out()).until(has('externalId', id2)).path().limit(1).unfold()", new Dictionary<string, object> { { "id1", address[1].Trim() }, { "id2", address[2].Trim() } });
+                                        if (res.Count == 0)
+                                        {
+                                            return new DarlResult("result", "There is no path to this job", DarlResult.DataType.textual);
+                                        }
+                                        return new DarlResult("result", CreatePathObjectsText(res), DarlResult.DataType.textual);
+                                    }
                                 }
-                                var lookup = await FindNearestNameVertex(gremlinClient, address[2].Trim().ToLower(), address[1].Trim().ToLower());
-                                if (lookup.Count == 0)
+                            case "attribute":
                                 {
-                                    return new DarlResult("result", 0.0, true);
+                                    var emptyResult = new DarlResult("result", "", DarlResult.DataType.textual);
+                                    emptyResult.SetWeight(0.0);
+                                    if (address.Count != 4 && address.Count != 3)
+                                    {
+                                        throw new Exception("Attribute call to a graph store must have 3 or 4 parameters, 'attribute', the name, the object lineage and the attribute lineage, or 'attribute', the external ID and the attribute lineage");
+                                    }
+                                    List<GraphObject> res;
+                                    if (address.Count == 4)
+                                    {
+                                        res = await FindNearestNameVertex(gremlinClient, address[2].Trim().ToLower(), address[1].Trim().ToLower());
+                                    }
+                                    else
+                                    {
+                                        res = new List<GraphObject> { await FindVertexByExternalID(gremlinClient, address[1].Trim()) };
+                                    }
+                                    if (res.Count == 0 || res[0] == null)
+                                    {
+                                        return emptyResult;
+                                    }
+                                    var propertyName = address.Last();
+                                    switch (propertyName)
+                                    {
+                                        case "name":
+                                            return new DarlResult("result", res.First().name, DarlResult.DataType.textual);
+                                        case "externalId":
+                                            return new DarlResult("result", res.First().externalId, DarlResult.DataType.textual);
+                                        case "lineage":
+                                            return new DarlResult("result", res.First().lineage, DarlResult.DataType.textual);
+                                        case "id":
+                                            return new DarlResult("result", res.First().lineage, DarlResult.DataType.textual);
+                                        case "existence":
+                                            return new DarlResult("result", res.First().existence, DarlResult.DataType.temporal);
+                                    }
+                                    var prop = res.First().properties.Where(a => a.Name.StartsWith(propertyName)).FirstOrDefault();
+                                    if (prop != null)
+                                        return new DarlResult("result", prop.Value, DarlResult.DataType.textual);
+                                    else
+                                        return emptyResult;
                                 }
-                                var res = await SubmitWithRetry(gremlinClient, "g.V().hasLabel(TextP.startingWith(lineage1)).has('name',name).outE().inv().hasLabel(TextP.startingWith(lineage2)).dedup().properties('name')", new Dictionary<string, object> { { "name", lookup.First().name }, { "lineage1", address[2] }, { "lineage2", address[3] } });
-                                if (res.Count == 0)
+                            case "categories":
                                 {
-                                    return new DarlResult("result", 0.0, true);
+                                    if (address.Count != 4)
+                                    {
+                                        throw new Exception("Categories call to a graph store must have 4 parameters, 'categories', the root externalId, the children lineage and the attribute value name/lineage");
+                                    }
+                                    var res = await FindChildAttributes(gremlinClient, address[1].Trim(), address[2].Trim(), address[3].Trim());
+                                    var result = new DarlResult("result", DarlResult.DataType.categorical, 1.0);
+                                    foreach (var c in res)
+                                    {
+                                        result.categories.Add(c, 1.0);
+                                    }
+                                    return result;
                                 }
-                                return new DarlResult("result", CreateLinksText(res), DarlResult.DataType.textual);
-                            }
-                        case "path":
-                            {
-                                if (address.Count != 5)
+                            case "inference":
                                 {
-                                    throw new Exception("Path call to a graph store must have 5 parameters, 'path', start name, end name, start lineage and end lineage");
+                                    if (address.Count != 3)
+                                    {
+                                        throw new Exception("inference call to a graph store must have 3 parameters, 'inference', the external Id of the start point and the external Id of the end point");
+                                    }
+                                    return await InferCore(gremlinClient, address[1].Trim(), address[2].Trim());
                                 }
-                                var start = await FindNearestNameVertex(gremlinClient, address[3].Trim().ToLower(), address[1].Trim().ToLower());
-                                var end = await FindNearestNameVertex(gremlinClient, address[4].Trim().ToLower(), address[2].Trim().ToLower());
-                                if (start.Count == 0)
-                                {
-                                    return new DarlResult("result", 0.0, true);
-                                }
-                                if (end.Count == 0)
-                                {
-                                    return new DarlResult("result", 0.0, true);
-                                }
-                                var res = await SubmitWithRetry(gremlinClient, "g.V().has('id',id1).repeat(out()).until(has('id', id2)).path().limit(1)", new Dictionary<string, object> { { "id1", start.First().id }, { "id2", end.First().id } });
-                                if (res.Count == 0)
-                                {
-                                    return new DarlResult("result", 0.0, true);
-                                }
-                                return new DarlResult("result", CreatePathText(res), DarlResult.DataType.textual);
-                            }
-                        case "attribute":
-                            {
-                                var emptyResult = new DarlResult("result", "", DarlResult.DataType.textual);
-                                emptyResult.SetWeight(0.0);
-                                if (address.Count != 4 && address.Count != 3)
-                                {
-                                    throw new Exception("Attribute call to a graph store must have 3 or 4 parameters, 'attribute', the name, the object lineage and the attribute lineage, or 'attribute', the external ID and the attribute lineage");
-                                }
-                                List<GraphObject> res;
-                                if (address.Count == 4)
-                                {
-                                    res = await FindNearestNameVertex(gremlinClient, address[2].Trim().ToLower(), address[1].Trim().ToLower());
-                                }
-                                else
-                                {
-                                    res = new List<GraphObject>{ await FindVertexByExternalID(gremlinClient, address[1].Trim()) };
-                                }
-                                if (res.Count == 0 || res[0] == null)
-                                {
-                                    return emptyResult;
-                                }
-                                var propertyName = address.Last();
-                                switch(propertyName)
-                                {
-                                    case "name":
-                                        return new DarlResult("result", res.First().name, DarlResult.DataType.textual);
-                                    case "externalId":
-                                        return new DarlResult("result", res.First().externalId, DarlResult.DataType.textual);
-                                    case "lineage":
-                                        return new DarlResult("result", res.First().lineage, DarlResult.DataType.textual);
-                                    case "id":
-                                        return new DarlResult("result", res.First().lineage, DarlResult.DataType.textual);
-                                    case "existence":
-                                        return new DarlResult("result", res.First().existence, DarlResult.DataType.temporal);
-                                }
-                                var prop = res.First().properties.Where(a => a.Name.StartsWith(propertyName)).FirstOrDefault();
-                                if (prop != null)
-                                    return new DarlResult("result", prop.Value, DarlResult.DataType.textual);
-                                else
-                                    return emptyResult;
-                            }
-                        case "categories":
-                            {
-                                if (address.Count != 4)
-                                {
-                                    throw new Exception("Categories call to a graph store must have 4 parameters, 'categories', the root externalId, the children lineage and the attribute value name/lineage");
-                                }
-                                var res = await FindChildAttributes(gremlinClient, address[1].Trim(), address[2].Trim(), address[3].Trim());
-                                var result = new DarlResult("result",DarlResult.DataType.categorical, 1.0);
-                                foreach(var c in res)
-                                {
-                                    result.categories.Add(c, 1.0);
-                                }
-                                return result;
-                            }
+                                break;
+                        }
                     }
                 }
+                return new DarlResult(0.0, true);
             }
-            return new DarlResult(0.0, true);
+            catch(Exception ex)
+            {
+                return new DarlResult(0.0, true);
+            }
         }
 
         public async Task<GraphObject> FindVertexByExternalID(GremlinClient gremlinClient, string v)
@@ -1052,6 +1110,27 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return sb.ToString();
         }
+
+        private string CreatePathObjectsText(ResultSet<dynamic> res)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("A typical path would be:");
+            foreach (var r in res)
+            {
+                GraphObject obj = ConvertGraphObject(r);
+                if (obj.externalId.StartsWith("C"))
+                    sb.AppendLine($"Take course {obj.name}.");
+                else if(obj.externalId.StartsWith("U"))
+                    sb.AppendLine($"Take unit {obj.name}.");
+                else if (obj.externalId.StartsWith("BS"))
+                    sb.AppendLine($"This leads to skill {obj.name}.");
+                else if (obj.externalId.StartsWith("BJ"))
+                    sb.AppendLine($"This leads to job {obj.name}.");
+            }
+            return sb.ToString();
+        }
+
+
 
         private string CreateLinksText(ResultSet<dynamic> res)
         {
@@ -1152,166 +1231,130 @@ namespace Darl.GraphQL.Models.Connectivity
                 return JsonConvert.SerializeObject(res);
             }
         }
-        public async Task<InferenceRecord> InferPath(GraphObjectInput start, GraphObjectInput end, string userId, string targetOutput)
+ 
+        public async Task<DarlResult> InferCore(GremlinClient gremlinClient, string startId, string endId)
         {
             var ir = new InferenceRecord();
-            try
-            {
-                var startObjects = await GetGraphObjects(userId, start.name, start.lineage);
-                if (startObjects.Count < 1)
-                {
-                    throw new Exception($"A matching object to start does not exist in the Knowledge graph.");
-                }
-                if (startObjects.Count > 1)
-                {
-                    throw new Exception($"Multiple matching objects to start exist in the Knowledge graph.");
-                }
-                var startObject = startObjects.First();
-                var startId = startObject.id;
 
-                var endObjects = await GetGraphObjects(userId, end.name, end.lineage);
-                if (endObjects.Count < 1)
-                {
-                    throw new Exception($"A matching object to end does not exist in the Knowledge graph.");
-                }
-                if (endObjects.Count > 1)
-                {
-                    throw new Exception($"Multiple matching objects to end exist in the Knowledge graph.");
-                }
-                var endObject = endObjects.First();
-                var endId = endObject.id;
+            var vertices = new Dictionary<string, GraphObject>();
+            var edges = new Dictionary<string, List<GraphConnection>>();
+            var inputs = new HashSet<string>();
+            var outputs = new HashSet<string>();
+            var rules = new HashSet<string>();
+            var lineages = new HashSet<string>();
+            var all = new Dictionary<string, string>();
+            var any = new Dictionary<string, string>();
 
-                var vertices = new Dictionary<string, GraphObject>();
-                var edges = new Dictionary<string, List<GraphConnection>>();
-                var inputs = new HashSet<string>();
-                var outputs = new HashSet<string>();
-                var rules = new HashSet<string>();
-                var lineages = new HashSet<string>();
-                var all = new Dictionary<string, string>();
-                var any = new Dictionary<string, string>();
-                using (var gremlinClient = new GremlinClient(ServerFactory(userId), new GraphSON2Reader(), new GraphSON2Writer(), GremlinClient.GraphSON2MimeType))
-                {
-                    //get all the paths between the start and end objects and then collect the vertices that occur in those paths.
-                    var query = $"g.V().has('id',id1).repeat(outE().inV()).until(has('id', id2)).path().unfold().dedup()";
-                    var res1 = await SubmitWithRetry(gremlinClient, query, new Dictionary<string, object> { { "id1", startId }, { "id2", endId } });
-                    //results contain all edges and all vertices
-                    if (res1.Count != 0)
-                    {
-                        foreach (var r in res1)
-                        {
-                            if (IsVertex(r))
-                            {
-                                GraphObject go = ConvertGraphObject(r);
-                                vertices.Add(go.id, go);
-                                lineages.Add(go.lineage);
-                            }
-                            else
-                            {
-                                GraphConnection conn = ConvertGraphConnection(r);
-                                if (!edges.ContainsKey(conn.endId))
-                                    edges.Add(conn.endId, new List<GraphConnection>());
-                                edges[conn.endId].Add(conn);
-                            }
-                        }
-                    }
-                    foreach (var l in lineages)
-                    {
-                        var lquery = "g.V().has('lineage',lin1).has('virtual',true)";
-                        var lres = await SubmitWithRetry(gremlinClient, lquery, new Dictionary<string, object> { { "lin1", l } });
-                        if (lres.Count > 0)
-                        {
-                            GraphObject gv = ConvertGraphObject(lres.First());
-                            if (gv.properties != null)
-                            {
-                                if (gv.properties.Any(a => a.Name == "all"))
-                                {
-                                    all.Add(l, gv.properties.First(a => a.Name == "all").Value);
-                                }
-                                if (gv.properties.Any(a => a.Name == "any"))
-                                {
-                                    any.Add(l, gv.properties.First(a => a.Name == "any").Value);
-                                }
-                            }
-                        }
-                    }
-                }
-                var rootName = ConvertToDarl(endObject, inputs, outputs, rules, edges, vertices, all, any);
-                var rulesetName = "compliance";
-                var darl = new StringBuilder($"ruleset {rulesetName}\n{{\n");
-                darl.AppendLine(string.Join('\n', inputs));
-                darl.AppendLine();
-                darl.AppendLine(string.Join('\n', outputs));
-                darl.AppendLine();
-                darl.AppendLine(string.Join('\n', rules));
-                darl.AppendLine("\n}");
-                var runtime = new DarlRunTime();
-                var darlSource = darl.ToString();
-                var tree = runtime.CreateTree(darlSource);
-                //assume the properties are name - degree of truth pairs
-                if (startObject.properties == null)
-                    startObject.properties = start.properties ?? new List<StringStringPair>();
-                else
-                {
-                    if(start.properties != null)
-                        startObject.properties.AddRange(start.properties);
-                }
-                var values = new List<DarlResult>();
-                if (startObject.properties != null)
-                {
-                    foreach (var p in startObject.properties)
-                    {
-                        if (double.TryParse(p.Value, out double dval))
-                        {
-                            if (dval >= 0.5)
-                                values.Add(new DarlResult(p.Name, "true", DarlResult.DataType.categorical, dval));
-                            else
-                                values.Add(new DarlResult(p.Name, "false", DarlResult.DataType.categorical, 1.0 - dval));
-                        }
-                    }
-                }
-                var outs = runtime.GetOutputNames(tree);
-                var res = await runtime.Evaluate(tree, values);
-                foreach (var r in res)
-                {
-                    if (!r.IsUnknown())
-                    {
-                        var degreeOfTruth = ((string)r.Value == "true" ? r.GetWeight() : 1.0 - r.GetWeight());
-                        var newProp = new StringStringPair(r.name, degreeOfTruth.ToString());
-                        if (startObject.properties.Any(a => a.Name == r.name))
-                        {
-                            var existing = startObject.properties.First(a => a.Name == r.name);
-                            startObject.properties.Remove(existing);
-                            startObject.properties.Add(newProp);
-                        }
-                        else if (!r.name.StartsWith(rulesetName)) //ignore local values
-                        {
-                            startObject.properties.Add(newProp);
-                        }
-                        if (r.name == targetOutput)
-                        {
-                            ir.unknown = false;
-                            ir.confidence = degreeOfTruth;
-                        }
-                    }
-                }
-                var saliences = runtime.CalculateSaliences(res, tree);
-                var sortedSaliences = saliences.OrderByDescending(a => a.Value).ThenBy(a => a.Key).ToList();
-                ir.source = startObject;
-                ir.recommendations = new List<StringStringPair>();
-                //update confidence and unknown status based on target result.
-                foreach (var s in sortedSaliences)
-                {
-                    ir.recommendations.Add(new StringStringPair(s.Key, s.Value.ToString()));
-                }
-                _logger.LogWarning($"{nameof(InferPath)}: {userId}");
-            }
-            catch (Exception ex)
+            var startObject = await FindVertexByExternalID(gremlinClient, startId);
+            var endObject = await FindVertexByExternalID(gremlinClient, endId);
+            //get all the paths between the start and end objects and then collect the vertices that occur in those paths.
+            var query = $"g.V().has('externalId',id1).repeat(outE().inV()).until(has('externalId', id2)).path().dedup().unfold()";
+            var res1 = await SubmitWithRetry(gremlinClient, query, new Dictionary<string, object> { { "id1", startId }, { "id2", endId } });
+            //results contain all edges and all vertices
+            if (res1.Count != 0)
             {
-                _logger.LogError("Error in InferPath", ex);
-                throw new ExecutionError($"Error in InferPath: {ex.Message}", ex);
+                foreach (var r in res1)
+                {
+                    if (IsVertex(r))
+                    {
+                        GraphObject go = ConvertGraphObject(r);
+                        vertices.Add(go.id, go);
+                        lineages.Add(go.lineage);
+                    }
+                    else
+                    {
+                        GraphConnection conn = ConvertGraphConnection(r);
+                        if (!edges.ContainsKey(conn.endId))
+                            edges.Add(conn.endId, new List<GraphConnection>());
+                        edges[conn.endId].Add(conn);
+                    }
+                }
             }
-            return ir;
+            foreach (var l in lineages)
+            {
+                var lquery = "g.V().has('lineage',lin1).has('virtual',true)";
+                var lres = await SubmitWithRetry(gremlinClient, lquery, new Dictionary<string, object> { { "lin1", l } });
+                if (lres.Count > 0)
+                {
+                    GraphObject gv = ConvertGraphObject(lres.First());
+                    if (gv.properties != null)
+                    {
+                        if (gv.properties.Any(a => a.Name == "all"))
+                        {
+                            all.Add(l, gv.properties.First(a => a.Name == "all").Value);
+                        }
+                        if (gv.properties.Any(a => a.Name == "any"))
+                        {
+                            any.Add(l, gv.properties.First(a => a.Name == "any").Value);
+                        }
+                    }
+                }
+            }
+            
+            var rootName = ConvertToDarl(endObject, inputs, outputs, rules, edges, vertices, all, any);
+            var rulesetName = "compliance";
+            var darl = new StringBuilder($"ruleset {rulesetName}\n{{\n");
+            darl.AppendLine(string.Join('\n', inputs));
+            darl.AppendLine();
+            darl.AppendLine(string.Join('\n', outputs));
+            darl.AppendLine();
+            darl.AppendLine(string.Join('\n', rules));
+            darl.AppendLine("\n}");
+            var runtime = new DarlRunTime();
+            var darlSource = darl.ToString();
+            var tree = runtime.CreateTree(darlSource);
+            var values = new List<DarlResult>();
+            if (startObject.properties != null)
+            {
+                foreach (var p in startObject.properties)
+                {
+                    if (double.TryParse(p.Value, out double dval))
+                    {
+                        if (dval >= 0.5)
+                            values.Add(new DarlResult(p.Name, "true", DarlResult.DataType.categorical, dval));
+                        else
+                            values.Add(new DarlResult(p.Name, "false", DarlResult.DataType.categorical, 1.0 - dval));
+                    }
+                }
+            }
+            var outs = runtime.GetOutputNames(tree);
+            var res = await runtime.Evaluate(tree, values);
+            foreach (var r in res)
+            {
+                if (!r.IsUnknown())
+                {
+                    var degreeOfTruth = ((string)r.Value == "true" ? r.GetWeight() : 1.0 - r.GetWeight());
+                    var newProp = new StringStringPair(r.name, degreeOfTruth.ToString());
+                    if (startObject.properties.Any(a => a.Name == r.name))
+                    {
+                        var existing = startObject.properties.First(a => a.Name == r.name);
+                        startObject.properties.Remove(existing);
+                        startObject.properties.Add(newProp);
+                    }
+                    else if (!r.name.StartsWith(rulesetName)) //ignore local values
+                    {
+                        startObject.properties.Add(newProp);
+                    }
+                    if (r.name == endObject.name + "_inferred")
+                    {
+                        ir.unknown = false;
+                        ir.confidence = degreeOfTruth;
+                    }
+                }
+            }
+            var saliences = runtime.CalculateSaliences(res, tree);
+            var sortedSaliences = saliences.OrderByDescending(a => a.Value).ThenBy(a => a.Key).ToList();
+            ir.source = startObject;
+            ir.recommendations = new List<StringStringPair>();
+            //update confidence and unknown status based on target result.
+            foreach (var s in sortedSaliences)
+            {
+                ir.recommendations.Add(new StringStringPair(s.Key, s.Value.ToString()));
+            }
+            var text = string.Empty; //insert reccomendations.
+            return new DarlResult("response", text, DarlResult.DataType.textual);
         }
+
         public string ConvertToDarl(GraphObject go, HashSet<string> inputs, HashSet<string> outputs, HashSet<string> rules, Dictionary<string, List<GraphConnection>> edges, Dictionary<string, GraphObject> vertices, Dictionary<string, string> all, Dictionary<string, string> any)
         {
             var fullOutName = $"{ConvertNameToDarlName(go.name)}_inferred";
@@ -1370,6 +1413,11 @@ namespace Darl.GraphQL.Models.Connectivity
                 outputs.Add($"output categorical {fullOutName} {{true,false}};");
                 return fullOutName;
             }
+        }
+
+        public async Task UpdateSingleKG(string userId, StringStringPair target, List<StringStringPair> Associations)
+        {
+
         }
 
         /// <summary>
