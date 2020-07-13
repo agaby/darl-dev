@@ -20,8 +20,8 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.InvoiceOrganization,true);
             Field(c => c.Issuer, true);
             Field(c => c.PaidUsageStarted);
-            Field(c => c.StripeCustomerId);
-            Field(c => c.UsageStripeSubscriptionItem);
+            Field(c => c.StripeCustomerId,true);
+            Field(c => c.UsageStripeSubscriptionItem,true);
             Field(c => c.userId);
             Field(c => c.APIKey);
             Field<SubscriptionTypeEnum>("subscriptionType", resolve: c => c.Source.subscriptionType);
