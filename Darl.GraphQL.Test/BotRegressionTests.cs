@@ -65,6 +65,8 @@ namespace Darl.GraphQL.Test
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:MongoConnectionString")]).Returns("mongodb://darlai:VqbEsCyGXAkTlWUuOb3Y4RQbFqmZs3VZaAWDtYrDO3054dicQHbWMo2OhbabuWK4szQM5VmgoUHe8jGihAIWdQ==@darlai.documents.azure.com:10255/?ssl=true&replicaSet=globaldb");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:boaiuserid")]).Returns("8c663676-a7dc-4561-af3d-89b38555837d");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:MongoDatabase")]).Returns("darlai");
+            configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:BlobContainer")]).Returns("darldevgraphs");
+            configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StorageConnectionString")]).Returns("DefaultEndpointsProtocol=https;AccountName=darlai;AccountKey=errnwefiVeXcDr0aKbHDxXjblOQhwFwHkeG4qR4caChkABnzp9MNeBBX0FP1jc4DnXPGztI67pbEBXDqA1dPCw==");
 
 
 
@@ -81,13 +83,13 @@ namespace Darl.GraphQL.Test
             _conv = new CosmosDBConnectivity(_config, connLogger.Object, licensing.Object);
             var trigger = new Mock<ITrigger>();
             var cache = new Mock<IDistributedCache>();
-            _graphStore = new GraphLocalStore(configuration.Object, logger.Object, context.Object);
             var bc = new BlobConnectivity(_config, blobLogger.Object);
             var blob = new BlobGraphPrimitives(bc,cache.Object);
             _graph = new GraphProcessing(blob);
+            _graphStore = new GraphLocalStore(configuration.Object, logger.Object, context.Object, _graph);
             var formApi = new FormApi(cache.Object, trigger.Object, formLogger.Object, _graphStore);
             _rform = new RuleFormInterface(_conv);
-            _bot = new BotProcessing(_conv, formApi, _rform, trigger.Object, botLogger.Object, _config, context.Object);
+            _bot = new BotProcessing(_conv, formApi, _rform, trigger.Object, botLogger.Object, _config, context.Object, _graph);
         }
 
         [TestMethod]
@@ -144,13 +146,13 @@ namespace Darl.GraphQL.Test
             Assert.AreEqual("Demo of graph processing using the grateful dead graph of songs, artists and playlists.", resp[0].response.Value);
             Assert.AreEqual("Select an artist", resp[1].response.Value);
             Assert.AreEqual(224, resp[1].response.categories.Count);
-            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "hunter", name = "" });
+            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "Hunter", name = "" });
             Assert.AreEqual("Now pick a song by that artist", resp[0].response.Value);
             Assert.AreEqual("Songs:", resp[1].response.Value);
             Assert.AreEqual(96, resp[1].response.categories.Count);
-            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "althea", name = "" });
+            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "ALTHEA", name = "" });
             Assert.AreEqual(1, resp.Count);
-            Assert.AreEqual("Response You selected song 'althea' of type original, performed 272 times.", resp[0].response.Value);
+            Assert.AreEqual("Response You selected song 'ALTHEA' of type original, performed 272 times with path ALTHEA -> writtenBy -> Hunter.", resp[0].response.Value);
             resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "Hi", name = "" });
             Assert.IsTrue(resp[0].response.Value == "hi, what can I do for you?" || resp[0].response.Value == "hello, can I help?");
         }
@@ -203,12 +205,13 @@ namespace Darl.GraphQL.Test
             }
             //upload
             var nameIdLookup = new Dictionary<string, string>();
+            var userId = _config["userId"];
             foreach (var lv in graph.vertices.Values)
             {
                 var v = new GraphObjectInput { lineage = lv.lineage, name = lv.name ?? lv.id, externalId = lv.id, properties = lv.properties };
                 try
                 {
-                    var res = await _graph.CreateGraphObject(_config["userId"], v, OntologyAction.build);
+                    var res = await _graph.CreateGraphObject($"{userId}_grateful_dead_graph", v, OntologyAction.build);
                     nameIdLookup.Add(lv.id, res.id);
                 }
                 catch (Exception ex)
@@ -221,14 +224,50 @@ namespace Darl.GraphQL.Test
                 var e = new Thinkbase.GraphConnectionInput { lineage = le.lineage, name = le.labelE, weight = le.weight, startId = nameIdLookup[le.Source.id], endId = nameIdLookup[le.Target.id] };
                 try
                 {
-                    await _graph.CreateGraphConnection(_config["userId"], e, OntologyAction.build);
+                    await _graph.CreateGraphConnection($"{userId}_grateful_dead_graph", e, OntologyAction.build);
                 }
                 catch (Exception ex)
                 {
 
                 }
             }
+            await _graph.Store($"{userId}_grateful_dead_graph");
+        }
 
+        [TestMethod]
+        public async Task TestShortestPath()
+        { // "Networks and Algorithms, an introductory approach p154
+            var userId = _config["userId"];
+            string graphName = $"{userId}_simple_graph";
+            var nameIdLookup = new Dictionary<string, string>();
+            var res = await _graph.CreateGraphObject(graphName, new GraphObjectInput { name = "A", externalId = "A", lineage = "noun:00,0"}, OntologyAction.build);
+            nameIdLookup.Add("A", res.id);
+            res = await _graph.CreateGraphObject(graphName, new GraphObjectInput { name = "B", externalId = "B", lineage = "noun:00,0" }, OntologyAction.build);
+            nameIdLookup.Add("B", res.id);
+            res = await _graph.CreateGraphObject(graphName, new GraphObjectInput { name = "C", externalId = "C", lineage = "noun:00,0" }, OntologyAction.build);
+            nameIdLookup.Add("C", res.id);
+            res = await _graph.CreateGraphObject(graphName, new GraphObjectInput { name = "D", externalId = "D", lineage = "noun:00,0" }, OntologyAction.build);
+            nameIdLookup.Add("D", res.id);
+            res = await _graph.CreateGraphObject(graphName, new GraphObjectInput { name = "E", externalId = "E", lineage = "noun:00,0" }, OntologyAction.build);
+            nameIdLookup.Add("E", res.id);
+            res = await _graph.CreateGraphObject(graphName, new GraphObjectInput { name = "S", externalId = "S", lineage = "noun:00,0" }, OntologyAction.build);
+            nameIdLookup.Add("S", res.id);
+            res = await _graph.CreateGraphObject(graphName, new GraphObjectInput { name = "T", externalId = "T", lineage = "noun:00,0" }, OntologyAction.build);
+            nameIdLookup.Add("T", res.id);
+            await _graph.CreateGraphConnection(graphName, new GraphConnectionInput { weight = 7, startId = nameIdLookup["S"], endId = nameIdLookup["A"], lineage = "verb:248,02,01", name = "connects" }, OntologyAction.build);
+            await _graph.CreateGraphConnection(graphName, new GraphConnectionInput { weight = 13, startId = nameIdLookup["S"], endId = nameIdLookup["B"], lineage = "verb:248,02,01", name = "connects" }, OntologyAction.build);
+            await _graph.CreateGraphConnection(graphName, new GraphConnectionInput { weight = 28, startId = nameIdLookup["S"], endId = nameIdLookup["C"], lineage = "verb:248,02,01", name = "connects" }, OntologyAction.build);
+            await _graph.CreateGraphConnection(graphName, new GraphConnectionInput { weight = 4, startId = nameIdLookup["A"], endId = nameIdLookup["B"], lineage = "verb:248,02,01", name = "connects" }, OntologyAction.build);
+            await _graph.CreateGraphConnection(graphName, new GraphConnectionInput { weight = 10, startId = nameIdLookup["A"], endId = nameIdLookup["E"], lineage = "verb:248,02,01", name = "connects" }, OntologyAction.build);
+            await _graph.CreateGraphConnection(graphName, new GraphConnectionInput { weight = 25, startId = nameIdLookup["A"], endId = nameIdLookup["D"], lineage = "verb:248,02,01", name = "connects" }, OntologyAction.build);
+            await _graph.CreateGraphConnection(graphName, new GraphConnectionInput { weight = 5, startId = nameIdLookup["B"], endId = nameIdLookup["C"], lineage = "verb:248,02,01", name = "connects" }, OntologyAction.build);
+            await _graph.CreateGraphConnection(graphName, new GraphConnectionInput { weight = 6, startId = nameIdLookup["B"], endId = nameIdLookup["D"], lineage = "verb:248,02,01", name = "connects" }, OntologyAction.build);
+            await _graph.CreateGraphConnection(graphName, new GraphConnectionInput { weight = 3, startId = nameIdLookup["C"], endId = nameIdLookup["E"], lineage = "verb:248,02,01", name = "connects" }, OntologyAction.build);
+            await _graph.CreateGraphConnection(graphName, new GraphConnectionInput { weight = 5, startId = nameIdLookup["D"], endId = nameIdLookup["T"], lineage = "verb:248,02,01", name = "connects" }, OntologyAction.build);
+            await _graph.CreateGraphConnection(graphName, new GraphConnectionInput { weight = 12, startId = nameIdLookup["E"], endId = nameIdLookup["T"], lineage = "verb:248,02,01", name = "connects" }, OntologyAction.build);
+            await _graph.Store(graphName);
+            var result = await _graphStore.ReadAsync(new List<string> { "path", "simple_graph", "S", "T" });
+            Assert.AreEqual("S -> connects -> A -> connects -> B -> connects -> D -> connects -> T", result.Value);
         }
 
 

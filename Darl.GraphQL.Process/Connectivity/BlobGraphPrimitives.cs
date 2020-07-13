@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
@@ -25,10 +26,21 @@ namespace Darl.GraphQL.Models.Connectivity
 
         private Dictionary<string, BlobGraphContent> buffer = new Dictionary<string, BlobGraphContent>();
 
+        private Object lockObject = new object();
+
+        private HashSet<string> modified = new HashSet<string>();
+
+        private Timer flushTimer;
+
+        private bool modifiedToggle = false;
+
+        public static int maxDepth = 0;
+
         public BlobGraphPrimitives(IBlobConnectivity blob, IDistributedCache cache)
         {
             _blob = blob;
             _cache = cache;
+            flushTimer = new Timer(FlushTimerTimeOut, null, 500, 500);
         }
 
         public async Task<GraphConnection> CreateConnection(string compositeName, GraphConnectionInput conn)
@@ -44,6 +56,7 @@ namespace Darl.GraphQL.Models.Connectivity
             else
                 throw new ExecutionError($"Real vertex id {conn.endId} does not exist"); 
             cont.edges.Add(gc.id,gc);
+            FlagChanges(compositeName);
             return gc;
         }
 
@@ -52,6 +65,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var cont = await Load(compositeName) as BlobGraphContent;
             var go = new GraphObject { existence = graphObject.existence, externalId = graphObject.externalId, id = Guid.NewGuid().ToString(), inferred = false, lineage = graphObject.lineage, name = graphObject.name, _virtual = false, properties = graphObject.properties };
             cont.vertices.Add(go.id, go);
+            FlagChanges(compositeName);
             return go;
         }
 
@@ -96,6 +110,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 cont.vertices[conn.endId].In.Remove(conn);
             }
             cont.edges.Remove(id);
+            FlagChanges(compositeName);
             return conn;
         }
 
@@ -125,6 +140,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 cont.edges.Remove(c.id);
             }
             cont.vertices.Remove(id);
+            FlagChanges(compositeName);
             return node;
         }
 
@@ -350,6 +366,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<bool> DeleteModel(string compositeName)
         {
+            if (buffer.ContainsKey(compositeName))
+                buffer.Remove(compositeName);
             return await _blob.Delete(compositeName);
         }
 
@@ -361,34 +379,58 @@ namespace Darl.GraphQL.Models.Connectivity
  
         public async Task<List<GraphElement>> ProcessPath(string compositeName, string startExternalID, string endExternalID)
         {
-            var cont = await Load(compositeName);
-            var start = await GetGraphObjectByExternalId(compositeName, startExternalID);
-            var target = await GetGraphObjectByExternalId(compositeName, endExternalID);
-            return ShortestPath(cont, start, target);
+            try
+            {
+                var cont = await Load(compositeName);
+                var start = await GetGraphObjectByExternalId(compositeName, startExternalID);
+                var target = await GetGraphObjectByExternalId(compositeName, endExternalID);
+                return ShortestPath(cont, start, target);
+            }
+            catch(Exception ex)
+            {
+
+            }
+            return null;
         }
 
         public async Task<List<StringStringPair>> GetLinkedCategories(string compositeName, string rootExternalID, string childLineage, string childValueAttribute)
         {
             var list = new List<StringStringPair>();
-            var obj = await GetGraphObjectByExternalId(compositeName, rootExternalID);
-            foreach(var c in obj.Out)
+            if (string.IsNullOrEmpty(rootExternalID))
             {
-                var other = await GetGraphObjectById(compositeName, c.endId);
-                if (other.lineage.StartsWith(childLineage))
+                var objects = await GetGraphObjectsByLineage(compositeName, childLineage);
+                foreach(var o in objects)
                 {
-                    var externalId = GetAttibuteGivenObject(other, nameof(GraphObject.externalId));
-                    var value = GetAttibuteGivenObject(other, childValueAttribute);
+                    var externalId = GetAttibuteGivenObject(o, nameof(GraphObject.externalId));
+                    var value = GetAttibuteGivenObject(o, childValueAttribute);
                     list.Add(new StringStringPair(externalId, value));
                 }
             }
-            foreach (var c in obj.In)
+            else
             {
-                var other = await GetGraphObjectById(compositeName, c.startId);
-                if (other.lineage.StartsWith(childLineage))
+                var obj = await GetGraphObjectByExternalId(compositeName, rootExternalID);
+                if (obj != null)
                 {
-                    var externalId = GetAttibuteGivenObject(other, nameof(GraphObject.externalId));
-                    var value = GetAttibuteGivenObject(other, childValueAttribute);
-                    list.Add(new StringStringPair(externalId, value));
+                    foreach (var c in obj.Out)
+                    {
+                        var other = await GetGraphObjectById(compositeName, c.endId);
+                        if (other.lineage.StartsWith(childLineage))
+                        {
+                            var externalId = GetAttibuteGivenObject(other, nameof(GraphObject.externalId));
+                            var value = GetAttibuteGivenObject(other, childValueAttribute);
+                            list.Add(new StringStringPair(externalId, value));
+                        }
+                    }
+                    foreach (var c in obj.In)
+                    {
+                        var other = await GetGraphObjectById(compositeName, c.startId);
+                        if (other.lineage.StartsWith(childLineage))
+                        {
+                            var externalId = GetAttibuteGivenObject(other, nameof(GraphObject.externalId));
+                            var value = GetAttibuteGivenObject(other, childValueAttribute);
+                            list.Add(new StringStringPair(externalId, value));
+                        }
+                    }
                 }
             }
             return list;
@@ -438,9 +480,17 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
+        /// <summary>
+        /// flag that one of the GraphModels has changed
+        /// </summary>
+        /// <param name="compositeName"></param>
         private void FlagChanges(string compositeName)
         {
-
+            lock(lockObject)
+            {
+                modified.Add(compositeName);
+                modifiedToggle = true;
+            }
         }
 
         /// <summary>
@@ -455,37 +505,172 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             BlobGraphContent cont = model as BlobGraphContent;
             var list = new List<GraphElement>{ start};
-            var coverage = new Dictionary<GraphObject, (double, bool)> { {start,(0,true) } };
-            return ShortestPathRecursion(model, start, target, list, coverage);
-        }
-
-        private List<GraphElement> ShortestPathRecursion(GraphModel model, GraphObject start, GraphObject target, List<GraphElement> list, Dictionary<GraphObject, (double, bool)> coverage)
-        {
-            BlobGraphContent cont = model as BlobGraphContent;
-            List<GraphElement> bestFound = null;
-            foreach (var c in start.Out)
+            var coverage = new Dictionary<GraphObject, (double, bool, int)> { {start,(0,true, 0) } };
+            try
             {
-                var next = cont.vertices[c.endId];
-                if(coverage.ContainsKey(next))
+                var path = ShortestPathRecursion(model, start, target, list, coverage, 0);
+            }
+            catch(Exception ex)
+            {
+
+            }
+            var shortestPath = new List<GraphElement> { target };
+            var next = target;
+            while(next != start)
+            {
+                if(!coverage.ContainsKey(next))
                 {
                     return null;
                 }
-                list.Add(c);
-                list.Add(next);
-                coverage.Add(next, (coverage[start].Item1 + c.weight, true));
-                if (next == target)
-                    return list;
-                var found = ShortestPathRecursion(model, next, target, new List<GraphElement>(list), coverage);
-                if (found != null && found.Count < (bestFound == null ? double.MaxValue : bestFound.Count))
-                    bestFound = found;
+                var potential = coverage[next].Item1;
+                bool found = false;
+                foreach (var i in next.In)
+                {
+                    var begin = cont.vertices[i.startId];
+                    if (!coverage.ContainsKey(begin))
+                        continue;
+                    var otherPotential = coverage[begin].Item1;
+                    if(potential - otherPotential == i.weight)
+                    {
+                        shortestPath.Add(i);
+                        shortestPath.Add(begin);
+                        next = begin;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    return null;
             }
-            return bestFound;
+            shortestPath.Reverse();
+            return shortestPath;
         }
+
+        private List<GraphElement> ShortestPathRecursion(GraphModel model, GraphObject start, GraphObject target, List<GraphElement> path, Dictionary<GraphObject, (double, bool, int)> coverage, int depth)
+        {
+            if (depth > maxDepth)
+                maxDepth = depth;
+            BlobGraphContent cont = model as BlobGraphContent;
+            var current = new List<(GraphObject, double, List<GraphElement>)>();
+            foreach (var c in start.Out)
+            {
+                var newPath = new List<GraphElement>(path);
+                var next = cont.vertices[c.endId];
+                newPath.Add(c);
+                newPath.Add(next);
+                var distance = coverage[start].Item1 + c.weight;
+                if (coverage.ContainsKey(next))
+                {
+                    var oldDistance = coverage[next].Item1;
+                    var visitCount = coverage[next].Item3 + 1;
+
+                    if (distance < oldDistance)
+                    {
+                        coverage[next] = (distance, visitCount >= next.In.Count, visitCount);
+                    }
+                    else
+                    {
+                        coverage[next] = (oldDistance, visitCount >= next.In.Count, visitCount);
+                    }
+                }
+                else
+                { 
+                    coverage.Add(next, (distance, next.In.Count == 1, 1));
+                }
+                current.Add((next, distance, newPath));
+                if (coverage[next].Item2)
+                {
+                    if (next == target)
+                        return newPath;
+                }
+
+            }
+ /*           foreach (var c in start.In)
+            {
+                var newPath = new List<GraphElement>(path);
+                var next = cont.vertices[c.startId];
+                if (coverage.ContainsKey(next))
+                {
+                    continue;
+                }
+                newPath.Add(c);
+                newPath.Add(next);
+                var distance = coverage[start].Item1 + c.weight;
+                coverage.Add(next, (distance, true));
+                current.Add((next, distance, newPath));
+                if (next == target)
+                    return newPath;
+            }*/
+            //sort current by distance descending
+            current = current.OrderBy(a => a.Item2).ToList();
+            foreach(var v in current)
+            {
+                if (depth < 10)
+                {
+                    var found = ShortestPathRecursion(model, v.Item1, target, new List<GraphElement>(v.Item3), coverage, ++depth);
+                    if (coverage.ContainsKey(target) && coverage[target].Item2)
+                        return found;
+                }
+            }
+            return null;
+        }
+
 
         public async Task<List<GraphObject>> GetGraphObjectsByLineage(string compositeName, string lineage)
         {
             var cont = await Load(compositeName) as BlobGraphContent;
-            return cont.vertices.Values.Where(a => a.lineage == lineage).ToList();
+            return cont.vertices.Values.Where(a => a.lineage.StartsWith(lineage)).ToList();
+        }
+
+        /// <summary>
+        /// writes out any modified graph models to the blob storage
+        /// </summary>
+        /// <param name="stateInfo"></param>
+        public void FlushTimerTimeOut(Object stateInfo)
+        {
+            //ModifiedToggle is used to only write out the GraphModels if one timeout has elapsed since the last change.
+            //Intended to prevent disruption to bursts of updates.
+            //Has side effect that one very busy model will stop another quiet model being written out.
+            lock(lockObject)
+            {
+                if(modifiedToggle)
+                {
+                    modifiedToggle = false;
+                    return;
+                }
+            }
+            List<string> changedModels = new List<string>();
+            //copy the modified list and clear it
+            lock(lockObject)
+            {
+                changedModels = modified.ToList();
+                modified.Clear();
+                modifiedToggle = false;
+            }
+            foreach(var s in changedModels)
+            {
+                //get the graphmodel
+                var model = buffer[s];
+                byte[] data;
+                //lock it
+                lock(lockObject)
+                {
+                    //serialize it and release it
+                    data = SerializeGraph(model);
+                }
+                //write out the serialized model
+                _blob.Write(s, data);
+
+            }  
+        }
+
+        public async Task Store(string compositeName)
+        {
+            modified.Remove(compositeName);
+            var model = buffer[compositeName];
+            byte[] data;
+            data = SerializeGraph(model);
+            await _blob.Write(compositeName, data);
         }
     }
 }

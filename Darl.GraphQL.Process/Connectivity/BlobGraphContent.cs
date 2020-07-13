@@ -32,9 +32,8 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <summary>
         /// virtual edges 
         /// </summary>
-        [ProtoMember(1)]
+        [ProtoMember(4)]
         public Dictionary<string,GraphConnection> virtualEdges { get; set; } = new Dictionary<string, GraphConnection>();
-
 
     }
 }

@@ -76,10 +76,12 @@ namespace Darl.GraphQL.Test
             configuration.Setup(a => a[It.Is<string>(s => s == "gremlinDatabase")]).Returns("farleft");
             //            configuration.Setup(a => a[It.Is<string>(s => s == "gremlinCollection")]).Returns("hypernymy");
             configuration.Setup(a => a[It.Is<string>(s => s == "gremlinCollection")]).Returns("7d1a254f-d405-4385-acbc-308c8376f2e3");
-            configuration.Setup(a => a[It.Is<string>(s => s == "darlDevAPiKey")]).Returns("7ecb39be-fb44-4c13-92df-68ec152a4edb");
+            //            configuration.Setup(a => a[It.Is<string>(s => s == "darlDevAPiKey")]).Returns("7ecb39be-fb44-4c13-92df-68ec152a4edb");
+            configuration.Setup(a => a[It.Is<string>(s => s == "darlDevAPiKey")]).Returns("2495b08b-93c3-4498-85b7-f4bdd36b6f01");
             //            configuration.Setup(a => a[It.Is<string>(s => s == "darlDevAPiKey")]).Returns("e438440e-9d90-46e8-87ed-080e19c43aed");
-            configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("33db770b-29e9-46ae-8a19-c1947bd775d8");
+            //configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("33db770b-29e9-46ae-8a19-c1947bd775d8");
             //            configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("5ee43551-c05c-4cff-8582-c08f23f84c14");
+            configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("a26560b3-7778-410b-a54b-b65da6a9649a");
             configuration.Setup(a => a[It.Is<string>(s => s == "gremlinLocation")]).Returns("azure");
             //            configuration.Setup(a => a[It.Is<string>(s => s == "gremlinLocation")]).Returns("local");
             configuration.Setup(a => a[It.Is<string>(s => s == "darlDevUrl")]).Returns("https://darl.dev/graphql/");
@@ -96,21 +98,38 @@ namespace Darl.GraphQL.Test
             cache.Setup(a => a.GetAsync(It.IsAny<string>(), default)).Returns(Task.FromResult<byte[]>(null));
             _primitives = new BlobGraphPrimitives(blob, cache.Object);
             _graph = new GraphProcessing(_primitives);
-            _graphStore = new GraphLocalStore(_config,logger.Object, context.Object);
+            _graphStore = new GraphLocalStore(_config,logger.Object, context.Object, _graph);
         }
 
         [TestMethod]
         public async Task TestInference()
         {
-            var res = await _graphStore.ReadAsync(new List<string> { "path", "STUD1", "BJT267" });
-            Assert.AreNotEqual("There is no path to this job", res.Value);
+            var userId = _config["userId"];
+            var res = await _graphStore.ReadAsync(new List<string> { "path", "kg1_graph", "STUD1", "BJT26" });
+            Assert.AreNotEqual("There is no path found", res.Value);
         }
 
         [TestMethod]
+        public async Task TestAttributes()
+        {
+            var userId = _config["userId"];
+            var res = await _graphStore.ReadAsync(new List<string> { "attribute", "kg1_graph", "BJT267", "noun:01,4,05,21,05" });
+            Assert.AreEqual("The mixing engineer is responsible for combining all of the different sonic elements of a recorded piece of music into a final version and balancing the distinct parts to achieve a desired effect.", res.Value);
+        }
+        [TestMethod]
+        public async Task TestCategories()
+        {
+            var userId = _config["userId"];
+            var res = await _graphStore.ReadAsync(new List<string> { "categories", "kg1_graph", "I1", "noun:01,0,0,15,07,02,04,1,02,1", "name" });
+            Assert.AreEqual(10, res.categories.Count);
+        }        
+        
+        [TestMethod]
         public async Task TestInferenceNopath()
         {
-            var res = await _graphStore.ReadAsync(new List<string> { "path", "STUD1", "BJT408" });
-            Assert.AreEqual("There is no path to this job", res.Value);
+            var userId = _config["userId"];
+            var res = await _graphStore.ReadAsync(new List<string> { "path", "kg1_graph","STUD1", "BJT408" });
+            Assert.AreEqual("There is no path found", res.Value);
         }
 
         /// <summary>
@@ -121,18 +140,21 @@ namespace Darl.GraphQL.Test
         public async Task AddStudent()
         {
             var v = new GraphObjectInput { lineage = studentLineage, name = "Student", externalId = "STUD1" };
-            var res = await _graph.CreateGraphObject(_config["userId"], v, OntologyAction.build);
+            var userId = _config["userId"];
+            var res = await _graph.CreateGraphObject($"{userId}_kg1_graph", v, OntologyAction.build);
 //            var studentId = "359f45d1-6c76-4761-bd9c-0ac8e23a6150";
             //connect it up to all the courses via a "can take" connection
-            var courses = await _graph.GetGraphObjectsByLineage(_config["userId"], courseLineage);
+            var courses = await _graph.GetGraphObjectsByLineage($"{userId}_kg1_graph", courseLineage);
             foreach(var c in courses)
             {
                 if(c. externalId != null && c.externalId.StartsWith("C"))
                 { 
                     var e = new GraphConnectionInput { lineage = requireLineage, name = "can Take", weight = 1.0, startId = res.id, endId = c.id };
-                    await _graph.CreateGraphConnection(_config["userId"], e, OntologyAction.build);
+                    await _graph.CreateGraphConnection($"{userId}_kg1_graph", e, OntologyAction.build);
                 }
             }
+            await _graph.Store($"{userId}_kg1_graph");
+
         }
 
         [TestMethod]
@@ -165,15 +187,17 @@ namespace Darl.GraphQL.Test
                     var skill = graph.vertices[bsid];
                     Assert.IsNotNull(skill);
                     //add link between job and skill
-                    graph.AddEdge(new SimpleEdge { Source = job, Target = skill, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
+//                    graph.AddEdge(new SimpleEdge { Source = job, Target = skill, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
+                    graph.AddEdge(new SimpleEdge { Source = skill, Target = job, edgelabel = "Required for", id = Guid.NewGuid().ToString(), lineage = requireLineage });
                     //now look for further links
-                    foreach(var jslo in js.SelectToken("$.JobSkillLearningOutcomes").ToList())
+                    foreach (var jslo in js.SelectToken("$.JobSkillLearningOutcomes").ToList())
                     {
                         var lo = jslo.SelectToken("$.LearningOutcome");
                         var loid = js.SelectToken("$.ImportCode").ToString();
                         var loObj = graph.vertices[loid];
                         Assert.IsNotNull(loObj);
-                        graph.AddEdge(new SimpleEdge { Source = skill, Target = loObj, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
+//                        graph.AddEdge(new SimpleEdge { Source = skill, Target = loObj, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
+                        graph.AddEdge(new SimpleEdge { Source = loObj, Target = skill, edgelabel = "Required for", id = Guid.NewGuid().ToString(), lineage = requireLineage });
                     }
                     foreach (var jsst in js.SelectToken("$.JobSkillSubjectTopics").ToList())
                     {
@@ -181,7 +205,8 @@ namespace Darl.GraphQL.Test
                         var stid = js.SelectToken("$.ImportCode").ToString();
                         var stObj = graph.vertices[stid];
                         Assert.IsNotNull(stObj);
-                        graph.AddEdge(new SimpleEdge { Source = skill, Target = stObj, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
+ //                       graph.AddEdge(new SimpleEdge { Source = skill, Target = stObj, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
+                        graph.AddEdge(new SimpleEdge { Source = stObj, Target = skill, edgelabel = "Required for", id = Guid.NewGuid().ToString(), lineage = requireLineage });
                     }
                     foreach (var jsts in js.SelectToken("$.JobSkillTransferableSkills").ToList())
                     {
@@ -189,7 +214,8 @@ namespace Darl.GraphQL.Test
                         var tsid = js.SelectToken("$.ImportCode").ToString();
                         var tsObj = graph.vertices[tsid];
                         Assert.IsNotNull(tsObj);
-                        graph.AddEdge(new SimpleEdge { Source = skill, Target = tsObj, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
+ //                       graph.AddEdge(new SimpleEdge { Source = skill, Target = tsObj, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
+                        graph.AddEdge(new SimpleEdge { Source = tsObj, Target = skill, edgelabel = "Required for", id = Guid.NewGuid().ToString(), lineage = requireLineage });
                     }
                     foreach (var jsu in js.SelectToken("$.JobSkillUnits").ToList())
                     {
@@ -197,7 +223,8 @@ namespace Darl.GraphQL.Test
                         var uid = js.SelectToken("$.ImportCode").ToString();
                         var uObj = graph.vertices[uid];
                         Assert.IsNotNull(uObj);
-                        graph.AddEdge(new SimpleEdge { Source = skill, Target = uObj, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
+//                        graph.AddEdge(new SimpleEdge { Source = skill, Target = uObj, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
+                        graph.AddEdge(new SimpleEdge { Source = uObj, Target = skill, edgelabel = "Required for", id = Guid.NewGuid().ToString(), lineage = requireLineage });
                     }
                 }
             }
@@ -294,7 +321,7 @@ namespace Darl.GraphQL.Test
                                 Thread.Sleep(100);*/
                 try
                 {
-                    var res = await _graph.CreateGraphObject($"{userId}/KG1.graph", v, OntologyAction.build);
+                    var res = await _graph.CreateGraphObject($"{userId}_kg1_graph", v, OntologyAction.build);
                     nameIdLookup.Add(lv.id, res.id);
                 }
                 catch(Exception ex)
@@ -310,13 +337,14 @@ namespace Darl.GraphQL.Test
                                 Thread.Sleep(100);*/
                 try
                 {
-                    await _graph.CreateGraphConnection($"{userId}/KG1.graph", e, OntologyAction.build);
+                    await _graph.CreateGraphConnection($"{userId}_kg1_graph", e, OntologyAction.build);
                 }
                 catch (Exception ex)
                 {
 
                 }
             }
+            await _graph.Store($"{userId}_kg1_graph");
         }
 
         SimpleVertex MakeVertex(String id)

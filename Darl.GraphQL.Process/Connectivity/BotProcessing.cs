@@ -3,9 +3,11 @@ using Darl.GraphQL.Process.Connectivity;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
+using Darl.Thinkbase;
 using Darl_standard.Darl.Thinkbase;
 using DarlCommon;
 using GraphQL;
+using Gremlin.Net.Structure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -27,9 +29,10 @@ namespace Darl.GraphQL.Models.Connectivity
         ITrigger _trigger;
         private ILogger<BotProcessing> _logger;
         private IConfiguration _config;
+        IGraphProcessing _graph;
 
 
-        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger, ILogger<BotProcessing> logger, IConfiguration config, IHttpContextAccessor context)
+        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger, ILogger<BotProcessing> logger, IConfiguration config, IHttpContextAccessor context, IGraphProcessing graph)
         {
             _conv = conv;
             _form = form;
@@ -38,6 +41,7 @@ namespace Darl.GraphQL.Models.Connectivity
             _trigger = trigger;
             _logger = logger;
             _config = config;
+            _graph = graph;
         }
 
         public async Task<List<InteractTestResponse>> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData)
@@ -64,7 +68,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var botFormat = JsonConvert.DeserializeObject<BotFormat>(bm.form);
             if(botFormat.Stores.Contains("Graph"))
             {
-                stores.Add("Graph", new GraphLocalStore(_config, _logger as ILogger<GraphLocalStore>, _context));
+                stores.Add("Graph", new GraphLocalStore(_config, _logger as ILogger<GraphLocalStore>, _context, _graph));
             }
             if (bs.ruleProcessing.Count == 0) // conversational processing
             {
@@ -170,7 +174,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                 }
             }
-            await _conv.SaveBotState(bs);            
+            await _conv.SaveBotState(bs);          
             if(recursive)
             {
                 resp.AddRange(await InteractAsync(userId, botModelName, conversationId, recursiveRuleSet));

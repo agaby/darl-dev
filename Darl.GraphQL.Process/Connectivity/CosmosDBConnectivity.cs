@@ -36,6 +36,8 @@ using QuickGraph.Algorithms.Search;
 using Darl.GraphQL.Process.Middleware;
 using QuickGraph.Algorithms;
 using Darl.Thinkbase;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Bson.Serialization.Options;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -79,6 +81,12 @@ namespace Darl.GraphQL.Models.Connectivity
             mongoClient = new MongoClient(settings);
             db = mongoClient.GetDatabase(_config["AppSettings:MongoDatabase"]);
             BsonClassMap.RegisterClassMap<BotTrigger>();
+            BsonClassMap.RegisterClassMap<DarlVar>(cm =>
+            {
+                cm.AutoMap();
+                cm.MapMember(c => c.categories).SetSerializer(new DictionaryInterfaceImplementerSerializer<Dictionary<string, double>>(DictionaryRepresentation.ArrayOfDocuments));
+            });
+
         }
 
         public async Task<Authorization> CreateAuthorization(string userId, string botModelName, Authorization auth)
