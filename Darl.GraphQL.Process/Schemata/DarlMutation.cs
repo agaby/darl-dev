@@ -1085,80 +1085,91 @@ namespace Darl.GraphQL.Models.Schemata
                                     async c => await connectivity.InferFromDarlDarlVar(userId, code, inputs));
                 });
             FieldAsync<GraphObjectType>("createGraphObject", "Add a new graph object", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
                     new QueryArgument<NonNullGraphType<GraphObjectInputType>> { Name = "graphObject", Description = "The object to add" },
                     new QueryArgument<OntologyActionEnum> { Name = "ontology", Description = "builds, checks against or ignores ontology" }
                ),
                 resolve: async context =>
                 {
+                    var graphName = context.GetArgument<string>("graphName");
                     var graphObject = context.GetArgument<GraphObjectInput>("graphObject");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     var ontology = context.GetArgument<OntologyAction>("ontology");
                     return await context.TryAsyncResolve(
-                        async c => await graph.CreateGraphObject(userId, graphObject, ontology));
+                        async c => await graph.CreateGraphObject(CompositeName(userId,graphName), graphObject, ontology));
                 }
             ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphConnectionType>("createGraphConnection", "Add a new graph connection", arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<GraphConnectionInputType>> { Name = "graphConnection", Description = "The connection to add" },
+                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph to modify" },
+                   new QueryArgument<NonNullGraphType<GraphConnectionInputType>> { Name = "graphConnection", Description = "The connection to add" },
                     new QueryArgument<OntologyActionEnum> { Name = "ontology", Description = "builds, checks against or ignores ontology" }
                ),
                 resolve: async context =>
                 {
+                    var graphName = context.GetArgument<string>("graphName");
                     var graphConnection = context.GetArgument<GraphConnectionInput>("graphConnection");
                     var ontology = context.GetArgument<OntologyAction>("ontology");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await graph.CreateGraphConnection(userId, graphConnection,ontology));
+                        async c => await graph.CreateGraphConnection(CompositeName(userId, graphName), graphConnection,ontology));
                 }
             ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphObjectType>("deleteGraphObject", "delete a graphObject", arguments: new QueryArguments(
+                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph to modify" },
                      new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "The id of the object to delete" }
                 ),
                  resolve: async context =>
                  {
+                     var graphName = context.GetArgument<string>("graphName");
                      var id = context.GetArgument<string>("id");
                      var userId = connectivity.GetCurrentUserId(context.UserContext);
                      return await context.TryAsyncResolve(
-                         async c => await graph.DeleteGraphObject(userId, id));
+                         async c => await graph.DeleteGraphObject(CompositeName(userId, graphName), id));
                  }
              ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphConnectionType>("deleteGraphConnection", "delete a graph connection", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph to modify" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "The id of the connection to delete" }
                ),
                 resolve: async context =>
                 {
+                    var graphName = context.GetArgument<string>("graphName");
                     var id = context.GetArgument<string>("id");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await graph.DeleteGraphConnection(userId, id));
+                        async c => await graph.DeleteGraphConnection(CompositeName(userId, graphName), id));
                 }
             ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphObjectType>("updateGraphObject", "Update a graph object", arguments: new QueryArguments(
-                     new QueryArgument<NonNullGraphType<GraphObjectUpdateType>> { Name = "graphObject", Description = "The object to update" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph to modify" },
+                    new QueryArgument<NonNullGraphType<GraphObjectUpdateType>> { Name = "graphObject", Description = "The object to update" },
                     new QueryArgument<OntologyActionEnum> { Name = "ontology", Description = "builds, checks against or ignores ontology" }
                 ),
                  resolve: async context =>
                  {
+                     var graphName = context.GetArgument<string>("graphName");
                      var graphObject = context.GetArgument<GraphObjectUpdate>("graphObject");
                      var userId = connectivity.GetCurrentUserId(context.UserContext);
                      var ontology = context.GetArgument<OntologyAction>("ontology");
                      return await context.TryAsyncResolve(
-                         async c => await graph.UpdateGraphObject(userId, graphObject,ontology));
+                         async c => await graph.UpdateGraphObject(CompositeName(userId, graphName), graphObject,ontology));
                  }
              ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphConnectionType>("updateGraphConnection", "Update a graph connection", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph to modify" },
                     new QueryArgument<NonNullGraphType<GraphConnectionUpdateType>> { Name = "graphConnection", Description = "The connection to update" },
                     new QueryArgument<OntologyActionEnum> { Name = "ontology", Description = "builds, checks against or ignores ontology" }
                ),
                 resolve: async context =>
                 {
+                    var graphName = context.GetArgument<string>("graphName");
                     var graphConnection = context.GetArgument<GraphConnectionUpdate>("graphConnection");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     var ontology = context.GetArgument<OntologyAction>("ontology");
                     return await context.TryAsyncResolve(
-                        async c => await graph.UpdateGraphConnection(userId, graphConnection,ontology));
+                        async c => await graph.UpdateGraphConnection(CompositeName(userId, graphName), graphConnection,ontology));
                 }
             ).AuthorizeWith("CorpPolicy");
-
             FieldAsync<SubscriptionTypeEnum>("updateSubscriptionType", "Change your subscription type",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<SubscriptionTypeEnum>> { Name = "type" }), 
                 resolve: async context =>
@@ -1220,6 +1231,34 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await cmp.DeleteSoftMatchModel(userId, name));
                 }
             );
+            FieldAsync<StringGraphType>("createKG", "Create a Knowledge graph ", arguments: new QueryArguments(
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "modelName", Description = "The unique name of the stored model for later reuse " }
+            ),
+            resolve: async context =>
+            {
+                    var modelName = context.GetArgument<string>("modelName");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await graph.CreateNewGraph(userId, modelName));
+                }
+            );
+            FieldAsync<StringGraphType>("deleteKG", "Delete a Knowledge graph", arguments: new QueryArguments(
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph to delete" }
+                ),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await graph.DeleteGraph(userId, name));
+                }
+            );
+
+        }
+
+        private string CompositeName(string userId, string graphName)
+        {
+            throw new NotImplementedException();
         }
     }
 }
