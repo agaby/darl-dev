@@ -7,6 +7,7 @@ using DarlCommon;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Default = Darl.GraphQL.Models.Models.Default;
 
@@ -219,5 +220,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<string> CreateKey(string userId, string company, string email, DateTime endDate);
         Task<bool> CheckKey(string userId, string key);
         Task<ModelDetails> UpdateRuleFormDetails(string userId, string ruleSetName, ModelDetails details);
+        Task<List<Contact>> GetRecentContacts();
+        IQueryable<Contact> GetContactsQueryable();
     }
 }

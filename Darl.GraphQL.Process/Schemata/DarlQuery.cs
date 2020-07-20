@@ -58,6 +58,14 @@ namespace Darl.GraphQL.Models.Schemata
                                   async c => await connectivity.GetContacts());
                   }
             ).AuthorizeWith("AdminPolicy");
+            FieldAsync<ListGraphType<ContactType>>(
+              "recentContacts",
+                  resolve: async context =>
+                  {
+                      return await context.TryAsyncResolve(
+                                  async c => await connectivity.GetRecentContacts());
+                  }
+            ).AuthorizeWith("AdminPolicy");
             FieldAsync<ListGraphType<DarlUserType>>(
               "users",
                   resolve: async context =>

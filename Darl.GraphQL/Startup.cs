@@ -109,6 +109,7 @@ namespace Darl.GraphQL
             services.AddSingleton<IBlobConnectivity, BlobConnectivity>();
             services.AddSingleton<ISoftMatchProcessing, SoftMatchProcessing>();
             services.AddSingleton<ILocalStore, GraphLocalStore>();
+            services.AddSingleton<IGraphPrimitives, BlobGraphPrimitives>();
 
             //types
             services.AddSingleton<BotFormatType>();
@@ -265,7 +266,7 @@ namespace Darl.GraphQL
             services.AddRazorPages();
             services.AddApplicationInsightsTelemetry();
             services.AddHealthChecks();
-            
+            services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
 
         }
 

@@ -455,6 +455,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
+
         public async Task<Default> DeleteDefault(string name)
         {
             var mc = db.GetCollection<Default>(defaultCollection);
@@ -841,6 +842,19 @@ namespace Darl.GraphQL.Models.Connectivity
             var mc = db.GetCollection<Contact>(contactCollection);
             var query = mc.AsQueryable(new AggregateOptions {  BatchSize = 10000});
             return await query.ToListAsync();
+        }
+
+        public  IQueryable<Contact> GetContactsQueryable()
+        {
+            var mc = db.GetCollection<Contact>(contactCollection);
+            return mc.AsQueryable(new AggregateOptions { BatchSize = 10000 });
+        }
+
+        public async Task<List<Contact>> GetRecentContacts()
+        {
+            var mc = db.GetCollection<Contact>(contactCollection);
+            var query = mc.AsQueryable(new AggregateOptions { BatchSize = 10000 });
+            return await query.OrderByDescending(a => a.Created).ToListAsync();
         }
         public async Task<List<Contact>> GetContactsByLastName(string lastName)
         {
