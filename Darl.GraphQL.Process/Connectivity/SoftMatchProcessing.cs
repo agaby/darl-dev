@@ -3,7 +3,6 @@ using Darl.Lineage;
 using Darl.SoftMatch;
 using Darl.Thinkbase;
 using GraphQL;
-using Gremlin.Net.Structure;
 using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Asn1.Cmp;
 using QuickGraph.Algorithms.Search;

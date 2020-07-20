@@ -7,7 +7,6 @@ using Darl.Thinkbase;
 using Darl_standard.Darl.Thinkbase;
 using DarlCommon;
 using GraphQL;
-using Gremlin.Net.Structure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
