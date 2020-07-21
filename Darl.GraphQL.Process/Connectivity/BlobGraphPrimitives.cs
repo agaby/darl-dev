@@ -672,5 +672,51 @@ namespace Darl.GraphQL.Models.Connectivity
             data = SerializeGraph(model);
             await _blob.Write(compositeName, data);
         }
+
+        public async Task<List<GraphObject>> GetAllRealObjects(string compositeName)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            return cont.vertices.Values.ToList();
+        }
+
+        public async Task<IEnumerable<GraphObject>> GetAllVirtualObjects(string compositeName)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            return cont.virtualVertices.Values.ToList();
+        }
+
+        public async Task<IEnumerable<GraphConnection>> GetAllRealConnections(string compositeName)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            return cont.edges.Values.ToList();
+        }
+
+        public async Task<IEnumerable<GraphConnection>> GetAllVirtualConnections(string compositeName)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            return cont.virtualEdges.Values.ToList();
+        }
+
+        public async Task CreateRawObject(GraphModel model, GraphObject graphObject)
+        {
+            var cont = model as BlobGraphContent;
+            var go = new GraphObject { existence = graphObject.existence, externalId = graphObject.externalId, id = graphObject.id, inferred = false, lineage = graphObject.lineage, name = graphObject.name, _virtual = graphObject._virtual, properties = graphObject.properties };
+            cont.vertices.Add(go.id, go);
+        }
+
+        public async Task CreateRawConnection(GraphModel model, GraphConnection conn)
+        {
+            var cont = model as BlobGraphContent;
+            var gc = new GraphConnection { id = Guid.NewGuid().ToString(), endId = conn.endId, existence = conn.existence, inferred = false, lineage = conn.lineage, name = conn.name, properties = conn.properties, startId = conn.startId, weight = conn.weight, _virtual = conn._virtual };
+            if (cont.vertices.ContainsKey(conn.startId))
+                cont.vertices[conn.startId].Out.Add(gc);
+            else
+                throw new ExecutionError($"Real vertex id {conn.startId} does not exist");
+            if (cont.vertices.ContainsKey(conn.endId))
+                cont.vertices[conn.endId].In.Add(gc);
+            else
+                throw new ExecutionError($"Real vertex id {conn.endId} does not exist");
+            cont.edges.Add(gc.id, gc);
+        }
     }
 }
