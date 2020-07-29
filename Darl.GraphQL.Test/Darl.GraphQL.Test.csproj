@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ContactTest.cs" />
     <Compile Remove="GraphProcessTest.cs" />
     <Compile Remove="LoadTests.cs" />
   </ItemGroup>
@@ -16,6 +17,7 @@
     <None Remove="CourseUnitsJson.json" />
     <None Remove="datafieldnames.json" />
     <None Remove="grateful-dead.xml" />
+    <None Remove="HTMLPage1.html" />
     <None Remove="Ians_jobs.graphml" />
     <None Remove="input.json" />
     <None Remove="input2.json" />
@@ -32,6 +34,7 @@
     <EmbeddedResource Include="CourseUnitsJson.json" />
     <EmbeddedResource Include="datafieldnames.json" />
     <EmbeddedResource Include="grateful-dead.xml" />
+    <EmbeddedResource Include="HTMLPage1.html" />
     <EmbeddedResource Include="Ians_jobs.graphml" />
     <EmbeddedResource Include="input.json" />
     <EmbeddedResource Include="input2.json" />
@@ -44,18 +47,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="15.0.5" />
     <PackageReference Include="GraphQL.Client" Version="3.1.3" />
     <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="3.1.3" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.24" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
     <PackageReference Include="Moq" Version="4.14.5" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
     <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
     <PackageReference Include="QuickGraph.NETStandard" Version="3.8.0" />
-    <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Darl.GraphQL.Process\Darl.GraphQL.Process.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="RFScrapePages\" />
   </ItemGroup>
 
 </Project>

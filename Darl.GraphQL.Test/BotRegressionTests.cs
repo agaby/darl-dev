@@ -3,7 +3,6 @@ using Darl.GraphQL.Models.Models;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using Darl.Thinkbase;
-using Darl_standard.Darl.Thinkbase;
 using DarlCommon;
 using DarlLanguage.Processing;
 using Microsoft.AspNetCore.Http;
@@ -182,9 +181,9 @@ namespace Darl.GraphQL.Test
                     v.lineage = artistLineage;
                 }
                 if(!string.IsNullOrEmpty(v.songType))
-                    v.properties.Add(new StringStringPair(songTypeLineage, v.songType));
+                    v.properties.Add(new GraphAttribute { name = songTypeLineage, value = v.songType });
                 if(v.performances > 0)
-                    v.properties.Add(new StringStringPair(performanceCountLineage, v.performances.ToString()));
+                    v.properties.Add(new GraphAttribute { name = performanceCountLineage, value = v.performances.ToString() });
             }
             //same with edges
             foreach (var e in graph.edges.Values)
@@ -456,7 +455,7 @@ namespace Darl.GraphQL.Test
 
             public string lineage { get; set; }
 
-            public List<StringStringPair> properties { get; set; } = new List<StringStringPair>();
+            public List<GraphAttribute> properties { get; set; } = new List<GraphAttribute>();
 
         }
 

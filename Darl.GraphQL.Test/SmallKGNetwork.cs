@@ -1,32 +1,25 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.Thinkbase;
+using DarlLanguage.Processing;
+using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.Newtonsoft;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json.Linq;
+using QuickGraph;
+using QuickGraph.Serialization;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using QuickGraph;
 using System.IO;
-using System.Reflection;
-using Darl.GraphQL.Models.Models;
-using System.Xml;
-using QuickGraph.Serialization;
-using MongoDB.Bson.Serialization.Conventions;
-using System.Xml.Serialization;
-using Newtonsoft.Json.Linq;
-using Castle.DynamicProxy.Generators.Emitters;
 using System.Linq;
-using GraphQL.Client.Http;
-using GraphQL.Client;
-using GraphQL.Client.Serializer.Newtonsoft;
-using System.Threading;
-using Darl.Thinkbase;
-using Darl_standard.Darl.Thinkbase;
-using Microsoft.Extensions.Caching.Distributed;
-using DarlLanguage.Processing;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Darl.GraphQL.Test
 {
@@ -437,7 +430,7 @@ namespace Darl.GraphQL.Test
             var path = $"$.{name}";
             if (j.SelectToken(path) != null && !string.IsNullOrEmpty(j.SelectToken(path).ToString()))
             {
-                v.properties.Add(new StringStringPair(lineage, j.SelectToken(path).ToString()));
+                v.properties.Add(new GraphAttribute { lineage = lineage, value = j.SelectToken(path).ToString() });
             }
         }
     }
@@ -614,7 +607,7 @@ namespace Darl.GraphQL.Test
 
         public string lineage { get; set; }
 
-        public List<StringStringPair> properties { get; set; } = new List<StringStringPair>();
+        public List<GraphAttribute> properties { get; set; } = new List<GraphAttribute>();
 
     }
 

@@ -1,6 +1,13 @@
-﻿namespace Darl.GraphQL.Test
+﻿using Darl.GraphQL.Models.Middleware;
+using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.Newtonsoft;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Threading.Tasks;
+
+namespace Darl.GraphQL.Test
 {
-    /*    [TestClass]
+        [TestClass]
         public class ContactTest
         {
             GraphQLHttpClient client = null;
@@ -73,5 +80,5 @@
                 var resp = await client.PostAsync(req);
 
             }
-        }*/
+        }
 }

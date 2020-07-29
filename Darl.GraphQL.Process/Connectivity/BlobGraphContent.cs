@@ -1,9 +1,5 @@
-﻿using Darl.GraphQL.Models.Models;
-using Darl.Thinkbase;
-using Darl_standard.Darl.Thinkbase;
-using System;
+﻿using Darl.Thinkbase;
 using System.Collections.Generic;
-using System.Text;
 using ProtoBuf;
 
 namespace Darl.GraphQL.Models.Connectivity

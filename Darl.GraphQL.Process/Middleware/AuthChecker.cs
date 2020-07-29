@@ -35,7 +35,10 @@ namespace Darl.GraphQL.Process.Middleware
             var r = await _authServ.AuthorizeAsync(_httpContext.HttpContext.User, "AdminPolicy");
             lock (this)
             {
-                userCache.Add(name, r.Succeeded);
+                if (!userCache.ContainsKey(name))
+                    userCache.Add(name, r.Succeeded);
+                else
+                    userCache[name] = r.Succeeded;
             }
             return r.Succeeded;
         }

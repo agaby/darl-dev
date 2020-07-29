@@ -1,6 +1,5 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.Thinkbase;
-using Darl_standard.Darl.Thinkbase;
 using GraphQL;
 using Microsoft.Extensions.Caching.Distributed;
 using ProtoBuf;
@@ -89,7 +88,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task CreateVirtualObject(GraphModel model, string lineage, string typeword, string description)
         {
-            var go = new GraphObject { id = Guid.NewGuid().ToString(), inferred = false, lineage = lineage, name = typeword, _virtual = true, properties = new List<StringStringPair> { new StringStringPair("description",description) } };
+            var go = new GraphObject { id = Guid.NewGuid().ToString(), inferred = false, lineage = lineage, name = typeword, _virtual = true, properties = new List<GraphAttribute> { new GraphAttribute { name = "description", value = description, lineage= "noun:01,4,05,21,05"} } };
             ((BlobGraphContent)model).virtualVertices.Add(go.lineage, go);
         }
 
@@ -472,9 +471,9 @@ namespace Darl.GraphQL.Models.Connectivity
                 case nameof(GraphObject.inferred):
                     return obj.inferred.ToString();
                 default:
-                    if (obj.properties != null && obj.properties.Where(a => a.Name == propertyName).Any())
+                    if (obj.properties != null && obj.properties.Where(a => a.name == propertyName).Any())
                     {
-                        return obj.properties.Where(a => a.Name == propertyName).First().Value;
+                        return obj.properties.Where(a => a.name == propertyName).First().value;
                     }
                     return string.Empty;
             }

@@ -82,11 +82,17 @@
                         <li class="nav-item">
                             @if (!User.Identity.IsAuthenticated)
                             {
-                                <a href="/azureadb2c/account/signin" class="btn btn-rounded btn-primary">Log in/Register</a>
-                            }
-                            else
-                            {
-                                <a href="/azureadb2c/account/signout" class="btn btn-rounded btn-primary">Log out</a>
+                                <a href="/MicrosoftIdentity/account/signin" class="btn btn-rounded btn-primary">Log in/Register</a>
+                            <!--<form method="get" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">
+            <button type="submit" class="btn btn-primary">Sign Up/In</button>
+        </form>-->
+    }
+    else
+    {
+        <!--<a href="/MicrosoftIdentity/account/signout" class="btn btn-rounded btn-primary">Log out</a>-->
+                            <form method="get" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">
+                                <button type="submit" class="btn btn-primary">Sign Up/In</button>
+                            </form>
                             }
                         </li>
                         <li class="nav-item">
