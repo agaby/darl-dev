@@ -222,5 +222,11 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<ModelDetails> UpdateRuleFormDetails(string userId, string ruleSetName, ModelDetails details);
         Task<List<Contact>> GetRecentContacts();
         IQueryable<Contact> GetContactsQueryable();
+        Task<KnowledgeState> GetKnowledgeState(string userId, string ksId);
+        Task<List<KnowledgeState>> GetKnowledgeStates(string userId);
+        Task<KnowledgeState> DeleteKnowledgeState(string userId, string ksId);
+        Task<KnowledgeState> UpdateKnowledgeState(string userId, string ksId, KnowledgeStateUpdate state);
+        Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state);
+        Task<KnowledgeState> GetKnowledgeStateByExternalId(string userId, string extId);
     }
 }

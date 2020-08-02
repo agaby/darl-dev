@@ -64,6 +64,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public static readonly string conversationCollection = "conversation";
         public static readonly string updateCollection = "update";
         public static readonly string documentCollection = "document";
+        public static readonly string knowledgestateCollection = "knowledgestate";
 
 
         public CosmosDBConnectivity(IConfiguration config, ILogger<CosmosDBConnectivity> logger, ILicensing licensing)
@@ -1974,6 +1975,61 @@ namespace Darl.GraphQL.Models.Connectivity
             var query = mc.AsQueryable().Where(p => p.name == name && p.userId == userId);
             var old = await query.FirstOrDefaultAsync();
             await mc.DeleteOneAsync(Builders<Document>.Filter.Eq(r => r.userId, userId) & Builders<Document>.Filter.Eq(r => r.name, name));
+            return old;
+        }
+
+        public async Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state)
+        {
+            var kstate = new KnowledgeState { userId = userId, data = state.data, Id = Guid.NewGuid().ToString(), knowledgeGraphName = state.knowledgeGraphName, subjectId = state.subjectId };
+            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            await mc.InsertOneAsync(kstate);
+            return kstate;
+        }
+
+        public async Task<KnowledgeState> GetKnowledgeState(string userId, string ksId)
+        {
+            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var query = mc.AsQueryable()
+            .Where(p => p.Id == ksId && p.userId == userId);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<KnowledgeState> GetKnowledgeStateByExternalId(string userId, string extId)
+        {
+            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var query = mc.AsQueryable()
+            .Where(p => p.subjectId == extId && p.userId == userId);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<List<KnowledgeState>> GetKnowledgeStates(string userId)
+        {
+            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var query = mc.AsQueryable()
+            .Where(p => p.userId == userId);
+            return await query.ToListAsync();
+        }
+
+        /// <summary>
+        /// Update the data field in the KnowledgeState
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public async Task<KnowledgeState> UpdateKnowledgeState(string userId, string ksId, KnowledgeStateUpdate state)
+        {
+            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var filter = Builders<KnowledgeState>.Filter.Where(x => x.Id == ksId && x.userId == userId);
+            var update = Builders<KnowledgeState>.Update.Set("data", state.data);
+            var updated = await mc.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<KnowledgeState, KnowledgeState> { IsUpsert = true });
+            return updated;
+        }
+
+        public async Task<KnowledgeState> DeleteKnowledgeState(string userId, string ksId)
+        {
+            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var query = mc.AsQueryable().Where(p => p.Id == ksId && p.userId == userId);
+            var old = await query.FirstOrDefaultAsync();
+            await mc.DeleteOneAsync(Builders<KnowledgeState>.Filter.Eq(r => r.userId, userId) & Builders<KnowledgeState>.Filter.Eq(r => r.Id, ksId));
             return old;
         }
 

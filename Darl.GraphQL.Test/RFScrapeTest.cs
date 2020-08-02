@@ -55,6 +55,8 @@ namespace Darl.GraphQL.Test
         private static string mathsLineage = "noun:01,0,0,15,21,0,08,02";
         private static string yearLineage = "noun:01,5,03,3,045";
         private static string followsLineage = "verb:534";
+        private static string activityLineage = "noun:01,0,2,00,23";
+        private static string testLineage = "noun:01,0,2,00,38,09";
 
         [TestInitialize()]
         public void Initialize()
@@ -96,6 +98,12 @@ namespace Darl.GraphQL.Test
             var toplevel = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "maths", lineage = mathsLineage, externalId = "MATH1" }, OntologyAction.build);
             GraphObject currentTopic = null;
             GraphObject currentYear = null;
+            GraphObject currentActivity = null;
+            int activityCount = 1;
+            int subactivityCount = 1;
+            int testCount = 1;
+            int subTestCount = 1;
+            GraphObject currentTest = null;
             var doc = new HtmlDocument();
             doc.Load(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.HTMLPage1.html"));
             var nodes = doc.DocumentNode.Descendants("a").ToList();
@@ -129,8 +137,14 @@ namespace Darl.GraphQL.Test
                                     {
                                         if (child.InnerText.Trim().StartsWith("Activity"))
                                         {
-                                            sb.AppendLine($"Activity: {HttpUtility.HtmlDecode(child.InnerText.Trim())}");
+                                            var activityText = HttpUtility.HtmlDecode(child.InnerText.Trim());
+                                            sb.AppendLine($"Activity: {activityText}");
                                             //add an activity object
+                                            var oldActivity = currentActivity;
+                                            currentActivity = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = activityText, lineage = activityLineage, externalId = $"ACTIVITY{activityCount++}" }, OntologyAction.build);
+                                            await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = currentYear.id, endId = currentActivity.id, lineage = consistsLineage, name = "consists of", weight = 1.0 }, OntologyAction.build);
+                                            if(oldActivity != null)
+                                                await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = currentActivity.id, endId = oldActivity.id, lineage = followsLineage, name = "follows", weight = 1.0 }, OntologyAction.build);
                                             activityFound = true;
                                         }
                                         else
@@ -144,13 +158,21 @@ namespace Darl.GraphQL.Test
                                             {
                                                 if(c.Name == "img")
                                                 {
-                                                    sb.AppendLine($"Activity image: ![{c.Attributes["alt"].Value}]({c.Attributes["src"].Value})");
+                                                    var subactivityText = $"![{c.Attributes["alt"].Value}]({c.Attributes["src"].Value})";
+                                                    sb.AppendLine($"Activity image: {subactivityText}");
                                                     //add a sub-activity object
+                                                    var  currentSubActivity = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = subactivityText, lineage = activityLineage, externalId = $"SUBACTIVITY{subactivityCount++}" }, OntologyAction.build);
+                                                    await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = currentActivity.id, endId = currentSubActivity.id, lineage = consistsLineage, name = "consists of", weight = 1.0 }, OntologyAction.build);
                                                 }
                                             }
                                         }
                                         if (!string.IsNullOrEmpty(child.InnerText.Trim()))
-                                            sb.AppendLine($"Activity text: {HttpUtility.HtmlDecode(child.InnerText.Trim())}");
+                                        {
+                                            var subactivityText = HttpUtility.HtmlDecode(child.InnerText.Trim());
+                                            sb.AppendLine($"Activity text: {subactivityText}");
+                                            var currentSubActivity = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = subactivityText, lineage = activityLineage, externalId = $"SUBACTIVITY{subactivityCount++}" }, OntologyAction.build);
+                                            await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = currentActivity.id, endId = currentSubActivity.id, lineage = consistsLineage, name = "consists of", weight = 1.0 }, OntologyAction.build);
+                                        }
                                     }
                                 }
                             }
@@ -171,8 +193,16 @@ namespace Darl.GraphQL.Test
                                 var headers = hnodes.Where(a => a.Attributes.Contains("class") && a.Attributes["class"].Value == "ExemplificationStatements").ToList();
                                 for(int n = 0; n < headers.Count; n++)
                                 {
-                                    sb.AppendLine($"Exemplification: {HttpUtility.HtmlDecode(headers[n].InnerText.Trim())}");
+                                    var testText = HttpUtility.HtmlDecode(headers[n].InnerText.Trim());
+                                    sb.AppendLine($"Exemplification: {testText}");
                                     //add a test object
+                                    //add an activity object
+                                    var oldTest = currentTest;
+                                    currentTest = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = testText, lineage = testLineage, externalId = $"TEST{testCount++}" }, OntologyAction.build);
+                                    await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = currentYear.id, endId = currentTest.id, lineage = consistsLineage, name = "consists of", weight = 1.0 }, OntologyAction.build);
+                                    if (oldTest != null)
+                                        await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = currentTest.id, endId = oldTest.id, lineage = followsLineage, name = "follows", weight = 1.0 }, OntologyAction.build);
+
                                     var x = headers[n].NextSibling;
                                     while( x != null && n + 1 < headers.Count && x != headers[n+1])
                                     {
@@ -189,8 +219,27 @@ namespace Darl.GraphQL.Test
                                         }
                                         else if(x.Name == "p")
                                         {
+                                            if (x.ChildNodes != null)
+                                            {
+                                                foreach (var c in x.ChildNodes)
+                                                {
+                                                    if (c.Name == "img")
+                                                    {
+                                                        var subTestText = $"![{c.Attributes["alt"].Value}]({c.Attributes["src"].Value})";
+                                                        sb.AppendLine($"Test image: {subTestText}");
+                                                        //add a sub-Test object
+                                                        var currentSubTest = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = subTestText, lineage = testLineage, externalId = $"SUBTEST{subTestCount++}" }, OntologyAction.build);
+                                                        await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = currentTest.id, endId = currentSubTest.id, lineage = consistsLineage, name = "consists of", weight = 1.0 }, OntologyAction.build);
+                                                    }
+                                                }
+                                            }
                                             if (!string.IsNullOrEmpty(x.InnerText.Trim()))
-                                                sb.AppendLine($"Exemplification text: {HttpUtility.HtmlDecode(x.InnerText.Trim())}");
+                                            {
+                                                var subTestText = HttpUtility.HtmlDecode(x.InnerText.Trim());
+                                                sb.AppendLine($"Exemplification text: {subTestText}");
+                                                var currentSubTest = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = subTestText, lineage = testLineage, externalId = $"SUBTEST{subTestCount++}" }, OntologyAction.build);
+                                                await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = currentTest.id, endId = currentSubTest.id, lineage = consistsLineage, name = "consists of", weight = 1.0 }, OntologyAction.build);
+                                            }
                                         }
                                         x = x.NextSibling;
                                     }
@@ -211,13 +260,15 @@ namespace Darl.GraphQL.Test
                                 topics.Add(topic);
                                 currentYear = null;
                             }
-                            var oldYear = currentYear != null ? currentYear : null;
+                            var oldYear = currentYear;
                             currentYear = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = year, lineage = yearLineage, externalId = year }, OntologyAction.build);
                             await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = currentTopic.id, endId = currentYear.id, lineage = consistsLineage, name = "consists of", weight = 1.0 }, OntologyAction.build);
                             if(oldYear != null)//set precedence
                             {
                                 await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = currentYear.id, endId = oldYear.id, lineage = followsLineage, name = "follows", weight = 1.0 }, OntologyAction.build);
                             }
+                            currentActivity = null;
+                            currentTest = null;
                             sb.AppendLine($"Topic: {topic}");
                             sb.AppendLine($"Year: {year}");
                         }
@@ -235,6 +286,13 @@ namespace Darl.GraphQL.Test
                 }
             }
             File.WriteAllText("scrape_1st_pass.txt", sb.ToString());
+            await _graph.Store(compositeName);
+            var stream = await _graph.StoreGraphML(compositeName);
+            using (var fileStream = File.Create("rf1.graphml"))
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+                stream.CopyTo(fileStream);
+            }
         }
     }
 }

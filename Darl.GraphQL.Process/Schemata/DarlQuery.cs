@@ -694,6 +694,48 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             ).AuthorizeWith("CorpPolicy");
 
+            FieldAsync<GraphConnectionType>(
+                "getKnowledgeState",
+                "get a knowledge state by its Id",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "Id", Description = "The knowledge state id" }
+                ),
+                resolve: async context =>
+                {
+                    var Id = context.GetArgument<string>("Id");
+
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await connectivity.GetKnowledgeState(userId,Id));
+                }
+            ).AuthorizeWith("CorpPolicy");
+
+            FieldAsync<GraphConnectionType>(
+                "getKnowledgeStateByExternalId",
+                "get a knowledge state by its external Id",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "subjectId", Description = "The external id" }
+                ),
+                resolve: async context =>
+                {
+                    var subjectId = context.GetArgument<string>("subjectId");
+
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await connectivity.GetKnowledgeStateByExternalId(userId, subjectId));
+                }
+            ).AuthorizeWith("CorpPolicy");
+
+            FieldAsync<GraphConnectionType>(
+                 "getKnowledgeStates",
+                 "get all the knowledge states in this account",
+                 resolve: async context =>
+                 {
+
+                     var userId = connectivity.GetCurrentUserId(context.UserContext);
+                     return await context.TryAsyncResolve(async c => await connectivity.GetKnowledgeStates(userId));
+                 }
+             ).AuthorizeWith("CorpPolicy");
+
+
             FieldAsync<BooleanGraphType>(
                 "checkKey",
                 "Check a license key is valid",

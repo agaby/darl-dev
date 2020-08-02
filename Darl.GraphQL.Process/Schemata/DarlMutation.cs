@@ -1253,6 +1253,20 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await graph.DeleteGraph(userId, name));
                 }
             );
+            FieldAsync<LineageNodeDefinitionType>("createKnowledgeState",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "path" },
+                new QueryArgument<NonNullGraphType<LineageNodeAttributeUpdateType>> { Name = "attribute" }
+                ),
+                resolve: async context =>
+                {
+                    var botModelName = context.GetArgument<string>("botModelName");
+                    var path = context.GetArgument<string>("path");
+                    var attribute = context.GetArgument<LineageNodeAttributes>("attribute");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreatePhrase(userId, botModelName, path, attribute));
+                });
 
         }
 
