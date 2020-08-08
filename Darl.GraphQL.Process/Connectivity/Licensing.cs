@@ -76,7 +76,7 @@ namespace Darl.GraphQL.Models.Connectivity
                                     .Signature(publicKey)
                                     .AssertValidLicense().ToList();
             }
-            catch (Exception ex)
+            catch 
             {
                 return false;
             }

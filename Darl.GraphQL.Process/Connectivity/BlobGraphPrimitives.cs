@@ -1,6 +1,10 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.Lineage.Bot;
 using Darl.Thinkbase;
+using Darl.Thinkbase.Meta;
+using DarlCommon;
 using GraphQL;
+using Microsoft.Azure.Storage.Shared.Protocol;
 using Microsoft.Extensions.Caching.Distributed;
 using ProtoBuf;
 using System;
@@ -68,7 +72,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return go;
         }
 
-        public async Task CreateVirtualConnection(GraphModel model, string child, string lineage, string connectionLabel)
+        public async Task CreateVirtualConnection(IGraphModel model, string child, string lineage, string connectionLabel)
         {
             BlobGraphContent cont = model as BlobGraphContent;
             if (!cont.virtualEdges.ContainsKey(($"{child}->{lineage}")))
@@ -86,7 +90,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
        }
 
-        public async Task CreateVirtualObject(GraphModel model, string lineage, string typeword, string description)
+        public async Task CreateVirtualObject(IGraphModel model, string lineage, string typeword, string description)
         {
             var go = new GraphObject { id = Guid.NewGuid().ToString(), inferred = false, lineage = lineage, name = typeword, _virtual = true, properties = new List<GraphAttribute> { new GraphAttribute { name = "description", value = description, lineage= "noun:01,4,05,21,05"} } };
             ((BlobGraphContent)model).virtualVertices.Add(go.lineage, go);
@@ -178,7 +182,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return cont.vertices.Values.Where(a => a.name == name && a.lineage.StartsWith(lineage)).ToList();
         }
 
-        public async Task<bool> LineageExists(GraphModel model,string lineage)
+        public async Task<bool> LineageExists(IGraphModel model,string lineage)
         {
             return ((BlobGraphContent)model).virtualVertices.ContainsKey(lineage);
         }
@@ -272,7 +276,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return node;
         }
 
-        public async Task<bool> VirtualAssociationExists(GraphModel model, string lineage1, string lineage2)
+        public async Task<bool> VirtualAssociationExists(IGraphModel model, string lineage1, string lineage2)
         {
             BlobGraphContent cont = model as BlobGraphContent;
             if (!cont.virtualVertices.ContainsKey(lineage1) || !cont.virtualVertices.ContainsKey(lineage2))
@@ -294,7 +298,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return false;
         }
 
-        private void FollowHypernymy(GraphModel model, GraphObject g, List<GraphObject> list)
+        private void FollowHypernymy(IGraphModel model, GraphObject g, List<GraphObject> list)
         {
             BlobGraphContent cont = model as BlobGraphContent;
             foreach (var l in g.Out.Where(a => a.name == "kind_of"))
@@ -305,13 +309,13 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        public async Task Store(string blobName, GraphModel model)
+        public async Task Store(string blobName, IGraphModel model)
         {
             BlobGraphContent cont = model as BlobGraphContent;
             await _blob.Write(blobName, SerializeGraph(cont));
         }
 
-        public async Task<GraphModel> Load(string blobName)
+        public async Task<IGraphModel> Load(string blobName)
         {
             if (buffer.ContainsKey(blobName))
                 return buffer[blobName];
@@ -332,7 +336,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         }
 
-        public byte[] SerializeGraph(GraphModel model)
+        public byte[] SerializeGraph(IGraphModel model)
         {
             BlobGraphContent cont = model as BlobGraphContent;
             using (MemoryStream ms = new MemoryStream())
@@ -500,7 +504,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <param name="Target"></param>
         /// <returns>the vertex,edge,vertex... sequence</returns>
         /// <remarks></remarks>
-        public List<GraphElement> ShortestPath(GraphModel model, GraphObject start, GraphObject target)
+        public List<GraphElement> ShortestPath(IGraphModel model, GraphObject start, GraphObject target)
         {
             BlobGraphContent cont = model as BlobGraphContent;
             var list = new List<GraphElement>{ start};
@@ -545,7 +549,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return shortestPath;
         }
 
-        private List<GraphElement> ShortestPathRecursion(GraphModel model, GraphObject start, GraphObject target, List<GraphElement> path, Dictionary<GraphObject, (double, bool, int)> coverage, int depth)
+        private List<GraphElement> ShortestPathRecursion(IGraphModel model, GraphObject start, GraphObject target, List<GraphElement> path, Dictionary<GraphObject, (double, bool, int)> coverage, int depth)
         {
             if (depth > maxDepth)
                 maxDepth = depth;
@@ -696,14 +700,14 @@ namespace Darl.GraphQL.Models.Connectivity
             return cont.virtualEdges.Values.ToList();
         }
 
-        public async Task CreateRawObject(GraphModel model, GraphObject graphObject)
+        public async Task CreateRawObject(IGraphModel model, GraphObject graphObject)
         {
             var cont = model as BlobGraphContent;
             var go = new GraphObject { existence = graphObject.existence, externalId = graphObject.externalId, id = graphObject.id, inferred = false, lineage = graphObject.lineage, name = graphObject.name, _virtual = graphObject._virtual, properties = graphObject.properties };
             cont.vertices.Add(go.id, go);
         }
 
-        public async Task CreateRawConnection(GraphModel model, GraphConnection conn)
+        public async Task CreateRawConnection(IGraphModel model, GraphConnection conn)
         {
             var cont = model as BlobGraphContent;
             var gc = new GraphConnection { id = Guid.NewGuid().ToString(), endId = conn.endId, existence = conn.existence, inferred = false, lineage = conn.lineage, name = conn.name, properties = conn.properties, startId = conn.startId, weight = conn.weight, _virtual = conn._virtual };
@@ -716,6 +720,97 @@ namespace Darl.GraphQL.Models.Connectivity
             else
                 throw new ExecutionError($"Real vertex id {conn.endId} does not exist");
             cont.edges.Add(gc.id, gc);
+        }
+
+
+        public async Task<InteractTestResponse> TryToInfer(string compositeName, KnowledgeState ks, string command)
+        {
+            var metaRuntime = new DarlMetaRunTime();
+            //hardwired lineages
+            var completedLineage = "adjective:5500";
+            var cont = await Load(compositeName) as BlobGraphContent;
+            cont.state = ks;
+            //initially hard wire completion values, and make command the targetId
+            var node = cont.vertices[command];
+            return new InteractTestResponse {  response = RecursiveInference(cont, node,metaRuntime, completedLineage) };
+        }
+
+        private DarlVar RecursiveInference(IGraphModel model, GraphObject node, DarlMetaRunTime runtime, string resultLineage)
+        {
+            var cont = model as BlobGraphContent;
+            if (cont.state.data.ContainsKey(node.id))
+            {
+                var completed = cont.state.data[node.id].Where(a => a.lineage == resultLineage).FirstOrDefault();
+                if (completed != null) //assume state is either unknown or completed
+                {
+                    return new DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "This is complete." };
+                }
+            }
+            else
+            {
+                if (node.properties != null)
+                {
+                    var completed = node.properties.Where(a => a.lineage.StartsWith(resultLineage)).FirstOrDefault();
+                    if (completed != null)//assume state is either unknown or completed
+                    {
+                        return new DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "This is complete." };
+                    }
+                }
+                //if we get here the required target is not complete - start searching by getting the corresponding virtual node and looking for completion rules.
+                var virtNode = cont.virtualVertices[node.lineage];
+                var list1 = new List<GraphObject> { virtNode };
+                FollowHypernymy(cont, virtNode, list1);
+                string ruleSource = string.Empty;
+                bool found = false;
+                foreach (var l in list1)
+                {
+                    if (l.properties != null)
+                    {
+                        foreach (var p in l.properties)
+                        {
+                            if (p.lineage.StartsWith(resultLineage))
+                            {
+                                ruleSource = p.value;
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (found)
+                        break;
+                }
+                if (string.IsNullOrEmpty(ruleSource))
+                {
+                    return new DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = $"No inference rules for node {node.lineage}", unknown = true, weight = 0.0 };
+                }
+                var tree = runtime.CreateTree(ruleSource, node,cont);
+                if (tree.HasErrors())
+                {
+                    return new DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = $"Compilation Errors in inference rules for node {node.lineage}" };
+                }
+                //do processing here
+                foreach(var n in runtime.ExploreGraph(tree))
+                {
+                    RecursiveInference(model, n, runtime, resultLineage);
+                }
+
+
+            }
+            return null;          
+        }
+
+        public async Task CreateVirtualAttribute(string compositeName, string lineage, GraphAttributeInput att)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            if(cont.virtualVertices.ContainsKey(lineage))
+            {
+                var node = cont.virtualVertices[lineage];
+                if (node.properties.Where(a => a.lineage == att.lineage).Any())
+                {
+                    node.properties.Remove(node.properties.Where(a => a.lineage == att.lineage).First());
+                }
+                node.properties.Add(new GraphAttribute {id = Guid.NewGuid().ToString(), existence = att.existence, confidence = att.confidence, inferred = false, lineage = att.lineage, name = att.name, type = att.type, value = att.value, _virtual = true });
+            }
         }
     }
 }

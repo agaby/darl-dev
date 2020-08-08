@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -57,6 +58,7 @@ namespace Darl.GraphQL.Test
         private static string followsLineage = "verb:534";
         private static string activityLineage = "noun:01,0,2,00,23";
         private static string testLineage = "noun:01,0,2,00,38,09";
+        private static string completeLineage = "adjective:5500";
 
         [TestInitialize()]
         public void Initialize()
@@ -286,6 +288,8 @@ namespace Darl.GraphQL.Test
                 }
             }
             File.WriteAllText("scrape_1st_pass.txt", sb.ToString());
+
+
             await _graph.Store(compositeName);
             var stream = await _graph.StoreGraphML(compositeName);
             using (var fileStream = File.Create("rf1.graphml"))
@@ -294,5 +298,29 @@ namespace Darl.GraphQL.Test
                 stream.CopyTo(fileStream);
             }
         }
+
+        [TestMethod]
+        public async Task UpdateVirtualInferenceRules()
+        {
+            var compositeName = _config["userId"] + "_rf1.graph";
+            var topicCode = $"output categorical completed {{true,false}};\n if all(\"{consistsLineage}\",\"{yearLineage}\") and all(\"{followsLineage}\",\"{yearLineage}\") then completed will be true;";
+            await _graph.CreateVirtualAttribute(compositeName, mathsLineage, new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = topicCode, lineage = completeLineage });
+            var yearCode = $"output categorical completed {{true,false}};\n if all(\"{consistsLineage}\",\"{activityLineage}\") and all(\"{followsLineage}\",\"{activityLineage}\") and all(\"{consistsLineage}\",\"{testLineage}\") and all(\"{followsLineage}\",\"{testLineage}\") then completed will be true;";
+            await _graph.CreateVirtualAttribute(compositeName, yearLineage, new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = yearCode, lineage = completeLineage });
+            var activityCode = $"output categorical completed {{true,false}};\n if all(\"{consistsLineage}\",\"{activityLineage}\") and all(\"{followsLineage}\",\"{activityLineage}\") then completed will be true;";
+            await _graph.CreateVirtualAttribute(compositeName, activityLineage, new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = activityCode, lineage = completeLineage });
+            var testCode = $"output categorical completed {{true,false}};\n if all(\"{consistsLineage}\",\"{testLineage}\") and all(\"{followsLineage}\",\"{testLineage}\") then completed will be true;";
+            await _graph.CreateVirtualAttribute(compositeName, testLineage, new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = testCode, lineage = completeLineage });
+            await _graph.Store(compositeName);
+        }
+
+        [TestMethod]
+        public async Task TestInference()
+        {
+            var graphName = "rf1.graph";
+            var compositeName = _config["userId"] + $"_{graphName}";
+            var query = await _graph.TryToInfer(compositeName, new KnowledgeState { Id = Guid.NewGuid().ToString(), subjectId = Guid.NewGuid().ToString(), userId = _config["userId"], knowledgeGraphName = graphName, data = new Dictionary<string, List<GraphAttribute>>() }, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
+        }
     }
+    
 }

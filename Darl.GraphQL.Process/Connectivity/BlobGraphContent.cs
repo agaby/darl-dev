@@ -5,7 +5,7 @@ using ProtoBuf;
 namespace Darl.GraphQL.Models.Connectivity
 {
     [ProtoContract]
-    public class BlobGraphContent : GraphModel
+    public class BlobGraphContent : IGraphModel
     {
         /// <summary>
         /// real objects indexed by id
@@ -30,6 +30,21 @@ namespace Darl.GraphQL.Models.Connectivity
         /// </summary>
         [ProtoMember(4)]
         public Dictionary<string,GraphConnection> virtualEdges { get; set; } = new Dictionary<string, GraphConnection>();
+        public KnowledgeState state { get; set; }
 
+        public List<GraphObject> GetConnectedObjects(GraphObject node, string connectionLineage, string objectLineage)
+        {
+            var list = new List<GraphObject>();
+            foreach(var i in node.Out)
+            {
+                if(i.lineage.StartsWith(connectionLineage))
+                {
+                    var obj = vertices[i.endId];
+                    if (obj.lineage.StartsWith(objectLineage))
+                        list.Add(obj);
+                }
+            }
+            return list;
+        }
     }
 }
