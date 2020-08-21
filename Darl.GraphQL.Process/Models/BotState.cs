@@ -30,5 +30,6 @@ namespace Darl.GraphQL.Models.Models
         public StoredBotData privateConversationData { get; set; }
 
         public DateTime? updated { get; set; }
+
     }
 }

@@ -82,7 +82,8 @@ namespace Darl.GraphQL.Test
             var trigger = new Mock<ITrigger>();
             var cache = new Mock<IDistributedCache>();
             var bc = new BlobConnectivity(_config, blobLogger.Object);
-            var blob = new BlobGraphPrimitives(bc,cache.Object);
+            var conn = new Mock<IConnectivity>();
+            var blob = new BlobGraphPrimitives(bc,cache.Object, conn.Object);
             _graph = new GraphProcessing(blob);
             _graphStore = new GraphLocalStore(configuration.Object, logger.Object, context.Object, _graph);
             var formApi = new FormApi(cache.Object, trigger.Object, formLogger.Object, _graphStore);

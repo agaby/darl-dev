@@ -31,6 +31,7 @@ namespace Darl.GraphQL.Models.Connectivity
         [ProtoMember(4)]
         public Dictionary<string,GraphConnection> virtualEdges { get; set; } = new Dictionary<string, GraphConnection>();
         public KnowledgeState state { get; set; }
+        public string modelName { get ; set ; }
 
         public List<GraphObject> GetConnectedObjects(GraphObject node, string connectionLineage, string objectLineage)
         {

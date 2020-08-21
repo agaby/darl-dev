@@ -88,8 +88,9 @@ namespace Darl.GraphQL.Test
             context.Setup(a => a.HttpContext.User.Identity.Name).Returns(_config["userId"]);
             var blob = new BlobConnectivity(_config, blogger.Object);
             var cache = new Mock<IDistributedCache>();
+            var conn = new Mock<IConnectivity>();
             cache.Setup(a => a.GetAsync(It.IsAny<string>(), default)).Returns(Task.FromResult<byte[]>(null));
-            _primitives = new BlobGraphPrimitives(blob, cache.Object);
+            _primitives = new BlobGraphPrimitives(blob, cache.Object, conn.Object);
             _graph = new GraphProcessing(_primitives);
             _graphStore = new GraphLocalStore(_config,logger.Object, context.Object, _graph);
         }

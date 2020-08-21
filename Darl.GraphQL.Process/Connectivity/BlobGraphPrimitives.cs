@@ -24,6 +24,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         private IBlobConnectivity _blob;
         private IDistributedCache _cache;
+        private IConnectivity _conn;
 
         private static TimeSpan cacheExpiration = new TimeSpan(0, 30, 0);
 
@@ -39,10 +40,11 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public static int maxDepth = 0;
 
-        public BlobGraphPrimitives(IBlobConnectivity blob, IDistributedCache cache)
+        public BlobGraphPrimitives(IBlobConnectivity blob, IDistributedCache cache, IConnectivity conn)
         {
             _blob = blob;
             _cache = cache;
+            _conn = conn;
             flushTimer = new Timer(FlushTimerTimeOut, null, 500, 500);
         }
 
@@ -130,7 +132,8 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 if (cont.vertices.ContainsKey(c.endId))
                 {
-                    cont.vertices[c.endId].In.Remove(c);
+                    var end = cont.vertices[c.endId];
+                    var success = end.In.Remove(end.In.Where(a => a.id == c.id).FirstOrDefault());
                 }
                 cont.edges.Remove(c.id);
             }
@@ -659,10 +662,10 @@ namespace Darl.GraphQL.Models.Connectivity
                 lock(lockObject)
                 {
                     //serialize it and release it
-                    data = SerializeGraph(model);
+//                    data = SerializeGraph(model);
                 }
                 //write out the serialized model
-                _blob.Write(s, data);
+ //               _blob.Write(s, data);
 
             }  
         }
@@ -723,81 +726,7 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
 
-        public async Task<InteractTestResponse> TryToInfer(string compositeName, KnowledgeState ks, string command)
-        {
-            var metaRuntime = new DarlMetaRunTime();
-            //hardwired lineages
-            var completedLineage = "adjective:5500";
-            var cont = await Load(compositeName) as BlobGraphContent;
-            cont.state = ks;
-            //initially hard wire completion values, and make command the targetId
-            var node = cont.vertices[command];
-            return new InteractTestResponse {  response = RecursiveInference(cont, node,metaRuntime, completedLineage) };
-        }
 
-        private DarlVar RecursiveInference(IGraphModel model, GraphObject node, DarlMetaRunTime runtime, string resultLineage)
-        {
-            var cont = model as BlobGraphContent;
-            if (cont.state.data.ContainsKey(node.id))
-            {
-                var completed = cont.state.data[node.id].Where(a => a.lineage == resultLineage).FirstOrDefault();
-                if (completed != null) //assume state is either unknown or completed
-                {
-                    return new DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "This is complete." };
-                }
-            }
-            else
-            {
-                if (node.properties != null)
-                {
-                    var completed = node.properties.Where(a => a.lineage.StartsWith(resultLineage)).FirstOrDefault();
-                    if (completed != null)//assume state is either unknown or completed
-                    {
-                        return new DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "This is complete." };
-                    }
-                }
-                //if we get here the required target is not complete - start searching by getting the corresponding virtual node and looking for completion rules.
-                var virtNode = cont.virtualVertices[node.lineage];
-                var list1 = new List<GraphObject> { virtNode };
-                FollowHypernymy(cont, virtNode, list1);
-                string ruleSource = string.Empty;
-                bool found = false;
-                foreach (var l in list1)
-                {
-                    if (l.properties != null)
-                    {
-                        foreach (var p in l.properties)
-                        {
-                            if (p.lineage.StartsWith(resultLineage))
-                            {
-                                ruleSource = p.value;
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (found)
-                        break;
-                }
-                if (string.IsNullOrEmpty(ruleSource))
-                {
-                    return new DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = $"No inference rules for node {node.lineage}", unknown = true, weight = 0.0 };
-                }
-                var tree = runtime.CreateTree(ruleSource, node,cont);
-                if (tree.HasErrors())
-                {
-                    return new DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = $"Compilation Errors in inference rules for node {node.lineage}" };
-                }
-                //do processing here
-                foreach(var n in runtime.ExploreGraph(tree))
-                {
-                    RecursiveInference(model, n, runtime, resultLineage);
-                }
-
-
-            }
-            return null;          
-        }
 
         public async Task CreateVirtualAttribute(string compositeName, string lineage, GraphAttributeInput att)
         {
@@ -812,5 +741,200 @@ namespace Darl.GraphQL.Models.Connectivity
                 node.properties.Add(new GraphAttribute {id = Guid.NewGuid().ToString(), existence = att.existence, confidence = att.confidence, inferred = false, lineage = att.lineage, name = att.name, type = att.type, value = att.value, _virtual = true });
             }
         }
+
+        public async Task<List<GraphObject>> FindNext(IGraphModel model, List<KeyValuePair<GraphObject, int>> ordered, KnowledgeState ks, GraphObject node, List<string> paths, string completedLineage)
+        {
+            var list = new List<GraphObject>();
+            var cont = model as BlobGraphContent;
+            //first build dependency list of nodes reachable from the start node
+            var saliences = new Dictionary<GraphObject, double>();
+            //in descending order calculate salience
+            saliences.Add(node, 1.0);
+            foreach(var o in ordered)
+            {
+                double salience = 0.0;
+                foreach(var c in o.Key.In)
+                {
+                    if (paths.Contains(c.lineage))
+                    {
+                        var parentNode = cont.vertices[c.startId];
+                        salience += saliences[parentNode];
+                    }
+                }
+                saliences.Add(o.Key, salience);
+            }
+            var orderedBySalience = saliences.OrderByDescending(a => a.Value).ToList();
+            var currentSalience = 0.0;
+            foreach(var o in orderedBySalience)
+            {
+                var obj = o.Key;
+                currentSalience = Math.Max(currentSalience, o.Value);
+                if (currentSalience != o.Value && list.Count > 0)
+                    break;
+                if (obj.Out.Count > 0) // not leaf
+                    continue;
+                if(ks.data.ContainsKey(obj.id))
+                {
+                    if (ks.data[obj.id].Any(a => a.lineage == completedLineage))
+                        continue;
+                }
+                list.Add(obj);
+            }
+
+            //list is leaf nodes with highest salience
+            return list;
+        }
+
+        private void AddDependency(IGraphModel model, List<Dependency> dependencies, GraphObject currentParent, GraphObject currentNode, string linkLineage, List<string> paths)
+        {
+            var cont = model as BlobGraphContent;
+            dependencies.Add(new Dependency { dependencyLineage = linkLineage, dependent = currentNode, parent = currentParent });
+            foreach (var c in currentNode.Out)
+            {
+                if (paths.Contains(c.lineage))
+                {
+                    var childNode = cont.vertices[c.endId];
+                    AddDependency(model, dependencies, currentNode, childNode, c.lineage, paths);
+                }
+            }
+        }
+
+        public List<KeyValuePair<GraphObject,int>> GetExecutionOrder(IGraphModel model, GraphObject node, List<string> paths)
+        {
+            var cont = model as BlobGraphContent;
+            var dependencies = new List<Dependency>();
+            foreach (var c in node.Out)
+            {
+                if (paths.Contains(c.lineage))
+                {
+                    var childNode = cont.vertices[c.endId];
+                    AddDependency(model, dependencies, node, childNode, c.lineage, paths);
+                }
+            }
+            //Now establish sequence
+            int currentSequence = 1;
+            var sequences = new Dictionary<GraphObject, int>();
+            bool complete = false;
+            while (!complete)
+            {
+                var deletions = new List<Dependency>();
+                foreach (var dep in dependencies)
+                {
+                    if (!sequences.ContainsKey(dep.dependent))
+                        sequences.Add(dep.dependent, currentSequence);
+                    else
+                        sequences[dep.dependent] = currentSequence;
+                    //if dependent does not match any parents
+                    //remove that link
+                    bool match = false;
+                    foreach (Dependency otherDep in dependencies)
+                    {
+                        if (otherDep.parent == dep.dependent)
+                        {
+                            match = true;
+                            break;
+                        }
+                    }
+                    if (!match)
+                        deletions.Add(dep);
+                }
+                if (deletions.Count == 0 && dependencies.Count > 0)
+                {
+                    throw new MetaRuleException("Loop found in nodes");
+                }
+                foreach (Dependency del in deletions)
+                {
+                    dependencies.Remove(del);
+                }
+                currentSequence++;
+                complete = dependencies.Count == 0;
+            }
+            //sort dependency list
+            return sequences.OrderByDescending(a => a.Value).ToList();
+        }
+
+        public async Task<KnowledgeState> UpdateKnowledgeState(IGraphModel model, List<KeyValuePair<GraphObject, int>> dependencies, List<DarlVar> values, string subjectId, string completionLineage)
+        {
+            var userId = "";
+            var runtime = new DarlMetaRunTime();
+            var ks = await _conn.GetKnowledgeState(userId, subjectId);
+            var cont = model as BlobGraphContent;
+            for (int n = dependencies.Count - 1; n >= 0; n--) //evaluate dependencies in reverse order
+            {
+                var o = dependencies[n];
+                if(values.Any(a => a.name == o.Key.id))
+                {
+                    var att = new GraphAttribute { id = Guid.NewGuid().ToString(), lineage = completionLineage, name = "completed", type = GraphAttribute.DataType.categorical, value = "completed" };
+                    if (!ks.data.ContainsKey(o.Key.id))
+                        ks.data.Add(o.Key.id, new List<GraphAttribute>{att });
+                    else
+                    {
+                        ks.data[o.Key.id].Add(att);
+                    }
+                }
+                else if (ks.data.ContainsKey(o.Key.id)) //look in KS
+                {
+                    var completed = ks.data[o.Key.id].Where(a => a.lineage == completionLineage).FirstOrDefault();
+                    if (completed != null) //assume state is either unknown or completed
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (o.Key.properties != null) //look locally
+                    {
+                        var completed = o.Key.properties.Where(a => a.lineage.StartsWith(completionLineage)).FirstOrDefault();
+                        if (completed != null)//assume state is either unknown or completed
+                        {
+                            continue;
+                        }
+                    }
+                    //if we get here the required target is not complete - start searching by getting the corresponding virtual node and looking for completion rules.
+                    var virtNode = cont.virtualVertices[o.Key.lineage];
+                    var list1 = new List<GraphObject> { virtNode };
+                    FollowHypernymy(cont, virtNode, list1);
+                    string ruleSource = string.Empty;
+                    bool found = false;
+                    foreach (var l in list1)
+                    {
+                        if (l.properties != null)
+                        {
+                            foreach (var p in l.properties)
+                            {
+                                if (p.lineage.StartsWith(completionLineage))
+                                {
+                                    ruleSource = p.value;
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (found)
+                            break;
+                    }
+                    if (string.IsNullOrEmpty(ruleSource))
+                    {
+                        continue;
+                    }
+                    var tree = runtime.CreateTree(ruleSource, o.Key, cont);
+                    if (tree.HasErrors())
+                    {
+                        continue;
+                    }
+                    await runtime.Evaluate(tree, new List<DarlResult>(), ks);
+                }
+            }
+            await _conn.UpdateKnowledgeState(userId, subjectId, new KnowledgeStateUpdate { data = ks.data });
+            return ks;
+        }
+    }
+
+    public class Dependency
+    {
+        public GraphObject parent { get; set; }
+        public GraphObject dependent { get; set; }
+
+        public string dependencyLineage { get; set; }
     }
 }

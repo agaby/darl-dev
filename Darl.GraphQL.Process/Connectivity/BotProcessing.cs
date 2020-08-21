@@ -106,7 +106,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (bs.ruleProcessing.Count > 0) //ruleset processing
             {
                 var rsh = bs.ruleProcessing.Peek();
-                rsh.trigger = _trigger;
+                rsh.Trigger = _trigger;
                 //handle simple navigation
                 var c = LineageModelBotExtensions.HandleRuleSetCommands(conversationData.Value);
                 switch(c)
@@ -132,9 +132,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 List<InteractTestResponse> responses = null;
                 try 
                 {
-                    if(rsh.rf.preload == null)
-                        rsh.rf.preload = new List<DarlVar>();
-                    responses = await rsh.RuleSetPass(bs.values, stores, bmt.serviceConnectivity);
+                     responses = await rsh.RuleSetPass(bs.values, stores, bmt.serviceConnectivity);
                 }
                 catch(Exception ex)
                 {

@@ -1,6 +1,7 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.Thinkbase;
 using DarlLanguage.Processing;
+using GraphQL;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
@@ -10,6 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -59,6 +61,11 @@ namespace Darl.GraphQL.Test
         private static string activityLineage = "noun:01,0,2,00,23";
         private static string testLineage = "noun:01,0,2,00,38,09";
         private static string completeLineage = "adjective:5500";
+        private static string subactivityLineage = "noun:01,0,2,00,00";
+        private static string questionLineage = "noun:01,0,2,00,39,08,08,1";
+
+        private static string graphName = "rf1.graph";
+        private static string graphImage = "rf1.graphml";
 
         [TestInitialize()]
         public void Initialize()
@@ -83,17 +90,21 @@ namespace Darl.GraphQL.Test
             context.Setup(a => a.HttpContext.User.Identity.Name).Returns(_config["userId"]);
             var blob = new BlobConnectivity(_config, blogger.Object);
             var cache = new Mock<IDistributedCache>();
+            var conn = new Mock<IConnectivity>();
             cache.Setup(a => a.GetAsync(It.IsAny<string>(), default)).Returns(Task.FromResult<byte[]>(null));
-            _primitives = new BlobGraphPrimitives(blob, cache.Object);
+            conn.Setup(a => a.GetKnowledgeState(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<KnowledgeState>(new KnowledgeState { data = new Dictionary<string, List<GraphAttribute>>() }));
+            conn.Setup(a => a.UpdateKnowledgeState(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<KnowledgeStateUpdate>()));
+             _primitives = new BlobGraphPrimitives(blob, cache.Object, conn.Object);
             _graph = new GraphProcessing(_primitives);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
         }
 
 
         [TestMethod]
+        [Ignore]
         public async Task TestScrapeMathsSite()
         {
-            var compositeName = _config["userId"] + "_rf1.graph";
+            var compositeName = $"{_config["userId"]}_{graphName}";
             var sb = new StringBuilder();
             var topics = new HashSet<string>();
             //emit top level node "maths"
@@ -288,11 +299,18 @@ namespace Darl.GraphQL.Test
                 }
             }
             File.WriteAllText("scrape_1st_pass.txt", sb.ToString());
-
+            var topicCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if all(\"{consistsLineage}\",\"{yearLineage}\") and all(\"{followsLineage}\",\"{yearLineage}\") then completed will be true;";
+            await _graph.CreateVirtualAttribute(compositeName, mathsLineage, new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = topicCode, lineage = completeLineage });
+            var yearCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if all(\"{consistsLineage}\",\"{activityLineage}\") and all(\"{followsLineage}\",\"{activityLineage}\") and all(\"{consistsLineage}\",\"{testLineage}\") and all(\"{followsLineage}\",\"{testLineage}\") then completed will be true;";
+            await _graph.CreateVirtualAttribute(compositeName, yearLineage, new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = yearCode, lineage = completeLineage });
+            var activityCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if all(\"{consistsLineage}\",\"{activityLineage}\") and all(\"{followsLineage}\",\"{activityLineage}\") then completed will be true;";
+            await _graph.CreateVirtualAttribute(compositeName, activityLineage, new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = activityCode, lineage = completeLineage });
+            var testCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if all(\"{consistsLineage}\",\"{testLineage}\") and all(\"{followsLineage}\",\"{testLineage}\") then completed will be true;";
+            await _graph.CreateVirtualAttribute(compositeName, testLineage, new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = testCode, lineage = completeLineage });
 
             await _graph.Store(compositeName);
             var stream = await _graph.StoreGraphML(compositeName);
-            using (var fileStream = File.Create("rf1.graphml"))
+            using (var fileStream = File.Create(graphImage))
             {
                 stream.Seek(0, SeekOrigin.Begin);
                 stream.CopyTo(fileStream);
@@ -300,27 +318,163 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
-        public async Task UpdateVirtualInferenceRules()
+        [Ignore]
+        public async Task Dedupe()
         {
-            var compositeName = _config["userId"] + "_rf1.graph";
-            var topicCode = $"output categorical completed {{true,false}};\n if all(\"{consistsLineage}\",\"{yearLineage}\") and all(\"{followsLineage}\",\"{yearLineage}\") then completed will be true;";
+            var compositeName = $"{_config["userId"]}_{graphName}";
+            var model = await _primitives.Load(compositeName) as BlobGraphContent;
+            var roots = model.vertices.Values.Where(a => a.externalId == "MATH1").ToList();
+            var topics = model.vertices.Values.Where(a => a.externalId.StartsWith("TOPIC")).ToList();
+            await _graph.DeleteGraphObject(compositeName,roots[1].id);
+            await _graph.DeleteGraphObject(compositeName, roots[2].id);
+            bool completed = false;
+            while (!completed)
+            {
+                var removeList = new List<GraphObject>();
+                foreach(var v in model.vertices.Values)
+                {
+                    if (v.In.Count == 0 && v.externalId != "MATH1")
+                    {
+                        removeList.Add(v);
+                    }
+                }
+                if(!removeList.Any())
+                {
+                    completed = true;
+                }
+                else
+                {
+                    foreach(var v in removeList)
+                    {
+                        await _graph.DeleteGraphObject(compositeName, v.id);
+                    }    
+                }
+            }
+            await _graph.Store(compositeName);
+            var stream = await _graph.StoreGraphML(compositeName);
+            using (var fileStream = File.Create(graphImage))
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+                stream.CopyTo(fileStream);
+            }
+        }
+
+        [TestMethod]
+        [Ignore]
+        public async Task UpdateRules()
+        {
+            var compositeName = $"{_config["userId"]}_{graphName}";
+            var topicCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if all(\"{yearLineage}\",\"{consistsLineage}\",\"{completeLineage}\") and all(\"{yearLineage}\",\"{followsLineage}\",\"{completeLineage}\") then completed will be true;";
             await _graph.CreateVirtualAttribute(compositeName, mathsLineage, new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = topicCode, lineage = completeLineage });
-            var yearCode = $"output categorical completed {{true,false}};\n if all(\"{consistsLineage}\",\"{activityLineage}\") and all(\"{followsLineage}\",\"{activityLineage}\") and all(\"{consistsLineage}\",\"{testLineage}\") and all(\"{followsLineage}\",\"{testLineage}\") then completed will be true;";
+            var yearCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if all(\"{activityLineage}\",\"{consistsLineage}\",\"{completeLineage}\") and all(\"{activityLineage}\",\"{followsLineage}\",\"{completeLineage}\") and all(\"{testLineage}\",\"{consistsLineage}\",\"{completeLineage}\") and all(\"{testLineage}\",\"{followsLineage}\",\"{completeLineage}\") then completed will be true;";
             await _graph.CreateVirtualAttribute(compositeName, yearLineage, new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = yearCode, lineage = completeLineage });
-            var activityCode = $"output categorical completed {{true,false}};\n if all(\"{consistsLineage}\",\"{activityLineage}\") and all(\"{followsLineage}\",\"{activityLineage}\") then completed will be true;";
+            var activityCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if all(\"{activityLineage}\",\"{consistsLineage}\",\"{completeLineage}\") and all(\"{activityLineage}\",\"{followsLineage}\",\"{completeLineage}\") then completed will be true;";
             await _graph.CreateVirtualAttribute(compositeName, activityLineage, new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = activityCode, lineage = completeLineage });
-            var testCode = $"output categorical completed {{true,false}};\n if all(\"{consistsLineage}\",\"{testLineage}\") and all(\"{followsLineage}\",\"{testLineage}\") then completed will be true;";
+            var testCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if all(\"{testLineage}\",\"{consistsLineage}\",\"{completeLineage}\") and all(\"{testLineage}\",\"{followsLineage}\",\"{completeLineage}\") then completed will be true;";
             await _graph.CreateVirtualAttribute(compositeName, testLineage, new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = testCode, lineage = completeLineage });
             await _graph.Store(compositeName);
         }
 
         [TestMethod]
+        [Ignore]
+        public async Task UpdatelineageTypes()
+        {
+            //sub-activity and subtest have been given lineages of activity and test, thus rules fire when they shouldn't. replace
+            var compositeName = $"{_config["userId"]}_{graphName}";
+            var model = await _primitives.Load(compositeName) as BlobGraphContent;
+            foreach(var s in model.vertices.Values)
+            {
+                if(s.externalId.StartsWith("SUBACTIVITY"))
+                {
+                    await _graph.UpdateGraphObject(compositeName, new GraphObjectUpdate { id = s.id, lineage = subactivityLineage }, OntologyAction.build);
+                }
+                if (s.externalId.StartsWith("SUBTEST"))
+                {
+                    await _graph.UpdateGraphObject(compositeName, new GraphObjectUpdate { id = s.id, lineage = questionLineage }, OntologyAction.build);
+                }
+            }
+            var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
+            var gh = new GraphHandler(_graph);
+            gh.graphName = graphName;
+            gh.paths = new List<string> { consistsLineage, followsLineage };
+            gh.subjectId = Guid.NewGuid().ToString();
+            gh.userId = _config["userId"];
+            gh.targetId = node.id;
+            gh.completionLineage = completeLineage;
+            var next = await gh.GraphPass(new List<DarlCommon.DarlVar>());
+            await _graph.Store(compositeName);
+            var stream = await _graph.StoreGraphML(compositeName);
+            using (var fileStream = File.Create(graphImage))
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+                stream.CopyTo(fileStream);
+            }
+        }
+
+
+        [TestMethod]
         public async Task TestInference()
         {
-            var graphName = "rf1.graph";
-            var compositeName = _config["userId"] + $"_{graphName}";
-            var query = await _graph.TryToInfer(compositeName, new KnowledgeState { Id = Guid.NewGuid().ToString(), subjectId = Guid.NewGuid().ToString(), userId = _config["userId"], knowledgeGraphName = graphName, data = new Dictionary<string, List<GraphAttribute>>() }, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
+            var compositeName =  $"{_config["userId"]}_{graphName}";
+            var model = await _primitives.Load(compositeName);
+            var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
+            var ks = new KnowledgeState { Id = Guid.NewGuid().ToString(), subjectId = Guid.NewGuid().ToString(), userId = _config["userId"], knowledgeGraphName = graphName, data = new Dictionary<string, List<GraphAttribute>>() };
+            var paths = new List<string> { consistsLineage, followsLineage };
+            var order =  _graph.GetExecutionOrder(model, node, paths);
+            var nodes = await _graph.FindNext(model,order,ks,node, paths, completeLineage);
+            Assert.AreEqual(1, nodes.Count);
+            Assert.AreEqual("SUBACTIVITY1", nodes[0].externalId);
+            ks.data.Add(nodes[0].id, new List<GraphAttribute> { new GraphAttribute { lineage = completeLineage } });
+            nodes = await _graph.FindNext(model, order, ks, node, new List<string> { consistsLineage, followsLineage }, completeLineage);
+            Assert.AreEqual(1, nodes.Count);
+            Assert.AreEqual("SUBACTIVITY2", nodes[0].externalId);
+            ks.data.Add(nodes[0].id, new List<GraphAttribute> { new GraphAttribute { lineage = completeLineage } });
+            nodes = await _graph.FindNext(model, order, ks, node, new List<string> { consistsLineage, followsLineage }, completeLineage);
+            Assert.AreEqual(1, nodes.Count);
+            Assert.AreEqual("SUBACTIVITY3", nodes[0].externalId);
+            var gh = new GraphHandler(_graph);
+            gh.graphName = graphName;
+            gh.paths = new List<string> { consistsLineage, followsLineage };
+            gh.subjectId = Guid.NewGuid().ToString();
+            gh.userId = _config["userId"];
+            gh.targetId = node.id;
+            gh.completionLineage = completeLineage;
+            var next = await gh.GraphPass(new List<DarlCommon.DarlVar>());
+        }
+
+        [TestMethod]
+        public async Task TestGraphPass()
+        {
+            var compositeName = $"{_config["userId"]}_{graphName}";
+            var gh = new GraphHandler(_graph);
+            var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
+            gh.graphName = graphName;
+            gh.paths = new List<string> { consistsLineage, followsLineage };
+            gh.subjectId = Guid.NewGuid().ToString();
+            gh.userId = _config["userId"];
+            gh.targetId = node.id;
+            gh.completionLineage = completeLineage;
+            var complete = false;
+            var next = await gh.GraphPass(new List<DarlCommon.DarlVar>());
+            var count = 0;
+            while (!complete)
+            {
+                var text = next.First().response.Value;
+                Debug.WriteLine(text);
+                if (text == "This process is complete.")
+                    complete = true;
+                else
+                {
+                    var current = next.Last();
+                    current.response.Value = current.response.categories.Keys.First();
+                    next = await gh.GraphPass(new List<DarlCommon.DarlVar> { current.response });
+                }
+                count++;
+            }
+            Assert.AreEqual(85, count);
         }
     }
-    
+
 }
+    
+
