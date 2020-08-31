@@ -613,7 +613,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 var currentModel = await GetLineageModel(userId, botModelName);
                 var results = currentModel.Match(phrase, new List<DarlVar>());
-                var att = results.Last();
+                var att = results.Last() as MatchedAnnotation;
                 if (att.path.Contains("default:")) //no actual match
                 {
                     var path = currentModel.BestMatch(phrase);

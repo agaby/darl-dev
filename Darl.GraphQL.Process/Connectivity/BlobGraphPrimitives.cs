@@ -7,6 +7,7 @@ using GraphQL;
 using Microsoft.Azure.Storage.Shared.Protocol;
 using Microsoft.Extensions.Caching.Distributed;
 using ProtoBuf;
+using QuickGraph.Algorithms.MaximumFlow;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -927,6 +928,146 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             await _conn.UpdateKnowledgeState(userId, subjectId, new KnowledgeStateUpdate { data = ks.data });
             return ks;
+        }
+
+        public async Task<GraphObject> GetRecognitionRoot(IGraphModel model, string rootLineage)
+        {
+            if (model.recognitionRoots.ContainsKey(rootLineage))
+                return model.recognitionRoots[rootLineage];
+            throw new ExecutionError($"Recognition root '{rootLineage}' does not exist");
+        }
+
+        public async Task<GraphObject> CreateRecognitionRoot(string compositeName, string rootLineage)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            var rootObject = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = rootLineage, name = "root" };
+            if (cont.recognitionRoots.ContainsKey(rootLineage))
+            {
+                throw new ExecutionError($"Recognition root '{rootLineage}' is already specified");
+            }
+            cont.recognitionVertices.Add(rootObject.id, rootObject);
+            cont.recognitionRoots.Add(rootLineage, rootObject);
+            return rootObject;
+        }
+
+        public async Task<GraphConnection> CreateRecognitionConnection(string compositeName, GraphConnectionInput graphConnection)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            var conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = graphConnection.endId, lineage = graphConnection.lineage, startId = graphConnection.startId, weight = graphConnection.weight ?? 0.0 };
+            if(!cont.recognitionVertices.ContainsKey(conn.startId))
+                throw new ExecutionError($"GraphConnection startId '{conn.startId}' does not exist.");
+            if (!cont.recognitionVertices.ContainsKey(conn.endId))
+                throw new ExecutionError($"GraphConnection endId '{conn.endId}' does not exist.");
+            cont.recognitionVertices[conn.startId].Out.Add(conn);
+            cont.recognitionVertices[conn.endId].In.Add(conn);
+            cont.recognitionEdges.Add(conn.id, conn);
+            return conn;
+        }
+
+        public async Task<GraphObject> CreateRecognitionObject(string compositeName, GraphObjectInput graphObject)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            var obj= new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = graphObject.lineage, name = graphObject.name, properties = graphObject.properties };
+            cont.recognitionVertices.Add(obj.id, obj);
+            return obj;
+        }
+
+        public async Task<GraphObject> DeleteRecognitionObject(string compositeName, string id)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            if (!cont.recognitionVertices.ContainsKey(id))
+                throw new ExecutionError($"GraphConnection id '{id}' does not exist.");
+            var obj = cont.recognitionVertices[id];
+            foreach(var c in obj.In)
+            {
+                cont.recognitionVertices[c.startId].Out.Remove(c);
+                cont.recognitionEdges.Remove(c.id);
+            }
+            foreach (var c in obj.Out)
+            {
+                cont.recognitionVertices[c.endId].In.Remove(c);
+                cont.recognitionEdges.Remove(c.id);
+            }
+            cont.recognitionVertices.Remove(id);
+            DeleteRecognitionOrphans(cont);
+            return obj;
+        }
+
+
+        public async Task<GraphObject> DeleteRecognitionRoot(string compositeName, string rootLineage)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            if(cont.recognitionRoots.ContainsKey(rootLineage))
+                throw new ExecutionError($"Recognition root '{rootLineage}' does not exist");
+            var obj = cont.recognitionRoots[rootLineage];
+            cont.recognitionRoots.Remove(rootLineage);
+            DeleteRecognitionOrphans(cont);
+            return obj;
+        }
+
+        public async Task<GraphObject> UpdateRecognitionObject(string compositeName, GraphObjectUpdate go)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            if (!cont.recognitionVertices.ContainsKey(go.id))
+                throw new ExecutionError($"GraphConnection id '{go.id}' does not exist.");
+            var obj = cont.recognitionVertices[go.id]; 
+            //update nun-null elements in go
+            bool changed = false;
+            if (go.existence != null)
+            {
+                obj.existence = go.existence;
+                changed = true;
+            }
+            if (go.lineage != null) //allow change of lineage?
+            {
+                if (obj.lineage != go.lineage)
+                {
+                    obj.lineage = go.lineage;
+                    changed = true;
+                }
+            }
+            if (go.name != null)
+            {
+                if (obj.name != go.name)
+                {
+                    obj.name = go.name;
+                    changed = true;
+                }
+            }
+            if (go.properties != null && go.properties.Any())
+            {
+                obj.properties = go.properties;
+                changed = true;
+            }
+            return obj;
+        }
+    
+
+        private void DeleteRecognitionOrphans(IGraphModel model)
+        {
+            var complete = false;
+            while (!complete)
+            {
+                var deletions = new List<GraphObject>();
+                foreach (var o in model.recognitionVertices.Values)
+                {
+                    if (!o.In.Any() && !model.recognitionRoots.Values.Contains(o))
+                    {
+                        deletions.Add(o);
+                    }
+                }
+                foreach (var o in deletions)
+                {
+                    foreach (var c in o.Out)
+                    {
+                        model.recognitionVertices[c.endId].In.Remove(c);
+                        model.recognitionEdges.Remove(c.id);
+                    }
+                    model.recognitionVertices.Remove(o.id);
+                }
+                if (!deletions.Any())
+                    complete = true;
+            }
         }
     }
 

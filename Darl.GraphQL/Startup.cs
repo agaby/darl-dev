@@ -104,6 +104,7 @@ namespace Darl.GraphQL
             services.AddSingleton<ISoftMatchProcessing, SoftMatchProcessing>();
             services.AddSingleton<ILocalStore, GraphLocalStore>();
             services.AddSingleton<IGraphPrimitives, BlobGraphPrimitives>();
+            services.AddSingleton<IGraphHandler, GraphHandler>();
 
             //types
             services.AddSingleton<BotFormatType>();
@@ -225,6 +226,15 @@ namespace Darl.GraphQL
             services.AddSingleton<OntologyActionEnum>();
             services.AddSingleton<KGTrainingSpecType>();
             services.AddSingleton<KGTrainingValueType>();
+            services.AddSingleton<GraphAttributeType>();
+            services.AddSingleton<GraphAttributeInputType>();
+            services.AddSingleton<GraphConnectionInputType>();
+            services.AddSingleton<GraphConnectionType>();
+            services.AddSingleton<GraphConnectionUpdateType>();
+            services.AddSingleton<GraphObjectInputType>();
+            services.AddSingleton<GraphObjectType>();
+            services.AddSingleton<GraphObjectUpdateType>();
+            services.AddSingleton<GraphAttributeDataTypeEnum>();
 
 
 

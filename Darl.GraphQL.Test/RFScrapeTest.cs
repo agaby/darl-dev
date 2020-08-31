@@ -1,7 +1,6 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.Thinkbase;
 using DarlLanguage.Processing;
-using GraphQL;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
@@ -395,13 +394,11 @@ namespace Darl.GraphQL.Test
             }
             var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
             var gh = new GraphHandler(_graph);
-            gh.graphName = graphName;
-            gh.paths = new List<string> { consistsLineage, followsLineage };
-            gh.subjectId = Guid.NewGuid().ToString();
-            gh.userId = _config["userId"];
-            gh.targetId = node.id;
-            gh.completionLineage = completeLineage;
-            var next = await gh.GraphPass(new List<DarlCommon.DarlVar>());
+            var paths = new List<string> { consistsLineage, followsLineage };
+            var subjectId = Guid.NewGuid().ToString();
+            var userId = _config["userId"];
+            var targetId = node.id;
+            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>());
             await _graph.Store(compositeName);
             var stream = await _graph.StoreGraphML(compositeName);
             using (var fileStream = File.Create(graphImage))
@@ -433,13 +430,10 @@ namespace Darl.GraphQL.Test
             Assert.AreEqual(1, nodes.Count);
             Assert.AreEqual("SUBACTIVITY3", nodes[0].externalId);
             var gh = new GraphHandler(_graph);
-            gh.graphName = graphName;
-            gh.paths = new List<string> { consistsLineage, followsLineage };
-            gh.subjectId = Guid.NewGuid().ToString();
-            gh.userId = _config["userId"];
-            gh.targetId = node.id;
-            gh.completionLineage = completeLineage;
-            var next = await gh.GraphPass(new List<DarlCommon.DarlVar>());
+            var subjectId = Guid.NewGuid().ToString();
+            var userId = _config["userId"];
+            var targetId = node.id;
+            var next = await gh.GraphPass( userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>());
         }
 
         [TestMethod]
@@ -448,14 +442,12 @@ namespace Darl.GraphQL.Test
             var compositeName = $"{_config["userId"]}_{graphName}";
             var gh = new GraphHandler(_graph);
             var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
-            gh.graphName = graphName;
-            gh.paths = new List<string> { consistsLineage, followsLineage };
-            gh.subjectId = Guid.NewGuid().ToString();
-            gh.userId = _config["userId"];
-            gh.targetId = node.id;
-            gh.completionLineage = completeLineage;
+            var paths = new List<string> { consistsLineage, followsLineage };
+            var subjectId = Guid.NewGuid().ToString();
+            var userId = _config["userId"];
+            var targetId = node.id;
             var complete = false;
-            var next = await gh.GraphPass(new List<DarlCommon.DarlVar>());
+            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName,  new List<DarlCommon.DarlVar>());
             var count = 0;
             while (!complete)
             {
@@ -467,11 +459,54 @@ namespace Darl.GraphQL.Test
                 {
                     var current = next.Last();
                     current.response.Value = current.response.categories.Keys.First();
-                    next = await gh.GraphPass(new List<DarlCommon.DarlVar> { current.response });
+                    next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar> { current.response });
                 }
                 count++;
             }
             Assert.AreEqual(85, count);
+        }
+
+        [TestMethod]
+        public async Task TestAddRecognition()
+        {
+            //Add basics, like Hello, help, default and then maths.
+            var compositeName = $"{_config["userId"]}_{graphName}";
+            var root = await _graph.CreateRecognitionRoot(compositeName, "default:");
+            var helloRule = "output textual response;\nif anything then response will be randomtext(\"hello, can I help ? \", \"hi, what can I do for you ? \");";
+            var hello = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "noun:01,4,05,11,03", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = helloRule } } });
+            var defaultRule = "output textual response;\nif anything then response will be \"I don't know the answer to that.\";";
+            var defaultAnswer = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "default:", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = defaultRule } } });
+            var helpRule = "output textual response;\nif anything then response will be \"This is a simple initial demonstration of maths teaching functionality. Try typing 'maths'\";";
+            var help = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "verb:397,2", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = helpRule } } });
+            var mathRule = "output textual response;\nif anything then response will be \"Maths functionality goes here\";";
+            var math = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "noun:01,0,0,15,21,0,08,02", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = mathRule } } });
+            await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = hello.id, lineage = followsLineage });
+            await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = defaultAnswer.id, lineage = followsLineage });
+            await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = help.id, lineage = followsLineage });
+            await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = math.id, lineage = followsLineage });
+            var gh = new GraphHandler(_graph);
+            var userId = _config["userId"];
+            var subjectId = "default:";
+            var results = await gh.InterpretText(userId, graphName, subjectId,  new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "hello" });
+            Assert.AreEqual(1, results.Count);
+            Assert.AreEqual(helloRule, results[0].darl);
+            results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "help" });
+            Assert.AreEqual(1, results.Count);
+            Assert.AreEqual(helpRule, results[0].darl);
+            Assert.AreEqual("This is a simple initial demonstration of maths teaching functionality. Try typing 'maths'", results[0].response.Value);
+            results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "froopies" });
+            Assert.AreEqual(1, results.Count);
+            Assert.AreEqual(defaultRule, results[0].darl);
+            Assert.AreEqual("I don't know the answer to that.", results[0].response.Value);
+            results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "arithmetic" });
+            Assert.AreEqual(1, results.Count);
+            Assert.AreEqual(mathRule, results[0].darl);
+            Assert.AreEqual("Maths functionality goes here", results[0].response.Value);
+            var nodeId = "1b35bb45-930a-4331-8421-d1c95f7a0bf7";
+            mathRule = $"output network completed \"{nodeId}\" \"{completeLineage}\";\n if anything then completed will be seek(\"{followsLineage}\", \"{consistsLineage}\");";
+            await _graph.UpdateRecognitionObject(compositeName, new GraphObjectUpdate { id = math.id, properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = mathRule } } });
+            results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "arithmetic" });
+
         }
     }
 

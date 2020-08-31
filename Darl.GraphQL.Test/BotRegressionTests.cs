@@ -88,7 +88,8 @@ namespace Darl.GraphQL.Test
             _graphStore = new GraphLocalStore(configuration.Object, logger.Object, context.Object, _graph);
             var formApi = new FormApi(cache.Object, trigger.Object, formLogger.Object, _graphStore);
             _rform = new RuleFormInterface(_conv);
-            _bot = new BotProcessing(_conv, formApi, _rform, trigger.Object, botLogger.Object, _config, context.Object, _graph);
+            var ghandler = new Mock<IGraphHandler>();
+            _bot = new BotProcessing(_conv, formApi, _rform, trigger.Object, botLogger.Object, _config, context.Object, _graph, ghandler.Object);
         }
 
         [TestMethod]

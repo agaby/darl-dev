@@ -28,9 +28,10 @@ namespace Darl.GraphQL.Models.Connectivity
         private ILogger<BotProcessing> _logger;
         private IConfiguration _config;
         IGraphProcessing _graph;
+        IGraphHandler _ghandler;
 
 
-        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger, ILogger<BotProcessing> logger, IConfiguration config, IHttpContextAccessor context, IGraphProcessing graph)
+        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger, ILogger<BotProcessing> logger, IConfiguration config, IHttpContextAccessor context, IGraphProcessing graph, IGraphHandler ghandler)
         {
             _conv = conv;
             _form = form;
@@ -40,6 +41,7 @@ namespace Darl.GraphQL.Models.Connectivity
             _logger = logger;
             _config = config;
             _graph = graph;
+            _ghandler = ghandler;
         }
 
         public async Task<List<InteractTestResponse>> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData)
@@ -209,6 +211,42 @@ namespace Darl.GraphQL.Models.Connectivity
 
             await _conv.SaveBotState(bs);
             return btv;
+        }
+
+        public async Task<List<InteractTestResponse>> InteractKGAsync(string userId, string KnowledgeGraphName, string conversationId, DarlVar conversationData)
+        {
+            _logger.LogWarning($"{nameof(InteractKGAsync)}: {userId}, {KnowledgeGraphName}, {conversationId}, {conversationData.Value}");
+            List<InteractTestResponse> resp = new List<InteractTestResponse>();
+            BotState bs = await _conv.GetBotState(userId, conversationId);
+            if (bs == null)//first call for this conversation
+            {
+                bs = new BotState { conversationId = conversationId, userId = userId, userData = new StoredBotData(), conversationData = new StoredBotData(), privateConversationData = new StoredBotData(), values = new List<DarlVar>(), ruleProcessing = new Stack<RuleSetHandler>(), updated = DateTime.UtcNow };
+            }
+            var responses = await _ghandler.InterpretText(userId, KnowledgeGraphName, conversationId, conversationData);
+            if (responses.Any())
+            {
+                var r = responses.Last();
+                if (r.response.dataType == DarlVar.DataType.seek)
+                {
+                    var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values);
+                }
+                else
+                {
+                    resp.Add(r);
+                }
+                if (r.response.approximate)
+                {
+                    string version = "unknown";
+                    await _conv.CreateDefaultResponse(new DefaultResponse { date = DateTime.UtcNow, model = KnowledgeGraphName, message = conversationData.Value, response = r.response.Value, userId = userId, version = version });
+                }
+            }
+            else
+            {
+                resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Internal error", dataType = DarlVar.DataType.textual } });
+            }
+        
+            return resp;
+
         }
     }
 }
