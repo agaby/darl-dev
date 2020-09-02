@@ -105,6 +105,7 @@ namespace Darl.GraphQL
             services.AddSingleton<ILocalStore, GraphLocalStore>();
             services.AddSingleton<IGraphPrimitives, BlobGraphPrimitives>();
             services.AddSingleton<IGraphHandler, GraphHandler>();
+            services.AddSingleton<IBlobConnectivity, BlobGraphConnectivity>();
 
             //types
             services.AddSingleton<BotFormatType>();

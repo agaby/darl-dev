@@ -41,9 +41,9 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public static int maxDepth = 0;
 
-        public BlobGraphPrimitives(IBlobConnectivity blob, IDistributedCache cache, IConnectivity conn)
+        public BlobGraphPrimitives(IEnumerable<IBlobConnectivity> blobs, IDistributedCache cache, IConnectivity conn)
         {
-            _blob = blob;
+            _blob = blobs.FirstOrDefault(h => h.implementation == nameof(BlobGraphConnectivity));
             _cache = cache;
             _conn = conn;
             flushTimer = new Timer(FlushTimerTimeOut, null, 500, 500);
@@ -859,6 +859,8 @@ namespace Darl.GraphQL.Models.Connectivity
             var userId = "";
             var runtime = new DarlMetaRunTime();
             var ks = await _conn.GetKnowledgeState(userId, subjectId);
+            if (ks == null)
+                ks = new KnowledgeState();
             var cont = model as BlobGraphContent;
             for (int n = dependencies.Count - 1; n >= 0; n--) //evaluate dependencies in reverse order
             {

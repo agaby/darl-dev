@@ -43,7 +43,7 @@ namespace Darl.GraphQL.Test
             var cmplogger = new Mock<ILogger<SoftMatchProcessing>>();
             //            var bc = new BlobConnectivity(configuration.Object, bloblogger.Object);
             var bc = new LocalBlob();
-            cmp = new SoftMatchProcessing(bc, cmplogger.Object);
+            cmp = new SoftMatchProcessing(new List<IBlobConnectivity> { bc }, cmplogger.Object);
             _config = configuration.Object;
         }
 
@@ -234,6 +234,8 @@ namespace Darl.GraphQL.Test
     public class LocalBlob : IBlobConnectivity
     {
         Dictionary<string, byte[]> localData = new Dictionary<string, byte[]>();
+
+        public string implementation => nameof(LocalBlob);
 
         public Task<bool> Delete(string name)
         {

@@ -1,4 +1,6 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.Lineage.Bot;
+using Darl.Lineage.Bot.Stores;
 using Darl.Thinkbase;
 using DarlLanguage.Processing;
 using HtmlAgilityPack;
@@ -27,6 +29,12 @@ namespace Darl.GraphQL.Test
         private IConfiguration _config;
         private IGraphPrimitives _primitives;
         private ILocalStore _graphStore;
+        private IConnectivity _conn;
+        private IFormApi _form;
+        private IRuleFormInterface _rf;
+        private ITrigger _trigger;
+        private ILogger<BotProcessing> _bplogger;
+        private IHttpContextAccessor _context;
 
         private static string industryLineage = "noun:01,2,07,10,14,3,1";
         private static string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";
@@ -87,15 +95,25 @@ namespace Darl.GraphQL.Test
             var context = new Mock<IHttpContextAccessor>();
             _config = configuration.Object;
             context.Setup(a => a.HttpContext.User.Identity.Name).Returns(_config["userId"]);
-            var blob = new BlobConnectivity(_config, blogger.Object);
+            var blob = new BlobGraphConnectivity(_config, blogger.Object);
             var cache = new Mock<IDistributedCache>();
             var conn = new Mock<IConnectivity>();
+            _conn = conn.Object;
             cache.Setup(a => a.GetAsync(It.IsAny<string>(), default)).Returns(Task.FromResult<byte[]>(null));
             conn.Setup(a => a.GetKnowledgeState(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<KnowledgeState>(new KnowledgeState { data = new Dictionary<string, List<GraphAttribute>>() }));
             conn.Setup(a => a.UpdateKnowledgeState(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<KnowledgeStateUpdate>()));
-             _primitives = new BlobGraphPrimitives(blob, cache.Object, conn.Object);
+             _primitives = new BlobGraphPrimitives(new List<IBlobConnectivity> { blob }, cache.Object, conn.Object);
             _graph = new GraphProcessing(_primitives);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
+            var form = new Mock<IFormApi>();
+            _form = form.Object;
+            var rf = new Mock<IRuleFormInterface>();
+            _rf = rf.Object;
+            var trigger = new Mock<ITrigger>();
+            _trigger = trigger.Object;
+            var bplogger = new Mock<ILogger<BotProcessing>>();
+            _bplogger = bplogger.Object;
+            _context = context.Object;
         }
 
 
@@ -467,6 +485,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task TestAddRecognition()
         {
             //Add basics, like Hello, help, default and then maths.
@@ -507,6 +526,51 @@ namespace Darl.GraphQL.Test
             await _graph.UpdateRecognitionObject(compositeName, new GraphObjectUpdate { id = math.id, properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = mathRule } } });
             results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "arithmetic" });
 
+        }
+
+        [TestMethod]
+        [Ignore]
+        public async Task AddRecognitionToKG()
+        {
+            var compositeName = $"{_config["userId"]}_{graphName}";
+            var root = await _graph.CreateRecognitionRoot(compositeName, "default:");
+            var helloRule = "output textual response;\nif anything then response will be randomtext(\"hello, can I help ? \", \"hi, what can I do for you ? \");";
+            var hello = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "noun:01,4,05,11,03", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = helloRule } } });
+            var defaultRule = "output textual response;\nif anything then response will be \"I don't know the answer to that.\";";
+            var defaultAnswer = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "default:", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = defaultRule } } });
+            var helpRule = "output textual response;\nif anything then response will be \"This is a simple initial demonstration of maths teaching functionality. Try typing 'maths'\";";
+            var help = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "verb:397,2", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = helpRule } } });
+            var nodeId = "1b35bb45-930a-4331-8421-d1c95f7a0bf7";
+            var mathRule = $"output network completed \"{nodeId}\" \"{completeLineage}\";\n if anything then completed will be seek(\"{followsLineage}\", \"{consistsLineage}\");";
+            var math = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "noun:01,0,0,15,21,0,08,02", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = mathRule } } });
+            await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = hello.id, lineage = followsLineage });
+            await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = defaultAnswer.id, lineage = followsLineage });
+            await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = help.id, lineage = followsLineage });
+            await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = math.id, lineage = followsLineage });
+            var navRoot = await _graph.CreateRecognitionRoot(compositeName, "navigation:"); //create a navigation tree
+            var navHelpRule = "output textual response;\nif anything then response will be \"You can stop anytime by typing 'quit'.\";";
+            var navHelp = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "verb:397,2", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = helpRule } } });
+            var navQuitRule = "output categorical terminate {\"true\",\"false\"};\nif anything then terminate will be true;";
+            var navQuit = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "verb:060", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = helpRule } } });
+            await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = navRoot.id, endId = navHelp.id, lineage = followsLineage });
+            await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = navRoot.id, endId = navQuit.id, lineage = followsLineage });
+            await _graph.Store(compositeName);
+        }
+
+        [TestMethod]
+        public async Task BotProcessingText()
+        {
+            var compositeName = $"{_config["userId"]}_{graphName}";
+            var userId = _config["userId"];
+            var gh = new GraphHandler(_graph);
+            var bp = new BotProcessing(_conn, _form, _rf, _trigger, _bplogger, _config, _context, _graph, gh);
+            var conversationId = Guid.NewGuid().ToString();
+            var res = await bp.InteractKGAsync(userId, graphName, conversationId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "hello" });
+            Assert.AreEqual(1, res.Count);
+            res = await bp.InteractKGAsync(userId, graphName, conversationId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "poops" });
+            Assert.AreEqual(1, res.Count);
+            Assert.AreEqual("I don't know the answer to that.", res[0].response.Value);
+            res = await bp.InteractKGAsync(userId, graphName, conversationId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "I want to learn arithmetic" });
         }
     }
 

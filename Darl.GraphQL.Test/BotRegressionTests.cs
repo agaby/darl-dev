@@ -65,6 +65,7 @@ namespace Darl.GraphQL.Test
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:MongoDatabase")]).Returns("darlai");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:BlobContainer")]).Returns("darldevgraphs");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StorageConnectionString")]).Returns("DefaultEndpointsProtocol=https;AccountName=darlai;AccountKey=errnwefiVeXcDr0aKbHDxXjblOQhwFwHkeG4qR4caChkABnzp9MNeBBX0FP1jc4DnXPGztI67pbEBXDqA1dPCw==");
+            configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:GraphContainer")]).Returns("darldevgraphs");
 
 
 
@@ -81,9 +82,9 @@ namespace Darl.GraphQL.Test
             _conv = new CosmosDBConnectivity(_config, connLogger.Object, licensing.Object);
             var trigger = new Mock<ITrigger>();
             var cache = new Mock<IDistributedCache>();
-            var bc = new BlobConnectivity(_config, blobLogger.Object);
+            var bc = new BlobGraphConnectivity(_config, blobLogger.Object);
             var conn = new Mock<IConnectivity>();
-            var blob = new BlobGraphPrimitives(bc,cache.Object, conn.Object);
+            var blob = new BlobGraphPrimitives(new List<IBlobConnectivity>{ bc },cache.Object, conn.Object);
             _graph = new GraphProcessing(blob);
             _graphStore = new GraphLocalStore(configuration.Object, logger.Object, context.Object, _graph);
             var formApi = new FormApi(cache.Object, trigger.Object, formLogger.Object, _graphStore);

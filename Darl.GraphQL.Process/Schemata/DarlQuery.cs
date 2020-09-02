@@ -805,6 +805,21 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             ).AuthorizeWith("CorpPolicy");
 
+            FieldAsync<ListGraphType<InteractResponseType>>("interactKnowledgeGraph",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "kgModelName", Description = "The knowledge graph to run" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "conversationId", Description = "The unique conversation identifier" },
+                    new QueryArgument<NonNullGraphType<DarlVarInputType>> { Name = "conversationData", Description = "The input from the other converser." }
+                ),
+                resolve: async context =>
+                {
+                    var kgModelName = context.GetArgument<string>("kgModelName");
+                    var conversationId = context.GetArgument<string>("conversationId");
+                    var conversationData = context.GetArgument<DarlVar>("conversationData");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await bot.InteractKGAsync(userId, kgModelName, conversationId, conversationData));
+                }).AuthorizeWith("CorpPolicy");
+
         }
 
         private string CompositeName(string userId, string graphName)

@@ -31,5 +31,7 @@ namespace Darl.GraphQL.Models.Models
 
         public DateTime? updated { get; set; }
 
+        public List<List<string>> kGraphData { get; set; }
+
     }
 }

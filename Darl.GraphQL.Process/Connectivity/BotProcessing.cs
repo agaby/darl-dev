@@ -222,29 +222,57 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 bs = new BotState { conversationId = conversationId, userId = userId, userData = new StoredBotData(), conversationData = new StoredBotData(), privateConversationData = new StoredBotData(), values = new List<DarlVar>(), ruleProcessing = new Stack<RuleSetHandler>(), updated = DateTime.UtcNow };
             }
-            var responses = await _ghandler.InterpretText(userId, KnowledgeGraphName, conversationId, conversationData);
-            if (responses.Any())
+            if (bs.kGraphData == null) // top level conversation
             {
-                var r = responses.Last();
-                if (r.response.dataType == DarlVar.DataType.seek)
+                var responses = await _ghandler.InterpretText(userId, KnowledgeGraphName, "default:", conversationData);
+                if (responses.Any())
                 {
-                    var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values);
+                    var r = responses.Last();
+                    if (r.response.dataType == DarlVar.DataType.seek)
+                    {
+                        bs.kGraphData = r.response.sequence;
+                        var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values);
+                        resp.Add(res.First());
+                    }
+                    else
+                    {
+                        resp.Add(r);
+                    }
+                    if (r.response.approximate)
+                    {
+                        string version = "unknown";
+                        await _conv.CreateDefaultResponse(new DefaultResponse { date = DateTime.UtcNow, model = KnowledgeGraphName, message = conversationData.Value, response = r.response.Value, userId = userId, version = version });
+                    }
                 }
                 else
                 {
-                    resp.Add(r);
-                }
-                if (r.response.approximate)
-                {
-                    string version = "unknown";
-                    await _conv.CreateDefaultResponse(new DefaultResponse { date = DateTime.UtcNow, model = KnowledgeGraphName, message = conversationData.Value, response = r.response.Value, userId = userId, version = version });
+                    resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Internal error", dataType = DarlVar.DataType.textual } });
                 }
             }
             else
             {
-                resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Internal error", dataType = DarlVar.DataType.textual } });
+                //pass text through the navigation recognition tree checking for help, quit etc.
+                var responses = await _ghandler.InterpretText(userId, KnowledgeGraphName, "navigation:", conversationData);
+                if(responses.Any())
+                {
+                    var r = responses.Last();
+                    if(r.response.name == "response")
+                    {
+                        resp.Add(r);
+                    }
+                    else if(r.response.name == "terminate")
+                    {
+                        bs.kGraphData = null;
+                        resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Quitting...", dataType = DarlVar.DataType.textual } });
+                    }
+                }
+                else //continue processing the KGraph
+                {
+                    var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, bs.kGraphData[0][0], bs.kGraphData[1], bs.kGraphData[2][0], bs.values);
+                    resp.Add(res.Last());
+                }
             }
-        
+            await _conv.SaveBotState(bs);
             return resp;
 
         }
