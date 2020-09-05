@@ -854,9 +854,8 @@ namespace Darl.GraphQL.Models.Connectivity
             return sequences.OrderByDescending(a => a.Value).ToList();
         }
 
-        public async Task<KnowledgeState> UpdateKnowledgeState(IGraphModel model, List<KeyValuePair<GraphObject, int>> dependencies, List<DarlVar> values, string subjectId, string completionLineage)
+        public async Task<KnowledgeState> UpdateKnowledgeState(string userId, IGraphModel model, List<KeyValuePair<GraphObject, int>> dependencies, List<DarlVar> values, string subjectId, string completionLineage)
         {
-            var userId = "";
             var runtime = new DarlMetaRunTime();
             var ks = await _conn.GetKnowledgeState(userId, subjectId);
             if (ks == null)
@@ -883,7 +882,7 @@ namespace Darl.GraphQL.Models.Connectivity
                         continue;
                     }
                 }
-                else
+                else if(o.Key.Out.Any())//leaf nodes can't have inferences
                 {
                     if (o.Key.properties != null) //look locally
                     {

@@ -612,7 +612,7 @@ namespace Darl.GraphQL.Models.Schemata
             );
             FieldAsync<ListGraphType<GraphObjectType>>(
                 "getGraphObjects",
-                "get graph objects based on name and lineage",
+                "Get graph objects based on name and lineage",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "Name of the object" },
@@ -629,7 +629,7 @@ namespace Darl.GraphQL.Models.Schemata
             ).AuthorizeWith("CorpPolicy");
             FieldAsync<ListGraphType<GraphObjectType>>(
                 "getGraphObjectsByLineage",
-                "get graph objects based on lineage",
+                "Get graph objects based on lineage",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "The parent lineage" }
@@ -645,7 +645,7 @@ namespace Darl.GraphQL.Models.Schemata
             ).AuthorizeWith("CorpPolicy"); 
             FieldAsync<GraphObjectType>(
                 "getGraphObjectByid",
-                "get a graph object based on id",
+                "Get a graph object based on id",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the object" }
@@ -661,7 +661,7 @@ namespace Darl.GraphQL.Models.Schemata
             ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphObjectType>(
                 "getGraphObjectByExternalId",
-                "get a graph object based on an external id",
+                "Get a graph object based on an external id",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "externalId", Description = "external id of the object" }
@@ -676,7 +676,7 @@ namespace Darl.GraphQL.Models.Schemata
             ).AuthorizeWith("CorpPolicy");
             FieldAsync<GraphConnectionType>(
                 "getGraphConnection",
-                "get a graph connection based on start and end ids and lineage",
+                "Get a graph connection based on start and end ids and lineage",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "startId", Description = "id of the start object" },
@@ -694,9 +694,9 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             ).AuthorizeWith("CorpPolicy");
 
-            FieldAsync<GraphConnectionType>(
+            FieldAsync<KnowledgeStateType>(
                 "getKnowledgeState",
-                "get a knowledge state by its Id",
+                "Get a knowledge state by its Id",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "Id", Description = "The knowledge state id" }
                 ),
@@ -709,9 +709,9 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             ).AuthorizeWith("CorpPolicy");
 
-            FieldAsync<GraphConnectionType>(
+            FieldAsync<KnowledgeStateType>(
                 "getKnowledgeStateByExternalId",
-                "get a knowledge state by its external Id",
+                "Get a knowledge state by its external Id",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "subjectId", Description = "The external id" }
                 ),
@@ -724,9 +724,9 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             ).AuthorizeWith("CorpPolicy");
 
-            FieldAsync<GraphConnectionType>(
+            FieldAsync<ListGraphType<KnowledgeStateType>>(
                  "getKnowledgeStates",
-                 "get all the knowledge states in this account",
+                 "Get all the knowledge states in this account",
                  resolve: async context =>
                  {
 
@@ -805,7 +805,9 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             ).AuthorizeWith("CorpPolicy");
 
-            FieldAsync<ListGraphType<InteractResponseType>>("interactKnowledgeGraph",
+            FieldAsync<ListGraphType<InteractResponseType>>(
+                "interactKnowledgeGraph",
+                "Perform a chatbot interaction making use of a knowledge graph",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "kgModelName", Description = "The knowledge graph to run" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "conversationId", Description = "The unique conversation identifier" },

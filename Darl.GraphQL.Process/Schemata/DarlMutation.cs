@@ -1114,7 +1114,7 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await graph.CreateGraphConnection(CompositeName(userId, graphName), graphConnection,ontology));
                 }
             ).AuthorizeWith("CorpPolicy");
-            FieldAsync<GraphObjectType>("deleteGraphObject", "delete a graphObject", arguments: new QueryArguments(
+            FieldAsync<GraphObjectType>("deleteGraphObject", "Delete a graphObject", arguments: new QueryArguments(
                      new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph to modify" },
                      new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "The id of the object to delete" }
                 ),
@@ -1127,7 +1127,7 @@ namespace Darl.GraphQL.Models.Schemata
                          async c => await graph.DeleteGraphObject(CompositeName(userId, graphName), id));
                  }
              ).AuthorizeWith("CorpPolicy");
-            FieldAsync<GraphConnectionType>("deleteGraphConnection", "delete a graph connection", arguments: new QueryArguments(
+            FieldAsync<GraphConnectionType>("deleteGraphConnection", "Delete a graph connection", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph to modify" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "The id of the connection to delete" }
                ),

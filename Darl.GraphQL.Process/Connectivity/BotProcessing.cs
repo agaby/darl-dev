@@ -268,6 +268,11 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
                 else //continue processing the KGraph
                 {
+                    var request = new DarlVar { Value = conversationData.Value, name = RuleSetHandler.questionIdentifier, dataType = DarlVar.DataType.textual };
+                    var existing = bs.values.Where(a => a.name == RuleSetHandler.questionIdentifier).FirstOrDefault();
+                    if (existing != null)
+                        bs.values.Remove(existing);
+                    bs.values.Add(request); 
                     var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, bs.kGraphData[0][0], bs.kGraphData[1], bs.kGraphData[2][0], bs.values);
                     resp.Add(res.Last());
                 }

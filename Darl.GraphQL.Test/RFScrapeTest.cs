@@ -385,9 +385,9 @@ namespace Darl.GraphQL.Test
             await _graph.CreateVirtualAttribute(compositeName, mathsLineage, new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = topicCode, lineage = completeLineage });
             var yearCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if all(\"{activityLineage}\",\"{consistsLineage}\",\"{completeLineage}\") and all(\"{activityLineage}\",\"{followsLineage}\",\"{completeLineage}\") and all(\"{testLineage}\",\"{consistsLineage}\",\"{completeLineage}\") and all(\"{testLineage}\",\"{followsLineage}\",\"{completeLineage}\") then completed will be true;";
             await _graph.CreateVirtualAttribute(compositeName, yearLineage, new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = yearCode, lineage = completeLineage });
-            var activityCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if all(\"{activityLineage}\",\"{consistsLineage}\",\"{completeLineage}\") and all(\"{activityLineage}\",\"{followsLineage}\",\"{completeLineage}\") then completed will be true;";
+            var activityCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if all(\"{subactivityLineage}\",\"{consistsLineage}\",\"{completeLineage}\") and all(\"{subactivityLineage}\",\"{followsLineage}\",\"{completeLineage}\") then completed will be true;";
             await _graph.CreateVirtualAttribute(compositeName, activityLineage, new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = activityCode, lineage = completeLineage });
-            var testCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if all(\"{testLineage}\",\"{consistsLineage}\",\"{completeLineage}\") and all(\"{testLineage}\",\"{followsLineage}\",\"{completeLineage}\") then completed will be true;";
+            var testCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if all(\"{questionLineage}\",\"{consistsLineage}\",\"{completeLineage}\") and all(\"{questionLineage}\",\"{followsLineage}\",\"{completeLineage}\") then completed will be true;";
             await _graph.CreateVirtualAttribute(compositeName, testLineage, new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = testCode, lineage = completeLineage });
             await _graph.Store(compositeName);
         }
@@ -551,7 +551,7 @@ namespace Darl.GraphQL.Test
             var navHelpRule = "output textual response;\nif anything then response will be \"You can stop anytime by typing 'quit'.\";";
             var navHelp = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "verb:397,2", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = helpRule } } });
             var navQuitRule = "output categorical terminate {\"true\",\"false\"};\nif anything then terminate will be true;";
-            var navQuit = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "verb:060", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = helpRule } } });
+            var navQuit = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "verb:060", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = navQuitRule } } });
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = navRoot.id, endId = navHelp.id, lineage = followsLineage });
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = navRoot.id, endId = navQuit.id, lineage = followsLineage });
             await _graph.Store(compositeName);

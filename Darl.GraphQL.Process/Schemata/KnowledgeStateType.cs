@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Darl.GraphQL.Process.Schemata
+namespace Darl.GraphQL.Models.Schemata
 {
     class KnowledgeStateType : ObjectGraphType<KnowledgeState>
     {
