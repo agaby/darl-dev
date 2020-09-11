@@ -1,0 +1,25 @@
+﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.GraphQL.Models.Middleware;
+using Darl.GraphQL.Models.Models;
+using Darl.Thinkbase;
+using GraphQL.Types;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Darl.GraphQL.Models.Schemata
+{
+    public class KGraphType : ObjectGraphType<KGraph>
+    {
+        public KGraphType(IGraphProcessing graph)
+        {
+            Name = "kGraph";
+            Description = "A Knowledge Graph and its status.";
+            Field(c => c.Name).Description("The unique name of the knowledge graph");
+            Field<GraphModelType>("model", resolve: context => graph.GetModel(context.Source.userId,context.Source.Name));
+            Field<ListGraphType<AuthorizationType>>("authorizations", resolve: context => context.Source.Authorizations).AuthorizeWith("CorpPolicy");
+            Field<ServiceConnectivityType>("serviceConnectivity", resolve: context => context.Source.serviceConnectivity).AuthorizeWith("CorpPolicy");
+            Field<ListGraphType<UserUsageType>>("usageHistory", resolve: context => context.Source.UsageHistory).AuthorizeWith("CorpPolicy");
+        }
+    }
+}

@@ -236,6 +236,12 @@ namespace Darl.GraphQL
             services.AddSingleton<GraphObjectType>();
             services.AddSingleton<GraphObjectUpdateType>();
             services.AddSingleton<GraphAttributeDataTypeEnum>();
+            services.AddSingleton<KnowledgeStateType>();
+            services.AddSingleton<StringListGraphAttributePairType>();
+            services.AddSingleton<KGraphType>();
+            services.AddSingleton<GraphModelType>();
+            services.AddSingleton<StringGraphObjectPairType>();
+            services.AddSingleton<StringGraphConnectionPairType>();
 
 
 

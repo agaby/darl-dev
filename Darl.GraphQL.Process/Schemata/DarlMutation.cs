@@ -884,6 +884,26 @@ namespace Darl.GraphQL.Models.Schemata
             ).AuthorizeWith("AdminPolicy");
 
             FieldAsync<UserUsageType>(
+                "createKGModelUsage",
+                "Attach a day of usage to a user's Knowledge graph",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<DateTimeGraphType>> { Name = "date", Description = "The date of the usage" },
+                    new QueryArgument<NonNullGraphType<IntGraphType>> { Name = "count", Description = "The count of the usages" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId", Description = "The user responsible for the usages" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "model", Description = "The KGraph the usages relate to" }
+               ),
+                resolve: async context =>
+                {
+                    var date = context.GetArgument<DateTime>("date");
+                    var count = context.GetArgument<int>("count");
+                    var userId = context.GetArgument<string>("userId");
+                    var model = context.GetArgument<string>("model");
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.CreateKGModelUsage(date, count, userId, model));
+                }
+            ).AuthorizeWith("AdminPolicy");
+
+            FieldAsync<UserUsageType>(
                 "createRulesetUsage",
                 "Attach a day of usage to a user's ruleset",
                 arguments: new QueryArguments(
@@ -1267,6 +1287,14 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await connectivity.CreatePhrase(userId, botModelName, path, attribute));
                 });
+
+            FieldAsync<KGraphType>("createKGraph", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
+            {
+                var name = context.GetArgument<string>("name");
+                var userId = connectivity.GetCurrentUserId(context.UserContext);
+                return await context.TryAsyncResolve(
+                    async c => await connectivity.CreateKGraph(userId, name));
+            });
 
         }
 

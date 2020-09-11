@@ -65,6 +65,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public static readonly string updateCollection = "update";
         public static readonly string documentCollection = "document";
         public static readonly string knowledgestateCollection = "knowledgestate";
+        public static readonly string kgraphcollection = "kgraph";
 
 
         public CosmosDBConnectivity(IConfiguration config, ILogger<CosmosDBConnectivity> logger, ILicensing licensing)
@@ -716,7 +717,8 @@ namespace Darl.GraphQL.Models.Connectivity
             var query = collection.AsQueryable()
                 .Where(a => a.AppId == appId)
                 .Select(c => c.UsageHistory);
-            return query.FirstOrDefault().ToList();
+            var list =  await query.FirstOrDefaultAsync();
+            return list.ToList();
         }
 
         /// <summary>
@@ -2692,6 +2694,45 @@ namespace Darl.GraphQL.Models.Connectivity
             var update = Builders<RuleSet>.Update.Combine(updList);
             var rs = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<RuleSet, RuleSet> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
             return new ModelDetails { author = rs.Contents.author, copyright = rs.Contents.copyright, currency = rs.Contents.currency, description = rs.Contents.description, license = rs.Contents.license, price = rs.Contents.price, version = rs.Contents.version };
+        }
+
+        public async Task<List<KGraph>> GetKGraphsAsync(string userId)
+        {
+            var mc = db.GetCollection<KGraph>(kgraphcollection);
+            var query = mc.AsQueryable()
+            .Where(p => p.userId == userId);
+            return await query.ToListAsync();
+        }
+
+        public async Task<UserUsage> CreateKGModelUsage(DateTime date, int count, string userId, string model)
+        {
+            var usage = new UserUsage(date, count);
+            var existing = await GetKGModel(userId, model);
+            if (existing == null)
+                return usage;
+            if (existing.UsageHistory.Any(x => x.Date == date))//don't overwrite
+                return usage;
+            var collection = db.GetCollection<KGraph>(kgraphcollection);
+            var filter = Builders<KGraph>.Filter.Where(x => x.userId == userId && x.Name == model);
+            var update = Builders<KGraph>.Update.Push("UsageHistory", usage);
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return usage;
+        }
+
+        public async Task<KGraph> GetKGModel(string userId, string model)
+        {
+            var mc = db.GetCollection<KGraph>(kgraphcollection);
+            var query = mc.AsQueryable()
+            .Where(p => p.userId == userId && p.Name == model);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<KGraph> CreateKGraph(string userId, string name)
+        {
+            var mc = db.GetCollection<KGraph>(kgraphcollection);
+            var model = new KGraph { Name = name, userId = userId};
+            await mc.InsertOneAsync(model);
+            return model;
         }
     }
 }

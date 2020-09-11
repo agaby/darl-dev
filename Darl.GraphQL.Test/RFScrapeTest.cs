@@ -558,7 +558,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
-        public async Task BotProcessingText()
+        public async Task BotProcessingTest()
         {
             var compositeName = $"{_config["userId"]}_{graphName}";
             var userId = _config["userId"];
@@ -572,6 +572,8 @@ namespace Darl.GraphQL.Test
             Assert.AreEqual("I don't know the answer to that.", res[0].response.Value);
             res = await bp.InteractKGAsync(userId, graphName, conversationId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "I want to learn arithmetic" });
         }
+
+
     }
 
 }

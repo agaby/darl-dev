@@ -42,7 +42,8 @@ namespace Darl.GraphQL.Models.Schemata
 
             FieldAsync<ListGraphType<BotModelType>>(
               "botmodels",
-              resolve: async context =>
+               "The set of Bot models for this account.",
+             resolve: async context =>
               {
                   var userId = connectivity.GetCurrentUserId(context.UserContext);
                   return await context.TryAsyncResolve(
@@ -50,8 +51,20 @@ namespace Darl.GraphQL.Models.Schemata
               }
             );
 
+            FieldAsync<ListGraphType<KGraphType>>(
+              "kgraphs",
+              "The set of Knowledge Graphs for this account.",
+              resolve: async context =>
+              {
+                  var userId = connectivity.GetCurrentUserId(context.UserContext);
+                  return await context.TryAsyncResolve(
+                      async c => await connectivity.GetKGraphsAsync(userId));
+              }
+            );
+
             FieldAsync<ListGraphType<ContactType>>(
               "contacts",
+               "The set of contacts.",
                   resolve: async context =>
                   {
                       return await context.TryAsyncResolve(
@@ -126,6 +139,18 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
                         async c => await connectivity.GetBotModel(userId, c.GetArgument<String>("name"))
+                    );
+                }
+            );
+
+            FieldAsync<KGraphType>(
+                "kGraphByName",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.GetKGModel(userId, c.GetArgument<String>("name"))
                     );
                 }
             );

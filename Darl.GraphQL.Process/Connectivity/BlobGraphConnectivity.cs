@@ -70,8 +70,15 @@ namespace Darl.GraphQL.Models.Connectivity
             var abbreviatedList = new List<string>();
             foreach (var l in list)
             {
-                int loc = l.LastIndexOf(prefix);
-                abbreviatedList.Add(l.Substring(loc + prefix.Length + 1));
+                if (!string.IsNullOrEmpty(prefix))
+                {
+                    int loc = l.LastIndexOf(prefix);
+                    abbreviatedList.Add(l.Substring(loc + prefix.Length + 1));
+                }
+                else
+                {
+                    abbreviatedList.Add(l);
+                }
             }
             return abbreviatedList;
         }

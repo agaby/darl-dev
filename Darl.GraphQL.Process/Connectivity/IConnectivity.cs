@@ -20,7 +20,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<Authorization> CreateAuthorization(string userId, string name, Authorization auth);
 
         Task<BotConnection> CreateBotConnection(string userId, string botModelName, string appId, string password);
-
         Task<Contact> CreateContactAsync(Contact contact);
 
         Task<Default> CreateDefault(string name, string value);
@@ -56,7 +55,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<string> DeleteAuthorization(string userId, string name, string name1);
 
         Task<AzureCredentials> DeleteAzureCredentials(string userId, string botModelName, ModelType modelType);
-
+        Task<List<KGraph>> GetKGraphsAsync(string userId);
         Task<BotConnection> DeleteBotConnection(string userId, string botModelName, string appId);
 
         Task<BotModel> DeleteBotModel(string userId, string name);
@@ -228,5 +227,8 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<KnowledgeState> UpdateKnowledgeState(string userId, string ksId, KnowledgeStateUpdate state);
         Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state);
         Task<KnowledgeState> GetKnowledgeStateByExternalId(string userId, string extId);
+        Task<UserUsage> CreateKGModelUsage(DateTime date, int count, string userId, string model);
+        Task<KGraph> GetKGModel(string userId, string model);
+        Task<KGraph> CreateKGraph(string userId, string name);
     }
 }
