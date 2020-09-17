@@ -242,6 +242,11 @@ namespace Darl.GraphQL
             services.AddSingleton<GraphModelType>();
             services.AddSingleton<StringGraphObjectPairType>();
             services.AddSingleton<StringGraphConnectionPairType>();
+            services.AddSingleton<DisplayConnectionInnerType>();
+            services.AddSingleton<DisplayConnectionOuterType>();
+            services.AddSingleton<DisplayModelType>();
+            services.AddSingleton<DisplayObjectInnerType>();
+            services.AddSingleton<DisplayObjectOuterType>();
 
 
 

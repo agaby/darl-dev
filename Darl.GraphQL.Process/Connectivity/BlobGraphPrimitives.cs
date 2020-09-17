@@ -1013,18 +1013,15 @@ namespace Darl.GraphQL.Models.Connectivity
                 throw new ExecutionError($"GraphConnection id '{go.id}' does not exist.");
             var obj = cont.recognitionVertices[go.id]; 
             //update nun-null elements in go
-            bool changed = false;
             if (go.existence != null)
             {
                 obj.existence = go.existence;
-                changed = true;
             }
             if (go.lineage != null) //allow change of lineage?
             {
                 if (obj.lineage != go.lineage)
                 {
                     obj.lineage = go.lineage;
-                    changed = true;
                 }
             }
             if (go.name != null)
@@ -1032,17 +1029,137 @@ namespace Darl.GraphQL.Models.Connectivity
                 if (obj.name != go.name)
                 {
                     obj.name = go.name;
-                    changed = true;
                 }
             }
             if (go.properties != null && go.properties.Any())
             {
-                obj.properties = go.properties;
-                changed = true;
+                //merge properties
+                foreach (var a in go.properties)
+                {
+                    var found = obj.properties.Where(b => b.lineage == a.lineage).FirstOrDefault();
+                    if (found != null)
+                    {
+                        obj.properties.Remove(found);
+                    }
+                    obj.properties.Add(a);
+                }
             }
             return obj;
         }
-    
+
+        public async Task<List<GraphObject>> NavigateRecognition(string compositeName, string root, string path)
+        {
+            var list = new List<GraphObject>();
+            var cont = await Load(compositeName) as BlobGraphContent;
+            if (!cont.recognitionRoots.ContainsKey(root))
+                return list;
+            var tokens = path.Split('/').ToList();
+            return cont.recognitionRoots[root].Navigate(cont, tokens);
+        }
+
+        public async Task<GraphObject> UpdateVirtualObject(string compositeName, GraphObjectUpdate go)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            if (!cont.virtualVertices.ContainsKey(go.lineage))
+                return null;
+            var node = cont.virtualVertices[go.lineage];
+            //update nun-null elements in go
+            if (go.name != null)
+            {
+                if (node.name != go.name)
+                {
+                    node.name = go.name;
+                }
+            }
+            if (go.properties != null && go.properties.Any())
+            {
+                //merge properties
+                foreach (var a in go.properties)
+                {
+                    var found = node.properties.Where(b => b.lineage == a.lineage).FirstOrDefault();
+                    if (found != null)
+                    {
+                        node.properties.Remove(found);
+                    }
+                    node.properties.Add(a);
+                }
+            }
+            return node;
+        }
+
+        public async Task<GraphObject> FindRecognition(string compositeName, string root, string path)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            if (!cont.recognitionRoots.ContainsKey(root))
+                return null;
+            var tokens = path.Split('/').ToList();
+            return cont.recognitionRoots[root].Find(cont, tokens);
+        }
+
+        public async Task<GraphObject> GetVirtualObjectByLineage(string compositeName, string lineage)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            if (cont.virtualVertices.ContainsKey(lineage))
+                return cont.virtualVertices[lineage];
+            return null;
+        }
+
+        public async Task<GraphObject> GetRecognitionObjectById(string compositeName, string id)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            if (cont.recognitionVertices.ContainsKey(id))
+                return cont.recognitionVertices[id];
+            return null;
+            throw new NotImplementedException();
+        }
+
+        public async Task<DisplayModel> GetRealDisplayGraph(string compositeName, string lineageFilter)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            var dmodel = new DisplayModel { nodes = new List<DisplayObject>(), edges = new List<DisplayConnection>() };
+            if(string.IsNullOrEmpty(lineageFilter)) //return everything
+            {
+                dmodel.nodes.AddRange(cont.vertices.Values.Select(i => new DisplayObject {id = i.id, name = i.name, lineage = i.lineage, externalId = i.externalId }));
+                dmodel.edges.AddRange(cont.edges.Values.Select(i => new DisplayConnection {id = i.id, name = i.name, source = i.startId, target = i.endId }));
+            }
+            else
+            {
+                dmodel.nodes.AddRange(cont.vertices.Values.Where(a => a.lineage.StartsWith(lineageFilter)).Select((i => new DisplayObject { id = i.id, name = i.name, lineage = i.lineage, externalId = i.externalId })));
+                dmodel.edges.AddRange(cont.vertices.Values.Where(a => a.lineage.StartsWith(lineageFilter)).SelectMany(a => a.In).Intersect(cont.vertices.Values.Where(a => a.lineage.StartsWith(lineageFilter)).SelectMany(a => a.Out)).Select(i => new DisplayConnection { id = i.id, name = i.name, source = i.startId, target = i.endId }));
+            }
+            return dmodel;
+        }
+
+        public async Task<DisplayModel> GetVirtualDisplayGraph(string compositeName)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            var dmodel = new DisplayModel { nodes = new List<DisplayObject>(), edges = new List<DisplayConnection>() };
+            dmodel.nodes.AddRange(cont.virtualVertices.Values.Select(i => new DisplayObject { id = i.lineage, name = i.name, lineage = i.lineage}));
+            dmodel.edges.AddRange(cont.virtualEdges.Values.Select(i => new DisplayConnection { id = i.id, name = i.name, source = i.startId, target = i.endId }));           
+            return dmodel;
+        }
+
+        public async Task<DisplayModel> GetRecognitionDisplayGraph(string compositeName, string root)
+        {
+            var dmodel = new DisplayModel { nodes = new List<DisplayObject>(), edges = new List<DisplayConnection>() };
+            var cont = await Load(compositeName) as BlobGraphContent;
+            if(cont.recognitionRoots.ContainsKey(root))
+            {
+                var robj = cont.recognitionRoots[root];
+                RecursivelyAddElements(robj, dmodel, cont);
+            }
+            return dmodel;
+        }
+        private void RecursivelyAddElements(GraphObject robj, DisplayModel dmodel, IGraphModel cont)
+        {
+            dmodel.nodes.Add(new DisplayObject { id = robj.id, name = robj.name, lineage = robj.lineage });
+            foreach (var c in robj.Out)
+            {
+                dmodel.edges.Add(new DisplayConnection { id = c.id, name = c.name, source = c.startId, target = c.endId});
+                RecursivelyAddElements(cont.recognitionVertices[c.endId], dmodel, cont);
+            }
+        }
+
 
         private void DeleteRecognitionOrphans(IGraphModel model)
         {
@@ -1070,6 +1187,8 @@ namespace Darl.GraphQL.Models.Connectivity
                     complete = true;
             }
         }
+
+
     }
 
     public class Dependency
