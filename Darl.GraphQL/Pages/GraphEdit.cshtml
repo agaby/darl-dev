@@ -23,7 +23,7 @@
             </div>
         </div>
         <div class="space-90"><hr /></div>
-        <div id ="real-header" class="row d-none">
+        <div id="real-header" class="row d-none">
             <div class="col-md-9">
                 <h3>Real graph</h3>
             </div>
@@ -67,599 +67,602 @@
     </div>
 </main>
 
-    @section StyleSheets
+@section StyleSheets
 {
-    }
+}
 
-    @section Scripts
+@section Scripts
 {
-        <script src="jquery/jquery.min.js"></script>
-        <script src="/graphql/graphql.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.16.0/cytoscape.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
+    <script src="jquery/jquery.min.js"></script>
+    <script src="/graphql/graphql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.16.0/cytoscape.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
+    <script src="https://unpkg.com/dagre@0.7.4/dist/dagre.js"></script>
+    <script src="/cytoscape-dagre/cytoscape-dagre.js"></script>
 
-        <script language="JavaScript">
+    <script language="JavaScript">
 
-            var allkgmodels;
-            var graph;
-            var realkgraphdata;
-            var realcy;
-            var virtualcy;
-            var recognitioncy;
-            var virtualkgraphdata;
-            var recognitionkgraphdata;
-            var realeditor;
-            var virtualeditor;
-            var recognitioneditor;
-            var realobjectdata;
-            var virtualobjectdata;
-            var recognitionobjectdata;
-            var realeditorchange;
-            var virtualeditorchange;
-            var receditorchange;
-            var realchanged;
-            var virtualchanged;
-            var recchanged;
-            var mdname;
-            var createKG;
-            var savechanges;
+        var allkgmodels;
+        var graph;
+        var realkgraphdata;
+        var realcy;
+        var virtualcy;
+        var recognitioncy;
+        var virtualkgraphdata;
+        var recognitionkgraphdata;
+        var realeditor;
+        var virtualeditor;
+        var recognitioneditor;
+        var realobjectdata;
+        var virtualobjectdata;
+        var recognitionobjectdata;
+        var realeditorchange;
+        var virtualeditorchange;
+        var receditorchange;
+        var realchanged;
+        var virtualchanged;
+        var recchanged;
+        var mdname;
+        var createKG;
+        var savechanges;
 
-            $(async function () {
+        $(async function () {
 
 
 
-                graph = graphql("/graphql");
-                var apiKey = findGetParameter("apikey");
-                mdname = findGetParameter("kgraph");
-                if (apiKey !== null)
-                    graph = graphql("/graphql", { headers: { "Authorization": "Basic " + apiKey } });
+            graph = graphql("/graphql");
+            var apiKey = findGetParameter("apikey");
+            mdname = findGetParameter("kgraph");
+            if (apiKey !== null)
+                graph = graphql("/graphql", { headers: { "Authorization": "Basic " + apiKey } });
 
-                allkgmodels = graph(`{ kgraphs { name }}`);
-                realkgraphdata = graph('query kgd($model: String!){getRealKGDisplay(graphName: $model){nodes{data{ id label lineage externalId}} edges{ data{ id label source target}}}}');
-                virtualkgraphdata = graph('query vkgd($model: String!){getVirtualKGDisplay(graphName: $model){nodes{data{ id lineage}} edges{ data{ id label source target}}}}');
-                recognitionkgraphdata = graph('query rkgd($model: String!){getRecognitionKGDisplay(graphName: $model root: "default:"){nodes{data{ id label lineage }} edges{ data{ id label source target}}}}');
-                realobjectdata = graph('query rod($model: String! $id: String!){getGraphObjectByid(graphName: $model id: $id){name lineage id existence externalId properties {name lineage value }}}');
-                virtualobjectdata = graph('query vod($model: String! $lineage: String!){getVirtualObjectByLineage(graphName: $model lineage: $lineage){name lineage id properties {name lineage value }}}');
-                recognitionobjectdata = graph('query recod($model: String! $id: String!){getRecognitionObjectById(graphName: $model id: $id){name lineage id properties {name lineage value }}}');
-                realeditorchange = graph('mutation rec($model: String! $goj: String!){updateGraphObjectFromJSON(graphName: $model graphObjectJSON: $goj ontology: BUILD) {id}}');
-                virtualeditorchange = graph('mutation uvg($model: String! $goj: String!){updateVirtualGraphObjectFromJSON(graphName: $model graphObjectJSON: $goj) {id}}');
-                receditorchange = graph('mutation rec($model: String! $goj: String!){updateRecognitionObjectFromJSON(graphName: $model graphObjectJSON: $goj) {id}}');
-                createKG = graph('mutation createKG($name: String!){createKGraph(name: $name){name}}');
-                savechanges = graph('mutation saveKGraph($name: String!){saveKGraph(name: $name)}')
+            allkgmodels = graph(`{ kgraphs { name }}`);
+            realkgraphdata = graph('query kgd($model: String!){getRealKGDisplay(graphName: $model){nodes{data{ id label lineage externalId}} edges{ data{ id label source target}}}}');
+            virtualkgraphdata = graph('query vkgd($model: String!){getVirtualKGDisplay(graphName: $model){nodes{data{ id lineage}} edges{ data{ id label source target}}}}');
+            recognitionkgraphdata = graph('query rkgd($model: String!){getRecognitionKGDisplay(graphName: $model root: "default:"){nodes{data{ id label lineage }} edges{ data{ id label source target}}}}');
+            realobjectdata = graph('query rod($model: String! $id: String!){getGraphObjectByid(graphName: $model id: $id){name lineage id existence externalId properties {name lineage value }}}');
+            virtualobjectdata = graph('query vod($model: String! $lineage: String!){getVirtualObjectByLineage(graphName: $model lineage: $lineage){name lineage id properties {name lineage value }}}');
+            recognitionobjectdata = graph('query recod($model: String! $id: String!){getRecognitionObjectById(graphName: $model id: $id){name lineage id properties {name lineage value }}}');
+            realeditorchange = graph('mutation rec($model: String! $goj: String!){updateGraphObjectFromJSON(graphName: $model graphObjectJSON: $goj ontology: BUILD) {id}}');
+            virtualeditorchange = graph('mutation uvg($model: String! $goj: String!){updateVirtualGraphObjectFromJSON(graphName: $model graphObjectJSON: $goj) {id}}');
+            receditorchange = graph('mutation rec($model: String! $goj: String!){updateRecognitionObjectFromJSON(graphName: $model graphObjectJSON: $goj) {id}}');
+            createKG = graph('mutation createKG($name: String!){createKGraph(name: $name){name}}');
+            savechanges = graph('mutation saveKGraph($name: String!){saveKGraph(name: $name)}')
 
-                if (mdname !== null) {
-                    $('#fileHandling').addClass('d-none');
+            if (mdname !== null) {
+                $('#fileHandling').addClass('d-none');
+                await loadGraphs();
+            }
+            else {
+                await updateDropdown();
+
+                $('#kgmodel-dropdown').on('change', async function () {
+                    mdname = this.value;
+                    //getGraphData
                     await loadGraphs();
-                }
-                else {
-                    await updateDropdown();
-
-                    $('#kgmodel-dropdown').on('change', async function () {
-                        mdname = this.value;
-                        //getGraphData
-                        await loadGraphs();
-                    });
-                }
-
-                $('#kg-create').click(async function () {
-                    mdname = $('#kg-input').val();
-                    try {
-                        var res = await createKG({ name: mdname });
-                        await updateDropdown();
-                        alert(mdname + " created");
-                    }
-                    catch (err) {
-                        alert(err[0].message);
-                    }
-                });
-
-
-                $('#kg-save').click(async function () {
-                    try {
-                        await savechanges({ name: mdname });
-                        $('#kg=save').prop('disabled', false);
-                        alert(mdname + " saved");
-                    }
-                    catch (err) {
-                        alert(err[0].message);
-                    }               
-                });
-
-            });
-
-            function findGetParameter(parameterName) {
-                var result = null,
-                    tmp = [];
-                location.search
-                    .substr(1)
-                    .split("&")
-                    .forEach(function (item) {
-                        tmp = item.split("=");
-                        if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
-                    });
-                return result;
-            }
-
-            async function updateDropdown() {
-                const rs = await allkgmodels();
-                var dropdown = $('#kgmodel-dropdown');
-                dropdown.empty();
-                dropdown.append('<option selected="true" disabled>Choose a Knowledge Graph to edit</option>');
-                dropdown.prop('selectedIndex', 0);
-                $.each(rs.kgraphs, function (key, entry) {
-                    dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
                 });
             }
 
-            async function loadGraphs() {
+            $('#kg-create').click(async function () {
+                mdname = $('#kg-input').val();
                 try {
-                    $('#real-header').removeClass('d-none');
-                    var realdata = await realkgraphdata({ model: mdname });
-                    var virtualdata = await virtualkgraphdata({ model: mdname });
-                    var recdata = await recognitionkgraphdata({ model: mdname });
-                    //instantiate graphs here
-                    realcy = cytoscape({
-                        container: $('#realgraph'),
-                        elements: realdata.getRealKGDisplay,
-                        style: [ // the stylesheet for the graph
-                            {
-                                selector: 'node',
-                                style: {
-                                    'background-color': '#666',
-                                    'label': 'data(externalId)'
-                                }
-                            },
-
-                            {
-                                selector: 'edge',
-                                style: {
-                                    'width': 3,
-                                    'line-color': '#ccc',
-                                    'target-arrow-color': '#ccc',
-                                    'target-arrow-shape': 'triangle',
-                                    'curve-style': 'bezier'
-                                }
-                            }
-                        ],
-
-                        layout: {
-                            name: 'cose',
-                            idealEdgeLength: 100,
-                            nodeOverlap: 20,
-                            refresh: 20,
-                            fit: true,
-                            padding: 30,
-                            randomize: false,
-                            componentSpacing: 100,
-                            nodeRepulsion: 400000,
-                            edgeElasticity: 100,
-                            nestingFactor: 5,
-                            gravity: 80,
-                            numIter: 1000,
-                            initialTemp: 200,
-                            coolingFactor: 0.95,
-                            minTemp: 1.0
-                        }
-
-                    });
-                    virtualcy = cytoscape({
-                        container: $('#virtualgraph'),
-                        elements: virtualdata.getVirtualKGDisplay,
-                        style: [ // the stylesheet for the graph
-                            {
-                                selector: 'node',
-                                style: {
-                                    'background-color': '#666',
-                                    'label': 'data(lineage)'
-                                }
-                            },
-
-                            {
-                                selector: 'edge',
-                                style: {
-                                    'width': 3,
-                                    'line-color': '#ccc',
-                                    'target-arrow-color': '#ccc',
-                                    'target-arrow-shape': 'triangle',
-                                    'curve-style': 'bezier',
-                                    'label': 'data(label)'
-                                }
-                            }
-                        ],
-
-                        layout: {
-                            name: 'grid'
-                        }
-                    });
-                    recognitioncy = cytoscape({
-                        container: $('#recognitiongraph'),
-                        elements: recdata.getRecognitionKGDisplay,
-                        style: [ // the stylesheet for the graph
-                            {
-                                selector: 'node',
-                                style: {
-                                    'background-color': '#666',
-                                    'label': 'data(lineage)'
-                                }
-                            },
-
-                            {
-                                selector: 'edge',
-                                style: {
-                                    'width': 3,
-                                    'line-color': '#ccc',
-                                    'target-arrow-color': '#ccc',
-                                    'target-arrow-shape': 'triangle',
-                                    'curve-style': 'bezier',
-                                    'label': 'data(label)'
-                                }
-                            }
-                        ],
-
-                        layout: {
-                            name: 'grid'
-                        }
-                    });
-                    realeditor = new JSONEditor(document.getElementById('realedit'), {
-                        theme: 'bootstrap4',
-                        schema: {
-                            "type": "object",
-                            "typeName": "GraphObject",
-                            "title": "Node contents",
-                            "additionalProperties": false,
-                            "options": {
-                                "disable_collapse": true
-                            },
-                            "required": [
-                                "name",
-                                "lineage",
-                                "id",
-                                "existence",
-                                "externalId",
-                                "properties"
-                            ],
-                            "properties": {
-                                "id": {
-                                    "type": "string",
-                                    "title": "Internal Id",
-                                    "description": "Internal reference for this object",
-                                    "readonly": true
-                                },
-                                "name": {
-                                    "type": "string",
-                                    "title": "Name",
-                                    "description": "Textual name of this object"
-                                },
-                                "lineage": {
-                                    "type": "string",
-                                    "title": "Lineage",
-                                    "readonly": true,
-                                    "description": "Type of this object in the DARL heirarchy"
-                                },
-                                "externalId": {
-                                    "type": "string",
-                                    "title": "External Id",
-                                    "description": "An external reference to this object"
-                                },
-                                "existence": {
-                                    "type": "array",
-                                    "title": "Existence",
-                                    "description": "Sequence of dates/times defining this objects lifetime",
-                                    "options": {
-                                        "disable_collapse": true
-                                    },
-                                    "items": {
-                                        "type": "datetime",
-                                        "title": "Date/Time",
-                                        "format": "datetime"
-                                    }
-                                },
-                                "properties": {
-                                    "type": "array",
-                                    "title": "Properties",
-                                    "description": "Attributes associated with this object",
-                                    "options": {
-                                        "disable_collapse": true
-                                    },
-                                    "items": {
-                                        "type": "object",
-                                        "typeName": "GraphAttribute",
-                                        "title": "Attribute",
-                                        "additionalProperties": false,
-                                        "required": [
-                                            "name",
-                                            "lineage",
-                                            "value"
-                                        ],
-                                        "properties": {
-                                            "name": {
-                                                "type": "string",
-                                                "title": "Name",
-                                                "description": "Textual name of this Attribute"
-                                            },
-                                            "lineage": {
-                                                "type": "string",
-                                                "title": "Lineage",
-                                                "description": "Type of this attribute in the DARL heirarchy"
-                                            },
-                                            "value": {
-                                                "type": "string",
-                                                "title": "Value",
-                                                "format": "textarea",
-                                                "description": "Value of this attribute"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        collapsed: true,
-                        disable_edit_json: true,
-                        disable_properties: true,
-                        disable_collapse: false,
-                        disable_array_add: false,
-                        disable_array_delete: false,
-                        disable_array_reorder: true,
-                        use_default_values: false,
-                        form_name_root: "real"
-                    });
-                    realchanged = true;
-                    virtualchanged = true;
-                    recchanged = true;
-                    realeditor.on('change', async function () {
-                        // Do something
-                        var obj = realeditor.getValue();
-                        if (obj.id !== null && obj.id !== "" && realchanged == false) {
-                            var json = JSON.stringify(obj);
-                            await realeditorchange({ model: mdname, goj: json });
-                            $('#kg-save').prop('disabled', false);
-                        }
-                        realchanged = false;
-                    });
-
-                    virtualeditor = new JSONEditor(document.getElementById('virtualedit'), {
-                        theme: 'bootstrap4',
-                        schema: {
-                            "type": "object",
-                            "typeName": "GraphObject",
-                            "title": "Node contents",
-                            "additionalProperties": false,
-                            "options": {
-                                "disable_collapse": true
-                            },
-                            "required": [
-                                "name",
-                                "lineage",
-                                "id",
-                                "properties"
-                            ],
-                            "properties": {
-                                "id": {
-                                    "type": "string",
-                                    "title": "Internal Id",
-                                    "description": "Internal reference for this object",
-                                    "readonly": true
-                                },
-                                "name": {
-                                    "type": "string",
-                                    "title": "Name",
-                                    "description": "Textual name of this object"
-                                },
-                                "lineage": {
-                                    "type": "string",
-                                    "title": "Lineage",
-                                    "readonly": true,
-                                    "description": "Type of this object in the DARL heirarchy"
-                                },
-                                "properties": {
-                                    "type": "array",
-                                    "title": "Properties",
-                                    "description": "Attributes associated with this object",
-                                    "options": {
-                                        "disable_collapse": true
-                                    },
-                                    "items": {
-                                        "type": "object",
-                                        "typeName": "GraphAttribute",
-                                        "title": "Attribute",
-                                        "additionalProperties": false,
-                                        "required": [
-                                            "name",
-                                            "lineage",
-                                            "value"
-                                        ],
-                                        "properties": {
-                                            "name": {
-                                                "type": "string",
-                                                "title": "Name",
-                                                "description": "Textual name of this Attribute"
-                                            },
-                                            "lineage": {
-                                                "type": "string",
-                                                "title": "Lineage",
-                                                "readonly": true,
-                                                "description": "Type of this attribute in the DARL heirarchy"
-                                            },
-                                            "value": {
-                                                "type": "string",
-                                                "title": "Value",
-                                                "format": "textarea",
-                                                "description": "Value of this attribute"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        collapsed: true,
-                        disable_edit_json: true,
-                        disable_properties: true,
-                        disable_collapse: false,
-                        disable_array_add: false,
-                        disable_array_delete: false,
-                        disable_array_reorder: true,
-                        form_name_root: "virtual"
-
-                    });
-
-                    virtualeditor.on('change', async function () {
-                        // Do something
-                        var obj = virtualeditor.getValue();
-                        if (obj.id !== null && obj.id !== "" && virtualchanged == false) {
-                            var json = JSON.stringify(obj);
-                            await virtualeditorchange({ model: mdname, goj: json });
-                            $('#kg-save').prop('disabled', false);
-                        }
-                        virtualchanged = false;
-                    });
-
-                    recognitioneditor = new JSONEditor(document.getElementById('recognitionedit'), {
-                        theme: 'bootstrap4',
-                        schema: {
-                            "type": "object",
-                            "typeName": "GraphObject",
-                            "title": "Node contents",
-                            "additionalProperties": false,
-                            "options": {
-                                "disable_collapse": true
-                            },
-                            "required": [
-                                "name",
-                                "lineage",
-                                "id",
-                                "properties"
-                            ],
-                            "properties": {
-                                "id": {
-                                    "type": "string",
-                                    "title": "Internal Id",
-                                    "description": "Internal reference for this object",
-                                    "readonly": true
-                                },
-                                "name": {
-                                    "type": "string",
-                                    "title": "Name",
-                                    "description": "Textual name of this object"
-                                },
-                                "lineage": {
-                                    "type": "string",
-                                    "title": "Lineage",
-                                    "readonly": true,
-                                    "description": "Type of this object in the DARL heirarchy"
-                                },
-                                "properties": {
-                                    "type": "array",
-                                    "title": "Properties",
-                                    "description": "Attributes associated with this object",
-                                    "options": {
-                                        "disable_collapse": true
-                                    },
-                                    "items": {
-                                        "type": "object",
-                                        "typeName": "GraphAttribute",
-                                        "title": "Attribute",
-                                        "additionalProperties": false,
-                                        "required": [
-                                            "name",
-                                            "lineage",
-                                            "value"
-                                        ],
-                                        "properties": {
-                                            "name": {
-                                                "type": "string",
-                                                "title": "Name",
-                                                "description": "Textual name of this Attribute"
-                                            },
-                                            "lineage": {
-                                                "type": "string",
-                                                "title": "Lineage",
-                                                "readonly": true,
-                                                "description": "Type of this attribute in the DARL heirarchy"
-                                            },
-                                            "value": {
-                                                "type": "string",
-                                                "title": "Value",
-                                                "format": "textarea",
-                                                "description": "Value of this attribute"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        collapsed: true,
-                        disable_edit_json: true,
-                        disable_properties: true,
-                        disable_collapse: false,
-                        disable_array_add: false,
-                        disable_array_delete: false,
-                        disable_array_reorder: true,
-                        form_name_root: "recognition"
-                    });
-
-                    recognitioneditor.on('change', async function () {
-                        // Do something
-                        var obj = recognitioneditor.getValue();
-                        if (obj.id !== null && obj.id !== "" && recchanged == false) {
-                            var json = JSON.stringify(obj);
-                            await receditorchange({ model: mdname, goj: json });
-                            $('#kg-save').prop('disabled', false);
-                        }
-                        recchanged = false;
-                    });
-
-                    realcy.on('tap', 'node', async function (evt) {
-                        var node = evt.target;
-                        var objContent = await realobjectdata({ model: mdname, id: node.id() });
-                        realeditor.setValue(objContent.getGraphObjectByid);
-                        console.log('tapped ' + node.id());
-                        realchanged = true;
-                    });
-                    virtualcy.on('tap', 'node', async function (evt) {
-                        var node = evt.target;
-                        var objContent = await virtualobjectdata({ model: mdname, lineage: node.id() });
-                        virtualeditor.setValue(objContent.getVirtualObjectByLineage);
-                        console.log('tapped ' + node.id());
-                        virtualchanged = true;
-                    });
-                    recognitioncy.on('tap', 'node', async function (evt) {
-                        var node = evt.target;
-                        var objContent = await recognitionobjectdata({ model: mdname, id: node.id() });
-                        recognitioneditor.setValue(objContent.getRecognitionObjectById);
-                        console.log('tapped ' + node.id());
-                        recchanged = true;
-                    });
-
-                    $('#real-find').click(async function () {
-                        var externalId = $('#real-select').val();
-                        var nodes = realcy.nodes().filter(function (element, i) {
-                            return element.data('externalId') == externalId;
-                        });
-                        realcy.center(nodes);
-                        nodes.emit('tap');
-                    });
-                    $('#real-fit').click(function () { realcy.fit();});
-                    $('#virtual-fit').click(function () { virtualcy.fit(); });
-                    $('#rec-fit').click(function () { recognitioncy.fit(); });
+                    var res = await createKG({ name: mdname });
+                    await updateDropdown();
+                    alert(mdname + " created");
                 }
                 catch (err) {
                     alert(err[0].message);
                 }
+            });
 
 
+            $('#kg-save').click(async function () {
+                try {
+                    await savechanges({ name: mdname });
+                    $('#kg=save').prop('disabled', false);
+                    alert(mdname + " saved");
+                }
+                catch (err) {
+                    alert(err[0].message);
+                }
+            });
+
+        });
+
+        function findGetParameter(parameterName) {
+            var result = null,
+                tmp = [];
+            location.search
+                .substr(1)
+                .split("&")
+                .forEach(function (item) {
+                    tmp = item.split("=");
+                    if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+                });
+            return result;
+        }
+
+        async function updateDropdown() {
+            const rs = await allkgmodels();
+            var dropdown = $('#kgmodel-dropdown');
+            dropdown.empty();
+            dropdown.append('<option selected="true" disabled>Choose a Knowledge Graph to edit</option>');
+            dropdown.prop('selectedIndex', 0);
+            $.each(rs.kgraphs, function (key, entry) {
+                dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
+            });
+        }
+
+        async function loadGraphs() {
+            try {
+                $('#real-header').removeClass('d-none');
+                var realdata = await realkgraphdata({ model: mdname });
+                var virtualdata = await virtualkgraphdata({ model: mdname });
+                var recdata = await recognitionkgraphdata({ model: mdname });
+                //instantiate graphs here
+                realcy = cytoscape({
+                    container: $('#realgraph'),
+                    elements: realdata.getRealKGDisplay,
+                    style: [ // the stylesheet for the graph
+                        {
+                            selector: 'node',
+                            style: {
+                                'background-color': '#11479e',
+                                'label': 'data(externalId)'
+                            }
+                        },
+
+                        {
+                            selector: 'edge',
+                            style: {
+                                'width': 3,
+                                'line-color': '#9dbaea',
+                                'target-arrow-color': '#9dbaea',
+                                'target-arrow-shape': 'triangle',
+                                'curve-style': 'bezier'
+                            }
+                        }
+                    ],
+
+                    layout: {
+
+                        name: 'cose',
+                        idealEdgeLength: 100,
+                        nodeOverlap: 20,
+                        refresh: 20,
+                        fit: true,
+                        padding: 30,
+                        randomize: false,
+                        componentSpacing: 100,
+                        nodeRepulsion: 400000,
+                        edgeElasticity: 100,
+                        nestingFactor: 5,
+                        gravity: 80,
+                        numIter: 1000,
+                        initialTemp: 200,
+                        coolingFactor: 0.95,
+                        minTemp: 1.0
+                    }
+
+                });
+                virtualcy = cytoscape({
+                    container: $('#virtualgraph'),
+                    elements: virtualdata.getVirtualKGDisplay,
+                    style: [ // the stylesheet for the graph
+                        {
+                            selector: 'node',
+                            style: {
+                                'background-color': '#666',
+                                'label': 'data(lineage)'
+                            }
+                        },
+
+                        {
+                            selector: 'edge',
+                            style: {
+                                'width': 3,
+                                'line-color': '#ccc',
+                                'target-arrow-color': '#ccc',
+                                'target-arrow-shape': 'triangle',
+                                'curve-style': 'bezier',
+                                'label': 'data(label)'
+                            }
+                        }
+                    ],
+
+                    layout: {
+                        name: 'dagre'
+                    }
+                });
+                recognitioncy = cytoscape({
+                    container: $('#recognitiongraph'),
+                    elements: recdata.getRecognitionKGDisplay,
+                    style: [ // the stylesheet for the graph
+                        {
+                            selector: 'node',
+                            style: {
+                                'background-color': '#666',
+                                'label': 'data(lineage)'
+                            }
+                        },
+
+                        {
+                            selector: 'edge',
+                            style: {
+                                'width': 3,
+                                'line-color': '#ccc',
+                                'target-arrow-color': '#ccc',
+                                'target-arrow-shape': 'triangle',
+                                'curve-style': 'bezier',
+                                'label': 'data(label)'
+                            }
+                        }
+                    ],
+
+                    layout: {
+                        name: 'dagre'
+                    }
+                });
+                realeditor = new JSONEditor(document.getElementById('realedit'), {
+                    theme: 'bootstrap4',
+                    schema: {
+                        "type": "object",
+                        "typeName": "GraphObject",
+                        "title": "Node contents",
+                        "additionalProperties": false,
+                        "options": {
+                            "disable_collapse": true
+                        },
+                        "required": [
+                            "name",
+                            "lineage",
+                            "id",
+                            "existence",
+                            "externalId",
+                            "properties"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "title": "Internal Id",
+                                "description": "Internal reference for this object",
+                                "readonly": true
+                            },
+                            "name": {
+                                "type": "string",
+                                "title": "Name",
+                                "description": "Textual name of this object"
+                            },
+                            "lineage": {
+                                "type": "string",
+                                "title": "Lineage",
+                                "readonly": true,
+                                "description": "Type of this object in the DARL heirarchy"
+                            },
+                            "externalId": {
+                                "type": "string",
+                                "title": "External Id",
+                                "description": "An external reference to this object"
+                            },
+                            "existence": {
+                                "type": "array",
+                                "title": "Existence",
+                                "description": "Sequence of dates/times defining this objects lifetime",
+                                "options": {
+                                    "disable_collapse": true
+                                },
+                                "items": {
+                                    "type": "datetime",
+                                    "title": "Date/Time",
+                                    "format": "datetime"
+                                }
+                            },
+                            "properties": {
+                                "type": "array",
+                                "title": "Properties",
+                                "description": "Attributes associated with this object",
+                                "options": {
+                                    "disable_collapse": true
+                                },
+                                "items": {
+                                    "type": "object",
+                                    "typeName": "GraphAttribute",
+                                    "title": "Attribute",
+                                    "additionalProperties": false,
+                                    "required": [
+                                        "name",
+                                        "lineage",
+                                        "value"
+                                    ],
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "title": "Name",
+                                            "description": "Textual name of this Attribute"
+                                        },
+                                        "lineage": {
+                                            "type": "string",
+                                            "title": "Lineage",
+                                            "description": "Type of this attribute in the DARL heirarchy"
+                                        },
+                                        "value": {
+                                            "type": "string",
+                                            "title": "Value",
+                                            "format": "textarea",
+                                            "description": "Value of this attribute"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    collapsed: true,
+                    disable_edit_json: true,
+                    disable_properties: true,
+                    disable_collapse: false,
+                    disable_array_add: false,
+                    disable_array_delete: false,
+                    disable_array_reorder: true,
+                    use_default_values: false,
+                    form_name_root: "real"
+                });
+                realchanged = true;
+                virtualchanged = true;
+                recchanged = true;
+                realeditor.on('change', async function () {
+                    // Do something
+                    var obj = realeditor.getValue();
+                    if (obj.id !== null && obj.id !== "" && realchanged == false) {
+                        var json = JSON.stringify(obj);
+                        await realeditorchange({ model: mdname, goj: json });
+                        $('#kg-save').prop('disabled', false);
+                    }
+                    realchanged = false;
+                });
+
+                virtualeditor = new JSONEditor(document.getElementById('virtualedit'), {
+                    theme: 'bootstrap4',
+                    schema: {
+                        "type": "object",
+                        "typeName": "GraphObject",
+                        "title": "Node contents",
+                        "additionalProperties": false,
+                        "options": {
+                            "disable_collapse": true
+                        },
+                        "required": [
+                            "name",
+                            "lineage",
+                            "id",
+                            "properties"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "title": "Internal Id",
+                                "description": "Internal reference for this object",
+                                "readonly": true
+                            },
+                            "name": {
+                                "type": "string",
+                                "title": "Name",
+                                "description": "Textual name of this object"
+                            },
+                            "lineage": {
+                                "type": "string",
+                                "title": "Lineage",
+                                "readonly": true,
+                                "description": "Type of this object in the DARL heirarchy"
+                            },
+                            "properties": {
+                                "type": "array",
+                                "title": "Properties",
+                                "description": "Attributes associated with this object",
+                                "options": {
+                                    "disable_collapse": true
+                                },
+                                "items": {
+                                    "type": "object",
+                                    "typeName": "GraphAttribute",
+                                    "title": "Attribute",
+                                    "additionalProperties": false,
+                                    "required": [
+                                        "name",
+                                        "lineage",
+                                        "value"
+                                    ],
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "title": "Name",
+                                            "description": "Textual name of this Attribute"
+                                        },
+                                        "lineage": {
+                                            "type": "string",
+                                            "title": "Lineage",
+                                            "readonly": true,
+                                            "description": "Type of this attribute in the DARL heirarchy"
+                                        },
+                                        "value": {
+                                            "type": "string",
+                                            "title": "Value",
+                                            "format": "textarea",
+                                            "description": "Value of this attribute"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    collapsed: true,
+                    disable_edit_json: true,
+                    disable_properties: true,
+                    disable_collapse: false,
+                    disable_array_add: false,
+                    disable_array_delete: false,
+                    disable_array_reorder: true,
+                    form_name_root: "virtual"
+
+                });
+
+                virtualeditor.on('change', async function () {
+                    // Do something
+                    var obj = virtualeditor.getValue();
+                    if (obj.id !== null && obj.id !== "" && virtualchanged == false) {
+                        var json = JSON.stringify(obj);
+                        await virtualeditorchange({ model: mdname, goj: json });
+                        $('#kg-save').prop('disabled', false);
+                    }
+                    virtualchanged = false;
+                });
+
+                recognitioneditor = new JSONEditor(document.getElementById('recognitionedit'), {
+                    theme: 'bootstrap4',
+                    schema: {
+                        "type": "object",
+                        "typeName": "GraphObject",
+                        "title": "Node contents",
+                        "additionalProperties": false,
+                        "options": {
+                            "disable_collapse": true
+                        },
+                        "required": [
+                            "name",
+                            "lineage",
+                            "id",
+                            "properties"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "title": "Internal Id",
+                                "description": "Internal reference for this object",
+                                "readonly": true
+                            },
+                            "name": {
+                                "type": "string",
+                                "title": "Name",
+                                "description": "Textual name of this object"
+                            },
+                            "lineage": {
+                                "type": "string",
+                                "title": "Lineage",
+                                "readonly": true,
+                                "description": "Type of this object in the DARL heirarchy"
+                            },
+                            "properties": {
+                                "type": "array",
+                                "title": "Properties",
+                                "description": "Attributes associated with this object",
+                                "options": {
+                                    "disable_collapse": true
+                                },
+                                "items": {
+                                    "type": "object",
+                                    "typeName": "GraphAttribute",
+                                    "title": "Attribute",
+                                    "additionalProperties": false,
+                                    "required": [
+                                        "name",
+                                        "lineage",
+                                        "value"
+                                    ],
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "title": "Name",
+                                            "description": "Textual name of this Attribute"
+                                        },
+                                        "lineage": {
+                                            "type": "string",
+                                            "title": "Lineage",
+                                            "readonly": true,
+                                            "description": "Type of this attribute in the DARL heirarchy"
+                                        },
+                                        "value": {
+                                            "type": "string",
+                                            "title": "Value",
+                                            "format": "textarea",
+                                            "description": "Value of this attribute"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    collapsed: true,
+                    disable_edit_json: true,
+                    disable_properties: true,
+                    disable_collapse: false,
+                    disable_array_add: false,
+                    disable_array_delete: false,
+                    disable_array_reorder: true,
+                    form_name_root: "recognition"
+                });
+
+                recognitioneditor.on('change', async function () {
+                    // Do something
+                    var obj = recognitioneditor.getValue();
+                    if (obj.id !== null && obj.id !== "" && recchanged == false) {
+                        var json = JSON.stringify(obj);
+                        await receditorchange({ model: mdname, goj: json });
+                        $('#kg-save').prop('disabled', false);
+                    }
+                    recchanged = false;
+                });
+
+                realcy.on('tap', 'node', async function (evt) {
+                    var node = evt.target;
+                    var objContent = await realobjectdata({ model: mdname, id: node.id() });
+                    realeditor.setValue(objContent.getGraphObjectByid);
+                    console.log('tapped ' + node.id());
+                    realchanged = true;
+                });
+                virtualcy.on('tap', 'node', async function (evt) {
+                    var node = evt.target;
+                    var objContent = await virtualobjectdata({ model: mdname, lineage: node.id() });
+                    virtualeditor.setValue(objContent.getVirtualObjectByLineage);
+                    console.log('tapped ' + node.id());
+                    virtualchanged = true;
+                });
+                recognitioncy.on('tap', 'node', async function (evt) {
+                    var node = evt.target;
+                    var objContent = await recognitionobjectdata({ model: mdname, id: node.id() });
+                    recognitioneditor.setValue(objContent.getRecognitionObjectById);
+                    console.log('tapped ' + node.id());
+                    recchanged = true;
+                });
+
+                $('#real-find').click(async function () {
+                    var externalId = $('#real-select').val();
+                    var nodes = realcy.nodes().filter(function (element, i) {
+                        return element.data('externalId') == externalId;
+                    });
+                    realcy.fit(nodes, 100);
+                    nodes.emit('tap');
+                });
+                $('#real-fit').click(function () { realcy.fit(); });
+                $('#virtual-fit').click(function () { virtualcy.fit(); });
+                $('#rec-fit').click(function () { recognitioncy.fit(); });
             }
-            var charCodeZero = "0".charCodeAt(0);
-            var charCodeNine = "9".charCodeAt(0);
-
-            function isDigitCode(n) {
-                return (n.charCodeAt(0) >= charCodeZero && n.charCodeAt(0) <= charCodeNine);
+            catch (err) {
+                alert(err[0].message);
             }
 
-        </script>
 
-    }
+        }
+        var charCodeZero = "0".charCodeAt(0);
+        var charCodeNine = "9".charCodeAt(0);
 
-    @section header{
-        <meta name="description" content="Edits a Knowledge Graph." />
-    }
+        function isDigitCode(n) {
+            return (n.charCodeAt(0) >= charCodeZero && n.charCodeAt(0) <= charCodeNine);
+        }
+
+    </script>
+
+}
+
+@section header{
+    <meta name="description" content="Edits a Knowledge Graph." />
+}
 
