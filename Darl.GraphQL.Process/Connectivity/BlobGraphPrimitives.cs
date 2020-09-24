@@ -1,8 +1,10 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
+using DarlLanguage.Processing;
 using GraphQL;
 using Microsoft.Azure.Storage.Shared.Protocol;
 using Microsoft.Extensions.Caching.Distributed;
@@ -14,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -924,7 +927,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     {
                         continue;
                     }
-                    await runtime.Evaluate(tree, new List<DarlResult>(), ks);
+                    await runtime.Evaluate(tree, new List<Thinkbase.Meta.DarlResult>(), ks);
                 }
             }
             await _conn.UpdateKnowledgeState(userId, subjectId, new KnowledgeStateUpdate { data = ks.data });
@@ -1150,6 +1153,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return dmodel;
         }
+
         private void RecursivelyAddElements(GraphObject robj, DisplayModel dmodel, IGraphModel cont)
         {
             dmodel.nodes.Add(new DisplayObject { id = robj.id, name = robj.name, lineage = robj.lineage });

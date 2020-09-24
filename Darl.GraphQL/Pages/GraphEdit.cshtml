@@ -3,60 +3,69 @@
     ViewData["Title"] = "GraphEdit";
     Layout = "~/Pages/_layoutscrolling.cshtml";
 }
-<div class="space-70"></div>
-<div class="container margin-b-40">
-    <div class="row">
-        <h1>Knowledge Graph editing</h1>
+<main role="main" class="pb-3" style="padding: 0px !important">
+    <div class="space-70"></div>
+    <div class="container-fluid" style="padding:20px; min-height:100vh">
+        <div class="row">
+            <h1>Knowledge Graph editing</h1>
+        </div>
+        <div class="row" id="fileHandling">
+            <div class="col-md-6 margin-b-40">
+                <p>Select a Knowledge Graph from your account to edit.</p>
+                <label>Knowledge Graphs </label>
+                <select id="kgmodel-dropdown" name="kgmodel" class="dropdown"></select>
+                <button id="kg-save" class="btn btn-info" disabled>Save changes</button>
+            </div>
+            <div class="col-md-6 margin-b-40">
+                <label>Or create a new Knowledge Graph - choose a unique name.</label>
+                <input id="kg-input" name="kgmodelname" class="form-control">
+                <button id="kg-create" class="btn btn-info">Create</button>
+            </div>
+        </div>
+        <div class="space-90"><hr /></div>
+        <div id ="real-header" class="row d-none">
+            <div class="col-md-9">
+                <h3>Real graph</h3>
+            </div>
+            <div class="form-inline pull-right col-md-3">
+                <input id="real-select" class="form-control-sm" type="text" placeholder="external id" />
+                <button id="real-find" class="btn btn-info form-control-sm">Find</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-9 margin-b-40" id="realgraph" style="width: 800px; height: 800px; display: block;">
+                <button id="real-fit" class="btn btn-info form-control-sm">Fit</button>
+            </div>
+            <div class="col-md-3 margin-b-40">
+                <div id="realedit"></div>
+            </div>
+        </div>
+        <div class="space-70"><hr /></div>
+        <div class="row">
+            <h3>Virtual graph</h3>
+        </div>
+        <div class="row">
+            <div class="col-md-9 margin-b-40" id="virtualgraph" style="width: 800px; height: 800px; display: block;">
+                <button id="virtual-fit" class="btn btn-info form-control-sm">Fit</button>
+            </div>
+            <div class="col-md-3 margin-b-40">
+                <div id="virtualedit"></div>
+            </div>
+        </div>
+        <div class="space-70"><hr /></div>
+        <div class="row">
+            <h3>Recognition graph</h3>
+        </div>
+        <div class="row">
+            <div class="col-md-9 margin-b-40" id="recognitiongraph" style="width: 800px; height: 800px; display: block;">
+                <button id="rec-fit" class="btn btn-info form-control-sm">Fit</button>
+            </div>
+            <div class="col-md-3 margin-b-40">
+                <div id="recognitionedit"></div>
+            </div>
+        </div>
     </div>
-    <div class="row">
-        <div class="col-md-6 margin-b-40">
-            <p>Select a Knowledge Graph from your account to edit.</p>
-            <label>Knowledge Graphs </label>
-            <select id="kgmodel-dropdown" name="kgmodel" class="dropdown"></select>
-        </div>
-        <div class="col-md-6 margin-b-40">
-            <label>Or create a new Knowledge Graph - choose a unique name.</label>
-            <input id="kg-input" name="kgmodelname" class="form-control">
-            <button id="kg-create" class="btn btn-info">Create</button>
-        </div>
-    </div>
-    <div class="space-90"><hr /></div>
-    <div class="row">
-        <h3>Real graph</h3>
-    </div>
-    <div class="row">
-        <div class="col-md-9 margin-b-40" id="realgraph" style="width: 800px; height: 800px; display: block;">
-
-        </div>
-        <div class="col-md-3 margin-b-40" id="realedit">
-
-        </div>
-    </div>
-    <div class="space-70"><hr /></div>
-    <div class="row">
-        <h3>Virtual graph</h3>
-    </div>
-    <div class="row">
-        <div class="col-md-9 margin-b-40" id="virtualgraph" style="width: 800px; height: 800px; display: block;">
-
-        </div>
-        <div class="col-md-3 margin-b-40" id="virtualedit">
-
-        </div>
-    </div>
-    <div class="space-70"><hr /></div>
-    <div class="row">
-        <h3>Recognition graph</h3>
-    </div>    
-    <div class="row">
-        <div class="col-md-9 margin-b-40" id="recognitiongraph" style="width: 800px; height: 800px; display: block;">
-
-        </div>
-        <div class="col-md-3 margin-b-40" id="recognitionedit">
-
-        </div>
-    </div>
-</div>
+</main>
 
     @section StyleSheets
 {
@@ -85,6 +94,15 @@
             var realobjectdata;
             var virtualobjectdata;
             var recognitionobjectdata;
+            var realeditorchange;
+            var virtualeditorchange;
+            var receditorchange;
+            var realchanged;
+            var virtualchanged;
+            var recchanged;
+            var mdname;
+            var createKG;
+            var savechanges;
 
             $(async function () {
 
@@ -92,8 +110,10 @@
 
                 graph = graphql("/graphql");
                 var apiKey = findGetParameter("apikey");
+                mdname = findGetParameter("kgraph");
                 if (apiKey !== null)
                     graph = graphql("/graphql", { headers: { "Authorization": "Basic " + apiKey } });
+
                 allkgmodels = graph(`{ kgraphs { name }}`);
                 realkgraphdata = graph('query kgd($model: String!){getRealKGDisplay(graphName: $model){nodes{data{ id label lineage externalId}} edges{ data{ id label source target}}}}');
                 virtualkgraphdata = graph('query vkgd($model: String!){getVirtualKGDisplay(graphName: $model){nodes{data{ id lineage}} edges{ data{ id label source target}}}}');
@@ -101,11 +121,79 @@
                 realobjectdata = graph('query rod($model: String! $id: String!){getGraphObjectByid(graphName: $model id: $id){name lineage id existence externalId properties {name lineage value }}}');
                 virtualobjectdata = graph('query vod($model: String! $lineage: String!){getVirtualObjectByLineage(graphName: $model lineage: $lineage){name lineage id properties {name lineage value }}}');
                 recognitionobjectdata = graph('query recod($model: String! $id: String!){getRecognitionObjectById(graphName: $model id: $id){name lineage id properties {name lineage value }}}');
-                await updateDropdown();
+                realeditorchange = graph('mutation rec($model: String! $goj: String!){updateGraphObjectFromJSON(graphName: $model graphObjectJSON: $goj ontology: BUILD) {id}}');
+                virtualeditorchange = graph('mutation uvg($model: String! $goj: String!){updateVirtualGraphObjectFromJSON(graphName: $model graphObjectJSON: $goj) {id}}');
+                receditorchange = graph('mutation rec($model: String! $goj: String!){updateRecognitionObjectFromJSON(graphName: $model graphObjectJSON: $goj) {id}}');
+                createKG = graph('mutation createKG($name: String!){createKGraph(name: $name){name}}');
+                savechanges = graph('mutation saveKGraph($name: String!){saveKGraph(name: $name)}')
 
-                $('#kgmodel-dropdown').on('change', async function () {
-                    mdname = this.value;
-                    //getGraphData
+                if (mdname !== null) {
+                    $('#fileHandling').addClass('d-none');
+                    await loadGraphs();
+                }
+                else {
+                    await updateDropdown();
+
+                    $('#kgmodel-dropdown').on('change', async function () {
+                        mdname = this.value;
+                        //getGraphData
+                        await loadGraphs();
+                    });
+                }
+
+                $('#kg-create').click(async function () {
+                    mdname = $('#kg-input').val();
+                    try {
+                        var res = await createKG({ name: mdname });
+                        await updateDropdown();
+                        alert(mdname + " created");
+                    }
+                    catch (err) {
+                        alert(err[0].message);
+                    }
+                });
+
+
+                $('#kg-save').click(async function () {
+                    try {
+                        await savechanges({ name: mdname });
+                        $('#kg=save').prop('disabled', false);
+                        alert(mdname + " saved");
+                    }
+                    catch (err) {
+                        alert(err[0].message);
+                    }               
+                });
+
+            });
+
+            function findGetParameter(parameterName) {
+                var result = null,
+                    tmp = [];
+                location.search
+                    .substr(1)
+                    .split("&")
+                    .forEach(function (item) {
+                        tmp = item.split("=");
+                        if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+                    });
+                return result;
+            }
+
+            async function updateDropdown() {
+                const rs = await allkgmodels();
+                var dropdown = $('#kgmodel-dropdown');
+                dropdown.empty();
+                dropdown.append('<option selected="true" disabled>Choose a Knowledge Graph to edit</option>');
+                dropdown.prop('selectedIndex', 0);
+                $.each(rs.kgraphs, function (key, entry) {
+                    dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
+                });
+            }
+
+            async function loadGraphs() {
+                try {
+                    $('#real-header').removeClass('d-none');
                     var realdata = await realkgraphdata({ model: mdname });
                     var virtualdata = await virtualkgraphdata({ model: mdname });
                     var recdata = await recognitionkgraphdata({ model: mdname });
@@ -135,8 +223,24 @@
                         ],
 
                         layout: {
-                            name: 'grid'
+                            name: 'cose',
+                            idealEdgeLength: 100,
+                            nodeOverlap: 20,
+                            refresh: 20,
+                            fit: true,
+                            padding: 30,
+                            randomize: false,
+                            componentSpacing: 100,
+                            nodeRepulsion: 400000,
+                            edgeElasticity: 100,
+                            nestingFactor: 5,
+                            gravity: 80,
+                            numIter: 1000,
+                            initialTemp: 200,
+                            coolingFactor: 0.95,
+                            minTemp: 1.0
                         }
+
                     });
                     virtualcy = cytoscape({
                         container: $('#virtualgraph'),
@@ -157,7 +261,8 @@
                                     'line-color': '#ccc',
                                     'target-arrow-color': '#ccc',
                                     'target-arrow-shape': 'triangle',
-                                    'curve-style': 'bezier'
+                                    'curve-style': 'bezier',
+                                    'label': 'data(label)'
                                 }
                             }
                         ],
@@ -185,7 +290,8 @@
                                     'line-color': '#ccc',
                                     'target-arrow-color': '#ccc',
                                     'target-arrow-shape': 'triangle',
-                                    'curve-style': 'bezier'
+                                    'curve-style': 'bezier',
+                                    'label': 'data(label)'
                                 }
                             }
                         ],
@@ -245,6 +351,7 @@
                                     "items": {
                                         "type": "datetime",
                                         "title": "Date/Time",
+                                        "format": "datetime"
                                     }
                                 },
                                 "properties": {
@@ -273,7 +380,6 @@
                                             "lineage": {
                                                 "type": "string",
                                                 "title": "Lineage",
-                                                "readonly": true,
                                                 "description": "Type of this attribute in the DARL heirarchy"
                                             },
                                             "value": {
@@ -294,8 +400,23 @@
                         disable_array_add: false,
                         disable_array_delete: false,
                         disable_array_reorder: true,
+                        use_default_values: false,
                         form_name_root: "real"
                     });
+                    realchanged = true;
+                    virtualchanged = true;
+                    recchanged = true;
+                    realeditor.on('change', async function () {
+                        // Do something
+                        var obj = realeditor.getValue();
+                        if (obj.id !== null && obj.id !== "" && realchanged == false) {
+                            var json = JSON.stringify(obj);
+                            await realeditorchange({ model: mdname, goj: json });
+                            $('#kg-save').prop('disabled', false);
+                        }
+                        realchanged = false;
+                    });
+
                     virtualeditor = new JSONEditor(document.getElementById('virtualedit'), {
                         theme: 'bootstrap4',
                         schema: {
@@ -380,6 +501,18 @@
                         form_name_root: "virtual"
 
                     });
+
+                    virtualeditor.on('change', async function () {
+                        // Do something
+                        var obj = virtualeditor.getValue();
+                        if (obj.id !== null && obj.id !== "" && virtualchanged == false) {
+                            var json = JSON.stringify(obj);
+                            await virtualeditorchange({ model: mdname, goj: json });
+                            $('#kg-save').prop('disabled', false);
+                        }
+                        virtualchanged = false;
+                    });
+
                     recognitioneditor = new JSONEditor(document.getElementById('recognitionedit'), {
                         theme: 'bootstrap4',
                         schema: {
@@ -464,52 +597,64 @@
                         form_name_root: "recognition"
                     });
 
+                    recognitioneditor.on('change', async function () {
+                        // Do something
+                        var obj = recognitioneditor.getValue();
+                        if (obj.id !== null && obj.id !== "" && recchanged == false) {
+                            var json = JSON.stringify(obj);
+                            await receditorchange({ model: mdname, goj: json });
+                            $('#kg-save').prop('disabled', false);
+                        }
+                        recchanged = false;
+                    });
+
                     realcy.on('tap', 'node', async function (evt) {
                         var node = evt.target;
                         var objContent = await realobjectdata({ model: mdname, id: node.id() });
                         realeditor.setValue(objContent.getGraphObjectByid);
                         console.log('tapped ' + node.id());
+                        realchanged = true;
                     });
                     virtualcy.on('tap', 'node', async function (evt) {
                         var node = evt.target;
                         var objContent = await virtualobjectdata({ model: mdname, lineage: node.id() });
                         virtualeditor.setValue(objContent.getVirtualObjectByLineage);
                         console.log('tapped ' + node.id());
+                        virtualchanged = true;
                     });
                     recognitioncy.on('tap', 'node', async function (evt) {
                         var node = evt.target;
                         var objContent = await recognitionobjectdata({ model: mdname, id: node.id() });
                         recognitioneditor.setValue(objContent.getRecognitionObjectById);
                         console.log('tapped ' + node.id());
+                        recchanged = true;
                     });
-                });
 
-
-            });
-
-            function findGetParameter(parameterName) {
-                var result = null,
-                    tmp = [];
-                location.search
-                    .substr(1)
-                    .split("&")
-                    .forEach(function (item) {
-                        tmp = item.split("=");
-                        if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+                    $('#real-find').click(async function () {
+                        var externalId = $('#real-select').val();
+                        var nodes = realcy.nodes().filter(function (element, i) {
+                            return element.data('externalId') == externalId;
+                        });
+                        realcy.center(nodes);
+                        nodes.emit('tap');
                     });
-                return result;
+                    $('#real-fit').click(function () { realcy.fit();});
+                    $('#virtual-fit').click(function () { virtualcy.fit(); });
+                    $('#rec-fit').click(function () { recognitioncy.fit(); });
+                }
+                catch (err) {
+                    alert(err[0].message);
+                }
+
+
+            }
+            var charCodeZero = "0".charCodeAt(0);
+            var charCodeNine = "9".charCodeAt(0);
+
+            function isDigitCode(n) {
+                return (n.charCodeAt(0) >= charCodeZero && n.charCodeAt(0) <= charCodeNine);
             }
 
-            async function updateDropdown() {
-                const rs = await allkgmodels();
-                var dropdown = $('#kgmodel-dropdown');
-                dropdown.empty();
-                dropdown.append('<option selected="true" disabled>Choose a Knowledge Graph to edit</option>');
-                dropdown.prop('selectedIndex', 0);
-                $.each(rs.kgraphs, function (key, entry) {
-                    dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
-                });
-            }
         </script>
 
     }
