@@ -912,15 +912,14 @@ namespace Darl.GraphQL.Models.Schemata
                 "getRecognitionKGDisplay",
                 "Get a display version of a recognition tree from the KG",
                 arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "root", Description = "the name of the recognition tree" }
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" }
                 ),
                 resolve: async context =>
                 {
                     var graphName = context.GetArgument<string>("graphName");
                     var root = context.GetArgument<string>("root");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetRecognitionDisplayGraph(CompositeName(userId, graphName), root));
+                    return await context.TryAsyncResolve(async c => await graph.GetRecognitionDisplayGraph(CompositeName(userId, graphName)));
                 }
             ).AuthorizeWith("CorpPolicy");
 

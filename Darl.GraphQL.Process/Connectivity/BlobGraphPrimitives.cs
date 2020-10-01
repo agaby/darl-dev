@@ -243,6 +243,13 @@ namespace Darl.GraphQL.Models.Connectivity
             return conn;
         }
 
+        /// <summary>
+        /// Updates a real object
+        /// </summary>
+        /// <param name="compositeName"></param>
+        /// <param name="go"></param>
+        /// <returns>The modified object</returns>
+        /// <remarks>Merges rather than overwriting properties</remarks>
         public async Task<GraphObject> UpdateObject(string compositeName, GraphObjectUpdate go)
         {
             var node = await GetGraphObjectById(compositeName, go.id);
@@ -273,8 +280,15 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             if (go.properties != null && go.properties.Any())
             {
-                node.properties = go.properties;
-                changed = true;
+                foreach (var a in go.properties)
+                {
+                    var found = node.properties.Where(b => b.lineage == a.lineage).FirstOrDefault();
+                    if (found != null)
+                    {
+                        node.properties.Remove(found);
+                    }
+                    node.properties.Add(a);
+                }
             }
             if (changed)
             {
@@ -1060,7 +1074,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return cont.recognitionRoots[root].Navigate(cont, tokens);
         }
 
-        public async Task<GraphObject> UpdateVirtualObject(string compositeName, GraphObjectUpdate go)
+        public async Task<GraphObject> UpdateVirtualObject(string compositeName, GraphObjectUpdate go, bool merge = false)
         {
             var cont = await Load(compositeName) as BlobGraphContent;
             if (!cont.virtualVertices.ContainsKey(go.lineage))
@@ -1076,15 +1090,22 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             if (go.properties != null && go.properties.Any())
             {
-                //merge properties
-                foreach (var a in go.properties)
+                if (merge)
                 {
-                    var found = node.properties.Where(b => b.lineage == a.lineage).FirstOrDefault();
-                    if (found != null)
+                    //merge properties
+                    foreach (var a in go.properties)
                     {
-                        node.properties.Remove(found);
+                        var found = node.properties.Where(b => b.lineage == a.lineage).FirstOrDefault();
+                        if (found != null)
+                        {
+                            node.properties.Remove(found);
+                        }
+                        node.properties.Add(a);
                     }
-                    node.properties.Add(a);
+                }
+                else
+                {
+                    node.properties = go.properties;
                 }
             }
             return node;
@@ -1142,16 +1163,34 @@ namespace Darl.GraphQL.Models.Connectivity
             return dmodel;
         }
 
-        public async Task<DisplayModel> GetRecognitionDisplayGraph(string compositeName, string root)
+        public async Task<DisplayModel> GetRecognitionDisplayGraph(string compositeName)
         {
             var dmodel = new DisplayModel { nodes = new List<DisplayObject>(), edges = new List<DisplayConnection>() };
             var cont = await Load(compositeName) as BlobGraphContent;
-            if(cont.recognitionRoots.ContainsKey(root))
+            foreach(var robj in cont.recognitionRoots.Values)
             {
-                var robj = cont.recognitionRoots[root];
                 RecursivelyAddElements(robj, dmodel, cont);
             }
             return dmodel;
+        }
+
+        public async Task CorrectBrokenLinks(string compositeName)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            var deleteList = new List<GraphConnection>();
+            foreach (var n in cont.vertices.Values)
+            {
+                foreach(var c in n.Out)
+                {
+                    if (!cont.vertices.ContainsKey(c.endId))
+                        deleteList.Add(c);
+                }
+                foreach(var c in deleteList)
+                {
+                    n.Out.Remove(c);
+                    cont.edges.Remove(c.id);
+                }
+            }
         }
 
         private void RecursivelyAddElements(GraphObject robj, DisplayModel dmodel, IGraphModel cont)

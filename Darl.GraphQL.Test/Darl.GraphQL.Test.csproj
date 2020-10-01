@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Activity_display_rule.darl" />
     <None Remove="AppSettings.json" />
     <None Remove="CourseUnitsJson.json" />
     <None Remove="datafieldnames.json" />
@@ -26,10 +27,12 @@
     <None Remove="learning_outcomes.txt" />
     <None Remove="msr_paraphrase_train.txt" />
     <None Remove="musicbusinessworldwide.json" />
+    <None Remove="numeric_test_display_rule.darl" />
     <None Remove="WM_MusicIndustry.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Activity_display_rule.darl" />
     <EmbeddedResource Include="AppSettings.json" />
     <EmbeddedResource Include="CourseUnitsJson.json" />
     <EmbeddedResource Include="datafieldnames.json" />
@@ -43,6 +46,7 @@
     <EmbeddedResource Include="learning_outcomes.txt" />
     <EmbeddedResource Include="msr_paraphrase_train.txt" />
     <EmbeddedResource Include="musicbusinessworldwide.json" />
+    <EmbeddedResource Include="numeric_test_display_rule.darl" />
     <EmbeddedResource Include="WM_MusicIndustry.json" />
   </ItemGroup>
 

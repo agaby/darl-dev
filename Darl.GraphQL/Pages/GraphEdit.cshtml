@@ -119,7 +119,7 @@
             allkgmodels = graph(`{ kgraphs { name }}`);
             realkgraphdata = graph('query kgd($model: String!){getRealKGDisplay(graphName: $model){nodes{data{ id label lineage externalId}} edges{ data{ id label source target}}}}');
             virtualkgraphdata = graph('query vkgd($model: String!){getVirtualKGDisplay(graphName: $model){nodes{data{ id lineage}} edges{ data{ id label source target}}}}');
-            recognitionkgraphdata = graph('query rkgd($model: String!){getRecognitionKGDisplay(graphName: $model root: "default:"){nodes{data{ id label lineage }} edges{ data{ id label source target}}}}');
+            recognitionkgraphdata = graph('query rkgd($model: String!){getRecognitionKGDisplay(graphName: $model){nodes{data{ id label lineage }} edges{ data{ id label source target}}}}');
             realobjectdata = graph('query rod($model: String! $id: String!){getGraphObjectByid(graphName: $model id: $id){name lineage id existence externalId properties {name lineage value }}}');
             virtualobjectdata = graph('query vod($model: String! $lineage: String!){getVirtualObjectByLineage(graphName: $model lineage: $lineage){name lineage id properties {name lineage value }}}');
             recognitionobjectdata = graph('query recod($model: String! $id: String!){getRecognitionObjectById(graphName: $model id: $id){name lineage id properties {name lineage value }}}');

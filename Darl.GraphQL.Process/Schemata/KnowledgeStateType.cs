@@ -1,4 +1,5 @@
-﻿using Darl.GraphQL.Models.Schemata;
+﻿using Darl.GraphQL.Models.Models;
+using Darl.GraphQL.Models.Schemata;
 using Darl.Thinkbase;
 using GraphQL.Types;
 using System;
@@ -17,7 +18,17 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.knowledgeGraphName).Description("The name of the knowledge graph this relates to");
             Field(c => c.subjectId).Description("The external reference of the subject of the state");
             Field(c => c.userId).Description("The id of the owner of the knowledge state");
-            Field<StringListGraphAttributePairType>("data", resolve: c => c.Source.data);
+            Field<ListGraphType<StringListGraphAttributePairType>>("data", resolve: c => GetSGAPairsFromDictionary(c.Source.data));
+        }
+
+        public static List<StringListGraphAttributePair> GetSGAPairsFromDictionary(Dictionary<string, List<GraphAttribute>> dict)
+        {
+            var list = new List<StringListGraphAttributePair>();
+            foreach (var k in dict.Keys)
+            {
+                list.Add(new StringListGraphAttributePair { Name = k, Value = dict[k]});
+            }
+            return list;
         }
     }
 }

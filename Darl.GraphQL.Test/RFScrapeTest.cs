@@ -66,11 +66,13 @@ namespace Darl.GraphQL.Test
         private static string yearLineage = "noun:01,5,03,3,045";
         private static string followsLineage = "verb:534";
         private static string activityLineage = "noun:01,0,2,00,23";
-        private static string testLineage = "noun:01,0,2,00,38,09";
+        private static string testLineage = "noun:01,0,2,00,38,09"; 
         private static string completeLineage = "adjective:5500";
         private static string subactivityLineage = "noun:01,0,2,00,00";
         private static string questionLineage = "noun:01,0,2,00,39,08,08,1";
         private static string displayLineage = "noun:00,1,00,3,10,09,06";
+        private static string textLineage = "noun:01,4,04,02,07,01";
+
 
         private static string graphName = "rf1.graph";
         private static string graphImage = "rf1.graphml";
@@ -85,7 +87,7 @@ namespace Darl.GraphQL.Test
             //            configuration.Setup(a => a[It.Is<string>(s => s == "darlDevAPiKey")]).Returns("e438440e-9d90-46e8-87ed-080e19c43aed");
             //configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("33db770b-29e9-46ae-8a19-c1947bd775d8");
             //            configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("5ee43551-c05c-4cff-8582-c08f23f84c14");
-            configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("a26560b3-7778-410b-a54b-b65da6a9649a");
+            configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("a26560b3-7778-410b-a54b-b65da6a9649a");//andy@darl.ai account
             //            configuration.Setup(a => a[It.Is<string>(s => s == "gremlinLocation")]).Returns("local");
             configuration.Setup(a => a[It.Is<string>(s => s == "darlDevUrl")]).Returns("https://darl.dev/graphql/");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:BlobContainer")]).Returns("darldevgraphs");
@@ -576,6 +578,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task AdaptTexts()
         {
             var compositeName = $"{_config["userId"]}_{graphName}";
@@ -587,11 +590,6 @@ namespace Darl.GraphQL.Test
             var navQuitRule = "output categorical terminate {\"true\",\"false\"};\nif anything then terminate will be true;";
             var robj = await _graph.FindRecognition(compositeName, "navigation:", "verb:060");
             await _graph.UpdateRecognitionObject(compositeName, new GraphObjectUpdate { id = robj.id, properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = navQuitRule } } });
-            await _graph.Store(compositeName);
-
-
-
-
             var userId = _config["userId"];
             var activities = await _graph.GetGraphObjectsByLineage(compositeName, subactivityLineage);
             foreach(var o in activities)
@@ -600,6 +598,14 @@ namespace Darl.GraphQL.Test
                 o.properties = new List<GraphAttribute>();
                 o.properties.Add(new GraphAttribute { lineage = displayLineage, value = name, inferred = false, name = "display" });
             }
+            var tests = await _graph.GetGraphObjectsByLineage(compositeName, questionLineage);
+            foreach (var o in tests)
+            {
+                var name = o.name;
+                o.properties = new List<GraphAttribute>();
+                o.properties.Add(new GraphAttribute { lineage = displayLineage, value = name, inferred = false, name = "display" });
+            }
+            await _graph.Store(compositeName);
         }
 
         [TestMethod]
@@ -615,19 +621,95 @@ namespace Darl.GraphQL.Test
             dmodel = await _graph.GetVirtualDisplayGraph(compositeName);
             Assert.AreEqual(25, dmodel.nodes.Count);
             Assert.AreEqual(36, dmodel.edges.Count);
-            dmodel = await _graph.GetRecognitionDisplayGraph(compositeName, "default:");
-            Assert.AreEqual(5, dmodel.nodes.Count);
-            Assert.AreEqual(4, dmodel.edges.Count);
-            dmodel = await _graph.GetRecognitionDisplayGraph(compositeName, "navigation:");
-            Assert.AreEqual(3, dmodel.nodes.Count);
-            Assert.AreEqual(2, dmodel.edges.Count);
-            dmodel = await _graph.GetRecognitionDisplayGraph(compositeName, "poops:");
-            Assert.AreEqual(0, dmodel.nodes.Count);
-            Assert.AreEqual(0, dmodel.edges.Count);
+            dmodel = await _graph.GetRecognitionDisplayGraph(compositeName);
+            Assert.AreEqual(8, dmodel.nodes.Count);
+            Assert.AreEqual(6, dmodel.edges.Count);
         }
 
+        [TestMethod]
+        [Ignore]
+        public async Task UpdateUIRules()
+        {
+            var compositeName = $"{_config["userId"]}_{graphName}";
+            //Add rules to the virtual objects for Subactivity and Subtest that create the UI. 
+            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.Activity_display_rule.darl")).ReadToEnd();
+            await _graph.UpdateVirtualObject(compositeName, new GraphObjectUpdate { lineage = subactivityLineage, properties = new List<GraphAttribute> { new GraphAttribute { confidence = 1.0, name = "display", type = GraphAttribute.DataType.textual, value = source, lineage = displayLineage } } });
+            await _graph.UpdateVirtualObject(compositeName, new GraphObjectUpdate { lineage = testLineage, properties = new List<GraphAttribute> { new GraphAttribute { confidence = 1.0, name = "display", type = GraphAttribute.DataType.textual, value = source, lineage = displayLineage } } });
+            source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.numeric_test_display_rule.darl")).ReadToEnd();
+            await _graph.UpdateVirtualObject(compositeName, new GraphObjectUpdate { lineage = questionLineage, properties = new List<GraphAttribute> { new GraphAttribute { confidence = 1.0, name = "display", type = GraphAttribute.DataType.textual, value = source, lineage = displayLineage } } });
+            await _graph.Store(compositeName);
+        }
 
+        [TestMethod]
+        public async Task FixGraphDeletions()
+        {
+            var compositeName = $"{_config["userId"]}_{graphName}";
+            var testCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if all(\"{questionLineage}\",\"{consistsLineage}\",\"{completeLineage}\") and all(\"{questionLineage}\",\"{followsLineage}\",\"{completeLineage}\") then completed will be true;";
+            await _graph.UpdateVirtualObject(compositeName, new GraphObjectUpdate { lineage = testLineage, properties = new List<GraphAttribute> { new GraphAttribute { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = testCode, lineage = completeLineage } } }, true);
 
+            var tests = await _graph.GetGraphObjectsByLineage(compositeName, questionLineage);
+            foreach (var o in tests)
+            {
+                var name = o.name;
+                if(o.properties == null)
+                    o.properties = new List<GraphAttribute>();
+                o.properties.Add(new GraphAttribute { lineage = displayLineage, value = name, inferred = false, name = "display" });
+            }
+            await _graph.Store(compositeName);
+        }
+
+        [TestMethod]
+        [Ignore]
+        public async Task MoveAnnotations()
+        {
+            var compositeName = $"{_config["userId"]}_{graphName}";
+            var activities = await _graph.GetGraphObjectsByLineage(compositeName, subactivityLineage);
+            foreach (var o in activities)
+            {
+                var att = o.properties.Where(a => a.name == "display").First();
+                o.properties.Remove(att);
+                att.name = "text";
+                att.lineage = textLineage;
+                var obj = await _graph.UpdateGraphObject(compositeName, new GraphObjectUpdate {id = o.id,  lineage = o.lineage, properties = new List<GraphAttribute> { att} }, OntologyAction.build);
+            }
+            var tests = await _graph.GetGraphObjectsByLineage(compositeName, questionLineage);
+            foreach (var o in tests)
+            {
+                var att = o.properties.Where(a => a.name == "display").First();
+                foreach (var p in o.properties.Where(a => a.name == "display").ToList())
+                    o.properties.Remove(p);
+                att.name = "text";
+                att.lineage = textLineage;
+                var obj = await _graph.UpdateGraphObject(compositeName, new GraphObjectUpdate { id = o.id, lineage = o.lineage, properties = new List<GraphAttribute> { att } }, OntologyAction.build);
+            }
+            await _graph.Store(compositeName);
+        }
+
+        [TestMethod]
+        [Ignore]
+        public async Task Deletions()
+        {
+            var compositeName = $"{_config["userId"]}_{graphName}";
+            var obj1 = await _graph.GetGraphObjectByExternalId(compositeName, "TEST1");
+            await _graph.DeleteGraphObject(compositeName, obj1.id);
+            var obj2 = await _graph.GetGraphObjectByExternalId(compositeName, "TEST6");
+            await _graph.DeleteGraphObject(compositeName, obj2.id);
+            var obj3 = await _graph.GetGraphObjectByExternalId(compositeName, "SUBACTIVITY3");
+            await _graph.DeleteGraphObject(compositeName, obj3.id);
+            var obj4 = await _graph.GetGraphObjectByExternalId(compositeName, "SUBACTIVITY6");
+            await _graph.DeleteGraphObject(compositeName, obj4.id);
+            await _graph.Store(compositeName);
+        }
+
+        [TestMethod]
+        [Ignore]
+        public async Task CleanKG()
+        {
+            var compositeName = $"{_config["userId"]}_{graphName}";
+            var prim = _primitives as BlobGraphPrimitives;
+            await prim.CorrectBrokenLinks(compositeName);
+            await _graph.Store(compositeName);
+        }
     }
 
 }

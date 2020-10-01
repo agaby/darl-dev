@@ -15,5 +15,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.Name);
             Field<ListGraphType<GraphAttributeType>>("value", resolve: c => c.Source.Value);
         }
+
+
     }
 }
