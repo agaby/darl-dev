@@ -1,8 +1,8 @@
 ﻿using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
 using Darl.SoftMatch;
+using Darl.Thinkbase;
 using GraphQL;
-using Gremlin.Net.Structure;
 using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Asn1.Cmp;
 using QuickGraph.Algorithms.Search;
@@ -19,9 +19,9 @@ namespace Darl.GraphQL.Models.Connectivity
     {
         private IBlobConnectivity _blob;
         private ILogger _logger;
-        public SoftMatchProcessing(IBlobConnectivity blob, ILogger<SoftMatchProcessing> logger)
+        public SoftMatchProcessing(IEnumerable<IBlobConnectivity> blobs, ILogger<SoftMatchProcessing> logger)
         {
-            _blob = blob;
+            _blob = blobs.FirstOrDefault(h => h.implementation == nameof(BlobConnectivity));
             _logger = logger;
         }
 
@@ -47,7 +47,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return $"Match Model {treeName} created containing {data.Count()} texts.";
         }
 
-        private string GenerateGraphName(string userId, string treeName)
+        public static string GenerateGraphName(string userId, string treeName)
         {
             return userId + "_" + treeName.Replace(" ", "_");
         }

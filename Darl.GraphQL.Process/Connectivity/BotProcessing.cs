@@ -1,7 +1,9 @@
 ﻿using Darl.GraphQL.Models.Models;
+using Darl.GraphQL.Process.Connectivity;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
+using Darl.Thinkbase;
 using DarlCommon;
 using GraphQL;
 using Microsoft.AspNetCore.Http;
@@ -25,9 +27,11 @@ namespace Darl.GraphQL.Models.Connectivity
         ITrigger _trigger;
         private ILogger<BotProcessing> _logger;
         private IConfiguration _config;
+        IGraphProcessing _graph;
+        IGraphHandler _ghandler;
 
 
-        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger, ILogger<BotProcessing> logger, IConfiguration config, IHttpContextAccessor context)
+        public BotProcessing(IConnectivity conv, IFormApi form, IRuleFormInterface rfi, ITrigger trigger, ILogger<BotProcessing> logger, IConfiguration config, IHttpContextAccessor context, IGraphProcessing graph, IGraphHandler ghandler)
         {
             _conv = conv;
             _form = form;
@@ -36,6 +40,8 @@ namespace Darl.GraphQL.Models.Connectivity
             _trigger = trigger;
             _logger = logger;
             _config = config;
+            _graph = graph;
+            _ghandler = ghandler;
         }
 
         public async Task<List<InteractTestResponse>> InteractAsync(string userId, string botModelName, string conversationId, DarlVar conversationData)
@@ -55,14 +61,14 @@ namespace Darl.GraphQL.Models.Connectivity
             BotState bs = await _conv.GetBotState(userId, conversationId);
             if(bs == null)//first call for this conversation
             {
-                bs = new BotState { conversationId = conversationId, userId = userId, userData = new LocalBotData(new Dictionary<string, string>()), conversationData = new LocalBotData(new Dictionary<string, string>()), privateConversationData = new LocalBotData(new Dictionary<string, string>()), values = new List<DarlVar>(), ruleProcessing = new Stack<RuleSetHandler>() }; 
+                bs = new BotState { conversationId = conversationId, userId = userId, userData = new StoredBotData(), conversationData = new StoredBotData(), privateConversationData = new StoredBotData(), values = new List<DarlVar>(), ruleProcessing = new Stack<RuleSetHandler>(), updated = DateTime.UtcNow }; 
             }
             var stores = bm.CreateStores(userId, _rfi, bs.values, bs.userData, bs.conversationData, bs.privateConversationData );
             //add extra stores defined locally
             var botFormat = JsonConvert.DeserializeObject<BotFormat>(bm.form);
             if(botFormat.Stores.Contains("Graph"))
             {
-                stores.Add("Graph", new GraphProcessing(_config, _logger as ILogger<GraphProcessing>, _context));
+                stores.Add("Graph", new GraphLocalStore(_config, _logger as ILogger<GraphLocalStore>, _context, _graph));
             }
             if (bs.ruleProcessing.Count == 0) // conversational processing
             {
@@ -97,10 +103,12 @@ namespace Darl.GraphQL.Models.Connectivity
                     resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Internal error", dataType = DarlVar.DataType.textual } });
                 }
             }
+            bool recursive = false;
+            DarlVar recursiveRuleSet = null;
             if (bs.ruleProcessing.Count > 0) //ruleset processing
             {
                 var rsh = bs.ruleProcessing.Peek();
-                rsh.trigger = _trigger;
+                rsh.Trigger = _trigger;
                 //handle simple navigation
                 var c = LineageModelBotExtensions.HandleRuleSetCommands(conversationData.Value);
                 switch(c)
@@ -126,9 +134,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 List<InteractTestResponse> responses = null;
                 try 
                 {
-                    if(rsh.rf.preload == null)
-                        rsh.rf.preload = new List<DarlVar>();
-                    responses = await rsh.RuleSetPass(bs.values, stores, bmt.serviceConnectivity);
+                     responses = await rsh.RuleSetPass(bs.values, stores, bmt.serviceConnectivity);
                 }
                 catch(Exception ex)
                 {
@@ -140,8 +146,15 @@ namespace Darl.GraphQL.Models.Connectivity
                     switch (r.response.dataType)
                     {
                         case DarlVar.DataType.ruleset:
-                            resp.Add(r);
-                            var newRF = ((CallStore)stores["Call"]).currentRF; if (newRF != null)
+                            //                           var newRF = ((CallStore)stores["Call"]).currentRF; 
+                            //                           if (newRF != null)
+                            //                                bs.ruleProcessing.Push(new RuleSetHandler { user = userId, rf = newRF, modelId = conversationId });
+                            recursive = true;
+                            recursiveRuleSet = r.response;
+                            bs.values.Clear();
+                            bs.ruleProcessing.Pop();
+                            var newRF = ((CallStore)stores["Call"]).currentRF;
+                            if (newRF != null)
                                 bs.ruleProcessing.Push(new RuleSetHandler { user = userId, rf = newRF, modelId = conversationId });
                             break;
                         case DarlVar.DataType.complete:
@@ -149,13 +162,22 @@ namespace Darl.GraphQL.Models.Connectivity
                             bs.values.Clear();
                             bs.ruleProcessing.Pop();
                             break;
+                        case DarlVar.DataType.categorical:
+                            //consider dynamic
+                            resp.Add(r);
+                            break;
                         default:
                             resp.Add(r);
                             break;
                     }
                 }
             }
-            await _conv.SaveBotState(bs);
+            await _conv.SaveBotState(bs);          
+            if(recursive)
+            {
+                resp.AddRange(await InteractAsync(userId, botModelName, conversationId, recursiveRuleSet));
+            }
+
             return resp;
         }
 
@@ -173,7 +195,7 @@ namespace Darl.GraphQL.Models.Connectivity
             BotState bs = await _conv.GetBotState(userId, conversationId);
             if (bs == null)//first call for this conversation
             {
-                bs = new BotState { conversationId = conversationId, userId = userId, userData = new LocalBotData(new Dictionary<string, string>()), conversationData = new LocalBotData(new Dictionary<string, string>()), privateConversationData = new LocalBotData(new Dictionary<string, string>()), values = new List<DarlVar>(), ruleProcessing = new Stack<RuleSetHandler>() };
+                bs = new BotState { conversationId = conversationId, userId = userId, userData = new StoredBotData(), conversationData = new StoredBotData(), privateConversationData = new StoredBotData(), values = new List<DarlVar>(), ruleProcessing = new Stack<RuleSetHandler>() };
             }
             var stores = bm.CreateStores(userId, _rfi, bs.values, bs.userData, bs.conversationData, bs.privateConversationData);
             var btv = new BotTestView() { conversationID = bs.conversationId, conversation = new List<string>(), darl = "" };
@@ -189,6 +211,75 @@ namespace Darl.GraphQL.Models.Connectivity
 
             await _conv.SaveBotState(bs);
             return btv;
+        }
+
+        public async Task<List<InteractTestResponse>> InteractKGAsync(string userId, string KnowledgeGraphName, string conversationId, DarlVar conversationData)
+        {
+            _logger.LogWarning($"{nameof(InteractKGAsync)}: {userId}, {KnowledgeGraphName}, {conversationId}, {conversationData.Value}");
+            List<InteractTestResponse> resp = new List<InteractTestResponse>();
+            BotState bs = await _conv.GetBotState(userId, conversationId);
+            if (bs == null)//first call for this conversation
+            {
+                bs = new BotState { conversationId = conversationId, userId = userId, userData = new StoredBotData(), conversationData = new StoredBotData(), privateConversationData = new StoredBotData(), values = new List<DarlVar>(), ruleProcessing = new Stack<RuleSetHandler>(), updated = DateTime.UtcNow };
+            }
+            if (bs.kGraphData == null) // top level conversation
+            {
+                var responses = await _ghandler.InterpretText(userId, KnowledgeGraphName, "default:", conversationData);
+                if (responses.Any())
+                {
+                    var r = responses.Last();
+                    if (r.response.dataType == DarlVar.DataType.seek)
+                    {
+                        bs.kGraphData = r.response.sequence;
+                        var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values);
+                        resp.Add(res.First());
+                    }
+                    else
+                    {
+                        resp.Add(r);
+                    }
+                    if (r.response.approximate)
+                    {
+                        string version = "unknown";
+                        await _conv.CreateDefaultResponse(new DefaultResponse { date = DateTime.UtcNow, model = KnowledgeGraphName, message = conversationData.Value, response = r.response.Value, userId = userId, version = version });
+                    }
+                }
+                else
+                {
+                    resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Internal error", dataType = DarlVar.DataType.textual } });
+                }
+            }
+            else
+            {
+                //pass text through the navigation recognition tree checking for help, quit etc.
+                var responses = await _ghandler.InterpretText(userId, KnowledgeGraphName, "navigation:", conversationData);
+                if(responses.Any())
+                {
+                    var r = responses.Last();
+                    if(r.response.name == "response")
+                    {
+                        resp.Add(r);
+                    }
+                    else if(r.response.name == "terminate")
+                    {
+                        bs.kGraphData = null;
+                        resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Quitting...", dataType = DarlVar.DataType.textual } });
+                    }
+                }
+                else //continue processing the KGraph
+                {
+                    var request = new DarlVar { Value = conversationData.Value, name = RuleSetHandler.questionIdentifier, dataType = DarlVar.DataType.textual };
+                    var existing = bs.values.Where(a => a.name == RuleSetHandler.questionIdentifier).FirstOrDefault();
+                    if (existing != null)
+                        bs.values.Remove(existing);
+                    bs.values.Add(request); 
+                    var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, bs.kGraphData[0][0], bs.kGraphData[1], bs.kGraphData[2][0], bs.values);
+                    resp.Add(res.Last());
+                }
+            }
+            await _conv.SaveBotState(bs);
+            return resp;
+
         }
     }
 }

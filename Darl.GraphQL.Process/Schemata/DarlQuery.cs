@@ -2,8 +2,12 @@
 using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
+using Darl.Lineage.Bot;
+using Darl.Thinkbase;
 using DarlCommon;
+using DarlLanguage.Processing;
 using GraphQL.Types;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -11,7 +15,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlQuery : ObjectGraphType<object>
     {
-        public DarlQuery(IConnectivity connectivity, IBotProcessing bot, IFormProcessing form, ISimProcessing sim, IGraphProcessing graph, ISoftMatchProcessing cmp)
+        public DarlQuery(IConnectivity connectivity, IBotProcessing bot, IFormProcessing form, ISimProcessing sim, IGraphProcessing graph, ISoftMatchProcessing cmp, ILocalStore graphStore)
         {
             Name = "Query";
             Description = "View the contents of your account.";
@@ -38,7 +42,8 @@ namespace Darl.GraphQL.Models.Schemata
 
             FieldAsync<ListGraphType<BotModelType>>(
               "botmodels",
-              resolve: async context =>
+               "The set of Bot models for this account.",
+             resolve: async context =>
               {
                   var userId = connectivity.GetCurrentUserId(context.UserContext);
                   return await context.TryAsyncResolve(
@@ -46,12 +51,32 @@ namespace Darl.GraphQL.Models.Schemata
               }
             );
 
+            FieldAsync<ListGraphType<KGraphType>>(
+              "kgraphs",
+              "The set of Knowledge Graphs for this account.",
+              resolve: async context =>
+              {
+                  var userId = connectivity.GetCurrentUserId(context.UserContext);
+                  return await context.TryAsyncResolve(
+                      async c => await connectivity.GetKGraphsAsync(userId));
+              }
+            );
+
             FieldAsync<ListGraphType<ContactType>>(
               "contacts",
+               "The set of contacts.",
                   resolve: async context =>
                   {
                       return await context.TryAsyncResolve(
                                   async c => await connectivity.GetContacts());
+                  }
+            ).AuthorizeWith("AdminPolicy");
+            FieldAsync<ListGraphType<ContactType>>(
+              "recentContacts",
+                  resolve: async context =>
+                  {
+                      return await context.TryAsyncResolve(
+                                  async c => await connectivity.GetRecentContacts());
                   }
             ).AuthorizeWith("AdminPolicy");
             FieldAsync<ListGraphType<DarlUserType>>(
@@ -114,6 +139,18 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
                         async c => await connectivity.GetBotModel(userId, c.GetArgument<String>("name"))
+                    );
+                }
+            );
+
+            FieldAsync<KGraphType>(
+                "kGraphByName",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await connectivity.GetKGModel(userId, c.GetArgument<String>("name"))
                     );
                 }
             );
@@ -600,49 +637,162 @@ namespace Darl.GraphQL.Models.Schemata
             );
             FieldAsync<ListGraphType<GraphObjectType>>(
                 "getGraphObjects",
-                "get graph objects based on name and lineage",
+                "Get graph objects based on name and lineage",
                 arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "Name of the object" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "The parent lineage" }
                 ),
                 resolve: async context =>
                 {
+                    var graphName = context.GetArgument<string>("graphName");
                     var name = context.GetArgument<string>("name");
                     var lineage = context.GetArgument<string>("lineage");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjects(userId, name, lineage));
+                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjects(CompositeName(userId, graphName), name, lineage));
                 }
             ).AuthorizeWith("CorpPolicy");
             FieldAsync<ListGraphType<GraphObjectType>>(
-                "getGraphObjectsFuzzy",
-                "get graph objects based on  a fuzzy match with name and lineage",
+                "getGraphObjectsByLineage",
+                "Get graph objects based on lineage",
                 arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "Name of the object" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "The parent lineage" },
-                    new QueryArgument<FloatGraphType>{ Name = "similarity", Description = "The minimum similarity [0,1]", DefaultValue = 0.7f }
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "The parent lineage" }
                 ),
                 resolve: async context =>
                 {
+                    var graphName = context.GetArgument<string>("graphName");
                     var name = context.GetArgument<string>("name");
                     var lineage = context.GetArgument<string>("lineage");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    var similarity = context.GetArgument<float>("similarity");
-                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectsFuzzy(userId, name, lineage,similarity));
+                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectsByLineage(CompositeName(userId, graphName), lineage));
                 }
-            ).AuthorizeWith("CorpPolicy");
+            ).AuthorizeWith("CorpPolicy"); 
             FieldAsync<GraphObjectType>(
                 "getGraphObjectByid",
-                "get a graph object based on id",
+                "Get a graph object based on id",
                 arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the object" }
+                    
                 ),
                 resolve: async context =>
                 {
+                    var graphName = context.GetArgument<string>("graphName");
                     var id = context.GetArgument<string>("id");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectById(userId, id));
+                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectById(CompositeName(userId, graphName), id));
                 }
             ).AuthorizeWith("CorpPolicy");
+            FieldAsync<GraphObjectType>(
+                 "getVirtualObjectByLineage",
+                 "Get a virtual graph object based on lineage",
+                 arguments: new QueryArguments(
+                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
+                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "Lineage of the object" }
+
+                 ),
+                 resolve: async context =>
+                 {
+                     var graphName = context.GetArgument<string>("graphName");
+                     var lineage = context.GetArgument<string>("lineage");
+                     var userId = connectivity.GetCurrentUserId(context.UserContext);
+                     return await context.TryAsyncResolve(async c => await graph.GetVirtualObjectByLineage(CompositeName(userId, graphName), lineage));
+                 }
+             ).AuthorizeWith("CorpPolicy");
+            FieldAsync<GraphObjectType>(
+                 "getRecognitionObjectById",
+                 "Get a recognition graph object based on id",
+                 arguments: new QueryArguments(
+                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
+                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "Id of the object" }
+
+                 ),
+                 resolve: async context =>
+                 {
+                     var graphName = context.GetArgument<string>("graphName");
+                     var id = context.GetArgument<string>("id");
+                     var userId = connectivity.GetCurrentUserId(context.UserContext);
+                     return await context.TryAsyncResolve(async c => await graph.GetRecognitionObjectById(CompositeName(userId, graphName), id));
+                 }
+             ).AuthorizeWith("CorpPolicy");
+
+            FieldAsync<GraphObjectType>(
+                "getGraphObjectByExternalId",
+                "Get a graph object based on an external id",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "externalId", Description = "external id of the object" }
+                ),
+                resolve: async context =>
+                {
+                    var graphName = context.GetArgument<string>("graphName");
+                    var id = context.GetArgument<string>("externalId");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectByExternalId(CompositeName(userId,graphName), id));
+                }
+            ).AuthorizeWith("CorpPolicy");
+            FieldAsync<GraphConnectionType>(
+                "getGraphConnection",
+                "Get a graph connection based on start and end ids and lineage",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "startId", Description = "id of the start object" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "endId", Description = "id of the end object" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "lineage of the connection" }
+                ),
+                resolve: async context =>
+                {
+                    var graphName = context.GetArgument<string>("graphName");
+                    var startId = context.GetArgument<string>("startId");
+                    var endId = context.GetArgument<string>("endId");
+                    var lineage = context.GetArgument<string>("lineage");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await graph.GetConnectionByIds(CompositeName(userId, graphName), startId,endId,lineage));
+                }
+            ).AuthorizeWith("CorpPolicy");
+
+            FieldAsync<KnowledgeStateType>(
+                "getKnowledgeState",
+                "Get a knowledge state by its Id",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "Id", Description = "The knowledge state id" }
+                ),
+                resolve: async context =>
+                {
+                    var Id = context.GetArgument<string>("Id");
+
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await connectivity.GetKnowledgeState(userId,Id));
+                }
+            ).AuthorizeWith("CorpPolicy");
+
+            FieldAsync<KnowledgeStateType>(
+                "getKnowledgeStateByExternalId",
+                "Get a knowledge state by its external Id",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "subjectId", Description = "The external id" }
+                ),
+                resolve: async context =>
+                {
+                    var subjectId = context.GetArgument<string>("subjectId");
+
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await connectivity.GetKnowledgeStateByExternalId(userId, subjectId));
+                }
+            ).AuthorizeWith("CorpPolicy");
+
+            FieldAsync<ListGraphType<KnowledgeStateType>>(
+                 "getKnowledgeStates",
+                 "Get all the knowledge states in this account",
+                 resolve: async context =>
+                 {
+
+                     var userId = connectivity.GetCurrentUserId(context.UserContext);
+                     return await context.TryAsyncResolve(async c => await connectivity.GetKnowledgeStates(userId));
+                 }
+             ).AuthorizeWith("CorpPolicy");
+
 
             FieldAsync<BooleanGraphType>(
                 "checkKey",
@@ -657,20 +807,6 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(async c => await connectivity.CheckKey(userId, key));
                 }
             );
-            FieldAsync<StringGraphType>(
-                "gremlinPassThrough",
-                "pass gremlin queries through to the underlying database - unsafe!",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "query", Description = "the gremlin query" }
-                ),
-                resolve: async context =>
-                {
-                    var query = context.GetArgument<string>("query");
-                    var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.gremlinPassThrough(userId, query));
-                }
-            ).AuthorizeWith("CorpPolicy");
-
             FieldAsync<ListGraphType<MatchResultType>>(
                 "InferFromSoftMatchModel",
                 "Find the nearest matches in a given SoftMatch model to the given set of texts",
@@ -686,23 +822,6 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(async c => await cmp.InferFromSoftMatchModel(userId, treeName, texts));
                 }
             ).AuthorizeWith("CorpPolicy");
-            FieldAsync<InferenceRecordType>(
-                "inferFromKnowledgeGraph",
-                "Make an 1nference using the knowledge graph",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<GraphObjectInputType>> { Name = "start", Description = "The object to make the inference for" },
-                    new QueryArgument<NonNullGraphType<GraphObjectInputType>> { Name = "target", Description = "The target object to make an inference to." },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "targetOutput", Description = "The dominant output to report on." }
-                ),
-                resolve: async context =>
-                {
-                    var start = context.GetArgument<GraphObjectInput>("start");
-                    var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    var target = context.GetArgument<GraphObjectInput>("target");
-                    var targetOutput = context.GetArgument<string>("targetOutput");
-                    return await context.TryAsyncResolve(async c => await graph.InferPath(start, target, userId, targetOutput));
-                }
-            ).AuthorizeWith("CorpPolicy");
             FieldAsync<ListGraphType<StringGraphType>>(
                 "softMatchModels",
                 "Get the names of the SoftMatch models in your account",                          
@@ -712,7 +831,103 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(async c => await cmp.ListSoftMatchModels(userId));
                 }
             );
+            FieldAsync<DarlVarType>(
+                "readGraph",
+                "Test graph calls used in the graph store",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "action", Description = "The name of the action to perform" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "param1", Description = "The first parameter" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "param2", Description = "The second parameter" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "param3", Description = "The third parameter" },                   
+                    new QueryArgument<StringGraphType> { Name = "param4", Description = "The fourth parameter" },                    
+                    new QueryArgument<StringGraphType> { Name = "param5", Description = "The fifth parameter" }),
+                resolve: async context =>
+                {
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    var action = context.GetArgument<string>("action");
+                    var param1 = context.GetArgument<string>("param1");
+                    var param2 = context.GetArgument<string>("param2");
+                    var param3 = context.GetArgument<string>("param3");
+                    var param4 = context.GetArgument<string>("param4");
+                    var param5 = context.GetArgument<string>("param5");
+                    var list = new List<string> { action, param1, param2, param3 };
+                    if (!string.IsNullOrEmpty(param4))
+                    {
+                        list.Add(param4);
+                        if (!string.IsNullOrEmpty(param5))
+                        {
+                            list.Add(param5);
+                        }
+                    }
+                    return DarlVarExtensions.Convert(await graphStore.ReadAsync(list));
+                }
+            ).AuthorizeWith("CorpPolicy");
+
+            FieldAsync<ListGraphType<InteractResponseType>>(
+                "interactKnowledgeGraph",
+                "Perform a chatbot interaction making use of a knowledge graph",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "kgModelName", Description = "The knowledge graph to run" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "conversationId", Description = "The unique conversation identifier" },
+                    new QueryArgument<NonNullGraphType<DarlVarInputType>> { Name = "conversationData", Description = "The input from the other converser." }
+                ),
+                resolve: async context =>
+                {
+                    var kgModelName = context.GetArgument<string>("kgModelName");
+                    var conversationId = context.GetArgument<string>("conversationId");
+                    var conversationData = context.GetArgument<DarlVar>("conversationData");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await bot.InteractKGAsync(userId, kgModelName, conversationId, conversationData));
+                }).AuthorizeWith("CorpPolicy");
+
+            FieldAsync<DisplayModelType>(
+                "getRealKGDisplay",
+                "Get a display version of the KG",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
+                    new QueryArgument<StringGraphType> { Name = "lineageFilter", Description = "optional lineage filter", DefaultValue = "" }
+                ),
+                resolve: async context =>
+                {
+                    var graphName = context.GetArgument<string>("graphName");
+                    var lineageFilter = context.GetArgument<string>("lineageFilter");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await graph.GetRealDisplayGraph(CompositeName(userId, graphName), lineageFilter));
+                }
+            ).AuthorizeWith("CorpPolicy");
+            FieldAsync<DisplayModelType>(
+                "getVirtualKGDisplay",
+                "Get a display version of the virtual part of the KG",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" }
+                ),
+                resolve: async context =>
+                {
+                    var graphName = context.GetArgument<string>("graphName");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await graph.GetVirtualDisplayGraph(CompositeName(userId, graphName)));
+                }
+            ).AuthorizeWith("CorpPolicy");
+            FieldAsync<DisplayModelType>(
+                "getRecognitionKGDisplay",
+                "Get a display version of a recognition tree from the KG",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" }
+                ),
+                resolve: async context =>
+                {
+                    var graphName = context.GetArgument<string>("graphName");
+                    var root = context.GetArgument<string>("root");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await graph.GetRecognitionDisplayGraph(CompositeName(userId, graphName)));
+                }
+            ).AuthorizeWith("CorpPolicy");
+
         }
 
+        private string CompositeName(string userId, string graphName)
+        {
+            return $"{userId}_{graphName}";
+        }
     }
 }

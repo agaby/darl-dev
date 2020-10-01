@@ -1,9 +1,11 @@
-﻿using Microsoft.Azure.Storage;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +18,8 @@ namespace Darl.GraphQL.Models.Connectivity
         private ILogger _logger;
         private CloudBlobClient _blob;
         private CloudBlobContainer _container;
+
+        public string implementation => nameof(BlobConnectivity);
 
         public BlobConnectivity(IConfiguration config, ILogger<BlobConnectivity> logger)
         {
@@ -37,8 +41,15 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task Write(string name, byte[] data)
         {
-            var b = _container.GetBlockBlobReference(name);
-            await b.UploadFromByteArrayAsync(data, 0, data.Length);
+            try
+            {
+                var b = _container.GetBlockBlobReference(name);
+                await b.UploadFromByteArrayAsync(data, 0, data.Length);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Failure to write blob '{name}', length {data.Length}");
+            }
         }
 
         public async Task<bool> Exists(string name)

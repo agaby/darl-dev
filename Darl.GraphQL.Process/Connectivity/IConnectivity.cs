@@ -2,10 +2,12 @@
 using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Schemata;
 using Darl.Lineage;
+using Darl.Thinkbase;
 using DarlCommon;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Default = Darl.GraphQL.Models.Models.Default;
 
@@ -18,7 +20,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<Authorization> CreateAuthorization(string userId, string name, Authorization auth);
 
         Task<BotConnection> CreateBotConnection(string userId, string botModelName, string appId, string password);
-
         Task<Contact> CreateContactAsync(Contact contact);
 
         Task<Default> CreateDefault(string name, string value);
@@ -54,7 +55,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<string> DeleteAuthorization(string userId, string name, string name1);
 
         Task<AzureCredentials> DeleteAzureCredentials(string userId, string botModelName, ModelType modelType);
-
+        Task<List<KGraph>> GetKGraphsAsync(string userId);
         Task<BotConnection> DeleteBotConnection(string userId, string botModelName, string appId);
 
         Task<BotModel> DeleteBotModel(string userId, string name);
@@ -217,5 +218,17 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<bool> CloseAccount(string userId);
         Task<string> CreateKey(string userId, string company, string email, DateTime endDate);
         Task<bool> CheckKey(string userId, string key);
+        Task<ModelDetails> UpdateRuleFormDetails(string userId, string ruleSetName, ModelDetails details);
+        Task<List<Contact>> GetRecentContacts();
+        IQueryable<Contact> GetContactsQueryable();
+        Task<KnowledgeState> GetKnowledgeState(string userId, string ksId);
+        Task<List<KnowledgeState>> GetKnowledgeStates(string userId);
+        Task<KnowledgeState> DeleteKnowledgeState(string userId, string ksId);
+        Task<KnowledgeState> UpdateKnowledgeState(string userId, string ksId, KnowledgeStateUpdate state);
+        Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state);
+        Task<KnowledgeState> GetKnowledgeStateByExternalId(string userId, string extId);
+        Task<UserUsage> CreateKGModelUsage(DateTime date, int count, string userId, string model);
+        Task<KGraph> GetKGModel(string userId, string model);
+        Task<KGraph> CreateKGraph(string userId, string name);
     }
 }

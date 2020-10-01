@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
@@ -8,13 +9,11 @@ using Darl.GraphQL.Ui.Playground;
 using Darl.GraphQL.Ui.Voyager;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
+using Darl.Thinkbase;
+using DarlLanguage.Processing;
 using GraphQL;
 using GraphQL.Http;
-using GraphQL.Types;
 using GraphQL.Validation;
-using Microsoft.ApplicationInsights;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.AzureADB2C.UI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -24,14 +23,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
-
+using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
 
 namespace Darl.GraphQL
 {
@@ -66,8 +64,7 @@ namespace Darl.GraphQL
                 options.AllowSynchronousIO = true;
             });
 
-            services.AddAuthentication(AzureADB2CDefaults.AuthenticationScheme)
-                .AddAzureADB2C(options => Configuration.Bind("AzureAdB2C", options));
+            services.AddMicrosoftWebAppAuthentication(Configuration, "AzureAdB2C");
 
             services.AddHsts(options =>
             {
@@ -105,6 +102,10 @@ namespace Darl.GraphQL
             services.AddSingleton<ILicensing, ProductLicensing>();
             services.AddSingleton<IBlobConnectivity, BlobConnectivity>();
             services.AddSingleton<ISoftMatchProcessing, SoftMatchProcessing>();
+            services.AddSingleton<ILocalStore, GraphLocalStore>();
+            services.AddSingleton<IGraphPrimitives, BlobGraphPrimitives>();
+            services.AddSingleton<IGraphHandler, GraphHandler>();
+            services.AddSingleton<IBlobConnectivity, BlobGraphConnectivity>();
 
             //types
             services.AddSingleton<BotFormatType>();
@@ -226,6 +227,26 @@ namespace Darl.GraphQL
             services.AddSingleton<OntologyActionEnum>();
             services.AddSingleton<KGTrainingSpecType>();
             services.AddSingleton<KGTrainingValueType>();
+            services.AddSingleton<GraphAttributeType>();
+            services.AddSingleton<GraphAttributeInputType>();
+            services.AddSingleton<GraphConnectionInputType>();
+            services.AddSingleton<GraphConnectionType>();
+            services.AddSingleton<GraphConnectionUpdateType>();
+            services.AddSingleton<GraphObjectInputType>();
+            services.AddSingleton<GraphObjectType>();
+            services.AddSingleton<GraphObjectUpdateType>();
+            services.AddSingleton<GraphAttributeDataTypeEnum>();
+            services.AddSingleton<KnowledgeStateType>();
+            services.AddSingleton<StringListGraphAttributePairType>();
+            services.AddSingleton<KGraphType>();
+            services.AddSingleton<GraphModelType>();
+            services.AddSingleton<StringGraphObjectPairType>();
+            services.AddSingleton<StringGraphConnectionPairType>();
+            services.AddSingleton<DisplayConnectionInnerType>();
+            services.AddSingleton<DisplayConnectionOuterType>();
+            services.AddSingleton<DisplayModelType>();
+            services.AddSingleton<DisplayObjectInnerType>();
+            services.AddSingleton<DisplayObjectOuterType>();
 
 
 
@@ -258,10 +279,18 @@ namespace Darl.GraphQL
                 return new DocumentWriter(Formatting.None, new JsonSerializerSettings());
             });
 
+            services.AddControllersWithViews()
+                .AddMicrosoftIdentityUI();
+
+
             services.AddRazorPages();
             services.AddApplicationInsightsTelemetry();
             services.AddHealthChecks();
-            
+            services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
+
+            //Configuring appsettings section AzureAdB2C, into IOptions
+            services.AddOptions();
+            services.Configure<OpenIdConnectOptions>(Configuration.GetSection("AzureAdB2C"));
 
         }
 

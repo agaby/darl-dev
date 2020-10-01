@@ -35,6 +35,9 @@ using QuickGraph.Serialization;
 using QuickGraph.Algorithms.Search;
 using Darl.GraphQL.Process.Middleware;
 using QuickGraph.Algorithms;
+using Darl.Thinkbase;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Bson.Serialization.Options;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -61,6 +64,8 @@ namespace Darl.GraphQL.Models.Connectivity
         public static readonly string conversationCollection = "conversation";
         public static readonly string updateCollection = "update";
         public static readonly string documentCollection = "document";
+        public static readonly string knowledgestateCollection = "knowledgestate";
+        public static readonly string kgraphcollection = "kgraph";
 
 
         public CosmosDBConnectivity(IConfiguration config, ILogger<CosmosDBConnectivity> logger, ILicensing licensing)
@@ -78,6 +83,12 @@ namespace Darl.GraphQL.Models.Connectivity
             mongoClient = new MongoClient(settings);
             db = mongoClient.GetDatabase(_config["AppSettings:MongoDatabase"]);
             BsonClassMap.RegisterClassMap<BotTrigger>();
+            BsonClassMap.RegisterClassMap<DarlVar>(cm =>
+            {
+                cm.AutoMap();
+                cm.MapMember(c => c.categories).SetSerializer(new DictionaryInterfaceImplementerSerializer<Dictionary<string, double>>(DictionaryRepresentation.ArrayOfDocuments));
+            });
+
         }
 
         public async Task<Authorization> CreateAuthorization(string userId, string botModelName, Authorization auth)
@@ -446,6 +457,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
+
         public async Task<Default> DeleteDefault(string name)
         {
             var mc = db.GetCollection<Default>(defaultCollection);
@@ -602,7 +614,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 var currentModel = await GetLineageModel(userId, botModelName);
                 var results = currentModel.Match(phrase, new List<DarlVar>());
-                var att = results.Last();
+                var att = results.Last() as MatchedAnnotation;
                 if (att.path.Contains("default:")) //no actual match
                 {
                     var path = currentModel.BestMatch(phrase);
@@ -705,7 +717,8 @@ namespace Darl.GraphQL.Models.Connectivity
             var query = collection.AsQueryable()
                 .Where(a => a.AppId == appId)
                 .Select(c => c.UsageHistory);
-            return query.FirstOrDefault().ToList();
+            var list =  await query.FirstOrDefaultAsync();
+            return list.ToList();
         }
 
         /// <summary>
@@ -832,6 +845,19 @@ namespace Darl.GraphQL.Models.Connectivity
             var mc = db.GetCollection<Contact>(contactCollection);
             var query = mc.AsQueryable(new AggregateOptions {  BatchSize = 10000});
             return await query.ToListAsync();
+        }
+
+        public  IQueryable<Contact> GetContactsQueryable()
+        {
+            var mc = db.GetCollection<Contact>(contactCollection);
+            return mc.AsQueryable(new AggregateOptions { BatchSize = 10000 });
+        }
+
+        public async Task<List<Contact>> GetRecentContacts()
+        {
+            var mc = db.GetCollection<Contact>(contactCollection);
+            var query = mc.AsQueryable(new AggregateOptions { BatchSize = 10000 });
+            return await query.OrderByDescending(a => a.Created).ToListAsync();
         }
         public async Task<List<Contact>> GetContactsByLastName(string lastName)
         {
@@ -1911,7 +1937,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task SaveBotState(BotState bs)
         {
             var collection = db.GetCollection<BotState>(botStateCollection);
-            await collection.ReplaceOneAsync(doc => doc.conversationId == bs.conversationId && doc.userId == bs.userId, bs, new UpdateOptions { IsUpsert = true });
+            var res = await collection.ReplaceOneAsync(doc => doc.conversationId == bs.conversationId && doc.userId == bs.userId, bs, new ReplaceOptions { IsUpsert = true });
         }
 
         public async Task CreateDefaultResponse(DefaultResponse response)
@@ -1951,6 +1977,61 @@ namespace Darl.GraphQL.Models.Connectivity
             var query = mc.AsQueryable().Where(p => p.name == name && p.userId == userId);
             var old = await query.FirstOrDefaultAsync();
             await mc.DeleteOneAsync(Builders<Document>.Filter.Eq(r => r.userId, userId) & Builders<Document>.Filter.Eq(r => r.name, name));
+            return old;
+        }
+
+        public async Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state)
+        {
+            var kstate = new KnowledgeState { userId = userId, data = state.data, Id = Guid.NewGuid().ToString(), knowledgeGraphName = state.knowledgeGraphName, subjectId = state.subjectId };
+            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            await mc.InsertOneAsync(kstate);
+            return kstate;
+        }
+
+        public async Task<KnowledgeState> GetKnowledgeState(string userId, string ksId)
+        {
+            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var query = mc.AsQueryable()
+            .Where(p => p.Id == ksId && p.userId == userId);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<KnowledgeState> GetKnowledgeStateByExternalId(string userId, string extId)
+        {
+            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var query = mc.AsQueryable()
+            .Where(p => p.subjectId == extId && p.userId == userId);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<List<KnowledgeState>> GetKnowledgeStates(string userId)
+        {
+            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var query = mc.AsQueryable()
+            .Where(p => p.userId == userId);
+            return await query.ToListAsync();
+        }
+
+        /// <summary>
+        /// Update the data field in the KnowledgeState
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public async Task<KnowledgeState> UpdateKnowledgeState(string userId, string ksId, KnowledgeStateUpdate state)
+        {
+            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var filter = Builders<KnowledgeState>.Filter.Where(x => x.Id == ksId && x.userId == userId);
+            var update = Builders<KnowledgeState>.Update.Set("data", state.data);
+            var updated = await mc.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<KnowledgeState, KnowledgeState> { IsUpsert = true });
+            return updated;
+        }
+
+        public async Task<KnowledgeState> DeleteKnowledgeState(string userId, string ksId)
+        {
+            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var query = mc.AsQueryable().Where(p => p.Id == ksId && p.userId == userId);
+            var old = await query.FirstOrDefaultAsync();
+            await mc.DeleteOneAsync(Builders<KnowledgeState>.Filter.Eq(r => r.userId, userId) & Builders<KnowledgeState>.Filter.Eq(r => r.Id, ksId));
             return old;
         }
 
@@ -2591,5 +2672,67 @@ namespace Darl.GraphQL.Models.Connectivity
             return _licensing.CheckKey(key);
         }
 
+        public async Task<ModelDetails> UpdateRuleFormDetails(string userId, string ruleSetName, ModelDetails details)
+        {
+            var collection = db.GetCollection<RuleSet>(rulesetCollection);
+            var filter = Builders<RuleSet>.Filter.Where(x => x.Name == ruleSetName && x.userId == userId );
+            var updList = new List<UpdateDefinition<RuleSet>>();
+            if (details.author != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.author, details.author));
+            if (details.copyright != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.copyright, details.copyright));
+            if (details.currency != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.currency, details.currency));
+            if (details.description != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.description, details.description));
+            if (details.license != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.license, details.license));
+            if (details.price != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.price, details.price));
+            if (details.version != null)
+                updList.Add(Builders<RuleSet>.Update.Set(x => x.Contents.version, details.version));
+            var update = Builders<RuleSet>.Update.Combine(updList);
+            var rs = await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<RuleSet, RuleSet> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
+            return new ModelDetails { author = rs.Contents.author, copyright = rs.Contents.copyright, currency = rs.Contents.currency, description = rs.Contents.description, license = rs.Contents.license, price = rs.Contents.price, version = rs.Contents.version };
+        }
+
+        public async Task<List<KGraph>> GetKGraphsAsync(string userId)
+        {
+            var mc = db.GetCollection<KGraph>(kgraphcollection);
+            var query = mc.AsQueryable()
+            .Where(p => p.userId == userId);
+            return await query.ToListAsync();
+        }
+
+        public async Task<UserUsage> CreateKGModelUsage(DateTime date, int count, string userId, string model)
+        {
+            var usage = new UserUsage(date, count);
+            var existing = await GetKGModel(userId, model);
+            if (existing == null)
+                return usage;
+            if (existing.UsageHistory.Any(x => x.Date == date))//don't overwrite
+                return usage;
+            var collection = db.GetCollection<KGraph>(kgraphcollection);
+            var filter = Builders<KGraph>.Filter.Where(x => x.userId == userId && x.Name == model);
+            var update = Builders<KGraph>.Update.Push("UsageHistory", usage);
+            await collection.FindOneAndUpdateAsync(filter, update);
+            return usage;
+        }
+
+        public async Task<KGraph> GetKGModel(string userId, string model)
+        {
+            var mc = db.GetCollection<KGraph>(kgraphcollection);
+            var query = mc.AsQueryable()
+            .Where(p => p.userId == userId && p.Name == model);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<KGraph> CreateKGraph(string userId, string name)
+        {
+            var mc = db.GetCollection<KGraph>(kgraphcollection);
+            var model = new KGraph { Name = name, userId = userId};
+            await mc.InsertOneAsync(model);
+            return model;
+        }
     }
 }
