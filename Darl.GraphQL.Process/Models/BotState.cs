@@ -33,5 +33,7 @@ namespace Darl.GraphQL.Models.Models
 
         public List<List<string>> kGraphData { get; set; }
 
+        public DarlVar pending { get; set; }
+
     }
 }

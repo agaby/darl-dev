@@ -771,14 +771,15 @@ namespace Darl.GraphQL.Models.Schemata
                 "getKnowledgeStateByExternalId",
                 "Get a knowledge state by its external Id",
                 arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "subjectId", Description = "The external id" }
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "subjectId", Description = "The external id" },
+                     new QueryArgument<BooleanGraphType>{ Name = "externalIds", Description = "true returns externalIds for GraphObjects, rather than internal", DefaultValue = false }
                 ),
                 resolve: async context =>
                 {
                     var subjectId = context.GetArgument<string>("subjectId");
-
+                    var externalIds = context.GetArgument<bool>("externalIds");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await connectivity.GetKnowledgeStateByExternalId(userId, subjectId));
+                    return await context.TryAsyncResolve(async c => await graph.GetKnowledgeStateByExternalId(userId, subjectId, externalIds));
                 }
             ).AuthorizeWith("CorpPolicy");
 

@@ -104,7 +104,7 @@ namespace Darl.GraphQL.Test
             var conn = new Mock<IConnectivity>();
             _conn = conn.Object;
             cache.Setup(a => a.GetAsync(It.IsAny<string>(), default)).Returns(Task.FromResult<byte[]>(null));
-            conn.Setup(a => a.GetKnowledgeState(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<KnowledgeState>(new KnowledgeState { data = new Dictionary<string, List<GraphAttribute>>() }));
+            conn.Setup(a => a.GetKnowledgeState(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<KnowledgeState>(new KnowledgeState ()));
             conn.Setup(a => a.UpdateKnowledgeState(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<KnowledgeStateUpdate>()));
             _primitives = new BlobGraphPrimitives(new List<IBlobConnectivity> { blob }, cache.Object, conn.Object);
             _graph = new GraphProcessing(_primitives);
@@ -420,7 +420,7 @@ namespace Darl.GraphQL.Test
             var subjectId = Guid.NewGuid().ToString();
             var userId = _config["userId"];
             var targetId = node.id;
-            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>());
+            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>(),null);
             await _graph.Store(compositeName);
             var stream = await _graph.StoreGraphML(compositeName);
             using (var fileStream = File.Create(graphImage))
@@ -437,17 +437,17 @@ namespace Darl.GraphQL.Test
             var compositeName = $"{_config["userId"]}_{graphName}";
             var model = await _primitives.Load(compositeName);
             var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
-            var ks = new KnowledgeState { Id = Guid.NewGuid().ToString(), subjectId = Guid.NewGuid().ToString(), userId = _config["userId"], knowledgeGraphName = graphName, data = new Dictionary<string, List<GraphAttribute>>() };
+            var ks = new KnowledgeState { Id = Guid.NewGuid().ToString(), userId = _config["userId"], knowledgeGraphName = graphName };
             var paths = new List<string> { consistsLineage, followsLineage };
             var order = _graph.GetExecutionOrder(model, node, paths);
             var nodes = await _graph.FindNext(model, order, ks, node, paths, completeLineage);
             Assert.AreEqual(1, nodes.Count);
             Assert.AreEqual("SUBACTIVITY1", nodes[0].externalId);
-            ks.data.Add(nodes[0].id, new List<GraphAttribute> { new GraphAttribute { lineage = completeLineage } });
+            ks.AddAttribute(nodes[0].id, new GraphAttribute { lineage = completeLineage } );
             nodes = await _graph.FindNext(model, order, ks, node, new List<string> { consistsLineage, followsLineage }, completeLineage);
             Assert.AreEqual(1, nodes.Count);
             Assert.AreEqual("SUBACTIVITY2", nodes[0].externalId);
-            ks.data.Add(nodes[0].id, new List<GraphAttribute> { new GraphAttribute { lineage = completeLineage } });
+            ks.AddAttribute(nodes[0].id, new GraphAttribute { lineage = completeLineage } );
             nodes = await _graph.FindNext(model, order, ks, node, new List<string> { consistsLineage, followsLineage }, completeLineage);
             Assert.AreEqual(1, nodes.Count);
             Assert.AreEqual("SUBACTIVITY3", nodes[0].externalId);
@@ -455,7 +455,7 @@ namespace Darl.GraphQL.Test
             var subjectId = Guid.NewGuid().ToString();
             var userId = _config["userId"];
             var targetId = node.id;
-            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>());
+            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>(), null);
         }
 
         [TestMethod]
@@ -469,19 +469,19 @@ namespace Darl.GraphQL.Test
             var userId = _config["userId"];
             var targetId = node.id;
             var complete = false;
-            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>());
+            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>(), null);
             var count = 0;
             while (!complete)
             {
-                var text = next.First().response.Value;
+                var text = next.Item1.First().response.Value;
                 Debug.WriteLine(text);
                 if (text == "This process is complete.")
                     complete = true;
                 else
                 {
-                    var current = next.Last();
+                    var current = next.Item1.Last();
                     current.response.Value = current.response.categories.Keys.First();
-                    next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar> { current.response });
+                    next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar> { current.response }, null);
                 }
                 count++;
             }

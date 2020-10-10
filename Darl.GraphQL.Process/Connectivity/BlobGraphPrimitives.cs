@@ -791,11 +791,8 @@ namespace Darl.GraphQL.Models.Connectivity
                     break;
                 if (obj.Out.Count > 0) // not leaf
                     continue;
-                if(ks.data.ContainsKey(obj.id))
-                {
-                    if (ks.data[obj.id].Any(a => a.lineage == completedLineage))
-                        continue;
-                }
+                if(ks.ContainsAttribute(obj.id, completedLineage))
+                    continue;
                 list.Add(obj);
             }
 
@@ -869,83 +866,6 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             //sort dependency list
             return sequences.OrderByDescending(a => a.Value).ToList();
-        }
-
-        public async Task<KnowledgeState> UpdateKnowledgeState(string userId, IGraphModel model, List<KeyValuePair<GraphObject, int>> dependencies, List<DarlVar> values, string subjectId, string completionLineage)
-        {
-            var runtime = new DarlMetaRunTime();
-            var ks = await _conn.GetKnowledgeState(userId, subjectId);
-            if (ks == null)
-                ks = new KnowledgeState();
-            var cont = model as BlobGraphContent;
-            for (int n = dependencies.Count - 1; n >= 0; n--) //evaluate dependencies in reverse order
-            {
-                var o = dependencies[n];
-                if(values.Any(a => a.name == o.Key.id))
-                {
-                    var att = new GraphAttribute { id = Guid.NewGuid().ToString(), lineage = completionLineage, name = "completed", type = GraphAttribute.DataType.categorical, value = "completed" };
-                    if (!ks.data.ContainsKey(o.Key.id))
-                        ks.data.Add(o.Key.id, new List<GraphAttribute>{att });
-                    else
-                    {
-                        ks.data[o.Key.id].Add(att);
-                    }
-                }
-                else if (ks.data.ContainsKey(o.Key.id)) //look in KS
-                {
-                    var completed = ks.data[o.Key.id].Where(a => a.lineage == completionLineage).FirstOrDefault();
-                    if (completed != null) //assume state is either unknown or completed
-                    {
-                        continue;
-                    }
-                }
-                else if(o.Key.Out.Any())//leaf nodes can't have inferences
-                {
-                    if (o.Key.properties != null) //look locally
-                    {
-                        var completed = o.Key.properties.Where(a => a.lineage.StartsWith(completionLineage)).FirstOrDefault();
-                        if (completed != null)//assume state is either unknown or completed
-                        {
-                            continue;
-                        }
-                    }
-                    //if we get here the required target is not complete - start searching by getting the corresponding virtual node and looking for completion rules.
-                    var virtNode = cont.virtualVertices[o.Key.lineage];
-                    var list1 = new List<GraphObject> { virtNode };
-                    FollowHypernymy(cont, virtNode, list1);
-                    string ruleSource = string.Empty;
-                    bool found = false;
-                    foreach (var l in list1)
-                    {
-                        if (l.properties != null)
-                        {
-                            foreach (var p in l.properties)
-                            {
-                                if (p.lineage.StartsWith(completionLineage))
-                                {
-                                    ruleSource = p.value;
-                                    found = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (found)
-                            break;
-                    }
-                    if (string.IsNullOrEmpty(ruleSource))
-                    {
-                        continue;
-                    }
-                    var tree = runtime.CreateTree(ruleSource, o.Key, cont);
-                    if (tree.HasErrors())
-                    {
-                        continue;
-                    }
-                    await runtime.Evaluate(tree, new List<Thinkbase.Meta.DarlResult>(), ks);
-                }
-            }
-            await _conn.UpdateKnowledgeState(userId, subjectId, new KnowledgeStateUpdate { data = ks.data });
-            return ks;
         }
 
         public async Task<GraphObject> GetRecognitionRoot(IGraphModel model, string rootLineage)
@@ -1191,6 +1111,56 @@ namespace Darl.GraphQL.Models.Connectivity
                     cont.edges.Remove(c.id);
                 }
             }
+        }
+
+        public async Task SaveKSChanges(string userId, string subjectId, KnowledgeState ks)
+        {
+            await _conn.UpdateKnowledgeState(userId, subjectId, new KnowledgeStateUpdate (ks));
+        }
+
+        public async Task<KnowledgeState> GetKnowledgeState(string userId, string subjectId)
+        {
+            return await _conn.GetKnowledgeState(userId, subjectId);
+        }
+
+        public async Task<KnowledgeState> GetKnowledgeStateByExternalId(string userId, string extId, bool externalIds)
+        {
+            var ks = await _conn.GetKnowledgeState(userId, extId);
+            if (!externalIds)
+            {
+                return ks;
+            }
+            if(!string.IsNullOrEmpty(ks.knowledgeGraphName))
+            {
+                try //several error modes - response is to return original
+                {
+                    var compositeName = CreateCompositeName(userId, ks.knowledgeGraphName);
+                    var cont = await Load(compositeName) as BlobGraphContent;
+                    //replace ids with externalIds. default to overwriting duplicates.
+                    var newData = new Dictionary<string, List<GraphAttribute>>();
+                    foreach (var c in ks.data.Keys)
+                    {
+                        var newKey = cont.vertices[c].externalId;
+                        if(!newData.ContainsKey(newKey))
+                        {
+                            newData.Add(newKey, ks.data[c]);
+                        }
+                        else
+                        {
+                            newData[newKey] = ks.data[c];
+                        }
+                    }
+                    return new KnowledgeState(userId, new KnowledgeStateInput { data = newData, knowledgeGraphName = ks.knowledgeGraphName, subjectId = ks.Id });
+                }
+                catch { }
+
+            }
+            return ks;
+        }
+
+        internal static string CreateCompositeName(string userId, string name)
+        {
+            return userId + "_" + name.Replace(" ", "_");
         }
 
         private void RecursivelyAddElements(GraphObject robj, DisplayModel dmodel, IGraphModel cont)

@@ -1982,7 +1982,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state)
         {
-            var kstate = new KnowledgeState { userId = userId, data = state.data, Id = Guid.NewGuid().ToString(), knowledgeGraphName = state.knowledgeGraphName, subjectId = state.subjectId };
+            var kstate = new KnowledgeState (userId, state);
             var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
             await mc.InsertOneAsync(kstate);
             return kstate;
@@ -1993,14 +1993,6 @@ namespace Darl.GraphQL.Models.Connectivity
             var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
             var query = mc.AsQueryable()
             .Where(p => p.Id == ksId && p.userId == userId);
-            return await query.FirstOrDefaultAsync();
-        }
-
-        public async Task<KnowledgeState> GetKnowledgeStateByExternalId(string userId, string extId)
-        {
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
-            var query = mc.AsQueryable()
-            .Where(p => p.subjectId == extId && p.userId == userId);
             return await query.FirstOrDefaultAsync();
         }
 
@@ -2019,9 +2011,14 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<KnowledgeState> UpdateKnowledgeState(string userId, string ksId, KnowledgeStateUpdate state)
         {
+            var updList = new List<UpdateDefinition<KnowledgeState>>();
+            if (!string.IsNullOrEmpty(state.knowledgeGraphName))
+                updList.Add(Builders<KnowledgeState>.Update.Set("knowledgeGraphName", state.knowledgeGraphName));
+            if (state.data != null)
+                updList.Add(Builders<KnowledgeState>.Update.Set("data", state.data));
             var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
             var filter = Builders<KnowledgeState>.Filter.Where(x => x.Id == ksId && x.userId == userId);
-            var update = Builders<KnowledgeState>.Update.Set("data", state.data);
+            var update = Builders<KnowledgeState>.Update.Combine(updList);
             var updated = await mc.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<KnowledgeState, KnowledgeState> { IsUpsert = true });
             return updated;
         }

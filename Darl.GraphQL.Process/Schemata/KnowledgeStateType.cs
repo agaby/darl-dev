@@ -16,7 +16,6 @@ namespace Darl.GraphQL.Models.Schemata
             Description = "Represents a state of knowledge used to make inferences from a knowledge graph";
             Field(c => c.Id).Description("The Id of the knowledge state");
             Field(c => c.knowledgeGraphName).Description("The name of the knowledge graph this relates to");
-            Field(c => c.subjectId).Description("The external reference of the subject of the state");
             Field(c => c.userId).Description("The id of the owner of the knowledge state");
             Field<ListGraphType<StringListGraphAttributePairType>>("data", resolve: c => GetSGAPairsFromDictionary(c.Source.data));
         }

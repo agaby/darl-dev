@@ -226,7 +226,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<KnowledgeState> DeleteKnowledgeState(string userId, string ksId);
         Task<KnowledgeState> UpdateKnowledgeState(string userId, string ksId, KnowledgeStateUpdate state);
         Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state);
-        Task<KnowledgeState> GetKnowledgeStateByExternalId(string userId, string extId);
         Task<UserUsage> CreateKGModelUsage(DateTime date, int count, string userId, string model);
         Task<KGraph> GetKGModel(string userId, string model);
         Task<KGraph> CreateKGraph(string userId, string name);

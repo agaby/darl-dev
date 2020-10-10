@@ -231,8 +231,10 @@ namespace Darl.GraphQL.Models.Connectivity
                     if (r.response.dataType == DarlVar.DataType.seek)
                     {
                         bs.kGraphData = r.response.sequence;
-                        var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values);
-                        resp.Add(res.First());
+                        bs.pending = null;
+                        var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending);
+                        resp.Add(res.Item1.First());
+                        bs.pending = res.Item2;
                     }
                     else
                     {
@@ -246,7 +248,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
                 else
                 {
-                    resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Internal error", dataType = DarlVar.DataType.textual } });
+                    resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Internal error", dataType = DarlVar.DataType.textual, name = "response" } });
                 }
             }
             else
@@ -263,7 +265,8 @@ namespace Darl.GraphQL.Models.Connectivity
                     else if(r.response.name == "terminate")
                     {
                         bs.kGraphData = null;
-                        resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Quitting...", dataType = DarlVar.DataType.textual } });
+                        bs.pending = null;
+                        resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Quitting...", dataType = DarlVar.DataType.textual, name = "response"} });
                     }
                 }
                 else //continue processing the KGraph
@@ -273,8 +276,9 @@ namespace Darl.GraphQL.Models.Connectivity
                     if (existing != null)
                         bs.values.Remove(existing);
                     bs.values.Add(request); 
-                    var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, bs.kGraphData[0][0], bs.kGraphData[1], bs.kGraphData[2][0], bs.values);
-                    resp.Add(res.Last());
+                    var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, bs.kGraphData[0][0], bs.kGraphData[1], bs.kGraphData[2][0], bs.values,bs.pending);
+                    resp.Add(res.Item1.Last());
+                    bs.pending = res.Item2;
                 }
             }
             await _conv.SaveBotState(bs);
