@@ -145,7 +145,8 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 if (cont.vertices.ContainsKey(c.startId))
                 {
-                    cont.vertices[c.startId].In.Remove(c);
+                    var start = cont.vertices[c.startId];
+                    var success = start.Out.Remove(start.Out.Where(a => a.id == c.id).FirstOrDefault());
                 }
                 cont.edges.Remove(c.id);
             }
@@ -1130,7 +1131,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 return ks;
             }
-            if(!string.IsNullOrEmpty(ks.knowledgeGraphName))
+            if(ks != null && !string.IsNullOrEmpty(ks.knowledgeGraphName))
             {
                 try //several error modes - response is to return original
                 {

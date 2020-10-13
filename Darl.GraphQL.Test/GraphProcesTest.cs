@@ -2,10 +2,8 @@
 using Darl.GraphQL.Models.Models;
 using Darl.SoftMatch;
 using Darl.Thinkbase;
-using Darl_standard.Darl.Thinkbase;
+using Darl.Thinkbase;
 using GraphQL;
-using Gremlin.Net.Driver;
-using Gremlin.Net.Structure.IO.GraphSON;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;

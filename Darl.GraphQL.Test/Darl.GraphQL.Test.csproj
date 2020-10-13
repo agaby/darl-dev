@@ -9,6 +9,7 @@
   <ItemGroup>
     <Compile Remove="ContactTest.cs" />
     <Compile Remove="GraphProcessTest.cs" />
+    <Compile Remove="GraphProcesTest.cs" />
     <Compile Remove="LoadTests.cs" />
   </ItemGroup>
 

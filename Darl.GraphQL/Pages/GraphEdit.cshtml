@@ -14,7 +14,7 @@
                 <p>Select a Knowledge Graph from your account to edit.</p>
                 <label>Knowledge Graphs </label>
                 <select id="kgmodel-dropdown" name="kgmodel" class="dropdown"></select>
-                <button id="kg-save" class="btn btn-info" disabled>Save changes</button>
+                <button id="kg-save" class="btn btn-info">Save changes</button>
             </div>
             <div class="col-md-6 margin-b-40">
                 <label>Or create a new Knowledge Graph - choose a unique name.</label>
@@ -30,6 +30,7 @@
             <div class="form-inline pull-right col-md-3">
                 <input id="real-select" class="form-control-sm" type="text" placeholder="external id" />
                 <button id="real-find" class="btn btn-info form-control-sm">Find</button>
+                <button id="real-delete" class="btn btn-info form-control-sm">Delete</button>
             </div>
         </div>
         <div class="row">
@@ -105,6 +106,7 @@
         var mdname;
         var createKG;
         var savechanges;
+        var deleterealobject;
 
         $(async function () {
 
@@ -127,7 +129,8 @@
             virtualeditorchange = graph('mutation uvg($model: String! $goj: String!){updateVirtualGraphObjectFromJSON(graphName: $model graphObjectJSON: $goj) {id}}');
             receditorchange = graph('mutation rec($model: String! $goj: String!){updateRecognitionObjectFromJSON(graphName: $model graphObjectJSON: $goj) {id}}');
             createKG = graph('mutation createKG($name: String!){createKGraph(name: $name){name}}');
-            savechanges = graph('mutation saveKGraph($name: String!){saveKGraph(name: $name)}')
+            savechanges = graph('mutation saveKGraph($name: String!){saveKGraph(name: $name)}');
+            deleterealobject = graph('mutation dgo($name: String! $id: String!){deleteGraphObject(graphName: $name id: $id){name}}');
 
             if (mdname !== null) {
                 $('#fileHandling').addClass('d-none');
@@ -159,7 +162,7 @@
             $('#kg-save').click(async function () {
                 try {
                     await savechanges({ name: mdname });
-                    $('#kg=save').prop('disabled', false);
+                    $('#kg=save').prop('disabled', true);
                     alert(mdname + " saved");
                 }
                 catch (err) {
@@ -638,8 +641,23 @@
                     var nodes = realcy.nodes().filter(function (element, i) {
                         return element.data('externalId') == externalId;
                     });
-                    realcy.fit(nodes, 100);
+                    realcy.fit(nodes, 300);
                     nodes.emit('tap');
+                });
+                $('#real-delete').click(async function () {
+                    var externalId = $('#real-select').val();
+                    var nodes = realcy.nodes().filter(function (element, i) {
+                        return element.data('externalId') == externalId;
+                    });
+                    var r = confirm("Are you sure you want to delete this node?");
+                    if (r == true) {
+                        var id = nodes[0].id();
+                        await deleterealobject({ name: mdname, id: id });
+                        nodes.remove();
+                        $('#kg=save').disabled = false;
+                        realeditor.setValue();
+                    }
+                    realcy.fit();
                 });
                 $('#real-fit').click(function () { realcy.fit(); });
                 $('#virtual-fit').click(function () { virtualcy.fit(); });
