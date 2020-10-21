@@ -24,6 +24,10 @@ namespace Darl.GraphQL.Models.Connectivity
             queue = csa.CreateCloudQueueClient().GetQueueReference("support-messages");
         }
 
+        public Task<string> InviteUser(string userId, string email)
+        {
+            throw new System.NotImplementedException();
+        }
 
         public async Task<int> Mailshot(string userId, string collateral, string subject, string sendfrom, string filter, bool test)
         {

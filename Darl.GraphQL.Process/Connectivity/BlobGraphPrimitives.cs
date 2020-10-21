@@ -1159,6 +1159,18 @@ namespace Darl.GraphQL.Models.Connectivity
             return ks;
         }
 
+        public async Task ClearGraphContent(string compositeName)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            cont.edges.Clear();
+            cont.recognitionEdges.Clear();
+            cont.recognitionRoots.Clear();
+            cont.recognitionVertices.Clear();
+            cont.vertices.Clear();
+            cont.virtualEdges.Clear();
+            cont.virtualVertices.Clear();
+        }
+
         internal static string CreateCompositeName(string userId, string name)
         {
             return userId + "_" + name.Replace(" ", "_");

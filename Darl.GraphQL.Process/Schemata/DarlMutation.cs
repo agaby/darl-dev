@@ -1306,7 +1306,7 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await graph.CreateNewGraph(userId, modelName));
                 }
-            );
+            ).AuthorizeWith("CorpPolicy");
             FieldAsync<StringGraphType>("deleteKG", "Delete a Knowledge graph", arguments: new QueryArguments(
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph to delete" }
                 ),
@@ -1317,21 +1317,7 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(
                         async c => await graph.DeleteGraph(userId, name));
                 }
-            );
-            FieldAsync<LineageNodeDefinitionType>("createKnowledgeState",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "botModelName" },
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "path" },
-                new QueryArgument<NonNullGraphType<LineageNodeAttributeUpdateType>> { Name = "attribute" }
-                ),
-                resolve: async context =>
-                {
-                    var botModelName = context.GetArgument<string>("botModelName");
-                    var path = context.GetArgument<string>("path");
-                    var attribute = context.GetArgument<LineageNodeAttributes>("attribute");
-                    var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await connectivity.CreatePhrase(userId, botModelName, path, attribute));
-                });
+            ).AuthorizeWith("CorpPolicy");
 
             FieldAsync<KGraphType>("createKGraph", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
             {
@@ -1339,7 +1325,7 @@ namespace Darl.GraphQL.Models.Schemata
                 var userId = connectivity.GetCurrentUserId(context.UserContext);
                 return await context.TryAsyncResolve(
                     async c => await connectivity.CreateKGraph(userId, name));
-            });
+            }).AuthorizeWith("CorpPolicy");
 
             FieldAsync<StringGraphType>("saveKGraph", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
             {
@@ -1347,7 +1333,35 @@ namespace Darl.GraphQL.Models.Schemata
                 var userId = connectivity.GetCurrentUserId(context.UserContext);
                 return await context.TryAsyncResolve(
                     async c => { await graph.Store(CompositeName(userId, name)); return ""; });
-            });
+            }).AuthorizeWith("CorpPolicy");
+
+            FieldAsync<DisplayObjectOuterType>("createRealConnectionObjectPair",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "parentExternalId" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "connName" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "connLineage" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "nodeExternalId" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "nodeLineage" }),
+            resolve: async context =>
+            {
+                var graphName = context.GetArgument<string>("graphName");
+                var parentExternalId = context.GetArgument<string>("parentExternalId");
+                var connName = context.GetArgument<string>("connName");
+                var connLineage = context.GetArgument<string>("connLineage");
+                var nodeExternalId = context.GetArgument<string>("nodeExternalId");
+                var nodeLineage = context.GetArgument<string>("nodeLineage");
+                var userId = connectivity.GetCurrentUserId(context.UserContext);
+                return await context.TryAsyncResolve(
+                    async c => await graph.CreateRealConnectionObjectPair(userId, graphName, parentExternalId, connName, connLineage, nodeExternalId, nodeLineage));
+            }).AuthorizeWith("CorpPolicy");
+
+            FieldAsync<StringGraphType>("inviteUser", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }), resolve: async context =>
+            {
+                var newUserEmail = context.GetArgument<string>("email");
+                var userId = connectivity.GetCurrentUserId(context.UserContext);
+                return await context.TryAsyncResolve(
+                    async c =>  await email.InviteUser(userId, newUserEmail));
+            }).AuthorizeWith("CorpPolicy");
 
         }
 

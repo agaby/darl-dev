@@ -1,8 +1,11 @@
 ﻿@page
+@model Darl.GraphQL.Pages.GraphEditModel
 @{
     ViewData["Title"] = "GraphEdit";
     Layout = "~/Pages/_layoutscrolling.cshtml";
+
 }
+
 <main role="main" class="pb-3" style="padding: 0px !important">
     <div class="space-70"></div>
     <div class="container-fluid" style="padding:20px; min-height:100vh">
@@ -31,6 +34,7 @@
                 <input id="real-select" class="form-control-sm" type="text" placeholder="external id" />
                 <button id="real-find" class="btn btn-info form-control-sm">Find</button>
                 <button id="real-delete" class="btn btn-info form-control-sm">Delete</button>
+                <button class="btn btn-info" data-toggle="modal" data-target="#addChildModal">Add a Node</button>
             </div>
         </div>
         <div class="row">
@@ -63,6 +67,32 @@
             </div>
             <div class="col-md-3 margin-b-40">
                 <div id="recognitionedit"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="addChildModal" tabindex="-1" role="dialog" aria-labelledby="addChildModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addChildModalLabel">Add a child to the selected node</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label>Connection name</label>
+                    <input id="newConnectionName" class="form-control" placeholder="consists of">
+                    <label>Connection lineage</label>
+                    <input id="newConnectionLineage" class="form-control">
+                    <label>Node external ID</label>
+                    <input id="newNodeExternalId" class="form-control">
+                    <label>Node lineage</label>
+                    <input id="newNodeLineage" class="form-control">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="addNodeButton">Add node</button>
+                </div>
             </div>
         </div>
     </div>
@@ -107,6 +137,7 @@
         var createKG;
         var savechanges;
         var deleterealobject;
+        var createconnobjpair;
 
         $(async function () {
 
@@ -131,6 +162,7 @@
             createKG = graph('mutation createKG($name: String!){createKGraph(name: $name){name}}');
             savechanges = graph('mutation saveKGraph($name: String!){saveKGraph(name: $name)}');
             deleterealobject = graph('mutation dgo($name: String! $id: String!){deleteGraphObject(graphName: $name id: $id){name}}');
+            createconnobjpair = graph('mutation crcop($name: String! $id: String! $connName: String! $connLineage: String! $nodeExt: String! $nodeLineage: String!){createRealConnectionObjectPair(graphName: $name parentExternalId: $id connName: $connName connLineage: $connLineage nodeExternalId: $nodeExt nodeLineage: $nodeLineage ){name lineage id existence externalId properties {name lineage value }}}');
 
             if (mdname !== null) {
                 $('#fileHandling').addClass('d-none');
@@ -659,6 +691,20 @@
                     }
                     realcy.fit();
                 });
+
+                $('#addNodeButton').click(async function () {
+
+                    var externalId = $('#real-select').val();
+                    var connName = $('#newConnectionName').val();
+                    var connLineage = $('#newConnectionLineage').val();
+                    var nodeExt = $('#newNodeExternalId').val();
+                    var nodeLineage = $('#newNodeLineage').val();
+                    var obj = await createconnobjpair({ name: mdname, id: externalId, connName: connName, connLineage: connLineage, nodeExt: nodeExt, nodeLineage: nodeLineage });
+                    //add both to visible graph
+                });
+
+
+
                 $('#real-fit').click(function () { realcy.fit(); });
                 $('#virtual-fit').click(function () { virtualcy.fit(); });
                 $('#rec-fit').click(function () { recognitioncy.fit(); });
@@ -683,4 +729,5 @@
 @section header{
     <meta name="description" content="Edits a Knowledge Graph." />
 }
+
 

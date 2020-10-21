@@ -8,5 +8,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<int> Mailshot(string userId, string collateral, string subject, string sendfrom, string filter, bool test);
 
         Task<String> SendEmail(string body, string subject, string sendfrom, string email);
+        Task<string> InviteUser(string userId, string email);
     }
 }
