@@ -55,5 +55,9 @@ namespace Darl.GraphQL.Models.Models
 
         public SubscriptionType? subscriptionType { get; set; }
 
+        public string parentAccount { get; set; }
+
+        public List<string> subUsers { get; set; } = new List<string>();
+
     }
 }

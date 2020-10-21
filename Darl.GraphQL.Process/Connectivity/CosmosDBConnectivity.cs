@@ -38,6 +38,7 @@ using QuickGraph.Algorithms;
 using Darl.Thinkbase;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization.Options;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -48,6 +49,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public IMongoDatabase db { get; set; }
         private MongoClient mongoClient;
         private DarlRunTime runtime = new DarlRunTime();
+        private IDistributedCache _cache;
         private ILogger _logger;
         private string backgroundUserId;
 
@@ -68,11 +70,12 @@ namespace Darl.GraphQL.Models.Connectivity
         public static readonly string kgraphcollection = "kgraph";
 
 
-        public CosmosDBConnectivity(IConfiguration config, ILogger<CosmosDBConnectivity> logger, ILicensing licensing)
+        public CosmosDBConnectivity(IConfiguration config, ILogger<CosmosDBConnectivity> logger, ILicensing licensing, IDistributedCache cache)
         {
             _config = config;
             _logger = logger;
             _licensing = licensing;
+            _cache = cache;
             string connectionString = _config["AppSettings:MongoConnectionString"];
             backgroundUserId = _config["AppSettings:boaiuserid"];
             MongoClientSettings settings = MongoClientSettings.FromUrl(
@@ -1575,12 +1578,30 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<DarlUser> CreateAndProvisionNewUser(DarlUserInput user)
         {
+            //check if the new user is invited.
+            var key = $"AddUserRequest_{user.InvoiceEmail}";
+            var mc = db.GetCollection<DarlUser>(userCollection);
+            var invitingUserId = await _cache.GetStringAsync(key);
+
+            if(!string.IsNullOrEmpty(invitingUserId)) //invited
+            {
+                await _cache.RemoveAsync(key);//just once
+                var parent = await GetUserById(invitingUserId);
+                if (parent == null)
+                    return null;
+                var subuser = new DarlUser { Created = DateTime.Now, current_period_end = parent.current_period_end, InvoiceEmail = parent.InvoiceEmail, InvoiceName = parent.InvoiceName, InvoiceOrganization = parent.InvoiceOrganization, Issuer = user.Issuer, PaidUsageStarted = DateTime.MaxValue, StripeCustomerId = string.Empty, UsageStripeSubscriptionItem = string.Empty, userId = user.userId, subscriptionType = parent.subscriptionType, parentAccount = parent.userId };
+                await mc.InsertOneAsync(subuser);
+                //Update the parent.
+                var filter = Builders<DarlUser>.Filter.Where(x => x.userId == parent.userId);
+                var update = Builders<DarlUser>.Update.Push("subUsers", user.userId);
+                await mc.FindOneAndUpdateAsync(filter, update);
+                return subuser;
+            }
             // create stripe account
             var stripeVals = await CreateStripeCustomer(user.userId, user.InvoiceEmail, false, _config.GetValue<int>("AppSettings:StripeTrialPeriodDays"), user.InvoiceName);
             // provision account
             await ProvisionUser(user.userId);
             //create user
-            var mc = db.GetCollection<DarlUser>(userCollection);
             var duser = new DarlUser { Created = DateTime.Now, current_period_end = DateTime.Now + new TimeSpan(_config.GetValue<int>("AppSettings:StripeTrialPeriodDays"), 0, 0, 0, 0), InvoiceEmail = user.InvoiceEmail, InvoiceName = user.InvoiceName, InvoiceOrganization = user.InvoiceOrganization, Issuer = user.Issuer, PaidUsageStarted = DateTime.MaxValue, StripeCustomerId = stripeVals.Item1, UsageStripeSubscriptionItem = stripeVals.Item2, userId = user.userId, subscriptionType = DarlUser.SubscriptionType.individual };
             await mc.InsertOneAsync(duser);
             _logger.LogWarning($"{nameof(CreateAndProvisionNewUser)}: {user.userId}, {user.Issuer}, {user.InvoiceEmail}");

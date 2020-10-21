@@ -338,6 +338,11 @@ namespace Darl.GraphQL
                     }
                     else
                     {
+                        if(!string.IsNullOrEmpty(du.parentAccount)) //this is a sub user, log in as the parent.
+                        {
+                            _logger.LogInformation($"logged in sub user {du.InvoiceEmail}");
+                            du = await _rep.GetUserById(du.parentAccount);
+                        }
                         _logger.LogInformation($"logged in user {du.InvoiceEmail}");
                     }
                 }
