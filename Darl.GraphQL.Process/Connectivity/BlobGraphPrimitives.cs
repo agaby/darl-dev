@@ -30,8 +30,6 @@ namespace Darl.GraphQL.Models.Connectivity
         private IDistributedCache _cache;
         private IConnectivity _conn;
 
-        private static TimeSpan cacheExpiration = new TimeSpan(0, 30, 0);
-
         private Dictionary<string, BlobGraphContent> buffer = new Dictionary<string, BlobGraphContent>();
 
         private Object lockObject = new object();
