@@ -924,6 +924,18 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             ).AuthorizeWith("CorpPolicy");
 
+            //                Lint Ruleset
+            FieldAsync<ListGraphType<DarlLintErrorType>>("lintDarlMeta", "Read code in DARL.Meta and return any syntax errors",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "darl" }
+                    ),
+                resolve: async context =>
+                {
+                    var darl = context.GetArgument<string>("darl");
+                    return await context.TryAsyncResolve(
+                                     async c => await connectivity.LintDarlMeta(darl));
+                });
+
         }
 
         private string CompositeName(string userId, string graphName)

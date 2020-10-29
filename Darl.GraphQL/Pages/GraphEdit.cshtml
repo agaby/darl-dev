@@ -17,7 +17,8 @@
                 <p>Select a Knowledge Graph from your account to edit.</p>
                 <label>Knowledge Graphs </label>
                 <select id="kgmodel-dropdown" name="kgmodel" class="dropdown"></select>
-                <button id="kg-save" class="btn btn-info">Save changes</button>
+                <button id="kg-save" class="btn btn-info">Save</button>
+                <button data-toggle="modal" data-target="#copyModelModal" class="btn btn-info">Copy</button>
             </div>
             <div class="col-md-6 margin-b-40">
                 <label>Or create a new Knowledge Graph - choose a unique name.</label>
@@ -96,6 +97,27 @@
             </div>
         </div>
     </div>
+
+    <div class="modal" id="copyModelModal" tabindex="-1" role="dialog" aria-labelledby="copyModelModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="copyModelModalLabel">Copy to new Knowledge Graph</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label>New Knowledge Graph name</label>
+                    <input id="newModelNameInput">
+                    <div class="well">Existing KGs with the same name will be overwritten.</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="copyModel">Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 
 @section StyleSheets
@@ -138,6 +160,7 @@
         var savechanges;
         var deleterealobject;
         var createconnobjpair;
+        var createclonedkg;
 
         $(async function () {
 
@@ -163,6 +186,7 @@
             savechanges = graph('mutation saveKGraph($name: String!){saveKGraph(name: $name)}');
             deleterealobject = graph('mutation dgo($name: String! $id: String!){deleteGraphObject(graphName: $name id: $id){name}}');
             createconnobjpair = graph('mutation crcop($name: String! $id: String! $connName: String! $connLineage: String! $nodeExt: String! $nodeLineage: String!){createRealConnectionObjectPair(graphName: $name parentExternalId: $id connName: $connName connLineage: $connLineage nodeExternalId: $nodeExt nodeLineage: $nodeLineage ){name lineage id existence externalId properties {name lineage value }}}');
+            createclonedkg = graph('mutation ckg($name: String! $newname: String!){copyRenamKG(name: $name newName: $newname)}');
 
             if (mdname !== null) {
                 $('#fileHandling').addClass('d-none');
@@ -188,6 +212,26 @@
                 catch (err) {
                     alert(err[0].message);
                 }
+            });
+
+            $('#copyModel').click(async function () {
+                if ( !mdname || mdname === "") {
+                    alert("You have to select a knowledge graph to copy");
+                    return;
+                }
+                var copyname = $('#newModelNameInput').val();
+                if (copyname === "") {
+                    alert("You have to give a name for the new knowledge graph");
+                    return;
+                }
+                try {
+                    await createclonedkg({ name: mdname, newname: copyname });
+                    alert(mdname + " copied to " + copyname + ".");
+                }
+                catch (err) {
+                    alert(err[0].message);
+                }
+
             });
 
 

@@ -77,11 +77,11 @@ namespace Darl.GraphQL.Test
             var connLogger = new Mock<ILogger<CosmosDBConnectivity>>();
             var blobLogger = new Mock<ILogger<BlobConnectivity>>();
             var context = new Mock<IHttpContextAccessor>();
+            var cache = new Mock<IDistributedCache>();
             context.Setup(a => a.HttpContext.User.Identity.Name).Returns(_config["userId"]);
             var licensing = new Mock<ILicensing>();
-            _conv = new CosmosDBConnectivity(_config, connLogger.Object, licensing.Object);
+            _conv = new CosmosDBConnectivity(_config, connLogger.Object, licensing.Object, cache.Object);
             var trigger = new Mock<ITrigger>();
-            var cache = new Mock<IDistributedCache>();
             var bc = new BlobGraphConnectivity(_config, blobLogger.Object);
             var conn = new Mock<IConnectivity>();
             var blob = new BlobGraphPrimitives(new List<IBlobConnectivity>{ bc },cache.Object, conn.Object);

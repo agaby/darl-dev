@@ -1,6 +1,7 @@
 ﻿using CsvHelper;
 using Darl.GraphQL.Models.Connectivity;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -55,9 +56,10 @@ namespace Darl.GraphQL.Test
             var connLogger = new Mock<ILogger<CosmosDBConnectivity>>();
             var blobLogger = new Mock<ILogger<BlobConnectivity>>();
             var context = new Mock<IHttpContextAccessor>();
+            var cache = new Mock<IDistributedCache>();
             context.Setup(a => a.HttpContext.User.Identity.Name).Returns(_config["userId"]);
             var licensing = new Mock<ILicensing>();
-            _conv = new CosmosDBConnectivity(_config, connLogger.Object, licensing.Object);
+            _conv = new CosmosDBConnectivity(_config, connLogger.Object, licensing.Object, cache.Object);
 
         }
         [TestMethod]

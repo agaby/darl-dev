@@ -39,6 +39,7 @@ using Darl.Thinkbase;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization.Options;
 using Microsoft.Extensions.Caching.Distributed;
+using Darl.Thinkbase.Meta;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -49,6 +50,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public IMongoDatabase db { get; set; }
         private MongoClient mongoClient;
         private DarlRunTime runtime = new DarlRunTime();
+        private DarlMetaRunTime metaRuntime = new DarlMetaRunTime();
         private IDistributedCache _cache;
         private ILogger _logger;
         private string backgroundUserId;
@@ -1012,9 +1014,9 @@ namespace Darl.GraphQL.Models.Connectivity
                             _logger.LogError("DarlInf used with errors");
                             return errors; //errors, just add them to the input and quit.
                         }
-                        var res = await ProcessValues(DarlVarExtensions.Convert(DarlVarInput.Convert(inputs)), tree);
+                        var res = await ProcessValues(Lineage.Bot.DarlVarExtensions.Convert(DarlVarInput.Convert(inputs)), tree);
                         _logger.LogWarning($"{nameof(InferFromRuleSetDarlVar)}: {userId}, {ruleSetName}");
-                        return DarlVarExtensions.Convert(res);
+                        return Lineage.Bot.DarlVarExtensions.Convert(res);
                     }
                     else
                     {
@@ -1549,7 +1551,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return list;
         }
 
-        private async Task<List<DarlResult>> ProcessValues(List<DarlResult> Values, ParseTree tree)
+        private async Task<List<DarlLanguage.Processing.DarlResult>> ProcessValues(List<DarlLanguage.Processing.DarlResult> Values, ParseTree tree)
         {
             var res = await runtime.Evaluate(tree, Values);
             var inputNames = runtime.GetInputNames(tree);
@@ -2346,10 +2348,10 @@ namespace Darl.GraphQL.Models.Connectivity
                             return errors; //errors, just add them to the input and quit.
                         }
                         //now convert the inputs to DarlVars
-                        var res = await ProcessValues(DarlVarExtensions.Convert(DarlVarInput.Convert(inputs)), tree);
+                        var res = await ProcessValues(Lineage.Bot.DarlVarExtensions.Convert(DarlVarInput.Convert(inputs)), tree);
                         _logger.LogWarning($"{nameof(InferFromDarlDarlVar)}: {userId}");
 
-                    return DarlVarExtensions.Convert(res);
+                    return Lineage.Bot.DarlVarExtensions.Convert(res);
                  }
             }
             catch (Exception ex)
@@ -2751,6 +2753,25 @@ namespace Darl.GraphQL.Models.Connectivity
             var model = new KGraph { Name = name, userId = userId};
             await mc.InsertOneAsync(model);
             return model;
+        }
+
+        public Task<List<DarlLintView>> LintDarlMeta(string darl)
+        {
+            var errorList = new List<DarlLintView>();
+            int rowoffset = 0;
+            int coloffset = 0;
+            if (!string.IsNullOrEmpty(darl))
+            {
+                var tree = metaRuntime.CreateTree(darl,null,null);
+                if (tree.HasErrors())
+                {
+                    foreach (var pm in tree.ParserMessages)
+                    {
+                        errorList.Add(new DarlLintView { line_no = pm.Location.Line + 1 - rowoffset, column_no_start = pm.Location.Column + 1 - coloffset, column_no_stop = pm.Location.Column + 2 - coloffset, message = pm.Message, severity = pm.Level == ErrorLevel.Error ? "error" : "warning" });
+                    }
+                }
+            }
+            return Task.FromResult(errorList);
         }
     }
 }

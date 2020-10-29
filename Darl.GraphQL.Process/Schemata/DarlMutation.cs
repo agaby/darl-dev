@@ -1363,6 +1363,20 @@ namespace Darl.GraphQL.Models.Schemata
                     async c =>  await email.InviteUser(userId, newUserEmail));
             }).AuthorizeWith("CorpPolicy");
 
+            FieldAsync<StringGraphType>("copyRenamKG", "copy and rename a Knowledge graph", arguments: new QueryArguments(
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph to copy" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "newName", Description = "The new name of the copied Knowledge Graph" }
+                ),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var newName = context.GetArgument<string>("newName");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await graph.CopyRenameKG(userId, name, newName));
+                }
+            ).AuthorizeWith("CorpPolicy");
+
         }
 
         private string CompositeName(string userId, string graphName)

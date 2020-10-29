@@ -1169,6 +1169,30 @@ namespace Darl.GraphQL.Models.Connectivity
             cont.virtualVertices.Clear();
         }
 
+        public async Task<string> CopyRenameKG(string userId, string name, string newName)
+        {
+            var sourceName = CreateCompositeName(userId, name);
+            var destName = CreateCompositeName(userId, newName);
+            BlobGraphContent source = null;
+            if (buffer.ContainsKey(sourceName))
+            {
+                source = buffer[sourceName];
+            }
+            else if (await _blob.Exists(sourceName))
+            {
+                var data = await _blob.Read(sourceName);
+                source = DeserializeGraph(data);
+            }
+            if (source != null)
+            {
+                await Store(destName, source);
+            }
+            //now keep cosmoDB records up to date
+            if ((await _conn.GetKGModel(userId, newName)) != null) 
+                await _conn.CreateKGraph(userId, newName);
+            return newName;
+        }
+
         internal static string CreateCompositeName(string userId, string name)
         {
             return userId + "_" + name.Replace(" ", "_");
@@ -1212,7 +1236,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-
+ 
     }
 
     public class Dependency

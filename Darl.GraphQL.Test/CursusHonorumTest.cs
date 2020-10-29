@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -66,6 +67,8 @@ namespace Darl.GraphQL.Test
         private static string questionLineage = "noun:01,0,2,00,39,08,08,1";
         private static string displayLineage = "noun:00,1,00,3,10,09,06";
         private static string textLineage = "noun:01,4,04,02,07,01";
+        private static string senatorLineage = "noun:00,2,00,033,34,1,10";
+        private static string lictorLineage = "noun:00,2,00,296,0,01";
 
 
         private static string graphName = "cursus_honorum.graph";
@@ -120,17 +123,18 @@ namespace Darl.GraphQL.Test
         {
             var compositeName = $"{_config["userId"]}_{graphName}";
             await _graph.ClearGraphContent(compositeName);
-            var censor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Censor", lineage = "noun:00,2,00,127", externalId = "Censor" }, OntologyAction.build);
-            var dictator = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Dictator", lineage = "noun:00,2,00,320,04", externalId = "Dictator" }, OntologyAction.build);
-            var proconsul = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Proconsul", lineage = "noun:00,2,00,033,34,0,5", externalId = "Proconsul" }, OntologyAction.build);
-            var consul = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Consul", lineage = "noun:00,2,00,050,43,35,14,02", externalId = "Consul" }, OntologyAction.build);
-            var propraetor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Propraetor", lineage = "noun:00,2,00,080,0,07", externalId = "Propraetor" }, OntologyAction.build);
-            var praetor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Praetor", lineage = "noun:00,2,00,080,0,07", externalId = "Praetor" }, OntologyAction.build);
-            var curule_aedile = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Curule aedile", lineage = "noun:00,2,00,050,43,35,36", externalId = "Curule_aedile" }, OntologyAction.build);
-            var plebian_aedile = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Plebian aedile", lineage = "noun:00,2,00,050,43,35,36", externalId = "Plebian_aedile" }, OntologyAction.build);
-            var proquaestor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Proquaestor", lineage = "noun:00,2,00,050,43,35,36", externalId = "Proquaestor" }, OntologyAction.build);
-            var quaestor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Quaestor", lineage = "noun:00,2,00,050,43,35,36", externalId = "Quaestor" }, OntologyAction.build);
-            var tribune_of_the_plebs = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Tribune of the plebs", lineage = "noun:00,2,00,296,0,12", externalId = "Tribune_of_the_plebs" }, OntologyAction.build);
+            var senator = new GraphAttribute { id = Guid.NewGuid().ToString(), name = "senator", value = "true", lineage = senatorLineage };
+            var censor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Censor", lineage = "noun:00,2,00,127", externalId = "Censor", properties = new List<GraphAttribute> {senator } }, OntologyAction.build);
+            var dictator = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Dictator", lineage = "noun:00,2,00,320,04", externalId = "Dictator", properties = new List<GraphAttribute> { senator, new GraphAttribute { name = "lictors", value = "24",  lineage = lictorLineage} } }, OntologyAction.build);
+            var proconsul = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Proconsul", lineage = "noun:00,2,00,033,34,0,5", externalId = "Proconsul", properties = new List<GraphAttribute> { senator, new GraphAttribute { name = "lictors", value = "12", lineage = lictorLineage } } }, OntologyAction.build);
+            var consul = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Consul", lineage = "noun:00,2,00,050,43,35,14,02", externalId = "Consul", properties = new List<GraphAttribute> { senator, new GraphAttribute { name = "lictors", value = "12", lineage = lictorLineage } } }, OntologyAction.build);
+            var propraetor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Propraetor", lineage = "noun:00,2,00,080,0,07", externalId = "Propraetor", properties = new List<GraphAttribute> { senator, new GraphAttribute { name = "lictors", value = "6", lineage = lictorLineage } } }, OntologyAction.build);
+            var praetor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Praetor", lineage = "noun:00,2,00,080,0,07", externalId = "Praetor", properties = new List<GraphAttribute> { senator, new GraphAttribute { name = "lictors", value = "6", lineage = lictorLineage } } }, OntologyAction.build);
+            var curule_aedile = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Curule aedile", lineage = "noun:00,2,00,050,43,35,36", externalId = "Curule_aedile", properties = new List<GraphAttribute> { senator, new GraphAttribute { name = "lictors", value = "2", lineage = lictorLineage } } }, OntologyAction.build);
+            var plebian_aedile = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Plebian aedile", lineage = "noun:00,2,00,050,43,35,36", externalId = "Plebian_aedile", properties = new List<GraphAttribute> { senator} }, OntologyAction.build);
+            var proquaestor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Proquaestor", lineage = "noun:00,2,00,050,43,35,36", externalId = "Proquaestor", properties = new List<GraphAttribute> { senator } }, OntologyAction.build);
+            var quaestor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Quaestor", lineage = "noun:00,2,00,050,43,35,36", externalId = "Quaestor", properties = new List<GraphAttribute> { senator } }, OntologyAction.build);
+            var tribune_of_the_plebs = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Tribune of the plebs", lineage = "noun:00,2,00,296,0,12", externalId = "Tribune_of_the_plebs", properties = new List<GraphAttribute> { senator } }, OntologyAction.build);
             var military_tribune = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Military Tribune", lineage = "noun:00,2,00,296,0,12", externalId = "Military_tribune" }, OntologyAction.build);
             await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = consul.id, endId = censor.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);
             await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = consul.id, endId = proconsul.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);
@@ -141,7 +145,7 @@ namespace Darl.GraphQL.Test
             await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = curule_aedile.id, endId = praetor.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);
             await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = quaestor.id, endId = praetor.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);
             await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = military_tribune.id, endId = quaestor.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);
-            await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = plebian_aedile.id, endId = quaestor.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);
+            await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = plebian_aedile.id, endId = praetor.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);
             await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = tribune_of_the_plebs.id, endId = praetor.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);
             await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = quaestor.id, endId = proquaestor.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);
             await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = quaestor.id, endId = curule_aedile.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);

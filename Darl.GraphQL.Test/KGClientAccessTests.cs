@@ -1,6 +1,7 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -42,12 +43,13 @@ namespace Darl.GraphQL.Test
             var blogger = new Mock<ILogger<BlobConnectivity>>();
             var clogger = new Mock<ILogger<CosmosDBConnectivity>>();
             var clicense = new Mock<ILicensing>();
+            var cache = new Mock<IDistributedCache>();
             _config = configuration.Object;
             blob = new BlobGraphConnectivity(_config, blogger.Object);
             client = new GraphQLHttpClient("https://darl.dev/graphql/", new NewtonsoftJsonSerializer());
             var authcode = "8952d1af-9d34-4866-a4bc-412bf51743d6";
             client.HttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authcode);
-            conn = new CosmosDBConnectivity(_config, clogger.Object, clicense.Object);
+            conn = new CosmosDBConnectivity(_config, clogger.Object, clicense.Object, cache.Object);
         }
 
         [TestMethod]

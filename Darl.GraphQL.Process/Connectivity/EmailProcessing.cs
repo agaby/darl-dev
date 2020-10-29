@@ -34,11 +34,16 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<string> InviteUser(string userId, string email)
         {
-            if (await _connectivity.CheckEmail(email))
+//            if (await _connectivity.CheckEmail(email))
             {
                 var user = await _connectivity.GetUserById(userId);
+                var accountName = user.InvoiceOrganization;
+                if (string.IsNullOrEmpty(accountName))
+                    accountName = user.InvoiceName;
+                if (string.IsNullOrEmpty(accountName))
+                    accountName = user.InvoiceEmail;
                 await _cache.SetStringAsync($"AddUserRequest_{email}", userId, new DistributedCacheEntryOptions { SlidingExpiration = cacheExpiration });
-                return await SendEmail($"You are invited to join the account of {user.InvoiceOrganization ?? user.InvoiceName ?? user.InvoiceEmail}.\r\n Go to https://darl.dev and register using this email address: {email}.\r\nThe system will recognize you and add you to that account.\r\nThis invitation expires in 24 hours.\r\n\r\n" +
+                return await SendEmail($"You are invited to join the account of {accountName}.\r\n Go to https://darl.dev and register using this email address: {email}.\r\nThe system will recognize you and add you to that account.\r\nThis invitation expires in 24 hours.\r\n\r\n" +
                     $"Darl.dev support.", "Invitation to join a Darl.dev account", "support@darl.ai",email);
             }
             throw new ExecutionError($"{email} is suspect or invalid");
