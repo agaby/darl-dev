@@ -1188,7 +1188,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 await Store(destName, source);
             }
             //now keep cosmoDB records up to date
-            if ((await _conn.GetKGModel(userId, newName)) != null) 
+            if ((await _conn.GetKGModel(userId, newName)) == null) 
                 await _conn.CreateKGraph(userId, newName);
             return newName;
         }
