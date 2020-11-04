@@ -42,6 +42,9 @@
             <div class="col-md-9 margin-b-40" id="realgraph" style="width: 800px; height: 800px; display: block;">
                 <button id="real-fit" class="btn btn-info form-control-sm">Fit</button>
             </div>
+            <div id="loading" class="loaded">
+                <span class="fa fa-refresh fa-spin"></span>
+            </div>
             <div class="col-md-3 margin-b-40">
                 <div id="realedit"></div>
             </div>
@@ -143,7 +146,6 @@
         var recognitioncy;
         var virtualkgraphdata;
         var recognitionkgraphdata;
-        var realeditor;
         var virtualeditor;
         var recognitioneditor;
         var realobjectdata;
@@ -275,6 +277,8 @@
         async function loadGraphs() {
             try {
                 $('#real-header').removeClass('d-none');
+                var loading = document.getElementById('loading');
+                loading.classList.remove('loaded');
                 var realdata = await realkgraphdata({ model: mdname });
                 var virtualdata = await virtualkgraphdata({ model: mdname });
                 var recdata = await recognitionkgraphdata({ model: mdname });
@@ -290,7 +294,13 @@
                                 'label': 'data(externalId)'
                             }
                         },
-
+                        {
+                            selector: 'node:selected',
+                            style: {
+                                'background-color': '#1010ff',
+                                'label': 'data(externalId)'
+                            }
+                        },
                         {
                             selector: 'edge',
                             style: {
@@ -335,7 +345,13 @@
                                 'label': 'data(lineage)'
                             }
                         },
-
+                        {
+                            selector: 'node:selected',
+                            style: {
+                                'background-color': '#1010ff',
+                                'label': 'data(externalId)'
+                            }
+                        },
                         {
                             selector: 'edge',
                             style: {
@@ -364,7 +380,13 @@
                                 'label': 'data(lineage)'
                             }
                         },
-
+                        {
+                            selector: 'node:selected',
+                            style: {
+                                'background-color': '#1010ff',
+                                'label': 'data(externalId)'
+                            }
+                        },
                         {
                             selector: 'edge',
                             style: {
@@ -697,6 +719,11 @@
                     console.log('tapped ' + node.id());
                     realchanged = true;
                 });
+
+                realcy.on('layoutstop', function (event) {
+                    var loading = document.getElementById('loading');
+                    loading.classList.add('loaded');
+                });
                 virtualcy.on('tap', 'node', async function (evt) {
                     var node = evt.target;
                     var objContent = await virtualobjectdata({ model: mdname, lineage: node.id() });
@@ -772,6 +799,24 @@
 
 @section header{
     <meta name="description" content="Edits a Knowledge Graph." />
+    <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
+<style>
+    #loading {
+        position: absolute;
+        display: block;
+        left: 0;
+        top: 50%;
+        width: 100%;
+        text-align: center;
+        margin-top: -0.5em;
+        font-size: 2em;
+        color: #000;
+    }
+
+        #loading.loaded {
+            display: none;
+        }
+</style>
 }
 
 
