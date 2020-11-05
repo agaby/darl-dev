@@ -75,6 +75,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\jstree\themes\" />
+    <Folder Include="wwwroot\cytoscape-cxtmenu\" />
   </ItemGroup>
 
 </Project>

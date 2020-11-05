@@ -34,8 +34,6 @@
             <div class="form-inline pull-right col-md-3">
                 <input id="real-select" class="form-control-sm" type="text" placeholder="external id" />
                 <button id="real-find" class="btn btn-info form-control-sm">Find</button>
-                <button id="real-delete" class="btn btn-info form-control-sm">Delete</button>
-                <button class="btn btn-info" data-toggle="modal" data-target="#addChildModal">Add a Node</button>
             </div>
         </div>
         <div class="row">
@@ -121,6 +119,32 @@
             </div>
         </div>
     </div>
+
+    <div class="modal" id="existenceModal" tabindex="-1" role="dialog" aria-labelledby="existenceModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="existenceModalLabel">Edit the times of existence of this element</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input id="time0" class="form-control" type="datetime-local">
+                    <input id="time1" class="form-control" type="datetime-local">
+                    <input id="time2" class="form-control" type="datetime-local">
+                    <input id="time3" class="form-control" type="datetime-local">
+                </div>
+                <div class="card card-body bg-light">
+                    One value constitutes an event, two an interval, three a fuzzy event and four a fuzzy interval. 
+                    Entries will be sorted in time order before use.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="editExistenceButton">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 
 @section StyleSheets
@@ -135,6 +159,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
     <script src="https://unpkg.com/dagre@0.7.4/dist/dagre.js"></script>
     <script src="/cytoscape-dagre/cytoscape-dagre.js"></script>
+    <script src="~/cytoscape-cxtmenu/cytoscape-cxtmenu.js"></script>
 
     <script language="JavaScript">
 
@@ -334,6 +359,63 @@
                     }
 
                 });
+                realcy.cxtmenu({
+                    selector: 'node',
+
+                    commands: [
+                        {
+                            content: '<span class="fa fa-trash fa-2x"></span>',
+                            select: async function (ele) {
+                                var r = confirm("Are you sure you want to delete this node?");
+                                if (r == true) {
+                                    await deleterealobject({ name: mdname, id: ele.id() });
+                                    realcy.remove(ele);
+                                    $('#kg=save').disabled = false;
+                                }
+                            }
+                        },
+
+                        {
+                            content: '<span class="fa fa-calendar fa-2x"></span>',
+                            select: function (ele) {
+                                console.log('existence');
+                                jQuery.noConflict(); 
+                                $('#existenceModal').modal('show')
+                            }
+                        },
+
+                        {
+                            content: '<span class="fa fa-arrow-up fa-2x"></span>',
+                            select: function (ele) {
+                                console.log('external id');
+                            }
+                        },
+
+                        {
+                            content: '<span class="fa fa-user fa-2x"></span>',
+                            select: function (ele) {
+                                console.log('name');
+                            }
+                        },
+
+                        {
+                            content: '<span class="fa fa-tasks fa-2x"></span>',
+                            select: function (ele) {
+                                console.log('attributes');
+                            }
+                        },
+
+                        {
+                            content: '<span class= "fa fa-plus fa-2x" ></span>',
+                            select: function (ele) {
+                                console.log('add object');
+                                jQuery.noConflict(); 
+                                $('#addChildModal').modal('show')
+                            }
+                        }
+                    ]
+                });
+
                 virtualcy = cytoscape({
                     container: $('#virtualgraph'),
                     elements: virtualdata.getVirtualKGDisplay,
@@ -813,9 +895,13 @@
         color: #000;
     }
 
-        #loading.loaded {
-            display: none;
-        }
+    #loading.loaded {
+        display: none;
+    }
+
+    .cxtmenu-disabled {
+        opacity: 0.333;
+    }
 </style>
 }
 
