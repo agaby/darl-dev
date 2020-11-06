@@ -136,7 +136,7 @@
                     <input id="time3" class="form-control" type="datetime-local">
                 </div>
                 <div class="card card-body bg-light">
-                    One value constitutes an event, two an interval, three a fuzzy event and four a fuzzy interval. 
+                    One value constitutes an event, two an interval, three a fuzzy event and four a fuzzy interval.
                     Entries will be sorted in time order before use.
                 </div>
                 <div class="modal-footer">
@@ -149,6 +149,28 @@
 
 @section StyleSheets
 {
+    <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
+    <style>
+        #loading {
+            position: absolute;
+            display: block;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            text-align: center;
+            margin-top: -0.5em;
+            font-size: 2em;
+            color: #000;
+        }
+
+            #loading.loaded {
+                display: none;
+            }
+
+        .cxtmenu-disabled {
+            opacity: 0.333;
+        }
+    </style>
 }
 
 @section Scripts
@@ -188,6 +210,7 @@
         var deleterealobject;
         var createconnobjpair;
         var createclonedkg;
+        var currentNodeId;
 
         $(async function () {
 
@@ -242,7 +265,7 @@
             });
 
             $('#copyModel').click(async function () {
-                if ( !mdname || mdname === "") {
+                if (!mdname || mdname === "") {
                     alert("You have to select a knowledge graph to copy");
                     return;
                 }
@@ -377,10 +400,24 @@
 
                         {
                             content: '<span class="fa fa-calendar fa-2x"></span>',
-                            select: function (ele) {
+                            select: async function (ele) {
                                 console.log('existence');
-                                jQuery.noConflict(); 
-                                $('#existenceModal').modal('show')
+                                var obj = await realobjectdata({ model: mdname, id: ele.id() });
+                                if (obj.existence) {
+                                    for (var n = 0; n < obj.existence.length && n < 4; n++) {
+                                        if (n == 0)
+                                            $('#time0').val(obj.existence[n]);
+                                        else if (n == 1)
+                                            $('#time1').val(obj.existence[n]);
+                                        else if (n == 2)
+                                            $('#time2').val(obj.existence[n]);
+                                        else if (n == 3)
+                                            $('#time3').val(obj.existence[n]);
+                                    }
+                                }
+                                currentNodeId = ele.id();
+                                jQuery.noConflict();
+                                $('#existenceModal').modal('show');
                             }
                         },
 
@@ -407,10 +444,10 @@
 
                         {
                             content: '<span class= "fa fa-plus fa-2x" ></span>',
-                            select: function (ele) {
+                            select: async function (ele) {
                                 console.log('add object');
-                                jQuery.noConflict(); 
-                                $('#addChildModal').modal('show')
+                                jQuery.noConflict();
+                                $('#addChildModal').modal('show');
                             }
                         }
                     ]
@@ -881,28 +918,6 @@
 
 @section header{
     <meta name="description" content="Edits a Knowledge Graph." />
-    <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
-<style>
-    #loading {
-        position: absolute;
-        display: block;
-        left: 0;
-        top: 50%;
-        width: 100%;
-        text-align: center;
-        margin-top: -0.5em;
-        font-size: 2em;
-        color: #000;
-    }
-
-    #loading.loaded {
-        display: none;
-    }
-
-    .cxtmenu-disabled {
-        opacity: 0.333;
-    }
-</style>
 }
 
 
