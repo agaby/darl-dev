@@ -34,17 +34,14 @@
             <div class="form-inline pull-right col-md-3">
                 <input id="real-select" class="form-control-sm" type="text" placeholder="external id" />
                 <button id="real-find" class="btn btn-info form-control-sm">Find</button>
+                <button id="real-fit" class="btn btn-info form-control-sm">Fit</button>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-9 margin-b-40" id="realgraph" style="width: 800px; height: 800px; display: block;">
-                <button id="real-fit" class="btn btn-info form-control-sm">Fit</button>
+            <div class="col-md-12 margin-b-40" id="realgraph" style="width: 800px; height: 800px; display: block;">
             </div>
             <div id="loading" class="loaded">
                 <span class="fa fa-refresh fa-spin"></span>
-            </div>
-            <div class="col-md-3 margin-b-40">
-                <div id="realedit"></div>
             </div>
         </div>
         <div class="space-70"><hr /></div>
@@ -73,32 +70,6 @@
         </div>
     </div>
 
-    <div class="modal" id="addChildModal" tabindex="-1" role="dialog" aria-labelledby="addChildModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addChildModalLabel">Add a child to the selected node</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <label>Connection name</label>
-                    <input id="newConnectionName" class="form-control" placeholder="consists of">
-                    <label>Connection lineage</label>
-                    <input id="newConnectionLineage" class="form-control">
-                    <label>Node external ID</label>
-                    <input id="newNodeExternalId" class="form-control">
-                    <label>Node lineage</label>
-                    <input id="newNodeLineage" class="form-control">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="addNodeButton">Add node</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="modal" id="copyModelModal" tabindex="-1" role="dialog" aria-labelledby="copyModelModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -120,36 +91,12 @@
         </div>
     </div>
 
-    <div class="modal" id="existenceModal" tabindex="-1" role="dialog" aria-labelledby="existenceModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="existenceModalLabel">Edit the times of existence of this element</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <input id="time0" class="form-control" type="datetime-local">
-                    <input id="time1" class="form-control" type="datetime-local">
-                    <input id="time2" class="form-control" type="datetime-local">
-                    <input id="time3" class="form-control" type="datetime-local">
-                </div>
-                <div class="card card-body bg-light">
-                    One value constitutes an event, two an interval, three a fuzzy event and four a fuzzy interval.
-                    Entries will be sorted in time order before use.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="editExistenceButton">Save</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </main>
 
 @section StyleSheets
 {
     <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-message-box@3.2.2/dist/messagebox.min.css" />"
     <style>
         #loading {
             position: absolute;
@@ -182,6 +129,9 @@
     <script src="https://unpkg.com/dagre@0.7.4/dist/dagre.js"></script>
     <script src="/cytoscape-dagre/cytoscape-dagre.js"></script>
     <script src="~/cytoscape-cxtmenu/cytoscape-cxtmenu.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.js"></script>
+    <script src="~/cytoscape-edgehandles/cytoscape-edgehandles.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-message-box@3.2.2/dist/messagebox.min.js"></script>
 
     <script language="JavaScript">
 
@@ -237,6 +187,7 @@
             deleterealobject = graph('mutation dgo($name: String! $id: String!){deleteGraphObject(graphName: $name id: $id){name}}');
             createconnobjpair = graph('mutation crcop($name: String! $id: String! $connName: String! $connLineage: String! $nodeExt: String! $nodeLineage: String!){createRealConnectionObjectPair(graphName: $name parentExternalId: $id connName: $connName connLineage: $connLineage nodeExternalId: $nodeExt nodeLineage: $nodeLineage ){name lineage id existence externalId properties {name lineage value }}}');
             createclonedkg = graph('mutation ckg($name: String! $newname: String!){copyRenamKG(name: $name newName: $newname)}');
+            gettypeword = graph('query gtw($lin: String!){getTypeWordForLineage(lineage: $lin)}');
 
             if (mdname !== null) {
                 $('#fileHandling').addClass('d-none');
@@ -358,6 +309,58 @@
                                 'target-arrow-shape': 'triangle',
                                 'curve-style': 'bezier'
                             }
+                        },
+                        {
+                            selector: '.eh-handle',
+                            style: {
+                                'background-color': 'red',
+                                'width': 12,
+                                'height': 12,
+                                'shape': 'ellipse',
+                                'overlay-opacity': 0,
+                                'border-width': 12, // makes the handle easier to hit
+                                'border-opacity': 0
+                            }
+                        },
+
+                        {
+                            selector: '.eh-hover',
+                            style: {
+                                'background-color': 'red'
+                            }
+                        },
+
+                        {
+                            selector: '.eh-source',
+                            style: {
+                                'border-width': 2,
+                                'border-color': 'red'
+                            }
+                        },
+
+                        {
+                            selector: '.eh-target',
+                            style: {
+                                'border-width': 2,
+                                'border-color': 'red'
+                            }
+                        },
+
+                        {
+                            selector: '.eh-preview, .eh-ghost-edge',
+                            style: {
+                                'background-color': 'red',
+                                'line-color': 'red',
+                                'target-arrow-color': 'red',
+                                'source-arrow-color': 'red'
+                            }
+                        },
+
+                        {
+                            selector: '.eh-ghost-edge.eh-preview-active',
+                            style: {
+                                'opacity': 0
+                            }
                         }
                     ],
 
@@ -384,17 +387,20 @@
                 });
                 realcy.cxtmenu({
                     selector: 'node',
-
                     commands: [
                         {
                             content: '<span class="fa fa-trash fa-2x"></span>',
                             select: async function (ele) {
-                                var r = confirm("Are you sure you want to delete this node?");
-                                if (r == true) {
+                                $.MessageBox({
+                                    buttonDone: "Yes",
+                                    buttonFail: "No",
+                                    message: "Are you sure you want to delete this node?"
+                                }).done(async function (data) {
+                                    console.log(data);
                                     await deleterealobject({ name: mdname, id: ele.id() });
                                     realcy.remove(ele);
                                     $('#kg=save').disabled = false;
-                                }
+                                });
                             }
                         },
 
@@ -403,8 +409,8 @@
                             select: async function (ele) {
                                 console.log('existence');
                                 var obj = await realobjectdata({ model: mdname, id: ele.id() });
-                                if (obj.existence) {
-                                    for (var n = 0; n < obj.existence.length && n < 4; n++) {
+                                if (obj.getGraphObjectByid.existence) {
+                                    for (var n = 0; n < obj.getGraphObjectByid.existence.length && n < 4; n++) {
                                         if (n == 0)
                                             $('#time0').val(obj.existence[n]);
                                         else if (n == 1)
@@ -415,23 +421,83 @@
                                             $('#time3').val(obj.existence[n]);
                                     }
                                 }
-                                currentNodeId = ele.id();
-                                jQuery.noConflict();
-                                $('#existenceModal').modal('show');
+                                $.MessageBox({
+                                    input: {
+                                        date1: {
+                                            type: "date",
+                                            label: "Date 1"
+                                        },
+                                        time1: {
+                                            type: "time",
+                                            label: "Time 1"
+                                        },
+                                        date2: {
+                                            type: "date",
+                                            label: "Date 2"
+                                        },
+                                        time2: {
+                                            type: "time",
+                                            label: "Time 2"
+                                        },
+                                        date3: {
+                                            type: "date",
+                                            label: "Date 3"
+                                        },
+                                        time3: {
+                                            type: "time",
+                                            label: "Time 3"
+                                        },
+                                        date4: {
+                                            type: "date",
+                                            label: "Date 4"
+                                        },
+                                        time4: {
+                                            type: "time",
+                                            label: "Time 4"
+                                        },
+                                        dummy_caption: {
+                                            type: "caption",
+                                            message: "One value constitutes an event, two an interval, <br/>three a fuzzy event and four a fuzzy interval.<br/>Entries will be sorted in time-order before use."
+                                        }
+                                    },
+                                    message: "Set or change the times of this element's existence",
+                                    buttonDone: "Change",
+                                    buttonFail: "Cancel"
+                                }).done(function (data) {
+                                    console.log(data);
+                                });
                             }
                         },
 
                         {
                             content: '<span class="fa fa-arrow-up fa-2x"></span>',
-                            select: function (ele) {
+                            select: async function (ele) {
                                 console.log('external id');
+                                var obj = await realobjectdata({ model: mdname, id: ele.id() });
+                                $.MessageBox({
+                                    input: obj.getGraphObjectByid.externalId,
+                                    message: "Edit the external Id",
+                                    buttonDone: "Change",
+                                    buttonFail: "Cancel"
+                                }).done(function (data) {
+                                    console.log(data);
+                                });
                             }
                         },
 
                         {
                             content: '<span class="fa fa-user fa-2x"></span>',
-                            select: function (ele) {
+                            select: async function (ele) {
                                 console.log('name');
+                                var obj = await realobjectdata({ model: mdname, id: ele.id() });
+                                $.MessageBox({
+                                    input: obj.getGraphObjectByid.name,
+                                    message: "Edit the name",
+                                    buttonDone: "Change",
+                                    buttonFail: "Cancel"
+                                }).done(function (data) {
+                                    console.log(data);
+                                });
                             }
                         },
 
@@ -441,16 +507,163 @@
                                 console.log('attributes');
                             }
                         },
-
                         {
-                            content: '<span class= "fa fa-plus fa-2x" ></span>',
+                            content: '<span class="fa fa-tree fa-2x"></span>',
                             select: async function (ele) {
-                                console.log('add object');
-                                jQuery.noConflict();
-                                $('#addChildModal').modal('show');
+                                console.log('lineage');
+                                var obj = await realobjectdata({ model: mdname, id: ele.id() });
+                                var lin = obj.getGraphObjectByid.lineage;
+                                var typeword = await gettypeword({ lin: lin });
+                                $.MessageBox({
+                                    input: {
+                                        lineage:
+                                        {
+                                            type: "caption",
+                                            message: lin
+                                        },
+                                        typeword:
+                                        {
+                                            type: "caption",
+                                            message: typeword.getTypeWordForLineage
+                                        }
+                                    },
+                                    message: "The lineage"
+                                }).done(function (data) {
+                                    console.log(data);
+                                });
                             }
                         }
                     ]
+                });
+                realcy.cxtmenu({
+                    selector: 'edge',
+                    commands: [
+                        {
+                            content: '<span class="fa fa-trash fa-2x"></span>',
+                            select: async function (ele) {
+                                $.MessageBox({
+                                    buttonDone: "Yes",
+                                    buttonFail: "No",
+                                    message: "Are you sure you want to delete this node?"
+                                }).done(async function (data) {
+                                    console.log(data);
+                                    //await deleterealobject({ name: mdname, id: ele.id() });
+                                    realcy.remove(ele);
+                                    $('#kg=save').disabled = false;
+                                });
+                            }
+                        },
+
+                        {
+                            content: '<span class="fa fa-calendar fa-2x"></span>',
+                            select: async function (ele) {
+                                console.log('existence');
+                                var obj = await realobjectdata({ model: mdname, id: ele.id() });
+                                if (obj.getGraphObjectByid.existence) {
+                                    for (var n = 0; n < obj.getGraphObjectByid.existence.length && n < 4; n++) {
+                                        if (n == 0)
+                                            $('#time0').val(obj.existence[n]);
+                                        else if (n == 1)
+                                            $('#time1').val(obj.existence[n]);
+                                        else if (n == 2)
+                                            $('#time2').val(obj.existence[n]);
+                                        else if (n == 3)
+                                            $('#time3').val(obj.existence[n]);
+                                    }
+                                }
+                                $.MessageBox({
+                                    input: {
+                                        date1: {
+                                            type: "date",
+                                            label: "Date 1"
+                                        },
+                                        time1: {
+                                            type: "time",
+                                            label: "Time 1"
+                                        },
+                                        date2: {
+                                            type: "date",
+                                            label: "Date 2"
+                                        },
+                                        time2: {
+                                            type: "time",
+                                            label: "Time 2"
+                                        },
+                                        date3: {
+                                            type: "date",
+                                            label: "Date 3"
+                                        },
+                                        time3: {
+                                            type: "time",
+                                            label: "Time 3"
+                                        },
+                                        date4: {
+                                            type: "date",
+                                            label: "Date 4"
+                                        },
+                                        time4: {
+                                            type: "time",
+                                            label: "Time 4"
+                                        },
+                                        dummy_caption: {
+                                            type: "caption",
+                                            message: "One value constitutes an event, two an interval, <br/>three a fuzzy event and four a fuzzy interval.<br/>Entries will be sorted in time-order before use."
+                                        }
+                                    },
+                                    message: "Set or change the times of this element's existence",
+                                    buttonDone: "Change",
+                                    buttonFail: "Cancel"
+                                }).done(function (data) {
+                                    console.log(data);
+                                });
+                            }
+                        },
+
+                        {
+                            content: '<span class="fa fa-user fa-2x"></span>',
+                            select: async function (ele) {
+                                console.log('name');
+                                var obj = await realobjectdata({ model: mdname, id: ele.id() });
+                                $.MessageBox({
+                                    input: obj.getGraphObjectByid.name,
+                                    message: "Edit the name",
+                                    buttonDone: "Change",
+                                    buttonFail: "Cancel"
+                                }).done(function (data) {
+                                    console.log(data);
+                                });
+                            }
+                        },
+                        {
+                            content: '<span class="fa fa-tree fa-2x"></span>',
+                            select: async function (ele) {
+                                console.log('lineage');
+                                var obj = await realobjectdata({ model: mdname, id: ele.id() });
+                                var lin = obj.getGraphObjectByid.lineage;
+                                var typeword = await gettypeword({ lin: lin });
+                                $.MessageBox({
+                                    input: {
+                                        lineage:
+                                        {
+                                            type: "caption",
+                                            message: lin
+                                        },
+                                        typeword:
+                                        {
+                                            type: "caption",
+                                            message: typeword.getTypeWordForLineage
+                                        }
+                                    },
+                                    message: "The lineage"
+                                }).done(function (data) {
+                                    console.log(data);
+                                });
+                            }
+                        }
+                    ]
+                });
+                var eh = realcy.edgehandles({
+                    snap: true
                 });
 
                 virtualcy = cytoscape({
@@ -523,122 +736,9 @@
                         name: 'dagre'
                     }
                 });
-                realeditor = new JSONEditor(document.getElementById('realedit'), {
-                    theme: 'bootstrap4',
-                    schema: {
-                        "type": "object",
-                        "typeName": "GraphObject",
-                        "title": "Node contents",
-                        "additionalProperties": false,
-                        "options": {
-                            "disable_collapse": true
-                        },
-                        "required": [
-                            "name",
-                            "lineage",
-                            "id",
-                            "existence",
-                            "externalId",
-                            "properties"
-                        ],
-                        "properties": {
-                            "id": {
-                                "type": "string",
-                                "title": "Internal Id",
-                                "description": "Internal reference for this object",
-                                "readonly": true
-                            },
-                            "name": {
-                                "type": "string",
-                                "title": "Name",
-                                "description": "Textual name of this object"
-                            },
-                            "lineage": {
-                                "type": "string",
-                                "title": "Lineage",
-                                "readonly": true,
-                                "description": "Type of this object in the DARL heirarchy"
-                            },
-                            "externalId": {
-                                "type": "string",
-                                "title": "External Id",
-                                "description": "An external reference to this object"
-                            },
-                            "existence": {
-                                "type": "array",
-                                "title": "Existence",
-                                "description": "Sequence of dates/times defining this objects lifetime",
-                                "options": {
-                                    "disable_collapse": true
-                                },
-                                "items": {
-                                    "type": "datetime",
-                                    "title": "Date/Time",
-                                    "format": "datetime"
-                                }
-                            },
-                            "properties": {
-                                "type": "array",
-                                "title": "Properties",
-                                "description": "Attributes associated with this object",
-                                "options": {
-                                    "disable_collapse": true
-                                },
-                                "items": {
-                                    "type": "object",
-                                    "typeName": "GraphAttribute",
-                                    "title": "Attribute",
-                                    "additionalProperties": false,
-                                    "required": [
-                                        "name",
-                                        "lineage",
-                                        "value"
-                                    ],
-                                    "properties": {
-                                        "name": {
-                                            "type": "string",
-                                            "title": "Name",
-                                            "description": "Textual name of this Attribute"
-                                        },
-                                        "lineage": {
-                                            "type": "string",
-                                            "title": "Lineage",
-                                            "description": "Type of this attribute in the DARL heirarchy"
-                                        },
-                                        "value": {
-                                            "type": "string",
-                                            "title": "Value",
-                                            "format": "textarea",
-                                            "description": "Value of this attribute"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    collapsed: true,
-                    disable_edit_json: true,
-                    disable_properties: true,
-                    disable_collapse: false,
-                    disable_array_add: false,
-                    disable_array_delete: false,
-                    disable_array_reorder: true,
-                    use_default_values: false,
-                    form_name_root: "real"
-                });
                 realchanged = true;
                 virtualchanged = true;
                 recchanged = true;
-                realeditor.on('change', async function () {
-                    // Do something
-                    var obj = realeditor.getValue();
-                    if (obj.id !== null && obj.id !== "" && realchanged == false) {
-                        var json = JSON.stringify(obj);
-                        await realeditorchange({ model: mdname, goj: json });
-                        $('#kg-save').prop('disabled', false);
-                    }
-                    realchanged = false;
-                });
 
                 virtualeditor = new JSONEditor(document.getElementById('virtualedit'), {
                     theme: 'bootstrap4',
@@ -831,17 +931,90 @@
                     recchanged = false;
                 });
 
-                realcy.on('tap', 'node', async function (evt) {
+                realcy.on('tap', async function (evt) {
                     var node = evt.target;
-                    var objContent = await realobjectdata({ model: mdname, id: node.id() });
-                    realeditor.setValue(objContent.getGraphObjectByid);
-                    console.log('tapped ' + node.id());
-                    realchanged = true;
+                    if (node === realcy) {
+                        $.MessageBox({
+                            input: {
+                                name:
+                                {
+                                    type: "text",
+                                    label: "Name"
+                                },
+                                externalId:
+                                {
+                                    type: "text",
+                                    label: "External id"
+                                },
+                                sep_caption: {
+                                    type: "caption",
+                                    message: "select an existing lineage <br/> or enter a new one."
+                                },
+                                existinglineage: {
+                                    label: "existing lineages",
+                                    type: "select"
+                                },
+                                newlineage: {
+                                    type: "text",
+                                    label: "new lineage"
+                                }
+                            },
+                            buttonDone: "Add",
+                            buttonFail: "Cancel",
+                            message: "Add a new node to the network."
+
+                        }).done(async function (data) {
+                            console.log('add node ' + data);
+                            //create new object here
+                            realcy.add({
+                                group: 'nodes',
+                                data: { externalId: data.externalId },
+                                position: {
+                                    x: evt.position.x,
+                                    y: evt.position.y
+                                }
+                            });
+                        });
+
+                    }
                 });
+
 
                 realcy.on('layoutstop', function (event) {
                     var loading = document.getElementById('loading');
                     loading.classList.add('loaded');
+                });
+
+                realcy.on('ehcomplete', async function (event, sourceNode, targetNode, addedEles) {
+                    $.MessageBox({
+                        input: {
+                            name:
+                            {
+                                type: "text",
+                                label: "Name"
+                            },
+                            sep_caption: {
+                                type: "caption",
+                                message: "select an existing lineage <br/> or enter a new one."
+                            },
+                            existinglineage: {
+                                label: "existing lineages",
+                                type: "select"
+                            },
+                            newlineage: {
+                                type: "text",
+                                label: "new lineage"
+                            }
+                        },
+                        buttonDone: "Add",
+                        buttonFail: "Cancel",
+                        message: "Add a new edge to the network."
+
+                    }).done(async function (data) {
+                        console.log('add edge ' + data);
+                    }).fail(function (data) {
+                        realcy.remove(addedEles);
+                    });
                 });
                 virtualcy.on('tap', 'node', async function (evt) {
                     var node = evt.target;
@@ -866,21 +1039,7 @@
                     realcy.fit(nodes, 300);
                     nodes.emit('tap');
                 });
-                $('#real-delete').click(async function () {
-                    var externalId = $('#real-select').val();
-                    var nodes = realcy.nodes().filter(function (element, i) {
-                        return element.data('externalId') == externalId;
-                    });
-                    var r = confirm("Are you sure you want to delete this node?");
-                    if (r == true) {
-                        var id = nodes[0].id();
-                        await deleterealobject({ name: mdname, id: id });
-                        nodes.remove();
-                        $('#kg=save').disabled = false;
-                        realeditor.setValue();
-                    }
-                    realcy.fit();
-                });
+
 
                 $('#addNodeButton').click(async function () {
 
