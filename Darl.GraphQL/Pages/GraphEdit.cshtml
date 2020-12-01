@@ -27,48 +27,56 @@
             </div>
         </div>
         <div class="space-90"><hr /></div>
-        <div id="real-header" class="row d-none">
-            <div class="col-md-9">
-                <h3>Real graph</h3>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#real" role="tab" aria-controls="home" aria-selected="true">Real</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#virtual" role="tab" aria-controls="profile" aria-selected="false">Virtual</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="contact-tab" data-toggle="tab" href="#recognition" role="tab" aria-controls="contact" aria-selected="false">Recognition</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="real" role="tabpanel" aria-labelledby="home-tab">
+                <div id="real-header" class="row d-none">
+                    <div class="form-inline pull-right col-md-3">
+                        <button id="real-fit" class="btn btn-info form-control-sm">Fit</button>
+                        <span>&nbsp;</span>
+                        <input id="real-select" class="form-control-sm" type="text" placeholder="external id" />
+                        <button id="real-find" class="btn btn-info form-control-sm">Find</button>
+                        <span>&nbsp;</span>
+                        <label><input type="checkbox" id="real-auth">Authoritative</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 margin-b-40" id="realgraph" style="width: 800px; height: 800px; display: block;">
+                    </div>
+                    <div id="loading" class="loaded">
+                        <span class="fa fa-refresh fa-spin"></span>
+                    </div>
+                </div>
             </div>
-            <div class="form-inline pull-right col-md-3">
-                <button id="real-fit" class="btn btn-info form-control-sm">Fit</button>
-                <span>&nbsp;</span>
-                <input id="real-select" class="form-control-sm" type="text" placeholder="external id" />
-                <button id="real-find" class="btn btn-info form-control-sm">Find</button>
-                <span>&nbsp;</span>
-                <label><input type="checkbox" id="real-auth">Authoritative</label>
+            <div class="tab-pane fade" id="virtual" role="tabpanel" aria-labelledby="profile-tab">
+                <div class="row">
+                    <div class="col-md-9 margin-b-40" id="virtualgraph" style="width: 800px; height: 800px; display: block;">
+                        <button id="virtual-fit" class="btn btn-info form-control-sm">Fit</button>
+                    </div>
+                    <div class="col-md-3 margin-b-40">
+                        <div id="virtualedit"></div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 margin-b-40" id="realgraph" style="width: 800px; height: 800px; display: block;">
-            </div>
-            <div id="loading" class="loaded">
-                <span class="fa fa-refresh fa-spin"></span>
-            </div>
-        </div>
-        <div class="space-70"><hr /></div>
-        <div class="row">
-            <h3>Virtual graph</h3>
-        </div>
-        <div class="row">
-            <div class="col-md-9 margin-b-40" id="virtualgraph" style="width: 800px; height: 800px; display: block;">
-                <button id="virtual-fit" class="btn btn-info form-control-sm">Fit</button>
-            </div>
-            <div class="col-md-3 margin-b-40">
-                <div id="virtualedit"></div>
-            </div>
-        </div>
-        <div class="space-70"><hr /></div>
-        <div class="row">
-            <h3>Recognition graph</h3>
-        </div>
-        <div class="row">
-            <div class="col-md-9 margin-b-40" id="recognitiongraph" style="width: 800px; height: 800px; display: block;">
-                <button id="rec-fit" class="btn btn-info form-control-sm">Fit</button>
-            </div>
-            <div class="col-md-3 margin-b-40">
-                <div id="recognitionedit"></div>
+            <div class="tab-pane fade" id="recognition" role="tabpanel" aria-labelledby="contact-tab">
+                <div class="row">
+                    <div class="col-md-9 margin-b-40" id="recognitiongraph" style="width: 800px; height: 800px; display: block;">
+                        <button id="rec-fit" class="btn btn-info form-control-sm">Fit</button>
+                    </div>
+                    <div class="col-md-3 margin-b-40">
+                        <div id="recognitionedit"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
