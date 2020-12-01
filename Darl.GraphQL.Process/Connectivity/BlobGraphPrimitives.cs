@@ -53,7 +53,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<GraphConnection> CreateConnection(string compositeName, GraphConnectionInput conn)
         {
             var cont = await Load(compositeName) as BlobGraphContent;
-            var gc = new GraphConnection { id = Guid.NewGuid().ToString(), endId = conn.endId, existence = conn.existence, inferred = false, lineage = conn.lineage, name = conn.name, properties = conn.properties, startId = conn.startId, weight = conn.weight ?? 1.0, _virtual = false };
+            var gc = new GraphConnection { id = conn.id, endId = conn.endId, existence = conn.existence, inferred = false, lineage = conn.lineage, name = conn.name, properties = conn.properties, startId = conn.startId, weight = conn.weight ?? 1.0, _virtual = false };
             if (cont.vertices.ContainsKey(conn.startId))
                 cont.vertices[conn.startId].Out.Add(gc);
             else
@@ -739,7 +739,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 cont.vertices[conn.endId].In.Add(gc);
             else
                 throw new ExecutionError($"Real vertex id {conn.endId} does not exist");
-            cont.edges.Add(gc.id, gc);
+            //cont.edges.Add(gc.id, gc);
         }
 
 
@@ -755,7 +755,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     node.properties.Remove(node.properties.Where(a => a.lineage == att.lineage).First());
                 }
-                node.properties.Add(new GraphAttribute {id = Guid.NewGuid().ToString(), existence = att.existence, confidence = att.confidence, inferred = false, lineage = att.lineage, name = att.name, type = att.type, value = att.value, _virtual = true });
+                node.properties.Add(new GraphAttribute {id = Guid.NewGuid().ToString(), existence = att.existence, confidence = att.confidence ?? 1.0, inferred = false, lineage = att.lineage, name = att.name, type = att.type ?? GraphAttribute.DataType.textual, value = att.value, _virtual = true });
             }
         }
 
@@ -889,8 +889,9 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<GraphConnection> CreateRecognitionConnection(string compositeName, GraphConnectionInput graphConnection)
         {
+            //should test for legality
             var cont = await Load(compositeName) as BlobGraphContent;
-            var conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = graphConnection.endId, lineage = graphConnection.lineage, startId = graphConnection.startId, weight = graphConnection.weight ?? 0.0 };
+            var conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = graphConnection.endId,  startId = graphConnection.startId, weight = 1.0 };
             if(!cont.recognitionVertices.ContainsKey(conn.startId))
                 throw new ExecutionError($"GraphConnection startId '{conn.startId}' does not exist.");
             if (!cont.recognitionVertices.ContainsKey(conn.endId))
@@ -1193,6 +1194,76 @@ namespace Darl.GraphQL.Models.Connectivity
             return newName;
         }
 
+        public async Task<GraphAttribute> UpdateRecognitionObjectAttribute(string compositeName, string objectId, GraphAttributeInput graphAtt)
+        {
+            var obj = await GetRecognitionObjectById(compositeName, objectId);
+            return UpdateOrCreateAttribute(obj, graphAtt);
+        }
+
+        public async Task<GraphAttribute> UpdateVirtualObjectAttribute(string compositeName, string lineage, GraphAttributeInput graphAtt)
+        {
+            var obj = await GetVirtualObjectByLineage(compositeName, lineage);
+            return UpdateOrCreateAttribute(obj, graphAtt);
+        }
+
+        public async Task<GraphAttribute> DeleteRecognitionObjectAttribute(string compositeName, string objectId, string graphLineage)
+        {
+            var obj = await GetRecognitionObjectById(compositeName, objectId);
+            return DeleteAttribute(obj, graphLineage);
+        }
+
+        public async Task<GraphAttribute> DeleteVirtualObjectAttribute(string compositeName, string objectLineage, string graphLineage)
+        {
+            var obj = await GetVirtualObjectByLineage(compositeName, objectLineage);
+            return DeleteAttribute(obj, graphLineage);
+        }
+
+        public async Task<GraphAttribute> UpdateGraphObjectAttribute(string compositeName, string objectId, GraphAttributeInput graphAtt)
+        {
+            var obj = await GetGraphObjectById(compositeName, objectId);
+            return UpdateOrCreateAttribute(obj, graphAtt);
+        }
+
+        public async Task<GraphAttribute> DeleteGraphObjectAttribute(string compositeName, string objectId, string graphLineage)
+        {
+            var obj = await GetGraphObjectById(compositeName, objectId);
+            return DeleteAttribute(obj, graphLineage);
+        }
+
+        //very brute force and slow. consider caching, or using virtual world
+        public async Task<List<LineageRecord>> GetLineagesInKG(string compositeName, GraphElementType gtype)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            List<string> lineages = new List<string>();
+            switch (gtype)
+            {
+                case GraphElementType.node:
+                    lineages = cont.vertices.Values.Select(a => a.lineage).Distinct().ToList();
+                    break;
+                case GraphElementType.connection:
+                    lineages = cont.edges.Values.Select(a => a.lineage).Distinct().ToList();
+                    break;
+                case GraphElementType.attribute:
+                    lineages = cont.vertices.Values.Select(a => (a.properties ?? new List<GraphAttribute>()).Select(b => b.lineage).ToList()).SelectMany(i => i).Distinct().ToList();
+                    break;
+            }
+            var records = new List<LineageRecord>();
+            foreach(var l in lineages)
+            {
+                if (LineageLibrary.lineages.ContainsKey(l))
+                    records.Add(LineageLibrary.lineages[l]);
+            }
+            return records;
+        }
+
+        public async Task<GraphConnection> GetConnectionById(string compositeName, string id)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            if (!cont.edges.ContainsKey(id))
+                return null;
+            return cont.edges[id];
+        }
+
         internal static string CreateCompositeName(string userId, string name)
         {
             return userId + "_" + name.Replace(" ", "_");
@@ -1206,6 +1277,43 @@ namespace Darl.GraphQL.Models.Connectivity
                 dmodel.edges.Add(new DisplayConnection { id = c.id, name = c.name, source = c.startId, target = c.endId});
                 RecursivelyAddElements(cont.recognitionVertices[c.endId], dmodel, cont);
             }
+        }
+
+        private GraphAttribute UpdateOrCreateAttribute(GraphObject obj, GraphAttributeInput graphAtt)
+        {
+            if (obj.properties.Any(a => a.lineage == graphAtt.lineage))
+            {
+                var att = obj.properties.Where(a => a.lineage == graphAtt.lineage).First();
+                if (!string.IsNullOrEmpty(graphAtt.value))
+                    att.value = graphAtt.value;
+                if (graphAtt.confidence != null)
+                    att.confidence = graphAtt.confidence ?? 1.0;
+                if (graphAtt.type != null)
+                    att.type = graphAtt.type ?? GraphAttribute.DataType.textual;
+                if (!string.IsNullOrEmpty(graphAtt.name))
+                    att.name = graphAtt.name;
+                if (graphAtt.existence != null && graphAtt.existence.Any())
+                {
+                    att.existence = graphAtt.existence;
+                }
+                return att;
+            }
+            else
+            {
+                var att = new GraphAttribute { id = Guid.NewGuid().ToString(), lineage = graphAtt.lineage, confidence = graphAtt.confidence ?? 1.0, existence = graphAtt.existence, name = graphAtt.name, type = graphAtt.type ?? GraphAttribute.DataType.textual, value = graphAtt.value };
+                obj.properties.Add(att);
+                return att;
+            }
+        }
+
+        private GraphAttribute DeleteAttribute(GraphObject obj, string attLineage)
+        {
+            var att = obj.properties.Where(a => a.lineage == attLineage).FirstOrDefault();
+            if (att != null)
+            {
+                obj.properties.Remove(att);
+            }
+            return att;
         }
 
 

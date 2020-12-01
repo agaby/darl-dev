@@ -669,7 +669,7 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             ).AuthorizeWith("CorpPolicy"); 
             FieldAsync<GraphObjectType>(
-                "getGraphObjectByid",
+                "getGraphObjectById",
                 "Get a graph object based on id",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
@@ -749,6 +749,21 @@ namespace Darl.GraphQL.Models.Schemata
                     var lineage = context.GetArgument<string>("lineage");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(async c => await graph.GetConnectionByIds(CompositeName(userId, graphName), startId,endId,lineage));
+                }
+            ).AuthorizeWith("CorpPolicy");
+            FieldAsync<GraphConnectionType>(
+                "getGraphConnectionById",
+                "Get a graph connection based on its Id",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the connection" }
+                ),
+                resolve: async context =>
+                {
+                    var graphName = context.GetArgument<string>("graphName");
+                    var id = context.GetArgument<string>("id");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await graph.GetConnectionById(CompositeName(userId, graphName), id));
                 }
             ).AuthorizeWith("CorpPolicy");
 
@@ -926,16 +941,34 @@ namespace Darl.GraphQL.Models.Schemata
 
             //                Lint Ruleset
             FieldAsync<ListGraphType<DarlLintErrorType>>("lintDarlMeta", "Read code in DARL.Meta and return any syntax errors",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "darl" }
-                    ),
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "darl" }),
                 resolve: async context =>
                 {
                     var darl = context.GetArgument<string>("darl");
-                    return await context.TryAsyncResolve(
-                                     async c => await connectivity.LintDarlMeta(darl));
+                    return await context.TryAsyncResolve( async c => await connectivity.LintDarlMeta(darl));
                 });
 
+            FieldAsync<ListGraphType<LineageRecordType>>("getLineagesInKG", "Get existing lineages used for this element type in this KG. ",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the elements" },
+                    new QueryArgument<NonNullGraphType<GraphTypeEnum>> { Name = "graphType", Description = "The type of element to find lineages for" }
+                    ),
+                resolve: async context =>
+                {
+                    var graphName = context.GetArgument<string>("graphName");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    var graphType = context.GetArgument<GraphElementType>("graphType");
+                    return await context.TryAsyncResolve(async c => await graph.GetLineagesInKG(CompositeName(userId,graphName),graphType));
+                }).AuthorizeWith("CorpPolicy");
+            Field<BooleanGraphType>("isValidLineage", "Check if this is a valid lineage. ",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "the word to check" }
+                    ),
+                resolve: context =>
+                {
+                    var lineage = context.GetArgument<string>("lineage");
+                    return LineageLibrary.CheckLineage(lineage);
+                }).AuthorizeWith("CorpPolicy");
         }
 
         private string CompositeName(string userId, string graphName)

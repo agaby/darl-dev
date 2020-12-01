@@ -1191,50 +1191,6 @@ namespace Darl.GraphQL.Models.Schemata
                             async c => await graph.UpdateGraphConnection(CompositeName(userId, graphName), graphConnection,ontology));
                     }
                 ).AuthorizeWith("CorpPolicy");
-            FieldAsync<GraphObjectType>("updateGraphObjectFromJSON",
-                    "Update a graph object from JSON", arguments: new QueryArguments(
-                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph to modify" },
-                        new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphObjectJSON", Description = "The Graph Object to update" },
-                        new QueryArgument<OntologyActionEnum> { Name = "ontology", Description = "builds, checks against or ignores ontology" }
-                   ),
-                    resolve: async context =>
-                    {
-                        var graphName = context.GetArgument<string>("graphName");
-                        var graphObjectJSON = context.GetArgument<string>("graphObjectJSON");
-                        var userId = connectivity.GetCurrentUserId(context.UserContext);
-                        var ontology = context.GetArgument<OntologyAction>("ontology");
-                        return await context.TryAsyncResolve(
-                            async c => await graph.UpdateGraphObjectFromJSON(CompositeName(userId, graphName), graphObjectJSON, ontology));
-                    }
-                ).AuthorizeWith("CorpPolicy");
-            FieldAsync<GraphObjectType>("updateVirtualGraphObjectFromJSON",
-                "Update a virtual graph object from JSON", arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph to modify" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphObjectJSON", Description = "The Graph Object to update" }
-                    ),
-                resolve: async context =>
-                {
-                    var graphName = context.GetArgument<string>("graphName");
-                    var graphObjectJSON = context.GetArgument<string>("graphObjectJSON");
-                    var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.UpdateVirtualGraphObjectFromJSON(CompositeName(userId, graphName), graphObjectJSON));
-                }
-            ).AuthorizeWith("CorpPolicy");
-            FieldAsync<GraphObjectType>("updateRecognitionObjectFromJSON",
-                "Update a recognition object from JSON", arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph to modify" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphObjectJSON", Description = "The Graph Object to update" }
-                    ),
-                resolve: async context =>
-                {
-                    var graphName = context.GetArgument<string>("graphName");
-                    var graphObjectJSON = context.GetArgument<string>("graphObjectJSON");
-                    var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.UpdateRecognitionObjectFromJSON(CompositeName(userId, graphName), graphObjectJSON));
-                }
-            ).AuthorizeWith("CorpPolicy");
             FieldAsync<SubscriptionTypeEnum>("updateSubscriptionType", "Change your subscription type",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<SubscriptionTypeEnum>> { Name = "type" }), 
                 resolve: async context =>
@@ -1335,26 +1291,6 @@ namespace Darl.GraphQL.Models.Schemata
                     async c => { await graph.Store(CompositeName(userId, name)); return ""; });
             }).AuthorizeWith("CorpPolicy");
 
-            FieldAsync<DisplayObjectOuterType>("createRealConnectionObjectPair",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName" },
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "parentExternalId" },
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "connName" },
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "connLineage" },
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "nodeExternalId" },
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "nodeLineage" }),
-            resolve: async context =>
-            {
-                var graphName = context.GetArgument<string>("graphName");
-                var parentExternalId = context.GetArgument<string>("parentExternalId");
-                var connName = context.GetArgument<string>("connName");
-                var connLineage = context.GetArgument<string>("connLineage");
-                var nodeExternalId = context.GetArgument<string>("nodeExternalId");
-                var nodeLineage = context.GetArgument<string>("nodeLineage");
-                var userId = connectivity.GetCurrentUserId(context.UserContext);
-                return await context.TryAsyncResolve(
-                    async c => await graph.CreateRealConnectionObjectPair(userId, graphName, parentExternalId, connName, connLineage, nodeExternalId, nodeLineage));
-            }).AuthorizeWith("CorpPolicy");
-
             FieldAsync<StringGraphType>("inviteUser", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }), resolve: async context =>
             {
                 var newUserEmail = context.GetArgument<string>("email");
@@ -1377,6 +1313,153 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             ).AuthorizeWith("CorpPolicy");
 
+            FieldAsync<GraphObjectType>("updateRecognitionObject", "update a GraphObject in the recognition trees", arguments: new QueryArguments(
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph the object is in" },
+                 new QueryArgument<NonNullGraphType<GraphObjectUpdateType>> { Name = "object", Description = "The object to update" }
+                ),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var obj = context.GetArgument<GraphObjectUpdate>("object");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await graph.UpdateRecognitionObject(CompositeName(userId, name), obj));
+                }
+            ).AuthorizeWith("CorpPolicy");
+
+            FieldAsync<GraphObjectType>("createRecognitionObject", "create a GraphObject in the recognition trees", arguments: new QueryArguments(
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph the object is to be in" },
+                 new QueryArgument<NonNullGraphType<GraphObjectInputType>> { Name = "object", Description = "The object to create" }
+                ),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var obj = context.GetArgument<GraphObjectInput>("object");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await graph.CreateRecognitionObject(CompositeName(userId, name), obj));
+                }
+            ).AuthorizeWith("CorpPolicy");
+
+            FieldAsync<GraphConnectionType>("createRecognitionConnection", "create a GraphConnection in the recognition trees", arguments: new QueryArguments(
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph the object is to be in" },
+                 new QueryArgument<NonNullGraphType<GraphConnectionInputType>> { Name = "connection", Description = "The connection to create" }
+                ),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var conn = context.GetArgument<GraphConnectionInput>("connection");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await graph.CreateRecognitionConnection(CompositeName(userId, name), conn));
+                }
+            ).AuthorizeWith("CorpPolicy");
+
+            FieldAsync<StringGraphType>("deleteRecognitionObject", "Delete a GraphObject in the recognition trees", arguments: new QueryArguments(
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph the object is in" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "The id of the object to delete" }
+                ),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var id = context.GetArgument<string>("id");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await graph.DeleteRecognitionObject(CompositeName(userId, name), id));
+                }
+            ).AuthorizeWith("CorpPolicy");
+
+            FieldAsync<StringGraphType>("updateRecognitionObjectAttribute", "update or add an attribute of a GraphObject in the recognition trees", arguments: new QueryArguments(
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph the object is in" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "The id of the parent object" },
+                 new QueryArgument<NonNullGraphType<GraphAttributeInputType>> { Name = "att", Description = "The attribute to update" }
+                ),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var id = context.GetArgument<string>("id");
+                    var att = context.GetArgument<GraphAttributeInput>("att");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await graph.UpdateRecognitionObjectAttribute(CompositeName(userId, name), id, att));
+                }
+            ).AuthorizeWith("CorpPolicy");
+
+            FieldAsync<StringGraphType>("updateVirtualObjectAttribute", "update or add an attribute of a virtual GraphObject", arguments: new QueryArguments(
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph the object is in" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "The lineage of the parent object" },
+                 new QueryArgument<NonNullGraphType<GraphAttributeInputType>> { Name = "att", Description = "The attribute to update" }
+                ),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var lineage = context.GetArgument<string>("lineage");
+                    var att = context.GetArgument<GraphAttributeInput>("att");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await graph.UpdateVirtualObjectAttribute(CompositeName(userId, name), lineage, att));
+                }
+            ).AuthorizeWith("CorpPolicy");
+            FieldAsync<StringGraphType>("deleteVirtualObjectAttribute", "update or add an attribute of a virtual GraphObject", arguments: new QueryArguments(
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph the object is in" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "The lineage of the parent object" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "attLineage", Description = "The lineage of the attribute to delete" }
+                ),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var lineage = context.GetArgument<string>("lineage");
+                    var attLineage = context.GetArgument<string>("attLineage");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await graph.DeleteVirtualObjectAttribute(CompositeName(userId, name), lineage, attLineage));
+                }
+            ).AuthorizeWith("CorpPolicy");
+            FieldAsync<StringGraphType>("deleteRecognitionObjectAttribute", "delete an attribute of a recognition GraphObject", arguments: new QueryArguments(
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph the object is in" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "The id of the parent object" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "attLineage", Description = "The lineage of the attribute to delete" }
+                ),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var id = context.GetArgument<string>("id");
+                    var attLineage = context.GetArgument<string>("attLineage");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await graph.DeleteRecognitionObjectAttribute(CompositeName(userId, name), id, attLineage));
+                }
+            ).AuthorizeWith("CorpPolicy");
+            FieldAsync<StringGraphType>("deleteGraphObjectAttribute", "delete an attribute of a real GraphObject", arguments: new QueryArguments(
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph the object is in" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "The id of the parent object" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "attLineage", Description = "The lineage of the attribute to delete" }
+                ),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var id = context.GetArgument<string>("id");
+                    var attLineage = context.GetArgument<string>("attLineage");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await graph.DeleteGraphObjectAttribute(CompositeName(userId, name), id, attLineage));
+                }
+            ).AuthorizeWith("CorpPolicy");
+            FieldAsync<StringGraphType>("updateGraphObjectAttribute", "update or add an attribute of a real GraphObject", arguments: new QueryArguments(
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph the object is in" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "The id of the parent object" },
+                 new QueryArgument<NonNullGraphType<GraphAttributeInputType>> { Name = "att", Description = "The attribute to update" }
+                ),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var id = context.GetArgument<string>("id");
+                    var att = context.GetArgument<GraphAttributeInput>("att");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await graph.UpdateGraphObjectAttribute(CompositeName(userId, name), id, att));
+                }
+            ).AuthorizeWith("CorpPolicy");
         }
 
         private string CompositeName(string userId, string graphName)

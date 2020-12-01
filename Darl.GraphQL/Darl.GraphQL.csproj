@@ -20,13 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="md\img\favicon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="md\img\favicon.ico">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+    <None Remove="wwwroot\md\img\favicon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -71,6 +65,47 @@
     <None Include="wwwroot\knowledge-graph\scripts\graph_viz.js" />
     <None Include="wwwroot\knowledge-graph\scripts\infobox.js" />
     <None Include="wwwroot\knowledge-graph\scripts\utils.js" />
+    <None Include="wwwroot\md\Accounts.md" />
+    <None Include="wwwroot\md\Aggregation.md" />
+    <None Include="wwwroot\md\alexa.md" />
+    <None Include="wwwroot\md\bot_help.md" />
+    <None Include="wwwroot\md\bot_model_caching.md" />
+    <None Include="wwwroot\md\collateral.md" />
+    <None Include="wwwroot\md\connectivity.md" />
+    <None Include="wwwroot\md\darl.md" />
+    <None Include="wwwroot\md\DarlVar.md" />
+    <None Include="wwwroot\md\Darl_dev.md" />
+    <None Include="wwwroot\md\darl_editor.md" />
+    <None Include="wwwroot\md\Dasl.md" />
+    <None Include="wwwroot\md\DaslState.md" />
+    <None Include="wwwroot\md\Edit_phrases.md" />
+    <None Include="wwwroot\md\Edit_tree.md" />
+    <None Include="wwwroot\md\example_rule_set.md" />
+    <None Include="wwwroot\md\Excluded_middle.md" />
+    <None Include="wwwroot\md\Executive.md" />
+    <None Include="wwwroot\md\Framework.md" />
+    <None Include="wwwroot\md\fuzzy_sets.md" />
+    <None Include="wwwroot\md\GraphQL.md" />
+    <None Include="wwwroot\md\GraphQL_examples.md" />
+    <None Include="wwwroot\md\handling_defaults.md" />
+    <None Include="wwwroot\md\index.md" />
+    <None Include="wwwroot\md\knowledge_graphs.md" />
+    <None Include="wwwroot\md\machine_learn.md" />
+    <None Include="wwwroot\md\model_test.md" />
+    <None Include="wwwroot\md\Overview.md" />
+    <None Include="wwwroot\md\resources.md" />
+    <None Include="wwwroot\md\ruleset_documents.md" />
+    <None Include="wwwroot\md\ruleset_edit.md" />
+    <None Include="wwwroot\md\ruleset_run.md" />
+    <None Include="wwwroot\md\ruleset_test.md" />
+    <None Include="wwwroot\md\select_model_ruleset.md" />
+    <None Include="wwwroot\md\simulation.md" />
+    <None Include="wwwroot\md\stores.md" />
+    <None Include="wwwroot\md\suggestions.md" />
+    <None Include="wwwroot\md\text_replacement.md" />
+    <None Include="wwwroot\md\Text_sequence_elements.md" />
+    <None Include="wwwroot\md\tutorial.md" />
+    <None Include="wwwroot\md\versioning.md" />
   </ItemGroup>
 
   <ItemGroup>

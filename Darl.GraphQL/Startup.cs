@@ -30,6 +30,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using Darl.Lineage;
 
 namespace Darl.GraphQL
 {
@@ -247,7 +248,7 @@ namespace Darl.GraphQL
             services.AddSingleton<DisplayModelType>();
             services.AddSingleton<DisplayObjectInnerType>();
             services.AddSingleton<DisplayObjectOuterType>();
-
+            services.AddSingleton<GraphTypeEnum>();
 
 
             //root
@@ -291,7 +292,7 @@ namespace Darl.GraphQL
             //Configuring appsettings section AzureAdB2C, into IOptions
             services.AddOptions();
             services.Configure<OpenIdConnectOptions>(Configuration.GetSection("AzureAdB2C"));
-
+            LineageLibrary.LookupWord("wake up");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
