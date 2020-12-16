@@ -1460,6 +1460,19 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await graph.UpdateGraphObjectAttribute(CompositeName(userId, name), id, att));
                 }
             ).AuthorizeWith("CorpPolicy");
+            FieldAsync<GraphObjectType>("CreateRecognitionRoot", "Create a new root in the recognition trees", arguments: new QueryArguments(
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph the object is in" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "The lineage of the root" }
+                ),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var lineage = context.GetArgument<string>("lineage");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await graph.CreateRecognitionRoot(CompositeName(userId, name), lineage));
+                }
+            ).AuthorizeWith("CorpPolicy");
         }
 
         private string CompositeName(string userId, string graphName)

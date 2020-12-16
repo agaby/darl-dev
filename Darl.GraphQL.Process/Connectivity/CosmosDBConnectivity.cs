@@ -2762,7 +2762,7 @@ namespace Darl.GraphQL.Models.Connectivity
             int coloffset = 0;
             if (!string.IsNullOrEmpty(darl))
             {
-                var tree = metaRuntime.CreateTree(darl,null,null);
+                var tree = metaRuntime.CreateTreeEdit(darl);
                 if (tree.HasErrors())
                 {
                     foreach (var pm in tree.ParserMessages)
