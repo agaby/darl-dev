@@ -230,6 +230,16 @@ namespace Darl.GraphQL.Models.Connectivity
                     var r = responses.Last();
                     if (r.response.dataType == DarlVar.DataType.seek)
                     {
+                        //emit any preceding messages before starting seek.
+                        foreach(var c in responses)
+                        {
+                            if (c == r)
+                                break;
+                            if(c.response.dataType != DarlVar.DataType.seek)
+                            {
+                                resp.Add(c);
+                            }
+                        }
                         bs.kGraphData = r.response.sequence;
                         bs.pending = null;
                         var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending);

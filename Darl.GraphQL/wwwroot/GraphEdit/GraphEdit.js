@@ -46,6 +46,8 @@ var createrecognitionroot;
 var updaterecognitionobject;
 var lintCall;
 var interact;
+var defaultRule;
+var getks
 
 var recognizedLineage = "adjective:8953";
 var currentStateId;
@@ -99,6 +101,8 @@ $(async function () {
     updaterecognitionobject = graph('mutation uro($name: String! $obj: graphObjectUpdate!){updateRecognitionObject(name: $name object: $obj){id}}');
     lintCall = graph('query lint($darl: String!){  lintDarlMeta(darl: $darl){ column_no_start column_no_stop line_no message severity }}');
     interact = graph('query int($name: String! $ksid: String! $text:  String!){interactKnowledgeGraph(kgModelName: $name conversationId: $ksid conversationData: { dataType: textual name: "" value: $text }){ darl reference response{dataType name value categories{name value }}}}');
+    defaultRule = graph('query dr($lineage: String!){getSuggestedRuleset(lineage: $lineage)}');
+    getks = graph('query gks($id: String!){getKnowledgeState(id: $id external: true){userId knowledgeGraphName data {name value {name lineage value confidence type }}}}')
 
     if (mdname !== null) {
         $('#fileHandling').addClass('d-none');
@@ -163,7 +167,7 @@ $(async function () {
     $('#kg-save').click(async function () {
         try {
             await savechanges({ name: mdname });
-            $('#kg=save').prop('disabled', true);
+//            $('#kg-save').prop('disabled', true);
             alert(mdname + " saved");
         }
         catch (err) {
@@ -855,6 +859,11 @@ async function loadGraphs() {
                     HandleError(err);
                 }
             }
+            else {
+                const ref = '#' + node.data('lineage').replace(/,/g, '-').replace(/:/g, '-');
+                const virt = virtualcy.$(ref);
+                virt.select();
+            }
         });
         realcy.on('layoutstop', function (event) {
             var loading = document.getElementById('loading');
@@ -951,8 +960,10 @@ async function loadGraphs() {
         });
         realcy.on('add', function (event) {
             node = event.target;
-            if (!node.data('externalId'))
-                realcy.remove(node);
+            if (!node.data('externalId')) {
+                //realcy.remove(node);
+                console.log(node.toString());
+            }
         });
         virtualcy = cytoscape({
             container: $('#virtualgraph'),
@@ -961,7 +972,7 @@ async function loadGraphs() {
                 {
                     selector: 'node',
                     style: {
-                        'background-color': '#666',
+                        'background-color': '#11479e',
                         'label': 'data(lineage)'
                     }
                 },
@@ -996,7 +1007,7 @@ async function loadGraphs() {
                     content: '<span class="fa fa-user fa-2x"></span>',
                     select: async function (ele) {
                         console.log('name');
-                        var id = ele.id();
+                        var id = ele.data('lineage');
                         var obj = await virtualobjectdata({ model: mdname, lineage: id });
                         if (obj) {
                             $.MessageBox({
@@ -1024,7 +1035,7 @@ async function loadGraphs() {
                     content: '<span class="fa fa-tasks fa-2x"></span>',
                     select: async function (ele) {
                         console.log('attributes');
-                        var id = ele.id();
+                        var id = ele.data('lineage');
                         await EditVirtualAttributes(id);
                     }
                 },
@@ -1033,7 +1044,7 @@ async function loadGraphs() {
                     select: async function (ele) {
                         console.log('lineage');
                         try {
-                            var id = ele.id();
+                            var id = ele.data('lineage');
                             var obj = await virtualobjectdata({ model: mdname, lineage: id });
                             if (obj) {
                                 var lin = obj.getVirtualObjectByLineage.lineage;
@@ -1067,6 +1078,9 @@ async function loadGraphs() {
         virtualcy.on('add', function (event) {
             node = event.target;
             realcy.remove(node);
+        });
+        virtualcy.on('tap', function (event) {
+            node = event.target;
         });
         recognitioncy = cytoscape({
             container: $('#recognitiongraph'),
@@ -1342,8 +1356,10 @@ async function loadGraphs() {
         });
         recognitioncy.on('add', function (event) {
             node = event.target;
-            if (!node.data('lineage'))
-                realcy.remove(node);
+            if (!node.data('lineage')) {
+                //realcy.remove(node);
+                console.log(node);
+            }
         });
         realchanged = true;
         virtualchanged = true;
@@ -1352,7 +1368,7 @@ async function loadGraphs() {
         $('#real-find').click(async function () {
             var externalId = $('#real-select').val();
             var nodes = realcy.nodes().filter(function (element, i) {
-                return element.data('externalId') == externalId;
+                return element.data('externalId') === externalId;
             });
             realcy.fit(nodes, 300);
             nodes.emit('tap');
@@ -1600,13 +1616,14 @@ async function EditRealAttributes(id) {
                     },
                     buttonDone: {
                         add: "Add",
-                        existing: "Existing",
+                        existing: "Edit",
                         delete: "Delete"
                     },
                     buttonFail: "Cancel",
                     message: "Edit or add an attribute",
                     filterDone: function (data, button) {
                         if (data.attChoice === "" && button === "existing") return "Select an attribute to edit";
+                        if (data.attChoice === "" && button === "delete") return "Select an attribute to delete";
                     }
                 }).done(async function (data, button) {
                     if (button === "add") {
@@ -1686,7 +1703,7 @@ async function EditVirtualAttributes(id) {
                     },
                     buttonDone: {
                         add: "Add",
-                        existing: "Existing",
+                        existing: "Edit",
                         delete: "Delete"
                     },
                     buttonFail: "Cancel",
@@ -1859,11 +1876,20 @@ async function UpdateAttributeValue(id, newAtt, type) {
             });
             break;
         case "RULESET":
+            var def;
+            try {
+                var alt = await defaultRule({ lineage: newAtt.lineage });
+                def = newAtt.value !== "" ? newAtt.value : alt.getSuggestedRuleset;
+            }
+            catch (err) {
+                HandleError(err);
+                return;
+            }
             $.MessageBox({
                 input: {
                     val: {
                         type: "ruleset",
-                        defaultValue: newAtt.value
+                        defaultValue: def
                     }
                 },
                 message: "Set the attribute's DARL code",
@@ -1930,40 +1956,69 @@ async function HandleMessage() {
 async function MessageProcess(data) {
     try {
         var res = await interact({ name: mdname, ksid: currentStateId, text: Array.isArray(data.response) ? data.response[0] : data.response });
-        switch (res.interactKnowledgeGraph[0].response.dataType) {
-            case "textual":
-            case "numeric":
-                Chat.addTags(
-                    [{
-                        type: "input",
-                        tag: "text",
-                        "chat-msg": res.interactKnowledgeGraph[0].response.value,
-                        name: "response",
-                        success: async function (data) {
-                            await MessageProcess(data);
+        for (let i = 0, n = res.interactKnowledgeGraph.length; i < n; i++){
+            let r = res.interactKnowledgeGraph[i];
+            //only wait on the last
+            if (i === n - 1) {
+                switch (r.response.dataType) {
+                    case "textual":
+                    case "numeric":
+                        Chat.addTags(
+                            [{
+                                type: "input",
+                                tag: "text",
+                                "chat-msg": r.response.value,
+                                name: "response",
+                                success: async function (data) {
+                                    await MessageProcess(data);
+                                }
+                            }]
+                        );
+                        break;
+                    case "categorical":
+                        var cats = [];
+                        for (let n of r.response.categories) {
+                            cats.push({ value: n.name, text: n.name });
                         }
-                    }]
-                );
-                break;
-            case "categorical":
-                var cats = [];
-                for (let n of res.interactKnowledgeGraph[0].response.categories) {
-                    cats.push({ value: n.name, text: n.name });
-                }
-                   Chat.addTags(
-                       [{
-                           type: "input",
-                           tag: "radio",
-                           name: "response",
-                           "chat-msg": res.interactKnowledgeGraph[0].response.value,
-                           children: cats,
-                           success: async function (data) {
-                               await MessageProcess(data);
-                           }
-                       }]);
+                        Chat.addTags(
+                            [{
+                                type: "input",
+                                tag: "radio",
+                                name: "response",
+                                "chat-msg": r.response.value,
+                                children: cats,
+                                success: async function (data) {
+                                    await MessageProcess(data);
+                                }
+                            }]);
 
-                break;
+                        break;
+                }
+            }
+            else {
+                Chat.addTextResponse(r.response.value);
+/*                Chat.addTags(
+                        [{
+                            type: "msg",
+                            tag: "text",
+                            "chat-msg": r.response.value,
+                            name: "response"
+                         }]
+                    );*/
+            }
+            
         }
+        UpdateKS();
+    }
+    catch (err) {
+        HandleError(err);
+    }
+}
+
+async function UpdateKS() {
+    try {
+        const resp = await getks({ id: currentStateId });
+        $('#kstate').jsonViewer(resp.getKnowledgeState, { collapsed: true, withQuotes: false, withLinks: true });
     }
     catch (err) {
         HandleError(err);

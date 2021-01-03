@@ -56,6 +56,14 @@
                         <button id="real-find" class="btn btn-info form-control-sm">Find</button>
                         <span>&nbsp;</span>
                         <label><input type="checkbox" id="real-auth">Authoritative</label>
+                        <span>&nbsp;</span>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="labelChoice" id="nameLabel">
+                            <label class="form-check-label" for="nameLabel">Name</label>
+                            <span>&nbsp;</span>
+                            <input class="form-check-input" type="radio" name="labelChoice" id="externalLabel" checked>
+                            <label class="form-check-label" for="externalLabel">ExternalId</label>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -75,10 +83,14 @@
             </div>
             <div class="tab-pane fade" id="recognition" role="tabpanel" aria-labelledby="contact-tab">
                 <div class="row">
-                    <div class="col-md-12 margin-b-40" id="recognitiongraph" style="width: 800px; height: 800px; display: block;">
+                    <div class="col-md-12 margin-b-40">
                         <button id="rec-fit" class="btn btn-info form-control-sm">Fit</button>
                         <span>&nbsp;</span>
                         <button id="rec-addroot" class="btn btn-info form-control-sm">Add root</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 margin-b-40" id="recognitiongraph" style="width: 800px; height: 800px; display: block;">
                     </div>
                 </div>
             </div>
@@ -89,6 +101,9 @@
                         <button id="conv-newstate" class="btn btn-info form-control-sm">Create new</button>
                         <label>local recent states</label>
                         <select id="conv-recent-dropdown" class="dropdown"></select>
+                        <hr />
+                        <p>Data</p>
+                        <pre id="kstate"></pre>
                     </div>
                     <div class="col-md-6 margin-b-40" id="chatcontainer">
                         <p>Conversation</p>
@@ -115,6 +130,7 @@
     <link rel="stylesheet" href="/codemirror/addon/fold/foldgutter.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
     <link rel="stylesheet" href="~/chatty/chat-style.css">
+    <link href="~/json-viewer/jquery.json-viewer.css" type="text/css" rel="stylesheet">
 
     <style>
         #loading {
@@ -164,18 +180,17 @@
     <script src="https://cdn.jsdelivr.net/npm/@@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
     <script src="https://unpkg.com/dagre@0.7.4/dist/dagre.js"></script>
     <script src="/cytoscape-dagre/cytoscape-dagre.js"></script>
-    <script src="https://unpkg.com/webcola/WebCola/cola.min.js"></script>
-    <script src="~/cytoscape-cola/cytoscape-cola.js"></script>
     <script src="~/cytoscape-cxtmenu/cytoscape-cxtmenu.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.js"></script>
-    <script src="~/cytoscape-edgehandles/cytoscape-edgehandles.js"></script>
     <script src="~/messagebox/messagebox.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.0/showdown.min.js"></script>
     <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
-    <script src="~/GraphEdit/GraphEdit.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.2/velocity.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.2/velocity.ui.min.js"></script>
     <script src="~/chatty/chatModule.js"></script>
+    <script src="~/cytoscape-edgehandles/cytoscape-edgehandles.js"></script>
+    <script src="~/GraphEdit/GraphEdit.js"></script>
+    <script src="~/json-viewer/jquery.json-viewer.js"></script>
 }
 @section header{
     <meta name="description" content="Edits a Knowledge Graph." />

@@ -96,7 +96,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task CreateVirtualObject(IGraphModel model, string lineage, string typeword, string description)
         {
-            var go = new GraphObject { id = Guid.NewGuid().ToString(), inferred = false, lineage = lineage, name = typeword, _virtual = true, properties = new List<GraphAttribute> { new GraphAttribute { name = "description", value = description, lineage= "noun:01,4,05,21,05"} } };
+            var go = new GraphObject { id = Guid.NewGuid().ToString(), inferred = false, lineage = lineage, name = typeword, _virtual = true, properties = new List<GraphAttribute> { new GraphAttribute { name = "description", value = description, lineage= "noun:01,4,05,21,05", type= GraphAttribute.DataType.textual} } };
             ((BlobGraphContent)model).virtualVertices.Add(go.lineage, go);
         }
 
@@ -168,10 +168,11 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<GraphObject> GetGraphObjectById(string compositeName, string id)
         {
+            //if id doesn't match but externalId does, return that
             var cont = await Load(compositeName) as BlobGraphContent;
             if (cont.vertices.ContainsKey(id))
                 return cont.vertices[id];
-            return null;
+            return cont.vertices.Values.Where(a => a.externalId == id).FirstOrDefault();
         }
 
         public async Task<string> GetGraphObjectProperty(string compositeName, string id, string property)
@@ -708,6 +709,12 @@ namespace Darl.GraphQL.Models.Connectivity
             return cont.virtualVertices.Values.ToList();
         }
 
+        public async Task<IEnumerable<GraphObject>> GetAllRecognitionObjects(string compositeName)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            return cont.recognitionVertices.Values.ToList();
+        }
+
         public async Task<IEnumerable<GraphConnection>> GetAllRealConnections(string compositeName)
         {
             var cont = await Load(compositeName) as BlobGraphContent;
@@ -794,8 +801,10 @@ namespace Darl.GraphQL.Models.Connectivity
                     continue;
                 list.Add(obj);
             }
-
             //list is leaf nodes with highest salience
+            //Add current node to the end of the list if not completed
+            if (!ks.ContainsAttribute(node.id, completedLineage))
+                list.Add(node);
             return list;
         }
 
@@ -1078,8 +1087,8 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var cont = await Load(compositeName) as BlobGraphContent;
             var dmodel = new DisplayModel { nodes = new List<DisplayObject>(), edges = new List<DisplayConnection>() };
-            dmodel.nodes.AddRange(cont.virtualVertices.Values.Select(i => new DisplayObject { id = i.lineage, name = i.name, lineage = i.lineage}));
-            dmodel.edges.AddRange(cont.virtualEdges.Values.Select(i => new DisplayConnection { id = i.id, name = i.name, source = i.startId, target = i.endId }));           
+            dmodel.nodes.AddRange(cont.virtualVertices.Values.Select(i => new DisplayObject { id = i.lineage.Replace(',','-').Replace(':', '-'), name = i.name, lineage = i.lineage}));
+            dmodel.edges.AddRange(cont.virtualEdges.Values.Select(i => new DisplayConnection { id = i.id, name = i.name, source = i.startId.Replace(',', '-').Replace(':', '-'), target = i.endId.Replace(',', '-').Replace(':', '-') }));           
             return dmodel;
         }
 
@@ -1118,9 +1127,9 @@ namespace Darl.GraphQL.Models.Connectivity
             await _conn.UpdateKnowledgeState(userId, subjectId, new KnowledgeStateUpdate (ks));
         }
 
-        public async Task<KnowledgeState> GetKnowledgeState(string userId, string subjectId)
+        public async Task<KnowledgeState> GetKnowledgeState(string userId, string subjectId, bool external)
         {
-            return await _conn.GetKnowledgeState(userId, subjectId);
+            return await GetKnowledgeStateByExternalId(userId, subjectId, external);
         }
 
         public async Task<KnowledgeState> GetKnowledgeStateByExternalId(string userId, string extId, bool externalIds)
@@ -1264,6 +1273,18 @@ namespace Darl.GraphQL.Models.Connectivity
             return cont.edges[id];
         }
 
+        /// <summary>
+        /// Looks for suggested rules in the defaults container
+        /// </summary>
+        /// <param name="compositeName">not currently used, for expansion</param>
+        /// <param name="graphType">The type of the attribute governing the </param>
+        /// <param name="lineage"></param>
+        /// <returns></returns>
+        public async Task<string> GetSuggestedRuleSet(string lineage)
+        {
+            return await _conn.GetDefaultValue($"default_rule_{lineage}");
+        }
+
         internal static string CreateCompositeName(string userId, string name)
         {
             return userId + "_" + name.Replace(" ", "_");
@@ -1346,7 +1367,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
- 
+
     }
 
     public class Dependency

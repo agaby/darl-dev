@@ -128,7 +128,7 @@
 #ui-submit {
     width: 60px;
     height: 60px;
-    background-color: var(--color-green);
+    background-color: var(--brightblue);
     color: var(--color-transwhite);
     position: absolute;
     bottom: 0;

@@ -10,7 +10,7 @@
     var waiting = true;
     var curTag;
     var textResponse;
-    var msgDelay = 1000;
+    var msgDelay = 100;
 
     self.start = function (ctx, tgs) {
         context = ctx;
@@ -21,7 +21,7 @@
         context.empty();
         context.addClass('chat-context');
         context.append('<div id="chat"></div><div id="ui-control"><div id="ui-options"></div>' +
-            '<div id="ui-response"><input id="response-text" /><div id="ui-submit"><i class="fas fa-arrow-up"></i></div></div></div>');
+            '<div id="ui-response"><input id="response-text" /><div id="ui-submit"><i class="fa fa-arrow-circle-right"></i></div></div></div>');
         chat = $('#chat');
         textResponse = $('#response-text');
         uiOptions = $('#ui-options');
@@ -254,6 +254,11 @@
         var end = tags.slice(offset);
 
         tags = start.concat(t).concat(end);
+    }
+
+    self.addTextResponse = function (t)
+    {
+        addResponse(true, t);
     }
 
     var invalidInput = function (msg) {

@@ -710,6 +710,86 @@ namespace Darl.GraphQL.Test
             await prim.CorrectBrokenLinks(compositeName);
             await _graph.Store(compositeName);
         }
+
+        [TestMethod]
+        public async Task CorrectAttributeTypes()
+        {
+            var compositeName = $"{_config["userId"]}_{graphName}";
+            var prim = _primitives as BlobGraphPrimitives;
+ /*           foreach(var obj in await prim.GetAllVirtualObjects(compositeName))
+            {
+                if(obj.properties != null)
+                {
+                    foreach(var prop in obj.properties)
+                    {
+                        if(prop.name == "description")
+                        {
+                            prop.type = GraphAttribute.DataType.textual;
+                        }
+                        else if(prop.value.Contains("if") && prop.value.Contains("then"))
+                        {
+                            prop.type = GraphAttribute.DataType.ruleset;
+                        }
+                        else if(double.TryParse(prop.value, out double val))
+                        {
+                            prop.type = GraphAttribute.DataType.numeric;
+                        }
+                        else
+                        {
+                            prop.type = GraphAttribute.DataType.markdown;
+                        }
+                    }
+                }
+            }
+            foreach (var obj in await prim.GetAllRealObjects(compositeName))
+            {
+                if (obj.properties != null)
+                {
+                    foreach (var prop in obj.properties)
+                    {
+                        if (prop.value.Contains("if") && prop.value.Contains("then"))
+                        {
+                            prop.type = GraphAttribute.DataType.ruleset;
+                        }
+                        else if (double.TryParse(prop.value, out double val))
+                        {
+                            prop.type = GraphAttribute.DataType.numeric;
+                        }
+                        else
+                        {
+                            prop.type = GraphAttribute.DataType.markdown;
+                        }
+                    }
+                }
+            }*/
+            foreach (var obj in await prim.GetAllRecognitionObjects(compositeName))
+            {
+                if (obj.properties != null)
+                {
+                    foreach (var prop in obj.properties)
+                    {
+                        if (prop.value.Contains("if") && prop.value.Contains("then"))
+                        {
+                            prop.type = GraphAttribute.DataType.ruleset;
+                        }
+                        else if (double.TryParse(prop.value, out double val))
+                        {
+                            prop.type = GraphAttribute.DataType.numeric;
+                        }
+                        else
+                        {
+                            prop.type = GraphAttribute.DataType.markdown;
+                        }
+                    }
+                }
+            }
+            await _graph.Store(compositeName);
+        }
+
+        public async Task UploadDefaultRulesets()
+        {
+
+        }
     }
 
 }

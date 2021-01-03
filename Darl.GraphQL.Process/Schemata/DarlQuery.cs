@@ -771,14 +771,15 @@ namespace Darl.GraphQL.Models.Schemata
                 "getKnowledgeState",
                 "Get a knowledge state by its Id",
                 arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "Id", Description = "The knowledge state id" }
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "Id", Description = "The knowledge state id" },
+                    new QueryArgument<BooleanGraphType> { Name = "external", Description = "ids are ExternalIds", DefaultValue  = false }
                 ),
                 resolve: async context =>
                 {
                     var Id = context.GetArgument<string>("Id");
-
+                    var external = context.GetArgument<bool>("external");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await connectivity.GetKnowledgeState(userId,Id));
+                    return await context.TryAsyncResolve(async c => await graph.GetKnowledgeState(userId, Id, external));
                 }
             ).AuthorizeWith("CorpPolicy");
 
@@ -969,6 +970,15 @@ namespace Darl.GraphQL.Models.Schemata
                     var lineage = context.GetArgument<string>("lineage");
                     return LineageLibrary.CheckLineage(lineage);
                 }).AuthorizeWith("CorpPolicy");
+            FieldAsync<StringGraphType>("getSuggestedRuleset", "Get a suggested initial ruleset for an attribute. ",
+            arguments: new QueryArguments(
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "Lineage of the attribute" }
+                ),
+            resolve: async context =>
+            {
+                var lineage = context.GetArgument<string>("lineage");
+                return await context.TryAsyncResolve(async c => await graph.GetSuggestedRuleSet(lineage));
+            }).AuthorizeWith("CorpPolicy");
         }
 
         private string CompositeName(string userId, string graphName)
