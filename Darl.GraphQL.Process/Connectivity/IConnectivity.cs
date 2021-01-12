@@ -229,6 +229,8 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<UserUsage> CreateKGModelUsage(DateTime date, int count, string userId, string model);
         Task<KGraph> GetKGModel(string userId, string model);
         Task<KGraph> CreateKGraph(string userId, string name);
+        Task<KGraph> ShareKGraph(string userId, string name, string sharerId, bool readOnly);
         Task<List<DarlLintView>> LintDarlMeta(string darl);
+        Task<KGraph> DeleteKGraph(string userId, string name);
     }
 }

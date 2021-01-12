@@ -624,10 +624,11 @@ function setHandleFor(node) {
         classes: 'eh-handle',
         position: pos,
         grabbable: false,
-        selectable: false
+        selectable: false,
       });
 
-      _this.handleNode.style('z-index', 9007199254740991);
+        _this.handleNode.style('z-index', 9007199254740991);
+        _this.handleNode.data("mainNode", node);
     });
   }
 

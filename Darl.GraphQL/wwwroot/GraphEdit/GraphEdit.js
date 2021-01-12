@@ -47,7 +47,8 @@ var updaterecognitionobject;
 var lintCall;
 var interact;
 var defaultRule;
-var getks
+var getks;
+var deletekg;
 
 var recognizedLineage = "adjective:8953";
 var currentStateId;
@@ -63,7 +64,7 @@ $(async function () {
         graph = graphql("/graphql", { headers: { "Authorization": "Basic " + apiKey } });
 
     allkgmodels = graph(`{ kgraphs { name }}`);
-    realkgraphdata = graph('query kgd($model: String!){getRealKGDisplay(graphName: $model){nodes{data{ id label lineage externalId}} edges{ data{ id label source target}}}}');
+    realkgraphdata = graph('query kgd($model: String!){getRealKGDisplay(graphName: $model){nodes{data{ id label lineage sublineage externalId}} edges{ data{ id label source target}}}}');
     virtualkgraphdata = graph('query vkgd($model: String!){getVirtualKGDisplay(graphName: $model){nodes{data{ id lineage parent}} edges{ data{ id label source target}}}}');
     recognitionkgraphdata = graph('query rkgd($model: String!){getRecognitionKGDisplay(graphName: $model){nodes{data{ id label lineage parent}} edges{ data{ id label source target}}}}');
     realobjectdata = graph('query rod($model: String! $id: String!){getGraphObjectById(graphName: $model id: $id){name lineage id existence externalId properties {name lineage value type confidence}}}');
@@ -73,7 +74,7 @@ $(async function () {
     realeditorchange = graph('mutation rec($model: String! $goj: String!){updateGraphObjectFromJSON(graphName: $model graphObjectJSON: $goj ontology: BUILD) {id}}');
     virtualeditorchange = graph('mutation uvg($model: String! $goj: String!){updateVirtualGraphObjectFromJSON(graphName: $model graphObjectJSON: $goj) {id}}');
     receditorchange = graph('mutation rec($model: String! $goj: String!){updateRecognitionObjectFromJSON(graphName: $model graphObjectJSON: $goj) {id}}');
-    createKG = graph('mutation createKG($name: String!){createKGraph(name: $name){name}}');
+    createKG = graph('mutation createKG($name: String!){createKGraph(name: $name)}');
     savechanges = graph('mutation saveKGraph($name: String!){saveKGraph(name: $name)}');
     deleterealobject = graph('mutation dgo($name: String! $id: String!){deleteGraphObject(graphName: $name id: $id){name}}');
     deleterealconnection = graph('mutation dgc($name: String! $id: String!){deleteGraphConnection(graphName: $name id: $id){name}}');
@@ -103,6 +104,7 @@ $(async function () {
     interact = graph('query int($name: String! $ksid: String! $text:  String!){interactKnowledgeGraph(kgModelName: $name conversationId: $ksid conversationData: { dataType: textual name: "" value: $text }){ darl reference response{dataType name value categories{name value }}}}');
     defaultRule = graph('query dr($lineage: String!){getSuggestedRuleset(lineage: $lineage)}');
     getks = graph('query gks($id: String!){getKnowledgeState(id: $id external: true){userId knowledgeGraphName data {name value {name lineage value confidence type }}}}')
+    deletekg = graph('mutation dkg($name: String!){deleteKG(name: $name)}');
 
     if (mdname !== null) {
         $('#fileHandling').addClass('d-none');
@@ -157,10 +159,31 @@ $(async function () {
             try {
                 await createclonedkg({ name: mdname, newname: dataNewName });
                 alert(mdname + " copied to " + copyname + ".");
+                await updateDropdown();
             }
             catch (err) {
                 HandleError(err);
             }});
+    });
+
+    $('#kg-delete').click(async function () {
+        if (!mdname) {
+            $.MessageBox("No KG is selected.");
+            return;
+        }
+        $.MessageBox({
+            buttonDone: "Yes",
+            buttonFail: "No",
+            message: "Delete this Knowledge Graph?"
+        }).done(async function () {
+            try {
+                await deletekg({ name: mdname });
+                await updateDropdown();
+            }
+            catch (err) {
+                HandleError(err);
+            }
+        })
     });
 
 
@@ -337,6 +360,9 @@ async function loadGraphs() {
                 {
                     content: '<span class="fa fa-trash fa-2x"></span>',
                     select: async function (ele) {
+                        if (ele.hasClass("eh-handle")) {
+                            ele = ele.data("mainNode");
+                        }
                         $.MessageBox({
                             buttonDone: "Yes",
                             buttonFail: "No",
@@ -359,6 +385,9 @@ async function loadGraphs() {
                     content: '<span class="fa fa-calendar fa-2x"></span>',
                     select: async function (ele) {
                         console.log('existence');
+                        if (ele.hasClass("eh-handle")) {
+                            ele = ele.data("mainNode");
+                        }
                         var obj = await realobjectdata({ model: mdname, id: ele.id() });
                         if (obj) {
                             if (obj.getGraphObjectById.existence) {
@@ -461,6 +490,9 @@ async function loadGraphs() {
                     select: async function (ele) {
                         try {
                             console.log('external id');
+                            if (ele.hasClass("eh-handle")) {
+                                ele = ele.data("mainNode");
+                            }
                             var id = ele.id();
                             var obj = await realobjectdata({ model: mdname, id: id });
                             if (obj) {
@@ -492,6 +524,9 @@ async function loadGraphs() {
                     select: async function (ele) {
                         try {
                             console.log('name');
+                            if (ele.hasClass("eh-handle")) {
+                                ele = ele.data("mainNode");
+                            }
                             var id = ele.id();
                             var obj = await realobjectdata({ model: mdname, id: id });
                             if (obj) {
@@ -522,6 +557,9 @@ async function loadGraphs() {
                     content: '<span class="fa fa-tasks fa-2x"></span>',
                     select: async function (ele) {
                         console.log('attributes');
+                        if (ele.hasClass("eh-handle")) {
+                            ele = ele.data("mainNode");
+                        }
                         var id = ele.id();
                         await EditRealAttributes(id);
                     }
@@ -530,11 +568,19 @@ async function loadGraphs() {
                     content: '<span class="fa fa-tree fa-2x"></span>',
                     select: async function (ele) {
                         console.log('lineage');
+                        if (ele.hasClass("eh-handle")) {
+                            ele = ele.data("mainNode");
+                        }
                         try {
                             var obj = await realobjectdata({ model: mdname, id: ele.id() });
                             if (obj) {
                                 var lin = obj.getGraphObjectById.lineage;
                                 var typeword = await gettypeword({ lin: lin });
+                                var subTypeword = "";
+                                var sublin = obj.getGraphObjectById.sublineage;
+                                if (sublin) {
+                                    subTypeword = await gettypeword({ lin: sublin }).getTypeWordForLineage;
+                                }
                                 $.MessageBox({
                                     input: {
                                         lineage:
@@ -546,6 +592,16 @@ async function loadGraphs() {
                                         {
                                             type: "caption",
                                             message: typeword.getTypeWordForLineage
+                                        },
+                                        sublineage:
+                                        {
+                                            type: "caption",
+                                            message: sublin
+                                        },
+                                        subtypeword:
+                                        {
+                                            type: "caption",
+                                            message: subTypeword
                                         }
                                     },
                                     message: "The lineage"
@@ -792,6 +848,19 @@ async function loadGraphs() {
                             newlineage: {
                                 type: "text",
                                 label: "new lineage"
+                            },
+                            sep_subcaption: {
+                                type: "caption",
+                                message: "optionally select an existing lineage for the sub-lineage<br/> or enter a new one."
+                            },
+                            existingsublineage: {
+                                label: "existing lineages",
+                                type: "select",
+                                options: obj
+                            },
+                            newsublineage: {
+                                type: "text",
+                                label: "new sub-lineage"
                             }
                         },
                         buttonDone: "Add",
@@ -1185,6 +1254,9 @@ async function loadGraphs() {
                 {
                     content: '<span class="fa fa-trash fa-2x"></span>',
                     select: async function (ele) {
+                        if (ele.hasClass("eh-handle")) {
+                            ele = ele.data("mainNode");
+                        }
                         $.MessageBox({
                             buttonDone: "Yes",
                             buttonFail: "No",
@@ -1210,6 +1282,9 @@ async function loadGraphs() {
                 {
                     content: '<span class="fa fa-tasks fa-2x"></span>',
                     select: async function (ele) {
+                        if (ele.hasClass("eh-handle")) {
+                            ele = ele.data("mainNode");
+                        }
                         console.log('attributes');
                         var id = ele.id();
                         await EditRecognitionAttributes(id);
@@ -1218,6 +1293,9 @@ async function loadGraphs() {
                 {
                     content: '<span class="fa fa-tree fa-2x"></span>',
                     select: async function (ele) {
+                        if (ele.hasClass("eh-handle")) {
+                            ele = ele.data("mainNode");
+                        }
                         console.log('lineage');
                         var obj = await recognitionobjectdata({ model: mdname, id: ele.id() });
                         if (obj) {

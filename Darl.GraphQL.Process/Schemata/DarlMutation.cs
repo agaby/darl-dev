@@ -1275,12 +1275,12 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             ).AuthorizeWith("CorpPolicy");
 
-            FieldAsync<KGraphType>("createKGraph", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
+            FieldAsync<BooleanGraphType>("createKGraph", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
             {
                 var name = context.GetArgument<string>("name");
                 var userId = connectivity.GetCurrentUserId(context.UserContext);
                 return await context.TryAsyncResolve(
-                    async c => await connectivity.CreateKGraph(userId, name));
+                    async c => await graph.CreateNewGraph(userId, name));
             }).AuthorizeWith("CorpPolicy");
 
             FieldAsync<StringGraphType>("saveKGraph", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>

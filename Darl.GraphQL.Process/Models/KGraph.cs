@@ -14,5 +14,11 @@ namespace Darl.GraphQL.Models.Models
         public string userId { get; set; }
         public ServiceConnectivity serviceConnectivity { get; set; } = new ServiceConnectivity();
         public List<UserUsage> UsageHistory { get; set; } = new List<UserUsage>();
+
+        public bool Shared { get; set; } = false;
+
+        public string OwnerId { get; set; }
+
+        public bool? ReadOnly { get; set; } = false;
     }
 }

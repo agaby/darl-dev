@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
@@ -61,8 +62,8 @@ namespace Darl.GraphQL.Models.Connectivity
             if (cont.vertices.ContainsKey(conn.endId))
                 cont.vertices[conn.endId].In.Add(gc);
             else
-                throw new ExecutionError($"Real vertex id {conn.endId} does not exist"); 
-            cont.edges.Add(gc.id,gc);
+                throw new ExecutionError($"Real vertex id {conn.endId} does not exist");
+            cont.edges.Add(gc.id, gc);
             FlagChanges(compositeName);
             return gc;
         }
@@ -70,7 +71,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<GraphObject> CreateObject(string compositeName, GraphObjectInput graphObject)
         {
             var cont = await Load(compositeName) as BlobGraphContent;
-            var go = new GraphObject { existence = graphObject.existence, externalId = graphObject.externalId, id = Guid.NewGuid().ToString(), inferred = false, lineage = graphObject.lineage, name = graphObject.name, _virtual = false, properties = graphObject.properties };
+            var go = new GraphObject { existence = graphObject.existence, externalId = graphObject.externalId, id = Guid.NewGuid().ToString(), inferred = false, lineage = CombineLineages(graphObject.lineage, graphObject.subLineage), name = graphObject.name, _virtual = false, properties = graphObject.properties };
             cont.vertices.Add(go.id, go);
             FlagChanges(compositeName);
             return go;
@@ -92,23 +93,23 @@ namespace Darl.GraphQL.Models.Connectivity
                     throw new ExecutionError($"Virtual vertex id {lineage} does not exist");
                 cont.virtualEdges.Add($"{child}->{lineage}", gc);
             }
-       }
+        }
 
         public async Task CreateVirtualObject(IGraphModel model, string lineage, string typeword, string description)
         {
-            var go = new GraphObject { id = Guid.NewGuid().ToString(), inferred = false, lineage = lineage, name = typeword, _virtual = true, properties = new List<GraphAttribute> { new GraphAttribute { name = "description", value = description, lineage= "noun:01,4,05,21,05", type= GraphAttribute.DataType.textual} } };
+            var go = new GraphObject { id = Guid.NewGuid().ToString(), inferred = false, lineage = lineage, name = typeword, _virtual = true, properties = new List<GraphAttribute> { new GraphAttribute { name = "description", value = description, lineage = "noun:01,4,05,21,05", type = GraphAttribute.DataType.textual } } };
             ((BlobGraphContent)model).virtualVertices.Add(go.lineage, go);
         }
 
         public async Task<GraphConnection> DeleteConnection(string compositeName, string id)
         {
             var cont = await Load(compositeName) as BlobGraphContent;
-            if(!cont.edges.ContainsKey(id))
-            { 
+            if (!cont.edges.ContainsKey(id))
+            {
                 return null;
             }
             var conn = cont.edges[id];
-            if(cont.vertices.ContainsKey(conn.startId))
+            if (cont.vertices.ContainsKey(conn.startId))
             {
                 cont.vertices[conn.startId].Out.Remove(conn);
             }
@@ -130,7 +131,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             var node = cont.vertices[id];
             //delete associated connections
-            foreach(var c in node.Out)
+            foreach (var c in node.Out)
             {
                 if (cont.vertices.ContainsKey(c.endId))
                 {
@@ -189,7 +190,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return cont.vertices.Values.Where(a => a.name == name && a.lineage.StartsWith(lineage)).ToList();
         }
 
-        public async Task<bool> LineageExists(IGraphModel model,string lineage)
+        public async Task<bool> LineageExists(IGraphModel model, string lineage)
         {
             return ((BlobGraphContent)model).virtualVertices.ContainsKey(lineage);
         }
@@ -201,7 +202,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 return null;
             //update nun-null elements in gc
             bool changed = false;
-            if(gc.existence != null)
+            if (gc.existence != null)
             {
                 conn.existence = gc.existence;
                 changed = true;
@@ -236,7 +237,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 changed = true;
 
             }
-            if(changed)
+            if (changed)
             {
                 FlagChanges(compositeName);
             }
@@ -311,7 +312,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var otherIds = list2.Select(a => a.id).ToList();
             FollowHypernymy(model, obj2, list2);
             //now search for connections
-            foreach(var o in list1)
+            foreach (var o in list1)
             {
                 if (o.Out.Where(a => otherIds.Contains(a.id)).Any())
                     return true;
@@ -339,8 +340,9 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<IGraphModel> Load(string blobName)
         {
             if (buffer.ContainsKey(blobName))
+            {
                 return buffer[blobName];
- 
+            }
             if (await _blob.Exists(blobName))
             {
                 var data = await _blob.Read(blobName);
@@ -350,9 +352,21 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             else
             {
-                var model =  new BlobGraphContent();
-                buffer.Add(blobName, model);
-                return model;
+                //check if it's a shared blob
+                var sharedState = await HandleSharedNames(blobName);
+                if (!String.IsNullOrEmpty(sharedState.Item1))
+                {
+                    var data = await _blob.Read(sharedState.Item1);
+                    var model = DeserializeGraph(data);
+                    buffer.Add(blobName, model);
+                    return model;
+                }
+                else
+                {
+                    var model = new BlobGraphContent();
+                    buffer.Add(blobName, model);
+                    return model;
+                }
             }
 
         }
@@ -384,12 +398,34 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<bool> CreateModel(string compositeName)
         {
+            var record = await GetRecord(compositeName);
+            if (record != null)
+                throw new ExecutionError($"{record.Name} already exists.");
+            var divider = compositeName.IndexOf('_');
+            var id = compositeName.Substring(0, divider);
+            var name = compositeName[(divider + 1)..];
+            await _conn.CreateKGraph(id,name);
             await _blob.Write(compositeName, SerializeGraph(new BlobGraphContent()));
             return true;
         }
 
         public async Task<bool> DeleteModel(string compositeName)
         {
+            //if shared, delete the share but not the blob
+            var record = await GetRecord(compositeName);
+            if(record == null)
+            {
+                return false;
+            }
+            if (record.ReadOnly ?? false)
+            {
+                throw new ExecutionError("The owner of this KG has not permitted deletion.");
+            }
+            await _conn.DeleteKGraph(record.userId, record.Name);
+            if(record.Shared)
+            {
+                return true;
+            }         
             if (buffer.ContainsKey(compositeName))
                 buffer.Remove(compositeName);
             return await _blob.Delete(compositeName);
@@ -400,7 +436,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return _blob.List(userId);
         }
 
- 
+
         public async Task<List<GraphElement>> ProcessPath(string compositeName, string startExternalID, string endExternalID)
         {
             try
@@ -410,7 +446,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 var target = await GetGraphObjectByExternalId(compositeName, endExternalID);
                 return ShortestPath(cont, start, target);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
@@ -423,7 +459,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (string.IsNullOrEmpty(rootExternalID))
             {
                 var objects = await GetGraphObjectsByLineage(compositeName, childLineage);
-                foreach(var o in objects)
+                foreach (var o in objects)
                 {
                     var externalId = GetAttibuteGivenObject(o, nameof(GraphObject.externalId));
                     var value = GetAttibuteGivenObject(o, childValueAttribute);
@@ -510,7 +546,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <param name="compositeName"></param>
         private void FlagChanges(string compositeName)
         {
-            lock(lockObject)
+            lock (lockObject)
             {
                 modified.Add(compositeName);
                 modifiedToggle = true;
@@ -528,21 +564,21 @@ namespace Darl.GraphQL.Models.Connectivity
         public List<GraphElement> ShortestPath(IGraphModel model, GraphObject start, GraphObject target)
         {
             BlobGraphContent cont = model as BlobGraphContent;
-            var list = new List<GraphElement>{ start};
-            var coverage = new Dictionary<GraphObject, (double, bool, int)> { {start,(0,true, 0) } };
+            var list = new List<GraphElement> { start };
+            var coverage = new Dictionary<GraphObject, (double, bool, int)> { { start, (0, true, 0) } };
             try
             {
                 var path = ShortestPathRecursion(model, start, target, list, coverage, 0);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
             var shortestPath = new List<GraphElement> { target };
             var next = target;
-            while(next != start)
+            while (next != start)
             {
-                if(!coverage.ContainsKey(next))
+                if (!coverage.ContainsKey(next))
                 {
                     return null;
                 }
@@ -554,7 +590,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     if (!coverage.ContainsKey(begin))
                         continue;
                     var otherPotential = coverage[begin].Item1;
-                    if(potential - otherPotential == i.weight)
+                    if (potential - otherPotential == i.weight)
                     {
                         shortestPath.Add(i);
                         shortestPath.Add(begin);
@@ -598,7 +634,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                 }
                 else
-                { 
+                {
                     coverage.Add(next, (distance, next.In.Count == 1, 1));
                 }
                 current.Add((next, distance, newPath));
@@ -609,25 +645,25 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
 
             }
- /*           foreach (var c in start.In)
-            {
-                var newPath = new List<GraphElement>(path);
-                var next = cont.vertices[c.startId];
-                if (coverage.ContainsKey(next))
-                {
-                    continue;
-                }
-                newPath.Add(c);
-                newPath.Add(next);
-                var distance = coverage[start].Item1 + c.weight;
-                coverage.Add(next, (distance, true));
-                current.Add((next, distance, newPath));
-                if (next == target)
-                    return newPath;
-            }*/
+            /*           foreach (var c in start.In)
+                       {
+                           var newPath = new List<GraphElement>(path);
+                           var next = cont.vertices[c.startId];
+                           if (coverage.ContainsKey(next))
+                           {
+                               continue;
+                           }
+                           newPath.Add(c);
+                           newPath.Add(next);
+                           var distance = coverage[start].Item1 + c.weight;
+                           coverage.Add(next, (distance, true));
+                           current.Add((next, distance, newPath));
+                           if (next == target)
+                               return newPath;
+                       }*/
             //sort current by distance descending
             current = current.OrderBy(a => a.Item2).ToList();
-            foreach(var v in current)
+            foreach (var v in current)
             {
                 if (depth < 10)
                 {
@@ -655,9 +691,9 @@ namespace Darl.GraphQL.Models.Connectivity
             //ModifiedToggle is used to only write out the GraphModels if one timeout has elapsed since the last change.
             //Intended to prevent disruption to bursts of updates.
             //Has side effect that one very busy model will stop another quiet model being written out.
-            lock(lockObject)
+            lock (lockObject)
             {
-                if(modifiedToggle)
+                if (modifiedToggle)
                 {
                     modifiedToggle = false;
                     return;
@@ -665,36 +701,64 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             List<string> changedModels = new List<string>();
             //copy the modified list and clear it
-            lock(lockObject)
+            lock (lockObject)
             {
                 changedModels = modified.ToList();
                 modified.Clear();
                 modifiedToggle = false;
             }
-            foreach(var s in changedModels)
+            foreach (var s in changedModels)
             {
                 //get the graphmodel
                 var model = buffer[s];
                 byte[] data;
                 //lock it
-                lock(lockObject)
+                lock (lockObject)
                 {
                     //serialize it and release it
-//                    data = SerializeGraph(model);
+                    //                    data = SerializeGraph(model);
                 }
                 //write out the serialized model
- //               _blob.Write(s, data);
+                //               _blob.Write(s, data);
 
-            }  
+            }
         }
 
         public async Task Store(string compositeName)
         {
-            modified.Remove(compositeName);
-            var model = buffer[compositeName];
-            byte[] data;
-            data = SerializeGraph(model);
-            await _blob.Write(compositeName, data);
+            var sharedState = await HandleSharedNames(compositeName);
+            if(sharedState.Item2)
+                throw new ExecutionError("The owner of this KG has not permitted saving of edits.");
+            if (!String.IsNullOrEmpty(sharedState.Item1))
+            {
+                modified.Remove(sharedState.Item1);
+                var model = buffer[sharedState.Item1];
+                byte[] data;
+                data = SerializeGraph(model);
+                await _blob.Write(sharedState.Item1, data);
+            }
+        }
+
+        private async Task<(string,bool)> HandleSharedNames(string compositeName)
+        {
+            var record = await GetRecord(compositeName);
+            if (record != null)
+            {
+                if (record.Shared) //redirect
+                {
+                    return (record.OwnerId + '_' + record.Name, record.ReadOnly ?? false);
+                }
+                return (compositeName, record.ReadOnly ?? false);
+            }
+            return ("", true); //no matching model
+        }
+
+        private async Task<KGraph> GetRecord(string compositeName)
+        {
+            var divider = compositeName.IndexOf('_');
+            var id = compositeName.Substring(0, divider);
+            var name = compositeName[(divider + 1)..];
+            return await _conn.GetKGModel(id, name);
         }
 
         public async Task<List<GraphObject>> GetAllRealObjects(string compositeName)
@@ -1072,7 +1136,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var dmodel = new DisplayModel { nodes = new List<DisplayObject>(), edges = new List<DisplayConnection>() };
             if(string.IsNullOrEmpty(lineageFilter)) //return everything
             {
-                dmodel.nodes.AddRange(cont.vertices.Values.Select(i => new DisplayObject {id = i.id, name = i.name, lineage = i.lineage, externalId = i.externalId }));
+                dmodel.nodes.AddRange(cont.vertices.Values.Select(i => new DisplayObject {id = i.id, name = i.name, lineage = ExtractLineage(i.lineage), subLineage = ExtractSubLineage(i.lineage), externalId = i.externalId }));
                 dmodel.edges.AddRange(cont.edges.Values.Select(i => new DisplayConnection {id = i.id, name = i.name, source = i.startId, target = i.endId }));
             }
             else
@@ -1367,7 +1431,31 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
+        private string CombineLineages(string lineage, string subLineage)
+        {
+            if (string.IsNullOrEmpty(subLineage))
+                return lineage;
+            return $"{lineage}+{subLineage}";
+        }
 
+        private string ExtractLineage(string lineage)
+        {
+            var pos = lineage.IndexOf('+');
+            if (pos == -1)
+            {
+                return lineage;
+            }
+            return lineage.Substring(0, pos);
+        }
+        private string ExtractSubLineage(string lineage)
+        {
+            var pos = lineage.IndexOf('+');
+            if (pos == -1)
+            {
+                return null;
+            }
+            return lineage.Substring(pos + 1);
+        }
     }
 
     public class Dependency

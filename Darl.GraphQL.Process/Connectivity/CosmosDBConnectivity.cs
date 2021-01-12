@@ -2642,7 +2642,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var subsoptions = new SubscriptionCreateOptions
             {
                 Items = items,
-                TrialPeriodDays = _config.GetValue<int>("AppSettings:StripeTrialPeriodDays"),
+                TrialPeriodDays = 30/*_config.GetValue<int>("AppSettings:StripeTrialPeriodDays")*/,
                 Customer = customerId,
                 CollectionMethod = "send_invoice",
                 DaysUntilDue = 14,
@@ -2772,6 +2772,32 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
             }
             return Task.FromResult(errorList);
+        }
+
+        public async Task<KGraph> ShareKGraph(string userId, string name, string sharerId, bool readOnly)
+        {
+            //ensure KG exists
+            var model = await GetKGModel(userId, name);
+            if (model == null)
+                return null;
+            //ensure sharer exists
+            var otherUser = await GetUserById(sharerId);
+            if (otherUser == null)
+                return null;
+            //create a record with sharerId as userId and Shared set.
+            var kg = new KGraph { Name = name, OwnerId = userId, userId = sharerId, Shared = true, ReadOnly = readOnly };
+            var mc = db.GetCollection<KGraph>(kgraphcollection);
+            await mc.InsertOneAsync(kg);
+            return kg;
+        }
+        public async Task<KGraph> DeleteKGraph(string userId, string name)
+        {
+            var mc = db.GetCollection<KGraph>(kgraphcollection);
+            var query = mc.AsQueryable()
+            .Where(p => p.userId == userId && p.Name == name);
+            var old = await query.FirstOrDefaultAsync();
+            await mc.DeleteOneAsync(Builders<KGraph>.Filter.Eq(r => r.userId, userId) & Builders<KGraph>.Filter.Eq(r => r.Name, name));
+            return old;
         }
     }
 }
