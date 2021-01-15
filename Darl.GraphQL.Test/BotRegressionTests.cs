@@ -76,6 +76,8 @@ namespace Darl.GraphQL.Test
             var botLogger = new Mock<ILogger<BotProcessing>>();
             var connLogger = new Mock<ILogger<CosmosDBConnectivity>>();
             var blobLogger = new Mock<ILogger<BlobConnectivity>>();
+            var bgplogger = new Mock<ILogger<BlobGraphPrimitives>>();
+            var glogger = new Mock<ILogger<GraphProcessing>>();
             var context = new Mock<IHttpContextAccessor>();
             var cache = new Mock<IDistributedCache>();
             context.Setup(a => a.HttpContext.User.Identity.Name).Returns(_config["userId"]);
@@ -84,8 +86,8 @@ namespace Darl.GraphQL.Test
             var trigger = new Mock<ITrigger>();
             var bc = new BlobGraphConnectivity(_config, blobLogger.Object);
             var conn = new Mock<IConnectivity>();
-            var blob = new BlobGraphPrimitives(new List<IBlobConnectivity>{ bc },cache.Object, conn.Object);
-            _graph = new GraphProcessing(blob);
+            var blob = new BlobGraphPrimitives(new List<IBlobConnectivity>{ bc },cache.Object, conn.Object, bgplogger.Object);
+            _graph = new GraphProcessing(blob, glogger.Object);
             _graphStore = new GraphLocalStore(configuration.Object, logger.Object, context.Object, _graph);
             var formApi = new FormApi(cache.Object, trigger.Object, formLogger.Object, _graphStore);
             _rform = new RuleFormInterface(_conv);

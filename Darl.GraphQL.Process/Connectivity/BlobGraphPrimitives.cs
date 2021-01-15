@@ -9,6 +9,7 @@ using DarlLanguage.Processing;
 using GraphQL;
 using Microsoft.Azure.Storage.Shared.Protocol;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using ProtoBuf;
 using QuickGraph.Algorithms.MaximumFlow;
 using System;
@@ -30,6 +31,8 @@ namespace Darl.GraphQL.Models.Connectivity
         private IBlobConnectivity _blob;
         private IDistributedCache _cache;
         private IConnectivity _conn;
+        private ILogger _logger;
+
 
         private Dictionary<string, BlobGraphContent> buffer = new Dictionary<string, BlobGraphContent>();
 
@@ -43,11 +46,12 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public static int maxDepth = 0;
 
-        public BlobGraphPrimitives(IEnumerable<IBlobConnectivity> blobs, IDistributedCache cache, IConnectivity conn)
+        public BlobGraphPrimitives(IEnumerable<IBlobConnectivity> blobs, IDistributedCache cache, IConnectivity conn, ILogger<BlobGraphPrimitives> logger)
         {
             _blob = blobs.FirstOrDefault(h => h.implementation == nameof(BlobGraphConnectivity));
             _cache = cache;
             _conn = conn;
+            _logger = logger;
             flushTimer = new Timer(FlushTimerTimeOut, null, 500, 500);
         }
 
@@ -71,7 +75,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<GraphObject> CreateObject(string compositeName, GraphObjectInput graphObject)
         {
             var cont = await Load(compositeName) as BlobGraphContent;
-            var go = new GraphObject { existence = graphObject.existence, externalId = graphObject.externalId, id = Guid.NewGuid().ToString(), inferred = false, lineage = CombineLineages(graphObject.lineage, graphObject.subLineage), name = graphObject.name, _virtual = false, properties = graphObject.properties };
+            var go = new GraphObject { existence = graphObject.existence, externalId = graphObject.externalId, id = Guid.NewGuid().ToString(), inferred = false, lineage = graphObject.lineage, name = graphObject.name, _virtual = false, properties = graphObject.properties };
             cont.vertices.Add(go.id, go);
             FlagChanges(compositeName);
             return go;

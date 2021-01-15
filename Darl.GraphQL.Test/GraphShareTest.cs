@@ -66,6 +66,8 @@ namespace Darl.GraphQL.Test
 
             var logger = new Mock<ILogger<GraphLocalStore>>();
             var blogger = new Mock<ILogger<BlobConnectivity>>();//
+            var bgplogger = new Mock<ILogger<BlobGraphPrimitives>>();
+            var glogger = new Mock<ILogger<GraphProcessing>>();
             var context = new Mock<IHttpContextAccessor>();
             _config = configuration.Object;
             context.Setup(a => a.HttpContext.User.Identity.Name).Returns(_config["userId"]);
@@ -75,8 +77,8 @@ namespace Darl.GraphQL.Test
             var clogger = new Mock<ILogger<CosmosDBConnectivity>>();
             var clicense = new Mock<ILicensing>();
             _conn = new CosmosDBConnectivity(_config, clogger.Object, clicense.Object, cache.Object);
-            _primitives = new BlobGraphPrimitives(new List<IBlobConnectivity> { blob }, cache.Object, _conn);
-            _graph = new GraphProcessing(_primitives);
+            _primitives = new BlobGraphPrimitives(new List<IBlobConnectivity> { blob }, cache.Object, _conn, bgplogger.Object);
+            _graph = new GraphProcessing(_primitives, glogger.Object);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
             var form = new Mock<IFormApi>();
             _form = form.Object;

@@ -67,7 +67,7 @@ $(async function () {
     realkgraphdata = graph('query kgd($model: String!){getRealKGDisplay(graphName: $model){nodes{data{ id label lineage sublineage externalId}} edges{ data{ id label source target}}}}');
     virtualkgraphdata = graph('query vkgd($model: String!){getVirtualKGDisplay(graphName: $model){nodes{data{ id lineage parent}} edges{ data{ id label source target}}}}');
     recognitionkgraphdata = graph('query rkgd($model: String!){getRecognitionKGDisplay(graphName: $model){nodes{data{ id label lineage parent}} edges{ data{ id label source target}}}}');
-    realobjectdata = graph('query rod($model: String! $id: String!){getGraphObjectById(graphName: $model id: $id){name lineage id existence externalId properties {name lineage value type confidence}}}');
+    realobjectdata = graph('query rod($model: String! $id: String!){getGraphObjectById(graphName: $model id: $id){name lineage subLineage id existence externalId properties {name lineage value type confidence}}}');
     realConnectiondata = graph('query rcd($model: String! $id: String!){getGraphConnectionById(graphName: $model id: $id){name lineage id existence}}');
     virtualobjectdata = graph('query vod($model: String! $lineage: String!){getVirtualObjectByLineage(graphName: $model lineage: $lineage){name lineage id properties {name lineage value type confidence}}}');
     recognitionobjectdata = graph('query recod($model: String! $id: String!){getRecognitionObjectById(graphName: $model id: $id){name lineage id properties {name lineage value type confidence}}}');
@@ -92,9 +92,9 @@ $(async function () {
     getlineagesinkgatts = graph('query glkg($name: String!){getLineagesInKG(graphName: $name graphType: ATTRIBUTE){typeWord lineage }}');
     isvalidlineage = graph('query ivl($lin: String!){isValidLineage(lineage: $lin)}');
     getlineagesforword = graph('query glw($word: String!){getLineagesForWord(word: $word){ typeWord lineage description lineageType}}');
-    deleterealattribute = graph('mutation dra($name: String! $id: String! attLin: String!){deleteGraphObjectAttribute(name: $name id: $id attLineage: $attLin)}');
-    deleterecognitionattribute = graph('mutation dra($name: String! $id: String! attLin: String!){deleteRecognitionObjectAttribute(name: $name id: $id attLineage: $attLin)}');
-    deletevirtualattribute = graph('mutation dra($name: String! $id: String! attLin: String!){deleteVirtualObjectAttribute(name: $name id: $id attLineage: $attLin)}');
+    deleterealattribute = graph('mutation dra($name: String! $id: String! $attLin: String!){deleteGraphObjectAttribute(name: $name id: $id attLineage: $attLin)}');
+    deleterecognitionattribute = graph('mutation dra($name: String! $id: String! $attLin: String!){deleteRecognitionObjectAttribute(name: $name id: $id attLineage: $attLin)}');
+    deletevirtualattribute = graph('mutation dra($name: String! $lineage: String! $attLin: String!){deleteVirtualObjectAttribute(name: $name lineage: $lineage attLineage: $attLin)}');
     updaterealattribute = graph('mutation uga($name: String! $id: String! $att: graphAttributeInput!){updateGraphObjectAttribute(name: $name id: $id att: $att)}');
     updaterecognitionattribute = graph('mutation uga($name: String! $id: String! $att: graphAttributeInput!){updateRecognitionObjectAttribute(name: $name id: $id att: $att)}');
     updatevirtualattribute = graph('mutation uga($name: String! $lineage: String! $att: graphAttributeInput!){updateVirtualObjectAttribute(name: $name lineage: $lineage att: $att)}');
@@ -248,7 +248,6 @@ async function loadGraphs() {
         loading.classList.remove('loaded');
         updateStateDropdown();
         var realdata = await realkgraphdata({ model: mdname });
-        var virtualdata = await virtualkgraphdata({ model: mdname });
         var recdata = await recognitionkgraphdata({ model: mdname });
         //instantiate graphs here
         realcy = cytoscape({
@@ -577,7 +576,7 @@ async function loadGraphs() {
                                 var lin = obj.getGraphObjectById.lineage;
                                 var typeword = await gettypeword({ lin: lin });
                                 var subTypeword = "";
-                                var sublin = obj.getGraphObjectById.sublineage;
+                                var sublin = obj.getGraphObjectById.subLineage;
                                 if (sublin) {
                                     subTypeword = await gettypeword({ lin: sublin }).getTypeWordForLineage;
                                 }
@@ -876,24 +875,87 @@ async function loadGraphs() {
                         console.log('add node ' + data);
                         //create new object here
                         var lin;
-                        if (data.existinglineage) {
-                            lin = data.existinglineage;
-                            await CreateNode(evt, data.name, data.externalId, lin);
+                        var sublin;
+                        var name = data.name;
+                        var externalId = data.externalId;
+                        if (data.existinglineage ) {//no lookup needed
+                            lin = data.existinglineage;        
                         }
-                        else {
-                            try {
+                        if (data.existingsublineage) {
+                            sublin = data.existingsublineage;
+                        }               
+                        if (!lin || (!sublin && data.newsublineage !== ""))
+                        {
+                            //check if new lineage and new sublineage are valid lineages
+                            var ivl = await isvalidlineage({ lin: data.newlineage });
+                            if (ivl.isValidLineage) {
                                 lin = data.newlineage;
-                                var name = data.name;
-                                var externalId = data.externalId;
-                                //check if valid lineage
-                                var ivl = await isvalidlineage({ lin: lin });
-                                if (!ivl.isValidLineage) {
-                                    //Create a messageBox to offer alternatives
-                                    var lineages = await getlineagesforword({ word: lin });
-                                    var obj = {};
-                                    $.each(lineages.getLineagesForWord, function (i, item) {
-                                        obj[item.lineage] = item.typeWord + ": " + item.description;
+                            }
+                            if (data.newsublineage !== "") {
+                                ivl = await isvalidlineage({ lin: data.newsublineage });
+                                if (ivl.isValidLineage) {
+                                    sublin = data.newsublineage;
+                                }
+                            }
+                            //check if either is null
+                            if (!lin || !sublin) {
+                                var lineages = await getlineagesforword({ word: data.newlineage });
+                                var obj = {};
+                                $.each(lineages.getLineagesForWord, function (i, item) {
+                                    obj[item.lineage] = item.typeWord + ": " + item.description;
+                                });
+                                var sublineages = await getlineagesforword({ word: data.newsublineage });
+                                var subobj = {};
+                                $.each(sublineages.getLineagesForWord, function (i, item) {
+                                    subobj[item.lineage] = item.typeWord + ": " + item.description;
+                                });
+                                if (!lin && !sublin) {
+                                    $.MessageBox({
+                                        input: {
+                                            lin: {
+                                                label: "Possible lineages",
+                                                type: "select",
+                                                options: obj
+                                            },
+                                            sublin: {
+                                                label: "Possible sub-lineages",
+                                                type: "select",
+                                                options: subobj
+                                            }
+                                        },
+                                        buttonDone: "Select",
+                                        buttonFail: "Cancel",
+                                        message: "Choose primary and sub-lineage for these words.",
+                                        filterDone: function (data) {
+                                            if (data.lin === "" || data.sublin === "") return "Select lineages.";
+                                        }
+                                    }).done(async function (data) {
+                                        sublin = data.sublin;
+                                        lin = data.lin;
+                                        await CreateNode(evt, name, externalId, lin, sublin);
                                     });
+                                }
+                                else if (!sublin) {
+                                    $.MessageBox({
+                                        input: {
+                                            lin: {
+                                                label: "Possible sub-lineages",
+                                                type: "select",
+                                                options: subobj
+                                            }
+                                        },
+                                        buttonDone: "Select",
+                                        buttonFail: "Cancel",
+                                        message: "Choose a lineage for this word.",
+                                        filterDone: function (data) {
+                                            if (data.lin === "") return "Select a lineage.";
+                                        }
+                                    }).done(async function (data) {
+                                        sublin = data.lin;
+                                        await CreateNode(evt, name, externalId, lin, sublin);
+                                    });
+                                }
+                                else {
                                     $.MessageBox({
                                         input: {
                                             lin: {
@@ -910,18 +972,14 @@ async function loadGraphs() {
                                         }
                                     }).done(async function (data) {
                                         lin = data.lin;
-                                        await CreateNode(evt, name, externalId, lin);
+                                        await CreateNode(evt, name, externalId, lin, sublin);
                                     });
                                 }
-                                else {
-                                    await CreateNode(evt, data.name, data.externalId, lin);
-                                }
                             }
-                            catch (err) {
-                                HandleError(err);
+                            else {
+                                await CreateNode(evt, name, externalId, lin, sublin);
                             }
                         }
-
                     });
                 }
                 catch (err) {
@@ -929,9 +987,16 @@ async function loadGraphs() {
                 }
             }
             else {
-                const ref = '#' + node.data('lineage').replace(/,/g, '-').replace(/:/g, '-');
-                const virt = virtualcy.$(ref);
-                virt.select();
+                if (node.data('sublineage')) {
+                    const ref = '#' + node.data('lineage').replace(/,/g, '-').replace(/:/g, '-') + '+' + node.data('sublineage').replace(/,/g, '-').replace(/:/g, '-');
+                    const virt = virtualcy.$(ref);
+                    virt.select();
+                }
+                else {
+                    const ref = '#' + node.data('lineage').replace(/,/g, '-').replace(/:/g, '-');
+                    const virt = virtualcy.$(ref);
+                    virt.select();
+                }
             }
         });
         realcy.on('layoutstop', function (event) {
@@ -1034,123 +1099,9 @@ async function loadGraphs() {
                 console.log(node.toString());
             }
         });
-        virtualcy = cytoscape({
-            container: $('#virtualgraph'),
-            elements: virtualdata.getVirtualKGDisplay,
-            style: [ // the stylesheet for the graph
-                {
-                    selector: 'node',
-                    style: {
-                        'background-color': '#11479e',
-                        'label': 'data(lineage)'
-                    }
-                },
-                {
-                    selector: 'node:selected',
-                    style: {
-                        'background-color': '#1010ff',
-                        'label': 'data(externalId)'
-                    }
-                },
-                {
-                    selector: 'edge',
-                    style: {
-                        'width': 3,
-                        'line-color': '#ccc',
-                        'target-arrow-color': '#ccc',
-                        'target-arrow-shape': 'triangle',
-                        'curve-style': 'bezier',
-                        'label': 'data(label)'
-                    }
-                }
-            ],
 
-            layout: {
-                name: 'dagre'
-            }
-        });
-        virtualcy.cxtmenu({
-            selector: 'node',
-            commands: [
-                {
-                    content: '<span class="fa fa-user fa-2x"></span>',
-                    select: async function (ele) {
-                        console.log('name');
-                        var id = ele.data('lineage');
-                        var obj = await virtualobjectdata({ model: mdname, lineage: id });
-                        if (obj) {
-                            $.MessageBox({
-                                input: {
-                                    name: {
-                                        type: "caption",
-                                        message: obj.getVirtualObjectByLineage.name
-                                    }
-                                },
-                                message: "The name",
-                                buttonDone: "OK",
-                            }).done(function (data) {
-                                console.log(data);
-                            });
-                        }
-                    }
-                },
-                {
-                    content: '<span class="fa fa-info fa-2x"></span>',
-                    select: async function (ele) {
-                        ShowInfo("md/thinkbase/virtual_node.md");
-                    }
-                },
-                {
-                    content: '<span class="fa fa-tasks fa-2x"></span>',
-                    select: async function (ele) {
-                        console.log('attributes');
-                        var id = ele.data('lineage');
-                        await EditVirtualAttributes(id);
-                    }
-                },
-                {
-                    content: '<span class="fa fa-tree fa-2x"></span>',
-                    select: async function (ele) {
-                        console.log('lineage');
-                        try {
-                            var id = ele.data('lineage');
-                            var obj = await virtualobjectdata({ model: mdname, lineage: id });
-                            if (obj) {
-                                var lin = obj.getVirtualObjectByLineage.lineage;
-                                var typeword = await gettypeword({ lin: lin });
-                                $.MessageBox({
-                                    input: {
-                                        lineage:
-                                        {
-                                            type: "caption",
-                                            message: lin
-                                        },
-                                        typeword:
-                                        {
-                                            type: "caption",
-                                            message: typeword.getTypeWordForLineage
-                                        }
-                                    },
-                                    message: "The lineage"
-                                }).done(function (data) {
-                                    console.log(data);
-                                });
-                            }
-                        }
-                        catch (err) {
-                            HandleError(err);
-                        }
-                    }
-                }
-            ]
-        });
-        virtualcy.on('add', function (event) {
-            node = event.target;
-            realcy.remove(node);
-        });
-        virtualcy.on('tap', function (event) {
-            node = event.target;
-        });
+        await LoadVirtualGraph();
+
         recognitioncy = cytoscape({
             container: $('#recognitiongraph'),
             elements: recdata.getRecognitionKGDisplay,
@@ -1439,6 +1390,9 @@ async function loadGraphs() {
                 console.log(node);
             }
         });
+
+
+
         realchanged = true;
         virtualchanged = true;
         recchanged = true;
@@ -1531,6 +1485,134 @@ async function loadGraphs() {
 
 
 }
+
+async function LoadVirtualGraph() {
+    try {
+        var virtualdata = await virtualkgraphdata({ model: mdname });
+        virtualcy = cytoscape({
+            container: $('#virtualgraph'),
+            elements: virtualdata.getVirtualKGDisplay,
+            style: [ // the stylesheet for the graph
+                {
+                    selector: 'node',
+                    style: {
+                        'background-color': '#11479e',
+                        'label': 'data(lineage)'
+                    }
+                },
+                {
+                    selector: 'node:selected',
+                    style: {
+                        'background-color': '#1010ff',
+                        'label': 'data(externalId)'
+                    }
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 3,
+                        'line-color': '#ccc',
+                        'target-arrow-color': '#ccc',
+                        'target-arrow-shape': 'triangle',
+                        'curve-style': 'bezier',
+                        'label': 'data(label)'
+                    }
+                }
+            ],
+
+            layout: {
+                name: 'dagre'
+            }
+        });
+        virtualcy.cxtmenu({
+            selector: 'node',
+            commands: [
+                {
+                    content: '<span class="fa fa-user fa-2x"></span>',
+                    select: async function (ele) {
+                        console.log('name');
+                        var id = ele.data('lineage');
+                        var obj = await virtualobjectdata({ model: mdname, lineage: id });
+                        if (obj) {
+                            $.MessageBox({
+                                input: {
+                                    name: {
+                                        type: "caption",
+                                        message: obj.getVirtualObjectByLineage.name
+                                    }
+                                },
+                                message: "The name",
+                                buttonDone: "OK",
+                            }).done(function (data) {
+                                console.log(data);
+                            });
+                        }
+                    }
+                },
+                {
+                    content: '<span class="fa fa-info fa-2x"></span>',
+                    select: async function (ele) {
+                        ShowInfo("md/thinkbase/virtual_node.md");
+                    }
+                },
+                {
+                    content: '<span class="fa fa-tasks fa-2x"></span>',
+                    select: async function (ele) {
+                        console.log('attributes');
+                        var id = ele.data('lineage');
+                        await EditVirtualAttributes(id);
+                    }
+                },
+                {
+                    content: '<span class="fa fa-tree fa-2x"></span>',
+                    select: async function (ele) {
+                        console.log('lineage');
+                        try {
+                            var id = ele.data('lineage');
+                            var obj = await virtualobjectdata({ model: mdname, lineage: id });
+                            if (obj) {
+                                var lin = obj.getVirtualObjectByLineage.lineage;
+                                var typeword = await gettypeword({ lin: lin });
+                                $.MessageBox({
+                                    input: {
+                                        lineage:
+                                        {
+                                            type: "caption",
+                                            message: lin
+                                        },
+                                        typeword:
+                                        {
+                                            type: "caption",
+                                            message: typeword.getTypeWordForLineage
+                                        }
+                                    },
+                                    message: "The lineage"
+                                }).done(function (data) {
+                                    console.log(data);
+                                });
+                            }
+                        }
+                        catch (err) {
+                            HandleError(err);
+                        }
+                    }
+                }
+            ]
+        });
+        virtualcy.on('add', function (event) {
+            node = event.target;
+            realcy.remove(node);
+        });
+        virtualcy.on('tap', function (event) {
+            node = event.target;
+        });
+    }
+    catch (err) {
+        HandleError(err);
+    }
+}
+
+
 var charCodeZero = "0".charCodeAt(0);
 var charCodeNine = "9".charCodeAt(0);
 
@@ -1709,7 +1791,12 @@ async function EditRealAttributes(id) {
                     }
                     else if (button === "delete") {
                         if (data.attChoice) {
-                            await deleterealattribute({ name: mdname, id: id, attLin: data.attChoice });
+                            try {
+                                await deleterealattribute({ name: mdname, id: id, attLin: data.attChoice });
+                            }
+                            catch (err) {
+                                HandleError(err);
+                            }
                         }
                     }
                     else {
@@ -1794,7 +1881,12 @@ async function EditVirtualAttributes(id) {
                         await CreateNewAttribute(id, "virtual");
                     }
                     else if (button === "delete") {
-                        await deletevirtualattribute({ name: mdname, id: id, attLin: data.attChoice, type: types[data.attChoice] });
+                        try {
+                            await deletevirtualattribute({ name: mdname, lineage: id, attLin: data.attChoice });
+                        }
+                        catch (err) {
+                            HandleError(err);
+                        }
                     }
                     else {
                         var newAtt = { value: values[data.attChoice], lineage: data.attChoice, type: types[data.attChoice] };
@@ -1812,17 +1904,19 @@ async function EditVirtualAttributes(id) {
     }
 }
 
-async function CreateNode(evt, name, externalId, lin) {
+async function CreateNode(evt, name, externalId, lin, sublin) {
     try {
-        var created = await createrealobject({ name: mdname, obj: { name: name, externalId: externalId, lineage: lin } });
+        var created = await createrealobject({ name: mdname, obj: { name: name, externalId: externalId, lineage: lin, subLineage: sublin } });
         realcy.add({
             group: 'nodes',
-            data: { label: name, externalId: externalId, id: created.createGraphObject.id, lineage: lin },
+            data: { label: name, externalId: externalId, id: created.createGraphObject.id, lineage: lin, sublineage: sublin },
             position: {
                 x: evt.position.x,
                 y: evt.position.y
             }
         });
+        await LoadVirtualGraph();
+
     }
     catch (err) {
         HandleError(err);
