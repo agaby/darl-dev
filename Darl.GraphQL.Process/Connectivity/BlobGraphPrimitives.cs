@@ -834,48 +834,6 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        public async Task<List<GraphObject>> FindNext(IGraphModel model, List<KeyValuePair<GraphObject, int>> ordered, KnowledgeState ks, GraphObject node, List<string> paths, string completedLineage)
-        {
-            var list = new List<GraphObject>();
-            var cont = model as BlobGraphContent;
-            //first build dependency list of nodes reachable from the start node
-            var saliences = new Dictionary<GraphObject, double>();
-            //in descending order calculate salience
-            saliences.Add(node, 1.0);
-            foreach(var o in ordered)
-            {
-                double salience = 0.0;
-                foreach(var c in o.Key.In)
-                {
-                    if (paths.Contains(c.lineage))
-                    {
-                        var parentNode = cont.vertices[c.startId];
-                        salience += saliences[parentNode];
-                    }
-                }
-                saliences.Add(o.Key, salience);
-            }
-            var orderedBySalience = saliences.OrderByDescending(a => a.Value).ToList();
-            var currentSalience = 0.0;
-            foreach(var o in orderedBySalience)
-            {
-                var obj = o.Key;
-                currentSalience = Math.Max(currentSalience, o.Value);
-                if (currentSalience != o.Value && list.Count > 0)
-                    break;
-                if (obj.Out.Count > 0) // not leaf
-                    continue;
-                if(ks.ContainsAttribute(obj.id, completedLineage))
-                    continue;
-                list.Add(obj);
-            }
-            //list is leaf nodes with highest salience
-            //Add current node to the end of the list if not completed
-            if (!ks.ContainsAttribute(node.id, completedLineage))
-                list.Add(node);
-            return list;
-        }
-
         private void AddDependency(IGraphModel model, List<Dependency> dependencies, GraphObject currentParent, GraphObject currentNode, string linkLineage, List<string> paths)
         {
             var cont = model as BlobGraphContent;

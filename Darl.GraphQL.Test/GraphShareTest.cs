@@ -60,7 +60,8 @@ namespace Darl.GraphQL.Test
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StripeAPIKey")]).Returns("sk_live_gKHiW6CmjAgGjhb9x3FY6n9H");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StripeCorporateLicensePlan")]).Returns("plan_DINGKECtG7jIs5");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StripeCorporateUsagePlan")]).Returns("plan_DINOybSsS0vMXf");
- //           configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StripeTrialPeriodDays")]).Returns<int>(a >= 30);
+            configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:boaiuserid")]).Returns("8c663676-a7dc-4561-af3d-89b38555837d");
+            //           configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StripeTrialPeriodDays")]).Returns<int>(a >= 30);
 
 
 
@@ -94,7 +95,7 @@ namespace Darl.GraphQL.Test
         [TestMethod]
         public async Task ShareText()
         {
-            var daveUser = "00f82011-193e-4662-8f6a-34152a8365eb";
+            var daveUser = "8c663676-a7dc-4561-af3d-89b38555837d";
 //            await _conn.UpdateSubscriptionType(daveUser, DarlUser.SubscriptionType.corporate);
             await _conn.ShareKGraph(_config["userId"],graphName, daveUser, true);
         }

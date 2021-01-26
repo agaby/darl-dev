@@ -220,11 +220,13 @@ namespace Darl.GraphQL.Models.Connectivity
             BotState bs = await _conv.GetBotState(userId, conversationId);
             if (bs == null)//first call for this conversation
             {
+                _logger.LogInformation($"new conversation, id= {conversationId}, KGName= {KnowledgeGraphName}, userId = {userId}");
                 bs = new BotState { conversationId = conversationId, userId = userId, userData = new StoredBotData(), conversationData = new StoredBotData(), privateConversationData = new StoredBotData(), values = new List<DarlVar>(), ruleProcessing = new Stack<RuleSetHandler>(), updated = DateTime.UtcNow };
             }
             if (bs.kGraphData == null) // top level conversation
             {
                 var responses = await _ghandler.InterpretText(userId, KnowledgeGraphName, "default:", conversationData);
+                _logger.LogInformation($"top level conversation, text = {conversationData.Value}, KGName= {KnowledgeGraphName}, userId = {userId}");
                 if (responses.Any())
                 {
                     var r = responses.Last();
@@ -237,6 +239,7 @@ namespace Darl.GraphQL.Models.Connectivity
                                 break;
                             if(c.response.dataType != DarlVar.DataType.seek)
                             {
+                                _logger.LogInformation($"Emitting text before seek: {c.response.Value}, id= {conversationId}, KGName= {KnowledgeGraphName}, userId = {userId}");
                                 resp.Add(c);
                             }
                         }
@@ -248,16 +251,19 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                     else
                     {
+                        _logger.LogInformation($"top level response, text = {r.response.Value}, KGName= {KnowledgeGraphName}, userId = {userId}");
                         resp.Add(r);
                     }
                     if (r.response.approximate)
                     {
                         string version = "unknown";
+                        _logger.LogInformation($"top level default response, text = {r.response.Value}, KGName= {KnowledgeGraphName}, userId = {userId}");
                         await _conv.CreateDefaultResponse(new DefaultResponse { date = DateTime.UtcNow, model = KnowledgeGraphName, message = conversationData.Value, response = r.response.Value, userId = userId, version = version });
                     }
                 }
                 else
                 {
+                    _logger.LogInformation($"No response found, text = {conversationData.Value}, KGName= {KnowledgeGraphName}, userId = {userId}");
                     resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Internal error", dataType = DarlVar.DataType.textual, name = "response" } });
                 }
             }
@@ -289,6 +295,18 @@ namespace Darl.GraphQL.Models.Connectivity
                     var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, bs.kGraphData[0][0], bs.kGraphData[1], bs.kGraphData[2][0], bs.values,bs.pending);
                     resp.Add(res.Item1.Last());
                     bs.pending = res.Item2;
+                    if(res.Item1.Count > 1)
+                    {//check for completion response
+                        foreach(var r in res.Item1)
+                        {
+                            if(r.response.dataType == DarlVar.DataType.complete)
+                            {
+                                bs.kGraphData = null;
+                                bs.pending = null;
+                                break;
+                            }
+                        }
+                    }
                 }
             }
             await _conv.SaveBotState(bs);

@@ -35,6 +35,7 @@ namespace Darl.GraphQL.Test
         private ITrigger _trigger;
         private ILogger<BotProcessing> _bplogger;
         private IHttpContextAccessor _context;
+        private ILogger<GraphHandler> _ghlogger;
 
         private static string industryLineage = "noun:01,2,07,10,14,3,1";
         private static string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";
@@ -98,7 +99,9 @@ namespace Darl.GraphQL.Test
             var blogger = new Mock<ILogger<BlobConnectivity>>();
             var bgplogger = new Mock<ILogger<BlobGraphPrimitives>>();
             var glogger = new Mock<ILogger<GraphProcessing>>();
+            var ghlogger = new Mock<ILogger<GraphHandler>>();
             var context = new Mock<IHttpContextAccessor>();
+            _ghlogger = ghlogger.Object;
             _config = configuration.Object;
             context.Setup(a => a.HttpContext.User.Identity.Name).Returns(_config["userId"]);
             var blob = new BlobGraphConnectivity(_config, blogger.Object);
@@ -417,7 +420,7 @@ namespace Darl.GraphQL.Test
                 }
             }
             var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
-            var gh = new GraphHandler(_graph);
+            var gh = new GraphHandler(_graph, _ghlogger);
             var paths = new List<string> { consistsLineage, followsLineage };
             var subjectId = Guid.NewGuid().ToString();
             var userId = _config["userId"];
@@ -442,18 +445,18 @@ namespace Darl.GraphQL.Test
             var ks = new KnowledgeState { Id = Guid.NewGuid().ToString(), userId = _config["userId"], knowledgeGraphName = graphName };
             var paths = new List<string> { consistsLineage, followsLineage };
             var order = _graph.GetExecutionOrder(model, node, paths);
-            var nodes = await _graph.FindNext(model, order, ks, node, paths, completeLineage);
+            var nodes = _graph.FindNext(model, order, ks, node, paths, completeLineage);
             Assert.AreEqual(1, nodes.Count);
             Assert.AreEqual("SUBACTIVITY1", nodes[0].externalId);
             ks.AddAttribute(nodes[0].id, new GraphAttribute { lineage = completeLineage } );
-            nodes = await _graph.FindNext(model, order, ks, node, new List<string> { consistsLineage, followsLineage }, completeLineage);
+            nodes = _graph.FindNext(model, order, ks, node, new List<string> { consistsLineage, followsLineage }, completeLineage);
             Assert.AreEqual(1, nodes.Count);
             Assert.AreEqual("SUBACTIVITY2", nodes[0].externalId);
             ks.AddAttribute(nodes[0].id, new GraphAttribute { lineage = completeLineage } );
-            nodes = await _graph.FindNext(model, order, ks, node, new List<string> { consistsLineage, followsLineage }, completeLineage);
+            nodes = _graph.FindNext(model, order, ks, node, new List<string> { consistsLineage, followsLineage }, completeLineage);
             Assert.AreEqual(1, nodes.Count);
             Assert.AreEqual("SUBACTIVITY3", nodes[0].externalId);
-            var gh = new GraphHandler(_graph);
+            var gh = new GraphHandler(_graph, _ghlogger);
             var subjectId = Guid.NewGuid().ToString();
             var userId = _config["userId"];
             var targetId = node.id;
@@ -464,7 +467,7 @@ namespace Darl.GraphQL.Test
         public async Task TestGraphPass()
         {
             var compositeName = $"{_config["userId"]}_{graphName}";
-            var gh = new GraphHandler(_graph);
+            var gh = new GraphHandler(_graph, _ghlogger);
             var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
             var paths = new List<string> { consistsLineage, followsLineage };
             var subjectId = Guid.NewGuid().ToString();
@@ -509,7 +512,7 @@ namespace Darl.GraphQL.Test
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = defaultAnswer.id, lineage = followsLineage });
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = help.id, lineage = followsLineage });
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = math.id, lineage = followsLineage });
-            var gh = new GraphHandler(_graph);
+            var gh = new GraphHandler(_graph, _ghlogger);
             var userId = _config["userId"];
             var subjectId = "default:";
             var results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "hello" });
@@ -568,7 +571,7 @@ namespace Darl.GraphQL.Test
         {
             var compositeName = $"{_config["userId"]}_{graphName}";
             var userId = _config["userId"];
-            var gh = new GraphHandler(_graph);
+            var gh = new GraphHandler(_graph, _ghlogger);
             var bp = new BotProcessing(_conn, _form, _rf, _trigger, _bplogger, _config, _context, _graph, gh);
             var conversationId = Guid.NewGuid().ToString();
             var res = await bp.InteractKGAsync(userId, graphName, conversationId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "hello" });

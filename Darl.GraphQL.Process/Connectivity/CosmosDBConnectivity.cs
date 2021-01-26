@@ -2782,7 +2782,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 return null;
             //ensure sharer exists
             var otherUser = await GetUserById(sharerId);
-            if (otherUser == null)
+            if (otherUser == null && sharerId != backgroundUserId)
                 return null;
             //create a record with sharerId as userId and Shared set.
             var kg = new KGraph { Name = name, OwnerId = userId, userId = sharerId, Shared = true, ReadOnly = readOnly };
@@ -2790,6 +2790,7 @@ namespace Darl.GraphQL.Models.Connectivity
             await mc.InsertOneAsync(kg);
             return kg;
         }
+
         public async Task<KGraph> DeleteKGraph(string userId, string name)
         {
             var mc = db.GetCollection<KGraph>(kgraphcollection);

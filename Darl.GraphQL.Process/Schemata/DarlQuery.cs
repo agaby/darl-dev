@@ -683,7 +683,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(async c => await graph.GetGraphObjectById(CompositeName(userId, graphName), id));
                 }
-            ).AuthorizeWith("CorpPolicy");
+            );
             FieldAsync<GraphObjectType>(
                  "getVirtualObjectByLineage",
                  "Get a virtual graph object based on lineage",
@@ -699,7 +699,7 @@ namespace Darl.GraphQL.Models.Schemata
                      var userId = connectivity.GetCurrentUserId(context.UserContext);
                      return await context.TryAsyncResolve(async c => await graph.GetVirtualObjectByLineage(CompositeName(userId, graphName), lineage));
                  }
-             ).AuthorizeWith("CorpPolicy");
+             );
             FieldAsync<GraphObjectType>(
                  "getRecognitionObjectById",
                  "Get a recognition graph object based on id",
@@ -715,7 +715,7 @@ namespace Darl.GraphQL.Models.Schemata
                      var userId = connectivity.GetCurrentUserId(context.UserContext);
                      return await context.TryAsyncResolve(async c => await graph.GetRecognitionObjectById(CompositeName(userId, graphName), id));
                  }
-             ).AuthorizeWith("CorpPolicy");
+             );
 
             FieldAsync<GraphObjectType>(
                 "getGraphObjectByExternalId",
@@ -731,7 +731,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(async c => await graph.GetGraphObjectByExternalId(CompositeName(userId,graphName), id));
                 }
-            ).AuthorizeWith("CorpPolicy");
+            );
             FieldAsync<GraphConnectionType>(
                 "getGraphConnection",
                 "Get a graph connection based on start and end ids and lineage",
@@ -750,7 +750,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(async c => await graph.GetConnectionByIds(CompositeName(userId, graphName), startId,endId,lineage));
                 }
-            ).AuthorizeWith("CorpPolicy");
+            );
             FieldAsync<GraphConnectionType>(
                 "getGraphConnectionById",
                 "Get a graph connection based on its Id",
@@ -765,7 +765,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(async c => await graph.GetConnectionById(CompositeName(userId, graphName), id));
                 }
-            ).AuthorizeWith("CorpPolicy");
+            );
 
             FieldAsync<KnowledgeStateType>(
                 "getKnowledgeState",
@@ -781,7 +781,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(async c => await graph.GetKnowledgeState(userId, Id, external));
                 }
-            ).AuthorizeWith("CorpPolicy");
+            );
 
             FieldAsync<KnowledgeStateType>(
                 "getKnowledgeStateByExternalId",
@@ -895,7 +895,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var conversationData = context.GetArgument<DarlVar>("conversationData");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(async c => await bot.InteractKGAsync(userId, kgModelName, conversationId, conversationData));
-                }).AuthorizeWith("CorpPolicy");
+                });
 
             FieldAsync<DisplayModelType>(
                 "getRealKGDisplay",
@@ -911,7 +911,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(async c => await graph.GetRealDisplayGraph(CompositeName(userId, graphName), lineageFilter));
                 }
-            ).AuthorizeWith("CorpPolicy");
+            );
             FieldAsync<DisplayModelType>(
                 "getVirtualKGDisplay",
                 "Get a display version of the virtual part of the KG",
@@ -924,7 +924,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(async c => await graph.GetVirtualDisplayGraph(CompositeName(userId, graphName)));
                 }
-            ).AuthorizeWith("CorpPolicy");
+            );
             FieldAsync<DisplayModelType>(
                 "getRecognitionKGDisplay",
                 "Get a display version of a recognition tree from the KG",
@@ -938,7 +938,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(async c => await graph.GetRecognitionDisplayGraph(CompositeName(userId, graphName)));
                 }
-            ).AuthorizeWith("CorpPolicy");
+            );
 
             //                Lint Ruleset
             FieldAsync<ListGraphType<DarlLintErrorType>>("lintDarlMeta", "Read code in DARL.Meta and return any syntax errors",
@@ -960,7 +960,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     var graphType = context.GetArgument<GraphElementType>("graphType");
                     return await context.TryAsyncResolve(async c => await graph.GetLineagesInKG(CompositeName(userId,graphName),graphType));
-                }).AuthorizeWith("CorpPolicy");
+                });
             Field<BooleanGraphType>("isValidLineage", "Check if this is a valid lineage. ",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "the word to check" }
@@ -969,7 +969,7 @@ namespace Darl.GraphQL.Models.Schemata
                 {
                     var lineage = context.GetArgument<string>("lineage");
                     return LineageLibrary.CheckLineage(lineage);
-                }).AuthorizeWith("CorpPolicy");
+                });
             FieldAsync<StringGraphType>("getSuggestedRuleset", "Get a suggested initial ruleset for an attribute. ",
             arguments: new QueryArguments(
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "Lineage of the attribute" }
@@ -978,7 +978,7 @@ namespace Darl.GraphQL.Models.Schemata
             {
                 var lineage = context.GetArgument<string>("lineage");
                 return await context.TryAsyncResolve(async c => await graph.GetSuggestedRuleSet(lineage));
-            }).AuthorizeWith("CorpPolicy");
+            });
         }
 
         private string CompositeName(string userId, string graphName)
