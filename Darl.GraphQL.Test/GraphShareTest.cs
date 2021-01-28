@@ -37,7 +37,7 @@ namespace Darl.GraphQL.Test
         private ILogger<BotProcessing> _bplogger;
         private IHttpContextAccessor _context;
 
-        private static string graphName = "lifestyle_medicine.graph";
+        private static string graphName = "cursus_honorum.graph";
 
         [TestInitialize()]
         public void Initialize()

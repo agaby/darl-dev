@@ -2755,6 +2755,22 @@ namespace Darl.GraphQL.Models.Connectivity
             return model;
         }
 
+        public async Task<KGraph> UpdateKGraph(KGraphUpdate kgupdate)
+        {
+            var existing = await GetKGModel(kgupdate.userId, kgupdate.Name);
+            if (existing == null)
+                return existing;
+            var collection = db.GetCollection<KGraph>(kgraphcollection);
+            var filter = Builders<KGraph>.Filter.Where(x => x.userId == kgupdate.userId && x.Name == kgupdate.Name);
+            var updList = new List<UpdateDefinition<KGraph>>();
+            if (kgupdate.Description != null)
+                updList.Add(Builders<KGraph>.Update.Set(x => x.Description, kgupdate.Description));
+            if (kgupdate.ReadOnly != null)
+                updList.Add(Builders<KGraph>.Update.Set(x => x.ReadOnly, kgupdate.ReadOnly));
+            var update = Builders<KGraph>.Update.Combine(updList);
+            return await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<KGraph, KGraph> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
+        }
+
         public Task<List<DarlLintView>> LintDarlMeta(string darl)
         {
             var errorList = new List<DarlLintView>();

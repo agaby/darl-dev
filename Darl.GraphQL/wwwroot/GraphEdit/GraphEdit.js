@@ -157,7 +157,7 @@ $(async function () {
             }
             }).done(async function (data) {
             try {
-                await createclonedkg({ name: mdname, newname: dataNewName });
+                await createclonedkg({ name: mdname, newname: data.newName });
                 alert(mdname + " copied to " + copyname + ".");
                 await updateDropdown();
             }
