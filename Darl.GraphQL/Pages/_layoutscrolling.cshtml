@@ -54,31 +54,13 @@
                             <a class="nav-link text-dark" href="index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="voyager">Voyager</a>
+                            <a class="nav-link text-dark" href="voyager">API objects</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="graphiql">Graphiql</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Darl editing
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="darleditor">DARL editor</a>
-                                <a class="dropdown-item" href="rulesettext">DARL text</a>
-                                <a class="dropdown-item" href="rulesetformat">DARL format</a>
-                                <a class="dropdown-item" href="rulesetextra">DARL extra</a>
-                                <a class="dropdown-item" href="darlevaluator">DARL evaluation</a>
-                                <a class="dropdown-item" href="bottree">Bot tree</a>
-                                <a class="dropdown-item" href="UploadCollateral">Upload resources</a>
-                                @if (User.Identity.IsAuthenticated )
-                                {
-                                    <a class="dropdown-item" href="GraphEdit">Edit a Knowledge Graph</a>
-                                }
-                            </div>
+                            <a class="nav-link text-dark" href="thinkbase">ThinkBase</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="/docs/">Read me!</a>
+                            <a class="nav-link text-dark" href="/docs/">Documentation</a>
                         </li>
                         <li class="nav-item">
                             @if (!User.Identity.IsAuthenticated)
@@ -92,11 +74,11 @@
                         </li>
                         @if(User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item">
-                                <form method="POST" asp-page="./index">
-                                    <button class="btn btn-rounded btn-primary" type="submit">Billing</button>
-                                </form>
-                            </li>
+                        <li class="nav-item">
+                            <form method="POST" asp-page="./index">
+                                <button class="btn btn-rounded btn-primary" type="submit">Billing</button>
+                            </form>
+                        </li>
                         }
                         <li class="nav-item">
                             <a class="nav-link text-dark" href="docs/darl_dev/" target="_blank"><img src="~/images/help_small.png" /></a>

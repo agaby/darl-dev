@@ -18,7 +18,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field<DarlVarDataTypeEnum>("dataType", resolve: context => context.Source.dataType);
             Field(c => c.name);
             Field<ListGraphType<ListGraphType<StringGraphType>>>("sequence", resolve: context => context.Source.sequence);
-            Field(c => c.times,true);
+            Field<DarlTimeType>("times", resolve: c => c.Source.times);
             Field(c => c.unknown,true);
             Field(c => c.Value);
             Field<ListGraphType<FloatGraphType>>("values", resolve: context => context.Source.values);

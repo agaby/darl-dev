@@ -53,15 +53,27 @@ var deletekg;
 var recognizedLineage = "adjective:8953";
 var currentStateId;
 
+var settingsStorageName = 'thinkbase-settings';
+var demo = false;
+
+
 $(async function () {
-
-
-
-    graph = graphql("/graphql");
-    var apiKey = findGetParameter("apikey");
+    var existing = window.localStorage.getItem(settingsStorageName);
+    existing = JSON.parse(existing);
+    var url = (existing ? existing.url : "https://darl.dev");
+    var key = (existing ? existing.key : "");
+    graph = graphql(url + "/graphql");
+    var apiKey = findGetParameter("apikey") ;
     mdname = findGetParameter("kgraph");
     if (apiKey !== null)
-        graph = graphql("/graphql", { headers: { "Authorization": "Basic " + apiKey } });
+        graph = graphql(url + "/graphql", { headers: { "Authorization": "Basic " + apiKey } });
+    else if (key !== null && key !== "")
+        graph = graphql(url + "/graphql", { headers: { "Authorization": "Basic " + key } });
+    else {
+        demo = true;
+        $('#fileHandling').addClass('d-none');
+        $('#demohandling').removeClass('d-none');
+    }
 
     allkgmodels = graph(`{ kgraphs { name }}`);
     realkgraphdata = graph('query kgd($model: String!){getRealKGDisplay(graphName: $model){nodes{data{ id label lineage sublineage externalId}} edges{ data{ id label source target}}}}');
@@ -118,6 +130,11 @@ $(async function () {
             //getGraphData
             await loadGraphs();
         });
+        $('#kgdemo-dropdown').on('change', async function () {
+            mdname = this.value;
+            //getGraphData
+            await loadGraphs();
+        });
     }
 
     $('#kg-create').click(async function () {
@@ -158,7 +175,7 @@ $(async function () {
             }).done(async function (data) {
             try {
                 await createclonedkg({ name: mdname, newname: data.newName });
-                alert(mdname + " copied to " + copyname + ".");
+                alert(mdname + " copied to " + data.newName + ".");
                 await updateDropdown();
             }
             catch (err) {
@@ -186,7 +203,6 @@ $(async function () {
         })
     });
 
-
     $('#kg-save').click(async function () {
         try {
             await savechanges({ name: mdname });
@@ -196,6 +212,36 @@ $(async function () {
         catch (err) {
             HandleError(err);
         }
+    });
+
+    $('#settings').click(function () {
+        var existing = window.localStorage.getItem(settingsStorageName);
+        existing = JSON.parse(existing)
+        var url = (existing ? existing.url : "https://darl.dev");
+        var key = (existing ? existing.key : "");
+        $.MessageBox({
+            input: {
+                url: {
+                    type: "text",
+                    label: "The ThinkBase source",
+                    defaultValue: url 
+                },
+                key: {
+                    type: "password",
+                    label: "Your ThinkBase API key",
+                    defaultValue: key 
+                }
+            },
+            message: "Change the settings",
+            buttonDone: "Change",
+            buttonFail: "Cancel",
+            filterDone: function (data) {
+                if (data.url === "" ) return "You must supply a url.";
+            }
+        }).done(async function (data) {
+            window.localStorage.setItem(settingsStorageName, JSON.stringify(data));
+            //update 
+        });
     });
 
 });
@@ -214,14 +260,20 @@ function findGetParameter(parameterName) {
 }
 
 async function updateDropdown() {
-    const rs = await allkgmodels();
-    var dropdown = $('#kgmodel-dropdown');
+    var dropdown = demo ? $('#kgdemo-dropdown') : $('#kgmodel-dropdown');
     dropdown.empty();
-    dropdown.append('<option selected="true" disabled>Choose a Knowledge Graph to edit</option>');
+    dropdown.append('<option selected="true" disabled>Choose a Knowledge Graph.</option>');
     dropdown.prop('selectedIndex', 0);
-    $.each(rs.kgraphs, function (key, entry) {
-        dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
-    });
+    try {
+        const rs = await allkgmodels();
+        $.each(rs.kgraphs, function (key, entry) {
+            dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
+        });
+    }
+    catch (err) {
+        HandleError(err);
+    }
+
 }
 
  function updateStateDropdown() {
@@ -1397,16 +1449,43 @@ async function loadGraphs() {
         virtualchanged = true;
         recchanged = true;
 
-        $('#real-find').click(async function () {
-            var externalId = $('#real-select').val();
-            var nodes = realcy.nodes().filter(function (element, i) {
-                return element.data('externalId') === externalId;
+        $('#real-find').click(function () {
+            $.MessageBox({
+                input: true,
+                message: "ExternalId to search for:",
+                buttonDone: "Find",
+                buttonFail: "Cancel",
+            }).done(function (data) {
+                if ($.trim(data)) {
+                    var nodes = realcy.nodes().filter(function (element, i) {
+                        return element.data('externalId') === $.trim(data);
+                    });
+                    realcy.fit(nodes, 300);
+                    nodes.emit('tap');
+                }
             });
-            realcy.fit(nodes, 300);
-            nodes.emit('tap');
         });
 
+        $('#real-help').click(function () {
+            ShowInfo("md/thinkbase/real_view.md");
+        });
 
+        $('#real-time').click(function () {
+            $.MessageBox({
+                input: true,
+                message: "ExternalId to search for:",
+                buttonDone: "Find",
+                buttonFail: "Cancel",
+            }).done(function (data) {
+                if ($.trim(data)) {
+                    var nodes = realcy.nodes().filter(function (element, i) {
+                        return element.data('externalId') === $.trim(data);
+                    });
+                    realcy.fit(nodes, 300);
+                    nodes.emit('tap');
+                }
+            });
+        });
 
         $('#real-fit').click(function () { realcy.fit(); });
         $('#virtual-fit').click(function () { virtualcy.fit(); });
@@ -1461,6 +1540,7 @@ async function loadGraphs() {
             var existing = window.localStorage.getItem(storageName);
             if (existing) {
                 idList = JSON.parse(existing);
+                idList = idList.slice(0, 7);
             }
             //add this to top
             idList.unshift(currentStateId);
@@ -2103,7 +2183,6 @@ async function check_syntax(code, result_cb) {
     }
 }
 
-
 function convertescapes(text) {
     text = text.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&#x221E;/g, '∞').replace(/&#xD;/g, '\r').replace(/&#xA;/g, '\n').replace(/&#x9;/g, '\t').replace(/&#x2B;/g, '+').replace(/&#x27;/g, '\'');
     return unescape(text);
@@ -2125,6 +2204,7 @@ async function HandleMessage() {
     Chat.start($('#chat'), tags);
 
 }
+
 async function MessageProcess(data) {
     try {
         var res = await interact({ name: mdname, ksid: currentStateId, text: Array.isArray(data.response) ? data.response[0] : data.response });

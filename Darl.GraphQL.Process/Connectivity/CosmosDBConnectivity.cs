@@ -40,6 +40,7 @@ using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization.Options;
 using Microsoft.Extensions.Caching.Distributed;
 using Darl.Thinkbase.Meta;
+using Darl.Common;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -2755,18 +2756,24 @@ namespace Darl.GraphQL.Models.Connectivity
             return model;
         }
 
-        public async Task<KGraph> UpdateKGraph(KGraphUpdate kgupdate)
+        public async Task<KGraph> UpdateKGraph(string userId, string name, KGraphUpdate kgupdate)
         {
-            var existing = await GetKGModel(kgupdate.userId, kgupdate.Name);
+            var existing = await GetKGModel(userId, name);
             if (existing == null)
                 return existing;
             var collection = db.GetCollection<KGraph>(kgraphcollection);
-            var filter = Builders<KGraph>.Filter.Where(x => x.userId == kgupdate.userId && x.Name == kgupdate.Name);
+            var filter = Builders<KGraph>.Filter.Where(x => x.userId == userId && x.Name == name);
             var updList = new List<UpdateDefinition<KGraph>>();
             if (kgupdate.Description != null)
                 updList.Add(Builders<KGraph>.Update.Set(x => x.Description, kgupdate.Description));
             if (kgupdate.ReadOnly != null)
                 updList.Add(Builders<KGraph>.Update.Set(x => x.ReadOnly, kgupdate.ReadOnly));
+            if (kgupdate.dateDisplay != null)
+                updList.Add(Builders<KGraph>.Update.Set(x => x.dateDisplay, kgupdate.dateDisplay));
+            if (kgupdate.inferenceTime != null)
+                updList.Add(Builders<KGraph>.Update.Set(x => x.inferenceTime, kgupdate.inferenceTime));
+            if (kgupdate.fixedTime != null)
+                updList.Add(Builders<KGraph>.Update.Set(x => x.fixedTime, kgupdate.fixedTime));
             var update = Builders<KGraph>.Update.Combine(updList);
             return await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<KGraph, KGraph> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
         }

@@ -13,7 +13,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "graphObject";
             Description = "an object representing a real world entity in the graph database";
-            Field<ListGraphType<DateTimeGraphType>>("existence", "The period of existence of the object", resolve: c => c.Source.existence);
+            Field<ListGraphType<DarlTimeType>>("existence", "The period of existence of the object", resolve: c => c.Source.existence);
             Field(c => c.id).Description("The unique id");
             Field(c => c.inferred, true).Description("If true, the existence of this object is inferred from other sources");
             Field<StringGraphType>("lineage", "The type of this object in the noun hypernymy hierarchy", resolve: c => ExtractLineage(c.Source.lineage));

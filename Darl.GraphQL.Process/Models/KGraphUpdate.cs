@@ -1,4 +1,5 @@
-﻿using DarlCommon;
+﻿using Darl.Common;
+using DarlCommon;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,9 @@ namespace Darl.GraphQL.Models.Models
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        public DateDisplay? dateDisplay { get; set; }
+        public InferenceTime? inferenceTime { get; set; }
+        public DarlTime? fixedTime { get; set; }
         public string userId { get; set; }
         public bool? ReadOnly { get; set; } = false;
     }

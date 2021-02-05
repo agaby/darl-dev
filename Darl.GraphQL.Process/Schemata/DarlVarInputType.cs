@@ -19,7 +19,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field<NonNullGraphType< DarlVarDataTypeEnum >>("dataType","The data type of this input");
             Field(c => c.name).Description("the name of this input");
             Field<ListGraphType<ListGraphType<StringGraphType>>>("sequence");
-            Field<ListGraphType<DateTimeGraphType>>("times");
+            Field<ListGraphType<DarlTimeInputType>>("times");
             Field(c => c.Value).Description("the central or crisp value of this input");
             Field<ListGraphType<FloatGraphType>>("values");
             Field(c => c.weight, true).Description("The degree of truth associated with this value").DefaultValue(1.0);

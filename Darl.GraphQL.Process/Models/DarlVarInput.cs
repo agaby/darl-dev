@@ -1,4 +1,5 @@
-﻿using Darl.GraphQL.Models.Models;
+﻿using Darl.Common;
+using Darl.GraphQL.Models.Models;
 using DarlCommon;
 using GraphQL;
 using System;
@@ -48,7 +49,7 @@ namespace Darl.GraphQL.Models.Models
         public List<StringDoublePair> categories { get; set; }
 
 
-        public List<DateTime> times { get; set; }
+        public List<DarlTime> times { get; set; }
 
         /// <summary>
         /// Indicates approximation has taken place in calculating the values.

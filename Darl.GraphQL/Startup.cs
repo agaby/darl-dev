@@ -249,6 +249,12 @@ namespace Darl.GraphQL
             services.AddSingleton<DisplayObjectInnerType>();
             services.AddSingleton<DisplayObjectOuterType>();
             services.AddSingleton<GraphTypeEnum>();
+            services.AddSingleton<DarlTimeType>();
+            services.AddSingleton<DarlTimeInputType>();
+            services.AddSingleton<DarlSeasonEnum>();
+            services.AddSingleton<KGraphUpdateType>();
+            services.AddSingleton<InferenceTimeEnum>();
+            services.AddSingleton<DateDisplayEnum>();
 
 
             //root

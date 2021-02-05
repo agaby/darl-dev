@@ -979,6 +979,27 @@ namespace Darl.GraphQL.Models.Schemata
                 var lineage = context.GetArgument<string>("lineage");
                 return await context.TryAsyncResolve(async c => await graph.GetSuggestedRuleSet(lineage));
             });
+/*            FieldAsync<FloatGraphType>("getDarlTime", "Get the DARL Time for a given point in time. ",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<IntGraphType>> { Name = "year", Description = "Year of the event - minus values are BC" },
+                     new QueryArgument<IntGraphType> { Name = "season", Description = "season, 0 is winter, 3 is autumn, northern hemisphere" },
+                     new QueryArgument<IntGraphType> { Name = "month", Description = "Month of the event" },
+                     new QueryArgument<IntGraphType> { Name = "day", Description = "day of the event" },
+                     new QueryArgument<IntGraphType> { Name = "hour", Description = "hour of the event in 24 hour format" },
+                     new QueryArgument<IntGraphType> { Name = "minute", Description = "minute of the event" },
+                     new QueryArgument<IntGraphType> { Name = "second", Description = "second and fraction of the event" }                   
+                     ),
+                resolve: async context =>
+                {
+                    var year = context.GetArgument<int>("year");
+                    var season = context.GetArgument<int?>("season");
+                    var month = context.GetArgument<int?>("month");
+                    var day = context.GetArgument<int?>("day");
+                    var hour = context.GetArgument<int?>("hour");
+                    var minute = context.GetArgument<int?>("minute");
+                    var second = context.GetArgument<double?>("second");
+                    return await context.TryAsyncResolve(async c => await graph.GetSuggestedRuleSet(lineage));
+                });*/
         }
 
         private string CompositeName(string userId, string graphName)

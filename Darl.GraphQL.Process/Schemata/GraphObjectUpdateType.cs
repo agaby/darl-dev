@@ -13,7 +13,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "graphObjectUpdate";
             Description = "updating an object representing a real world entity in the graph database";
-            Field<ListGraphType<DateTimeGraphType>>("existence", "The period of existence of the object", resolve: c => c.Source.existence);
+            Field<ListGraphType<DarlTimeInputType>>("existence", "The period of existence of the object", resolve: c => c.Source.existence);
             Field(c => c.id).Description("The id of the object");
             Field(c => c.lineage,true).Description("The type of this object in the noun hypernymy hierarchy");
             Field(c => c.name,true).Description("The name of this object");

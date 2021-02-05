@@ -13,7 +13,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "graphConnectionInput";
             Description = "A connection representing a real world relationship in the graph database";
-            Field<ListGraphType<DateTimeGraphType>>("existence", "The period of existence of the connection", resolve: c => c.Source.existence);
+            Field<ListGraphType<DarlTimeInputType>>("existence", "The period of existence of the connection", resolve: c => c.Source.existence);
             Field(c => c.lineage).Description("The type of this connection in the verb hypernymy hierarchy");
             Field(c => c.name).Description("The name of this connection");
             Field(c => c.startId).Description("The object at the start of this connection");

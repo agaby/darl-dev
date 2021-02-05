@@ -17,11 +17,21 @@
     },
     {
       "provider": "filesystem",
-      "library": "https://github.com/drandysip/darl-codemirror/tree/master/dist/darl-codemirror.js",
+      "library": "https://raw.githubusercontent.com/drandysip/thinkbase.ui/main/wwwroot/darl-codemirror/darl-codemirror.js",
       "destination": "wwwroot/darl-codemirror/",
       "files": [
         "darl-codemirror.js"
       ]
     }
+    ,
+    {
+      "provider": "filesystem",
+      "library": "https://raw.githubusercontent.com/drandysip/thinkbase.ui/main/wwwroot/GraphEdit/GraphEdit.js",
+      "destination": "wwwroot/GraphEdit/",
+      "files": [
+        "GraphEdit.js"
+      ]
+    }
+
   ]
 }
