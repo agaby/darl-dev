@@ -2808,7 +2808,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (otherUser == null && sharerId != backgroundUserId)
                 return null;
             //create a record with sharerId as userId and Shared set.
-            var kg = new KGraph { Name = name, OwnerId = userId, userId = sharerId, Shared = true, ReadOnly = readOnly };
+            var kg = new KGraph { Name = name, OwnerId = userId, userId = sharerId, Shared = true, ReadOnly = readOnly, Description = model.Description };
             var mc = db.GetCollection<KGraph>(kgraphcollection);
             await mc.InsertOneAsync(kg);
             return kg;

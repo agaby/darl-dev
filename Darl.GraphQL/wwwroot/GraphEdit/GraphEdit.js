@@ -173,6 +173,12 @@ $(async function () {
             //getGraphData
             await loadGraphs();
         });
+
+        $('#kgdemo-dropdown').on('change', async function () {
+            mdname = this.value;
+            //getGraphData
+            await loadGraphs();
+        });
     }
 
     $('#kg-create').click(async function () {
@@ -299,12 +305,16 @@ function findGetParameter(parameterName) {
 }
 
 async function updateDropdown() {
-
     try {
         const rs = await allkgmodels();
-        var dropdown = $('#kgmodel-dropdown');
+        var dropdown = demo ? $('#kgdemo-dropdown') : $('#kgmodel-dropdown');
         dropdown.empty();
-        dropdown.append('<option selected="true" disabled>Choose a Knowledge Graph to edit</option>');
+        if (demo) {
+            dropdown.append('<option selected="true" disabled>Choose a Knowledge Graph to view</option>');
+        }
+        else {
+            dropdown.append('<option selected="true" disabled>Choose a Knowledge Graph to edit</option>');
+        }
         dropdown.prop('selectedIndex', 0);
         descriptions = {};
         $.each(rs.kgraphs, function (key, entry) {
