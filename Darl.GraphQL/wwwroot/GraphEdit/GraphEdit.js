@@ -49,22 +49,54 @@ var interact;
 var defaultRule;
 var getks;
 var deletekg;
+var updatekg;
+var kgraph;
 
 var recognizedLineage = "adjective:8953";
 var currentStateId;
 
 var settingsStorageName = 'thinkbase-settings';
+var realStorageName = 'thinkbase-real';
 var demo = false;
 
+var dateDisplay = "Recent";
+var authoritative = true;
+var labels = "externalId";
+var inferenceTime = "Now";
+var descriptions;
+
+
+var lastConnectionName = "";
+var lastConnectionExistingLineage = "";
 
 $(async function () {
     var existing = window.localStorage.getItem(settingsStorageName);
     existing = JSON.parse(existing);
-    var url = (existing ? existing.url : "https://darl.dev");
-    var key = (existing ? existing.key : "");
+    var url = "https://darl.dev";
+    var key = "";
+    if (existing) {
+        if (existing.url) {
+            url = existing.url;
+        }
+        if (existing.key) {
+            key = existing.key;
+        }
+    }
+    // Get real window settings
+    var real = window.localStorage.getItem(realStorageName);
+    dateDisplay = (real ? (real.dateDisplay ? real.dateDisplay : "Recent") : "Recent");
+    authoritative = (real ? (real.authoritative ? real.authoritative : true) : true);
+    labels = (real ? (real.labels ? real.labels : "externalId") : "externalId");
+
     graph = graphql(url + "/graphql");
-    var apiKey = findGetParameter("apikey") ;
-    mdname = findGetParameter("kgraph");
+    var apiKey = findGetParameter("apikey");
+    if ($('#kgurl').data('kgurl')) {
+        mdname = $('#kgurl').data('kgurl');
+    }
+    else {
+        mdname = findGetParameter("kgraph");
+    }
+
     if (apiKey !== null)
         graph = graphql(url + "/graphql", { headers: { "Authorization": "Basic " + apiKey } });
     else if (key !== null && key !== "")
@@ -75,12 +107,13 @@ $(async function () {
         $('#demohandling').removeClass('d-none');
     }
 
-    allkgmodels = graph(`{ kgraphs { name }}`);
+    allkgmodels = graph(`{ kgraphs { name description }}`);
+    kgraph = graph('query kg($name: String!){kGraphByName(name: $name){name description }}');
     realkgraphdata = graph('query kgd($model: String!){getRealKGDisplay(graphName: $model){nodes{data{ id label lineage sublineage externalId}} edges{ data{ id label source target}}}}');
     virtualkgraphdata = graph('query vkgd($model: String!){getVirtualKGDisplay(graphName: $model){nodes{data{ id lineage parent}} edges{ data{ id label source target}}}}');
     recognitionkgraphdata = graph('query rkgd($model: String!){getRecognitionKGDisplay(graphName: $model){nodes{data{ id label lineage parent}} edges{ data{ id label source target}}}}');
-    realobjectdata = graph('query rod($model: String! $id: String!){getGraphObjectById(graphName: $model id: $id){name lineage subLineage id existence externalId properties {name lineage value type confidence}}}');
-    realConnectiondata = graph('query rcd($model: String! $id: String!){getGraphConnectionById(graphName: $model id: $id){name lineage id existence}}');
+    realobjectdata = graph('query rod($model: String! $id: String!){getGraphObjectById(graphName: $model id: $id){name lineage subLineage id externalId properties {name lineage value type confidence}}}');
+    realConnectiondata = graph('query rcd($model: String! $id: String!){getGraphConnectionById(graphName: $model id: $id){name lineage id }}');
     virtualobjectdata = graph('query vod($model: String! $lineage: String!){getVirtualObjectByLineage(graphName: $model lineage: $lineage){name lineage id properties {name lineage value type confidence}}}');
     recognitionobjectdata = graph('query recod($model: String! $id: String!){getRecognitionObjectById(graphName: $model id: $id){name lineage id properties {name lineage value type confidence}}}');
     realeditorchange = graph('mutation rec($model: String! $goj: String!){updateGraphObjectFromJSON(graphName: $model graphObjectJSON: $goj ontology: BUILD) {id}}');
@@ -117,20 +150,25 @@ $(async function () {
     defaultRule = graph('query dr($lineage: String!){getSuggestedRuleset(lineage: $lineage)}');
     getks = graph('query gks($id: String!){getKnowledgeState(id: $id external: true){userId knowledgeGraphName data {name value {name lineage value confidence type }}}}')
     deletekg = graph('mutation dkg($name: String!){deleteKG(name: $name)}');
+    updatekg = graph('mutation ukg($name: String! $update: KGraphUpdate!){updateKGraphMetadata(name: $name update: $update){name description}}')
 
-    if (mdname !== null) {
+    if (mdname !== null) { // pre-loaded
         $('#fileHandling').addClass('d-none');
+        descriptions = {};
+        try {
+            var kgmeta = await kgraph({ name: mdname });
+            descriptions[mdname] = kgmeta.kGraphByName.description;
+        }
+        catch (err) {
+            HandleError(err);
+        }
+        $('#graphTitle').text(mdname);
         await loadGraphs();
     }
     else {
         await updateDropdown();
 
         $('#kgmodel-dropdown').on('change', async function () {
-            mdname = this.value;
-            //getGraphData
-            await loadGraphs();
-        });
-        $('#kgdemo-dropdown').on('change', async function () {
             mdname = this.value;
             //getGraphData
             await loadGraphs();
@@ -172,15 +210,16 @@ $(async function () {
             filterDone: function (data) {
                 if (data.newName === "") return "You have to give a name for the new knowledge graph";
             }
-            }).done(async function (data) {
+        }).done(async function (data) {
             try {
-                await createclonedkg({ name: mdname, newname: data.newName });
-                alert(mdname + " copied to " + data.newName + ".");
+                await createclonedkg({ name: mdname, newname: dataNewName });
+                alert(mdname + " copied to " + copyname + ".");
                 await updateDropdown();
             }
             catch (err) {
                 HandleError(err);
-            }});
+            }
+        });
     });
 
     $('#kg-delete').click(async function () {
@@ -206,7 +245,7 @@ $(async function () {
     $('#kg-save').click(async function () {
         try {
             await savechanges({ name: mdname });
-//            $('#kg-save').prop('disabled', true);
+            //            $('#kg-save').prop('disabled', true);
             alert(mdname + " saved");
         }
         catch (err) {
@@ -224,19 +263,19 @@ $(async function () {
                 url: {
                     type: "text",
                     label: "The ThinkBase source",
-                    defaultValue: url 
+                    defaultValue: url
                 },
                 key: {
                     type: "password",
                     label: "Your ThinkBase API key",
-                    defaultValue: key 
+                    defaultValue: key
                 }
             },
             message: "Change the settings",
             buttonDone: "Change",
             buttonFail: "Cancel",
             filterDone: function (data) {
-                if (data.url === "" ) return "You must supply a url.";
+                if (data.url === "") return "You must supply a url.";
             }
         }).done(async function (data) {
             window.localStorage.setItem(settingsStorageName, JSON.stringify(data));
@@ -260,35 +299,39 @@ function findGetParameter(parameterName) {
 }
 
 async function updateDropdown() {
-    var dropdown = demo ? $('#kgdemo-dropdown') : $('#kgmodel-dropdown');
-    dropdown.empty();
-    dropdown.append('<option selected="true" disabled>Choose a Knowledge Graph.</option>');
-    dropdown.prop('selectedIndex', 0);
+
     try {
         const rs = await allkgmodels();
+        var dropdown = $('#kgmodel-dropdown');
+        dropdown.empty();
+        dropdown.append('<option selected="true" disabled>Choose a Knowledge Graph to edit</option>');
+        dropdown.prop('selectedIndex', 0);
+        descriptions = {};
         $.each(rs.kgraphs, function (key, entry) {
             dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
+            descriptions[entry.name] = entry.description;
         });
     }
     catch (err) {
         HandleError(err);
+        return;
     }
 
 }
 
- function updateStateDropdown() {
-     const dropdown = $('#conv-recent-dropdown');
-     var idList = [];
-     //get local set of state ids
-     const storageName = mdname + '_knowledge_states';
-     var existing = window.localStorage.getItem(storageName);
-     if (existing) {
-         idList = JSON.parse(existing);
-     }
-     dropdown.empty();
-     dropdown.append('<option selected="true" disabled>Choose a knowledge state</option>');
-     dropdown.prop('selectedIndex', 0);
-     $.each(idList, function (key, entry) {
+function updateStateDropdown() {
+    const dropdown = $('#conv-recent-dropdown');
+    var idList = [];
+    //get local set of state ids
+    const storageName = mdname + '_knowledge_states';
+    var existing = window.localStorage.getItem(storageName);
+    if (existing) {
+        idList = JSON.parse(existing);
+    }
+    dropdown.empty();
+    dropdown.append('<option selected="true" disabled>Choose a knowledge state</option>');
+    dropdown.prop('selectedIndex', 0);
+    $.each(idList, function (key, entry) {
         dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry).text(entry));
     });
 }
@@ -299,6 +342,21 @@ async function loadGraphs() {
         var loading = document.getElementById('loading');
         loading.classList.remove('loaded');
         updateStateDropdown();
+        if (descriptions[mdname]) {
+            var converter = new showdown.Converter();
+            var html = converter.makeHtml(descriptions[mdname]);
+            var div = $("<div>", {
+                css: {
+                    "width": "100%",
+                    "margin-top": "1rem"
+                }
+            }).html(html);
+
+            $.MessageBox({
+                message: "About this Knowledge Graph",
+                input: div
+            });
+        }
         var realdata = await realkgraphdata({ model: mdname });
         var recdata = await recognitionkgraphdata({ model: mdname });
         //instantiate graphs here
@@ -310,14 +368,14 @@ async function loadGraphs() {
                     selector: 'node',
                     style: {
                         'background-color': '#11479e',
-                        'label': 'data(externalId)'
+                        'label': 'data(' + labels + ')'
                     }
                 },
                 {
                     selector: 'node:selected',
                     style: {
                         'background-color': '#1010ff',
-                        'label': 'data(externalId)'
+                        'label': 'data(' + labels + ')'
                     }
                 },
                 {
@@ -428,7 +486,7 @@ async function loadGraphs() {
                 {
                     content: '<span class="fa fa-info fa-2x"></span>',
                     select: async function (ele) {
-                        ShowInfo("md/thinkbase/real_node.md");
+                        ShowInfo("/md/thinkbase/real_node.md");
                     }
                 },
 
@@ -646,8 +704,9 @@ async function loadGraphs() {
                                         },
                                         sublineage:
                                         {
-                                            type: "caption",
-                                            message: sublin
+                                            type: "text",
+                                            label: "The sub-lineage",
+                                            defaultValue: sublin
                                         },
                                         subtypeword:
                                         {
@@ -655,9 +714,19 @@ async function loadGraphs() {
                                             message: subTypeword
                                         }
                                     },
-                                    message: "The lineage"
-                                }).done(function (data) {
+                                    message: "The lineage",
+                                    buttonDone: "Change",
+                                    buttonFail: "Cancel",
+                                }).done(async function (data) {
                                     console.log(data);
+                                    if (data.sublineage !== sublin) {
+                                        try {
+                                            await updateGraphObject({ name: mdname, obj: { id: ele.id(), subLineage: data.sublineage, lineage: lin } });
+                                        }
+                                        catch (err) {
+                                            HandleError(err);
+                                        }
+                                    }
                                 });
                             }
                         }
@@ -794,7 +863,7 @@ async function loadGraphs() {
                 {
                     content: '<span class="fa fa-info fa-2x"></span>',
                     select: async function (ele) {
-                        ShowInfo("md/thinkbase/real_Connection.md");
+                        ShowInfo("/md/thinkbase/real_Connection.md");
                     }
                 },
 
@@ -930,14 +999,13 @@ async function loadGraphs() {
                         var sublin;
                         var name = data.name;
                         var externalId = data.externalId;
-                        if (data.existinglineage ) {//no lookup needed
-                            lin = data.existinglineage;        
+                        if (data.existinglineage) {//no lookup needed
+                            lin = data.existinglineage;
                         }
                         if (data.existingsublineage) {
                             sublin = data.existingsublineage;
-                        }               
-                        if (!lin || (!sublin && data.newsublineage !== ""))
-                        {
+                        }
+                        if (!lin || (!sublin && data.newsublineage !== "")) {
                             //check if new lineage and new sublineage are valid lineages
                             var ivl = await isvalidlineage({ lin: data.newlineage });
                             if (ivl.isValidLineage) {
@@ -1066,7 +1134,8 @@ async function loadGraphs() {
                     name:
                     {
                         type: "text",
-                        label: "Name"
+                        label: "Name",
+                        defaultValue: lastConnectionName
                     },
                     sep_caption: {
                         type: "caption",
@@ -1075,7 +1144,8 @@ async function loadGraphs() {
                     existinglineage: {
                         label: "existing lineages",
                         type: "select",
-                        options: obj
+                        options: obj,
+                        defaultValue: lastConnectionExistingLineage
                     },
                     newlineage: {
                         type: "text",
@@ -1092,8 +1162,10 @@ async function loadGraphs() {
 
             }).done(async function (data) {
                 var lin;
+                lastConnectionName = data.name;
                 if (data.existinglineage) {
                     lin = data.existinglineage;
+                    lastConnectionExistingLineage = data.existinglineage;
                     await CreateConnection(addedEles, sourceNode, targetNode, data.name, lin);
                 }
                 else {
@@ -1279,7 +1351,7 @@ async function loadGraphs() {
                 {
                     content: '<span class="fa fa-info fa-2x"></span>',
                     select: async function (ele) {
-                        ShowInfo("md/thinkbase/recognition_node.md");
+                        ShowInfo("/md/thinkbase/recognition_node.md");
                     }
                 },
                 {
@@ -1326,7 +1398,7 @@ async function loadGraphs() {
                             }).done(async function (data) {
                                 try {
                                     console.log('add node ' + data);
-                                    var newObj = {id: obj.id, lineage: data.word, name: data.word};
+                                    var newObj = { id: obj.id, lineage: data.word, name: data.word };
                                     if (data.convLin) {
                                         var lineages = await getlineagesforword({ word: data.word });
                                         var lins = {};
@@ -1349,7 +1421,7 @@ async function loadGraphs() {
                                             }
                                         }).done(async function (data) {
                                             newObj.lineage = data.lin;
-                                            await updaterecognitionobject({name: mdname, obj: newObj});
+                                            await updaterecognitionobject({ name: mdname, obj: newObj });
                                         });
                                     }
                                     else {
@@ -1413,7 +1485,7 @@ async function loadGraphs() {
                                 filterDone: function (data) {
                                     if (data.lin === "") return "Select a lineage or cancel.";
                                 }
-                           }).done(async function (data) {
+                            }).done(async function (data) {
                                 await CreateRecognitionNode(evt, data.lin);
                             });
                         }
@@ -1449,16 +1521,16 @@ async function loadGraphs() {
         virtualchanged = true;
         recchanged = true;
 
-        $('#real-find').click(function () {
+        $('#real-find').click(async function () {
             $.MessageBox({
                 input: true,
-                message: "ExternalId to search for:",
+                message: labels + " to search for:",
                 buttonDone: "Find",
                 buttonFail: "Cancel",
             }).done(function (data) {
                 if ($.trim(data)) {
                     var nodes = realcy.nodes().filter(function (element, i) {
-                        return element.data('externalId') === $.trim(data);
+                        return element.data(labels) === $.trim(data);
                     });
                     realcy.fit(nodes, 300);
                     nodes.emit('tap');
@@ -1467,24 +1539,130 @@ async function loadGraphs() {
         });
 
         $('#real-help').click(function () {
-            ShowInfo("md/thinkbase/real_view.md");
+            ShowInfo("/md/thinkbase/real_view.md");
         });
 
         $('#real-time').click(function () {
             $.MessageBox({
-                input: true,
-                message: "ExternalId to search for:",
-                buttonDone: "Find",
+                input: {
+                    inferenceTime:
+                    {
+                        type: "select",
+                        defaultValue: inferenceTime,
+                        options: ["Now","Fixed"]
+                    }
+                },
+                message: "Use the current time or some fixed time to make inferences",
+                buttonDone: "Change",
                 buttonFail: "Cancel",
-            }).done(function (data) {
-                if ($.trim(data)) {
-                    var nodes = realcy.nodes().filter(function (element, i) {
-                        return element.data('externalId') === $.trim(data);
-                    });
-                    realcy.fit(nodes, 300);
-                    nodes.emit('tap');
+                filterDone: function (data) {
+                    if (data.inferenceTime === "") return "Select an inference time or cancel.";
+                }
+            }).done(async function (data) {
+                inferenceTime = data.inferenceTime;
+                if (inferenceTime === "Fixed") { //get the fixed time
+                    if (dateDisplay === "Historic") {
+                        $.MessageBox({
+                            input: {
+                                date: {
+                                    type: "number",
+                                    label: "Year, -ve for BC"
+                                },
+                                time: {
+                                    type: "select",
+                                    label: "season",
+                                    options: ["Winter", "Spring", "Summer", "Fall"]
+                                }
+                            },
+                            message: "Fixed time for inference",
+                            buttonDone: "Change",
+                            buttonFail: "Cancel",
+                        }).done(function (data) {
+
+                        });
+                    }
+                    else { //standard format
+                        $.MessageBox({
+                            input: {
+                                date: {
+                                    type: "date",
+                                    label: "Fixed Date"
+                                },
+                                time: {
+                                    type: "time",
+                                    label: "Fixed Time"
+                                }
+                            },
+                            message: "Fixed time for inference",
+                            buttonDone: "Change",
+                            buttonFail: "Cancel",
+                        }).done(function (data) {
+
+                        });
+                    }
                 }
             });
+        });
+
+        $('#real-settings').click(function () {
+            $.MessageBox({
+                input: {
+                    dateDisplay: {
+                        type: "select",
+                        label: "Select how dates are displayed",
+                        options: ["Recent", "Historic"],
+                        defaultValue: dateDisplay
+                    },
+                    authoritative: {
+                        type: "checkbox",
+                        label: "New lineage relationships are authoritative.",
+                        defaultValue: authoritative
+                    },
+                    labels: {
+                        type: "select",
+                        label: "Select data displayed on nodes",
+                        options: ["externalId", "label"],
+                        defaultValue: labels
+                    },
+                },
+                message: "Settings",
+                buttonDone: "Save",
+                buttonFail: "Cancel",
+            }).done(function (data) {
+                window.localStorage.setItem(realStorageName, JSON.stringify(data));
+                dateDisplay = data.dateDisplay;
+                authoritative = data.authoritative;
+                if (labels !== data.labels) {
+                    //redraw real graph.
+                    loadGraphs();
+                }
+                labels = data.labels;
+
+            });
+        });
+
+
+        $('#real-description').click(async function () {
+            if (descriptions[mdname]) {
+                var converter = new showdown.Converter();
+                var html = converter.makeHtml(descriptions[mdname]);
+                var div = $("<div>", {
+                    css: {
+                        "width": "100%",
+                        "margin-top": "1rem"
+                    }
+                }).html(html);
+
+                $.MessageBox({
+                    message: "About this Knowledge Graph",
+                    input: div,
+                    buttonDone: "Edit",
+                    buttonFail: "OK",
+                }).done(async function (data) { await EditKGDescription(); });
+            }
+           if(!descriptions[mdname]) { // edit the description
+               await EditKGDescription();
+           }
         });
 
         $('#real-fit').click(function () { realcy.fit(); });
@@ -1632,7 +1810,7 @@ async function LoadVirtualGraph() {
                 {
                     content: '<span class="fa fa-info fa-2x"></span>',
                     select: async function (ele) {
-                        ShowInfo("md/thinkbase/virtual_node.md");
+                        ShowInfo("/md/thinkbase/virtual_node.md");
                     }
                 },
                 {
@@ -2106,7 +2284,7 @@ async function UpdateAttributeValue(id, newAtt, type) {
             });
             break;
         case "MARKDOWN":
-             $.MessageBox({
+            $.MessageBox({
                 input: {
                     val: {
                         type: "markdown",
@@ -2190,7 +2368,7 @@ function convertescapes(text) {
 
 async function HandleMessage() {
     var tags = [
-            {
+        {
             type: "input",
             tag: "text",
             name: "response",
@@ -2208,7 +2386,7 @@ async function HandleMessage() {
 async function MessageProcess(data) {
     try {
         var res = await interact({ name: mdname, ksid: currentStateId, text: Array.isArray(data.response) ? data.response[0] : data.response });
-        for (let i = 0, n = res.interactKnowledgeGraph.length; i < n; i++){
+        for (let i = 0, n = res.interactKnowledgeGraph.length; i < n; i++) {
             let r = res.interactKnowledgeGraph[i];
             //only wait on the last
             if (i === n - 1) {
@@ -2249,16 +2427,16 @@ async function MessageProcess(data) {
             }
             else {
                 Chat.addTextResponse(r.response.value);
-/*                Chat.addTags(
-                        [{
-                            type: "msg",
-                            tag: "text",
-                            "chat-msg": r.response.value,
-                            name: "response"
-                         }]
-                    );*/
+                /*                Chat.addTags(
+                                        [{
+                                            type: "msg",
+                                            tag: "text",
+                                            "chat-msg": r.response.value,
+                                            name: "response"
+                                         }]
+                                    );*/
             }
-            
+
         }
         UpdateKS();
     }
@@ -2275,4 +2453,32 @@ async function UpdateKS() {
     catch (err) {
         HandleError(err);
     }
+}
+
+async function EditKGDescription() {
+    $.MessageBox({
+        input: {
+            val: {
+                type: "markdown",
+                defaultValue: descriptions[mdname],
+                resize: true
+            }
+        },
+        message: "Set the description",
+        buttonDone: "Change",
+        buttonFail: "Cancel",
+        filterDone: function (data) {
+            if (data.val === "") return "Give a value.";
+        }
+    }).done(async function (valdata) {
+        if (descriptions[mdname] !== valdata[0]) {
+            descriptions[mdname] = valdata[0];
+            try {
+                await updatekg({ name: mdname, update: { description: valdata[0] } });
+            }
+            catch (err) {
+                HandleError(err);
+            }
+        }
+    });
 }

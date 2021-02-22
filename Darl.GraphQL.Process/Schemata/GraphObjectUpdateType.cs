@@ -18,6 +18,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.lineage,true).Description("The type of this object in the noun hypernymy hierarchy");
             Field(c => c.name,true).Description("The name of this object");
             Field(c => c.externalId, true).Description("An external Id for this object");
+            Field(c => c.subLineage, true).Description("An optional secondary lineage");
             Field<ListGraphType<GraphAttributeInputType>>("properties", "Other properties of this object", resolve: c => c.Source.properties);
         }
     }

@@ -1,30 +1,25 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Darl.GraphQL.Models.Connectivity;
+﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using Darl.Thinkbase;
+using DarlLanguage;
 using DarlLanguage.Processing;
-using HtmlAgilityPack;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
-using Darl.GraphQL.Models.Models;
 
 namespace Darl.GraphQL.Test
 {
     [TestClass]
-    public class GraphShareTest
+    public class GraphConstructorTest
     {
         private IGraphProcessing _graph;
         private IConfiguration _config;
@@ -37,7 +32,13 @@ namespace Darl.GraphQL.Test
         private ILogger<BotProcessing> _bplogger;
         private IHttpContextAccessor _context;
 
-        private static string graphName = "lifestyle_medicine.graph";
+        private static string graphName = "personality_test.graph";
+        private string sourceName = "Personality test.rule";
+        private string appraisal = "noun:01,0,0,11,0,06,1";
+        private static string displayLineage = "noun:00,1,00,3,10,09,06";
+        private static string textLineage = "noun:01,4,04,02,07,01";
+        private static string consistsLineage = "verb:019,031";
+
 
         [TestInitialize()]
         public void Initialize()
@@ -93,11 +94,20 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
-        public async Task ShareText()
+        public async Task ConvertRuleSet()
         {
-            var daveUser = "fb42f881-3b87-4a9e-8a9d-9971d24e4fc5";
-//            await _conn.UpdateSubscriptionType(daveUser, DarlUser.SubscriptionType.corporate);
-            await _conn.ShareKGraph(_config["userId"],graphName, daveUser, true);
+            var rset = await _conn.GetRuleSet("8c663676-a7dc-4561-af3d-89b38555837d", sourceName);
+//            var kg = await _graph.CreateNewGraph(_config["userId"], graphName);
+            var darlRuntime = new DarlRunTime();
+            var sourceTree = darlRuntime.CreateTree(rset.Contents.darl);
+            var compositeName = $"{_config["userId"]}_{graphName}";
+            foreach(var input in sourceTree.GetMapInputs())
+            {
+                var text = rset.Contents.language.LanguageList.Where(a => a.Name == input.Name).First().Text;
+                //create a leaf node with a text attribute. For the personality test, questions can be negative or positive, so split text and display.
+                await _graph.CreateGraphObject(compositeName, new GraphObjectInput {name = input.Name, externalId = input.Name, lineage = appraisal, properties = new List<GraphAttribute> { new GraphAttribute { type = GraphAttribute.DataType.textual, name = "text", value = text, lineage = textLineage } } }, OntologyAction.build);
+            }
+            await _graph.Store(compositeName);
         }
     }
 }

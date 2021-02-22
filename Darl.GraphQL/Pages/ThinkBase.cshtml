@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "{kgraph?}/{tab?}"
 @model Darl.GraphQL.Pages.GraphEditModel
 @{
     ViewData["Title"] = "GraphEdit";
@@ -11,7 +11,7 @@
     <div class="container-fluid" style="padding:20px; min-height:100vh">
         <div class="row">
             <div class="col-md-11 margin-b-40">
-                <h3>ThinkBase Knowledge Graphs</h3>
+                <h3 id="graphTitle">ThinkBase Knowledge Graphs</h3>
             </div>
             <div class="col-md-1 margin-b-40">
                 <button class="btn btn-info" id="settings"><i class="fa fa-gear"></i></button>
@@ -67,6 +67,7 @@
                         <button id="real-help" class="btn btn-info form-control-sm" title="help"><i class="fa fa-info"></i></button>
                         <button id="real-time" class="btn btn-info form-control-sm" title="set time"><i class="fa fa-clock"></i></button>
                         <button id="real-settings" class="btn btn-info form-control-sm" title="settings"><i class="fa fa-gear"></i></button>
+                        <button id="real-description" class="btn btn-info form-control-sm" title="description"><i class="fa fa-clipboard-list"></i></button>
                     </div>
                 </div>
                 <div class="row">
@@ -117,7 +118,8 @@
             </div>
         </div>
     </div>
-
+    <div id='kgurl' data-kgurl="@RouteData.Values["kgraph"]"></div>
+    <div id='taburl' data-taburl="@RouteData.Values["tab"]"></div>
 </main>
 
 
@@ -133,7 +135,7 @@
     <link rel="stylesheet" href="/codemirror/addon/fold/foldgutter.css" />
     <link rel="stylesheet" href="/simplemde/src/css/simplemde.css">
     <link rel="stylesheet" href="/chatty/chat-style.css">
-    <link rel="stylesheet" href="/json-viewer/jquery.json-viewer.css" type="text/css" >
+    <link rel="stylesheet" href="/json-viewer/jquery.json-viewer.css" type="text/css">
 
     <style>
         #loading {
@@ -179,7 +181,7 @@
     <script src="/codemirror/addon/fold/brace-fold.min.js"></script>
     <script src="/codemirror/addon/lint/lint.js"></script>
     <script src="/codemirror/addon/lint/json-lint.min.js"></script>
-    <script src="/darl-codemirror/darl-codemirror.js"></script>
+    <script src="/darl-codemirror/darl-meta-codemirror.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.16.0/cytoscape.min.js"></script>
     <script src="https://unpkg.com/dagre@0.7.4/dist/dagre.js"></script>
     <script src="/cytoscape-dagre/cytoscape-dagre.js"></script>
@@ -194,6 +196,8 @@
     <script src="/cytoscape-edgehandles/cytoscape-edgehandles.js"></script>
     <script src="/GraphEdit/GraphEdit.js"></script>
     <script src="/json-viewer/jquery.json-viewer.js"></script>
+
+
 }
 @section header{
     <meta name="description" content="Edits a Knowledge Graph." />

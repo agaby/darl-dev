@@ -1473,7 +1473,7 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await graph.CreateRecognitionRoot(CompositeName(userId, name), lineage));
                 }
             ).AuthorizeWith("CorpPolicy");
-            FieldAsync<GraphObjectType>("UpdateKGraphMetadata", "Update the meta-data of a knowledge graph", arguments: new QueryArguments(
+            FieldAsync<KGraphType>("UpdateKGraphMetadata", "Update the meta-data of a knowledge graph", arguments: new QueryArguments(
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph to update" },
                  new QueryArgument<NonNullGraphType<KGraphUpdateType>> { Name = "update", Description = "The update" }
                 ),

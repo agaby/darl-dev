@@ -1790,8 +1790,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\darl-codemirror\" />
-    <Folder Include="wwwroot\GraphEdit\" />
     <Folder Include="wwwroot\jstree\themes\" />
     <Folder Include="wwwroot\cytoscape-cxtmenu\" />
   </ItemGroup>

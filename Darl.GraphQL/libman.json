@@ -23,15 +23,7 @@
         "darl-codemirror.js"
       ]
     }
-    ,
-    {
-      "provider": "filesystem",
-      "library": "https://raw.githubusercontent.com/drandysip/thinkbase.ui/main/wwwroot/GraphEdit/GraphEdit.js",
-      "destination": "wwwroot/GraphEdit/",
-      "files": [
-        "GraphEdit.js"
-      ]
-    }
+    
 
   ]
 }
