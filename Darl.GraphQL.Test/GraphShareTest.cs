@@ -37,7 +37,7 @@ namespace Darl.GraphQL.Test
         private ILogger<BotProcessing> _bplogger;
         private IHttpContextAccessor _context;
 
-        private static string graphName = "lifestyle_medicine.graph";
+        private static string graphName = "primary_math.graph";
 
         [TestInitialize()]
         public void Initialize()
@@ -93,11 +93,63 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        //[Ignore]
         public async Task ShareText()
         {
-            var daveUser = "fb42f881-3b87-4a9e-8a9d-9971d24e4fc5";
+            var demoUser = _config["AppSettings:boaiuserid"];
 //            await _conn.UpdateSubscriptionType(daveUser, DarlUser.SubscriptionType.corporate);
-            await _conn.ShareKGraph(_config["userId"],graphName, daveUser, true);
+            await _conn.ShareKGraph(_config["userId"],graphName, demoUser, true);
+        }
+
+        /// <summary>
+        /// Shares descriptions from the masters to shared KGs in the demo account
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        [Ignore]
+        public async Task ShareDescriptions()
+        {
+            var dest = await _conn.GetKGraphsAsync(_config["AppSettings:boaiuserid"]);
+            foreach(var kg in dest)
+            {
+                if(kg.Shared)
+                {
+                    var shared = await _conn.GetKGModel(kg.OwnerId, kg.Name);
+                    if(shared != null)
+                    {
+                        await _conn.UpdateKGraph(_config["AppSettings:boaiuserid"], kg.Name, new KGraphUpdate { Description = shared.Description });
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public async Task CorrectRecognitionLabels()
+        {
+            //read a KG
+            //access the recognition objects,
+            var compositeName = $"{_config["userId"]}_{graphName}";
+            var rec = await _graph.GetRecognitionDisplayGraph(compositeName);
+            foreach(var ob in rec.nodes)
+            {
+                var recObj = await _graph.GetRecognitionObjectById(compositeName, ob.id);
+                if (string.IsNullOrEmpty(recObj.name) || recObj.name == recObj.lineage)
+                {
+                    if (recObj.lineage == "navigation:")
+                    {
+                        recObj.name = "navigation root";
+                    }
+                    else
+                    {
+                        //convert the name to be the typeword if present.
+                        var typeword = await _conn.GetTypeWordForLineage(recObj.lineage);
+                        if (!string.IsNullOrEmpty(typeword))
+                            recObj.name = $"~{typeword}";
+                    }
+                }
+            }
+            //save kgraph.
+            await _graph.Store(compositeName);
         }
     }
 }

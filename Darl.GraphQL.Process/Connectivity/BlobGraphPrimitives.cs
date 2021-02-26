@@ -1330,18 +1330,21 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             if (obj.properties != null && obj.properties.Any(a => a.lineage == graphAtt.lineage))
             {
-                var att = obj.properties.Where(a => a.lineage == graphAtt.lineage).First();
-                if (!string.IsNullOrEmpty(graphAtt.value))
-                    att.value = graphAtt.value;
-                if (graphAtt.confidence != null)
-                    att.confidence = graphAtt.confidence ?? 1.0;
-                if (graphAtt.type != null)
-                    att.type = graphAtt.type ?? GraphAttribute.DataType.textual;
-                if (!string.IsNullOrEmpty(graphAtt.name))
-                    att.name = graphAtt.name;
-                if (graphAtt.existence != null && graphAtt.existence.Any())
+                var att = obj.properties.Where(a => a.lineage == graphAtt.lineage).FirstOrDefault();
+                if (att != null)
                 {
-                    att.existence = graphAtt.existence;
+                    if (!string.IsNullOrEmpty(graphAtt.value))
+                        att.value = graphAtt.value;
+                    if (graphAtt.confidence != null)
+                        att.confidence = graphAtt.confidence ?? 1.0;
+                    if (graphAtt.type != null)
+                        att.type = graphAtt.type ?? GraphAttribute.DataType.textual;
+                    if (!string.IsNullOrEmpty(graphAtt.name))
+                        att.name = graphAtt.name;
+                    if (graphAtt.existence != null && graphAtt.existence.Any())
+                    {
+                        att.existence = graphAtt.existence;
+                    }
                 }
                 return att;
             }

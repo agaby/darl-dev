@@ -246,6 +246,10 @@ namespace Darl.GraphQL.Models.Connectivity
                         bs.kGraphData = r.response.sequence;
                         bs.pending = null;
                         var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending);
+                        if(!res.Item1.Any())
+                        {
+                            //no connection found
+                        }
                         resp.Add(res.Item1.First());
                         bs.pending = res.Item2;
                     }

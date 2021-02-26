@@ -57,6 +57,9 @@ var currentStateId;
 
 var settingsStorageName = 'thinkbase-settings';
 var realStorageName = 'thinkbase-real';
+var virtualStorageName = 'thinkbase-virtual';
+var recognitionStorageName = 'thinkbase-recognition';
+
 var demo = false;
 
 var dateDisplay = "Recent";
@@ -64,6 +67,8 @@ var authoritative = true;
 var labels = "externalId";
 var inferenceTime = "Now";
 var descriptions;
+var virtualLabels = "label";
+var recLabels = "label";
 
 
 var lastConnectionName = "";
@@ -88,6 +93,13 @@ $(async function () {
     authoritative = (real ? (real.authoritative ? real.authoritative : true) : true);
     labels = (real ? (real.labels ? real.labels : "externalId") : "externalId");
 
+    var virtual = window.localStorage.getItem(virtualStorageName);
+    virtualLabels = (virtual ? (virtual.virtualLabels ? virtual.virtualLabels : "label") : "label");
+
+    var recset = window.localStorage.getItem(virtualStorageName);
+    recLabels = (recset ? (recset.recLabels ? recset.recLabels : "label") : "label");;
+
+
     graph = graphql(url + "/graphql");
     var apiKey = findGetParameter("apikey");
     if ($('#kgurl').data('kgurl')) {
@@ -104,14 +116,16 @@ $(async function () {
     else {
         demo = true;
         $('#fileHandling').addClass('d-none');
-        $('#demohandling').removeClass('d-none');
+        if (!mdname) {
+            $('#demohandling').removeClass('d-none');
+        }
     }
 
     allkgmodels = graph(`{ kgraphs { name description }}`);
     kgraph = graph('query kg($name: String!){kGraphByName(name: $name){name description }}');
     realkgraphdata = graph('query kgd($model: String!){getRealKGDisplay(graphName: $model){nodes{data{ id label lineage sublineage externalId}} edges{ data{ id label source target}}}}');
-    virtualkgraphdata = graph('query vkgd($model: String!){getVirtualKGDisplay(graphName: $model){nodes{data{ id lineage parent}} edges{ data{ id label source target}}}}');
-    recognitionkgraphdata = graph('query rkgd($model: String!){getRecognitionKGDisplay(graphName: $model){nodes{data{ id label lineage parent}} edges{ data{ id label source target}}}}');
+    virtualkgraphdata = graph('query vkgd($model: String!){getVirtualKGDisplay(graphName: $model){nodes{data{ id lineage parent label}} edges{ data{ id label source target}}}}');
+    recognitionkgraphdata = graph('query rkgd($model: String!){getRecognitionKGDisplay(graphName: $model){nodes{data{ id label lineage parent label}} edges{ data{ id label source target}}}}');
     realobjectdata = graph('query rod($model: String! $id: String!){getGraphObjectById(graphName: $model id: $id){name lineage subLineage id externalId properties {name lineage value type confidence}}}');
     realConnectiondata = graph('query rcd($model: String! $id: String!){getGraphConnectionById(graphName: $model id: $id){name lineage id }}');
     virtualobjectdata = graph('query vod($model: String! $lineage: String!){getVirtualObjectByLineage(graphName: $model lineage: $lineage){name lineage id properties {name lineage value type confidence}}}');
@@ -213,6 +227,7 @@ $(async function () {
             message: "Copy to new Knowledge Graph",
             buttonDone: "Copy",
             buttonFail: "Cancel",
+            queue: false,
             filterDone: function (data) {
                 if (data.newName === "") return "You have to give a name for the new knowledge graph";
             }
@@ -236,6 +251,7 @@ $(async function () {
         $.MessageBox({
             buttonDone: "Yes",
             buttonFail: "No",
+            queue: false,
             message: "Delete this Knowledge Graph?"
         }).done(async function () {
             try {
@@ -280,6 +296,7 @@ $(async function () {
             message: "Change the settings",
             buttonDone: "Change",
             buttonFail: "Cancel",
+            queue: false,
             filterDone: function (data) {
                 if (data.url === "") return "You must supply a url.";
             }
@@ -364,11 +381,11 @@ async function loadGraphs() {
 
             $.MessageBox({
                 message: "About this Knowledge Graph",
-                input: div
+                input: div,
+                queue: false
             });
         }
         var realdata = await realkgraphdata({ model: mdname });
-        var recdata = await recognitionkgraphdata({ model: mdname });
         //instantiate graphs here
         realcy = cytoscape({
             container: $('#realgraph'),
@@ -485,11 +502,17 @@ async function loadGraphs() {
                         $.MessageBox({
                             buttonDone: "Yes",
                             buttonFail: "No",
+                            queue: false,
                             message: "Are you sure you want to delete this node?"
                         }).done(async function (data) {
                             console.log(data);
-                            await deleterealobject({ name: mdname, id: ele.id() });
-                            realcy.remove(ele);
+                            try {
+                                await deleterealobject({ name: mdname, id: ele.id() });
+                                realcy.remove(ele);
+                            }
+                            catch (err) {
+                                HandleError(err);
+                            }
                         });
                     }
                 },
@@ -561,6 +584,7 @@ async function loadGraphs() {
                                     }
                                 },
                                 message: "Set or change the times of this element's existence",
+                                queue: false,
                                 buttonDone: "Change",
                                 buttonFail: "Cancel"
                             }).done(async function (data) {
@@ -620,13 +644,19 @@ async function loadGraphs() {
                                     message: "Edit the external Id",
                                     buttonDone: "Change",
                                     buttonFail: "Cancel",
+                                    queue: false,
                                     filterDone: function (data) {
                                         if (data === "") return "ExternalId must have a value!";
                                     }
                                 }).done(async function (data) {
                                     if (obj.getGraphObjectById.externalId !== data) {
-                                        await updateGraphObject({ name: mdname, obj: { id: ele.id(), externalId: data } });
-                                        ele.data('externalId', externalId);
+                                        try {
+                                            await updateGraphObject({ name: mdname, obj: { id: ele.id(), externalId: data } });
+                                            ele.data('externalId', externalId);
+                                        }
+                                        catch (err) {
+                                            HandleError(err);
+                                        }
                                         console.log(data);
                                     }
                                 });
@@ -654,13 +684,19 @@ async function loadGraphs() {
                                     message: "Edit the name",
                                     buttonDone: "Change",
                                     buttonFail: "Cancel",
+                                    queue: false,
                                     filterDone: function (data) {
                                         if (data === "") return "Name must have a value!";
                                     }
                                 }).done(async function (data) {
                                     if (obj.getGraphObjectById.name !== data) {
-                                        await updateGraphObject({ name: mdname, obj: { id: ele.id(), name: data } });
-                                        ele.data('label', data);
+                                        try {
+                                            await updateGraphObject({ name: mdname, obj: { id: ele.id(), name: data } });
+                                            ele.data('label', data);
+                                        }
+                                        catch (err) {
+                                            HandleError(err);
+                                        }
                                         console.log(data);
                                     }
                                 });
@@ -725,6 +761,7 @@ async function loadGraphs() {
                                         }
                                     },
                                     message: "The lineage",
+                                    queue: false,
                                     buttonDone: "Change",
                                     buttonFail: "Cancel",
                                 }).done(async function (data) {
@@ -756,6 +793,7 @@ async function loadGraphs() {
                         $.MessageBox({
                             buttonDone: "Yes",
                             buttonFail: "No",
+                            queue: false,
                             message: "Are you sure you want to delete this node?"
                         }).done(async function (data) {
                             try {
@@ -828,6 +866,7 @@ async function loadGraphs() {
                                     }
                                 },
                                 message: "Set or change the times of this element's existence",
+                                queue: false,
                                 buttonDone: "Change",
                                 buttonFail: "Cancel"
                             }).done(async function (data) {
@@ -864,7 +903,12 @@ async function loadGraphs() {
                                         times.push(date4);
                                     }
                                 }
-                                await updateGraphConnection({ name: mdname, conn: { id: ele.id(), existence: times } });
+                                try {
+                                    await updateGraphConnection({ name: mdname, conn: { id: ele.id(), existence: times } });
+                                }
+                                catch (err) {
+                                    HandleError(err);
+                                }
                                 console.log(data);
                             });
                         }
@@ -890,6 +934,7 @@ async function loadGraphs() {
                                     message: "Edit the name",
                                     buttonDone: "Change",
                                     buttonFail: "Cancel",
+                                    queue: false,
                                     filterDone: function (data) {
                                         if (data === "") return "Name must have a value";
                                     }
@@ -933,6 +978,7 @@ async function loadGraphs() {
                                         message: typeword.getTypeWordForLineage
                                     }
                                 },
+                                queue: false,
                                 message: "The lineage"
                             }).done(function (data) {
                                 console.log(data);
@@ -995,6 +1041,7 @@ async function loadGraphs() {
                         },
                         buttonDone: "Add",
                         buttonFail: "Cancel",
+                        queue: false,
                         message: "Add a new node to the network.",
                         filterDone: function (data) {
                             if (data.name === "") return "Please supply a name";
@@ -1055,6 +1102,7 @@ async function loadGraphs() {
                                         },
                                         buttonDone: "Select",
                                         buttonFail: "Cancel",
+                                        queue: false,
                                         message: "Choose primary and sub-lineage for these words.",
                                         filterDone: function (data) {
                                             if (data.lin === "" || data.sublin === "") return "Select lineages.";
@@ -1077,6 +1125,7 @@ async function loadGraphs() {
                                         buttonDone: "Select",
                                         buttonFail: "Cancel",
                                         message: "Choose a lineage for this word.",
+                                        queue: false,
                                         filterDone: function (data) {
                                             if (data.lin === "") return "Select a lineage.";
                                         }
@@ -1097,6 +1146,7 @@ async function loadGraphs() {
                                         buttonDone: "Select",
                                         buttonFail: "Cancel",
                                         message: "Choose a lineage for this word.",
+                                        queue: false,
                                         filterDone: function (data) {
                                             if (data.lin === "") return "Select a lineage.";
                                         }
@@ -1164,6 +1214,7 @@ async function loadGraphs() {
                 },
                 buttonDone: "Add",
                 buttonFail: "Cancel",
+                queue: false,
                 message: "Add a new edge to the network.",
                 filterDone: function (data) {
                     if (data.name === "") return "Please supply a name";
@@ -1201,6 +1252,7 @@ async function loadGraphs() {
                                 },
                                 buttonDone: "Select",
                                 buttonFail: "Cancel",
+                                queue: false,
                                 message: "Choose a lineage for this word.",
                                 filterDone: function (data) {
                                     if (data.lin === "") return "Select a lineage.";
@@ -1236,6 +1288,423 @@ async function loadGraphs() {
 
         await LoadVirtualGraph();
 
+        await LoadRecGraph();
+
+
+
+        realchanged = true;
+        virtualchanged = true;
+        recchanged = true;
+
+        $('#real-find').click(async function () {
+            $.MessageBox({
+                input: true,
+                message: labels + " to search for:",
+                buttonDone: "Find",
+                buttonFail: "Cancel",
+                queue: false
+            }).done(function (data) {
+                if ($.trim(data)) {
+                    var nodes = realcy.nodes().filter(function (element, i) {
+                        return element.data(labels) === $.trim(data);
+                    });
+                    realcy.fit(nodes, 300);
+                    nodes.emit('tap');
+                }
+            });
+        });
+
+        $('#real-help').click(function () {
+            ShowInfo("/md/thinkbase/real_view.md");
+        });
+
+        $('#real-time').click(function () {
+            $.MessageBox({
+                input: {
+                    inferenceTime:
+                    {
+                        type: "select",
+                        defaultValue: inferenceTime,
+                        options: ["Now","Fixed"]
+                    }
+                },
+                message: "Use the current time or some fixed time to make inferences",
+                buttonDone: "Change",
+                buttonFail: "Cancel",
+                queue: false,
+                filterDone: function (data) {
+                    if (data.inferenceTime === "") return "Select an inference time or cancel.";
+                }
+            }).done(async function (data) {
+                inferenceTime = data.inferenceTime;
+                if (inferenceTime === "Fixed") { //get the fixed time
+                    if (dateDisplay === "Historic") {
+                        $.MessageBox({
+                            input: {
+                                date: {
+                                    type: "number",
+                                    label: "Year, -ve for BC"
+                                },
+                                time: {
+                                    type: "select",
+                                    label: "season",
+                                    options: ["Winter", "Spring", "Summer", "Fall"]
+                                }
+                            },
+                            message: "Fixed time for inference",
+                            buttonDone: "Change",
+                            buttonFail: "Cancel",
+                            queue: false
+                        }).done(function (data) {
+
+                        });
+                    }
+                    else { //standard format
+                        $.MessageBox({
+                            input: {
+                                date: {
+                                    type: "date",
+                                    label: "Fixed Date"
+                                },
+                                time: {
+                                    type: "time",
+                                    label: "Fixed Time"
+                                }
+                            },
+                            message: "Fixed time for inference",
+                            queue: false,
+                            buttonDone: "Change",
+                            buttonFail: "Cancel",
+                        }).done(function (data) {
+
+                        });
+                    }
+                }
+            });
+        });
+
+        $('#real-settings').click(function () {
+            $.MessageBox({
+                input: {
+                    dateDisplay: {
+                        type: "select",
+                        label: "Select how dates are displayed",
+                        options: ["Recent", "Historic"],
+                        defaultValue: dateDisplay
+                    },
+                    authoritative: {
+                        type: "checkbox",
+                        label: "New lineage relationships are authoritative.",
+                        defaultValue: authoritative
+                    },
+                    labels: {
+                        type: "select",
+                        label: "Select data displayed on nodes",
+                        options: ["externalId", "label"],
+                        defaultValue: labels
+                    },
+                },
+                message: "Settings",
+                queue: false,
+                buttonDone: "Save",
+                buttonFail: "Cancel",
+            }).done(async function (data) {
+                window.localStorage.setItem(realStorageName, JSON.stringify(data));
+                dateDisplay = data.dateDisplay;
+                authoritative = data.authoritative;
+                if (labels !== data.labels) {
+                    //redraw real graph.
+                    labels = data.labels;
+                    await loadGraphs();
+                }
+            });
+        });
+
+        $('#virtual-settings').click(function () {
+            $.MessageBox({
+                input: {
+
+                    virtualLabels: {
+                        type: "select",
+                        label: "Select data displayed on nodes",
+                        options: ["lineage", "label"],
+                        defaultValue: virtualLabels
+                    },
+                },
+                message: "Settings",
+                queue: false,
+                buttonDone: "Save",
+                buttonFail: "Cancel",
+            }).done(async function (data) {
+                window.localStorage.setItem(virtualStorageName, JSON.stringify(data));
+                if (virtualLabels !== data.virtualLabels) {
+                    //redraw virtual graph.
+                    virtualLabels = data.virtualLabels;
+                    await LoadVirtualGraph();
+                }
+            });
+        });
+
+        $('#rec-settings').click(function () {
+            $.MessageBox({
+                input: {
+
+                    recLabels: {
+                        type: "select",
+                        label: "Select data displayed on nodes",
+                        options: ["lineage", "label"],
+                        defaultValue: recLabels
+                    },
+                },
+                message: "Settings",
+                queue: false,
+                buttonDone: "Save",
+                buttonFail: "Cancel",
+            }).done(async function (data) {
+                window.localStorage.setItem(recognitionStorageName, JSON.stringify(data));
+                if (recLabels !== data.recLabels) {
+                    //redraw recognition graph.
+                    recLabels = data.recLabels;
+                    await LoadRecGraph();
+                }
+            });
+        });
+
+        $('#real-description').click(async function () {
+            if (descriptions[mdname]) {
+                var converter = new showdown.Converter();
+                var html = converter.makeHtml(descriptions[mdname]);
+                var div = $("<div>", {
+                    css: {
+                        "width": "100%",
+                        "margin-top": "1rem"
+                    }
+                }).html(html);
+
+                $.MessageBox({
+                    message: "About this Knowledge Graph",
+                    input: div,
+                    buttonDone: "Edit",
+                    buttonFail: "OK",
+                    queue: false
+                }).done(async function (data) { await EditKGDescription(); });
+            }
+           if(!descriptions[mdname]) { // edit the description
+               await EditKGDescription();
+           }
+        });
+
+        $('#real-fit').click(function () { realcy.fit(); });
+        $('#virtual-fit').click(function () { virtualcy.fit(); });
+        $('#rec-fit').click(function () { recognitioncy.fit(); });
+        $('#rec-addroot').click(async function () {
+            $.MessageBox({
+                input: {
+                    lin: {
+                        label: "Possible lineages",
+                        type: "select",
+                        options: {
+                            "default:": "default",
+                            "navigation:": "navigation",
+                        }
+                    }
+                },
+                buttonDone: "Select",
+                buttonFail: "Cancel",
+                message: "Choose a root to add.",
+                queue: false,
+                filterDone: function (data) {
+                    if (data.lin === "") return "Select a root or cancel.";
+                }
+
+            }).done(async function (data) {
+                try {
+                    var created = await createrecognitionroot({ name: mdname, lineage: data.lin });
+                    recognitioncy.add({
+                        group: 'nodes',
+                        data: { label: data.lin, id: created.createRecognitionRoot.id, lineage: data.lin },
+                        position: {
+                            x: 100,
+                            y: 100
+                        }
+                    });
+                    var layout = recognitioncy.layout({
+                        name: 'dagre'
+                    });
+                    layout.run();
+
+                }
+                catch (err) {
+                    HandleError(err);
+                }
+            });
+        });
+
+        $('#conv-newstate').click(async function () {
+            const storageName = mdname + '_knowledge_states';
+            currentStateId = uuidv4();
+            var idList = [];
+            //get local set of state ids
+            var existing = window.localStorage.getItem(storageName);
+            if (existing) {
+                idList = JSON.parse(existing);
+                idList = idList.slice(0, 7);
+            }
+            //add this to top
+            idList.unshift(currentStateId);
+            //save
+            window.localStorage.setItem(storageName, JSON.stringify(idList));
+            //update state id selection
+            updateStateDropdown();
+            //clear chat
+            await HandleMessage();
+        });
+
+        $('#conv-recent-dropdown').on('change', async function () {
+            currentState = this.value;
+            //clear chat
+            await HandleMessage();
+        });
+
+    }
+    catch (err) {
+        HandleError(err);
+    }
+
+
+}
+
+async function LoadVirtualGraph() {
+    try {
+        var virtualdata = await virtualkgraphdata({ model: mdname });
+        virtualcy = cytoscape({
+            container: $('#virtualgraph'),
+            elements: virtualdata.getVirtualKGDisplay,
+            style: [ // the stylesheet for the graph
+                {
+                    selector: 'node',
+                    style: {
+                        'background-color': '#11479e',
+                        'label': 'data(' + virtualLabels + ')'
+                    }
+                },
+                {
+                    selector: 'node:selected',
+                    style: {
+                        'background-color': '#1010ff',
+                        'label': 'data(' + virtualLabels + ')'
+                    }
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 3,
+                        'line-color': '#9dbaea',
+                        'target-arrow-color': '#9dbaea',
+                        'target-arrow-shape': 'triangle',
+                        'curve-style': 'bezier',
+                        'label': 'data(label)'
+                    }
+                }
+            ],
+
+            layout: {
+                name: 'dagre'
+            }
+        });
+        virtualcy.cxtmenu({
+            selector: 'node',
+            commands: [
+                {
+                    content: '<span class="fa fa-user fa-2x"></span>',
+                    select: async function (ele) {
+                        console.log('name');
+                        var id = ele.data('lineage');
+                        var obj = await virtualobjectdata({ model: mdname, lineage: id });
+                        if (obj) {
+                            $.MessageBox({
+                                input: {
+                                    name: {
+                                        type: "caption",
+                                        message: obj.getVirtualObjectByLineage.name
+                                    }
+                                },
+                                message: "The name",
+                                buttonDone: "OK",
+                                queue: false,
+                            }).done(function (data) {
+                                console.log(data);
+                            });
+                        }
+                    }
+                },
+                {
+                    content: '<span class="fa fa-info fa-2x"></span>',
+                    select: async function (ele) {
+                        ShowInfo("/md/thinkbase/virtual_node.md");
+                    }
+                },
+                {
+                    content: '<span class="fa fa-tasks fa-2x"></span>',
+                    select: async function (ele) {
+                        console.log('attributes');
+                        var id = ele.data('lineage');
+                        await EditVirtualAttributes(id);
+                    }
+                },
+                {
+                    content: '<span class="fa fa-tree fa-2x"></span>',
+                    select: async function (ele) {
+                        console.log('lineage');
+                        try {
+                            var id = ele.data('lineage');
+                            var obj = await virtualobjectdata({ model: mdname, lineage: id });
+                            if (obj) {
+                                var lin = obj.getVirtualObjectByLineage.lineage;
+                                var typeword = await gettypeword({ lin: lin });
+                                $.MessageBox({
+                                    input: {
+                                        lineage:
+                                        {
+                                            type: "caption",
+                                            message: lin
+                                        },
+                                        typeword:
+                                        {
+                                            type: "caption",
+                                            message: typeword.getTypeWordForLineage
+                                        }
+                                    },
+                                    message: "The lineage",
+                                    queue: false,
+                                }).done(function (data) {
+                                    console.log(data);
+                                });
+                            }
+                        }
+                        catch (err) {
+                            HandleError(err);
+                        }
+                    }
+                }
+            ]
+        });
+        virtualcy.on('add', function (event) {
+            node = event.target;
+            realcy.remove(node);
+        });
+        virtualcy.on('tap', function (event) {
+            node = event.target;
+        });
+    }
+    catch (err) {
+        HandleError(err);
+    }
+}
+
+async function LoadRecGraph() {
+    try {
+        var recdata = await recognitionkgraphdata({ model: mdname });
         recognitioncy = cytoscape({
             container: $('#recognitiongraph'),
             elements: recdata.getRecognitionKGDisplay,
@@ -1243,15 +1712,15 @@ async function loadGraphs() {
                 {
                     selector: 'node',
                     style: {
-                        'background-color': '#666',
-                        'label': 'data(lineage)'
+                        'background-color': '#11479e',
+                        'label': 'data(' + recLabels + ')'
                     }
                 },
                 {
                     selector: 'node:selected',
                     style: {
                         'background-color': '#1010ff',
-                        'label': 'data(externalId)'
+                        'label': 'data(' + recLabels + ')'
                     }
                 },
                 {
@@ -1266,8 +1735,8 @@ async function loadGraphs() {
                     selector: 'edge',
                     style: {
                         'width': 3,
-                        'line-color': '#ccc',
-                        'target-arrow-color': '#ccc',
+                        'line-color': '#9dbaea',
+                        'target-arrow-color': '#9dbaea',
                         'target-arrow-shape': 'triangle',
                         'curve-style': 'bezier',
                         'label': 'data(label)'
@@ -1345,6 +1814,7 @@ async function loadGraphs() {
                         $.MessageBox({
                             buttonDone: "Yes",
                             buttonFail: "No",
+                            queue: false,
                             message: "Are you sure you want to delete this node?"
                         }).done(async function (data) {
                             try {
@@ -1402,6 +1872,7 @@ async function loadGraphs() {
                                 buttonDone: "Change",
                                 buttonFail: "Cancel",
                                 message: "The word to recognise",
+                                queue: false,
                                 filterDone: function (data) {
                                     if (data.word === "") return "Supply a word.";
                                 }
@@ -1425,6 +1896,7 @@ async function loadGraphs() {
                                             },
                                             buttonDone: "Select",
                                             buttonFail: "Cancel",
+                                            queue: false,
                                             message: "Choose a lineage for this word.",
                                             filterDone: function (data) {
                                                 if (data.lin === "") return "Select a lineage or cancel.";
@@ -1468,6 +1940,7 @@ async function loadGraphs() {
                     },
                     buttonDone: "Add",
                     buttonFail: "Cancel",
+                    queue: false,
                     message: "Add a word to the recognition tree.",
                     filterDone: function (data) {
                         if (data.word === "") return "Supply a word";
@@ -1491,6 +1964,7 @@ async function loadGraphs() {
                                 },
                                 buttonDone: "Select",
                                 buttonFail: "Cancel",
+                                queue: false,
                                 message: "Choose a lineage for this word.",
                                 filterDone: function (data) {
                                     if (data.lin === "") return "Select a lineage or cancel.";
@@ -1523,356 +1997,6 @@ async function loadGraphs() {
                 //realcy.remove(node);
                 console.log(node);
             }
-        });
-
-
-
-        realchanged = true;
-        virtualchanged = true;
-        recchanged = true;
-
-        $('#real-find').click(async function () {
-            $.MessageBox({
-                input: true,
-                message: labels + " to search for:",
-                buttonDone: "Find",
-                buttonFail: "Cancel",
-            }).done(function (data) {
-                if ($.trim(data)) {
-                    var nodes = realcy.nodes().filter(function (element, i) {
-                        return element.data(labels) === $.trim(data);
-                    });
-                    realcy.fit(nodes, 300);
-                    nodes.emit('tap');
-                }
-            });
-        });
-
-        $('#real-help').click(function () {
-            ShowInfo("/md/thinkbase/real_view.md");
-        });
-
-        $('#real-time').click(function () {
-            $.MessageBox({
-                input: {
-                    inferenceTime:
-                    {
-                        type: "select",
-                        defaultValue: inferenceTime,
-                        options: ["Now","Fixed"]
-                    }
-                },
-                message: "Use the current time or some fixed time to make inferences",
-                buttonDone: "Change",
-                buttonFail: "Cancel",
-                filterDone: function (data) {
-                    if (data.inferenceTime === "") return "Select an inference time or cancel.";
-                }
-            }).done(async function (data) {
-                inferenceTime = data.inferenceTime;
-                if (inferenceTime === "Fixed") { //get the fixed time
-                    if (dateDisplay === "Historic") {
-                        $.MessageBox({
-                            input: {
-                                date: {
-                                    type: "number",
-                                    label: "Year, -ve for BC"
-                                },
-                                time: {
-                                    type: "select",
-                                    label: "season",
-                                    options: ["Winter", "Spring", "Summer", "Fall"]
-                                }
-                            },
-                            message: "Fixed time for inference",
-                            buttonDone: "Change",
-                            buttonFail: "Cancel",
-                        }).done(function (data) {
-
-                        });
-                    }
-                    else { //standard format
-                        $.MessageBox({
-                            input: {
-                                date: {
-                                    type: "date",
-                                    label: "Fixed Date"
-                                },
-                                time: {
-                                    type: "time",
-                                    label: "Fixed Time"
-                                }
-                            },
-                            message: "Fixed time for inference",
-                            buttonDone: "Change",
-                            buttonFail: "Cancel",
-                        }).done(function (data) {
-
-                        });
-                    }
-                }
-            });
-        });
-
-        $('#real-settings').click(function () {
-            $.MessageBox({
-                input: {
-                    dateDisplay: {
-                        type: "select",
-                        label: "Select how dates are displayed",
-                        options: ["Recent", "Historic"],
-                        defaultValue: dateDisplay
-                    },
-                    authoritative: {
-                        type: "checkbox",
-                        label: "New lineage relationships are authoritative.",
-                        defaultValue: authoritative
-                    },
-                    labels: {
-                        type: "select",
-                        label: "Select data displayed on nodes",
-                        options: ["externalId", "label"],
-                        defaultValue: labels
-                    },
-                },
-                message: "Settings",
-                buttonDone: "Save",
-                buttonFail: "Cancel",
-            }).done(function (data) {
-                window.localStorage.setItem(realStorageName, JSON.stringify(data));
-                dateDisplay = data.dateDisplay;
-                authoritative = data.authoritative;
-                if (labels !== data.labels) {
-                    //redraw real graph.
-                    loadGraphs();
-                }
-                labels = data.labels;
-
-            });
-        });
-
-
-        $('#real-description').click(async function () {
-            if (descriptions[mdname]) {
-                var converter = new showdown.Converter();
-                var html = converter.makeHtml(descriptions[mdname]);
-                var div = $("<div>", {
-                    css: {
-                        "width": "100%",
-                        "margin-top": "1rem"
-                    }
-                }).html(html);
-
-                $.MessageBox({
-                    message: "About this Knowledge Graph",
-                    input: div,
-                    buttonDone: "Edit",
-                    buttonFail: "OK",
-                }).done(async function (data) { await EditKGDescription(); });
-            }
-           if(!descriptions[mdname]) { // edit the description
-               await EditKGDescription();
-           }
-        });
-
-        $('#real-fit').click(function () { realcy.fit(); });
-        $('#virtual-fit').click(function () { virtualcy.fit(); });
-        $('#rec-fit').click(function () { recognitioncy.fit(); });
-        $('#rec-addroot').click(async function () {
-            $.MessageBox({
-                input: {
-                    lin: {
-                        label: "Possible lineages",
-                        type: "select",
-                        options: {
-                            "default:": "default",
-                            "navigation:": "navigation",
-                        }
-                    }
-                },
-                buttonDone: "Select",
-                buttonFail: "Cancel",
-                message: "Choose a root to add.",
-                filterDone: function (data) {
-                    if (data.lin === "") return "Select a root or cancel.";
-                }
-
-            }).done(async function (data) {
-                try {
-                    var created = await createrecognitionroot({ name: mdname, lineage: data.lin });
-                    recognitioncy.add({
-                        group: 'nodes',
-                        data: { label: data.lin, id: created.createRecognitionRoot.id, lineage: data.lin },
-                        position: {
-                            x: 100,
-                            y: 100
-                        }
-                    });
-                    var layout = recognitioncy.layout({
-                        name: 'dagre'
-                    });
-                    layout.run();
-
-                }
-                catch (err) {
-                    HandleError(err);
-                }
-            });
-        });
-
-        $('#conv-newstate').click(async function () {
-            const storageName = mdname + '_knowledge_states';
-            currentStateId = uuidv4();
-            var idList = [];
-            //get local set of state ids
-            var existing = window.localStorage.getItem(storageName);
-            if (existing) {
-                idList = JSON.parse(existing);
-                idList = idList.slice(0, 7);
-            }
-            //add this to top
-            idList.unshift(currentStateId);
-            //save
-            window.localStorage.setItem(storageName, JSON.stringify(idList));
-            //update state id selection
-            updateStateDropdown();
-            //clear chat
-            await HandleMessage();
-        });
-
-        $('#conv-recent-dropdown').on('change', async function () {
-            currentState = this.value;
-            //clear chat
-            await HandleMessage();
-        });
-
-    }
-    catch (err) {
-        HandleError(err);
-    }
-
-
-}
-
-async function LoadVirtualGraph() {
-    try {
-        var virtualdata = await virtualkgraphdata({ model: mdname });
-        virtualcy = cytoscape({
-            container: $('#virtualgraph'),
-            elements: virtualdata.getVirtualKGDisplay,
-            style: [ // the stylesheet for the graph
-                {
-                    selector: 'node',
-                    style: {
-                        'background-color': '#11479e',
-                        'label': 'data(lineage)'
-                    }
-                },
-                {
-                    selector: 'node:selected',
-                    style: {
-                        'background-color': '#1010ff',
-                        'label': 'data(externalId)'
-                    }
-                },
-                {
-                    selector: 'edge',
-                    style: {
-                        'width': 3,
-                        'line-color': '#ccc',
-                        'target-arrow-color': '#ccc',
-                        'target-arrow-shape': 'triangle',
-                        'curve-style': 'bezier',
-                        'label': 'data(label)'
-                    }
-                }
-            ],
-
-            layout: {
-                name: 'dagre'
-            }
-        });
-        virtualcy.cxtmenu({
-            selector: 'node',
-            commands: [
-                {
-                    content: '<span class="fa fa-user fa-2x"></span>',
-                    select: async function (ele) {
-                        console.log('name');
-                        var id = ele.data('lineage');
-                        var obj = await virtualobjectdata({ model: mdname, lineage: id });
-                        if (obj) {
-                            $.MessageBox({
-                                input: {
-                                    name: {
-                                        type: "caption",
-                                        message: obj.getVirtualObjectByLineage.name
-                                    }
-                                },
-                                message: "The name",
-                                buttonDone: "OK",
-                            }).done(function (data) {
-                                console.log(data);
-                            });
-                        }
-                    }
-                },
-                {
-                    content: '<span class="fa fa-info fa-2x"></span>',
-                    select: async function (ele) {
-                        ShowInfo("/md/thinkbase/virtual_node.md");
-                    }
-                },
-                {
-                    content: '<span class="fa fa-tasks fa-2x"></span>',
-                    select: async function (ele) {
-                        console.log('attributes');
-                        var id = ele.data('lineage');
-                        await EditVirtualAttributes(id);
-                    }
-                },
-                {
-                    content: '<span class="fa fa-tree fa-2x"></span>',
-                    select: async function (ele) {
-                        console.log('lineage');
-                        try {
-                            var id = ele.data('lineage');
-                            var obj = await virtualobjectdata({ model: mdname, lineage: id });
-                            if (obj) {
-                                var lin = obj.getVirtualObjectByLineage.lineage;
-                                var typeword = await gettypeword({ lin: lin });
-                                $.MessageBox({
-                                    input: {
-                                        lineage:
-                                        {
-                                            type: "caption",
-                                            message: lin
-                                        },
-                                        typeword:
-                                        {
-                                            type: "caption",
-                                            message: typeword.getTypeWordForLineage
-                                        }
-                                    },
-                                    message: "The lineage"
-                                }).done(function (data) {
-                                    console.log(data);
-                                });
-                            }
-                        }
-                        catch (err) {
-                            HandleError(err);
-                        }
-                    }
-                }
-            ]
-        });
-        virtualcy.on('add', function (event) {
-            node = event.target;
-            realcy.remove(node);
-        });
-        virtualcy.on('tap', function (event) {
-            node = event.target;
         });
     }
     catch (err) {
@@ -1907,7 +2031,8 @@ function ShowInfo(url) {
 
         $.MessageBox({
             message: "Information",
-            input: div
+            input: div,
+            queue: false
         }).done(function (data) {
             console.log(data);
         });
@@ -1968,6 +2093,7 @@ async function CreateNewAttribute(id, type) {
         message: "Create a new attribute",
         buttonDone: "Create",
         buttonFail: "Cancel",
+        queue: false,
         filterDone: function (data) {
             if (data.name === "") return "Please supply a name";
             if (data.typeSelect === "") return "Please select a type";
@@ -2001,6 +2127,7 @@ async function CreateNewAttribute(id, type) {
                     buttonDone: "Select",
                     buttonFail: "Cancel",
                     message: "Choose a lineage for this word.",
+                    queue: false,
                     filterDone: function (data) {
                         if (data.lin === "") return "Select a lineage or cancel.";
                     }
@@ -2049,6 +2176,7 @@ async function EditRealAttributes(id) {
                     },
                     buttonFail: "Cancel",
                     message: "Edit or add an attribute",
+                    queue: false,
                     filterDone: function (data, button) {
                         if (data.attChoice === "" && button === "existing") return "Select an attribute to edit";
                         if (data.attChoice === "" && button === "delete") return "Select an attribute to delete";
@@ -2141,6 +2269,7 @@ async function EditVirtualAttributes(id) {
                     },
                     buttonFail: "Cancel",
                     message: "Edit or add an attribute",
+                    queue: false,
                     filterDone: function (data, button) {
                         if (data.attChoice === "" && button === "existing") return "Select an attribute to edit";
                     }
@@ -2193,7 +2322,12 @@ async function CreateNode(evt, name, externalId, lin, sublin) {
 
 async function CreateRecognitionNode(evt, lin) {
     try {
-        var created = await createrecognitionobject({ name: mdname, obj: { lineage: lin, name: lin } });
+        var name = lin;
+        var typeword = await gettypeword({ lineage: lin });
+        if (typeword && typeword !== "") {
+            name = "~" + typeword;
+        }
+        var created = await createrecognitionobject({ name: mdname, obj: { lineage: lin, name: name } });
         recognitioncy.add({
             group: 'nodes',
             data: { label: lin, id: created.createRecognitionObject.id, lineage: lin },
@@ -2236,6 +2370,7 @@ async function UpdateAttributeValue(id, newAtt, type) {
                 message: "Set the attribute's value",
                 buttonDone: "Change",
                 buttonFail: "Cancel",
+                queue: false,
                 filterDone: function (data) {
                     if (data.val === "") return "Give a value.";
                 }
@@ -2259,6 +2394,7 @@ async function UpdateAttributeValue(id, newAtt, type) {
                 message: "Set the attribute's value",
                 buttonDone: "Change",
                 buttonFail: "Cancel",
+                queue: false,
                 filterDone: function (data) {
                     if (data.val === "") return "Give a value.";
                 }
@@ -2285,6 +2421,7 @@ async function UpdateAttributeValue(id, newAtt, type) {
                 message: "Set the attribute's time value",
                 buttonDone: "Change",
                 buttonFail: "Cancel",
+                queue: false,
                 filterDone: function (data) {
                     if (data.date1 === "") return "Give a value.";
                 }
@@ -2305,6 +2442,7 @@ async function UpdateAttributeValue(id, newAtt, type) {
                 message: "Set the attribute's value",
                 buttonDone: "Change",
                 buttonFail: "Cancel",
+                queue: false,
                 filterDone: function (data) {
                     if (data.val === "") return "Give a value.";
                 }
@@ -2335,6 +2473,7 @@ async function UpdateAttributeValue(id, newAtt, type) {
                 message: "Set the attribute's DARL code",
                 buttonDone: "Change",
                 buttonFail: "Cancel",
+                queue: false,
                 filterDone: function (data) {
                     if (data.val === "") return "Give a value.";
                 }
@@ -2477,6 +2616,7 @@ async function EditKGDescription() {
         message: "Set the description",
         buttonDone: "Change",
         buttonFail: "Cancel",
+        queue: false,
         filterDone: function (data) {
             if (data.val === "") return "Give a value.";
         }
