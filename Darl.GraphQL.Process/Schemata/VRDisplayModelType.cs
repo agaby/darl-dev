@@ -1,0 +1,19 @@
+﻿using Darl.Thinkbase;
+using GraphQL.Types;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Darl.GraphQL.Models.Schemata
+{
+    public class VRDisplayModelType : ObjectGraphType<VRDisplayModel>
+    {
+        public VRDisplayModelType()
+        {
+            Name = "vrDisplayModel";
+            Description = "A simplified version of a knowledge graph for VR display purposes";
+            Field<ListGraphType<VRDisplayNodeType>>("nodes", resolve: context => context.Source.nodes);
+            Field<ListGraphType<VRDisplayLinkType>>("links", resolve: context => context.Source.links);
+        }
+    }
+}

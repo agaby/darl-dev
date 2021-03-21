@@ -37,7 +37,7 @@ namespace Darl.GraphQL.Test
         private ILogger<BotProcessing> _bplogger;
         private IHttpContextAccessor _context;
 
-        private static string graphName = "primary_math.graph";
+        private static string graphName = "ai_triage.graph";
 
         [TestInitialize()]
         public void Initialize()
@@ -77,9 +77,10 @@ namespace Darl.GraphQL.Test
             cache.Setup(a => a.GetAsync(It.IsAny<string>(), default)).Returns(Task.FromResult<byte[]>(null));
             var clogger = new Mock<ILogger<CosmosDBConnectivity>>();
             var clicense = new Mock<ILicensing>();
+            var meta = new Mock<IMetaStructureHandler>();
             _conn = new CosmosDBConnectivity(_config, clogger.Object, clicense.Object, cache.Object);
             _primitives = new BlobGraphPrimitives(new List<IBlobConnectivity> { blob }, cache.Object, _conn, bgplogger.Object);
-            _graph = new GraphProcessing(_primitives, glogger.Object);
+            _graph = new GraphProcessing(_primitives, glogger.Object,meta.Object);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
             var form = new Mock<IFormApi>();
             _form = form.Object;
@@ -93,7 +94,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
-        //[Ignore]
+        [Ignore]
         public async Task ShareText()
         {
             var demoUser = _config["AppSettings:boaiuserid"];
@@ -149,6 +150,19 @@ namespace Darl.GraphQL.Test
                 }
             }
             //save kgraph.
+            await _graph.Store(compositeName);
+        }
+
+        [TestMethod]
+        public async Task AddDefaultRecognitionTree()
+        {
+            var compositeName = $"{_config["userId"]}_{graphName}";
+            var model = await _graph.GetModel(_config["userId"], graphName) as BlobGraphContent;
+            var p = _primitives as BlobGraphPrimitives;
+            model.recognitionVertices.Clear();
+            model.recognitionRoots.Clear();
+            model.recognitionEdges.Clear();
+            p.AddDefaultContent(model);
             await _graph.Store(compositeName);
         }
     }

@@ -912,6 +912,22 @@ namespace Darl.GraphQL.Models.Schemata
                     return await context.TryAsyncResolve(async c => await graph.GetRealDisplayGraph(CompositeName(userId, graphName), lineageFilter));
                 }
             );
+
+            FieldAsync<VRDisplayModelType>(
+                "getRealVRKGDisplay",
+                "Get a display version of the KG for VR",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
+                    new QueryArgument<StringGraphType> { Name = "lineageFilter", Description = "optional lineage filter", DefaultValue = "" }
+                ),
+                resolve: async context =>
+                {
+                    var graphName = context.GetArgument<string>("graphName");
+                    var lineageFilter = context.GetArgument<string>("lineageFilter");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await graph.GetRealVRDisplayGraph(CompositeName(userId, graphName), lineageFilter));
+                }
+            );
             FieldAsync<DisplayModelType>(
                 "getVirtualKGDisplay",
                 "Get a display version of the virtual part of the KG",

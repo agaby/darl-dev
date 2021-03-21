@@ -1,0 +1,85 @@
+﻿@page "{kgraph?}"
+@model Darl.GraphQL.Pages.thinkbasevrModel
+@{
+    ViewData["Title"] = "ThinkBase Virtual Reality";
+    Layout = "~/Pages/_layoutscrolling.cshtml";
+}
+
+
+@section header
+{
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-forcegraph-component/dist/aframe-forcegraph-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+}
+
+<main role="main" class="pb-3" style="padding: 0px !important">
+    <a-scene inspector keyboard-shortcuts screenshot vr-mode-ui>
+        <a-entity id="rig"
+                  movement-controls="speed: 7; fly: true">
+            <a-entity camera
+                      look-controls="pointerLockEnabled: true">
+            </a-entity>
+        </a-entity>
+        <a-sky color="#003" radius="10000"></a-sky>
+        <a-entity id="fg" forcegraph="node-label: name; node-auto-color-by: compositelineage; link-directional-arrow-length: 1.5; link-directional-arrow-rel-pos: 1;"></a-entity>
+    </a-scene>
+    <div id='kgurl' data-kgurl="@RouteData.Values["kgraph"]"></div>
+</main>
+
+@section Scripts
+{
+    <script src="/graphql/graphql.min.js"></script>
+
+    <script>
+        var settingsStorageName = 'thinkbase-settings';
+
+        $(async function () {
+            var existing = window.localStorage.getItem(settingsStorageName);
+            existing = JSON.parse(existing);
+            var url = "https://darl.dev";
+            var key = "";
+            if (existing) {
+                if (existing.url) {
+                    url = existing.url;
+                }
+                if (existing.key) {
+                    key = existing.key;
+                }
+            }
+            var graph = graphql(url + "/graphql");
+            var apiKey = findGetParameter("apikey");
+            if ($('#kgurl').data('kgurl')) {
+                mdname = $('#kgurl').data('kgurl');
+            }
+            else {
+                mdname = findGetParameter("kgraph");
+            }
+            if (!mdname)
+                mdname = "primary_math.graph";
+
+            if (apiKey !== null)
+                graph = graphql(url + "/graphql", { headers: { "Authorization": "Basic " + apiKey } });
+            else if (key !== null && key !== "")
+                graph = graphql(url + "/graphql", { headers: { "Authorization": "Basic " + key } });
+            var realkgraphdata = graph('query kgd($model: String!){getRealVRKGDisplay(graphName: $model){nodes{ id label lineage sublineage externalId compositelineage} links{  id label source target}}}');
+            var data = await realkgraphdata({ model: mdname });
+            var fg = document.querySelector('#fg');
+            fg.setAttribute('forcegraph', { nodes: data.getRealVRKGDisplay.nodes, links: data.getRealVRKGDisplay.links });
+        });
+
+        function findGetParameter(parameterName) {
+            var result = null,
+                tmp = [];
+            location.search
+                .substr(1)
+                .split("&")
+                .forEach(function (item) {
+                    tmp = item.split("=");
+                    if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+                });
+            return result;
+        }
+
+    </script>
+}

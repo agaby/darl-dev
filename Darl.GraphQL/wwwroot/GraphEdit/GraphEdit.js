@@ -137,7 +137,7 @@ $(async function () {
     savechanges = graph('mutation saveKGraph($name: String!){saveKGraph(name: $name)}');
     deleterealobject = graph('mutation dgo($name: String! $id: String!){deleteGraphObject(graphName: $name id: $id){name}}');
     deleterealconnection = graph('mutation dgc($name: String! $id: String!){deleteGraphConnection(graphName: $name id: $id){name}}');
-    deleterecognitionobject = graph('mutation dgc($name: String! $id: String!){deleteRecognitionObject(graphName: $name id: $id){name}}');
+    deleterecognitionobject = graph('mutation dgc($name: String! $id: String!){deleteRecognitionObject(name: $name id: $id)}');
     createrecognitionconnection = graph('mutation crc($name: String! $conn: graphConnectionInput!){createRecognitionConnection(name: $name connection: $conn){id}}');
     createrecognitionobject = graph('mutation cro($name: String! $obj: graphObjectInput!){createRecognitionObject(name: $name object: $obj){id}}');
     createrealconnection = graph('mutation crc($name: String! $conn: graphConnectionInput!){createGraphConnection(graphName: $name graphConnection: $conn ontology: BUILD){id}}');
@@ -621,7 +621,7 @@ async function loadGraphs() {
                                         times.push(date4);
                                     }
                                 }
-                                await updateGraphObject({ name: mdname, conn: { id: ele.id(), existence: times } });
+                                await updateGraphObject({ name: mdname, conn: { id: ele.id(), existence: times, lineage: ele.data('lineage') } });
                                 console.log(data);
                             });
                         }
@@ -651,7 +651,7 @@ async function loadGraphs() {
                                 }).done(async function (data) {
                                     if (obj.getGraphObjectById.externalId !== data) {
                                         try {
-                                            await updateGraphObject({ name: mdname, obj: { id: ele.id(), externalId: data } });
+                                            await updateGraphObject({ name: mdname, obj: { id: ele.id(), externalId: data, lineage: ele.data('lineage') } });
                                             ele.data('externalId', externalId);
                                         }
                                         catch (err) {
@@ -691,7 +691,7 @@ async function loadGraphs() {
                                 }).done(async function (data) {
                                     if (obj.getGraphObjectById.name !== data) {
                                         try {
-                                            await updateGraphObject({ name: mdname, obj: { id: ele.id(), name: data } });
+                                            await updateGraphObject({ name: mdname, obj: { id: ele.id(), name: data, lineage: ele.data('lineage') } });
                                             ele.data('label', data);
                                         }
                                         catch (err) {
@@ -1064,13 +1064,13 @@ async function loadGraphs() {
                         }
                         if (!lin || (!sublin && data.newsublineage !== "")) {
                             //check if new lineage and new sublineage are valid lineages
-                            var ivl = await isvalidlineage({ lin: data.newlineage });
+                            const ivl = await isvalidlineage({ lin: data.newlineage });
                             if (ivl.isValidLineage) {
                                 lin = data.newlineage;
                             }
                             if (data.newsublineage !== "") {
-                                ivl = await isvalidlineage({ lin: data.newsublineage });
-                                if (ivl.isValidLineage) {
+                                const ivl2 = await isvalidlineage({ lin: data.newsublineage });
+                                if (ivl2.isValidLineage) {
                                     sublin = data.newsublineage;
                                 }
                             }
@@ -1159,6 +1159,9 @@ async function loadGraphs() {
                             else {
                                 await CreateNode(evt, name, externalId, lin, sublin);
                             }
+                        }
+                        else {
+                            await CreateNode(evt, name, externalId, lin);
                         }
                     });
                 }
@@ -1557,13 +1560,22 @@ async function loadGraphs() {
             //update state id selection
             updateStateDropdown();
             //clear chat
-            await HandleMessage();
+            ClearChatText();
         });
 
         $('#conv-recent-dropdown').on('change', async function () {
             currentState = this.value;
             //clear chat
-            await HandleMessage();
+            ClearChatText();
+        });
+
+        $('#conv-newstate').click();
+
+        //add message handlers
+        $('.msg_send_btn').click(async function () {
+            const text = $('.write_msg').val();
+            if(text !== "")
+                await HandleChatText(text);
         });
 
     }
@@ -2323,14 +2335,14 @@ async function CreateNode(evt, name, externalId, lin, sublin) {
 async function CreateRecognitionNode(evt, lin) {
     try {
         var name = lin;
-        var typeword = await gettypeword({ lineage: lin });
-        if (typeword && typeword !== "") {
-            name = "~" + typeword;
+        var typeword = await gettypeword({ lin: lin });
+        if (typeword && typeword.getTypeWordForLineage !== "") {
+            name = "~" + typeword.getTypeWordForLineage;
         }
         var created = await createrecognitionobject({ name: mdname, obj: { lineage: lin, name: name } });
         recognitioncy.add({
             group: 'nodes',
-            data: { label: lin, id: created.createRecognitionObject.id, lineage: lin },
+            data: { label: name, id: created.createRecognitionObject.id, lineage: lin },
             position: {
                 x: evt.position.x,
                 y: evt.position.y
@@ -2515,83 +2527,75 @@ function convertescapes(text) {
     return unescape(text);
 }
 
-async function HandleMessage() {
-    var tags = [
-        {
-            type: "input",
-            tag: "text",
-            name: "response",
-            "chat-msg": "Type below to test/interrogate " + mdname + " with the selected knowledge state",
-            success: async function (data) {
-                await MessageProcess(data);
-            }
+
+
+
+function AddInComingMessage(message) {
+    for (let i = 0, n = message.interactKnowledgeGraph.length; i < n; i++) {
+        let r = message.interactKnowledgeGraph[i];
+        switch (r.response.dataType) {
+            case "textual":
+            case "numeric":
+                AddIncomingText(r.response.value);
+                break;
+            case "categorical":
+                AddIncomingText(r.response.value);
+                var cats = "";
+                for (let n of r.response.categories) {
+                    cats = cats + '<button type="button" class="btn btn-secondary chat-btn">' + n.name + '</button>';
+                }
+                $('.msg_history').append('<div class="incoming_msg">' +
+                    '<div class="received_msg">' +
+                    '<div class="received_withd_msg">' +
+                    '<div class="btn-group" role="group">' + cats + '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>');   
+                $('.chat-btn').click(async function (data) {
+                    const text = $(data.target).text();
+                    await HandleChatText(text);
+                });
+                break;
         }
-    ];
-
-    Chat.start($('#chat'), tags);
-
+    }
 }
 
-async function MessageProcess(data) {
+function AddIncomingText(text) {
+    var converter = new showdown.Converter();
+    var html = converter.makeHtml(text);
+    $('.msg_history').append('<div class="incoming_msg">' +
+        '<div class="received_msg">' +
+        '<div class="received_withd_msg">' +
+        '<p>' + html + '</p>' +
+        '</div>' +
+        '</div>' +
+        '</div>');
+}
+function AddOutGoingText(text) {
+    $('.msg_history').append('<div class="outgoing_msg">' +
+        '<div class="sent_msg">' +
+        '<p>' + text + '</p>' +
+        '</div>' +
+        '</div>');
+}
+
+// takes text from a chat message box or chat button press.
+async function HandleChatText(text) {
     try {
-        var res = await interact({ name: mdname, ksid: currentStateId, text: Array.isArray(data.response) ? data.response[0] : data.response });
-        for (let i = 0, n = res.interactKnowledgeGraph.length; i < n; i++) {
-            let r = res.interactKnowledgeGraph[i];
-            //only wait on the last
-            if (i === n - 1) {
-                switch (r.response.dataType) {
-                    case "textual":
-                    case "numeric":
-                        Chat.addTags(
-                            [{
-                                type: "input",
-                                tag: "text",
-                                "chat-msg": r.response.value,
-                                name: "response",
-                                success: async function (data) {
-                                    await MessageProcess(data);
-                                }
-                            }]
-                        );
-                        break;
-                    case "categorical":
-                        var cats = [];
-                        for (let n of r.response.categories) {
-                            cats.push({ value: n.name, text: n.name });
-                        }
-                        Chat.addTags(
-                            [{
-                                type: "input",
-                                tag: "radio",
-                                name: "response",
-                                "chat-msg": r.response.value,
-                                children: cats,
-                                success: async function (data) {
-                                    await MessageProcess(data);
-                                }
-                            }]);
-
-                        break;
-                }
-            }
-            else {
-                Chat.addTextResponse(r.response.value);
-                /*                Chat.addTags(
-                                        [{
-                                            type: "msg",
-                                            tag: "text",
-                                            "chat-msg": r.response.value,
-                                            name: "response"
-                                         }]
-                                    );*/
-            }
-
-        }
-        UpdateKS();
+        $('.write_msg').val('');
+        AddOutGoingText(text);
+        var res = await interact({ name: mdname, ksid: currentStateId, text: text });
+        AddInComingMessage(res);
+        $(".msg_history").stop().animate({ scrollTop: $(".msg_history")[0].scrollHeight }, 1000);
+        await UpdateKS();
     }
     catch (err) {
         HandleError(err);
     }
+}
+
+function ClearChatText() {
+    $('.msg_history').empty();
 }
 
 async function UpdateKS() {

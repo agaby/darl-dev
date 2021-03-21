@@ -16,7 +16,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.approximate,true);
             Field<ListGraphType<StringDoublePairType>>("categories", resolve: context => GetSDPairsFromDictionary(context.Source.categories));
             Field<DarlVarDataTypeEnum>("dataType", resolve: context => context.Source.dataType);
-            Field(c => c.name);
+            Field(c => c.name,true);
             Field<ListGraphType<ListGraphType<StringGraphType>>>("sequence", resolve: context => context.Source.sequence);
             Field<DarlTimeType>("times", resolve: c => c.Source.times);
             Field(c => c.unknown,true);

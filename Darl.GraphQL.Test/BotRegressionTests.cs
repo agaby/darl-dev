@@ -86,8 +86,9 @@ namespace Darl.GraphQL.Test
             var trigger = new Mock<ITrigger>();
             var bc = new BlobGraphConnectivity(_config, blobLogger.Object);
             var conn = new Mock<IConnectivity>();
+            var meta = new Mock<IMetaStructureHandler>();
             var blob = new BlobGraphPrimitives(new List<IBlobConnectivity>{ bc },cache.Object, conn.Object, bgplogger.Object);
-            _graph = new GraphProcessing(blob, glogger.Object);
+            _graph = new GraphProcessing(blob, glogger.Object,meta.Object);
             _graphStore = new GraphLocalStore(configuration.Object, logger.Object, context.Object, _graph);
             var formApi = new FormApi(cache.Object, trigger.Object, formLogger.Object, _graphStore);
             _rform = new RuleFormInterface(_conv);

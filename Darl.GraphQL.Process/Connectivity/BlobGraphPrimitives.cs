@@ -409,8 +409,38 @@ namespace Darl.GraphQL.Models.Connectivity
             var id = compositeName.Substring(0, divider);
             var name = compositeName[(divider + 1)..];
             await _conn.CreateKGraph(id,name);
-            await _blob.Write(compositeName, SerializeGraph(new BlobGraphContent()));
+            var newGraph = new BlobGraphContent();
+            AddDefaultContent(newGraph);
+            await _blob.Write(compositeName, SerializeGraph(newGraph));
             return true;
+        }
+
+        public void AddDefaultContent(BlobGraphContent newGraph)
+        {
+            var defaultroot = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = "default:", name = "root" };
+            newGraph.recognitionVertices.Add(defaultroot.id, defaultroot);
+            newGraph.recognitionRoots.Add("default:", defaultroot);
+            var navigationRoot = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = "navigation:", name = "root" };
+            newGraph.recognitionVertices.Add(navigationRoot.id, navigationRoot);
+            newGraph.recognitionRoots.Add("navigation:", navigationRoot);
+            var obj = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = "default:", name = "default", properties = new List<GraphAttribute> { new GraphAttribute { id = Guid.NewGuid().ToString(), type= GraphAttribute.DataType.ruleset, value = "output textual response;\nif anything then response will be \"I don't know the answer to that\";", lineage = "adjective:8953" } } };
+            newGraph.recognitionVertices.Add(obj.id, obj);
+            var conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = obj.id, startId = defaultroot.id, weight = 1.0 };
+            newGraph.recognitionVertices[conn.startId].Out.Add(conn);
+            newGraph.recognitionVertices[conn.endId].In.Add(conn);
+            newGraph.recognitionEdges.Add(conn.id, conn);
+            obj = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = "verb:397,2", name = "help", properties = new List<GraphAttribute> { new GraphAttribute { id = Guid.NewGuid().ToString(), type = GraphAttribute.DataType.ruleset, value = "output textual response;\nif anything then response will be \"Just select a response for each question. Type \"quit\" if you want to stop.\"; ", lineage = "adjective:8953" } } };
+            newGraph.recognitionVertices.Add(obj.id, obj);
+            conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = obj.id, startId = navigationRoot.id, weight = 1.0 };
+            newGraph.recognitionVertices[conn.startId].Out.Add(conn);
+            newGraph.recognitionVertices[conn.endId].In.Add(conn);
+            newGraph.recognitionEdges.Add(conn.id, conn);
+            obj = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = "verb:060", name = "quit", properties = new List<GraphAttribute> { new GraphAttribute { id = Guid.NewGuid().ToString(), type = GraphAttribute.DataType.ruleset, value = "output categorical terminate {\"true\",\"false\"};\nif anything then terminate will be true; ", lineage = "adjective:8953" } } };
+            newGraph.recognitionVertices.Add(obj.id, obj);
+            conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = obj.id, startId = navigationRoot.id, weight = 1.0 };
+            newGraph.recognitionVertices[conn.startId].Out.Add(conn);
+            newGraph.recognitionVertices[conn.endId].In.Add(conn);
+            newGraph.recognitionEdges.Add(conn.id, conn);
         }
 
         public async Task<bool> DeleteModel(string compositeName)
@@ -834,6 +864,15 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
+        /// <summary>
+        /// Recursively searches a network for dependencies
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="dependencies"></param>
+        /// <param name="currentParent"></param>
+        /// <param name="currentNode"></param>
+        /// <param name="linkLineage"></param>
+        /// <param name="paths"></param>
         private void AddDependency(IGraphModel model, List<Dependency> dependencies, GraphObject currentParent, GraphObject currentNode, string linkLineage, List<string> paths)
         {
             var cont = model as BlobGraphContent;
@@ -848,6 +887,14 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
+        /// <summary>
+        /// Creates a list of nodes connected by connections with lineages in path, with a depth value
+        /// </summary>
+        /// <param name="model">The model</param>
+        /// <param name="node">The root node</param>
+        /// <param name="paths">permitted lineages for connections</param>
+        /// <returns>The found nodes</returns>
+        /// <exception cref="MetaRuleException">Thrown if not a DAG.</exception>
         public List<KeyValuePair<GraphObject,int>> GetExecutionOrder(IGraphModel model, GraphObject node, List<string> paths)
         {
             var cont = model as BlobGraphContent;
@@ -1311,6 +1358,24 @@ namespace Darl.GraphQL.Models.Connectivity
             return await _conn.GetDefaultValue($"default_rule_{lineage}");
         }
 
+
+        public async Task<VRDisplayModel> GetRealVRDisplayGraph(string compositeName, string lineageFilter)
+        {
+            var cont = await Load(compositeName) as BlobGraphContent;
+            var dmodel = new VRDisplayModel { nodes = new List<VRDisplayNode>(), links = new List<VRDisplayLink>() };
+            if (string.IsNullOrEmpty(lineageFilter)) //return everything
+            {
+                dmodel.nodes.AddRange(cont.vertices.Values.Select(i => new VRDisplayNode { id = i.id, name = i.name, lineage = ExtractLineage(i.lineage), subLineage = ExtractSubLineage(i.lineage), externalId = i.externalId }));
+                dmodel.links.AddRange(cont.edges.Values.Select(i => new VRDisplayLink { id = i.id, name = i.name, source = i.startId, target = i.endId }));
+            }
+            else
+            {
+                dmodel.nodes.AddRange(cont.vertices.Values.Where(a => a.lineage.StartsWith(lineageFilter)).Select((i => new VRDisplayNode { id = i.id, name = i.name, lineage = i.lineage, externalId = i.externalId })));
+                dmodel.links.AddRange(cont.vertices.Values.Where(a => a.lineage.StartsWith(lineageFilter)).SelectMany(a => a.In).Intersect(cont.vertices.Values.Where(a => a.lineage.StartsWith(lineageFilter)).SelectMany(a => a.Out)).Select(i => new VRDisplayLink { id = i.id, name = i.name, source = i.startId, target = i.endId }));
+            }
+            return dmodel;
+        }
+
         internal static string CreateCompositeName(string userId, string name)
         {
             return userId + "_" + name.Replace(" ", "_");
@@ -1319,10 +1384,23 @@ namespace Darl.GraphQL.Models.Connectivity
         private void RecursivelyAddElements(GraphObject robj, DisplayModel dmodel, IGraphModel cont)
         {
             dmodel.nodes.Add(new DisplayObject { id = robj.id, name = robj.name, lineage = robj.lineage });
+            GraphConnection orphan = null;
             foreach (var c in robj.Out)
             {
-                dmodel.edges.Add(new DisplayConnection { id = c.id, name = c.name, source = c.startId, target = c.endId});
-                RecursivelyAddElements(cont.recognitionVertices[c.endId], dmodel, cont);
+                if (cont.recognitionVertices.ContainsKey(c.endId))
+                {
+                    dmodel.edges.Add(new DisplayConnection { id = c.id, name = c.name, source = c.startId, target = c.endId });
+                    RecursivelyAddElements(cont.recognitionVertices[c.endId], dmodel, cont);
+                }
+                else
+                {//delete orphans
+                    orphan = c;
+                }
+            }
+            if (orphan != null)
+            {
+                robj.Out.Remove(orphan);
+                cont.recognitionEdges.Remove(orphan.id);
             }
         }
 
@@ -1421,6 +1499,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return lineage.Substring(pos + 1);
         }
+
     }
 
     public class Dependency

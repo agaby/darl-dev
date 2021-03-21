@@ -78,9 +78,10 @@ namespace Darl.GraphQL.Test
             cache.Setup(a => a.GetAsync(It.IsAny<string>(), default)).Returns(Task.FromResult<byte[]>(null));
             var clogger = new Mock<ILogger<CosmosDBConnectivity>>();
             var clicense = new Mock<ILicensing>();
+            var meta = new Mock<IMetaStructureHandler>();
             _conn = new CosmosDBConnectivity(_config, clogger.Object, clicense.Object, cache.Object);
             _primitives = new BlobGraphPrimitives(new List<IBlobConnectivity> { blob }, cache.Object, _conn, bgplogger.Object);
-            _graph = new GraphProcessing(_primitives, glogger.Object);
+            _graph = new GraphProcessing(_primitives, glogger.Object, meta.Object);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
             var form = new Mock<IFormApi>();
             _form = form.Object;

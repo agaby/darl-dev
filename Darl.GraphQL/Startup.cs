@@ -107,6 +107,7 @@ namespace Darl.GraphQL
             services.AddSingleton<IGraphPrimitives, BlobGraphPrimitives>();
             services.AddSingleton<IGraphHandler, GraphHandler>();
             services.AddSingleton<IBlobConnectivity, BlobGraphConnectivity>();
+            services.AddSingleton<IMetaStructureHandler, MetaStructureHandler>();
 
             //types
             services.AddSingleton<BotFormatType>();
@@ -255,6 +256,9 @@ namespace Darl.GraphQL
             services.AddSingleton<KGraphUpdateType>();
             services.AddSingleton<InferenceTimeEnum>();
             services.AddSingleton<DateDisplayEnum>();
+            services.AddSingleton<VRDisplayModelType>();
+            services.AddSingleton<VRDisplayNodeType>();
+            services.AddSingleton<VRDisplayLinkType>();
 
 
             //root

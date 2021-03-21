@@ -86,6 +86,7 @@ namespace Darl.GraphQL.Test
             var bgplogger = new Mock<ILogger<BlobGraphPrimitives>>();
             var glogger = new Mock<ILogger<GraphProcessing>>();
             var context = new Mock<IHttpContextAccessor>();
+            var meta = new Mock<IMetaStructureHandler>();
             _config = configuration.Object;
             context.Setup(a => a.HttpContext.User.Identity.Name).Returns(_config["userId"]);
             var blob = new BlobGraphConnectivity(_config, blogger.Object);
@@ -93,7 +94,7 @@ namespace Darl.GraphQL.Test
             var conn = new Mock<IConnectivity>();
             cache.Setup(a => a.GetAsync(It.IsAny<string>(), default)).Returns(Task.FromResult<byte[]>(null));
             _primitives = new BlobGraphPrimitives(new List<IBlobConnectivity> { blob }, cache.Object, conn.Object, bgplogger.Object);
-            _graph = new GraphProcessing(_primitives, glogger.Object);
+            _graph = new GraphProcessing(_primitives, glogger.Object,meta.Object);
             _graphStore = new GraphLocalStore(_config,logger.Object, context.Object, _graph);
         }
 
