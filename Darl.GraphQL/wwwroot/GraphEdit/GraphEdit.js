@@ -2531,6 +2531,8 @@ function convertescapes(text) {
 
 
 function AddInComingMessage(message) {
+    //remove any previous buttons
+    $('.received_withd_msg > .btn-group').empty();
     for (let i = 0, n = message.interactKnowledgeGraph.length; i < n; i++) {
         let r = message.interactKnowledgeGraph[i];
         switch (r.response.dataType) {

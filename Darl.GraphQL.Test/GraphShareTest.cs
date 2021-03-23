@@ -37,7 +37,7 @@ namespace Darl.GraphQL.Test
         private ILogger<BotProcessing> _bplogger;
         private IHttpContextAccessor _context;
 
-        private static string graphName = "ai_triage.graph";
+        private static string graphName = "personality_test.graph";
 
         [TestInitialize()]
         public void Initialize()
@@ -164,6 +164,40 @@ namespace Darl.GraphQL.Test
             model.recognitionEdges.Clear();
             p.AddDefaultContent(model);
             await _graph.Store(compositeName);
+        }
+
+        [TestMethod]
+        public async Task FindTextInProperties()
+        {
+            var target = "female";
+            var compositeName = $"{_config["userId"]}_{graphName}";
+            var model = await _graph.GetModel(_config["userId"], graphName) as BlobGraphContent;
+            foreach (var v in model.vertices)
+            {
+                if (v.Value.properties != null)
+                {
+                    foreach (var p in v.Value.properties)
+                    {
+                        if(p.value.Contains(target))
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            foreach (var v in model.virtualVertices)
+            {
+                if (v.Value.properties != null)
+                {
+                    foreach (var p in v.Value.properties)
+                    {
+                        if (p.value.Contains(target))
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 }
