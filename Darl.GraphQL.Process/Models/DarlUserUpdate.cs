@@ -10,7 +10,7 @@ namespace Darl.GraphQL.Models.Models
         /// <summary>
         /// Date of upgrade
         /// </summary>
-        public DateTime PaidUsageStarted { get; set; } = DateTime.MaxValue;
+        public DateTime? PaidUsageStarted { get; set; }
         /// <summary>
         /// Person to authorize invoice
         /// </summary>
@@ -26,7 +26,7 @@ namespace Darl.GraphQL.Models.Models
         /// </summary>
         public string InvoiceEmail { get; set; }
 
-        public AccountState? accountState { get; set; } = AccountState.trial;
+        public AccountState? accountState { get; set; } 
         /// <summary>
         /// end of current subscription period.
         /// </summary>

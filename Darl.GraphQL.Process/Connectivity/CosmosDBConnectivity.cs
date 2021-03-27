@@ -1449,6 +1449,14 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<DarlUser> UpdateUserAsync(string userId, DarlUserUpdate user)
         {
+            var existing = await GetUserById(userId);
+            if(existing.accountState != user.accountState)
+            {
+                if(existing.accountState != DarlUser.AccountState.trial && user.accountState == DarlUser.AccountState.trial)
+                {
+                    throw new ExecutionError($"Downgrading from {existing.accountState} to trial not permitted.");
+                }
+            }
             var collection = db.GetCollection<DarlUser>(userCollection);
             var filter = Builders<DarlUser>.Filter.Where(x => x.userId == userId);
             var updList = new List<UpdateDefinition<DarlUser>>();
@@ -1456,10 +1464,6 @@ namespace Darl.GraphQL.Models.Connectivity
                 updList.Add(Builders<DarlUser>.Update.Set(x => x.accountState, user.accountState));
             if (user.current_period_end != null)
                 updList.Add(Builders<DarlUser>.Update.Set(x => x.current_period_end, user.current_period_end));
-            if (user.InvoiceEmail != null)
-                updList.Add(Builders<DarlUser>.Update.Set(x => x.InvoiceEmail, user.InvoiceEmail));
-            if (user.InvoiceName != null)
-                updList.Add(Builders<DarlUser>.Update.Set(x => x.InvoiceName, user.InvoiceName));
             if (user.InvoiceEmail != null)
                 updList.Add(Builders<DarlUser>.Update.Set(x => x.InvoiceEmail, user.InvoiceEmail));
             if (user.InvoiceName != null)

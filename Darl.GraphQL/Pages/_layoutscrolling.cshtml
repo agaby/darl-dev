@@ -63,22 +63,25 @@
                             <a class="nav-link text-dark" href="/docs/">Documentation</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-dark" href="https://discord.gg/4BaqGFukNG">Discord support</a>
+                        </li>
+                        <li class="nav-item">
                             @if (!User.Identity.IsAuthenticated)
                             {
-                            <a href="/MicrosoftIdentity/account/signin" class="btn btn-rounded btn-primary">Log in/Register</a>
+                                <a href="/MicrosoftIdentity/account/signin" class="btn btn-rounded btn-primary">Log in/Register</a>
                             }
                             else
                             {
-                            <a href="/MicrosoftIdentity/account/signout" class="btn btn-rounded btn-primary">Log out</a>
+                                <a href="/MicrosoftIdentity/account/signout" class="btn btn-rounded btn-primary">Log out</a>
                             }
                         </li>
-                        @if(User.Identity.IsAuthenticated)
+                        @if (User.Identity.IsAuthenticated)
                         {
-                        <li class="nav-item">
-                            <form method="POST" asp-page="./index">
-                                <button class="btn btn-rounded btn-primary" type="submit">Billing</button>
-                            </form>
-                        </li>
+                            <li class="nav-item">
+                                <form method="POST" asp-page="./index">
+                                    <button class="btn btn-rounded btn-primary" type="submit">Billing</button>
+                                </form>
+                            </li>
                         }
                         <li class="nav-item">
                             <a class="nav-link text-dark" href="docs/darl_dev/" target="_blank"><img src="~/images/help_small.png" /></a>
