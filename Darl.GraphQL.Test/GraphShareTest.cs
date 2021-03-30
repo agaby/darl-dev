@@ -199,5 +199,14 @@ namespace Darl.GraphQL.Test
                 }
             }
         }
+
+        [TestMethod]
+        public async Task LoadInitialText()
+        {
+            var name = "primary_math.graph";
+            var text = "Teach me mathematics";
+            await _conn.UpdateKGraph(_config["userId"], name, new KGraphUpdate { InitialText =  text});
+            await _conn.UpdateKGraph(_config["AppSettings:boaiuserid"], name, new KGraphUpdate { InitialText = text });
+        }
     }
 }

@@ -2778,6 +2778,8 @@ namespace Darl.GraphQL.Models.Connectivity
                 updList.Add(Builders<KGraph>.Update.Set(x => x.inferenceTime, kgupdate.inferenceTime));
             if (kgupdate.fixedTime != null)
                 updList.Add(Builders<KGraph>.Update.Set(x => x.fixedTime, kgupdate.fixedTime));
+            if (kgupdate.InitialText != null)
+                updList.Add(Builders<KGraph>.Update.Set(x => x.InitialText, kgupdate.InitialText));
             var update = Builders<KGraph>.Update.Combine(updList);
             return await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<KGraph, KGraph> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
         }

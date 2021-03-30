@@ -16,5 +16,6 @@ namespace Darl.GraphQL.Models.Models
         public DarlTime? fixedTime { get; set; }
         public string userId { get; set; }
         public bool? ReadOnly { get; set; } = false;
+        public string InitialText { get; set; }
     }
 }
