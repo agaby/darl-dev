@@ -28,6 +28,9 @@ namespace Darl.GraphQL.Models.Models
 
         public bool? ReadOnly { get; set; } = false;
 
+        /// <summary>
+        /// Initial text for the conversation in demo mode
+        /// </summary>
         public string InitialText { get; set; }
     }
 }
