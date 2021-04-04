@@ -67,6 +67,7 @@ var authoritative = true;
 var labels = "externalId";
 var inferenceTime = "Now";
 var descriptions;
+var initialTexts;
 var virtualLabels = "label";
 var recLabels = "label";
 
@@ -121,8 +122,8 @@ $(async function () {
         }
     }
 
-    allkgmodels = graph(`{ kgraphs { name description }}`);
-    kgraph = graph('query kg($name: String!){kGraphByName(name: $name){name description }}');
+    allkgmodels = graph(`{ kgraphs { name description initialText }}`);
+    kgraph = graph('query kg($name: String!){kGraphByName(name: $name){name description initialText}}');
     realkgraphdata = graph('query kgd($model: String!){getRealKGDisplay(graphName: $model){nodes{data{ id label lineage sublineage externalId}} edges{ data{ id label source target}}}}');
     virtualkgraphdata = graph('query vkgd($model: String!){getVirtualKGDisplay(graphName: $model){nodes{data{ id lineage parent label}} edges{ data{ id label source target}}}}');
     recognitionkgraphdata = graph('query rkgd($model: String!){getRecognitionKGDisplay(graphName: $model){nodes{data{ id label lineage parent label}} edges{ data{ id label source target}}}}');
@@ -172,6 +173,7 @@ $(async function () {
         try {
             var kgmeta = await kgraph({ name: mdname });
             descriptions[mdname] = kgmeta.kGraphByName.description;
+            initialTexts[mdname] = kgmeta.kGraphByName.initialText;
         }
         catch (err) {
             HandleError(err);
@@ -334,9 +336,11 @@ async function updateDropdown() {
         }
         dropdown.prop('selectedIndex', 0);
         descriptions = {};
+        initialTexts = {};
         $.each(rs.kgraphs, function (key, entry) {
             dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
             descriptions[entry.name] = entry.description;
+            initialTexts[entry.name] = entry.initialText;
         });
     }
     catch (err) {
@@ -384,6 +388,9 @@ async function loadGraphs() {
                 input: div,
                 queue: false
             });
+        }
+        if (initialTexts[mdname]) {
+            $('#msg_input').val(initialTexts[mdname])
         }
         var realdata = await realkgraphdata({ model: mdname });
         //instantiate graphs here

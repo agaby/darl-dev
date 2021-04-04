@@ -51,7 +51,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public IMongoDatabase db { get; set; }
         private MongoClient mongoClient;
         private DarlRunTime runtime = new DarlRunTime();
-        private DarlMetaRunTime metaRuntime = new DarlMetaRunTime();
+        private DarlMetaRunTime metaRuntime = new DarlMetaRunTime(new MetaStructureHandler());
         private IDistributedCache _cache;
         private ILogger _logger;
         private string backgroundUserId;
