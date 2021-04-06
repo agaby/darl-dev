@@ -20,6 +20,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using Darl.GraphQL.Models.Models;
+using Darl.Lineage;
+using Darl.Thinkbase.Meta;
 
 namespace Darl.GraphQL.Test
 {
@@ -37,7 +39,7 @@ namespace Darl.GraphQL.Test
         private ILogger<BotProcessing> _bplogger;
         private IHttpContextAccessor _context;
 
-        private static string graphName = "personality_test.graph";
+        private static string graphName = "primary_math.graph";
 
         [TestInitialize()]
         public void Initialize()
@@ -201,12 +203,129 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task LoadInitialText()
         {
             var name = "primary_math.graph";
             var text = "Teach me mathematics";
             await _conn.UpdateKGraph(_config["userId"], name, new KGraphUpdate { InitialText =  text});
             await _conn.UpdateKGraph(_config["AppSettings:boaiuserid"], name, new KGraphUpdate { InitialText = text });
+        }
+
+        [TestMethod]
+        public async Task ReplaceLineageLiterals()
+        {
+            var model = await _graph.GetModel(_config["userId"], graphName) as BlobGraphContent;
+            var msh = new MetaStructureHandler();
+            var runtime = new DarlMetaRunTime(msh);
+            var reverse = new Dictionary<string, string>();
+            foreach (var c in msh.CommonLineages)
+                reverse.Add(c.Value, c.Key);
+            foreach (var v in model.vertices)
+            {
+                if (v.Value.properties != null)
+                {
+                    foreach (var p in v.Value.properties)
+                    {
+                        if(p.name == "text")
+                        {
+                            p.type = GraphAttribute.DataType.markdown;
+                            continue;
+                        }
+                        if (p.type == GraphAttribute.DataType.ruleset)
+                        {
+                            p.value = ReplaceLiterals(p.value, reverse, "noun:");
+                            p.value = ReplaceLiterals(p.value, reverse, "verb:");
+                            p.value = ReplaceLiterals(p.value, reverse, "adjective:");
+                            try
+                            {
+                                runtime.CreateTree(p.value, v.Value, model);
+                            }
+                            catch(Exception err)
+                            {
+
+                            }
+                        }
+
+                    }
+                }
+            }
+            foreach (var v in model.virtualVertices)
+            {
+                if (v.Value.properties != null)
+                {
+                    foreach (var p in v.Value.properties)
+                    {
+                        if (p.type == GraphAttribute.DataType.ruleset)
+                        {
+                            p.value = ReplaceLiterals(p.value, reverse, "noun:");
+                            p.value = ReplaceLiterals(p.value, reverse, "verb:");
+                            p.value = ReplaceLiterals(p.value, reverse, "adjective:");
+                            try
+                            {
+                                runtime.CreateTree(p.value, v.Value, model);
+                            }
+                            catch (Exception err)
+                            {
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private string ReplaceLiterals(string code, Dictionary<string,string> reverse, string preamble)
+        {
+            bool complete = false;
+            StringBuilder sb = new StringBuilder();
+            var foundSoFar = new Dictionary<string, string>();
+            var cursor = 0;
+            while(!complete)
+            {
+                var start = code.IndexOf(preamble, cursor);
+                if(start == -1)
+                {
+                    complete = true;
+                    sb.Append(code.Substring(cursor));
+                }
+                else
+                {
+                    var end = code.IndexOf("\"", start + 1);
+                    var lineage = code.Substring(start, end - start);
+                    if(reverse.ContainsKey(lineage))
+                    {
+                        sb.Append(code.Substring(cursor, start - cursor - 1));
+                        sb.Append(reverse[lineage]);
+                        end++;
+                    }
+                    else
+                    {
+                        if(foundSoFar.ContainsKey(lineage))
+                        {
+                            var typeword = foundSoFar[lineage];
+                            sb.Append(code.Substring(cursor, start - cursor - 1));
+                            sb.Append(typeword);
+                            end++;
+                        }
+                        else if (LineageLibrary.lineages.ContainsKey(lineage))
+                        {
+                            var typeword = LineageLibrary.lineages[lineage].typeWord;
+                            sb.Insert(0, $"lineage {typeword} \"{lineage}\";\n");
+                            sb.Append(code.Substring(cursor, start - cursor - 1));
+                            sb.Append(typeword);
+                            foundSoFar.Add(lineage, typeword);
+                            end++;
+                        }
+                        else
+                        {
+                            sb.Append(code.Substring(cursor, end - cursor));
+                        }
+                    }
+                    cursor = end;
+                }
+            }
+            return sb.ToString();
         }
     }
 }
