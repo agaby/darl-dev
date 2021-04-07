@@ -39,7 +39,7 @@ namespace Darl.GraphQL.Test
         private ILogger<BotProcessing> _bplogger;
         private IHttpContextAccessor _context;
 
-        private static string graphName = "primary_math.graph";
+        private static string graphName = "primary_math_old.graph";
 
         [TestInitialize()]
         public void Initialize()
@@ -216,6 +216,7 @@ namespace Darl.GraphQL.Test
         public async Task ReplaceLineageLiterals()
         {
             var model = await _graph.GetModel(_config["userId"], graphName) as BlobGraphContent;
+            var compositeName = $"{_config["userId"]}_{graphName}";
             var msh = new MetaStructureHandler();
             var runtime = new DarlMetaRunTime(msh);
             var reverse = new Dictionary<string, string>();
@@ -273,6 +274,7 @@ namespace Darl.GraphQL.Test
                     }
                 }
             }
+            await _graph.Store(compositeName);
         }
 
         private string ReplaceLiterals(string code, Dictionary<string,string> reverse, string preamble)
