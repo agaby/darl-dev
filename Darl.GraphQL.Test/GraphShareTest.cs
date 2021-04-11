@@ -39,7 +39,7 @@ namespace Darl.GraphQL.Test
         private ILogger<BotProcessing> _bplogger;
         private IHttpContextAccessor _context;
 
-        private static string graphName = "primary_math_old.graph";
+        private static string graphName = "lifestyle_medicine.graph";
 
         [TestInitialize()]
         public void Initialize()
@@ -213,6 +213,13 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
+        public async Task SwapModel()
+        {
+            await _graph.CopyRenameKG(_config["userId"], "primary_math_old.graph", "primary_math.graph");
+        }
+
+        [TestMethod]
         public async Task ReplaceLineageLiterals()
         {
             var model = await _graph.GetModel(_config["userId"], graphName) as BlobGraphContent;
@@ -235,9 +242,10 @@ namespace Darl.GraphQL.Test
                         }
                         if (p.type == GraphAttribute.DataType.ruleset)
                         {
-                            p.value = ReplaceLiterals(p.value, reverse, "noun:");
-                            p.value = ReplaceLiterals(p.value, reverse, "verb:");
-                            p.value = ReplaceLiterals(p.value, reverse, "adjective:");
+                            var cursor = 0;
+                            p.value = ReplaceLiterals(p.value, reverse, "noun:", ref cursor);
+                            p.value = ReplaceLiterals(p.value, reverse, "verb:", ref cursor);
+                            p.value = ReplaceLiterals(p.value, reverse, "adjective:", ref cursor);
                             try
                             {
                                 runtime.CreateTree(p.value, v.Value, model);
@@ -259,9 +267,10 @@ namespace Darl.GraphQL.Test
                     {
                         if (p.type == GraphAttribute.DataType.ruleset)
                         {
-                            p.value = ReplaceLiterals(p.value, reverse, "noun:");
-                            p.value = ReplaceLiterals(p.value, reverse, "verb:");
-                            p.value = ReplaceLiterals(p.value, reverse, "adjective:");
+                            var cursor = 0;
+                            p.value = ReplaceLiterals(p.value, reverse, "noun:",ref cursor);
+                            p.value = ReplaceLiterals(p.value, reverse, "verb:",ref cursor);
+                            p.value = ReplaceLiterals(p.value, reverse, "adjective:", ref cursor);
                             try
                             {
                                 runtime.CreateTree(p.value, v.Value, model);
@@ -274,16 +283,21 @@ namespace Darl.GraphQL.Test
                     }
                 }
             }
+            //add recognition
             await _graph.Store(compositeName);
         }
 
-        private string ReplaceLiterals(string code, Dictionary<string,string> reverse, string preamble)
+        private string ReplaceLiterals(string code, Dictionary<string,string> reverse, string preamble, ref int cursor)
         {
             bool complete = false;
             StringBuilder sb = new StringBuilder();
             var foundSoFar = new Dictionary<string, string>();
-            var cursor = 0;
-            while(!complete)
+            var offset = cursor;
+            if (cursor > 0)
+            {
+                sb.Append(code.Substring(0, cursor));
+            }
+            while (!complete)
             {
                 var start = code.IndexOf(preamble, cursor);
                 if(start == -1)
@@ -295,6 +309,7 @@ namespace Darl.GraphQL.Test
                 {
                     var end = code.IndexOf("\"", start + 1);
                     var lineage = code.Substring(start, end - start);
+
                     if(reverse.ContainsKey(lineage))
                     {
                         sb.Append(code.Substring(cursor, start - cursor - 1));
@@ -313,11 +328,30 @@ namespace Darl.GraphQL.Test
                         else if (LineageLibrary.lineages.ContainsKey(lineage))
                         {
                             var typeword = LineageLibrary.lineages[lineage].typeWord;
-                            sb.Insert(0, $"lineage {typeword} \"{lineage}\";\n");
+                            var insert = $"lineage {typeword} \"{lineage}\";\n";
+                            sb.Insert(0, insert);
+                            offset += insert.Length;
                             sb.Append(code.Substring(cursor, start - cursor - 1));
                             sb.Append(typeword);
                             foundSoFar.Add(lineage, typeword);
                             end++;
+                        }
+                        else if (lineage.Contains("+")) //composite lineage
+                        {
+                            int pos = lineage.IndexOf("+");
+                            var primary = lineage.Substring(0, pos);
+                            var secondary = lineage.Substring(pos + 1);
+                            if (LineageLibrary.lineages.ContainsKey(primary) && LineageLibrary.lineages.ContainsKey(secondary))
+                            {
+                                var pword = LineageLibrary.lineages[primary].typeWord + "_" + LineageLibrary.lineages[secondary].typeWord;
+                                var insert = $"lineage {pword} \"{lineage}\";\n";
+                                sb.Insert(0, insert);
+                                offset += insert.Length; 
+                                sb.Append(code.Substring(cursor, start - cursor - 1));
+                                sb.Append(pword);
+                                foundSoFar.Add(lineage, pword);
+                                end++;
+                            }
                         }
                         else
                         {
@@ -327,6 +361,7 @@ namespace Darl.GraphQL.Test
                     cursor = end;
                 }
             }
+            cursor = offset;
             return sb.ToString();
         }
     }
