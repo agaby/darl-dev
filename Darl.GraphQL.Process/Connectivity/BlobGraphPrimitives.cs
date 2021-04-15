@@ -971,10 +971,14 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<GraphConnection> CreateRecognitionConnection(string compositeName, GraphConnectionInput graphConnection)
         {
-            //should test for legality
+            //should test for DAG if new connection added
             var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
-                throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
+            if(cont == null)
+                throw new ExecutionError($"Graph {compositeName} does not exist.");
+            if (cont.recognitionVertices[graphConnection.startId].lineage == GraphObject.terminatingLabel)
+            {
+                return null;
+            }
             var conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = graphConnection.endId,  startId = graphConnection.startId, weight = 1.0 };
             if(!cont.recognitionVertices.ContainsKey(conn.startId))
                 throw new ExecutionError($"GraphConnection startId '{conn.startId}' does not exist.");

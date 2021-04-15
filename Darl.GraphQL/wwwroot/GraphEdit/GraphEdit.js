@@ -53,6 +53,7 @@ var updatekg;
 var kgraph;
 
 var recognizedLineage = "adjective:8953";
+var textLineage = "noun:01,4,04,02,07,01";
 var currentStateId;
 
 var settingsStorageName = 'thinkbase-settings';
@@ -1865,6 +1866,17 @@ async function LoadRecGraph() {
                     }
                 },
                 {
+                    content: '<span class="fa fa-file-alt fa-2x"></span>',
+                    select: async function (ele) {
+                        if (ele.hasClass("eh-handle")) {
+                            ele = ele.data("mainNode");
+                        }
+                        console.log('text attribute');
+                        var id = ele.id();
+                        await EditRecognitionMarkDown(id);
+                    }
+                },
+                {
                     content: '<span class="fa fa-tree fa-2x"></span>',
                     select: async function (ele) {
                         if (ele.hasClass("eh-handle")) {
@@ -1957,17 +1969,20 @@ async function LoadRecGraph() {
                             label: "Suggest lineage?"
                         },
                     },
-                    buttonDone: "Add",
+                    buttonDone: { add: "Add", terminus: "Create terminus" },
                     buttonFail: "Cancel",
                     queue: false,
                     message: "Add a word to the recognition tree.",
-                    filterDone: function (data) {
-                        if (data.word === "") return "Supply a word";
+                    filterDone: function (data,button) {
+                        if (data.word === "" && button !== "terminus") return "Supply a word";
                     }
-                }).done(async function (data) {
+                }).done(async function (data, button) {
                     try {
                         console.log('add node ' + data);
-                        if (data.convLin) {
+                        if (button === "terminus") {
+                            await CreateRecognitionTerminusNode(evt);
+                        }
+                        else if (data.convLin) {
                             var lineages = await getlineagesforword({ word: data.word });
                             var obj = {};
                             $.each(lineages.getLineagesForWord, function (i, item) {
@@ -2256,6 +2271,31 @@ async function EditRecognitionAttributes(id) {
     }
 }
 
+async function EditRecognitionMarkDown(id) {
+    try {
+        var obj = await recognitionobjectdata({ model: mdname, id: id });
+        if (obj) {
+            if (obj.getRecognitionObjectById.properties) {
+                const text = obj.getRecognitionObjectById.properties.find(e => e.type === "MARKDOWN");
+                if (text) {
+                    await UpdateAttributeValue(id, text, "recognition");
+                }
+                else {
+                    const newAtt = { value: "", lineage: textLineage, type: "MARKDOWN" };
+                    await UpdateAttributeValue(id, newAtt, "recognition");
+                }
+            }
+            else {
+                const newAtt = { value: "", lineage: textLineage, type: "MARKDOWN" };
+                await UpdateAttributeValue(id, newAtt, "recognition");
+            }
+        }
+    }
+    catch (err) {
+        HandleError(err);
+    }
+}
+
 async function EditVirtualAttributes(id) {
     try {
         var obj = await virtualobjectdata({ model: mdname, lineage: id });
@@ -2350,6 +2390,24 @@ async function CreateRecognitionNode(evt, lin) {
         recognitioncy.add({
             group: 'nodes',
             data: { label: name, id: created.createRecognitionObject.id, lineage: lin },
+            position: {
+                x: evt.position.x,
+                y: evt.position.y
+            }
+        });
+    }
+    catch (err) {
+        HandleError(err);
+    }
+}
+
+async function CreateRecognitionTerminusNode(evt) {
+    try {
+        var name = "*";
+        var created = await createrecognitionobject({ name: mdname, obj: { lineage: "terminus:", name: name } });
+        recognitioncy.add({
+            group: 'nodes',
+            data: { label: name, id: created.createRecognitionObject.id, lineage: "terminus:" },
             position: {
                 x: evt.position.x,
                 y: evt.position.y
