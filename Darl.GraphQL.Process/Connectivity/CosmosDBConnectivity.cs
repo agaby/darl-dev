@@ -2791,14 +2791,22 @@ namespace Darl.GraphQL.Models.Connectivity
             int coloffset = 0;
             if (!string.IsNullOrEmpty(darl))
             {
-                var tree = metaRuntime.CreateTreeEdit(darl);
-                if (tree.HasErrors())
+                try
                 {
-                    foreach (var pm in tree.ParserMessages)
+                    var tree = metaRuntime.CreateTreeEdit(darl);
+                    if (tree.HasErrors())
                     {
-                        errorList.Add(new DarlLintView { line_no = pm.Location.Line + 1 - rowoffset, column_no_start = pm.Location.Column + 1 - coloffset, column_no_stop = pm.Location.Column + 2 - coloffset, message = pm.Message, severity = pm.Level == ErrorLevel.Error ? "error" : "warning" });
+                        foreach (var pm in tree.ParserMessages)
+                        {
+                            errorList.Add(new DarlLintView { line_no = pm.Location.Line + 1 - rowoffset, column_no_start = pm.Location.Column + 1 - coloffset, column_no_stop = pm.Location.Column + 2 - coloffset, message = pm.Message, severity = pm.Level == ErrorLevel.Error ? "error" : "warning" });
+                        }
                     }
                 }
+                catch(Exception ex)
+                {
+
+                }
+ 
             }
             return Task.FromResult(errorList);
         }

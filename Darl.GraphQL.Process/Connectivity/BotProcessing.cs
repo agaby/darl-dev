@@ -295,21 +295,28 @@ namespace Darl.GraphQL.Models.Connectivity
                     var existing = bs.values.Where(a => a.name == RuleSetHandler.questionIdentifier).FirstOrDefault();
                     if (existing != null)
                         bs.values.Remove(existing);
-                    bs.values.Add(request); 
-                    var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, bs.kGraphData[0][0], bs.kGraphData[1], bs.kGraphData[2][0], bs.values,bs.pending);
-                    resp.Add(res.Item1.Last());
-                    bs.pending = res.Item2;
-                    if(res.Item1.Count > 1)
-                    {//check for completion response
-                        foreach(var r in res.Item1)
-                        {
-                            if(r.response.dataType == DarlVar.DataType.complete)
+                    bs.values.Add(request);
+                    try
+                    {
+                        var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, bs.kGraphData[0][0], bs.kGraphData[1], bs.kGraphData[2][0], bs.values, bs.pending);
+                        resp.Add(res.Item1.Last());
+                        bs.pending = res.Item2;
+                        if (res.Item1.Count > 1)
+                        {//check for completion response
+                            foreach (var r in res.Item1)
                             {
-                                bs.kGraphData = null;
-                                bs.pending = null;
-                                break;
+                                if (r.response.dataType == DarlVar.DataType.complete)
+                                {
+                                    bs.kGraphData = null;
+                                    bs.pending = null;
+                                    break;
+                                }
                             }
                         }
+                    }
+                    catch(Exception ex)
+                    {
+                        throw new ExecutionError($"Internal Error in GraphPass", ex);
                     }
                 }
             }

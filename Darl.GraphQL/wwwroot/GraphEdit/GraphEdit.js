@@ -775,11 +775,45 @@ async function loadGraphs() {
                                 }).done(async function (data) {
                                     console.log(data);
                                     if (data.sublineage !== sublin) {
-                                        try {
-                                            await updateGraphObject({ name: mdname, obj: { id: ele.id(), subLineage: data.sublineage, lineage: lin } });
+                                        const ivl = await isvalidlineage({ lin: data.sublineage });
+                                        if (!ivl.isValidLineage) {
+                                            var sublineages = await getlineagesforword({ word: data.sublineage });
+                                            var subobj = {};
+                                            $.each(sublineages.getLineagesForWord, function (i, item) {
+                                                subobj[item.lineage] = item.typeWord + ": " + item.description;
+                                            });
+                                            $.MessageBox({
+                                                input: {
+                                                    lin: {
+                                                        label: "Possible sub-lineages",
+                                                        type: "select",
+                                                        options: subobj
+                                                    }
+                                                },
+                                                buttonDone: "Select",
+                                                buttonFail: "Cancel",
+                                                message: "Choose a lineage for this word.",
+                                                queue: false,
+                                                filterDone: function (data) {
+                                                    if (data.lin === "") return "Select a lineage.";
+                                                }
+                                            }).done(async function (data) {
+                                                sublin = data.lin;
+                                                try {
+                                                    await updateGraphObject({ name: mdname, obj: { id: ele.id(), subLineage: sublin, lineage: lin } });
+                                                }
+                                                catch (err) {
+                                                    HandleError(err);
+                                                }
+                                            });
                                         }
-                                        catch (err) {
-                                            HandleError(err);
+                                        else {
+                                            try {
+                                                await updateGraphObject({ name: mdname, obj: { id: ele.id(), subLineage: data.sublineage, lineage: lin } });
+                                            }
+                                            catch (err) {
+                                                HandleError(err);
+                                            }
                                         }
                                     }
                                 });
@@ -1118,7 +1152,12 @@ async function loadGraphs() {
                                     }).done(async function (data) {
                                         sublin = data.sublin;
                                         lin = data.lin;
-                                        await CreateNode(evt, name, externalId, lin, sublin);
+                                        try {
+                                            await CreateNode(evt, name, externalId, lin, sublin);
+                                        }
+                                        catch (err) {
+                                            HandleError(err);
+                                        }
                                     });
                                 }
                                 else if (!sublin) {
@@ -1139,7 +1178,12 @@ async function loadGraphs() {
                                         }
                                     }).done(async function (data) {
                                         sublin = data.lin;
-                                        await CreateNode(evt, name, externalId, lin, sublin);
+                                        try {
+                                            await CreateNode(evt, name, externalId, lin, sublin);
+                                        }
+                                        catch (err) {
+                                            HandleError(err);
+                                        }
                                     });
                                 }
                                 else {
@@ -1165,11 +1209,21 @@ async function loadGraphs() {
                                 }
                             }
                             else {
-                                await CreateNode(evt, name, externalId, lin, sublin);
+                                try {
+                                    await CreateNode(evt, name, externalId, lin, sublin);
+                                }
+                                catch (err) {
+                                    HandleError(err);
+                                }
                             }
                         }
                         else {
-                            await CreateNode(evt, name, externalId, lin);
+                            try {
+                                await CreateNode(evt, name, externalId, lin);
+                            }
+                            catch (err) {
+                                HandleError(err);
+                            }
                         }
                     });
                 }

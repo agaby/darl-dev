@@ -950,9 +950,27 @@ namespace Darl.GraphQL.Models.Schemata
                 resolve: async context =>
                 {
                     var graphName = context.GetArgument<string>("graphName");
-                    var root = context.GetArgument<string>("root");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(async c => await graph.GetRecognitionDisplayGraph(CompositeName(userId, graphName)));
+                }
+            );
+            FieldAsync<GraphAttributeType>(
+                "getGraphAttribute",
+                "Drill down to an individual attribute within a KG",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id or externalId of the associated object" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "lineage of the attribute to find" },
+                    new QueryArgument<StringGraphType> { Name = "ksId", Description = "Knowledge State id if required" }
+                ),
+                resolve: async context =>
+                {
+                    var graphName = context.GetArgument<string>("graphName");
+                    var id = context.GetArgument<string>("id");
+                    var lineage = context.GetArgument<string>("lineage");
+                    var ksId = context.GetArgument<string>("ksId");
+                    var userId = connectivity.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(async c => await graph.GetGraphAttribute(userId, graphName,id,lineage,ksId));
                 }
             );
 
