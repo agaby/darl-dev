@@ -328,7 +328,7 @@ namespace Darl.GraphQL
             app.Use(async (context, next) =>
             {
 
-                DarlUser du = null;
+                DarlUser? du = null;
                 String roles = string.Empty;
                 string objectId = string.Empty;
                 var _rep = (IConnectivity)context.RequestServices.GetService(typeof(IConnectivity));

@@ -26,59 +26,78 @@ namespace Darl.GraphQL.Pages
         }
         public async Task<JsonResult> OnGetData([FromQuery] int? page, [FromQuery] int? limit, [FromQuery] string sortBy, [FromQuery] string direction, [FromQuery] string lastName, [FromQuery] string company)
         {
-            if(_context.HttpContext.User == null || !_context.HttpContext.User.IsInRole("Admin"))
+            try
             {
-                return new JsonResult(new { records = new List<Contact>(), total = 0 });
-            }
-            int recordsTotal = 0;
-
-            // getting all Customer data  
-            var responseData = _conn.GetContactsQueryable();
-            //Sorting  
-            if (!(string.IsNullOrEmpty(sortBy) && string.IsNullOrEmpty(direction)))
-            {
-                var prop = GetResponseProperty(sortBy);
-                if (direction == "asc")
+                if (_context.HttpContext.Request.Headers.ContainsKey("apikey"))
                 {
-                    responseData = responseData.OrderBy(prop.GetValue).AsQueryable();
+                    var user = await _conn.GetUserByApiKey(_context.HttpContext.Request.Headers["apikey"].FirstOrDefault());
+                    if (user == null || user.accountState != DarlUser.AccountState.admin)
+                        return new JsonResult(new { records = new List<Contact>(), total = 0 });
+                }
+                else if (_context.HttpContext.User == null || !_context.HttpContext.User.IsInRole("Admin"))
+                {
+                    return new JsonResult(new { records = new List<Contact>(), total = 0 });
+                }
+                int recordsTotal = 0;
+
+                // getting all Customer data  
+                var responseData = _conn.GetContactsQueryable();
+                //Sorting  
+                if (!(string.IsNullOrEmpty(sortBy) && string.IsNullOrEmpty(direction)))
+                {
+                    var prop = GetResponseProperty(sortBy);
+                    if (direction == "asc")
+                    {
+                        responseData = responseData.OrderBy(prop.GetValue).AsQueryable();
+                    }
+                    else
+                    {
+                        responseData = responseData.OrderByDescending(prop.GetValue).AsQueryable();
+                    }
+
+                }
+                //Search  
+                if (!string.IsNullOrEmpty(lastName))
+                {
+                    responseData = responseData.Where(m => m.LastName != null && m.LastName.ToLower().Contains(lastName.ToLower()));
+                }
+
+                if (!string.IsNullOrEmpty(company))
+                {
+                    responseData = responseData.Where(m => m.Company != null && m.Company.ToLower().Contains(company.ToLower()));
+                }
+
+                //total number of rows counts   
+                recordsTotal = responseData.Count();
+                //Paging  
+                List<Contact> data;
+                if (page.HasValue && limit.HasValue)
+                {
+                    int start = (page.Value - 1) * limit.Value;
+                    data = responseData.Skip(start).Take(limit.Value).ToList();
                 }
                 else
                 {
-                    responseData = responseData.OrderByDescending(prop.GetValue).AsQueryable();
+                    data = responseData.ToList();
                 }
-
+                //Returning Json Data  
+                return new JsonResult(new { records = data, total = recordsTotal });
             }
-            //Search  
-            if (!string.IsNullOrEmpty(lastName))
+            catch(Exception ex)
             {
-                responseData = responseData.Where(m => m.LastName != null && m.LastName.ToLower().Contains(lastName.ToLower()));
+                return new JsonResult(new { records = new List<Contact>(), total = 0 });
             }
-
-            if (!string.IsNullOrEmpty(company))
-            {
-                responseData = responseData.Where(m => m.Company != null && m.Company.ToLower().Contains(company.ToLower()));
-            }
-
-            //total number of rows counts   
-            recordsTotal = responseData.Count();
-            //Paging  
-            List<Contact> data;
-            if (page.HasValue && limit.HasValue)
-            {
-                int start = (page.Value - 1) * limit.Value;
-                data = responseData.Skip(start).Take(limit.Value).ToList();
-            }
-            else
-            {
-                data = responseData.ToList();
-            }
-            //Returning Json Data  
-            return new JsonResult(new { records = data, total = recordsTotal });
         }
 
         public async Task OnPostDeleteAsync(string id)
         {
-            if (_context.HttpContext.User == null || !_context.HttpContext.User.IsInRole("Admin"))
+            if (_context.HttpContext.Request.Headers.ContainsKey("apikey"))
+            {
+                var user = await _conn.GetUserByApiKey(_context.HttpContext.Request.Headers["apikey"].FirstOrDefault());
+                if (user == null || user.accountState != DarlUser.AccountState.admin)
+                    return ;
+            }
+            else if(_context.HttpContext.User == null || !_context.HttpContext.User.IsInRole("Admin"))
             {
                 return;
             }
@@ -87,7 +106,13 @@ namespace Darl.GraphQL.Pages
 
         public async Task OnPostUpdateAsync()
         {
-            if (_context.HttpContext.User == null || !_context.HttpContext.User.IsInRole("Admin"))
+            if (_context.HttpContext.Request.Headers.ContainsKey("apikey"))
+            {
+                var user = await _conn.GetUserByApiKey(_context.HttpContext.Request.Headers["apikey"].FirstOrDefault());
+                if (user == null || user.accountState != DarlUser.AccountState.admin)
+                    return;
+            }
+            else if(_context.HttpContext.User == null || !_context.HttpContext.User.IsInRole("Admin"))
             {
                 return;
             }
@@ -118,6 +143,44 @@ namespace Darl.GraphQL.Pages
                 }
             }
         }
+
+        public async Task OnPostCreateAsync()
+        {
+            if (_context.HttpContext.Request.Headers.ContainsKey("apikey"))
+            {
+                var user = await _conn.GetUserByApiKey(_context.HttpContext.Request.Headers["apikey"].FirstOrDefault());
+                if (user == null || user.accountState != DarlUser.AccountState.admin)
+                    return;
+            }
+            else if (_context.HttpContext.User == null || !_context.HttpContext.User.IsInRole("Admin"))
+            {
+                return;
+            }
+            MemoryStream stream = new MemoryStream();
+            Request.Body.CopyTo(stream);
+            stream.Position = 0;
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                string requestBody = reader.ReadToEnd();
+                string decoded = HttpUtility.UrlDecode(requestBody);
+                decoded = decoded.Substring(8);
+                if (requestBody.Length > 0)
+                {
+                    try
+                    {
+                        var con = JsonConvert.DeserializeObject<Contact>(decoded);
+                        con.Created = DateTime.Now;
+                        await _conn.CreateContactAsync(con);
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+
+                }
+            }
+        }
+
 
         private PropertyInfo GetResponseProperty(string name)
         {
