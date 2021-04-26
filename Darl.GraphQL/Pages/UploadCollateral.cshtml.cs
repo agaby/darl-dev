@@ -20,13 +20,13 @@ namespace Darl.GraphQL.Pages
         public UploadType uploadType { get; set; }
 
         [BindProperty, Display(Name = "File to upload")]
-        public IFormFile UploadedFile { get; set; }
+        public IFormFile? UploadedFile { get; set; }
 
         [BindProperty, Display(Name = "Name of resource")]
-        public string destinationName { get; set; }
+        public string? destinationName { get; set; }
 
         [BindProperty, Display(Name = "Api Key")]
-        public string apiKey { get; set; }
+        public string? apiKey { get; set; }
 
         private IConnectivity _connectivity;
 
@@ -62,20 +62,26 @@ namespace Darl.GraphQL.Pages
                     using (var ms = new MemoryStream())
                     {
                         var d = new Document { userId = userId, name = destinationName };
-                        await UploadedFile.CopyToAsync(ms);
-                        d.content = ms.ToArray();
-                        await _connectivity.UpdateDocument(d);
+                        if (UploadedFile != null)
+                        {
+                            await UploadedFile.CopyToAsync(ms);
+                            d.content = ms.ToArray();
+                            await _connectivity.UpdateDocument(d);
+                        }
                     }
                     break;
                 default:
                     using (var ms = new MemoryStream())
                     {
-                        await UploadedFile.CopyToAsync(ms);
-                        ms.Position = 0;
-                        using (var reader = new StreamReader(ms))
+                        if (UploadedFile != null)
                         {
-                           var content = await reader.ReadToEndAsync();
-                           await _connectivity.UpdateCollateral(userId, destinationName, content);
+                            await UploadedFile.CopyToAsync(ms);
+                            ms.Position = 0;
+                            using (var reader = new StreamReader(ms))
+                            {
+                                var content = await reader.ReadToEndAsync();
+                                await _connectivity.UpdateCollateral(userId, destinationName, content);
+                            }
                         }
                     }
                     break;

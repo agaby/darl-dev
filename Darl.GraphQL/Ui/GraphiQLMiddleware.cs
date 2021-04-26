@@ -21,7 +21,7 @@ namespace Darl.GraphQL.Ui.GraphiQL {
         /// <summary>
         /// The page model used to render GraphiQL
         /// </summary>
-        private GraphiQLPageModel _pageModel;
+        private GraphiQLPageModel? _pageModel;
 
         /// <summary>
         /// Create a new GraphiQLMiddleware

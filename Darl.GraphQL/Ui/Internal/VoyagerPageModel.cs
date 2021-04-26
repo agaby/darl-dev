@@ -7,7 +7,7 @@ namespace Darl.GraphQL.Ui.Voyager.Internal
     // https://docs.microsoft.com/en-us/aspnet/core/mvc/razor-pages/?tabs=netcore-cli
     internal class VoyagerPageModel
     {
-        private string voyagerCSHtml;
+        private string? voyagerCSHtml;
 
         private readonly GraphQLVoyagerOptions settings;
 
@@ -27,14 +27,18 @@ namespace Darl.GraphQL.Ui.Voyager.Internal
 
             using (var manifestResourceStream = assembly.GetManifestResourceStream("Darl.GraphQL.Ui.Internal.voyager.cshtml"))
             {
-                using (var streamReader = new StreamReader(manifestResourceStream))
+                if (manifestResourceStream != null)
                 {
-                    var builder = new StringBuilder(streamReader.ReadToEnd());
-                    builder.Replace("@Model.GraphQLEndPoint", this.settings.GraphQLEndPoint);
-                    voyagerCSHtml = builder.ToString();
-                    return this.Render();
+                    using (var streamReader = new StreamReader(manifestResourceStream))
+                    {
+                        var builder = new StringBuilder(streamReader.ReadToEnd());
+                        builder.Replace("@Model.GraphQLEndPoint", this.settings.GraphQLEndPoint);
+                        voyagerCSHtml = builder.ToString();
+                        return this.Render();
+                    }
                 }
             }
+            return string.Empty;
         }
     }
 }

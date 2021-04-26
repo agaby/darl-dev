@@ -437,7 +437,7 @@ namespace Darl.GraphQL
 
         }
 
-        private async Task<DarlUser> AddNewUser(HttpContext context, string objectId, IConnectivity _rep)
+        private async Task<DarlUser?> AddNewUser(HttpContext context, string objectId, IConnectivity _rep)
         {
             try
             { 

@@ -15,12 +15,12 @@ namespace Darl.GraphQL.Ui.Playground {
         /// <summary>
         /// The GraphQL Config
         /// </summary>
-        public Dictionary<string, object> GraphQLConfig { get; set; } = null;
+        public Dictionary<string, object>? GraphQLConfig { get; set; } = null;
 
         /// <summary>
         /// The GraphQL Playground Settings
         /// </summary>
-        public Dictionary<string, object> PlaygroundSettings { get; set; } = null;
+        public Dictionary<string, object>? PlaygroundSettings { get; set; } = null;
 
     }
 

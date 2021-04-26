@@ -29,18 +29,21 @@ namespace Darl.GraphQL.Pages
 
         public  async Task<ActionResult> OnPostAsync()
         {
-            var user = await _connectivity.GetUserById(User.Identity.Name);
-            if (!string.IsNullOrEmpty(user.StripeCustomerId))
+            if (User.Identity.Name != null)
             {
-                StripeConfiguration.ApiKey = _config["AppSettings:StripeAPIKey"];
-                var options = new SessionCreateOptions
+                var user = await _connectivity.GetUserById(User.Identity.Name);
+                if (!string.IsNullOrEmpty(user.StripeCustomerId))
                 {
-                    Customer = user.StripeCustomerId,
-                    ReturnUrl = "https://darl.dev",
-                };
-                var service = new SessionService();
-                var session = service.Create(options);
-                return Redirect(session.Url);
+                    StripeConfiguration.ApiKey = _config["AppSettings:StripeAPIKey"];
+                    var options = new SessionCreateOptions
+                    {
+                        Customer = user.StripeCustomerId,
+                        ReturnUrl = "https://darl.dev",
+                    };
+                    var service = new SessionService();
+                    var session = service.Create(options);
+                    return Redirect(session.Url);
+                }
             }
             return Redirect("Https://darl.dev");
         }

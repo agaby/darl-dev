@@ -21,7 +21,7 @@ namespace Darl.GraphQL.Ui.Voyager
         /// <summary>
         /// The page model used to render Voyager
         /// </summary>
-        private VoyagerPageModel _pageModel;
+        private VoyagerPageModel? _pageModel;
 
         /// <summary>
         /// Create a new VoyagerMiddleware

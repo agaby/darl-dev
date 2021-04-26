@@ -46,15 +46,17 @@ namespace Darl.GraphQL.Pages
                 if (!(string.IsNullOrEmpty(sortBy) && string.IsNullOrEmpty(direction)))
                 {
                     var prop = GetResponseProperty(sortBy);
-                    if (direction == "asc")
+                    if (prop != null)
                     {
-                        responseData = responseData.OrderBy(prop.GetValue).AsQueryable();
+                        if (direction == "asc")
+                        {
+                            responseData = responseData.OrderBy(prop.GetValue).AsQueryable();
+                        }
+                        else
+                        {
+                            responseData = responseData.OrderByDescending(prop.GetValue).AsQueryable();
+                        }
                     }
-                    else
-                    {
-                        responseData = responseData.OrderByDescending(prop.GetValue).AsQueryable();
-                    }
-
                 }
                 //Search  
                 if (!string.IsNullOrEmpty(lastName))
@@ -83,7 +85,7 @@ namespace Darl.GraphQL.Pages
                 //Returning Json Data  
                 return new JsonResult(new { records = data, total = recordsTotal });
             }
-            catch(Exception ex)
+            catch
             {
                 return new JsonResult(new { records = new List<Contact>(), total = 0 });
             }
@@ -135,7 +137,7 @@ namespace Darl.GraphQL.Pages
                             con.Id = Guid.NewGuid().ToString();
                         await _conn.UpdateContactAsync(con);
                     }
-                    catch(Exception ex)
+                    catch
                     {
 
                     }
@@ -172,7 +174,7 @@ namespace Darl.GraphQL.Pages
                         con.Created = DateTime.Now;
                         await _conn.CreateContactAsync(con);
                     }
-                    catch (Exception ex)
+                    catch 
                     {
 
                     }
@@ -182,10 +184,10 @@ namespace Darl.GraphQL.Pages
         }
 
 
-        private PropertyInfo GetResponseProperty(string name)
+        private PropertyInfo? GetResponseProperty(string name)
         {
             var properties = typeof(Contact).GetProperties();
-            PropertyInfo prop = null;
+            PropertyInfo? prop = null;
             foreach (var item in properties)
             {
                 if (item.Name.ToLower().Equals(name.ToLower()))

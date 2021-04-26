@@ -22,7 +22,7 @@ namespace Darl.GraphQL.Pages
         public string modelName { get; set; } = "far_left.model";
 
         [BindProperty, Display(Name = "Api Key")]
-        public string apiKey { get; set; }
+        public string? apiKey { get; set; }
 
         private IConnectivity _connectivity;
 

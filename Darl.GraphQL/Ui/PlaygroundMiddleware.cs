@@ -21,7 +21,7 @@ namespace Darl.GraphQL.Ui.Playground {
         /// <summary>
         /// The page model used to render Playground
         /// </summary>
-        private PlaygroundPageModel _pageModel;
+        private PlaygroundPageModel? _pageModel;
 
         /// <summary>
         /// Create a new PlaygroundMiddleware
