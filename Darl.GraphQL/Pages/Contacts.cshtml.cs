@@ -32,7 +32,9 @@ namespace Darl.GraphQL.Pages
                 {
                     var user = await _conn.GetUserByApiKey(_context.HttpContext.Request.Headers["apikey"].FirstOrDefault());
                     if (user == null || user.accountState != DarlUser.AccountState.admin)
+                    {
                         return new JsonResult(new { records = new List<Contact>(), total = 0 });
+                    }
                 }
                 else if (_context.HttpContext.User == null || !_context.HttpContext.User.IsInRole("Admin"))
                 {

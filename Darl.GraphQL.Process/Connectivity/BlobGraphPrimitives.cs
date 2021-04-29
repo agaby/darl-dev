@@ -59,11 +59,11 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var cont = await Load(compositeName) as BlobGraphContent;
             var gc = new GraphConnection { id = conn.id, endId = conn.endId, existence = conn.existence, inferred = false, lineage = conn.lineage, name = conn.name, properties = conn.properties, startId = conn.startId, weight = conn.weight ?? 1.0, _virtual = false };
-            if (cont.vertices.ContainsKey(conn.startId))
+            if (cont != null && cont.vertices.ContainsKey(conn.startId))
                 cont.vertices[conn.startId].Out.Add(gc);
             else
                 throw new ExecutionError($"Real vertex id {conn.startId} does not exist");
-            if (cont.vertices.ContainsKey(conn.endId))
+            if (cont != null && cont.vertices.ContainsKey(conn.endId))
                 cont.vertices[conn.endId].In.Add(gc);
             else
                 throw new ExecutionError($"Real vertex id {conn.endId} does not exist");
@@ -83,8 +83,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task CreateVirtualConnection(IGraphModel model, string child, string lineage, string connectionLabel)
         {
-            BlobGraphContent cont = model as BlobGraphContent;
-            if (!cont.virtualEdges.ContainsKey(($"{child}->{lineage}")))
+            BlobGraphContent? cont = model as BlobGraphContent;
+            if (cont != null && !cont.virtualEdges.ContainsKey(($"{child}->{lineage}")))
             {
                 var gc = new GraphConnection { id = Guid.NewGuid().ToString(), endId = lineage, inferred = false, name = connectionLabel, startId = child, weight = 1.0, _virtual = true };
                 if (cont.virtualVertices.ContainsKey(child))
@@ -712,7 +712,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<List<GraphObject>> GetGraphObjectsByLineage(string compositeName, string lineage)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
+            var cont = await Load(compositeName);
             return cont.vertices.Values.Where(a => a.lineage.StartsWith(lineage)).ToList();
         }
 

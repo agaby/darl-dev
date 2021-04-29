@@ -103,7 +103,6 @@
         var grid, dialog;
         var apiKey;
 
-        microsoftTeams.initialize();
 
         function Edit(e) {
             $('#id').val(e.data.record.id);
@@ -249,6 +248,8 @@
                         alert('Failed to delete.');
                     })
             });
+            microsoftTeams.initialize();
+            microsoftTeams.appInitialization.notifySuccess();
 
         });
 

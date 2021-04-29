@@ -171,6 +171,7 @@ $(async function () {
     if (mdname !== null) { // pre-loaded
         $('#fileHandling').addClass('d-none');
         descriptions = {};
+        initialTexts = {};
         try {
             var kgmeta = await kgraph({ name: mdname });
             descriptions[mdname] = kgmeta.kGraphByName.description;
