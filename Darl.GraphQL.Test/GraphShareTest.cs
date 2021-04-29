@@ -101,7 +101,7 @@ namespace Darl.GraphQL.Test
         {
             var demoUser = _config["AppSettings:boaiuserid"];
 //            await _conn.UpdateSubscriptionType(daveUser, DarlUser.SubscriptionType.corporate);
-            await _conn.ShareKGraph(_config["userId"],graphName, demoUser, true);
+            await _conn.ShareKGraph(_config["userId"],graphName, demoUser, false,true);
         }
 
         /// <summary>
