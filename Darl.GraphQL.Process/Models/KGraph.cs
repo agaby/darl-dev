@@ -32,5 +32,7 @@ namespace Darl.GraphQL.Models.Models
         /// Initial text for the conversation in demo mode
         /// </summary>
         public string InitialText { get; set; }
+
+        public bool? hidden { get; set; } = false;
     }
 }

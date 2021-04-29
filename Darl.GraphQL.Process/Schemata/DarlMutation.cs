@@ -12,7 +12,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlMutation : ObjectGraphType<object>
     {
-        public DarlMutation(IConnectivity connectivity, IEmailProcessing email, IGraphProcessing graph, IConfiguration _config, ISoftMatchProcessing cmp)
+        public DarlMutation(IConnectivity connectivity, IEmailProcessing email, IGraphProcessing graph, IConfiguration _config, ISoftMatchProcessing cmp, IKGTranslation trans)
         {
             Name = "Mutation";
             Description = "Make changes to the contents of your account.";
@@ -812,7 +812,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var from = context.GetArgument<string>("from");
                     var to = context.GetArgument<string>("to");
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.SetLastUpdate(from, to));
+                        async c => await trans.SetLastUpdate(from, to));
                 }
             ).AuthorizeWith("AdminPolicy");
 

@@ -1,4 +1,5 @@
-﻿using Darl.GraphQL.Models.Models;
+﻿using Darl.Common;
+using Darl.GraphQL.Models.Models;
 using Darl.Thinkbase;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Darl.GraphQL.Process.Connectivity
+namespace Darl.GraphQL.Models.Connectivity
 {
     /// <summary>
     /// Transforms between GraphQL processes and KGs
@@ -18,7 +19,7 @@ namespace Darl.GraphQL.Process.Connectivity
         private IConfiguration _config;
         private ILogger<KGTranslation> _logger;
         private IGraphProcessing _graph;
-        private static string updateKG = "updates.graph";
+        private static string backofficeKG = "backoffice.graph";
         private static string sourceLineage = "noun:01,4,04,02,21,16";
         private static string destinationLineage = "noun:01,0,0,15,15,3";
         private static string processLineage = "noun:00,4";
@@ -27,14 +28,14 @@ namespace Darl.GraphQL.Process.Connectivity
             _config = config;
             _logger = logger;
             _graph = graph;
-            updateKG = _config["AppSettings:boaiuserid"] + '_' + updateKG;
+            backofficeKG = _config["AppSettings:boaiuserid"] + '_' + backofficeKG;
         }
 
 
         public async Task<List<Update>> Updates()
         {
             var list = new List<Update>();
-            var obs = await _graph.GetGraphObjectsByLineage(updateKG, processLineage);
+            var obs = await _graph.GetGraphObjectsByLineage(backofficeKG, processLineage);
             foreach(var o in obs)
             {
                 var from = o.properties.FirstOrDefault(a => a.lineage.StartsWith(sourceLineage));
@@ -58,14 +59,40 @@ namespace Darl.GraphQL.Process.Connectivity
             return DateTime.MinValue;
         }
 
-        public DateTime SetLastUpdate(string from, string to)
+        public async Task<DateTime> SetLastUpdate(string from, string to)
         {
-            return DateTime.Now;
+            var obj = await GetUpdate(from, to);
+            if(obj != null)
+            {
+                obj.existence.Clear();
+                obj.existence.Add(new DarlTime(DateTime.UtcNow));
+            }
+            else
+            {
+                var goi = new GraphObjectInput { 
+                    name = $"{from} - {to}", 
+                    lineage = processLineage,
+                    properties = new List<GraphAttribute> { 
+                        new GraphAttribute {
+                            name = "from", 
+                            lineage = sourceLineage, 
+                            value = from
+                        }, new GraphAttribute {
+                            name = "to",
+                            lineage = destinationLineage,
+                            value = to
+                        } },
+                    existence = new List<DarlTime?> { new DarlTime(DateTime.UtcNow) }
+                };
+                await _graph.CreateGraphObject(backofficeKG, goi, OntologyAction.build);
+            }
+            await _graph.Store(backofficeKG);
+            return DateTime.UtcNow;
         }
 
         private async Task<GraphObject?> GetUpdate(string from, string to)
         {
-            var obs = await _graph.GetGraphObjectsByLineage(updateKG, processLineage);
+            var obs = await _graph.GetGraphObjectsByLineage(backofficeKG, processLineage);
             foreach (var o in obs)
             {
                 var tfrom = o.properties.FirstOrDefault(a => a.lineage.StartsWith(sourceLineage));

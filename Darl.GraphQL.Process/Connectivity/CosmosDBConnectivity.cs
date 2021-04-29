@@ -2725,7 +2725,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var mc = db.GetCollection<KGraph>(kgraphcollection);
             var query = mc.AsQueryable()
-            .Where(p => p.userId == userId);
+            .Where(p => p.userId == userId && !(p.hidden == false));
             return await query.ToListAsync();
         }
 
@@ -2780,6 +2780,8 @@ namespace Darl.GraphQL.Models.Connectivity
                 updList.Add(Builders<KGraph>.Update.Set(x => x.fixedTime, kgupdate.fixedTime));
             if (kgupdate.InitialText != null)
                 updList.Add(Builders<KGraph>.Update.Set(x => x.InitialText, kgupdate.InitialText));
+            if (kgupdate.hidden != null)
+                updList.Add(Builders<KGraph>.Update.Set(x => x.hidden, kgupdate.hidden));
             var update = Builders<KGraph>.Update.Combine(updList);
             return await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<KGraph, KGraph> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
         }
@@ -2811,7 +2813,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return Task.FromResult(errorList);
         }
 
-        public async Task<KGraph> ShareKGraph(string userId, string name, string sharerId, bool readOnly)
+        public async Task<KGraph> ShareKGraph(string userId, string name, string sharerId, bool readOnly, bool hidden)
         {
             //ensure KG exists
             var model = await GetKGModel(userId, name);
@@ -2822,7 +2824,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (otherUser == null && sharerId != backgroundUserId)
                 return null;
             //create a record with sharerId as userId and Shared set.
-            var kg = new KGraph { Name = name, OwnerId = userId, userId = sharerId, Shared = true, ReadOnly = readOnly, Description = model.Description };
+            var kg = new KGraph { Name = name, OwnerId = userId, userId = sharerId, Shared = true, ReadOnly = readOnly, Description = model.Description, hidden = hidden };
             var mc = db.GetCollection<KGraph>(kgraphcollection);
             await mc.InsertOneAsync(kg);
             return kg;

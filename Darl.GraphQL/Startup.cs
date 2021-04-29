@@ -108,6 +108,7 @@ namespace Darl.GraphQL
             services.AddSingleton<IGraphHandler, GraphHandler>();
             services.AddSingleton<IBlobConnectivity, BlobGraphConnectivity>();
             services.AddSingleton<IMetaStructureHandler, MetaStructureHandler>();
+            services.AddSingleton<IKGTranslation, KGTranslation>();
 
             //types
             services.AddSingleton<BotFormatType>();

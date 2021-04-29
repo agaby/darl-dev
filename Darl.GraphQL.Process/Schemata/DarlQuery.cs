@@ -15,7 +15,7 @@ namespace Darl.GraphQL.Models.Schemata
 {
     public class DarlQuery : ObjectGraphType<object>
     {
-        public DarlQuery(IConnectivity connectivity, IBotProcessing bot, IFormProcessing form, ISimProcessing sim, IGraphProcessing graph, ISoftMatchProcessing cmp, ILocalStore graphStore)
+        public DarlQuery(IConnectivity connectivity, IBotProcessing bot, IFormProcessing form, ISimProcessing sim, IGraphProcessing graph, ISoftMatchProcessing cmp, ILocalStore graphStore, IKGTranslation trans)
         {
             Name = "Query";
             Description = "View the contents of your account.";
@@ -443,7 +443,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var from = context.GetArgument<string>("from");
                     var to = context.GetArgument<string>("to");
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.GetLastUpdate(from,to));
+                        async c => await trans.GetLastUpdate(from,to));
                 }
             );
             FieldAsync<ListGraphType<ConversationType>>(
@@ -504,7 +504,7 @@ namespace Darl.GraphQL.Models.Schemata
                 resolve: async context =>
                 {
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.GetUpdates());
+                        async c => await trans.Updates());
                 }
             );
             FieldAsync<BooleanGraphType>(

@@ -17,5 +17,7 @@ namespace Darl.GraphQL.Models.Models
         public string userId { get; set; }
         public bool? ReadOnly { get; set; } = false;
         public string InitialText { get; set; }
+        public bool? hidden { get; set; } = false;
+
     }
 }
