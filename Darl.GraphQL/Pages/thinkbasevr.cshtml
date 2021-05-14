@@ -15,14 +15,35 @@
 
 <main role="main" class="pb-3" style="padding: 0px !important">
     <a-scene inspector keyboard-shortcuts screenshot vr-mode-ui>
-        <a-entity id="rig"
-                  movement-controls="speed: 7; fly: true">
-            <a-entity camera
-                      look-controls="pointerLockEnabled: true">
-            </a-entity>
-        </a-entity>
+        <!--       <a-entity id="rig"
+                     movement-controls="speed: 7; fly: true">
+               <a-entity camera
+                         look-controls="pointerLockEnabled: true">
+               </a-entity>
+           </a-entity> -->
+        <a-entity cursor="rayOrigin: mouse; mouseCursorStylesEnabled: true;" raycaster="objects: [forcegraph];"></a-entity>
+        <a-entity laser-controls="hand: left" raycaster="objects: [forcegraph]; lineColor: steelblue; lineOpacity: 0.85;"></a-entity>
+        <a-entity laser-controls="hand: right" raycaster="objects: [forcegraph]; lineColor: steelblue; lineOpacity: 0.85;"></a-entity>
+
+        <a-camera look-controls="pointerLockEnabled: false"
+                  wasd-controls="fly: true; acceleration: 600;">
+            <!-- <a-cursor color="lavender" opacity="0.5" raycaster="objects: [forcegraph]"></a-cursor> -->
+            <a-text id="forcegraph-tooltip"
+                    position="0.0 0.0 -1"
+                    width="0.7"
+                    align="left"
+                    color="lavender"
+                    opacity="0.5"></a-text>
+        </a-camera>
         <a-sky color="#003" radius="10000"></a-sky>
-        <a-entity id="fg" forcegraph="node-label: name; node-auto-color-by: compositelineage; link-directional-arrow-length: 1.5; link-directional-arrow-rel-pos: 1;"></a-entity>
+        <a-entity id="fg" forcegraph="
+                  node-label: name; 
+                  node-auto-color-by: compositelineage; 
+                  link-directional-arrow-length: 1.5; 
+                  link-directional-arrow-rel-pos: 1;
+                  on-node-hover: node => document.querySelector('#forcegraph-tooltip').setAttribute('value', node ? node.externalId : '');
+                  on-node-click: async node => document.querySelector('#forcegraph-tooltip').setAttribute('value', await GetFullString(node.id));
+        "></a-entity>
     </a-scene>
     <div id='kgurl' data-kgurl="@RouteData.Values["kgraph"]"></div>
 </main>
@@ -33,6 +54,7 @@
 
     <script>
         var settingsStorageName = 'thinkbase-settings';
+        var graph;
 
         $(async function () {
             var existing = window.localStorage.getItem(settingsStorageName);
@@ -47,7 +69,7 @@
                     key = existing.key;
                 }
             }
-            var graph = graphql(url + "/graphql");
+            graph = graphql(url + "/graphql");
             var apiKey = findGetParameter("apikey");
             if ($('#kgurl').data('kgurl')) {
                 mdname = $('#kgurl').data('kgurl');
@@ -67,6 +89,12 @@
             var fg = document.querySelector('#fg');
             fg.setAttribute('forcegraph', { nodes: data.getRealVRKGDisplay.nodes, links: data.getRealVRKGDisplay.links });
         });
+
+        async function GetFullString(id) {
+            var getGraphObjectToString = graph('query ($model: String! $id: String!){getGraphObjectToString(graphName: $model id: $id)}');
+            var data = await getGraphObjectToString({ model: mdname, id: id });
+            return data.getGraphObjectToString;
+        }
 
         function findGetParameter(parameterName) {
             var result = null,

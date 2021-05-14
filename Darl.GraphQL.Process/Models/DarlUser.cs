@@ -39,7 +39,7 @@ namespace Darl.GraphQL.Models.Models
         /// </summary>
         public string InvoiceEmail { get; set; }
 
-        public AccountState accountState { get; set; } = AccountState.trial;
+        public AccountState? accountState { get; set; }
         /// <summary>
         /// end of current subscription period.
         /// </summary>
@@ -58,6 +58,8 @@ namespace Darl.GraphQL.Models.Models
         public string parentAccount { get; set; }
 
         public List<string> subUsers { get; set; } = new List<string>();
+
+        public string productId { get; set; }
 
     }
 }

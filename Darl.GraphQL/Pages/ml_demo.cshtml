@@ -82,7 +82,6 @@
             graph = graphql("https://darl.dev/graphql");
             var allmodels = graph(`{ mlmodels { name }}`);
             var mlContent = graph(`query getModel($name: String!){  mlmodelByName(name: $name)  { mlmodel { darl trainData description}}}`);
-            var trainedContent = graph('query gc($name: String!){getCollateral(name: $name)}');
             const ml = await allmodels();
             $.each(ml.mlmodels, function (key, entry) {
                 dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
@@ -97,10 +96,15 @@
                 darlCodeMirror.refresh();
                 dataMirror.refresh();
             });
-            $('#process').click(async function () {
-                var content = await trainedContent({ name: mlname });
-                darlCodeMirror.setValue(content.getCollateral);
-                darlCodeMirror.refresh();
+            $('#process').click(function () {
+                $.ajax({
+                    url: "demo/" + mlname + ".txt",
+                    dataType: "text",
+                    success: function (data) {
+                        darlCodeMirror.setValue(data);
+                        darlCodeMirror.refresh();
+                    }
+                });
             });
 
            $('.nav-tabs a').on('shown.bs.tab', function () {

@@ -38,8 +38,10 @@ namespace Darl.GraphQL.Test
         private ITrigger _trigger;
         private ILogger<BotProcessing> _bplogger;
         private IHttpContextAccessor _context;
+        private IMetaStructureHandler _meta;
+        private IProducts _prods;
 
-        private static string graphName = "lifestyle_medicine.graph";
+        private static string graphName = "backoffice_test.graph";
 
         [TestInitialize()]
         public void Initialize()
@@ -79,10 +81,10 @@ namespace Darl.GraphQL.Test
             cache.Setup(a => a.GetAsync(It.IsAny<string>(), default)).Returns(Task.FromResult<byte[]>(null));
             var clogger = new Mock<ILogger<CosmosDBConnectivity>>();
             var clicense = new Mock<ILicensing>();
-            var meta = new Mock<IMetaStructureHandler>();
+            _meta = new MetaStructureHandler();
             _conn = new CosmosDBConnectivity(_config, clogger.Object, clicense.Object, cache.Object);
             _primitives = new BlobGraphPrimitives(new List<IBlobConnectivity> { blob }, cache.Object, _conn, bgplogger.Object);
-            _graph = new GraphProcessing(_primitives, glogger.Object,meta.Object);
+            _graph = new GraphProcessing(_primitives, glogger.Object,_meta);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
             var form = new Mock<IFormApi>();
             _form = form.Object;
@@ -93,10 +95,11 @@ namespace Darl.GraphQL.Test
             var bplogger = new Mock<ILogger<BotProcessing>>();
             _bplogger = bplogger.Object;
             _context = context.Object;
+            _prods = new Mock<IProducts>().Object;
         }
 
         [TestMethod]
-        [Ignore]
+//        [Ignore]
         public async Task ShareText()
         {
             var demoUser = _config["AppSettings:boaiuserid"];
@@ -364,5 +367,110 @@ namespace Darl.GraphQL.Test
             cursor = offset;
             return sb.ToString();
         }
+
+        [TestMethod]
+        [Ignore]
+        public async Task CreateKGDefaults()
+        {
+            var kglog = new Mock<ILogger<KGTranslation>>();
+            var kgt = new KGTranslation(kglog.Object, _config, _graph, _meta, _prods);
+            var defs = await _conn.GetDefaults();
+            foreach(var d in defs)
+            {
+                await kgt.CreateDefault(d.Name, d.Value);
+            }
+        }
+
+        [TestMethod]
+        [Ignore]
+        public async Task CreateKGCollateral()
+        {
+            var kglog = new Mock<ILogger<KGTranslation>>();
+            var kgt = new KGTranslation(kglog.Object, _config, _graph, _meta, _prods);
+            var defs = await _conn.GetCollaterals("786e46c2-fa33-4124-af67-1bb14625c216");
+            foreach (var d in defs)
+            {
+                await kgt.UpdateCollateral(d.Name, d.Value);
+            }
+        }
+
+        [TestMethod]
+        public async Task SaveDemoCollateral()
+        {
+            var kglog = new Mock<ILogger<KGTranslation>>();
+            var kgt = new KGTranslation(kglog.Object, _config, _graph, _meta, _prods);
+            var defs = await _conn.GetCollaterals(_config["AppSettings:boaiuserid"]);
+            foreach (var d in defs)
+            {
+                if(d.Name.EndsWith("mlmodel"))
+                {
+                    File.WriteAllText($"C:\\Users\\sales\\source\\repos\\Darl.GraphQL\\Darl.GraphQL\\wwwroot\\demo\\{d.Name}.txt", d.Value);
+                }
+            }
+        }
+
+        [TestMethod]
+        [Ignore]
+        public async Task CreateContacts()
+        {
+            var kglog = new Mock<ILogger<KGTranslation>>();
+            var kgt = new KGTranslation(kglog.Object, _config, _graph, _meta, _prods);
+            var users = await _conn.GetUsers();
+            var cons = await _conn.GetContacts();
+            foreach(var u in users)
+            {
+                await kgt.CreateUserAsync(u);
+            }
+            foreach (var c in cons)
+            {
+                await kgt.UpdateContactAsync(c);
+            }
+            await kgt.StoreSystemKG();
+        }
+
+        [TestMethod]
+        public async Task UpdateAttributeConfidence()
+        {
+            var m = await _graph.GetModel(_config["AppSettings:boaiuserid"], "backoffice.graph");
+            foreach(var v in m.vertices.Values)
+            {
+                if(v.properties != null)
+                {
+                    foreach(var a in v.properties)
+                    {
+                        a.confidence = 1.0;
+                    }
+                }
+            }
+            await _graph.Store(_config["AppSettings:boaiuserid"] + "_" + "backoffice.graph");
+        }
+
+        [TestMethod]
+        public void Testproducts()
+        {
+            var prods = new Products(_config);
+
+        }
+
+        [TestMethod]
+        public async Task RemoveUsersInTest()
+        {
+            var m = await _graph.GetModel(_config["AppSettings:boaiuserid"], "backoffice_test.graph");
+            var comp = _config["AppSettings:boaiuserid"] + "_" + "backoffice_test.graph";
+            var ids = new List<string>();
+            foreach (var v in m.vertices.Values)
+            {
+                if(v.lineage.StartsWith(_meta.CommonLineages["person"]))
+                {
+                    ids.Add(v.id);
+                }
+            }
+            foreach(var i in ids)
+            {
+                await _graph.DeleteGraphObject(comp, i);
+            }
+            await _graph.Store(comp);
+        }
+
     }
 }

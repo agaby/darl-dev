@@ -115,7 +115,7 @@ $(async function () {
         graph = graphql(url + "/graphql", { headers: { "Authorization": "Basic " + apiKey } });
     else if (key !== null && key !== "")
         graph = graphql(url + "/graphql", { headers: { "Authorization": "Basic " + key } });
-    else {
+    else if (!$('#auth').length) {
         demo = true;
         $('#fileHandling').addClass('d-none');
         if (!mdname) {

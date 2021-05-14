@@ -1,0 +1,81 @@
+﻿@page
+@model Darl.GraphQL.Pages.subscribeModel
+@{
+    ViewData["Title"] = "Subscribe to ThinkBase";
+    Layout = "~/Pages/_layoutscrolling.cshtml";
+}
+<main role ="main" class="pb-3" style="padding: 0px !important">
+    <div class="space-70"></div>
+    <div class="container-fluid" style="padding:20px; min-height:100vh">
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <h3>Subscribe</h3>
+                <p>You are agreeing to subscribe to <b>@Model.product</b> at <b>@Model.currency @Model.price</b> per month recurring. </p>
+                <p>You will be billed with the card you enter below. You can cancel at any time by logging in to this site and clicking on the <i>billing</i> button above.</p>
+                <p>Invoices will be emailed to you.</p>
+                <form id="subscribe-form" class="form-group">
+                    <label>
+                        Full name
+                        <input type="text" id="name" value="@Model.userName" class="form-control"/>
+                    </label>
+
+                    <div id="card-element" class="col-md-5">
+                        <!-- the card element will be mounted here -->
+                    </div>
+                    <div class="space-20">&nbsp;</div>
+                    <button type="submit" >
+                        Subscribe
+                    </button>
+
+                    <div id="messages" role="alert"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts
+{
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        var publishableKey = "@Model.StripePublicKey";
+        var subscriptionId = "@Model.SubscriptionId";
+        var clientSecret = "@Model.ClientSecret";
+
+        const setMessage = (message) => {
+            const messageDiv = document.querySelector('#messages');
+            messageDiv.innerHTML += "<br>" + '<span class="alert alert-warning">' + message + "</span>";
+        }
+        let stripe, cardElement;
+
+        stripe = Stripe(publishableKey);
+
+        const elements = stripe.elements();
+        cardElement = elements.create('card', { hidePostalCode: true });
+        cardElement.mount('#card-element');
+        const form = document.querySelector('#subscribe-form');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nameInput = document.getElementById('name');
+
+            // Create payment method and confirm payment intent.
+            stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: cardElement,
+                    billing_details: {
+                        name: nameInput.value,
+                    },
+                }
+            }).then((result) => {
+                if (result.error) {
+                    setMessage(`Payment failed: ${result.error.message}`);
+                } else {
+                    // Redirect the customer to their account page
+                    setMessage('Success! Redirecting to your account.');
+                    window.location.href = '/index?newsubs=true';
+                }
+            });
+        });
+    </script>
+}

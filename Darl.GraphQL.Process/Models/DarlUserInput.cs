@@ -45,5 +45,10 @@ namespace Darl.GraphQL.Models.Models
         public string StripeCustomerId { get; set; }
 
         public string UsageStripeSubscriptionItem { get; set; }
+
+        public string APIKey { get; set; }
+
+        public string productId { get; set; }
+
     }
 }

@@ -408,6 +408,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var divider = compositeName.IndexOf('_');
             var id = compositeName.Substring(0, divider);
             var name = compositeName[(divider + 1)..];
+            var user = 
             await _conn.CreateKGraph(id,name);
             var newGraph = new BlobGraphContent();
             AddDefaultContent(newGraph);
@@ -766,7 +767,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (!String.IsNullOrEmpty(sharedState.Item1))
             {
                 modified.Remove(sharedState.Item1);
-                var model = buffer[sharedState.Item1];
+                var model = buffer[compositeName];
                 byte[] data;
                 data = SerializeGraph(model);
                 await _blob.Write(sharedState.Item1, data);
@@ -1414,6 +1415,21 @@ namespace Darl.GraphQL.Models.Connectivity
             return dmodel;
         }
 
+        public async Task<int> GetKGraphCountAsync(string userId)
+        {
+            return await _conn.GetKGraphCountAsync(userId);
+        }
+
+        public async Task<string> GetGraphObjectToString(string compositeName, string id)
+        {
+            var obj = await GetGraphObjectById(compositeName, id);
+            if(obj != null)
+            {
+                return obj.ToString();
+            }
+            return string.Empty;
+        }
+
         internal static string CreateCompositeName(string userId, string name)
         {
             return userId + "_" + name.Replace(" ", "_");
@@ -1537,6 +1553,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return lineage.Substring(pos + 1);
         }
+
 
     }
 

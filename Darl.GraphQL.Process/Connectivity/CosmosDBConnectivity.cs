@@ -2725,8 +2725,16 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var mc = db.GetCollection<KGraph>(kgraphcollection);
             var query = mc.AsQueryable()
-            .Where(p => p.userId == userId && !(p.hidden == false));
+            .Where(p => p.userId == userId && !(p.hidden == true));
             return await query.ToListAsync();
+        }
+
+        public async Task<int> GetKGraphCountAsync(string userId)
+        {
+            var mc = db.GetCollection<KGraph>(kgraphcollection);
+            var query = mc.AsQueryable()
+            .Where(p => p.userId == userId && !(p.hidden == true));
+            return await query.CountAsync();
         }
 
         public async Task<UserUsage> CreateKGModelUsage(DateTime date, int count, string userId, string model)

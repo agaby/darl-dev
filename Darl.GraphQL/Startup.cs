@@ -42,11 +42,9 @@ namespace Darl.GraphQL
         static readonly string firstNameClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname";
         static readonly string secondNameClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname";
 
-        private readonly ILogger _logger;
 
-        public Startup(IConfiguration configuration, ILogger<Startup> logger)
+        public Startup(IConfiguration configuration)
         {
-            _logger = logger;
             Configuration = configuration;
         }
 
@@ -109,6 +107,7 @@ namespace Darl.GraphQL
             services.AddSingleton<IBlobConnectivity, BlobGraphConnectivity>();
             services.AddSingleton<IMetaStructureHandler, MetaStructureHandler>();
             services.AddSingleton<IKGTranslation, KGTranslation>();
+            services.AddSingleton<IProducts, Products>();
 
             //types
             services.AddSingleton<BotFormatType>();
@@ -332,7 +331,8 @@ namespace Darl.GraphQL
                 DarlUser? du = null;
                 String roles = string.Empty;
                 string objectId = string.Empty;
-                var _rep = (IConnectivity)context.RequestServices.GetService(typeof(IConnectivity));
+                string clientSecret = string.Empty;
+                var _rep = (IKGTranslation)context.RequestServices.GetService(typeof(IKGTranslation));
                 if (context.User.Identity.IsAuthenticated)
                 {
                     //look up user
@@ -343,7 +343,6 @@ namespace Darl.GraphQL
                         du = await AddNewUser(context, objectId, _rep);
                         if(du == null) //can't setup user
                         {
-                            _logger.LogError($"Can't setup user {context.User.Identity.Name}");
                             await next.Invoke();
                             return;
                         }
@@ -352,10 +351,8 @@ namespace Darl.GraphQL
                     {
                         if(!string.IsNullOrEmpty(du.parentAccount)) //this is a sub user, log in as the parent.
                         {
-                            _logger.LogInformation($"logged in sub user {du.InvoiceEmail}");
                             du = await _rep.GetUserById(du.parentAccount);
                         }
-                        _logger.LogInformation($"logged in user {du.InvoiceEmail}");
                     }
                 }
                 else
@@ -372,7 +369,6 @@ namespace Darl.GraphQL
                             return;
                         }
                         objectId = du.userId;
-                        _logger.LogInformation($"User {du.InvoiceEmail} logged in via API key");
                     }
                 }
                 if (du != null)//found it from one or other
@@ -385,17 +381,7 @@ namespace Darl.GraphQL
                         case DarlUser.AccountState.trial:
                         case DarlUser.AccountState.paying:
                         case DarlUser.AccountState.delinquent:
-                            switch(du.subscriptionType ?? DarlUser.SubscriptionType.individual)
-                            {
-                                case DarlUser.SubscriptionType.inhouse:
-                                case DarlUser.SubscriptionType.embedded:
-                                case DarlUser.SubscriptionType.corporate:
-                                    roles = "Corp,User";
-                                    break;
-                                case DarlUser.SubscriptionType.individual:
-                                    roles = "User";
-                                    break;
-                            }
+                            roles = "User";
                             break;
                         default:
                             roles = string.Empty;
@@ -438,7 +424,7 @@ namespace Darl.GraphQL
 
         }
 
-        private async Task<DarlUser?> AddNewUser(HttpContext context, string objectId, IConnectivity _rep)
+        private async Task<DarlUser?> AddNewUser(HttpContext context, string objectId, IKGTranslation _rep)
         {
             try
             { 
@@ -464,7 +450,8 @@ namespace Darl.GraphQL
                     invoiceName = $"{firstName} {secondName}";
                 }
                 var provider = "aadb2c";
-                return await _rep.CreateAndProvisionNewUser(new DarlUserInput {userId = objectId, InvoiceEmail = emailClaim, Issuer = provider, InvoiceName = invoiceName, InvoiceOrganization = "" });
+                var priceId = context.Request.Cookies["priceId"];
+                return await _rep.CreateAndRegisterNewUser(new DarlUserInput {userId = objectId, InvoiceEmail = emailClaim, Issuer = provider, InvoiceName = invoiceName, InvoiceOrganization = "", productId = priceId});
             }
             catch
             {

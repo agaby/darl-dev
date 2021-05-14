@@ -440,7 +440,7 @@ namespace Darl.GraphQL.Test
         [TestMethod]
         public async Task TestInference()
         {
-            var compositeName = $"{_config["userId"]}_{graphName}";
+/*            var compositeName = $"{_config["userId"]}_{graphName}";
             var model = await _primitives.Load(compositeName);
             var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
             var ks = new KnowledgeState { Id = Guid.NewGuid().ToString(), userId = _config["userId"], knowledgeGraphName = graphName };
@@ -461,7 +461,7 @@ namespace Darl.GraphQL.Test
             var subjectId = Guid.NewGuid().ToString();
             var userId = _config["userId"];
             var targetId = node.id;
-            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>(), null);
+            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>(), null);*/
         }
 
         [TestMethod]

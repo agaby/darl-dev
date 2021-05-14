@@ -233,5 +233,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<DarlLintView>> LintDarlMeta(string darl);
         Task<KGraph> DeleteKGraph(string userId, string name);
         Task<KGraph> UpdateKGraph(string userId, string name, KGraphUpdate kgupdate);
+        Task<int> GetKGraphCountAsync(string userId);
     }
 }

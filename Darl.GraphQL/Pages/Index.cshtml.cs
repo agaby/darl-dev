@@ -1,51 +1,35 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Darl.GraphQL.Models.Connectivity;
+using Darl.GraphQL.Models.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Configuration;
-using Stripe;
-using Stripe.BillingPortal;
+using Newtonsoft.Json;
 
 namespace Darl.GraphQL.Pages
 {
-    public class IndexModel : PageModel
+    public class GraphEditModel : PageModel
     {
-        private IConnectivity _connectivity;
-        private IConfiguration _config;
+        IConnectivity _conn;
+        private IHttpContextAccessor _context;
+        public List<DarlProduct> products;
+        private IKGTranslation _trans;
 
 
-        public IndexModel(IConnectivity conn, IConfiguration config)
+        public GraphEditModel(IConnectivity conn, IHttpContextAccessor context, IProducts prod, IKGTranslation trans)
         {
-            _connectivity = conn;
-            _config = config;
+            _conn = conn;
+            _context = context;
+            products = prod.products;
+            _trans = trans;
         }
-        public void OnGet()
+        public IActionResult OnGet()
         {
-
+            return new PageResult();
         }
 
-        public  async Task<ActionResult> OnPostAsync()
-        {
-            if (User.Identity.Name != null)
-            {
-                var user = await _connectivity.GetUserById(User.Identity.Name);
-                if (!string.IsNullOrEmpty(user.StripeCustomerId))
-                {
-                    StripeConfiguration.ApiKey = _config["AppSettings:StripeAPIKey"];
-                    var options = new SessionCreateOptions
-                    {
-                        Customer = user.StripeCustomerId,
-                        ReturnUrl = "https://darl.dev",
-                    };
-                    var service = new SessionService();
-                    var session = service.Create(options);
-                    return Redirect(session.Url);
-                }
-            }
-            return Redirect("Https://darl.dev");
-        }
     }
 }
