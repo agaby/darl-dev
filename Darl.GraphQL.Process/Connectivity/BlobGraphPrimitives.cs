@@ -1231,14 +1231,14 @@ namespace Darl.GraphQL.Models.Connectivity
             await _conn.UpdateKnowledgeState(userId, subjectId, new KnowledgeStateUpdate (ks));
         }
 
-        public async Task<KnowledgeState> GetKnowledgeState(string userId, string subjectId, bool external)
+        public async Task<KnowledgeState> GetKnowledgeState(string userId, string subjectId, string graphName, bool external)
         {
-            return await GetKnowledgeStateByExternalId(userId, subjectId, external);
+            return await GetKnowledgeStateByExternalId(userId, subjectId, graphName, external);
         }
 
-        public async Task<KnowledgeState> GetKnowledgeStateByExternalId(string userId, string extId, bool externalIds)
+        public async Task<KnowledgeState> GetKnowledgeStateByExternalId(string userId, string extId, string graphName, bool externalIds)
         {
-            var ks = await _conn.GetKnowledgeState(userId, extId);
+            var ks = await _conn.GetKnowledgeState(userId, extId, graphName);
             if (!externalIds)
             {
                 return ks;
@@ -1263,7 +1263,7 @@ namespace Darl.GraphQL.Models.Connectivity
                             newData[newKey] = ks.data[c];
                         }
                     }
-                    return new KnowledgeState(userId, new KnowledgeStateInput { data = newData, knowledgeGraphName = ks.knowledgeGraphName, subjectId = ks.Id });
+                    return new KnowledgeState(userId, new KnowledgeStateInput { data = newData, knowledgeGraphName = ks.knowledgeGraphName, subjectId = ks.subjectId });
                 }
                 catch { }
 
@@ -1554,7 +1554,25 @@ namespace Darl.GraphQL.Models.Connectivity
             return lineage.Substring(pos + 1);
         }
 
+        public async Task<KnowledgeState> GetKnowledgeStateByTypeAndAttribute(string userId, string objectId, string graphName, string attLineage, string attValue)
+        {
+            return await _conn.GetKnowledgeStateByTypeAndAttribute(userId, objectId, graphName, attLineage, attValue);
+        }
 
+        public async Task<List<KnowledgeState>> GetKnowledgeStatesByType(string userId, string objectId, string graphName)
+        {
+            return await _conn.GetKnowledgeStatesByType(userId, objectId, graphName);
+        }
+
+        public async Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state)
+        {
+            return await _conn.CreateKnowledgeState(userId, state);
+        }
+
+        public async Task<List<KnowledgeState>> GetKnowledgeStatesByTypeAndAttribute(string userId, string objectId, string graphName, string attLineage, string attValue)
+        {
+            return await _conn.GetKnowledgeStatesByTypeAndAttribute(userId, objectId, graphName, attLineage, attValue);
+        }
     }
 
     public class Dependency

@@ -414,14 +414,16 @@ namespace Darl.GraphQL.Models.Schemata
                 "Get a knowledge state by its Id",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "Id", Description = "The knowledge state id" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The name of the associated Knowledge Graph."},
                     new QueryArgument<BooleanGraphType> { Name = "external", Description = "ids are ExternalIds", DefaultValue  = false }
                 ),
                 resolve: async context =>
                 {
                     var Id = context.GetArgument<string>("Id");
+                    var name = context.GetArgument<string>("graphName");
                     var external = context.GetArgument<bool>("external");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetKnowledgeState(userId, Id, external));
+                    return await context.TryAsyncResolve(async c => await graph.GetKnowledgeState(userId, Id, name, external));
                 }
             );
 
@@ -430,25 +432,30 @@ namespace Darl.GraphQL.Models.Schemata
                 "Get a knowledge state by its external Id",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "subjectId", Description = "The external id" },
-                     new QueryArgument<BooleanGraphType>{ Name = "externalIds", Description = "true returns externalIds for GraphObjects, rather than internal", DefaultValue = false }
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The name of the associated Knowledge Graph." },
+                    new QueryArgument<BooleanGraphType>{ Name = "externalIds", Description = "true returns externalIds for GraphObjects, rather than internal", DefaultValue = false }
                 ),
                 resolve: async context =>
                 {
                     var subjectId = context.GetArgument<string>("subjectId");
+                    var name = context.GetArgument<string>("graphName");
                     var externalIds = context.GetArgument<bool>("externalIds");
                     var userId = connectivity.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetKnowledgeStateByExternalId(userId, subjectId, externalIds));
+                    return await context.TryAsyncResolve(async c => await graph.GetKnowledgeStateByExternalId(userId, subjectId,name, externalIds));
                 }
             ).AuthorizeWith("UserPolicy");
 
             FieldAsync<ListGraphType<KnowledgeStateType>>(
                  "getKnowledgeStates",
-                 "Get all the knowledge states in this account",
+                 "Get all the knowledge states in this account", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The name of the associated Knowledge Graph." }
+                 ),
                  resolve: async context =>
                  {
 
                      var userId = connectivity.GetCurrentUserId(context.UserContext);
-                     return await context.TryAsyncResolve(async c => await connectivity.GetKnowledgeStates(userId));
+                     var name = context.GetArgument<string>("graphName");
+                     return await context.TryAsyncResolve(async c => await connectivity.GetKnowledgeStates(userId,name));
                  }
              ).AuthorizeWith("UserPolicy");
 

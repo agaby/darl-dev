@@ -164,7 +164,7 @@ $(async function () {
     lintCall = graph('query lint($darl: String!){  lintDarlMeta(darl: $darl){ column_no_start column_no_stop line_no message severity }}');
     interact = graph('query int($name: String! $ksid: String! $text:  String!){interactKnowledgeGraph(kgModelName: $name conversationId: $ksid conversationData: { dataType: textual name: "" value: $text }){ darl reference response{dataType name value categories{name value }}}}');
     defaultRule = graph('query dr($lineage: String!){getSuggestedRuleset(lineage: $lineage)}');
-    getks = graph('query gks($id: String!){getKnowledgeState(id: $id external: true){userId knowledgeGraphName data {name value {name lineage value confidence type }}}}')
+    getks = graph('query gks($id: String! $name: String!){getKnowledgeState(id: $id graphName: $name external: true){userId knowledgeGraphName data {name value {name lineage value confidence type }}}}')
     deletekg = graph('mutation dkg($name: String!){deleteKG(name: $name)}');
     updatekg = graph('mutation ukg($name: String! $update: KGraphUpdate!){updateKGraphMetadata(name: $name update: $update){name description}}')
 
@@ -2722,7 +2722,7 @@ function ClearChatText() {
 
 async function UpdateKS() {
     try {
-        const resp = await getks({ id: currentStateId });
+        const resp = await getks({ id: currentStateId, name: mdname });
         $('#kstate').jsonViewer(resp.getKnowledgeState, { collapsed: true, withQuotes: false, withLinks: true });
     }
     catch (err) {

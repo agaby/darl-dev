@@ -221,9 +221,9 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<ModelDetails> UpdateRuleFormDetails(string userId, string ruleSetName, ModelDetails details);
         Task<List<Contact>> GetRecentContacts();
         IQueryable<Contact> GetContactsQueryable();
-        Task<KnowledgeState> GetKnowledgeState(string userId, string ksId);
-        Task<List<KnowledgeState>> GetKnowledgeStates(string userId);
-        Task<KnowledgeState> DeleteKnowledgeState(string userId, string ksId);
+        Task<KnowledgeState> GetKnowledgeState(string userId, string ksId, string graphName);
+        Task<List<KnowledgeState>> GetKnowledgeStates(string userId, string graphName);
+        Task<KnowledgeState> DeleteKnowledgeState(string userId, string ksId, string graphName);
         Task<KnowledgeState> UpdateKnowledgeState(string userId, string ksId, KnowledgeStateUpdate state);
         Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state);
         Task<UserUsage> CreateKGModelUsage(DateTime date, int count, string userId, string model);
@@ -234,5 +234,8 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<KGraph> DeleteKGraph(string userId, string name);
         Task<KGraph> UpdateKGraph(string userId, string name, KGraphUpdate kgupdate);
         Task<int> GetKGraphCountAsync(string userId);
+        Task<KnowledgeState> GetKnowledgeStateByTypeAndAttribute(string userId, string objectId, string graphName, string attLineage, string attValue);
+        Task<List<KnowledgeState>> GetKnowledgeStatesByType(string userId, string objectId, string graphName);
+        Task<List<KnowledgeState>> GetKnowledgeStatesByTypeAndAttribute(string userId, string objectId, string graphName, string attLineage, string attValue);
     }
 }
