@@ -30,8 +30,8 @@ namespace Darl.GraphQL
             _config = config;
         }
 
-        [HttpPost("webhook")]
-        public async Task<IActionResult> Webhook()
+        [HttpPost]
+        public async Task<IActionResult> Post()
         {
             var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
             Event stripeEvent;
@@ -40,7 +40,8 @@ namespace Darl.GraphQL
                 stripeEvent = EventUtility.ConstructEvent(
                     json,
                     Request.Headers["Stripe-Signature"],
-                    _config["AppSettings:StripeWebHookSecret"]
+                    _config["AppSettings:StripeWebHookSecret"],
+                    throwOnApiVersionMismatch: false
                 );
                 Console.WriteLine($"Webhook notification with type: {stripeEvent.Type} found for {stripeEvent.Id}");
             }
@@ -67,7 +68,7 @@ namespace Darl.GraphQL
                         subscriptionService.Update(invoice.SubscriptionId, options);
                     }
                     //mark the user as "paying".
-                    await _trans.UpdateUserAccountState(invoice.Customer.Id, DarlUser.AccountState.paying);
+                    await _trans.UpdateUserAccountState(invoice.CustomerId, DarlUser.AccountState.paying);
                 }
             }
 
@@ -109,6 +110,11 @@ namespace Darl.GraphQL
             }
 
             return Ok();
+        }
+
+        public ActionResult<string> Get()
+        {
+            return new ActionResult<string>("hello");
         }
     }
 }

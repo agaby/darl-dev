@@ -69,85 +69,123 @@ namespace Darl.GraphQL.Models.Connectivity
             _prods = prods;
             backofficeKG = _config["AppSettings:BackOfficeKG"];
             backofficeKGComp = _config["AppSettings:boaiuserid"] + '_' + backofficeKG;
+            GetObjectIds().Wait();
+        }
+
+        private async Task GetObjectIds()
+        {
+            var model = await _graph.GetModel(_config["AppSettings:boaiuserid"], backofficeKG);
+            foreach (var v in model.vertices)
+            {
+
+                if (v.Value.lineage == defaultLineage)
+                {
+                    defaultObjectId = v.Value.id;
+                }
+                else if (v.Value.lineage == collateralLineage)
+                {
+                    collateralObjectId = v.Value.id;
+                }
+                else if (v.Value.lineage == _meta.CommonLineages["person"])
+                {
+                    personObjectId = v.Value.id;
+                }
+                else if (v.Value.lineage == processLineage)
+                {
+                    updateObjectId = v.Value.id;
+                }
+            }
         }
 
         #region SystemUpdates
 
         public async Task<List<Update>> Updates()
         {
-            var list = new List<Update>();
-            var obs = await _graph.GetGraphObjectsByLineage(backofficeKGComp, processLineage);
-            foreach(var o in obs)
+            var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], updateObjectId, backofficeKG);
+            return kslist.Select(a => ConvertUpdate(a, updateObjectId)).ToList();
+        }
+
+        Update ConvertUpdate(KnowledgeState ks, string objectId)
+        {
+            var ex = GetExistence(ks, updateObjectId);
+            if (ex == null)
+                return new Update();
+            var update = ex.Last();
+            if (update == null)
+                return new Update();
+            return new Update
             {
-                var from = o.properties.FirstOrDefault(a => a.lineage.StartsWith(sourceLineage));
-                var to = o.properties.FirstOrDefault(a => a.lineage.StartsWith(destinationLineage));
-                if(from != null && to != null)
-                {
-                    var update = new Update { from = from.value, to = to.value, updated = o.existence.Last() != null ? o.existence.Last().dateTime : DateTime.MinValue };
-                    list.Add(update);
-                }
-            }
-            return list;
+                from = GetAttributeValue(ks, updateObjectId, sourceLineage),
+                to = GetAttributeValue(ks, updateObjectId, destinationLineage),
+                updated = update.dateTime
+            };
         }
 
         public async Task<DateTime> GetLastUpdate(string from, string to)
         {
             var obj = await GetUpdate(from, to);
-            if(obj != null)
+            if (obj != null)
             {
-                return obj.existence.Last() != null ? obj.existence.Last().dateTime : DateTime.MinValue;
+                var last = GetExistence(obj, updateObjectId).Last();
+                return last != null ? last.dateTime : DateTime.MinValue;
             }
             return DateTime.MinValue;
         }
 
         public async Task<DateTime> SetLastUpdate(string from, string to)
         {
-            var obj = await GetUpdate(from, to);
-            if(obj != null)
+            var ks = await GetUpdate(from, to);
+            if (ks != null)
             {
-                obj.existence.Clear();
-                obj.existence.Add(new DarlTime(DateTime.UtcNow));
+                UpdateExistence(ks, updateObjectId, new List<DarlTime?> { new DarlTime(DateTime.UtcNow) });
             }
             else
             {
-                var goi = new GraphObjectInput { 
-                    name = $"{from} - {to}", 
-                    lineage = processLineage,
-                    externalId = $"{from} - {to}",
-                    properties = new List<GraphAttribute> { 
-                        new GraphAttribute {
-                            name = "from", 
-                            lineage = sourceLineage, 
-                            type = GraphAttribute.DataType.textual,
-                            value = from
-                        }, new GraphAttribute {
-                            name = "to",
-                            lineage = destinationLineage,
-                            type = GraphAttribute.DataType.textual,
-                            value = to
-                        } },
-                    existence = new List<DarlTime?> { new DarlTime(DateTime.UtcNow) }
+                var goi = new KnowledgeStateInput
+                {
+                    subjectId = $"{from}/{to}",
+                    knowledgeGraphName = backofficeKG,
+                    data = new Dictionary<string, List<GraphAttribute>>
+                    {
+                        {
+                            updateObjectId,
+                            new List<GraphAttribute> {
+                                new GraphAttribute {
+                                 id = Guid.NewGuid().ToString(),
+                                    name = "existence",
+                                    lineage = existenceLineage,
+                                    type = GraphAttribute.DataType.temporal,
+                                    existence = new List<DarlTime?> { new DarlTime(DateTime.UtcNow) },
+                                    confidence = 1.0
+                                },
+                                new GraphAttribute {
+                                    name = "from",
+                                 id = Guid.NewGuid().ToString(),
+                                    lineage = sourceLineage,
+                                    type = GraphAttribute.DataType.textual,
+                                    value = from,
+                                    confidence = 1.0
+                                },
+                                new GraphAttribute {
+                                 id = Guid.NewGuid().ToString(),
+                                    name = "to",
+                                    lineage = destinationLineage,
+                                    type = GraphAttribute.DataType.textual,
+                                    value = from,
+                                    confidence = 1.0
+                                }
+                            }
+                        }
+                    }
                 };
-                await _graph.CreateGraphObject(backofficeKGComp, goi, OntologyAction.build);
+                await _graph.CreateKnowledgeState(_config["AppSettings:boaiuserid"], goi);
             }
-            await _graph.Store(backofficeKGComp);
             return DateTime.UtcNow;
         }
 
-        private async Task<GraphObject?> GetUpdate(string from, string to)
+        private async Task<KnowledgeState?> GetUpdate(string from, string to)
         {
-            var obs = await _graph.GetGraphObjectsByLineage(backofficeKGComp, processLineage);
-            foreach (var o in obs)
-            {
-                var tfrom = o.properties.FirstOrDefault(a => a.lineage.StartsWith(sourceLineage));
-                var tto = o.properties.FirstOrDefault(a => a.lineage.StartsWith(destinationLineage));
-                if (tfrom != null && tto != null)
-                {
-                    if (tfrom.value == from && tto.value == to)
-                        return o;
-                }
-            }
-            return null;
+            return await _graph.GetKnowledgeState(_config["AppSettings:boaiuserid"], $"{from}/{to}", backofficeKG);
         }
 
         #endregion
@@ -155,79 +193,64 @@ namespace Darl.GraphQL.Models.Connectivity
         #region Defaults
         public async Task<List<Default>> GetDefaults()
         {
-            var list = new List<Default>();
-            var obs = await _graph.GetGraphObjectsByLineage(backofficeKGComp, defaultLineage);
-            foreach (var o in obs)
+            var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], defaultObjectId, backofficeKG);
+            return kslist.Select(a => ConvertDefault(a, defaultObjectId)).ToList();
+        }
+
+        private Default ConvertDefault(KnowledgeState ks, string objectId)
+        {
+            return new Default
             {
-                var val = o.properties.FirstOrDefault(a => a.lineage.StartsWith(valueLineage));
-                if (val != null )
-                {
-                    var def = new Default { Name = o.externalId, Value = val.value };
-                    list.Add(def);
-                }
-            }
-            return list;
+                Name = ks.subjectId,
+                Value = GetAttributeValue(ks, objectId, valueLineage)
+            };
         }
 
         public async Task<string> GetDefaultValue(string name)
         {
-            var o = await _graph.GetGraphObjectByExternalId(backofficeKGComp, name);
-            var val = o.properties.FirstOrDefault(a => a.lineage.StartsWith(valueLineage));
-            if (val != null)
-            {
-                return val.value;
-            }
-            return string.Empty;
+            var ks = await _graph.GetKnowledgeState(_config["AppSettings:boaiuserid"], name, backofficeKG);
+            return GetAttributeValue(ks, defaultObjectId, valueLineage) ?? string.Empty;
         }
 
         public async Task<Default> CreateDefault(string name, string value)
         {
-            var goi = new GraphObjectInput
+            var goi = new KnowledgeStateInput
             {
-                name = name,
-                lineage = defaultLineage,
-                externalId = name,
-                properties = new List<GraphAttribute> {
-                        new GraphAttribute {
-                            name = "value",
-                            lineage = valueLineage,
-                            type = GraphAttribute.DataType.textual,
-                            value = value
-                        } }
+                subjectId = name,
+                knowledgeGraphName = backofficeKG,
+                data = new Dictionary<string, List<GraphAttribute>>
+                {
+                    {
+                        defaultObjectId,  new List<GraphAttribute> {
+                            new GraphAttribute {
+                                id = Guid.NewGuid().ToString(),
+                                name = "value",
+                                lineage = valueLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = value,
+                                confidence = 1.0
+                            }
+                        }
+                    }
+                }
             };
-            await _graph.CreateGraphObject(backofficeKGComp, goi, OntologyAction.build);
-            await _graph.Store(backofficeKGComp);
+            await _graph.CreateKnowledgeState(_config["AppSettings:boaiuserid"], goi);
             return new Default { Name = name, Value = value };
         }
 
         public async Task<Default?> DeleteDefault(string name)
         {
-            var o = await _graph.GetGraphObjectByExternalId(backofficeKGComp, name);
-            if (o != null)
-            {
-                await _graph.DeleteGraphObject(backofficeKGComp, o.id);
-                var val = o.properties.FirstOrDefault(a => a.lineage.StartsWith(valueLineage));
-                if (val != null)
-                {
-                    await _graph.Store(backofficeKGComp);
-                    return new Default { Name = name, Value = val.value };
-                }
-            }
+            await _graph.DeleteKnowledgeState(_config["AppSettings:boaiuserid"], name, backofficeKG);
             return null;
         }
 
         public async Task<Default> UpdateDefault(string name, string value)
         {
-            var o = await _graph.GetGraphObjectByExternalId(backofficeKGComp, name);
-            if (o != null)
+            var ks = await _graph.GetKnowledgeState(_config["AppSettings:boaiuserid"], name, backofficeKG);
+            if (ks != null)
             {
-                var val = o.properties.FirstOrDefault(a => a.lineage.StartsWith(valueLineage));
-                if (val != null)
-                {
-                    val.value = value;
-                    await _graph.Store(backofficeKGComp);
-                    return new Default { Name = name, Value = val.value };
-                }
+                UpdateAttribute(ks, defaultObjectId, valueLineage, "value", value);
+                return new Default { Name = name, Value = value };
             }
             return await CreateDefault(name, value);
         }
@@ -240,80 +263,59 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             if (!string.IsNullOrEmpty(name))
             {
-                var o = await _graph.GetGraphObjectByExternalId(backofficeKGComp, name);
-                if (o != null && o.properties != null)
-                {
-                    var val = o.properties.FirstOrDefault(a => a.lineage.StartsWith(valueLineage));
-                    if (val != null)
-                    {
-                        return val.value;
-                    }
-                }
+                var ks = await _graph.GetKnowledgeState(_config["AppSettings:boaiuserid"], name, backofficeKG);
+                return GetAttributeValue(ks, collateralObjectId, valueLineage) ?? string.Empty;
             }
             return string.Empty;
         }
 
         public async Task<Collateral> UpdateCollateral(string name, string value)
         {
-            var o = await _graph.GetGraphObjectByExternalId(backofficeKGComp, name);
-            if (o != null)
+            var ks = await _graph.GetKnowledgeState(_config["AppSettings:boaiuserid"], name, backofficeKG);
+            if (ks != null)
             {
-                var val = o.properties.FirstOrDefault(a => a.lineage.StartsWith(valueLineage));
-                if (val != null)
-                {
-                    val.value = value;
-                    await _graph.Store(backofficeKGComp);
-                    return new Collateral { Name = name, Value = val.value };
-                }
+                UpdateAttribute(ks, collateralObjectId, valueLineage, "value", value);
+                return new Collateral { Name = name, Value = value };
             }
-            var goi = new GraphObjectInput
+            return await CreateCollateral(name, value);
+        }
+
+        private async Task<Collateral> CreateCollateral(string name, string value)
+        {
+            var goi = new KnowledgeStateInput
             {
-                name = name,
-                lineage = collateralLineage,
-                externalId = name,
-                properties = new List<GraphAttribute> {
-                        new GraphAttribute {
-                            name = "value",
-                            lineage = valueLineage,
-                            type = GraphAttribute.DataType.textual,
-                            value = value
-                        } }
+                subjectId = name,
+                knowledgeGraphName = backofficeKG,
+                data = new Dictionary<string, List<GraphAttribute>>
+                {
+                    {
+                        collateralObjectId,  new List<GraphAttribute> {
+                            new GraphAttribute {
+                                 id = Guid.NewGuid().ToString(),
+                                name = "value",
+                                lineage = valueLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = value,
+                                confidence = 1.0
+                            }
+                        }
+                    }
+                }
             };
-            await _graph.CreateGraphObject(backofficeKGComp, goi, OntologyAction.build);
-            await _graph.Store(backofficeKGComp);
+            await _graph.CreateKnowledgeState(_config["AppSettings:boaiuserid"], goi);
             return new Collateral { Name = name, Value = value };
         }
 
         public async Task<Collateral?> DeleteCollateral(string name)
         {
-            var o = await _graph.GetGraphObjectByExternalId(backofficeKGComp, name);
-            if (o != null)
-            {
-                await _graph.DeleteGraphObject(backofficeKGComp, o.id);
-                var val = o.properties.FirstOrDefault(a => a.lineage.StartsWith(valueLineage));
-                if (val != null)
-                {
-                    await _graph.Store(backofficeKGComp);
-                    return new Collateral { Name = name, Value = val.value };
-                }
-            }
+            await _graph.DeleteKnowledgeState(_config["AppSettings:boaiuserid"], name, backofficeKG);
             return null;
         }
 
         public async Task<List<Collateral>> GetCollaterals()
         {
-            var list = new List<Collateral>();
-            var obs = await _graph.GetGraphObjectsByLineage(backofficeKGComp, collateralLineage);
-            foreach (var o in obs)
-            {
-                var val = o.properties.FirstOrDefault(a => a.lineage.StartsWith(valueLineage));
-                if (val != null)
-                {
-                    var def = new Collateral { Name = o.externalId, Value = val.value };
-                    list.Add(def);
-                }
-            }
-            return list;
+            var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], collateralObjectId, backofficeKG);
+            return kslist.Select(a => ConvertCollateral(a, collateralObjectId)).ToList();
         }
 
         #endregion
@@ -325,9 +327,18 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public IQueryable<Contact> GetContactsQueryable()
+        public async Task<IQueryable<Contact>> GetContactsQueryable()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG);
+                return kslist.Select(a => ConvertContact(a, personObjectId)).AsQueryable();
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return new List<Contact>().AsQueryable();
         }
 
         public async Task<List<Contact>> GetContacts()
@@ -344,19 +355,16 @@ namespace Darl.GraphQL.Models.Connectivity
             return new List<Contact>();
         }
 
-        private Contact ConvertContact(KnowledgeState a, string personObjectId)
-        {
-            throw new NotImplementedException();
-        }
 
         public Task<List<Contact>> GetContactsByLastName(string lastName)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Contact> GetContactByEmail(string email)
+        public async Task<Contact> GetContactByEmail(string email)
         {
-            throw new NotImplementedException();
+            var kslist = await _graph.GetKnowledgeStatesByTypeAndAttribute(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG, emailLineage, email);
+            return kslist.Select(a => ConvertContact(a, personObjectId)).FirstOrDefault();
         }
 
         public Task<Contact> GetContactById(string Id)
@@ -366,7 +374,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<Contact> UpdateContactAsync(Contact contact)
         {
-            var ks = await _graph.GetKnowledgeStateByTypeAndAttribute(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG, emailLineage,  contact.Email);
+            var ks = await _graph.GetKnowledgeStateByTypeAndAttribute(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG, emailLineage, contact.Email);
             if (ks != null)
             {
                 //update, remembering this may be a user, so overwrite with caution.
@@ -382,126 +390,15 @@ namespace Darl.GraphQL.Models.Connectivity
                 //call update in db
                 return contact;
             }
-            var goi = new KnowledgeStateInput
-            {
-                subjectId = contact.Id,
-                knowledgeGraphName = backofficeKG,
-                data = new Dictionary<string, List<GraphAttribute>> {
-                    { personObjectId, new List<GraphAttribute> 
-                        {
-                            new GraphAttribute {
-                                name = "first name",
-                                lineage = firstNameLineage,
-                                type = GraphAttribute.DataType.textual,
-                                value = contact.FirstName,
-                                confidence = 1.0
-                            },
-                            new GraphAttribute {
-                                name = "last name",
-                                lineage = lastNameLineage,
-                                type = GraphAttribute.DataType.textual,
-                                value = contact.LastName,
-                                confidence = 1.0
-                            },
-                            new GraphAttribute {
-
-                                name = "email",
-                                lineage = emailLineage,
-                                type = GraphAttribute.DataType.textual,
-                                value = contact.Email,
-                                confidence = 1.0
-                            },
-                            new GraphAttribute {
-                                name = "phone",
-                                lineage = phoneLineage,
-                                type = GraphAttribute.DataType.textual,
-                                value = contact.Phone,
-                                confidence = 1.0
-                            },
-                            new GraphAttribute {
-                                name = "occupation",
-                                lineage = occupationLineage,
-                                type = GraphAttribute.DataType.textual,
-                                value = contact.Title
-                            },
-                            new GraphAttribute {
-                                name = "notes",
-                                lineage = noteLineage,
-                                type = GraphAttribute.DataType.textual,
-                                value = contact.Notes,
-                                confidence = 1.0
-                            },
-                            new GraphAttribute {
-                                name = "company",
-                                lineage = companyLineage,
-                                type = GraphAttribute.DataType.textual,
-                                value = contact.Company,
-                                confidence = 1.0
-                            },
-                            new GraphAttribute {
-                                name = "country",
-                                lineage = countryLineage,
-                                type = GraphAttribute.DataType.textual,
-                                value = contact.Country,
-                                confidence = 1.0
-                            },
-                            new GraphAttribute {
-                                name = "source",
-                                lineage = sourceLineage,
-                                type = GraphAttribute.DataType.textual,
-                                value = contact.Source,
-                                confidence = 1.0
-                            },
-                            new GraphAttribute {
-                                name = "sector",
-                                lineage = sectorLineage,
-                                type = GraphAttribute.DataType.textual,
-                                value = contact.Sector,
-                                confidence = 1.0
-                            },
-                            new GraphAttribute {
-                                name = "existence",
-                                lineage = existenceLineage,
-                                type = GraphAttribute.DataType.temporal,
-                                existence = new List<DarlTime?> { new DarlTime(contact.Created), DarlTime.MaxValue },
-                                confidence = 1.0
-                            }
-                        } 
-                    }
-                }
-            };
-            await _graph.CreateKnowledgeState(_config["AppSettings:boaiuserid"], goi);
+            await CreateContactAsync(contact);
             return contact;
         }
 
-        private void UpdateAttribute(KnowledgeState ks, string objectId, string attlineage, string name, string value)
-        {
-            if (string.IsNullOrEmpty(value))
-                return;
-            if (!ks.data.ContainsKey(objectId))
-                return;
-            var properties = ks.data[objectId];
-            var val = properties.FirstOrDefault(a => a.lineage.StartsWith(attlineage));
-            if (val == null)
-            {
-                properties.Add(new GraphAttribute
-                {
-                    name = name,
-                    lineage = attlineage,
-                    type = GraphAttribute.DataType.textual,
-                    value = value,
-                    confidence = 1.0
-                });
-            }
-            else if(string.IsNullOrEmpty(val.value))
-            {
-                val.value = value;
-            }
-        }
 
-        public Task<long> GetContactsCount(string userId)
+        public async Task<long> GetContactsCount(string userId)
         {
-            throw new NotImplementedException();
+            var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG);
+            return kslist.Select(a => Convert(a, personObjectId)).Count();
         }
 
         public Task<long> GetContactsDayCount(string userId)
@@ -514,6 +411,117 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
+        public async Task<Contact> CreateContactAsync(Contact contact)
+        {
+            var goi = new KnowledgeStateInput
+            {
+                subjectId = contact.Id,
+                knowledgeGraphName = backofficeKG,
+                data = new Dictionary<string, List<GraphAttribute>> {
+                    { personObjectId, new List<GraphAttribute>
+                        {
+                            new GraphAttribute {
+                                 id = Guid.NewGuid().ToString(),
+                                name = "first name",
+                                lineage = firstNameLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = contact.FirstName,
+                                confidence = 1.0
+                            },
+                            new GraphAttribute {
+                                 id = Guid.NewGuid().ToString(),
+                                name = "last name",
+                                lineage = lastNameLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = contact.LastName,
+                                confidence = 1.0
+                            },
+                            new GraphAttribute {
+                                id = Guid.NewGuid().ToString(),
+                                name = "email",
+                                lineage = emailLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = contact.Email,
+                                confidence = 1.0
+                            },
+                            new GraphAttribute {
+                                id = Guid.NewGuid().ToString(),
+                                name = "phone",
+                                lineage = phoneLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = contact.Phone,
+                                confidence = 1.0
+                            },
+                            new GraphAttribute {
+                                id = Guid.NewGuid().ToString(),
+                                name = "occupation",
+                                lineage = occupationLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = contact.Title
+                            },
+                            new GraphAttribute {
+                                id = Guid.NewGuid().ToString(),
+                                name = "notes",
+                                lineage = noteLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = contact.Notes,
+                                confidence = 1.0
+                            },
+                            new GraphAttribute {
+                                 id = Guid.NewGuid().ToString(),
+                                name = "company",
+                                lineage = companyLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = contact.Company,
+                                confidence = 1.0
+                            },
+                            new GraphAttribute {
+                                 id = Guid.NewGuid().ToString(),
+                                name = "country",
+                                lineage = countryLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = contact.Country,
+                                confidence = 1.0
+                            },
+                            new GraphAttribute {
+                                 id = Guid.NewGuid().ToString(),
+                                name = "source",
+                                lineage = sourceLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = contact.Source,
+                                confidence = 1.0
+                            },
+                            new GraphAttribute {
+                                 id = Guid.NewGuid().ToString(),
+                                name = "sector",
+                                lineage = sectorLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = contact.Sector ?? string.Empty,
+                                confidence = 1.0
+                            },
+                            new GraphAttribute {
+                                 id = Guid.NewGuid().ToString(),
+                                name = "existence",
+                                lineage = existenceLineage,
+                                type = GraphAttribute.DataType.temporal,
+                                existence = new List<DarlTime?> { new DarlTime(contact.Created), DarlTime.MaxValue },
+                                confidence = 1.0
+                            }
+                        }
+                    }
+                }
+            };
+            await _graph.CreateKnowledgeState(_config["AppSettings:boaiuserid"], goi);
+            return contact; throw new NotImplementedException();
+        }
+
+        public async Task<Contact?> DeleteContactAsync(string email)
+        {
+            await _graph.DeleteKnowledgeState(_config["AppSettings:boaiuserid"], email, backofficeKG);
+            return null;
+        }
+
+
         #endregion
 
         #region Users
@@ -521,12 +529,16 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<DarlUser> GetUserByApiKey(string apiKey)
         {
             var ks = await _graph.GetKnowledgeStateByTypeAndAttribute(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG, keyLineage, apiKey);
+            if (ks == null)
+                return null;
             return Convert(ks, personObjectId);
         }
 
         public async Task<DarlUser> GetUserById(string id)
         {
             var ks = await _graph.GetKnowledgeState(_config["AppSettings:boaiuserid"], id, backofficeKG);
+            if (ks == null)
+                return null;
             return Convert(ks, personObjectId);
         }
 
@@ -534,10 +546,10 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             try
             {
-                var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG);
+                var kslist = await _graph.GetKnowledgeStatesByTypeAndAttributeExistence(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG,stateLineage);
                 return kslist.Select(a => Convert(a, personObjectId)).ToList();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
@@ -548,12 +560,14 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<DarlUser> GetUserByStripeId(string stripeId)
         {
             var ks = await _graph.GetKnowledgeStateByTypeAndAttribute(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG, idLineage, stripeId);
+            if (ks == null)
+                return null;
             return Convert(ks, personObjectId);
         }
 
         public async Task<List<DarlUser>> GetUsersByEmail(string email)
-        {          
-            var kslist = await _graph.GetKnowledgeStatesByTypeAndAttribute(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG, emailLineage,email);
+        {
+            var kslist = await _graph.GetKnowledgeStatesByTypeAndAttribute(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG, emailLineage, email);
             return kslist.Select(a => Convert(a, personObjectId)).ToList();
         }
 
@@ -562,13 +576,13 @@ namespace Darl.GraphQL.Models.Connectivity
             if (userContext != null)
             {
                 var ctxt = userContext as GraphQLUserContext;
-                if(ctxt != null)
+                if (ctxt != null)
                     return ctxt.User.Identity.Name ?? _config["AppSettings:boaiuserid"];
             }
             return _config["AppSettings:boaiuserid"];
         }
 
-        public Task<DarlUser> UpdateUserAsync(string userId, DarlUserUpdate darlUserUpdate)
+        public async Task<DarlUser> UpdateUserAsync(string userId, DarlUserUpdate darlUserUpdate)
         {
             throw new NotImplementedException();
         }
@@ -586,8 +600,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<long> GetUserCount(string userId)
         {
-            var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG);
-            return kslist.Select(a => Convert(a, personObjectId)).Count();
+            var kslist = await _graph.GetKnowledgeStatesByTypeAndAttributeExistence(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG, stateLineage);
+            return kslist.Count();
         }
 
         public async Task<DarlUser> CreateUserAsync(DarlUser user)
@@ -599,16 +613,18 @@ namespace Darl.GraphQL.Models.Connectivity
                 knowledgeGraphName = backofficeKG,
                 data = new Dictionary<string, List<GraphAttribute>> {
                     { personObjectId,
-                        new List<GraphAttribute> 
+                        new List<GraphAttribute>
                         {
                              new GraphAttribute {
-                                name = "first name",
-                                lineage = firstNameLineage,
-                                type = GraphAttribute.DataType.textual,
-                                value = names.Any() ? names.First() : string.Empty,
-                                confidence = 1.0
+                                 id = Guid.NewGuid().ToString(),
+                                 name = "first name",
+                                 lineage = firstNameLineage,
+                                 type = GraphAttribute.DataType.textual,
+                                 value = names.Any() ? names.First() : string.Empty,
+                                 confidence = 1.0
                             },
                             new GraphAttribute {
+                                 id = Guid.NewGuid().ToString(),
                                 name = "last name",
                                 lineage = lastNameLineage,
                                 type = GraphAttribute.DataType.textual,
@@ -616,6 +632,7 @@ namespace Darl.GraphQL.Models.Connectivity
                                 confidence = 1.0
                             },
                             new GraphAttribute {
+                                 id = Guid.NewGuid().ToString(),
                                 name = "email",
                                 lineage = emailLineage,
                                 type = GraphAttribute.DataType.textual,
@@ -623,6 +640,7 @@ namespace Darl.GraphQL.Models.Connectivity
                                 confidence = 1.0
                             },
                             new GraphAttribute {
+                                 id = Guid.NewGuid().ToString(),
                                 name = "apiKey",
                                 lineage = keyLineage,
                                 type = GraphAttribute.DataType.textual,
@@ -630,13 +648,15 @@ namespace Darl.GraphQL.Models.Connectivity
                                 confidence = 1.0
                             },
                             new GraphAttribute {
-                                name = "stripe subscription",
+                                 id = Guid.NewGuid().ToString(),
+                                name = "stripe product",
                                 lineage = subscriptionLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = user.productId,
                                 confidence = 1.0
                             },
                             new GraphAttribute {
+                                 id = Guid.NewGuid().ToString(),
                                 name = "Stripe id",
                                 lineage = idLineage,
                                 type = GraphAttribute.DataType.textual,
@@ -644,6 +664,7 @@ namespace Darl.GraphQL.Models.Connectivity
                                 confidence = 1.0
                             },
                             new GraphAttribute {
+                                 id = Guid.NewGuid().ToString(),
                                 name = "account state",
                                 lineage = stateLineage,
                                 type = GraphAttribute.DataType.categorical,
@@ -651,21 +672,24 @@ namespace Darl.GraphQL.Models.Connectivity
                                 confidence = 1.0
                             },
                             new GraphAttribute {
+                                 id = Guid.NewGuid().ToString(),
                                 name = "company",
                                 lineage = companyLineage,
                                 type = GraphAttribute.DataType.textual,
-                                value = user.InvoiceOrganization,
+                                value = user.InvoiceOrganization ?? string.Empty,
                                 confidence = 1.0
                             },
                             new GraphAttribute {
+                                 id = Guid.NewGuid().ToString(),
                                 name = "existence",
                                 lineage = existenceLineage,
                                 type = GraphAttribute.DataType.temporal,
                                 existence = new List<DarlTime?> { new DarlTime(user.Created), DarlTime.MaxValue },
+                                value = string.Empty,
                                 confidence = 1.0
                             }
                         }
-                    } 
+                    }
                 }
             };
             await _graph.CreateKnowledgeState(_config["AppSettings:boaiuserid"], goi);
@@ -688,11 +712,13 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task UpdateUserAccountState(string customerId, DarlUser.AccountState paying)
         {
-            var m = await _graph.GetModel(_config["AppSettings:boaiuserid"], backofficeKG);
-            var user = m.vertices.Where(a => a.Value.lineage.StartsWith(_meta.CommonLineages["person"]) && (a.Value.GetAttributeValue(idLineage) ?? "") == customerId).Select(a => a.Value).FirstOrDefault();
-            if (user != null)
+            var state = await GetUserAccountState(customerId);
+            if(state != null)
             {
-//                UpdateAttribute(user, stateLineage, "account state", paying.ToString());
+                if(state != DarlUser.AccountState.admin) //can't downgrade admin
+                {
+                   // UpdateAttribute()
+                }
             }
         }
 
@@ -704,35 +730,12 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<DarlUser> CreateAndRegisterNewUser(DarlUserInput user)
         {
             //Create stripe customer and internal user
+            //productId in user is actually priceId, lookup
             var customerId = await CreateStripeCustomer(user.userId, user.InvoiceEmail, user.InvoiceName);
-            return await CreateUserAsync(new DarlUser { userId = user.userId, InvoiceName = user.InvoiceName, InvoiceEmail = user.InvoiceEmail, Created = DateTime.UtcNow, StripeCustomerId = customerId, APIKey = Guid.NewGuid().ToString(), accountState = DarlUser.AccountState.trial, productId = user.productId });
+            var product = _prods.products.FirstOrDefault(a => a.priceId == user.productId);
+            return await CreateUserAsync(new DarlUser { userId = user.userId, InvoiceName = user.InvoiceName, InvoiceEmail = user.InvoiceEmail, Created = DateTime.UtcNow, StripeCustomerId = customerId, APIKey = Guid.NewGuid().ToString(), accountState = DarlUser.AccountState.trial, productId = product.id });
         }
- 
-        private async Task<string> CreateStripeCustomer(string userId, string email, string name = "")
-        {
-            var sak = _config["AppSettings:StripeAPIKey"];
-            if (!string.IsNullOrEmpty(sak))
-            {
-                StripeConfiguration.ApiKey = sak;
-                try
-                {
-                    var options = new CustomerCreateOptions
-                    {
-                        Email = email,
-                        Description = userId,
-                        Metadata = new Dictionary<string, string> { { nameof(userId), userId }, { nameof(name), name }}
-                    };
-                    var service = new CustomerService();
-                    Customer customer = await service.CreateAsync(options);
-                    return (customer.Id);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, nameof(CreateStripeCustomer));
-                }
-            }
-            return string.Empty;
-        }
+
 
         #endregion
 
@@ -762,21 +765,21 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             try
             {
-/*                var test = _config.GetValue<bool>("StripeTest");
-                var subject = await GetDefault(subjectDefault);
-                var contentName = await GetDefault(contentNameDefault);
-                var addressFrom = await GetDefault("SendStatusChange.addressFrom");
-                var content = await GetMailContent(_config.GetValue<string>("adminuserid"), contentName);
-                var pars = new Dictionary<string, string>();
-                pars.Add(nameof(ind.invoiceName), string.IsNullOrEmpty(ind.invoiceName) ? "DARL user" : ind.invoiceName);
-                pars.Add(nameof(ind.invoiceOrganization), string.IsNullOrEmpty(ind.invoiceOrganization) ? "Your organization" : ind.invoiceOrganization);
-                var t = new TextProcess();
-                var insertedContent = t.Parse(content, pars) as string;
-                var to = test ? "test@darl.ai" : ind.invoiceEmail;
-                //put into queue as List<string>
-                QueueClient queueClient = new QueueClient(_config.GetValue<string>("StorageConnectionString"), "support-messages");
-                await queueClient.CreateIfNotExistsAsync();
-                await queueClient.SendMessageAsync(JsonConvert.SerializeObject(new SupportMailMessage { from = addressFrom, to = email, subject = subject, content = insertedContent }));*/
+                /*                var test = _config.GetValue<bool>("StripeTest");
+                                var subject = await GetDefault(subjectDefault);
+                                var contentName = await GetDefault(contentNameDefault);
+                                var addressFrom = await GetDefault("SendStatusChange.addressFrom");
+                                var content = await GetMailContent(_config.GetValue<string>("adminuserid"), contentName);
+                                var pars = new Dictionary<string, string>();
+                                pars.Add(nameof(ind.invoiceName), string.IsNullOrEmpty(ind.invoiceName) ? "DARL user" : ind.invoiceName);
+                                pars.Add(nameof(ind.invoiceOrganization), string.IsNullOrEmpty(ind.invoiceOrganization) ? "Your organization" : ind.invoiceOrganization);
+                                var t = new TextProcess();
+                                var insertedContent = t.Parse(content, pars) as string;
+                                var to = test ? "test@darl.ai" : ind.invoiceEmail;
+                                //put into queue as List<string>
+                                QueueClient queueClient = new QueueClient(_config.GetValue<string>("StorageConnectionString"), "support-messages");
+                                await queueClient.CreateIfNotExistsAsync();
+                                await queueClient.SendMessageAsync(JsonConvert.SerializeObject(new SupportMailMessage { from = addressFrom, to = email, subject = subject, content = insertedContent }));*/
             }
             catch
             {
@@ -786,13 +789,12 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
 
-
         public async Task<bool> CreateNewGraph(string userId, string modelName)
         {
             var user = await GetUserById(userId);
             if (user == null)
                 return false;
-            var prod = _prods.products.FirstOrDefault(a => a.priceId == user.productId);
+            var prod = _prods.products.FirstOrDefault(a => a.id == user.productId);
             if (prod == null)
                 return false;
             var count = await _graph.GetKGraphCountAsync(userId);
@@ -802,6 +804,53 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return await _graph.CreateNewGraph(userId, modelName);
         }
+
+        public async Task<string> ShareKGraph(string userId, string name, string sharerId, bool readOnly, bool hidden)
+        {
+            var otherUser = await GetUserById(sharerId);
+            if (otherUser == null && sharerId != _config["AppSettings:boaiuserid"])
+                return null;
+            return await _graph.ShareKGraph(userId, name, sharerId, readOnly, hidden);
+        }
+
+        public async Task<string> RegisterForMarketing(string name, string email)
+        {
+            if(await CheckEmail(email))
+            {
+                try
+                {
+                    if (await GetContactByEmail(email) != null)
+                        return "You're already in our system.";
+                    await CreateContactAsync(new Contact {Id = Guid.NewGuid().ToString(), Created = DateTime.UtcNow, Source= "newsletter", Email = email, FirstName = name });
+                    return "Thanks for signing up. You'll now receive our newsletters.";
+                }
+                catch(Exception ex)
+                {
+                    return "there was an error creating your contact record. Please try again later.";
+                }
+            }
+            return "Your email is invalid according to ZeroBounce, please give us a valid one.";
+        }
+
+        public async Task<bool> CheckEmail(string email, string ipaddress = "")
+        {
+            var zeroBounceAPI = new ZeroBounce.ZeroBounceAPI();
+            zeroBounceAPI.api_key = _config["AppSettings:ZeroBounceAPIKey"];
+            zeroBounceAPI.RequestTimeOut = 150000; // Any integer value in milliseconds
+            zeroBounceAPI.EmailToValidate = email;
+            zeroBounceAPI.ip_address = ipaddress;
+            var apiProperties = await zeroBounceAPI.ValidateEmailAsync();
+            switch (apiProperties.status.ToLower())
+            {
+                case "unknown":
+                case "valid":
+                case "catch-all":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
 
         #region private
 
@@ -831,13 +880,147 @@ namespace Darl.GraphQL.Models.Connectivity
             return string.Empty;
         }
 
+        private List<DarlTime?> GetExistence(KnowledgeState ks, string objectId)
+        {
+            var att = ks.GetAttribute(objectId, existenceLineage);
+            if (att != null)
+            {
+                return att.existence;
+            }
+            return new List<DarlTime?>();
+        }
+
+        private DateTime GetExistenceStart(KnowledgeState ks, string objectId)
+        {
+            var att = ks.GetAttribute(objectId, existenceLineage);
+            if (att != null)
+            {
+                if(att.existence != null)
+                {
+                    var first = att.existence.First();
+                    if(first != null)
+                    {
+                        return first.dateTime;
+                    }
+                }
+            }
+            return DateTime.MinValue;
+        }
+
         private DarlUser.AccountState? ConvertAccountState(KnowledgeState ks)
         {
             var att = ks.GetAttribute(personObjectId, stateLineage);
-            if (string.IsNullOrEmpty(att.value))
+            if (att == null || string.IsNullOrEmpty(att.value))
                 return null;
             return (DarlUser.AccountState)Enum.Parse(typeof(DarlUser.AccountState), att.value);
         }
+
+        private void UpdateAttribute(KnowledgeState ks, string objectId, string attlineage, string name, string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return;
+            if (!ks.data.ContainsKey(objectId))
+                return;
+            var properties = ks.data[objectId];
+            var val = properties.FirstOrDefault(a => a.lineage.StartsWith(attlineage));
+            if (val == null)
+            {
+                properties.Add(new GraphAttribute
+                {
+                    id = Guid.NewGuid().ToString(),
+                    name = name,
+                    lineage = attlineage,
+                    type = GraphAttribute.DataType.textual,
+                    value = value,
+                    confidence = 1.0
+                });
+            }
+            else if (string.IsNullOrEmpty(val.value))
+            {
+                val.value = value;
+            }
+        }
+
+        private void UpdateExistence(KnowledgeState ks, string objectId, List<DarlTime?> existence)
+        {
+            if (existence == null || !existence.Any())
+                return;
+            if (!ks.data.ContainsKey(objectId))
+                return;
+            var properties = ks.data[objectId];
+            var val = properties.FirstOrDefault(a => a.lineage.StartsWith(existenceLineage));
+            if (val == null)
+            {
+                properties.Add(new GraphAttribute
+                {
+                    id = Guid.NewGuid().ToString(),
+                    name = "existence",
+                    lineage = existenceLineage,
+                    type = GraphAttribute.DataType.temporal,
+                    existence = existence,
+                    confidence = 1.0
+                });
+            }
+            else
+            {
+                val.existence = existence;
+            }
+        }
+
+        private Collateral ConvertCollateral(KnowledgeState ks, string objectId)
+        {
+            return new Collateral
+            {
+                Name = ks.subjectId,
+                Value = GetAttributeValue(ks, objectId, valueLineage)
+            };
+        }
+
+        private Contact ConvertContact(KnowledgeState ks, string personObjectId)
+        {
+            return new Contact
+            {
+                Id = ks.userId,
+                Email = GetAttributeValue(ks, personObjectId, emailLineage),
+                FirstName = GetAttributeValue(ks, personObjectId, firstNameLineage),
+                LastName = GetAttributeValue(ks, personObjectId, lastNameLineage),
+                Company = GetAttributeValue(ks, personObjectId, companyLineage),
+                Title = GetAttributeValue(ks, personObjectId, occupationLineage),
+                Notes = GetAttributeValue(ks, personObjectId, noteLineage),
+                Country = GetAttributeValue(ks, personObjectId, countryLineage),
+                Sector = GetAttributeValue(ks, personObjectId, sectorLineage),
+                Phone = GetAttributeValue(ks, personObjectId, phoneLineage),
+                Source = GetAttributeValue(ks, personObjectId, sourceLineage),
+                Created = GetExistenceStart(ks, personObjectId)
+            };
+        }
+
+        private async Task<string> CreateStripeCustomer(string userId, string email, string name = "")
+        {
+            var sak = _config["AppSettings:StripeAPIKey"];
+            if (!string.IsNullOrEmpty(sak))
+            {
+                StripeConfiguration.ApiKey = sak;
+                try
+                {
+                    var options = new CustomerCreateOptions
+                    {
+                        Email = email,
+                        Description = userId,
+                        Metadata = new Dictionary<string, string> { { nameof(userId), userId }, { nameof(name), name } }
+                    };
+                    var service = new CustomerService();
+                    Customer customer = await service.CreateAsync(options);
+                    return (customer.Id);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, nameof(CreateStripeCustomer));
+                }
+            }
+            return string.Empty;
+        }
+
         #endregion
     }
 }

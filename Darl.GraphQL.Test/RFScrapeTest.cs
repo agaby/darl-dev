@@ -112,6 +112,7 @@ namespace Darl.GraphQL.Test
             cache.Setup(a => a.GetAsync(It.IsAny<string>(), default)).Returns(Task.FromResult<byte[]>(null));
             conn.Setup(a => a.GetKnowledgeState(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<KnowledgeState>(new KnowledgeState ()));
             conn.Setup(a => a.UpdateKnowledgeState(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<KnowledgeStateUpdate>()));
+            var trans = new Mock<IKGTranslation>();
             _primitives = new BlobGraphPrimitives(new List<IBlobConnectivity> { blob }, cache.Object, conn.Object, bgplogger.Object);
             _graph = new GraphProcessing(_primitives,glogger.Object,meta.Object);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
@@ -573,7 +574,8 @@ namespace Darl.GraphQL.Test
             var compositeName = $"{_config["userId"]}_{graphName}";
             var userId = _config["userId"];
             var gh = new GraphHandler(_graph, _ghlogger);
-            var bp = new BotProcessing(_conn, _form, _rf, _trigger, _bplogger, _config, _context, _graph, gh);
+            var cache = new Mock<IDistributedCache>();
+            var bp = new BotProcessing(_conn, _bplogger, _config, _graph, gh, cache.Object);
             var conversationId = Guid.NewGuid().ToString();
             var res = await bp.InteractKGAsync(userId, graphName, conversationId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "hello" });
             Assert.AreEqual(1, res.Count);

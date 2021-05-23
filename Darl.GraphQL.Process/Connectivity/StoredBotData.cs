@@ -2,12 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ProtoBuf;
 
 namespace Darl.GraphQL.Process.Connectivity
 {
+    [ProtoContract]
     public class StoredBotData : IBotDataInterface
     {
+        [ProtoMember(1)]
         public Dictionary<string, string> data { get; set; } = new Dictionary<string, string>();
+
         public bool ContainsKey(string v)
         {
             return data.ContainsKey(v);

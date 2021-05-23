@@ -17,13 +17,13 @@ namespace Darl.GraphQL.Models.Connectivity
     {
 
         private IConfiguration _config;
-        IConnectivity _connectivity;
+        IKGTranslation _connectivity;
         private CloudQueue queue;
         private IDistributedCache _cache;
         private static TimeSpan cacheExpiration = new TimeSpan(1, 0, 0, 0);
 
 
-        public EmailProcessing(IConfiguration config, IConnectivity connectivity, IDistributedCache cache, IConnectivity conn)
+        public EmailProcessing(IConfiguration config, IKGTranslation connectivity, IDistributedCache cache, IConnectivity conn)
         {
             _config = config;
             _connectivity = connectivity;
@@ -51,25 +51,18 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<int> Mailshot(string userId, string collateral, string subject, string sendfrom, string filter, bool test)
         {
-            var coll = await _connectivity.GetCollateral(userId, collateral);
-            var collection = _connectivity.db.GetCollection<Contact>(CosmosDBConnectivity.contactCollection);
+            var coll = await _connectivity.GetCollateral(collateral);
+            var collection = await _connectivity.GetContacts();
             int count = 0;
             var tp = new TextProcess();
-            using (IAsyncCursor<Contact> cursor = await collection.FindAsync(string.IsNullOrEmpty(filter) ? FilterDefinition<Contact>.Empty : Builders<Contact>.Filter.Where(x => x.Sector == filter)))
+            foreach(var c in collection)
             {
-                while (await cursor.MoveNextAsync())
+                if (!test)
                 {
-                    IEnumerable<Contact> batch = cursor.Current;
-                    foreach (Contact c in batch)
-                    {
-                        if (!test)
-                        {
-                            var body = tp.Parse(coll, new Dictionary<string, string> { { "InvoiceName", c.FirstName } }); //make the insertion dictionary programmable
-                            await SendEmail(body, subject, sendfrom, c.Email);
-                        }
-                        count++;
-                    }
+                    var body = tp.Parse(coll, new Dictionary<string, string> { { "InvoiceName", c.FirstName } }); //make the insertion dictionary programmable
+                    await SendEmail(body, subject, sendfrom, c.Email);
                 }
+                count++;
             }
             if(test) //send one email back with the generated text
             {

@@ -22,7 +22,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<Collateral?> DeleteCollateral(string name);
         Task<List<Collateral>> GetCollaterals();
         Task<List<Contact>> GetRecentContacts();
-        IQueryable<Contact> GetContactsQueryable();
+        Task<IQueryable<Contact>> GetContactsQueryable();
         Task<List<Contact>> GetContacts();
         Task<List<Contact>> GetContactsByLastName(string lastName);
         Task<Contact> GetContactByEmail(string email);
@@ -35,6 +35,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<DarlUser> GetUserById(string id);
         Task<List<DarlUser>> GetUsers();
         Task<List<DarlUser>> GetUsersByEmail(string email);
+        Task<Contact> CreateContactAsync(Contact contact);
         string GetCurrentUserId(object userContext);
         Task<DarlUser> UpdateUserAsync(string userId, DarlUserUpdate darlUserUpdate);
         Task<string> UpdateUserAPIKey(string userId);
@@ -50,5 +51,9 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<bool> SendEmail(string email, string name, string v1, string v2);
         Task<DarlUser.AccountState?> GetUserAccountState(string customerId);
         Task<bool> CreateNewGraph(string userId, string modelName);
+        Task<Contact> DeleteContactAsync(string emailname);
+        Task<string> RegisterForMarketing(string name, string email);
+        Task<bool> CheckEmail(string email, string ipaddress = "");
+
     }
 }

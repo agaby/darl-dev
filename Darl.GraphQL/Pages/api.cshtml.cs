@@ -14,12 +14,12 @@ namespace Darl.GraphQL.Pages
 {
     public class IndexModel : PageModel
     {
-        private IConnectivity _connectivity;
+        private IKGTranslation _connectivity;
         private IConfiguration _config;
         public List<DarlProduct> products;
 
 
-        public IndexModel(IConnectivity conn, IConfiguration config, IProducts prod)
+        public IndexModel(IKGTranslation conn, IConfiguration config, IProducts prod)
         {
             _connectivity = conn;
             _config = config;

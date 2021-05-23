@@ -72,7 +72,6 @@ namespace Darl.GraphQL.Test
 
             _config = configuration.Object;
             var logger = new Mock<ILogger<GraphLocalStore>>();
-            var formLogger = new Mock<ILogger<FormApi>>();
             var botLogger = new Mock<ILogger<BotProcessing>>();
             var connLogger = new Mock<ILogger<CosmosDBConnectivity>>();
             var blobLogger = new Mock<ILogger<BlobConnectivity>>();
@@ -87,79 +86,16 @@ namespace Darl.GraphQL.Test
             var bc = new BlobGraphConnectivity(_config, blobLogger.Object);
             var conn = new Mock<IConnectivity>();
             var meta = new Mock<IMetaStructureHandler>();
+            var trans = new Mock<IKGTranslation>();
             var blob = new BlobGraphPrimitives(new List<IBlobConnectivity>{ bc },cache.Object, conn.Object, bgplogger.Object);
             _graph = new GraphProcessing(blob, glogger.Object,meta.Object);
             _graphStore = new GraphLocalStore(configuration.Object, logger.Object, context.Object, _graph);
-            var formApi = new FormApi(cache.Object, trigger.Object, formLogger.Object, _graphStore);
-            _rform = new RuleFormInterface(_conv);
             var ghandler = new Mock<IGraphHandler>();
-            _bot = new BotProcessing(_conv, formApi, _rform, trigger.Object, botLogger.Object, _config, context.Object, _graph, ghandler.Object);
+            var dg = new Mock<IDistributedCache>();
+            _bot = new BotProcessing(_conv, botLogger.Object, _config, _graph, ghandler.Object,dg.Object);
         }
 
-        [TestMethod]
-        public async Task TestBasicInteractions()
-        {
-            var conversationId = Guid.NewGuid().ToString();
-            //simplest interaction
-            var resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "Hi", name = "" });
-            Assert.IsTrue(resp[0].response.Value == "hi, what can I do for you?" || resp[0].response.Value == "hello, can I help?");
-            //value storage
-            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "my name is andy", name = "" });
-            Assert.AreEqual("thanks for that", resp[0].response.Value);
-            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "what is my name", name = "" });
-            Assert.AreEqual("andy", resp[0].response.Value);
-            //calling rulesets
-            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "run a ruleset", name = "" });
-            Assert.AreEqual("The following are demonstration rule sets you can run.", resp[0].response.Value);
-            Assert.AreEqual("Choose a rule set to run", resp[1].response.Value);
-            Assert.AreEqual(2, resp[1].response.categories.Count);
-            //ruleset calling a ruleset
-            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "UK Tax and NI", name = "" });
-            Assert.AreEqual("This rule set is a UK Tax and NI calculator. It takes a yearly salary and calculates taxes, including employer's payments.", resp[0].response.Value);
-            Assert.AreEqual("What is your income per year?", resp[1].response.Value);
-            Assert.AreEqual(DarlVar.DataType.numeric, resp[1].response.dataType);
-            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.numeric, Value = "50000", name = "" });
-            Assert.AreEqual("Any dividend income? (Give the value after corporation taxes)", resp[0].response.Value);
-            Assert.AreEqual(DarlVar.DataType.numeric, resp[0].response.dataType);
-            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.numeric, Value = "30000", name = "" });
-            Assert.AreEqual("Your age in years", resp[0].response.Value);
-            Assert.AreEqual(DarlVar.DataType.numeric, resp[0].response.dataType);
-            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.numeric, Value = "55", name = "" });
-            Assert.AreEqual("Are you registered as blind?", resp[0].response.Value);
-            Assert.AreEqual(DarlVar.DataType.categorical, resp[0].response.dataType);
-            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.categorical, Value = "True", name = "" });
-            Assert.AreEqual("Calculated results", resp[0].response.Value);
-            Assert.AreEqual("Total taxes, per year 16543.80", resp[1].response.Value);
-            Assert.AreEqual("Total taxes, per month 1378.65", resp[2].response.Value);
-            Assert.AreEqual("National Insurance, per year 4337.32", resp[3].response.Value);
-            Assert.AreEqual("National Insurance, per month 361.44", resp[4].response.Value);
-            Assert.AreEqual("Your take home pay, per month 5649.46", resp[5].response.Value);
-            Assert.AreEqual("Employers' NI, per year 5866.66", resp[6].response.Value);
-            Assert.AreEqual("Percentage of the cost of your employment paid in tax 25.12", resp[7].response.Value);
-            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "Hi", name = "" });
-            Assert.IsTrue(resp[0].response.Value == "hi, what can I do for you?" || resp[0].response.Value == "hello, can I help?");
-        }
 
-        [TestMethod]
-        public async Task TestGraphInteractions()
-        {
-            //using the grateful dead graph create choices based on the contents.
-            var conversationId = Guid.NewGuid().ToString();
-            var resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "grateful dead song", name = "" });
-            Assert.AreEqual(2, resp.Count);
-            Assert.AreEqual("Demo of graph processing using the grateful dead graph of songs, artists and playlists.", resp[0].response.Value);
-            Assert.AreEqual("Select an artist", resp[1].response.Value);
-            Assert.AreEqual(224, resp[1].response.categories.Count);
-            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "Hunter", name = "" });
-            Assert.AreEqual("Now pick a song by that artist", resp[0].response.Value);
-            Assert.AreEqual("Songs:", resp[1].response.Value);
-            Assert.AreEqual(96, resp[1].response.categories.Count);
-            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "ALTHEA", name = "" });
-            Assert.AreEqual(1, resp.Count);
-            Assert.AreEqual("Response You selected song 'ALTHEA' of type original, performed 272 times with path ALTHEA -> writtenBy -> Hunter.", resp[0].response.Value);
-            resp = await _bot.InteractAsync(_config["userId"], _config["botmodel"], conversationId, new DarlVar { dataType = DarlVar.DataType.textual, Value = "Hi", name = "" });
-            Assert.IsTrue(resp[0].response.Value == "hi, what can I do for you?" || resp[0].response.Value == "hello, can I help?");
-        }
 
 
         /// <summary>

@@ -16,12 +16,12 @@ namespace Darl.GraphQL.Pages
 { 
     public class ContactsModel : PageModel
     {
-        IConnectivity _conn;
+        IKGTranslation _conn;
         private IHttpContextAccessor _context;
 
-        public ContactsModel(IConnectivity conn, IHttpContextAccessor context)
+        public ContactsModel(IKGTranslation trans, IHttpContextAccessor context)
         {
-            _conn = conn;
+            _conn = trans;
             _context = context;
         }
         public async Task<JsonResult> OnGetData([FromQuery] int? page, [FromQuery] int? limit, [FromQuery] string sortBy, [FromQuery] string direction, [FromQuery] string lastName, [FromQuery] string company)
@@ -43,7 +43,7 @@ namespace Darl.GraphQL.Pages
                 int recordsTotal = 0;
 
                 // getting all Customer data  
-                var responseData = _conn.GetContactsQueryable();
+                var responseData = await _conn.GetContactsQueryable();
                 //Sorting  
                 if (!(string.IsNullOrEmpty(sortBy) && string.IsNullOrEmpty(direction)))
                 {

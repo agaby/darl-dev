@@ -32,6 +32,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private IDistributedCache _cache;
         private IConnectivity _conn;
         private ILogger _logger;
+        IKGTranslation _trans;
 
 
         private Dictionary<string, BlobGraphContent> buffer = new Dictionary<string, BlobGraphContent>();
@@ -55,6 +56,17 @@ namespace Darl.GraphQL.Models.Connectivity
             flushTimer = new Timer(FlushTimerTimeOut, null, 500, 500);
         }
 
+        /// <summary>
+        /// Looks for suggested rules in the defaults container
+        /// </summary>
+        /// <param name="compositeName">not currently used, for expansion</param>
+        /// <param name="graphType">The type of the attribute governing the </param>
+        /// <param name="lineage"></param>
+        /// <returns></returns>
+        public async Task<string> GetSuggestedRuleSet(string lineage)
+        {
+            return await _trans.GetDefaultValue($"default_rule_{lineage}");
+        }
         public async Task<GraphConnection> CreateConnection(string compositeName, GraphConnectionInput conn)
         {
             var cont = await Load(compositeName) as BlobGraphContent;
@@ -1383,19 +1395,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return cont.edges[id];
         }
 
-        /// <summary>
-        /// Looks for suggested rules in the defaults container
-        /// </summary>
-        /// <param name="compositeName">not currently used, for expansion</param>
-        /// <param name="graphType">The type of the attribute governing the </param>
-        /// <param name="lineage"></param>
-        /// <returns></returns>
-        public async Task<string> GetSuggestedRuleSet(string lineage)
-        {
-            return await _conn.GetDefaultValue($"default_rule_{lineage}");
-        }
-
-
         public async Task<VRDisplayModel> GetRealVRDisplayGraph(string compositeName, string lineageFilter)
         {
             var cont = await Load(compositeName) as BlobGraphContent;
@@ -1572,6 +1571,21 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<List<KnowledgeState>> GetKnowledgeStatesByTypeAndAttribute(string userId, string objectId, string graphName, string attLineage, string attValue)
         {
             return await _conn.GetKnowledgeStatesByTypeAndAttribute(userId, objectId, graphName, attLineage, attValue);
+        }
+
+        public async Task<KnowledgeState> DeleteKnowledgeState(string userId, string subjectId, string graphName)
+        {
+            return await _conn.DeleteKnowledgeState(userId, subjectId, graphName);
+        }
+
+        public async Task<List<KnowledgeState>> GetKnowledgeStatesByTypeAndAttributeExistence(string userId, string objectId, string graphName, string attLineage)
+        {
+            return await _conn.GetKnowledgeStatesByTypeAndAttributeExistence(userId, objectId, graphName, attLineage);
+        }
+
+        public async Task<string> ShareKGraph(string userId, string name, string sharerId, bool readOnly, bool hidden)
+        {
+            return await _conn.ShareKGraph(userId, name, sharerId, readOnly, hidden);
         }
     }
 

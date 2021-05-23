@@ -47,10 +47,6 @@ namespace Darl.GraphQL.Models.Models
 
         public string StripeCustomerId { get; set; }
 
-        public string UsageStripeSubscriptionItem { get; set; }
-
-        public List<UserUsage> UsageHistory { get; set; } = new List<UserUsage>();
-
         public string APIKey { get; set; } = Guid.NewGuid().ToString();
 
         public SubscriptionType? subscriptionType { get; set; }

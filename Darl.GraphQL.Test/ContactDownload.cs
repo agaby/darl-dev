@@ -51,7 +51,6 @@ namespace Darl.GraphQL.Test
 
             _config = configuration.Object;
             var logger = new Mock<ILogger<GraphLocalStore>>();
-            var formLogger = new Mock<ILogger<FormApi>>();
             var botLogger = new Mock<ILogger<BotProcessing>>();
             var connLogger = new Mock<ILogger<CosmosDBConnectivity>>();
             var blobLogger = new Mock<ILogger<BlobConnectivity>>();
@@ -62,16 +61,7 @@ namespace Darl.GraphQL.Test
             _conv = new CosmosDBConnectivity(_config, connLogger.Object, licensing.Object, cache.Object);
 
         }
-        [TestMethod]
-        [Ignore]
-        public async Task DownloadTest()
-        {
-            var contacts = await _conv.GetContacts();
-            using (var writer = new StreamWriter("contacts.csv"))
-            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-            {
-                csv.WriteRecords(contacts);
-            }
-        }
+
+
     }
 }

@@ -1,12 +1,8 @@
 ﻿using DarlCommon;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Converters;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Test

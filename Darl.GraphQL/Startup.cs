@@ -63,7 +63,7 @@ namespace Darl.GraphQL
                 options.AllowSynchronousIO = true;
             });
 
-            services.AddMicrosoftWebAppAuthentication(Configuration, "AzureAdB2C");
+            services.AddMicrosoftIdentityWebAppAuthentication(Configuration, "AzureAdB2C");
 
             services.AddHsts(options =>
             {
@@ -89,13 +89,8 @@ namespace Darl.GraphQL
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddSingleton<IConnectivity, CosmosDBConnectivity>();
-            services.AddSingleton<IFormApi, FormApi>();
             services.AddSingleton<IBotProcessing, BotProcessing>();
-            services.AddSingleton<IRuleFormInterface, RuleFormInterface>();
-            services.AddSingleton<ITrigger, BotTrigger>();
-            services.AddSingleton<IFormProcessing, FormProcessing>();
             services.AddSingleton<IEmailProcessing, EmailProcessing>();
-            services.AddSingleton<ISimProcessing, SimProcessing>();
             services.AddSingleton<IAuthChecker, AuthChecker>();
             services.AddSingleton<IGraphProcessing, GraphProcessing>();
             services.AddSingleton<ILicensing, ProductLicensing>();
@@ -110,51 +105,31 @@ namespace Darl.GraphQL
             services.AddSingleton<IProducts, Products>();
 
             //types
-            services.AddSingleton<BotFormatType>();
-            services.AddSingleton<BotInputFormatType>();
-            services.AddSingleton<BotModelType>();
-            services.AddSingleton<BotOutputFormatType>();
             services.AddSingleton<DictionarySequenceType>();
             services.AddSingleton<DisplayTypeEnum>();
             services.AddSingleton<FormFormatType>();
             services.AddSingleton<InputFormatType>();
             services.AddSingleton<InputTypeEnum>();
-            services.AddSingleton<LanguageFormatType>();
-            services.AddSingleton<LanguageTextType>();
             services.AddSingleton<LineageAnnotationNodeType>();
             services.AddSingleton<LineageElementType>();
             services.AddSingleton<LineageMatchNodePairType>();
             services.AddSingleton<LineageMatchNodeType>();
             services.AddSingleton<LineageMatchTreeType>();
-            services.AddSingleton<LineageModelType>();
             services.AddSingleton<LineageTypeEnum>();
-            services.AddSingleton<MLModelType>();
             services.AddSingleton<MLSpecType>();
             services.AddSingleton<OutputFormatType>();
             services.AddSingleton<OutputTypeEnum>();
             services.AddSingleton<PostTypeEnum>();
-            services.AddSingleton<RuleFormType>();
-            services.AddSingleton<RuleSetType>();
             services.AddSingleton<SourceTypeEnum>();
             services.AddSingleton<StringDoublePairType>();
             services.AddSingleton<StringStringPairType>();
-            services.AddSingleton<TriggerViewType>();
-            services.AddSingleton<VariantTextType>();
             services.AddSingleton<SetDefinitionType>();
-            services.AddSingleton<ServiceConnectivityType>();
-            services.AddSingleton<AzureCredentialsType>();
-            services.AddSingleton<SellerCenterCredentialsType>();
-            services.AddSingleton<ZendeskCredentialsType>();
-            services.AddSingleton<SendGridCredentialsType>();
-            services.AddSingleton<TwilioCredentialsType>();
-            services.AddSingleton<UserUsageType>();
             services.AddSingleton<ContactType>();
             services.AddSingleton<DefaultType>();
             services.AddSingleton<ContactInputType>();
             services.AddSingleton<ContactUpdateType>();
             services.AddSingleton<InputFormatUpdateType>();
             services.AddSingleton<OutputFormatUpdateType>();
-            services.AddSingleton<BotOutputFormatUpdateType>();
             services.AddSingleton<LineageNodeDefinitionType>();
             services.AddSingleton<LineageRecordType>();
             services.AddSingleton<LineageNodeAttributeUpdateType>();
@@ -164,10 +139,8 @@ namespace Darl.GraphQL
             services.AddSingleton<StringStringPairInputType>();
             services.AddSingleton<DarlVarInputType>();
             services.AddSingleton<MLResultType>();
-            services.AddSingleton<AuthorizationType>();
             services.AddSingleton<LineageAssociationType>();
             services.AddSingleton<LineageElementUnionType>();
-            services.AddSingleton<AuthorizationUpdateType>();
             services.AddSingleton<DarlUserType>();
             services.AddSingleton<AccountStateEnum>();
             services.AddSingleton<DarlUserInputType>();
@@ -175,7 +148,6 @@ namespace Darl.GraphQL
             services.AddSingleton<MLSpecUpdateType>();
             services.AddSingleton<SetGraphType>();
             services.AddSingleton<PercentGraphType>();
-            services.AddSingleton<QuestionSetType>();
             services.AddSingleton<QuestionDataType>();
             services.AddSingleton<QuestionTypeEnum>();
             services.AddSingleton<ResponseDataType>();
@@ -191,9 +163,7 @@ namespace Darl.GraphQL
             services.AddSingleton<UpdateType>();
             services.AddSingleton<ConversationType>();
             services.AddSingleton<ConversationInputType>();
-            services.AddSingleton<BotRuntimeModelType>();
             services.AddSingleton<DocumentType>();
-            services.AddSingleton<TriggerViewInputType>();
             services.AddSingleton<DQTypeEnum>();
             services.AddSingleton<ResourceTypeEnum>();
             services.AddSingleton<PurchaseType>();

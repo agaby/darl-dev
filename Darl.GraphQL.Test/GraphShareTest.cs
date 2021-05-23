@@ -41,6 +41,28 @@ namespace Darl.GraphQL.Test
         private IMetaStructureHandler _meta;
         private IProducts _prods;
 
+        private static string sourceLineage = "noun:01,4,04,02,21,16";
+        private static string destinationLineage = "noun:01,0,0,15,15,3";
+        private static string processLineage = "noun:00,4";
+        private static string defaultLineage = "noun:01,0,0,15,07,02,06,05";//constant
+        private static string valueLineage = "noun:01,4,04,02,07,01";//text
+        private static string collateralLineage = "noun:00,1,00,3,10,09,07";//document
+        private static string firstNameLineage = "noun:01,3,14,01,06,13";//first name
+        private static string lastNameLineage = "noun:01,3,14,01,06,11";//surname
+        private static string emailLineage = "noun:01,0,2,00,38,00,06,1";//email
+        private static string phoneLineage = "noun:01,4,07,01";//phone
+        private static string occupationLineage = "noun:01,0,2,00,23,19";//occupation
+        private static string noteLineage = "noun:01,4,05,21,28,1";//note
+        private static string companyLineage = "noun:01,2,07,10";//organization
+        private static string countryLineage = "noun:01,2,06,35";//nation
+        private static string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";//sector
+        private static string keyLineage = "noun:01,4,09,01,7,3,0";//key
+        private static string subscriptionLineage = "noun:01,0,2,00,34,6,1,5,0";
+        private static string idLineage = "noun:01,4,09,01,7,3,5";
+        private static string stateLineage = "noun:01,1,00";
+        private static string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
+        private static string existenceLineage = "noun:01,5,03,3,018";//life
+
         private static string graphName = "backoffice_test.graph";
 
         [TestInitialize()]
@@ -65,6 +87,7 @@ namespace Darl.GraphQL.Test
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StripeCorporateLicensePlan")]).Returns("plan_DINGKECtG7jIs5");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StripeCorporateUsagePlan")]).Returns("plan_DINOybSsS0vMXf");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:boaiuserid")]).Returns("8c663676-a7dc-4561-af3d-89b38555837d");
+            configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:BackOfficeKG")]).Returns("backoffice_test.graph");
             //           configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StripeTrialPeriodDays")]).Returns<int>(a >= 30);
 
 
@@ -83,6 +106,7 @@ namespace Darl.GraphQL.Test
             var clicense = new Mock<ILicensing>();
             _meta = new MetaStructureHandler();
             _conn = new CosmosDBConnectivity(_config, clogger.Object, clicense.Object, cache.Object);
+            var trans = new Mock<IKGTranslation>();
             _primitives = new BlobGraphPrimitives(new List<IBlobConnectivity> { blob }, cache.Object, _conn, bgplogger.Object);
             _graph = new GraphProcessing(_primitives, glogger.Object,_meta);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
@@ -368,65 +392,8 @@ namespace Darl.GraphQL.Test
             return sb.ToString();
         }
 
-        [TestMethod]
-        [Ignore]
-        public async Task CreateKGDefaults()
-        {
-            var kglog = new Mock<ILogger<KGTranslation>>();
-            var kgt = new KGTranslation(kglog.Object, _config, _graph, _meta, _prods);
-            var defs = await _conn.GetDefaults();
-            foreach(var d in defs)
-            {
-                await kgt.CreateDefault(d.Name, d.Value);
-            }
-        }
 
-        [TestMethod]
-        [Ignore]
-        public async Task CreateKGCollateral()
-        {
-            var kglog = new Mock<ILogger<KGTranslation>>();
-            var kgt = new KGTranslation(kglog.Object, _config, _graph, _meta, _prods);
-            var defs = await _conn.GetCollaterals("786e46c2-fa33-4124-af67-1bb14625c216");
-            foreach (var d in defs)
-            {
-                await kgt.UpdateCollateral(d.Name, d.Value);
-            }
-        }
 
-        [TestMethod]
-        public async Task SaveDemoCollateral()
-        {
-            var kglog = new Mock<ILogger<KGTranslation>>();
-            var kgt = new KGTranslation(kglog.Object, _config, _graph, _meta, _prods);
-            var defs = await _conn.GetCollaterals(_config["AppSettings:boaiuserid"]);
-            foreach (var d in defs)
-            {
-                if(d.Name.EndsWith("mlmodel"))
-                {
-                    File.WriteAllText($"C:\\Users\\sales\\source\\repos\\Darl.GraphQL\\Darl.GraphQL\\wwwroot\\demo\\{d.Name}.txt", d.Value);
-                }
-            }
-        }
-
-        [TestMethod]
-        [Ignore]
-        public async Task CreateContacts()
-        {
-            var kglog = new Mock<ILogger<KGTranslation>>();
-            var kgt = new KGTranslation(kglog.Object, _config, _graph, _meta, _prods);
-            var users = await _conn.GetUsers();
-            var cons = await _conn.GetContacts();
-            foreach(var u in users)
-            {
-                await kgt.CreateUserAsync(u);
-            }
-            foreach (var c in cons)
-            {
-                await kgt.UpdateContactAsync(c);
-            }
-            await kgt.StoreSystemKG();
-        }
 
         [TestMethod]
         public async Task UpdateAttributeConfidence()
@@ -453,6 +420,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task RemoveUsersInTest()
         {
             var m = await _graph.GetModel(_config["AppSettings:boaiuserid"], "backoffice_test.graph");
@@ -469,6 +437,20 @@ namespace Darl.GraphQL.Test
             {
                 await _graph.DeleteGraphObject(comp, i);
             }
+            await _graph.Store(comp);
+        }
+
+
+        [TestMethod]
+        public async Task GenerateModelObjects()
+        {
+            var comp = $"{_config["AppSettings:boaiuserid"]}_backoffice_test.graph";
+            var m = await _graph.GetModel(_config["AppSettings:boaiuserid"], "backoffice_test.graph");
+            await _graph.ClearGraphContent(comp);
+            await _graph.CreateGraphObject(comp, new GraphObjectInput { externalId = "collateral", lineage = collateralLineage, name = "collateral" }, OntologyAction.build);
+            await _graph.CreateGraphObject(comp, new GraphObjectInput { externalId = "default", lineage = defaultLineage, name = "default" }, OntologyAction.build);
+            await _graph.CreateGraphObject(comp, new GraphObjectInput { externalId = "person", lineage = _meta.CommonLineages["person"], name = "person" }, OntologyAction.build);
+            await _graph.CreateGraphObject(comp, new GraphObjectInput { externalId = "update", lineage = processLineage, name = "update" }, OntologyAction.build);
             await _graph.Store(comp);
         }
 

@@ -22,9 +22,6 @@ namespace Darl.GraphQL.Models.Schemata
             Field<InferenceTimeEnum>("inferenceTime", "Determines if inferences are performed with a current or fixed time.", resolve: context => context.Source.dateDisplay);
             Field<DarlTimeType>("fixedTime", "The time of the inference process if in fixed time mode", resolve: context => context.Source.fixedTime);
             Field<GraphModelType>("model", resolve: context => graph.GetModel(context.Source.userId,context.Source.Name));
-            Field<ListGraphType<AuthorizationType>>("authorizations", resolve: context => context.Source.Authorizations).AuthorizeWith("CorpPolicy");
-            Field<ServiceConnectivityType>("serviceConnectivity", resolve: context => context.Source.serviceConnectivity).AuthorizeWith("CorpPolicy");
-            Field<ListGraphType<UserUsageType>>("usageHistory", resolve: context => context.Source.UsageHistory).AuthorizeWith("CorpPolicy");
         }
     }
 }
