@@ -1,0 +1,111 @@
+﻿.price-box {
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+    .price-box .price-header {
+        background: #000;
+        color: #fff;
+        padding: 30px 15px;
+    }
+
+        .price-box .price-header h1, .price-box .price-header h4 {
+            color: #fff;
+        }
+
+        .price-box .price-header h1 {
+            text-transform: uppercase;
+        }
+
+            .price-box .price-header h1 span {
+                font-size: 12px;
+                opacity: 0.8;
+                display: inline-block;
+            }
+
+        .price-box .price-header h4 {
+            opacity: 0.8;
+            margin: 0px;
+        }
+
+    .price-box.best-plan .price-header, .price-box.best-plan .price-footer {
+        background: #4aa3df;
+    }
+
+.price-features {
+    margin: 0;
+    padding: 15px 0;
+}
+
+    .price-features li {
+        line-height: 50px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 0px 15px;
+    }
+
+        .price-features li:last-child {
+            border-bottom: 0px;
+        }
+
+.price-footer {
+    background: #f5f5f5;
+    padding: 25px 15px;
+}
+
+.price-btn {
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    -ms-border-radius: 2px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    border: 0px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    -moz-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    -webkit-transition: all 0.3s;
+    transition: all 0.3s;
+}
+
+.btn.btn-rounded {
+    -webkit-border-radius: 100px;
+    -moz-border-radius: 100px;
+    -ms-border-radius: 100px;
+    border-radius: 100px;
+    padding: 12px 35px;
+}
+
+.btn-white-border {
+    background: transparent;
+    color: #fff;
+    border: 2px solid #fff;
+}
+
+    .btn-white-border:focus {
+        background: transparent;
+        color: #fff;
+        border: 2px solid #fff;
+    }
+
+    .btn-white-border:hover {
+        background: #fff;
+        color: #333;
+    }
+
+.btn-dark-border {
+    background: transparent;
+    color: #333;
+    border: 2px solid #333;
+}
+
+    .btn-dark-border:focus {
+        background: transparent;
+        color: #333;
+        border: 2px solid #333;
+    }
+
+    .btn-dark-border:hover {
+        background: #333;
+        color: #fff;
+    }

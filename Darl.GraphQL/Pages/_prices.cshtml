@@ -6,7 +6,7 @@
         @if (prod.hidden == false)
         {
             <div class="col-lg-4 margin-b-30">
-                <div class="price-box @(prod == Model.First() ? "best-plan" : "")">
+                <div class="price-box @(prod.price < 2000 ? "best-plan" : "")">
                     <div class="price-header">
                         <h1><span class="dolor">$</span>@(((double)prod.price) / 100)<span class="peroid">/Month</span></h1>
                         <h4>@prod.name</h4>

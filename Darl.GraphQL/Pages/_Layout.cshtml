@@ -21,8 +21,8 @@
             height: 100vh;
         }
     </style>
-
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Subscription/subscribe.css" />
     @RenderSection("header", required: false)
 
     @RenderSection("StyleSheets", required: false)
@@ -66,6 +66,10 @@
                             <a class="nav-link text-dark" href="/docs/">Documentation</a>
                         </li>
                         <li class="nav-item">
+                            <a data-toggle="modal" href="#modalPricing" class="nav-link text-dark">Pricing</a>
+                        </li>
+
+                        <li class="nav-item">
                             <a class="nav-link text-dark" href="https://discord.gg/4BaqGFukNG">Discord support</a>
                         </li>
                         <li class="nav-item">
@@ -96,34 +100,18 @@
         </nav>
     </header>
 
-    <div id="modalIntro" class="modal fade" role="dialog">
+    <div id="modalPricing" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg">
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title">Welcome to Darl.dev</h3>
+                    <h3 class="modal-title">Subscriptions</h3>
                 </div>
                 <div class="modal-body" id="modalBody">
-                    <p>This site provides GraphQL access to our <a href="https://darl.ai" target="_blank">DARL expert system, machine learning and Bot functionality</a>.</p>
-                    <p>
-                        This is a tenanted site. If you <a href="/azureadb2c/account/signin">register</a> you get your own account with an initial free set of expert system rulesets, machine learning examples and a bot model, which you can modify or add to as you please. The API permits you to embed rulesets and bots in your own applications.
-                    </p>
-                    <p>
-                        If you don’t register you can query the default examples, but not modify them.
-                    </p>
-                    <p>
-                        Registration is free with no monthly charges and there is a generous allowance of free ruleset and bot usage. If you exceed this usage the <a href="https://darl.ai/#pricing" target="_blank">charges</a> won’t break the bank.
-                    </p>
-                    <p>
-                        GraphQL has excellent tooling, and we’ve included state of the art tools to access and explore our API. This page contains a Playground interface; other pages contain a Voyager object browser to explore the large object model employed by DARL, and GraphiQL, an alternate user interface.
-                    </p>
-                    <p>
-                        Pages also exist for specialized editing, like our DARL interactive editor.
-                    </p>
-                    <p>
-                        Please <a href="/azureadb2c/account/signin">Register now</a>. You can <a href="docs/darl_dev/" target="_blank">read more about this site here</a>.
-                    </p>
-
+                    <p>Choose a subscription</p>
+                    <div class="row">
+                        <partial name="_prices" model="Model.products" />
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -138,31 +126,93 @@
 
     </footer>
 
+    @if (User.Identity.IsAuthenticated)
+    {
+        <input name="auth" id="auth" type="hidden" />
+    }
+
 
     <script src="~/jquery/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-
-
-
+    <script src="/graphql/graphql.min.js"></script>
 
     @RenderSection("Scripts", required: false)
 
     <script>
-        $(document).ready(function () {
+        $(document).ready(async function () {
             if (localStorage.getItem('popState') != 'shown') {
-                $("#modalIntro").modal('show');
+                await ShowMDBox("Welcome to ThinkBase", "/md/thinkbase/visitor_text.md");
                 localStorage.setItem('popState', 'shown')
             }
+            var priceId = getCookie("priceId");
+            if (priceId) {
+                document.cookie = "priceId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                window.location.href = '/subscribe?priceId=' + priceId;
+            }
 
-            $('#popup-close').click(function (e) // You are clicking the close button
-            {
-                $('#modalIntro').fadeOut(); // Now the pop up is hiden.
+            $('#popup-close').click(function (e) {
+                $('#modalIntro').fadeOut();
             });
+
             $('#modalIntro').click(function (e) {
                 $('#modalIntro').fadeOut();
             });
+
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('newsubs')) {
+                await ShowMDBox("Thanks for subscribing", "/md/thinkbase/Subscribe_text.md");
+            }
+
         });
+
+        function HandlePurchase(priceId) {
+            $('#modalPricing').fadeOut();
+            document.cookie = "priceId=" + priceId;
+            if ($('#auth').length) {
+                window.location.href = '/subscribe';
+            }
+            else {
+                window.location.href = '/MicrosoftIdentity/account/signin';
+            }
+        }
+
+        function getCookie(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        async function ShowMDBox(header, url) {
+            $.get(url, function (data) {
+                var converter = new showdown.Converter();
+                var html = converter.makeHtml(data);
+                var div = $("<div>", {
+                    css: {
+                        "width": "100%",
+                        "margin-top": "1rem"
+                    }
+                }).html(html);
+
+                $.MessageBox({
+                    message: header,
+                    input: div,
+                    queue: false
+                }).done(function (data) {
+                    console.log(data);
+                });
+            });
+        }
     </script>
 </body>
 </html>
