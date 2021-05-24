@@ -1,0 +1,33 @@
+﻿@page
+@model Darl.GraphQL.Pages.referralModel
+@{
+    Layout = "_BlankLayout";
+}
+
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <input name="auth" id="auth" type="hidden" />
+    }
+
+    @section Scripts
+    {
+        <script>
+            $(document).ready(async function () {
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('priceId')) {
+                    document.cookie = "priceId=" + params.get('priceId');
+                    if ($('#auth').length) {
+                        window.location.replace('/subscribe');
+                    }
+                    else {
+                        window.location.replace('/MicrosoftIdentity/account/signin');
+                    }
+                }
+                else {
+                    window.location.replace('/index');
+                }
+            });
+
+        </script>
+    }

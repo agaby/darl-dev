@@ -178,7 +178,8 @@ $(async function () {
             initialTexts[mdname] = kgmeta.kGraphByName.initialText;
         }
         catch (err) {
-            HandleError(err);
+            window.location.replace("/index");
+            return;
         }
         $('#graphTitle').text(mdname);
         await loadGraphs();
