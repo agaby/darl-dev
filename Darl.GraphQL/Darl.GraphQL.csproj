@@ -54,7 +54,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="wwwroot\docs\img\favicon.ico">
+    <Content Update="wwwroot\md\images\darl_bot_block_diagram.png">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
