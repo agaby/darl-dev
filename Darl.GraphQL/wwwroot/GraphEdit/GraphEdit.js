@@ -2498,18 +2498,25 @@ async function UpdateAttributeValue(id, newAtt, type) {
                         type: "number",
                         label: "Attribute value",
                         defaultValue: newAtt.value
+                    },
+                    empty: {
+                        type: "checkbox",
+                        label: "Leave empty",
+                        defaultValue: !(newAtt.value)
                     }
+
                 },
                 message: "Set the attribute's value",
                 buttonDone: "Change",
                 buttonFail: "Cancel",
                 queue: false,
                 filterDone: function (data) {
-                    if (data.val === "") return "Give a value.";
+                    if (data.val === "" && !data.empty) return "Give a value or set to empty.";
                 }
             }).done(function (valdata) {
-                if (newAtt.value !== valdata.val) {
-                    newAtt.value = valdata.val;
+                let content = valdata.empty ? "" : valdata.val;
+                if (newAtt.value !== content || valdata.empty) {
+                    newAtt.value = content;
                     Upsert(id, newAtt, type);
                 }
             });
@@ -2522,6 +2529,11 @@ async function UpdateAttributeValue(id, newAtt, type) {
                         type: "text",
                         label: "Attribute value",
                         defaultValue: newAtt.value
+                    },
+                    empty: {
+                        type: "checkbox",
+                        label: "Leave empty",
+                        defaultValue: !(newAtt.value)
                     }
                 },
                 message: "Set the attribute's value",
@@ -2529,11 +2541,12 @@ async function UpdateAttributeValue(id, newAtt, type) {
                 buttonFail: "Cancel",
                 queue: false,
                 filterDone: function (data) {
-                    if (data.val === "") return "Give a value.";
+                    if (data.val === "" && !data.empty) return "Give a value or set to empty.";
                 }
             }).done(function (valdata) {
-                if (newAtt.value !== valdata.val) {
-                    newAtt.value = valdata.val;
+                let content = valdata.empty ? "" : valdata.val;
+                if (newAtt.value !== content || valdata.empty) {
+                    newAtt.value = content;
                     Upsert(id, newAtt, type);
                 }
             });
@@ -2549,17 +2562,23 @@ async function UpdateAttributeValue(id, newAtt, type) {
                     time1: {
                         type: "time",
                         label: "Time 1"
+                    },
+                    empty: {
+                        type: "checkbox",
+                        label: "Leave empty",
+                        defaultValue: !(newAtt.value)
                     }
+
                 },
                 message: "Set the attribute's time value",
                 buttonDone: "Change",
                 buttonFail: "Cancel",
                 queue: false,
                 filterDone: function (data) {
-                    if (data.date1 === "") return "Give a value.";
+                    if (data.date1 === "" && !data.empty) return "Give a value or set to empty.";
                 }
             }).done(function (valData) {
-                newAtt.value = valdata.date1 + valdate.time1;
+                newAtt.value = valdata.empty ? "" : valdata.date1 + valdate.time1;
                 Upsert(id, newAtt, type);
             });
             break;

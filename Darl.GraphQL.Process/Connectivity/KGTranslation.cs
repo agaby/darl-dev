@@ -209,7 +209,9 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<string> GetDefaultValue(string name)
         {
             var ks = await _graph.GetKnowledgeState(_config["AppSettings:boaiuserid"], name, backofficeKG);
-            return GetAttributeValue(ks, defaultObjectId, valueLineage) ?? string.Empty;
+            if(ks != null)
+                return GetAttributeValue(ks, defaultObjectId, valueLineage) ?? string.Empty;
+            return string.Empty;
         }
 
         public async Task<Default> CreateDefault(string name, string value)
@@ -851,6 +853,33 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
+        public async Task<string> GetSuggestedRuleSet(string lineage)
+        {
+            var complete = false;
+            string code = null;
+            var lin = lineage;
+            while (!complete)
+            {
+                code = await GetDefaultValue($"default_rule_{lineage}");
+                if (code != null)
+                    complete = true;
+                else
+                {
+                    //remove last element from lineage
+                    var pos = lin.LastIndexOf(',');
+                    if (pos == -1)
+                    {
+                        complete = true;
+                    }
+                    else
+                    {
+                        lin = lin.Substring(0, pos);
+                    }
+                }
+            }
+            return code ?? string.Empty;
+        }
+
 
         #region private
 
@@ -1020,6 +1049,8 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return string.Empty;
         }
+
+
 
         #endregion
     }

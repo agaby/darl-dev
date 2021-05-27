@@ -32,7 +32,6 @@ namespace Darl.GraphQL.Models.Connectivity
         private IDistributedCache _cache;
         private IConnectivity _conn;
         private ILogger _logger;
-        IKGTranslation _trans;
 
 
         private Dictionary<string, BlobGraphContent> buffer = new Dictionary<string, BlobGraphContent>();
@@ -56,17 +55,7 @@ namespace Darl.GraphQL.Models.Connectivity
             flushTimer = new Timer(FlushTimerTimeOut, null, 500, 500);
         }
 
-        /// <summary>
-        /// Looks for suggested rules in the defaults container
-        /// </summary>
-        /// <param name="compositeName">not currently used, for expansion</param>
-        /// <param name="graphType">The type of the attribute governing the </param>
-        /// <param name="lineage"></param>
-        /// <returns></returns>
-        public async Task<string> GetSuggestedRuleSet(string lineage)
-        {
-            return await _trans.GetDefaultValue($"default_rule_{lineage}");
-        }
+
         public async Task<GraphConnection> CreateConnection(string compositeName, GraphConnectionInput conn)
         {
             var cont = await Load(compositeName) as BlobGraphContent;

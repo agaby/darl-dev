@@ -632,7 +632,7 @@ namespace Darl.GraphQL.Models.Schemata
             resolve: async context =>
             {
                 var lineage = context.GetArgument<string>("lineage");
-                return await context.TryAsyncResolve(async c => await graph.GetSuggestedRuleSet(lineage));
+                return await context.TryAsyncResolve(async c => await trans.GetSuggestedRuleSet(lineage));
             });
             FieldAsync<StringGraphType>("registerForMarketing", "Receive marketing communications from DARL ",
             arguments: new QueryArguments(
