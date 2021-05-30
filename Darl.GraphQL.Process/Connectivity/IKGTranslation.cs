@@ -54,6 +54,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<Contact> DeleteContactAsync(string emailname);
         Task<string> RegisterForMarketing(string name, string email);
         Task<bool> CheckEmail(string email, string ipaddress = "");
-        Task<string> GetSuggestedRuleSet(string lineage);
+        Task<string> GetSuggestedRuleSet(string userId, string modelName, string objectId, string lineage);
     }
 }

@@ -1352,26 +1352,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var cont = await Load(compositeName) as BlobGraphContent;
             if (cont == null)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
-            List<string> lineages = new List<string>();
-            switch (gtype)
-            {
-                case GraphElementType.node:
-                    lineages = cont.vertices.Values.Select(a => a.lineage).Distinct().ToList();
-                    break;
-                case GraphElementType.connection:
-                    lineages = cont.edges.Values.Select(a => a.lineage).Distinct().ToList();
-                    break;
-                case GraphElementType.attribute:
-                    lineages = cont.vertices.Values.Select(a => (a.properties ?? new List<GraphAttribute>()).Select(b => b.lineage).ToList()).SelectMany(i => i).Distinct().ToList();
-                    break;
-            }
-            var records = new List<LineageRecord>();
-            foreach(var l in lineages)
-            {
-                if (LineageLibrary.lineages.ContainsKey(l))
-                    records.Add(LineageLibrary.lineages[l]);
-            }
-            return records;
+            return cont.GetLineages(gtype);
         }
 
         public async Task<GraphConnection> GetConnectionById(string compositeName, string id)

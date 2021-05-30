@@ -163,7 +163,7 @@ $(async function () {
     updaterecognitionobject = graph('mutation uro($name: String! $obj: graphObjectUpdate!){updateRecognitionObject(name: $name object: $obj){id}}');
     lintCall = graph('query lint($darl: String!){  lintDarlMeta(darl: $darl){ column_no_start column_no_stop line_no message severity }}');
     interact = graph('query int($name: String! $ksid: String! $text:  String!){interactKnowledgeGraph(kgModelName: $name conversationId: $ksid conversationData: { dataType: textual name: "" value: $text }){ darl reference response{dataType name value categories{name value }}}}');
-    defaultRule = graph('query dr($lineage: String!){getSuggestedRuleset(lineage: $lineage)}');
+    defaultRule = graph('query dr($name: String! $id: String! $lineage: String!){getSuggestedRuleset(graphName: $name objectId: $id lineage: $lineage)}');
     getks = graph('query gks($id: String! $name: String!){getKnowledgeState(id: $id graphName: $name external: true){userId knowledgeGraphName data {name value {name lineage value confidence type }}}}')
     deletekg = graph('mutation dkg($name: String!){deleteKG(name: $name)}');
     updatekg = graph('mutation ukg($name: String! $update: KGraphUpdate!){updateKGraphMetadata(name: $name update: $update){name description}}')
@@ -2608,7 +2608,7 @@ async function UpdateAttributeValue(id, newAtt, type) {
         case "RULESET":
             var def;
             try {
-                var alt = await defaultRule({ lineage: newAtt.lineage });
+                var alt = await defaultRule({ name: mdname, id: id, lineage: newAtt.lineage });
                 def = newAtt.value !== "" ? newAtt.value : alt.getSuggestedRuleset;
             }
             catch (err) {

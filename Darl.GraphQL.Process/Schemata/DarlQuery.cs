@@ -627,12 +627,17 @@ namespace Darl.GraphQL.Models.Schemata
                 });
             FieldAsync<StringGraphType>("getSuggestedRuleset", "Get a suggested initial ruleset for an attribute. ",
             arguments: new QueryArguments(
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "objectId", Description = "Id of the object containing the new ruleset."},
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "Lineage of the attribute" }
                 ),
             resolve: async context =>
             {
                 var lineage = context.GetArgument<string>("lineage");
-                return await context.TryAsyncResolve(async c => await trans.GetSuggestedRuleSet(lineage));
+                var objectId = context.GetArgument<string>("objectId");
+                var graphName = context.GetArgument<string>("graphName");
+                var userId = trans.GetCurrentUserId(context.UserContext);
+                return await context.TryAsyncResolve(async c => await trans.GetSuggestedRuleSet(userId, graphName, objectId, lineage));
             });
             FieldAsync<StringGraphType>("registerForMarketing", "Receive marketing communications from DARL ",
             arguments: new QueryArguments(

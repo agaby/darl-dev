@@ -853,31 +853,14 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        public async Task<string> GetSuggestedRuleSet(string lineage)
+        public async Task<string> GetSuggestedRuleSet(string userId, string modelName, string objectId, string lineage)
         {
-            var complete = false;
-            string code = null;
-            var lin = lineage;
-            while (!complete)
+            var model = await _graph.GetModel(userId, modelName);
+            if (model != null)
             {
-                code = await GetDefaultValue($"default_rule_{lineage}");
-                if (code != null)
-                    complete = true;
-                else
-                {
-                    //remove last element from lineage
-                    var pos = lin.LastIndexOf(',');
-                    if (pos == -1)
-                    {
-                        complete = true;
-                    }
-                    else
-                    {
-                        lin = lin.Substring(0, pos);
-                    }
-                }
+                return _meta.GetSuggestedRuleSet(model, objectId, lineage);
             }
-            return code ?? string.Empty;
+            return string.Empty;
         }
 
 
