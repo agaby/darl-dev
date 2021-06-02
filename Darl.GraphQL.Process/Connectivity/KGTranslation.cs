@@ -735,7 +735,7 @@ namespace Darl.GraphQL.Models.Connectivity
             //productId in user is actually priceId, lookup
             var customerId = await CreateStripeCustomer(user.userId, user.InvoiceEmail, user.InvoiceName);
             var product = _prods.products.FirstOrDefault(a => a.priceId == user.productId);
-            return await CreateUserAsync(new DarlUser { userId = user.userId, InvoiceName = user.InvoiceName, InvoiceEmail = user.InvoiceEmail, Created = DateTime.UtcNow, StripeCustomerId = customerId, APIKey = Guid.NewGuid().ToString(), accountState = DarlUser.AccountState.trial, productId = product.id });
+            return await CreateUserAsync(new DarlUser { userId = user.userId, InvoiceName = user.InvoiceName, InvoiceEmail = user.InvoiceEmail, Created = DateTime.UtcNow, StripeCustomerId = customerId, APIKey = Guid.NewGuid().ToString(), accountState = DarlUser.AccountState.trial, productId = product == null ? string.Empty : product.id });
         }
 
 

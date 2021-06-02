@@ -1782,7 +1782,7 @@
     <None Include="wwwroot\md\suggestions.md" />
     <None Include="wwwroot\md\text_replacement.md" />
     <None Include="wwwroot\md\Text_sequence_elements.md" />
-    <None Include="wwwroot\md\tutorial.md" />
+    <None Include="wwwroot\md\Bot_Frame_tutorial.md" />
     <None Include="wwwroot\md\versioning.md" />
     <None Include="wwwroot\simplemde\debug\simplemde.debug.js" />
     <None Include="wwwroot\simplemde\debug\simplemde.js" />
@@ -1795,6 +1795,7 @@
     <Folder Include="wwwroot\jstree\themes\" />
     <Folder Include="wwwroot\cytoscape-cxtmenu\" />
     <Folder Include="wwwroot\demo\" />
+    <Folder Include="wwwroot\md\videos\" />
   </ItemGroup>
 
 </Project>

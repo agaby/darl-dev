@@ -84,6 +84,8 @@ $(async function () {
     if (existing) {
         if (existing.url) {
             url = existing.url;
+            if (url === "https://localhost:44311/index")
+                url = "https://localhost:44311";
         }
         if (existing.key) {
             key = existing.key;
