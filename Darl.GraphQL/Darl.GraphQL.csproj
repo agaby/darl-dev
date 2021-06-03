@@ -1766,7 +1766,7 @@
     <None Include="wwwroot\md\GraphQL.md" />
     <None Include="wwwroot\md\GraphQL_examples.md" />
     <None Include="wwwroot\md\handling_defaults.md" />
-    <None Include="wwwroot\md\index.md" />
+    <None Include="wwwroot\md\old_index.md" />
     <None Include="wwwroot\md\knowledge_graphs.md" />
     <None Include="wwwroot\md\machine_learn.md" />
     <None Include="wwwroot\md\model_test.md" />

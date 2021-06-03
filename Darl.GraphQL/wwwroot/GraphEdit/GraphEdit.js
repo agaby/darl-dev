@@ -51,6 +51,7 @@ var getks;
 var deletekg;
 var updatekg;
 var kgraph;
+var edited = false;
 
 var recognizedLineage = "adjective:8953";
 var textLineage = "noun:01,4,04,02,07,01";
@@ -77,6 +78,12 @@ var lastConnectionName = "";
 var lastConnectionExistingLineage = "";
 
 $(async function () {
+
+    window.addEventListener('beforeunload', (event) => {
+        if (edited) {
+            event.returnValue = 'You have unfinished changes!';
+        }
+    });
     var existing = window.localStorage.getItem(settingsStorageName);
     existing = JSON.parse(existing);
     var url = "https://darl.dev";
@@ -276,6 +283,7 @@ $(async function () {
             await savechanges({ name: mdname });
             //            $('#kg-save').prop('disabled', true);
             alert(mdname + " saved");
+            edited = false;
         }
         catch (err) {
             HandleError(err);
@@ -521,6 +529,7 @@ async function loadGraphs() {
                             try {
                                 await deleterealobject({ name: mdname, id: ele.id() });
                                 realcy.remove(ele);
+                                edited = true;
                             }
                             catch (err) {
                                 HandleError(err);
@@ -846,6 +855,7 @@ async function loadGraphs() {
                                 console.log(data);
                                 await deleterealconnection({ name: mdname, id: ele.id() });
                                 realcy.remove(ele);
+                                edited = true;
                             }
                             catch (err) {
                                 HandleError(err);
@@ -1601,6 +1611,7 @@ async function loadGraphs() {
                         name: 'dagre'
                     });
                     layout.run();
+                    edited = true;
 
                 }
                 catch (err) {
@@ -1899,6 +1910,7 @@ async function LoadRecGraph() {
                                 console.log(data);
                                 await deleterecognitionobject({ name: mdname, id: ele.id() });
                                 realcy.remove(ele);
+                                edited = true;
                             }
                             catch (err) {
                                 HandleError(err);
@@ -1993,10 +2005,12 @@ async function LoadRecGraph() {
                                         }).done(async function (data) {
                                             newObj.lineage = data.lin;
                                             await updaterecognitionobject({ name: mdname, obj: newObj });
+                                            edited = true;
                                         });
                                     }
                                     else {
                                         await updaterecognitionobject({ name: mdname, obj: newObj });
+                                        edited = true;
                                     }
                                 }
                                 catch (err) {
@@ -2082,6 +2096,7 @@ async function LoadRecGraph() {
             if (!res.createRecognitionConnection) { //failed, delete connection
                 recognitioncy.remove(addedEles);
             }
+            edited = true;
         });
         recognitioncy.on('add', function (event) {
             node = event.target;
@@ -2281,6 +2296,7 @@ async function EditRealAttributes(id) {
                         if (data.attChoice) {
                             try {
                                 await deleterealattribute({ name: mdname, id: id, attLin: data.attChoice });
+                                edited = true;
                             }
                             catch (err) {
                                 HandleError(err);
@@ -2397,6 +2413,7 @@ async function EditVirtualAttributes(id) {
                     else if (button === "delete") {
                         try {
                             await deletevirtualattribute({ name: mdname, lineage: id, attLin: data.attChoice });
+                            edited = true;
                         }
                         catch (err) {
                             HandleError(err);
@@ -2430,6 +2447,7 @@ async function CreateNode(evt, name, externalId, lin, sublin) {
             }
         });
         await LoadVirtualGraph();
+        edited = true;
 
     }
     catch (err) {
@@ -2453,6 +2471,7 @@ async function CreateRecognitionNode(evt, lin) {
                 y: evt.position.y
             }
         });
+        edited = true;
     }
     catch (err) {
         HandleError(err);
@@ -2471,6 +2490,7 @@ async function CreateRecognitionTerminusNode(evt) {
                 y: evt.position.y
             }
         });
+        edited = true;
     }
     catch (err) {
         HandleError(err);
@@ -2483,6 +2503,7 @@ async function CreateConnection(addedEles, sourceNode, targetNode, name, lin) {
         var endId = targetNode.id();
         var created = await createrealconnection({ name: mdname, conn: { name: name, lineage: lin, startId: startId, endId: endId, id: addedEles.id() } });
         addedEles.data('id', created.createGraphConnection.id);
+        edited = true;
     }
     catch (err) {
         HandleError(err);
@@ -2648,6 +2669,7 @@ async function Upsert(id, newAtt, type) {
             await updaterecognitionattribute({ name: mdname, id: id, att: newAtt });
         else if (type === "virtual")
             await updatevirtualattribute({ name: mdname, lineage: id, att: newAtt });
+        edited = true;
     }
     catch (err) {
         HandleError(err);

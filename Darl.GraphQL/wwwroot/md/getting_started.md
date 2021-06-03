@@ -4,11 +4,19 @@ You can create a very simple functioning KG in 5 minutes.
 
 See the video:
 
-<iframe width="809" height="531" src="https://www.youtube.com/embed/Kw05ocsfntY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/Kw05ocsfntY/0.jpg)](https://www.youtube.com/watch?v=Kw05ocsfntY)
+
+![Make a KG in 5 Minutes](videos/Make_a_KG_in_5_minutes.mp4)
 
 ## The process
 
 ### Create a new KG
+
+You should chose a unique name for your KG. We normally use the extension _.graph_, but this is your choice. 
+Characters should be limited to letters, numbers and the underscore character.
+
+
+
 ### Add nodes
 ### Add attributes to nodes
 ### Wire nodes up with connections
@@ -22,7 +30,7 @@ Things to do next:
 
 [Create a Knowledge graph programmatically]()
 
-[Understand lineages]()
+[Understand lineages](ontology.md)
 
 [Using the ThinkBase 2D UI]()
 

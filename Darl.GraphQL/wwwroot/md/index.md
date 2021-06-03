@@ -1,14 +1,19 @@
-﻿---
-title: Documentation index
-description: Documentation for the DARL system, Bot Framework and more.
-output:
-  html_document:
-    toc: true
-    toc_float: true
----
+﻿# ThinkBase
 
+ThinkBase is a SaaS system that allows you to build and reuse Knowledge Graphs.
 
-### Documentation index
+We have an especial focus on _inference_ in this system, in that our Knowledge graphs both represent objects, attributes and relationships, and allow you to reason with them. 
+
+This is most useful when your knowledge graph is intended to contain some kind of model that responds to data. 
+
+ThinkBase can represent both kinds of Knowledge Graph:  graphs that represent real world objects and relationships and also graphs that represent a methodology to create knowledge.
+
+Knowledge Graphs are part of the movement to supply AI functionality that can be easily understood and that can explain itself.
+
+We've focused specially on  making the graphs both easy to construct and understand. We've created a web-based 2D graphical interface to do this, but are extending that to Virtual Reality in the near future.
+
+# DARL
+Whereas ThinkBase is relatively new, DARL (Doctor Andy's rule language) has been developed over some years.  
 
 DARL is a language and set of tools for reasoning in the presence of uncertainty.
 The principle business of AI and ML is handling uncertainty.
@@ -22,97 +27,25 @@ Where only example data is available, DARL can machine learn relationships.
 
 Uniquely, DARL uses the _same_ representation for knowledge derived from either method.
 
-The DARL tool-set includes a Bot creation service that uses NLP and heuristics to understand requests and offer advice, a Fuzzy logic expert system like inference engine that can be used with incomplete data, and that can create it's own sequence of minimal questions to create an inference, and a set of Machine learning algorithms that create results that are usable in the former engines.
+DARL is used as the constraint and inference language inside ThinkBase.
 
-The DARL engines are accessible via the API described in these pages so you can develop intelligent solutions making use of them.
+# Exploiting your Knowledge Graph
 
+There are two principle ways you can use your KG in the real world.
 
-#### Overview
+## ChatBots
 
-[Using the Darl.dev site](./darl_dev)
+ThinkBase has a built in bot interface which can easily be used with the Microsoft Bot Framework and through that a range of portals, such as FaceBook messenger, Slack, Twitter, etc.
+We are producing tooling to talk to a range of other portals, such as Discord and Alexa.
 
-[Executive summary](./executive)
+## Programmatic access
 
-[Overview of bot functionality](./overview)
+Underneath the hood, our 2D graphical interface and our VR engine talk to a GraphQL interface.
 
-[Tutorial on setting up a bot](tutorial)
+GraphQL is a replacement for REST interfaces created by FaceBook, that gives you access to extensible, self-documenting functionality delivered through a single POST endpoint.
 
-[Example of creating a ruleset](example_rule_set)
+ We have constructed a wide set of built in queries and mutations (commands that change data)  that allow you to do everything the UI can do programmatically.
 
-
-### GraphQL API
-[Using the GraphQL API](./GraphQL)
-
-[Usage examples](./GraphQL_examples)
-
-#### DARL
-[The DARL language](./darl)
-
-#### DARL editor
-[The DARL editor](./darl_editor)
-
-#### Models and rulesets
-[Select the model or ruleset to edit](./select_model_ruleset)
-
-#### Framework
-[Edit the darl fragment environment](./framework)
-
-#### Model tree
-[Edit the model tree](./edit_tree)
-
-#### Model test
-[Test the model in conversation](./model_test)
-
-#### Ruleset edit
-[Edit a ruleset](./ruleset_edit)
-
-#### Ruleset run
-[Run a ruleset](./ruleset_run)
-
-#### Ruleset documents
-[Add a document to format results](./ruleset_documents)
-
-#### Machine learning
-[Machine learn a ruleset](./machine_learn)
-
-#### System simulation in time
-[How to create a simulation](./simulation)
-
-#### Connectivity
-[Set connection data](./connectivity)
-
-#### Collateral
-[Add markup to responses](./collateral)
-
-#### Stores
-[Extra functionality for Bots](./stores)
-
-#### Text sequences
-[The grammar of text sequences](./text_sequence_elements)
-
-#### Editing and versioning
-
-[Saving changes and how to support multiple versions of bots](./versioning)
-
-#### Resources
-
-[Resources to help you use DARL](./resources)
-
-#### Accounts
-
-[About accounts](./accounts)
-
-#### Bot model caching
-
-[Updating models](./bot_model_caching)
-
-#### Creating reports in DARL
-
-[Text replacement and report generation](./text_replacement)
-
-#### Knowledge graphs (Thinkbase)
-
-[Using our knowledge graph technology](./knowledge_graphs)
 
 
 
