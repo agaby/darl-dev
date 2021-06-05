@@ -1,12 +1,4 @@
-﻿---
-title: Fuzzy logic and sets
-description: Fuzzy Logic and the DARL Language.
-output:
-  html_document:
-    toc: true
-    toc_float: true
----
-
+﻿
 Fuzzy logic and sets
 ====
 
@@ -25,7 +17,7 @@ Around 500BC, the Greek philosopher Zeno described a paradox, known as the Sorit
 
 There are several conclusions we can draw from this paradox.
 
-+ Qualitative words like "small" "medium", "large", "high", "low", etc.don't map well onto crisp sets.
++ Qualitative words like "small" "medium", "large", "high", "low", etc. don't map well onto crisp sets.
 + It seems that it can be possible to both partly in and partly out of a set.
 + As more  stones are added, the statement "this is a small pile of stones" becomes less true, so truth can be partial.
 
@@ -44,12 +36,12 @@ The standard way of representing fuzzy sets is as a chart with the Y axis repres
 
 So, for instance, if we were to try to describe European male height we might create the following sets:
 
-![fuzzy sets for height](/images/fuzzysetsheight.png)
+![fuzzy sets for height](images/fuzzysetsheight.png)
 
 There is no reason why a variety of shapes might not be used for fuzzy sets; the only requirement is that they are convex.
 However we have chosen for Darl a simple set of definitions that are very easy to describe.
 
-![fuzzy set types](/images/FuzzySetTypes.png)
+![fuzzy set types](images/FuzzySetTypes.png)
 
 These sets can be described just using an ascending-ordered sequence of numbers representing the intercepts of a vertical line dropped from the vertices to the X axis.
 

@@ -1,11 +1,4 @@
----
-title: Output aggregation
-description: How DARL language outputs are aggregated.
-output:
-  html_document:
-    toc: true
-    toc_float: true
----
+
 Output aggregation
 ==============
 
