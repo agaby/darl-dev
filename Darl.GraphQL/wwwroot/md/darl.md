@@ -1,15 +1,4 @@
-﻿---
-title: The Darl Language
-description: The DARL programming language syntax.
-output:
-  html_document:
-    toc: true
-    toc_float: true
----
-
-
-
-The Darl Language
+﻿The Darl Language
 ============
 
 'Darl' stands for **D**octor **A**ndy's **R**ule **L**anguage.

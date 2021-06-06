@@ -5,6 +5,7 @@ using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using Darl.Thinkbase;
 using DarlCommon;
+using DarlCompiler.Interpreter;
 using GraphQL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
@@ -139,6 +140,10 @@ namespace Darl.GraphQL.Models.Connectivity
                                 }
                             }
                         }
+                    }
+                    catch(ScriptException ex)
+                    {
+                        resp.Add(new InteractTestResponse { darl = "", response = new DarlVar { dataType= DarlVar.DataType.textual, Value = $"_Rule error: {ex.Message} location: {ex.Location}._ " } });
                     }
                     catch(Exception ex)
                     {

@@ -1,11 +1,4 @@
----
-title: Class DarlVar
-description: The DarlVar class that holds DARL I/O data.
-output:
-  html_document:
-    toc: true
-    toc_float: true
----
+
 Class DarlVar
 ===
 
