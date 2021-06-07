@@ -9,6 +9,6 @@ Negative values are therefore BC dates.
 
 Resolution will vary over the numeric range, but there is adequate resolution to be able to represent down to the second for all of recorded history. 
 
-This may sound overkill, but there are some astronomical events in the ancient world calculable to this kind of accuracy. 
+This may sound like overkill, but there are some astronomical events in the ancient world calculable to this kind of accuracy. 
 
 User Interface components used in various places may not be able to represent BC dates, however.

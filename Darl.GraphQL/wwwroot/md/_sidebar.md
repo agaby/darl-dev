@@ -10,6 +10,12 @@
   - [What is ThinkBase](thinkbase.md)
   - [Ontologies and lineages](ontology.md)
   - [Fuzzy logic and sets](fuzzy_sets.md)
+  - [Uncertainty](uncertainty.md)
+  - [Time Representation](time_representation.md)
+  - [Aggregation](aggregation.md)
+  - [Excluded middle](excluded_middle.md)
+  - [Handling defaults](handling_defaults.md)
+  - [Reporting with DARL](text_replacement.md)
 - The 2D User interface
   - [The DARL editor](darl_editor.md)
 - API access

@@ -1,12 +1,4 @@
-﻿---
-title: Reporting with DARL
-description: How to create reports in the DARL Bot System.
-output:
-  html_document:
-    toc: true
-    toc_float: true
----
-
+﻿
 Reporting with DARL
 ===
 

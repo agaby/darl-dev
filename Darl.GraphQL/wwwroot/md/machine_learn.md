@@ -1,12 +1,4 @@
-﻿---
-title: Machine Learning
-description: How to Machine Learn DARL rulesets.
-output:
-  html_document:
-    toc: true
-    toc_float: true
----
-
+﻿
 Machine Learning
 ===
 You can machine learn DARL rulesets. Not only that, but the quality of machine learning is very high.

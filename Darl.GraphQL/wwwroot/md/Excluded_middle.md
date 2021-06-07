@@ -1,12 +1,3 @@
----
-title: The law of the excluded middle
-description: How this logical idea does not apply to open ended circumstances..
-output:
-  html_document:
-    toc: true
-    toc_float: true
----
-
 
 The law of the excluded middle
 =================
