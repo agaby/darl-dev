@@ -100,7 +100,6 @@ namespace Darl.GraphQL
                     if(state != DarlUser.AccountState.admin)
                     {
                         await _trans.UpdateUserAccountState(subs.CustomerId, DarlUser.AccountState.closed);
-                        await _trans.SendEmail(subs.Customer.Email, subs.Customer.Name, "SendStatusChange.closed_subject", "SendStatusChange.closed_template");
                     }
                 }
             }

@@ -21,7 +21,7 @@ When you first access the site without registering and logging in, you will have
 
 When you select the Log in/Register button You'll be presented with this dialog.
 
-![Sign in register](/images/sign_in_register.png)
+![Sign in register](images/sign_in_register.png)
 
 If you choose one of the social providers such as Google, Facebook or Twitter then you will get taken to their pages to log in, and if you have not used our site before through the same social provider you will be registered and an account set ip for you.
 We will not tweet or post on your behalf. We will retrieve your email address which we will use for billing should you ever exceed the resource limits.
@@ -31,7 +31,7 @@ While, of course, it shows marvelous cunning to use one of those short term emai
  
 The registration dialog looks like this:
 
-![Register](/images/register.png)
+![Register](images/register.png)
 
 # Access to the API
 When you are logged in to the site you are also logged in to the API, so you can access it directly via the various interfaces. 
@@ -58,37 +58,16 @@ Briefly it enables you to develop _Queries_ and _Mutations_ and use them directl
 
 You can enable headers by clicking on the top right cog-shaped settings button and setting ```"request.credentials": "include"```.
 
-![playground](/images/darl_dev_index.png)
+![playground](images/darl_dev_index.png)
 
 ## The Voyager interface
 
 This shows diagrammatically the objects supported by our API, their fields and how they are related.
 full details can be found [here](https://github.com/APIs-guru/graphql-voyager).
 
-![voyager](/images/darl_dev_voyager.png)
+![voyager](images/darl_dev_voyager.png)
 
-## The GraphiQL interface
-This interface is included because it may be more familiar than playground. You can read more about it [here](https://github.com/graphql/graphiql).
 
-![graphiql](/images/darl_dev_graphiql.png)
-
-## The DARL editor
-
-Although you can access all the data items in the API through the interfaces, including the text of rulesets, it is much more convenient to edit DARL in a dedicated syntax-checking editor.
-The DARL editor plug-in is described in the [DARL editor](./darl_editor) page, and the DARL language is described in the [DARL](./darl) page.
-Depending on whether or not you are logged in the drop down selection shows either your rule sets or the demo collection.
-
-If the demo collection, the save button, which calls a _mutation_, will not work.
-
-![darl editor](/images/darl_dev_darl_editor.png)
-
-### Editing using an API key
-If you are logged in you can only edit records associated with your account.  You can edit on behalf of another account if you know the APIKey.
-Pass the API key as a parameter. For instance:
-
-```
-https://darl.dev/darleditor?apikey=api_key_here"
-```
 
 ## Bug or request reporting
 

@@ -17,7 +17,8 @@ namespace Darl.GraphQL.Models.Connectivity
     {
 
         private IConfiguration _config;
-        IKGTranslation _connectivity;
+        private IKGTranslation _connectivity;
+        private ICheckEmail _checkEmail;
         private CloudQueue queue;
         private IDistributedCache _cache;
         private static TimeSpan cacheExpiration = new TimeSpan(1, 0, 0, 0);
@@ -34,7 +35,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<string> InviteUser(string userId, string email)
         {
-//            if (await _connectivity.CheckEmail(email))
+            if (await _checkEmail.CheckEmail(email))
             {
                 var user = await _connectivity.GetUserById(userId);
                 var accountName = user.InvoiceOrganization;

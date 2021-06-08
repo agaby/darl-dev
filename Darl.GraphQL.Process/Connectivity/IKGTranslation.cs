@@ -48,12 +48,12 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<DarlUser> CreateAndRegisterNewUser(DarlUserInput user);
         Task StoreSystemKG();
         Task UpdateUserAccountState(string id, DarlUser.AccountState paying);
-        Task<bool> SendEmail(string email, string name, string v1, string v2);
         Task<DarlUser.AccountState?> GetUserAccountState(string customerId);
         Task<bool> CreateNewGraph(string userId, string modelName);
         Task<Contact> DeleteContactAsync(string emailname);
         Task<string> RegisterForMarketing(string name, string email);
         Task<bool> CheckEmail(string email, string ipaddress = "");
         Task<string> GetSuggestedRuleSet(string userId, string modelName, string objectId, string lineage);
+        Task<List<DarlUser>> GetRecentUsers();
     }
 }

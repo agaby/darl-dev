@@ -28,6 +28,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private IGraphProcessing _graph;
         private IMetaStructureHandler _meta;
         private IProducts _prods;
+        private ICheckEmail _checkEmail;
 
         //fill in with single call to model at startup
         private string personObjectId { get; set; } = string.Empty;
@@ -60,13 +61,14 @@ namespace Darl.GraphQL.Models.Connectivity
         private static string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
         private static string existenceLineage = "noun:01,5,03,3,018";//life
 
-        public KGTranslation(ILogger<KGTranslation> logger, IConfiguration config, IGraphProcessing graph, IMetaStructureHandler meta, IProducts prods)
+        public KGTranslation(ILogger<KGTranslation> logger, IConfiguration config, IGraphProcessing graph, IMetaStructureHandler meta, IProducts prods, ICheckEmail checkEmail)
         {
             _config = config;
             _logger = logger;
             _graph = graph;
             _meta = meta;
             _prods = prods;
+            _checkEmail = checkEmail;
             backofficeKG = _config["AppSettings:BackOfficeKG"];
             backofficeKGComp = _config["AppSettings:boaiuserid"] + '_' + backofficeKG;
             GetObjectIds().Wait();
@@ -324,9 +326,11 @@ namespace Darl.GraphQL.Models.Connectivity
 
         #region Contacts
 
-        public Task<List<Contact>> GetRecentContacts()
+        public async Task<List<Contact>> GetRecentContacts()
         {
-            throw new NotImplementedException();
+            DateTime cutOff = DateTime.UtcNow - new TimeSpan(7, 0, 0, 0);
+            var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG);
+            return kslist.Where(a => GetExistenceStart(a, personObjectId) > cutOff).Select(a => ConvertContact(a, personObjectId)).ToList();
         }
 
         public async Task<IQueryable<Contact>> GetContactsQueryable()
@@ -558,6 +562,13 @@ namespace Darl.GraphQL.Models.Connectivity
             return new List<DarlUser>();
         }
 
+        public async Task<List<DarlUser>> GetRecentUsers()
+        {
+            DateTime cutOff = DateTime.UtcNow - new TimeSpan(7, 0, 0, 0);
+            var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG);
+            return kslist.Where(a => GetExistenceStart(a, personObjectId) > cutOff).Select(a => Convert(a, personObjectId)).ToList();
+        }
+
 
         public async Task<DarlUser> GetUserByStripeId(string stripeId)
         {
@@ -762,35 +773,6 @@ namespace Darl.GraphQL.Models.Connectivity
             await _graph.Store(backofficeKGComp);
         }
 
-
-        public async Task<bool> SendEmail(string email, string name, string subjectDefault, string contentNameDefault)
-        {
-            try
-            {
-                /*                var test = _config.GetValue<bool>("StripeTest");
-                                var subject = await GetDefault(subjectDefault);
-                                var contentName = await GetDefault(contentNameDefault);
-                                var addressFrom = await GetDefault("SendStatusChange.addressFrom");
-                                var content = await GetMailContent(_config.GetValue<string>("adminuserid"), contentName);
-                                var pars = new Dictionary<string, string>();
-                                pars.Add(nameof(ind.invoiceName), string.IsNullOrEmpty(ind.invoiceName) ? "DARL user" : ind.invoiceName);
-                                pars.Add(nameof(ind.invoiceOrganization), string.IsNullOrEmpty(ind.invoiceOrganization) ? "Your organization" : ind.invoiceOrganization);
-                                var t = new TextProcess();
-                                var insertedContent = t.Parse(content, pars) as string;
-                                var to = test ? "test@darl.ai" : ind.invoiceEmail;
-                                //put into queue as List<string>
-                                QueueClient queueClient = new QueueClient(_config.GetValue<string>("StorageConnectionString"), "support-messages");
-                                await queueClient.CreateIfNotExistsAsync();
-                                await queueClient.SendMessageAsync(JsonConvert.SerializeObject(new SupportMailMessage { from = addressFrom, to = email, subject = subject, content = insertedContent }));*/
-            }
-            catch
-            {
-                return false;
-            }
-            return true; throw new NotImplementedException();
-        }
-
-
         public async Task<bool> CreateNewGraph(string userId, string modelName)
         {
             var user = await GetUserById(userId);
@@ -836,21 +818,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<bool> CheckEmail(string email, string ipaddress = "")
         {
-            var zeroBounceAPI = new ZeroBounce.ZeroBounceAPI();
-            zeroBounceAPI.api_key = _config["AppSettings:ZeroBounceAPIKey"];
-            zeroBounceAPI.RequestTimeOut = 150000; // Any integer value in milliseconds
-            zeroBounceAPI.EmailToValidate = email;
-            zeroBounceAPI.ip_address = ipaddress;
-            var apiProperties = await zeroBounceAPI.ValidateEmailAsync();
-            switch (apiProperties.status.ToLower())
-            {
-                case "unknown":
-                case "valid":
-                case "catch-all":
-                    return true;
-                default:
-                    return false;
-            }
+            return await _checkEmail.CheckEmail(email, ipaddress);
         }
 
         public async Task<string> GetSuggestedRuleSet(string userId, string modelName, string objectId, string lineage)
@@ -1032,8 +1000,6 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return string.Empty;
         }
-
-
 
         #endregion
     }

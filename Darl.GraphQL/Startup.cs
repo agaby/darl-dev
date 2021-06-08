@@ -103,6 +103,7 @@ namespace Darl.GraphQL
             services.AddSingleton<IMetaStructureHandler, MetaStructureHandler>();
             services.AddSingleton<IKGTranslation, KGTranslation>();
             services.AddSingleton<IProducts, Products>();
+            services.AddSingleton<ICheckEmail, EmailChecker>();
 
             //types
             services.AddSingleton<DictionarySequenceType>();
