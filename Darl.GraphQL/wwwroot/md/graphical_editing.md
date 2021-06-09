@@ -88,5 +88,71 @@ Right button click on a node to bring up the selection graphic:
 
 Recognition nodes can only have two attributes, a text attribute that defines the response when a node is triggered, and a rule attribute that determines the functionality that fires at that time.
 
+## General
+
+If you highlight a node in the real tab, the node in the virtual tab that is the direct parent of that node is highlighted.
+
+## Real tab buttons
+
+![Real tab buttons](images/real_tab_buttons.png)
+
+From left to right these are:
+
+### Fit to screen
+
+Fits the graph to the screen.
+
+### search
+
+Searches for a node by external ID
+
+### Information
+
+Gives information on that tab.
+
+### Time
+
+Sets the processing time for any time dependent evaluations.
+
+### Settings
+
+Allows you to set the time display mode to recent or historic. The latter uses AD/BC dates.
+Sets whether the name or the externalId are used to label the nodes in the graph.
+
+### Description
+
+Enables you to add a description shown whenever the graph is loaded. 
+
+## Virtual tab buttons
+
+![Virtual tab buttons](images/virtual_tab_buttons.png)
+
+From left to right these are:
+
+### Fit to screen
+
+Fits the graph to the screen.
+
+### Settings
+
+Sets whether the name or the lineage are used to label the nodes in the graph.
+
+## Recognition tab buttons
+
+![Recognition tab buttons](images/recognition_tab_buttons.png)
+
+From left to right these are:
+
+### Fit to screen
+
+Fits the graph to the screen.
+
+### Add root
+
+Basic recognition nodes are added by default. Should you delete one you can recreate it here.
+
+### Settings
+
+Sets whether the name or the lineage are used to label the nodes in the graph.
 
 
