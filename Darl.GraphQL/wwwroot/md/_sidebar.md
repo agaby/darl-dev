@@ -8,9 +8,11 @@
   - [What are KGs?](knowledge_graphs.md)
   - [What is DARL](darl.md)
   - [What is ThinkBase](thinkbase.md)
+  - [ThinkBase architecture](thinkbase_architecture.md)
   - [Ontologies and lineages](ontology.md)
   - [Fuzzy logic and sets](fuzzy_sets.md)
   - [Uncertainty](uncertainty.md)
+  - [Rule hierarchies](rule_hierarchies.md)
   - [Time Representation](time_representation.md)
   - [Aggregation](aggregation.md)
   - [Excluded middle](excluded_middle.md)
@@ -18,6 +20,7 @@
   - [Reporting with DARL](text_replacement.md)
 - The 2D User interface
   - [The DARL editor](darl_editor.md)
+  - [Graphical editing](graphical_editing.md)
 - API access
   - [The APi user interfaces](darl_dev.md)
   - [Accessing the GraphQL API](GraphQL.md)

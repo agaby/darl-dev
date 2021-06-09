@@ -89,7 +89,7 @@ Enter a word to recognize. Case is ignored. If you click suggest lineage a set o
 
 ![Recognition node add](images/recognitionAdd2.png)
 
-Recognition nodes can only have two attributes, a text attribute that defines the response when a node is triggered and a rule node that determines the functionality that fires at that time.
+Recognition nodes can only have two attributes, a text attribute that defines the response when a node is triggered and a rule attribute that determines the functionality that fires at that time.
 
 
 ### Wire them into the tree
