@@ -5,7 +5,7 @@ In this example we're going to turn a slightly tongue in cheek flowchart into a 
 Karen Hao wrote an article in the MIT technology review called  "[Is it using AI](https://www.technologyreview.com/s/612404/is-this-ai-we-drew-you-a-flowchart-to-work-it-out/)" and including the following flowchart.
 It details a set of questions intended to establish whether a device or system contains some element of AI.
 
-![AI flow chart](/images/flow-chart-ai.jpg)
+![AI flow chart](images/flow-chart-ai.jpg)
 
 The first step is to list all the decision points in the flowchart, which correspond to inputs.
 
@@ -78,7 +78,7 @@ Finally we set the rules for the rest of the processing following the flowchart.
 ```
 This determines the logic of the process. We still need to set the text. This can be done via the [Darl text](https://darl.dev/rulesettext) page.
 
-![darl text for is it AI](/images/darl_text_is_it_AI.png)
+![darl text for is it AI](images/darl_text_is_it_AI.png)
 
 Finally the very last thing is required because we've included an intermediary output. These are very useful for forcing the rule set into a particular order. In this case we want to ensure one and only one of the first set of questions will be asked.
 We don't need to output anything to the user for this output, but outputs are set to be visible by default.

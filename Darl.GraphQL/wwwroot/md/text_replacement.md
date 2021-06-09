@@ -8,7 +8,7 @@ This is done with darl using the document function.
 
 For instance:
 
-```
+```darl
 output textual time;
 if anything then time will be Bot["time"];
 if anything then response will be document("%% time %% UTC",{time});

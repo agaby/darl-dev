@@ -56,7 +56,7 @@ There are four settings you need to add. They are
 - "initialText", This is the first text the bot shows given a new connection, such as "hello from darlbot".
 - "DarlAPIKey", This is the API key to access your account on Darl.dev. Find it by logging into Darl.Dev and then making the following query:
 
-```json
+```graphql
 {
   getApiKey
 }

@@ -67,73 +67,7 @@ In order to support templating, darl permits special comments that represent a s
 %% named.value %%
 ```
 
-# Top level elements
-These elements are concerned with inputs and outputs at the highest level, and the definition of rulesets.
-Darl permits the creation of multiple rule sets within a file, like functional blocks in a schematic diagram, and these can be wired to "connector" elements that act as inputs and outputs for the aggregate document, called a *map*. 
-If a darl source file contains only a single ruleset, then these input output and wire definitions can be left out, and the runtime will automatically generate these elements.
 
-## Mapinputs
-These define the inputs at the top or "map" level.
-These will accept external values during the machine learning or inference process.
-They take two parameters, the first, which is mandatory, is an identifier naming the mapinput. The second optional parameter is a string containing navigation text for machine learning.
-
-```darl
-mapinput fred "/fred/text()"
-```
-## Mapoutputs
-These define the outputs at the top or "map" level.
-These will generate values during the machine learning or inference process.
-They take two parameters, the first, which is mandatory, is an identifier naming the mapoutput. The second optional parameter is a string containing navigation text for machine learning.
-
-```darl
-mapoutput bill "/bill/text()"
-```
-
-## Wires
-These connect up the various elements at the top level.
-They take two parameters, the first is an identifier naming the source, the second parameter is an identifier naming the destination. Both may be composite identifiers
-Sources can be mapinputs or ruleset outputs. Destinations may be mapoutputs or ruleset inputs.
-
-```darl
-wire input1 ruleset1.input1
-```
-            
-```darl
-wire ruleset2.output1 ruleset3.input2
-```
-
-The DARL parser checks for impossible combinations, such as connecting two ruleset outputs.
-The on-line DARL designer makes these checks dynamically.
-A further constraint is that connections between rulesets are only possible where the data types match. 
-
-## Rulesets
-These define the block of code corresponding to a ruleset.
-A ruleset is a unit of processing, with an analogy to the class in conventional programming.
-They take two parameters, the first, which is mandatory, is an identifier naming the ruleset, the second optional parameter is a keyword identifying if the ruleset will be subject to machine learning.
-Choices here are:
-
-+ manual - The ruleset contents will be created by hand - default, not required.
-+ supervised - The ruleset will be created by supervised machine learning
-+ unsupervised - The ruleset will be created by unsupervised learning
-+ reinforcement - The ruleset will be created by reinforcement learning
-
-```darl
-ruleset ruleset1 supervised 
-{ 
-//ruleset content 
-}
-```
-
-## The pattern
-When the contents of one or more rule sets are to be set by machine learning, then a data source must be connected to the DARL file.
-Machine learning is based on learning associations between or within inputs and/or outputs. Generally these data values are presented as a series of patterns. 
-The optional pattern element permits you to define how to find those patterns in the language appropriate to the data source. This might be XPath for an XML source, or SQL for a database.
-There should only be one pattern element in a DARL source file.
-Patterns take one parameter, the string containing the navigation text to identify the pattern.
-
-```darl
-pattern "//pattern"
-```
 # Ruleset level elements
 These elements are concerned with inputs and outputs within a ruleset and the contents of the rules.
 
@@ -498,42 +432,4 @@ otherwise if anything then b will be true;
 ```
 There should be only one _otherwise_ rule per output. The otherwise rule is triggered only if no other rules fire for that output, and thus provides default functionality.
 
-## Stores
-There are circumstances where defining inputs and outputs in a ruleset is unwieldy.
-DARL has the _stores_ functionality to handle data input and output within a ruleset, if the environment the inference engine is running in supports stores.
-The stores are defined like inputs and outputs, but the environment must support the store specified or a runtime exception will be generated.
 
-Stores can be sinks or sources of information, or both. For instance, when using DARL within the Bot Development System a store is defined containing the local data stored during the conversation. Such a store can be treated as an output and an input. 
-
-A store can have a sequence of parameters that are specific to that store, where the parameters must be provided in the order expected.
-Parameters can be string constants, strings, textual outputs or other stores.
-
-A store has the general format:
-
-```darl
-<store name>[<list of parameters>]
-```
-
-A store definition is just:
-
-```darl
-store <store name>;
-```
-
-If an environment, such as the BDS supports a store called _UserData_ which is implemented as a name/value pair storage facility, the following code will copy data from one name/value pair to another, where the names are sink and source.
-
-```darl
-ruleset storedemo
-{
-    store UserData;
-    if anything then UserData["sink"] will be UserData["source"];
-}
-
-```
-
-Stores can be read-only or write-only, in which case reading or writing the wrong way round will not create a syntax error, but will have no effect.
-A read to a store that is write-only, or a read of a data item that does not exist will return an _unknown_ value.
-
-
-
- 

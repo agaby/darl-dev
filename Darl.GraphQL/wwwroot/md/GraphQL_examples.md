@@ -6,7 +6,7 @@ The GraphQL interface permits you to create, maintain and edit your models progr
 # Queries
 
 ## Viewing a list of rulesets
-```json
+```graphql
 {
   rulesets
   {
@@ -16,7 +16,7 @@ The GraphQL interface permits you to create, maintain and edit your models progr
 ```
 
 ## Viewing a list of Machine learning models
-```json
+```graphql
 {
   mlmodels
   {
@@ -25,13 +25,13 @@ The GraphQL interface permits you to create, maintain and edit your models progr
 }
 ```
 ## Finding your API key
-```json
+```graphql
 {
   getApiKey
 }
 ```
 ## listing collateral
-```json
+```graphql
 {
  collateral
   {
@@ -43,7 +43,7 @@ The GraphQL interface permits you to create, maintain and edit your models progr
 
 ## Seeing the language elements set in a ruleset
 
-```json
+```graphql
 {
   rulesetByName(name: "military_service.rule")
   {
@@ -63,7 +63,7 @@ The GraphQL interface permits you to create, maintain and edit your models progr
 ```
 
 ## See a list of preloaded data items in a rule set
-```json
+```graphql
 {
   rulesetByName(name: "military_service.rule")
   {
@@ -78,7 +78,7 @@ The GraphQL interface permits you to create, maintain and edit your models progr
 }
 ```
 ## Start a questionnaire
-```json
+```graphql
 {
   beginQuestionnaire(ruleSetName: "military_service.rule")
   {
@@ -107,7 +107,7 @@ The GraphQL interface permits you to create, maintain and edit your models progr
 ```
 
 ## Continue a questionnaire
-```json
+```graphql
 {
   continueQuestionnaire(responses:{
      ieToken: "<ieToken value returned by begin questionnaire>",
@@ -147,7 +147,7 @@ The GraphQL interface permits you to create, maintain and edit your models progr
 ```
 
 ## Go Back a step with a questionnaire
-```json
+```graphql
 query back($ieToken: String!)
 {
   backtrackQuestionnaire(ieToken: $ieToken)
@@ -182,7 +182,7 @@ query back($ieToken: String!)
 ```
 
 ## Interact with a Bot
-```json
+```graphql
 query interact($model: String!, $convId: String!, $data: darlVarInput!)
 {
   interact(botModelName: $model, conversationId: $convId, conversationData: $data)
@@ -198,7 +198,7 @@ query interact($model: String!, $convId: String!, $data: darlVarInput!)
 ```
 
 ## Get lineages for a word
-```json
+```graphql
 {
   getLineagesForWord(word: "immigration")
   {
@@ -209,7 +209,7 @@ query interact($model: String!, $convId: String!, $data: darlVarInput!)
 }
 ```
 ## Investigate the bot text recognition tree
-```json
+```graphql
 {
   getChildrenLineageNodes(botModelName: "thousandquestions.model", path: "", isRoot: true )
   {
@@ -221,7 +221,7 @@ query interact($model: String!, $convId: String!, $data: darlVarInput!)
 
 
 ## Use the DARL linter
-```json
+```graphql
 query lint($darl: String!)
 {
   lintDarl(darl: $darl)
@@ -236,7 +236,7 @@ query lint($darl: String!)
 ```
 
 ## Getting an Alexa InteractionModel to build an Alexa skill
-```json
+```graphql
 alexaInteractionModel(name: "is_it_using_AI.rule" invocationName: "using AI")
   {
     languageModel
@@ -260,14 +260,14 @@ alexaInteractionModel(name: "is_it_using_AI.rule" invocationName: "using AI")
     }
   }
 ```
-note: In the returned Json, rename _alexaInteractionModel_ to _interactionModel_ and remove the outer braces and _data:_ . You can then drop the Json into the Alexa Developer Console Json editor.
+note: In the returned graphql, rename _alexaInteractionModel_ to _interactionModel_ and remove the outer braces and _data:_ . You can then drop the graphql into the Alexa Developer Console graphql editor.
 _
 
 # Mutations
 
 ## Setting the text for a ruleset question
 
-``` json
+``` graphql
 mutation{
   updateRuleSetLanguageText(ruleSetName: "military_service.rule", 
     languageName: "military", languageText: "Did you serve in the US military?")
@@ -279,7 +279,7 @@ mutation{
 ```
 
 ## Setting a preloaded data value for a rule set
-```json
+```graphql
 mutation{
   updateRulesetPreload(rulesetName: "military_service.rule", preloadData: 
     { name: "comply_text", dataType:  textual, value: "Thanks, that looks great. Expect an email in the near future."
@@ -291,7 +291,7 @@ mutation{
 }
 ```
 ## Run a machine learning model
-```json
+```graphql
 mutation
 {
   machineLearnModel(mlmodelname: "iris.mlmodel")
@@ -305,7 +305,7 @@ mutation
 ```
 
 ## Factory reset - Dangerous!
-```json
+```graphql
 mutation
 {
   factoryReset
@@ -313,7 +313,7 @@ mutation
 ```
 
 ## Update the DARL code in a rulesset
-```json
+```graphql
 mutation
 {
   updateRuleSetDarl(name: "military_service.rule", darl: "ruleset military_service {} ")
@@ -323,7 +323,7 @@ mutation
 }
 ```
 ## Update SendGrid credentials
-```json
+```graphql
 mutation
 {
   updateSendgridCredentials(botModelName: "thousandquestions.model", 
@@ -335,7 +335,7 @@ mutation
 ```
 
 ## Add a phrase to botmodel
-```json
+```graphql
 mutation
 {
   createPhrase(botModelName: "thousandquestions.model",
@@ -351,7 +351,7 @@ mutation
 ```
 
 ## Update a ruleset trigger
-```json
+```graphql
 mutation
 {
   updateRuleSetTrigger(ruleSetName: "military_service.rule", trigger: {
@@ -372,7 +372,7 @@ mutation
 ```
 
 ## Exclude a Ruleset output from the visible results
-```json
+```graphql
 mutation
 {
  updateRuleSetOutputFormat(ruleSetName: "military_service.rule", outputName: "emailText", outputUpdate:
@@ -386,7 +386,7 @@ mutation
 ```
 
 ## Infer a ruleset using DARL code
-```json
+```graphql
 mutation ifd($code: String!, $inputs: [darlVarInput]!)
 {
   inferFromDarl(code: $code, inputs: $inputs)

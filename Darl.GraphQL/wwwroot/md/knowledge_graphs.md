@@ -54,7 +54,7 @@ Knowledge graphs require far more resources than other DARL offerings, so we are
 
 To upgrade your account to _corporate_ use the following mutation:
 
-```
+```graphql
 mutation
 {
   updateSubscriptionType(type: corporate)

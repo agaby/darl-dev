@@ -19,7 +19,7 @@ The key thing that makes this simple is that a ruleset already contains a set of
 The way that you specify the intents and associated utterances in the Alexa development environment is via a piece of json.
 
 A skeleton version of this can be generated with the following GraphQL:
-```
+```graphql
 {
     alexaInteractionModel(name: "The ruleset name", invocationName: "The invocation name for your skill")
 }

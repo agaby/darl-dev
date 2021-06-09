@@ -34,7 +34,7 @@ The GraphQL query language is very simple to learn, and is a kind of simplified 
 An example of this process for javascript using the [graphql.js](https://github.com/f/graphql.js)
 client library is shown here.
 
-```
+```javascript
     var graph = graphql("https://darl.dev/graphql");
     var allrulesets = graph(`{ rulesets { name }}`);
     const rs = await allrulesets();
@@ -43,7 +43,7 @@ in this example _rs_ contains a list of the ruleset names in your account.
 
 Another example using parameters is:
 
-```
+```javascript
     var graph = graphql("https://darl.dev/graphql");
     var darlContent = graph(`query getdarl($name: String!){  getDarlFromRuleSet(ruleSetName: $name)}`);
     var content = await darlContent({ name: rsname });
@@ -53,7 +53,7 @@ which is provided when _darlContent_ is called.
 
 Finally an example of mutation writes the darl code back. Here there are two parameters: the filename and the darl content.
 
-```
+```javascript
     var graph = graphql("https://darl.dev/graphql");
     var savecontent = graph('mutation setdarl($name: String!, $darl: String!){updateDarlInRuleset(ruleSetName: $name, darl: $darl)}');
     await savecontent({ name: rsname, darl: content });
@@ -64,7 +64,7 @@ Finally an example of mutation writes the darl code back. Here there are two par
 A similar example can be seen using the .net [graphql-client](https://github.com/graphql-dotnet/graphql-client) library.
 With this library you specify the operation name, variables in an anonymous class, and the graphQL text. This code fetches the name and author of a particular machine learning model.
 
-```
+```csharp
     GraphQLClient client = new GraphQLClient("https://darl.dev/graphql/");
     var req = new GraphQLRequest() { OperationName = "getModelByName", Variables = new { name = models[0].Name }, Query = @"query getModelByName($name: String!){  mlmodelByName(name: $name){ name mlmodel{ author}}}" };
     var resp = await client.PostAsync(req);

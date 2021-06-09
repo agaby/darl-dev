@@ -73,7 +73,7 @@ full details can be found [here](https://github.com/APIs-guru/graphql-voyager).
 
 You can talk to the support team through the API using the following mutation:
 
-```
+```graphql
 mutation
 {
   createSupportRequest(customerName: "Dr Andy", customerEmail: "support@darl.ai", text: "there's something wrong")
