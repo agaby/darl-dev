@@ -442,6 +442,7 @@ namespace Darl.GraphQL.Test
 
 
         [TestMethod]
+        [Ignore]
         public async Task GenerateModelObjects()
         {
             var comp = $"{_config["AppSettings:boaiuserid"]}_backoffice_test.graph";
@@ -452,6 +453,12 @@ namespace Darl.GraphQL.Test
             await _graph.CreateGraphObject(comp, new GraphObjectInput { externalId = "person", lineage = _meta.CommonLineages["person"], name = "person" }, OntologyAction.build);
             await _graph.CreateGraphObject(comp, new GraphObjectInput { externalId = "update", lineage = processLineage, name = "update" }, OntologyAction.build);
             await _graph.Store(comp);
+        }
+
+        [TestMethod]
+        public async Task CreateMailshot()
+        {
+
         }
 
     }

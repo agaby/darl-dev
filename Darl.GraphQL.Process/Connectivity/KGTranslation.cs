@@ -268,17 +268,20 @@ namespace Darl.GraphQL.Models.Connectivity
             if (!string.IsNullOrEmpty(name))
             {
                 var ks = await _graph.GetKnowledgeState(_config["AppSettings:boaiuserid"], name, backofficeKG);
-                return GetAttributeValue(ks, collateralObjectId, valueLineage) ?? string.Empty;
+                if(ks != null)
+                    return GetAttributeValue(ks, collateralObjectId, valueLineage) ?? string.Empty;
             }
             return string.Empty;
         }
 
         public async Task<Collateral> UpdateCollateral(string name, string value)
         {
-            var ks = await _graph.GetKnowledgeState(_config["AppSettings:boaiuserid"], name, backofficeKG);
+            var userId = _config["AppSettings:boaiuserid"];
+            var ks = await _graph.GetKnowledgeState(userId, name, backofficeKG);
             if (ks != null)
             {
-                UpdateAttribute(ks, collateralObjectId, valueLineage, "value", value);
+                UpdateAttribute(ks, collateralObjectId, valueLineage, "value", value, true);
+                await _graph.SaveKSChanges(userId, collateralObjectId, ks);
                 return new Collateral { Name = name, Value = value };
             }
             return await CreateCollateral(name, value);
@@ -895,7 +898,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return (DarlUser.AccountState)Enum.Parse(typeof(DarlUser.AccountState), att.value);
         }
 
-        private void UpdateAttribute(KnowledgeState ks, string objectId, string attlineage, string name, string value)
+        private void UpdateAttribute(KnowledgeState ks, string objectId, string attlineage, string name, string value, bool overwrite = false)
         {
             if (string.IsNullOrEmpty(value))
                 return;
@@ -915,7 +918,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     confidence = 1.0
                 });
             }
-            else if (string.IsNullOrEmpty(val.value))
+            else if (string.IsNullOrEmpty(val.value) || overwrite)
             {
                 val.value = value;
             }

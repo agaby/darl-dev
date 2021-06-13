@@ -71,13 +71,15 @@ namespace Darl.GraphQL
                 options.IncludeSubDomains = true;
                 options.MaxAge = TimeSpan.FromDays(60);
             });
-
+#if DEBUG
+            services.AddDistributedMemoryCache();
+#else
             services.AddDistributedRedisCache(option =>
             {
                 option.Configuration = Configuration.GetSection("AppSettings")["RedisConnection"];
                 option.InstanceName = "darlai";
             });
-
+#endif
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromSeconds(3600);

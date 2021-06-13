@@ -53,6 +53,10 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<int> Mailshot(string userId, string collateral, string subject, string sendfrom, string filter, bool test)
         {
             var coll = await _connectivity.GetCollateral(collateral);
+            if(string.IsNullOrEmpty(coll))
+            {
+                throw new ExecutionError($"Collateral {collateral} is not present or empty");
+            }
             var collection = await _connectivity.GetContacts();
             int count = 0;
             var tp = new TextProcess();
