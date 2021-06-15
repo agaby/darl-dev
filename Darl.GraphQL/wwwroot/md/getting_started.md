@@ -4,7 +4,7 @@ You can create a very simple functioning KG in 5 minutes.
 
 See the video:
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/Kw05ocsfntY/0.jpg)](https://www.youtube.com/watch?v=Kw05ocsfntY)
+[![Getting started with ThinkBase](https://img.youtube.com/vi/e3bfRlzxOxQ/0.jpg)](https://www.youtube.com/watch?v=e3bfRlzxOxQ)
 
 
 
