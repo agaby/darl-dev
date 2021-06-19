@@ -138,7 +138,7 @@ $(async function () {
     virtualkgraphdata = graph('query vkgd($model: String!){getVirtualKGDisplay(graphName: $model){nodes{data{ id lineage parent label}} edges{ data{ id label source target}}}}');
     recognitionkgraphdata = graph('query rkgd($model: String!){getRecognitionKGDisplay(graphName: $model){nodes{data{ id label lineage parent label}} edges{ data{ id label source target}}}}');
     realobjectdata = graph('query rod($model: String! $id: String!){getGraphObjectById(graphName: $model id: $id){name lineage subLineage id externalId properties {name lineage value type confidence}}}');
-    realConnectiondata = graph('query rcd($model: String! $id: String!){getGraphConnectionById(graphName: $model id: $id){name lineage id }}');
+    realConnectiondata = graph('query rcd($model: String! $id: String!){getGraphConnectionById(graphName: $model id: $id){name lineage id weight }}');
     virtualobjectdata = graph('query vod($model: String! $lineage: String!){getVirtualObjectByLineage(graphName: $model lineage: $lineage){name lineage id properties {name lineage value type confidence}}}');
     recognitionobjectdata = graph('query recod($model: String! $id: String!){getRecognitionObjectById(graphName: $model id: $id){name lineage id properties {name lineage value type confidence}}}');
     realeditorchange = graph('mutation rec($model: String! $goj: String!){updateGraphObjectFromJSON(graphName: $model graphObjectJSON: $goj ontology: BUILD) {id}}');
@@ -863,7 +863,6 @@ async function loadGraphs() {
                         });
                     }
                 },
-
                 {
                     content: '<span class="fa fa-calendar fa-2x"></span>',
                     select: async function (ele) {
@@ -976,7 +975,6 @@ async function loadGraphs() {
                         ShowInfo("/md/thinkbase/real_Connection.md");
                     }
                 },
-
                 {
                     content: '<span class="fa fa-user fa-2x"></span>',
                     select: async function (ele) {
@@ -1039,6 +1037,57 @@ async function loadGraphs() {
                             }).done(function (data) {
                                 console.log(data);
                             });
+                        }
+                    }
+                },
+                {
+                    content: '<span class="fa fa-balance-scale fa-2x"></span>',
+                    select: async function (ele) {
+                        console.log('name');
+                        try {
+                            var id = ele.id();
+                            var obj = await realConnectiondata({ model: mdname, id: id });
+                            if (obj) {
+                                $.MessageBox({
+                                    input: {
+                                        weight: {
+                                            type: "number",
+                                            defaultValue: obj.getGraphConnectionById.weight,
+                                            label: "weight (0 - 1)",
+                                            htmlAttributes: {
+                                                "min": "0.0",
+                                                "max": "1.0",
+                                                "step": "0.01"
+                                            }
+                                        }
+                                    },
+                                    message: "Edit the weight",
+                                    buttonDone: "Change",
+                                    buttonFail: "Cancel",
+                                    queue: false,
+                                    filterDone: function (data) {
+                                        if (data.weight === "") return "Weight must have a value";
+                                        var weight = parseFloat(data.weight);
+                                        if (isNaN(weight))
+                                            return "Weight must be a number";
+                                        if (weight > 1.0 || weight < 0.0)
+                                            return "Weight must be between 0 and 1";
+                                    }
+                                }).done(async function (data) {
+                                    try {
+                                        if (obj.getGraphConnectionById.weight !== parseFloat(data.weight)) {
+                                            await updateGraphConnection({ name: mdname, conn: { id: ele.id(), weight: data.weight } });
+                                            console.log(data);
+                                        }
+                                    }
+                                    catch (err) {
+                                        HandleError(err);
+                                    }
+                                });
+                            }
+                        }
+                        catch (err) {
+                            HandleError(err);
                         }
                     }
                 }
@@ -2195,6 +2244,19 @@ async function CreateNewAttribute(id, type) {
             newlineage: {
                 type: "text",
                 label: "new lineage"
+            },
+            sep_subcaption: {
+                type: "caption",
+                message: "optionally select an existing lineage for the sub-lineage<br/> or enter a new one."
+            },
+            existingsublineage: {
+                label: "existing lineages",
+                type: "select",
+                options: obj
+            },
+            newsublineage: {
+                type: "text",
+                label: "new sub-lineage"
             }
         },
         message: "Create a new attribute",
@@ -2208,18 +2270,70 @@ async function CreateNewAttribute(id, type) {
         }
     }).done(async function (data) {
         //can only set value when creating, not existence
-        var newAtt = { type: data.typeSelect, name: data.name, value: "", lineage: "" };
+        var newAtt = { type: data.typeSelect, name: data.name, value: "", lineage: "", subLineage: "" };
         if (data.existinglineage) {
             newAtt.lineage = data.existinglineage;
-            await UpdateAttributeValue(id, newAtt, type);
         }
-        else {
-            newAtt.lineage = data.newlineage;
-            //check if valid lineage
-            var ivl = await isvalidlineage({ lin: newAtt.lineage });
-            if (!ivl.isValidLineage) {
-                var lineages = await getlineagesforword({ word: newAtt.lineage });
-                var obj = {};
+        if (data.existingsublineage){
+            newAtt.subLineage = data.existingsublineage;
+        }
+        if (newAtt.lineage === "") {
+            var ivl = await isvalidlineage({ lin: data.newlineage });
+            if (ivl.isvalidlineage) {
+                newAtt.lineage = data.newlineage;
+            }
+        }
+        if (newAtt.subLineage === "") {
+            if (data.newsublineage !== "") {
+                const ivl2 = await isvalidlineage({ lin: data.newsublineage });
+                if (ivl2.isValidLineage) {
+                    newAtt.subLineage = data.newsublineage;
+                }
+            }
+        }
+        if (newAtt.lineage === "" || (newAtt.subLineage === "" && data.newsublineage !== "")) {
+            //at this point, if the lineages have been made from the dropdown or a valid lineage supplied, newAtt is correct.
+            //only remaining alternative is that one or other is specified by a word or phrase.
+            if (newAtt.lineage === "" && (newAtt.subLineage === "" && data.newsublineage !== "")) { //both
+                let lineages = await getlineagesforword({ word: data.newlineage });
+                let obj = {};
+                $.each(lineages.getLineagesForWord, function (i, item) {
+                    obj[item.lineage] = item.typeWord + ": " + item.description;
+                });
+                let sublineages = await getlineagesforword({ word: data.newsublineage });
+                let subobj = {};
+                $.each(sublineages.getLineagesForWord, function (i, item) {
+                    subobj[item.lineage] = item.typeWord + ": " + item.description;
+                });
+                $.MessageBox({
+                    input: {
+                        lin: {
+                            label: "Possible lineages",
+                            type: "select",
+                            options: obj
+                        },
+                        sublin: {
+                            label: "Possible sub-lineages",
+                            type: "select",
+                            options: subobj
+                        }
+                    },
+                    buttonDone: "Select",
+                    buttonFail: "Cancel",
+                    queue: false,
+                    message: "Choose primary and sub-lineage for these words.",
+                    filterDone: function (data) {
+                        if (data.lin === "" || data.sublin === "") return "Select lineages.";
+                    }
+                }).done(async function (data) {
+                    newAtt.lineage = data.lin;
+                    newAtt.subLineage = data.sublin;
+                    await UpdateAttributeValue(id, newAtt, type);
+                });
+            }
+            else if (newAtt.lineage === "" && !(newAtt.subLineage === "" && data.newsublineage !== "")) {//just lineage
+                let lineages = await getlineagesforword({ word: data.newlineage });
+                let obj = {};
                 $.each(lineages.getLineagesForWord, function (i, item) {
                     obj[item.lineage] = item.typeWord + ": " + item.description;
                 });
@@ -2242,11 +2356,36 @@ async function CreateNewAttribute(id, type) {
                     newAtt.lineage = data.lin;
                     await UpdateAttributeValue(id, newAtt, type);
                 });
-
             }
-            else {
-                await UpdateAttributeValue(id, newAtt);
+            else if (newAtt.lineage !== "" && (newAtt.subLineage === "" && data.newsublineage !== "")) {//just sub lineage
+                let lineages = await getlineagesforword({ word: data.newsublineage });
+                let obj = {};
+                $.each(lineages.getLineagesForWord, function (i, item) {
+                    obj[item.lineage] = item.typeWord + ": " + item.description;
+                });
+                $.MessageBox({
+                    input: {
+                        lin: {
+                            label: "Possible lineages",
+                            type: "select",
+                            options: obj
+                        }
+                    },
+                    buttonDone: "Select",
+                    buttonFail: "Cancel",
+                    message: "Choose a sub-lineage for this word.",
+                    queue: false,
+                    filterDone: function (data) {
+                        if (data.lin === "") return "Select a lineage or cancel.";
+                    }
+                }).done(async function (data) {
+                    newAtt.subLineage = data.lin;
+                    await UpdateAttributeValue(id, newAtt, type);
+                });
             }
+        }
+        else {
+            await UpdateAttributeValue(id, newAtt, type);
         }
     });
 }

@@ -202,7 +202,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<GraphConnection> UpdateConnection(string compositeName, GraphConnectionUpdate gc)
         {
-            var conn = await GetConnectionByIds(compositeName, gc.startId, gc.endId, gc.lineage);
+            var conn = await GetConnectionById(compositeName,gc.id);
             if (conn == null)
                 return null;
             //update nun-null elements in gc
@@ -1429,9 +1429,10 @@ namespace Darl.GraphQL.Models.Connectivity
 
         private GraphAttribute UpdateOrCreateAttribute(GraphObject obj, GraphAttributeInput graphAtt)
         {
-            if (obj.properties != null && obj.properties.Any(a => a.lineage == graphAtt.lineage))
+            var lineage = CombineLineages(graphAtt.lineage, graphAtt.subLineage);
+            if (obj.properties != null && obj.properties.Any(a => a.lineage == lineage))
             {
-                var att = obj.properties.Where(a => a.lineage == graphAtt.lineage).FirstOrDefault();
+                var att = obj.properties.Where(a => a.lineage == lineage).FirstOrDefault();
                 if (att != null)
                 {
                     if (!string.IsNullOrEmpty(graphAtt.value))
@@ -1453,7 +1454,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 if (obj.properties == null)
                     obj.properties = new List<GraphAttribute>();
-                var att = new GraphAttribute { id = Guid.NewGuid().ToString(), lineage = graphAtt.lineage, confidence = graphAtt.confidence ?? 1.0, existence = graphAtt.existence, name = graphAtt.name, type = graphAtt.type ?? GraphAttribute.DataType.textual, value = graphAtt.value };
+                var att = new GraphAttribute { id = Guid.NewGuid().ToString(), lineage = lineage, confidence = graphAtt.confidence ?? 1.0, existence = graphAtt.existence, name = graphAtt.name, type = graphAtt.type ?? GraphAttribute.DataType.textual, value = graphAtt.value };
                 obj.properties.Add(att);
                 return att;
             }

@@ -6,17 +6,18 @@ using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
-    public class GraphAttributeInputType : InputObjectGraphType<GraphAttribute>
+    public class GraphAttributeInputType : InputObjectGraphType<GraphAttributeInput>
     {
         public GraphAttributeInputType()
         {
             Name = "graphAttributeInput";
             Description = "An attribute of an object or connection";
             Field<ListGraphType<DarlTimeInputType>>("existence", "The period of existence of the connection", resolve: c => c.Source.existence);
-            Field(c => c.lineage).Description("The type of this attribute in the adjective hypernymy hierarchy");
+            Field(c => c.lineage).Description("The type of this attribute in the hypernymy hierarchy");
+            Field(c => c.subLineage,true).Description("The sub-type of this attribute in the hypernymy hierarchy");
             Field(c => c.name,true).Description("The name of this Attribute");
             Field(c => c.value,true).Description("The value of this attribute");
-            Field<GraphAttributeDataTypeEnum>("type", "The type of this object", resolve: c => c.Source.type);
+            Field<GraphAttributeDataTypeEnum>("type", "The type of this attribute", resolve: c => c.Source.type);
             Field(c => c.confidence, true).Description("The degree of plausibility of this attribute").DefaultValue(1.0);
         }
     }
