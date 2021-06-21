@@ -842,7 +842,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return new DarlUser
             {
                 accountState = ConvertAccountState(ks),
-                userId = ks.userId,
+                userId = ks.subjectId,
                 InvoiceEmail = GetAttributeValue(ks, objectId, emailLineage),
                 InvoiceName = ($"{GetAttributeValue(ks, objectId, firstNameLineage)} {GetAttributeValue(ks, objectId, lastNameLineage)}").Trim(),
                 InvoiceOrganization = GetAttributeValue(ks, objectId, companyLineage),

@@ -333,6 +333,7 @@ namespace Darl.GraphQL.Test
                 /*                var req = new GraphQLHttpRequest() { Variables = new { gc = e }, Query = @"mutation cgc($gc: graphConnectionInput!){createGraphConnection(graphConnection: $gc, ontology: BUILD){name id}}" };
                                 var resp = await client.SendQueryAsync<GraphConnection>(req);
                                 Thread.Sleep(100);*/
+
                 try
                 {
                     await _graph.CreateGraphConnection($"{userId}_kg1_graph", e, OntologyAction.build);
