@@ -673,7 +673,7 @@ async function loadGraphs() {
                                     if (obj.getGraphObjectById.externalId !== data) {
                                         try {
                                             await updateGraphObject({ name: mdname, obj: { id: ele.id(), externalId: data, lineage: ele.data('lineage') } });
-                                            ele.data('externalId', externalId);
+                                            ele.data('externalId', data);
                                         }
                                         catch (err) {
                                             HandleError(err);
