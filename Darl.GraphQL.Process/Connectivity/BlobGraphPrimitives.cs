@@ -59,6 +59,8 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<GraphConnection> CreateConnection(string compositeName, GraphConnectionInput conn)
         {
             var cont = await Load(compositeName) as BlobGraphContent;
+            if (string.IsNullOrEmpty(conn.id))
+                conn.id = Guid.NewGuid().ToString();
             var gc = new GraphConnection { id = conn.id, endId = conn.endId, existence = conn.existence, inferred = false, lineage = conn.lineage, name = conn.name, properties = conn.properties, startId = conn.startId, weight = conn.weight ?? 1.0, _virtual = false };
             if (cont != null && cont.vertices.ContainsKey(conn.startId))
                 cont.vertices[conn.startId].Out.Add(gc);
