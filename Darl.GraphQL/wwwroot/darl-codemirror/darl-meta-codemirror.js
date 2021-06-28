@@ -14,7 +14,7 @@
         var keywords = "if anything is then will be confidence input output numeric categorical textual constant string " +
             "sum product sigmoid normprob round match and or not maximum minimum fuzzytuple " +
             "exists absent present sequence supervised document randomtext otherwise store duration temporal" +
-            "categoryof timerange before preceding overlapping during starting finishing after now dynamic count seek attribute attributes for single durationof lineage any all for";
+            "categoryof timerange before preceding overlapping during starting finishing after now dynamic count seek attribute attributes for single durationof lineage any all for discover";
 
         CodeMirror.remoteValidator = function (text, updateLinting, options, cm) {
 
@@ -104,6 +104,7 @@
                     found.push({ text: "categorical", displayText: "categorical" });
                     found.push({ text: "textual;", displayText: "textual" });
                     found.push({ text: "temporal;", displayText: "temporal" });
+                    found.push({ text: "network;", displayText: "network" });
                     break;
                 case "confidence":
                     found.push({ text: "1.0;", displayText: "number between 0.0 and 1.0" });
