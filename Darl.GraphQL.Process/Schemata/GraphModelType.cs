@@ -17,9 +17,9 @@ namespace Darl.GraphQL.Models.Schemata
             Field<ListGraphType<StringGraphObjectPairType>>("virtualVertices", resolve: c => GetSGOPairsFromDictionary(c.Source.virtualVertices));
             Field<ListGraphType<StringGraphObjectPairType>>("recognitionVertices", resolve: c => GetSGOPairsFromDictionary(c.Source.recognitionVertices));
             Field<ListGraphType<StringGraphObjectPairType>>("recognitionRoots", resolve: c => GetSGOPairsFromDictionary(c.Source.recognitionRoots));
-            Field<ListGraphType<StringGraphObjectPairType>>("edges", resolve: c => GetSGCPairsFromDictionary(c.Source.edges));
-            Field<ListGraphType<StringGraphObjectPairType>>("virtualEdges", resolve: c => GetSGCPairsFromDictionary(c.Source.virtualEdges));
-            Field<ListGraphType<StringGraphObjectPairType>>("recognitionEdges", resolve: c => GetSGCPairsFromDictionary(c.Source.recognitionEdges));
+            Field<ListGraphType<StringGraphConnectionPairType>>("edges", resolve: c => GetSGCPairsFromDictionary(c.Source.edges));
+            Field<ListGraphType<StringGraphConnectionPairType>>("virtualEdges", resolve: c => GetSGCPairsFromDictionary(c.Source.virtualEdges));
+            Field<ListGraphType<StringGraphConnectionPairType>>("recognitionEdges", resolve: c => GetSGCPairsFromDictionary(c.Source.recognitionEdges));
         }
 
         public static List<StringGraphObjectPair> GetSGOPairsFromDictionary(Dictionary<string, GraphObject> dict)

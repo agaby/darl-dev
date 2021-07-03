@@ -238,6 +238,14 @@ namespace Darl.GraphQL.Models.Connectivity
                     changed = true;
                 }
             }
+            if(gc.inferred != null)
+            {
+                if(conn.inferred != gc.inferred)
+                {
+                    conn.inferred = gc.inferred ?? false;
+                    changed = true;
+                }
+            }
             if (gc.properties != null && gc.properties.Any())
             {
                 conn.properties = gc.properties;

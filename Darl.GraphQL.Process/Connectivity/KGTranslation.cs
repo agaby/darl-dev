@@ -834,7 +834,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return string.Empty;
         }
 
-
         #region private
 
         private DarlUser Convert(KnowledgeState ks, string objectId)

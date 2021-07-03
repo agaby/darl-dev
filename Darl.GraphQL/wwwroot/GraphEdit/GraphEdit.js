@@ -138,7 +138,7 @@ $(async function () {
     virtualkgraphdata = graph('query vkgd($model: String!){getVirtualKGDisplay(graphName: $model){nodes{data{ id lineage parent label}} edges{ data{ id label source target}}}}');
     recognitionkgraphdata = graph('query rkgd($model: String!){getRecognitionKGDisplay(graphName: $model){nodes{data{ id label lineage parent label}} edges{ data{ id label source target}}}}');
     realobjectdata = graph('query rod($model: String! $id: String!){getGraphObjectById(graphName: $model id: $id){name lineage subLineage id externalId properties {name lineage value type confidence}}}');
-    realConnectiondata = graph('query rcd($model: String! $id: String!){getGraphConnectionById(graphName: $model id: $id){name lineage id weight }}');
+    realConnectiondata = graph('query rcd($model: String! $id: String!){getGraphConnectionById(graphName: $model id: $id){name lineage id weight inferred }}');
     virtualobjectdata = graph('query vod($model: String! $lineage: String!){getVirtualObjectByLineage(graphName: $model lineage: $lineage){name lineage id properties {name lineage value type confidence}}}');
     recognitionobjectdata = graph('query recod($model: String! $id: String!){getRecognitionObjectById(graphName: $model id: $id){name lineage id properties {name lineage value type confidence}}}');
     realeditorchange = graph('mutation rec($model: String! $goj: String!){updateGraphObjectFromJSON(graphName: $model graphObjectJSON: $goj ontology: BUILD) {id}}');
@@ -1043,7 +1043,7 @@ async function loadGraphs() {
                 {
                     content: '<span class="fa fa-balance-scale fa-2x"></span>',
                     select: async function (ele) {
-                        console.log('name');
+                        console.log('weight');
                         try {
                             var id = ele.id();
                             var obj = await realConnectiondata({ model: mdname, id: id });
@@ -1077,6 +1077,44 @@ async function loadGraphs() {
                                     try {
                                         if (obj.getGraphConnectionById.weight !== parseFloat(data.weight)) {
                                             await updateGraphConnection({ name: mdname, conn: { id: ele.id(), weight: data.weight } });
+                                            console.log(data);
+                                        }
+                                    }
+                                    catch (err) {
+                                        HandleError(err);
+                                    }
+                                });
+                            }
+                        }
+                        catch (err) {
+                            HandleError(err);
+                        }
+                    }
+                },
+                {
+                    content: '<span class="fa fa-check-square fa-2x"></span>',
+                    select: async function (ele) {
+                        console.log('inferred');
+                        try {
+                            var id = ele.id();
+                            var obj = await realConnectiondata({ model: mdname, id: id });
+                            if (obj) {
+                                $.MessageBox({
+                                    input: {
+                                        inferred: {
+                                            type: "checkbox",
+                                            defaultValue: obj.getGraphConnectionById.inferred,
+                                            label: "inferred?"
+                                        }
+                                    },
+                                    message: "Can this connection be inferred?",
+                                    buttonDone: "Change",
+                                    buttonFail: "Cancel",
+                                    queue: false,
+                                }).done(async function (data) {
+                                    try {
+                                        if (obj.getGraphConnectionById.inferred !== parseFloat(data.inferred)) {
+                                            await updateGraphConnection({ name: mdname, conn: { id: ele.id(), inferred: data.inferred } });
                                             console.log(data);
                                         }
                                     }

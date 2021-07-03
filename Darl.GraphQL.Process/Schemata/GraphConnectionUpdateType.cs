@@ -18,6 +18,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.lineage,true).Description("The type of this connection in the verb hypernymy hierarchy");
             Field(c => c.name,true).Description("The name of this connection");
             Field(c => c.weight,true).Description("The degree of plausibility of this connection");
+            Field(c => c.inferred, true).Description("If true, the existence of this connection is inferred from other sources");
             Field<ListGraphType<GraphAttributeInputType>>("properties", "Other properties of this connection", resolve: c => c.Source.properties);
         }
     }
