@@ -232,6 +232,8 @@ namespace Darl.GraphQL
             services.AddSingleton<VRDisplayModelType>();
             services.AddSingleton<VRDisplayNodeType>();
             services.AddSingleton<VRDisplayLinkType>();
+            services.AddSingleton<KnowledgeStateInputType>();
+            services.AddSingleton<StringListGraphAttributePairInputType>();
 
 
             //root

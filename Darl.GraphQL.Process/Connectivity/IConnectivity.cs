@@ -27,6 +27,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<KnowledgeState> DeleteKnowledgeState(string userId, string ksId, string graphName);
         Task<KnowledgeState> UpdateKnowledgeState(string userId, string ksId, KnowledgeStateUpdate state);
         Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state);
+        Task<long> DeleteAllKnowledgeStates(string userId, string graphName);
         Task<KGraph> GetKGModel(string userId, string model);
         Task<KGraph> CreateKGraph(string userId, string name);
         Task<List<DarlLintView>> LintDarlMeta(string darl);

@@ -1,13 +1,10 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Middleware;
-using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
 using DarlCommon;
-using DarlLanguage.Processing;
 using GraphQL.Types;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -19,7 +16,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "Query";
             Description = "View the contents of your account.";
-            
+
             FieldAsync<ListGraphType<KGraphType>>(
               "kgraphs",
               "The set of Knowledge Graphs for this account.",
@@ -190,7 +187,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var from = context.GetArgument<string>("from");
                     var to = context.GetArgument<string>("to");
                     return await context.TryAsyncResolve(
-                        async c => await trans.GetLastUpdate(from,to));
+                        async c => await trans.GetLastUpdate(from, to));
                 }
             );
             FieldAsync<ListGraphType<UpdateType>>(
@@ -265,11 +262,11 @@ namespace Darl.GraphQL.Models.Schemata
                 "tokenize",
                 "Tokenize a string using the standard en tokenizer",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "text", Description = "Text to tokenize" }),
-                resolve:  context =>
-                {
-                    var text = context.GetArgument<string>("text");
-                    return LineageLibrary.SimpleTokenizer(text);
-                }
+                resolve: context =>
+               {
+                   var text = context.GetArgument<string>("text");
+                   return LineageLibrary.SimpleTokenizer(text);
+               }
             );
 
             FieldAsync<ListGraphType<GraphObjectType>>(
@@ -304,14 +301,14 @@ namespace Darl.GraphQL.Models.Schemata
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(async c => await graph.GetGraphObjectsByLineage(CompositeName(userId, graphName), lineage));
                 }
-            ).AuthorizeWith("UserPolicy"); 
+            ).AuthorizeWith("UserPolicy");
             FieldAsync<GraphObjectType>(
                 "getGraphObjectById",
                 "Get a graph object based on id",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the object" }
-                    
+
                 ),
                 resolve: async context =>
                 {
@@ -366,7 +363,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var graphName = context.GetArgument<string>("graphName");
                     var id = context.GetArgument<string>("externalId");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectByExternalId(CompositeName(userId,graphName), id));
+                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectByExternalId(CompositeName(userId, graphName), id));
                 }
             );
             FieldAsync<GraphConnectionType>(
@@ -385,7 +382,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var endId = context.GetArgument<string>("endId");
                     var lineage = context.GetArgument<string>("lineage");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetConnectionByIds(CompositeName(userId, graphName), startId,endId,lineage));
+                    return await context.TryAsyncResolve(async c => await graph.GetConnectionByIds(CompositeName(userId, graphName), startId, endId, lineage));
                 }
             );
             FieldAsync<GraphConnectionType>(
@@ -409,8 +406,8 @@ namespace Darl.GraphQL.Models.Schemata
                 "Get a knowledge state by its Id",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "Id", Description = "The knowledge state id" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The name of the associated Knowledge Graph."},
-                    new QueryArgument<BooleanGraphType> { Name = "external", Description = "ids are ExternalIds", DefaultValue  = false }
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The name of the associated Knowledge Graph." },
+                    new QueryArgument<BooleanGraphType> { Name = "external", Description = "ids are ExternalIds", DefaultValue = false }
                 ),
                 resolve: async context =>
                 {
@@ -428,7 +425,7 @@ namespace Darl.GraphQL.Models.Schemata
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "subjectId", Description = "The external id" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The name of the associated Knowledge Graph." },
-                    new QueryArgument<BooleanGraphType>{ Name = "externalIds", Description = "true returns externalIds for GraphObjects, rather than internal", DefaultValue = false }
+                    new QueryArgument<BooleanGraphType> { Name = "externalIds", Description = "true returns externalIds for GraphObjects, rather than internal", DefaultValue = false }
                 ),
                 resolve: async context =>
                 {
@@ -436,7 +433,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var name = context.GetArgument<string>("graphName");
                     var externalIds = context.GetArgument<bool>("externalIds");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetKnowledgeStateByExternalId(userId, subjectId,name, externalIds));
+                    return await context.TryAsyncResolve(async c => await graph.GetKnowledgeStateByExternalId(userId, subjectId, name, externalIds));
                 }
             ).AuthorizeWith("UserPolicy");
 
@@ -450,7 +447,7 @@ namespace Darl.GraphQL.Models.Schemata
 
                      var userId = trans.GetCurrentUserId(context.UserContext);
                      var name = context.GetArgument<string>("graphName");
-                     return await context.TryAsyncResolve(async c => await connectivity.GetKnowledgeStates(userId,name));
+                     return await context.TryAsyncResolve(async c => await connectivity.GetKnowledgeStates(userId, name));
                  }
              ).AuthorizeWith("UserPolicy");
 
@@ -485,7 +482,7 @@ namespace Darl.GraphQL.Models.Schemata
             ).AuthorizeWith("UserPolicy");
             FieldAsync<ListGraphType<StringGraphType>>(
                 "softMatchModels",
-                "Get the names of the SoftMatch models in your account",                          
+                "Get the names of the SoftMatch models in your account",
                 resolve: async context =>
                 {
                     var userId = trans.GetCurrentUserId(context.UserContext);
@@ -599,7 +596,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var lineage = context.GetArgument<string>("lineage");
                     var ksId = context.GetArgument<string>("ksId");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetGraphAttribute(userId, graphName,id,lineage,ksId));
+                    return await context.TryAsyncResolve(async c => await graph.GetGraphAttribute(userId, graphName, id, lineage, ksId));
                 }
             );
 
@@ -609,7 +606,7 @@ namespace Darl.GraphQL.Models.Schemata
                 resolve: async context =>
                 {
                     var darl = context.GetArgument<string>("darl");
-                    return await context.TryAsyncResolve( async c => await connectivity.LintDarlMeta(darl));
+                    return await context.TryAsyncResolve(async c => await connectivity.LintDarlMeta(darl));
                 });
 
             FieldAsync<ListGraphType<LineageRecordType>>("getLineagesInKG", "Get existing lineages used for this element type in this KG. ",
@@ -622,7 +619,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var graphName = context.GetArgument<string>("graphName");
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     var graphType = context.GetArgument<GraphElementType>("graphType");
-                    return await context.TryAsyncResolve(async c => await graph.GetLineagesInKG(CompositeName(userId,graphName),graphType));
+                    return await context.TryAsyncResolve(async c => await graph.GetLineagesInKG(CompositeName(userId, graphName), graphType));
                 });
             Field<BooleanGraphType>("isValidLineage", "Check if this is a valid lineage. ",
                 arguments: new QueryArguments(
@@ -635,7 +632,7 @@ namespace Darl.GraphQL.Models.Schemata
                 });
             FieldAsync<StringGraphType>("getSuggestedRuleset", "Get a suggested initial ruleset for an attribute. ",
             arguments: new QueryArguments(
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "objectId", Description = "Id of the object containing the new ruleset."},
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "objectId", Description = "Id of the object containing the new ruleset." },
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "Lineage of the attribute" }
                 ),
@@ -656,7 +653,7 @@ namespace Darl.GraphQL.Models.Schemata
             {
                 var name = context.GetArgument<string>("name");
                 var email = context.GetArgument<string>("email");
-                return await context.TryAsyncResolve(async c => await trans.RegisterForMarketing(name,email));
+                return await context.TryAsyncResolve(async c => await trans.RegisterForMarketing(name, email));
             });
         }
 
