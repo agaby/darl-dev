@@ -12,7 +12,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "stringListGraphAttributePairInput";
             Field<NonNullGraphType<StringGraphType>>("name");
-            Field<NonNullGraphType<GraphAttributeInputType>>("value");
+            Field<ListGraphType<GraphAttributeInputType>>("value");
         }
     }
 }
