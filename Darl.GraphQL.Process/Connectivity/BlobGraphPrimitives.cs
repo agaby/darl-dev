@@ -78,7 +78,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<GraphObject> CreateObject(string compositeName, GraphObjectInput graphObject)
         {
             var cont = await Load(compositeName) as BlobGraphContent;
-            var go = new GraphObject { existence = graphObject.existence, externalId = graphObject.externalId, id = Guid.NewGuid().ToString(), inferred = false, lineage = graphObject.lineage, name = graphObject.name, _virtual = false, properties = graphObject.properties };
+            var go = new GraphObject { existence = graphObject.existence, externalId = graphObject.externalId, id = Guid.NewGuid().ToString(), inferred = false, lineage = graphObject.lineage, name = graphObject.name, _virtual = false, properties = ConvertAttributeInputList(graphObject.properties) };
             cont.vertices.Add(go.id, go);
             FlagChanges(compositeName);
             return go;
@@ -303,7 +303,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     {
                         node.properties.Remove(found);
                     }
-                    node.properties.Add(a);
+                    node.properties.Add(ConvertAttributeInput(a));
                 }
             }
             if (changed)
@@ -837,10 +837,10 @@ namespace Darl.GraphQL.Models.Connectivity
             return cont.virtualEdges.Values.ToList();
         }
 
-        public async Task CreateRawObject(IGraphModel model, GraphObject graphObject)
+        public async Task CreateRawObject(IGraphModel model, GraphObjectInput graphObject)
         {
             var cont = model as BlobGraphContent;
-            var go = new GraphObject { existence = graphObject.existence, externalId = graphObject.externalId, id = graphObject.id, inferred = false, lineage = graphObject.lineage, name = graphObject.name, _virtual = graphObject._virtual, properties = graphObject.properties };
+            var go = new GraphObject { existence = graphObject.existence, externalId = graphObject.externalId, id = Guid.NewGuid().ToString(), inferred = false, lineage = graphObject.lineage, name = graphObject.name, properties = ConvertAttributeInputList(graphObject.properties) };
             cont.vertices.Add(go.id, go);
         }
 
@@ -872,7 +872,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     node.properties.Remove(node.properties.Where(a => a.lineage == att.lineage).First());
                 }
-                node.properties.Add(new GraphAttribute {id = Guid.NewGuid().ToString(), existence = att.existence, confidence = att.confidence ?? 1.0, inferred = false, lineage = att.lineage, name = att.name, type = att.type ?? GraphAttribute.DataType.textual, value = att.value, _virtual = true });
+                node.properties.Add(new GraphAttribute {id = Guid.NewGuid().ToString(), existence = att.existence, confidence = att.confidence ?? 1.0, inferred = false, lineage = att.lineage, name = att.name, type = att.type , value = att.value, _virtual = true });
             }
         }
 
@@ -1007,7 +1007,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var cont = await Load(compositeName) as BlobGraphContent;
             if(cont == null)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
-            var obj = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = graphObject.lineage.ToLower(), name = graphObject.name, properties = graphObject.properties };
+            var obj = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = graphObject.lineage.ToLower(), name = graphObject.name, properties = ConvertAttributeInputList(graphObject.properties) };
             cont.recognitionVertices.Add(obj.id, obj);
             return obj;
         }
@@ -1084,7 +1084,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     {
                         obj.properties.Remove(found);
                     }
-                    obj.properties.Add(a);
+                    obj.properties.Add(ConvertAttributeInput(a));
                 }
             }
             return obj;
@@ -1130,12 +1130,12 @@ namespace Darl.GraphQL.Models.Connectivity
                         {
                             node.properties.Remove(found);
                         }
-                        node.properties.Add(a);
+                        node.properties.Add(ConvertAttributeInput(a));
                     }
                 }
                 else
                 {
-                    node.properties = go.properties;
+                    node.properties = ConvertAttributeInputList(go.properties);
                 }
             }
             return node;
@@ -1274,7 +1274,7 @@ namespace Darl.GraphQL.Models.Connectivity
                             newData[newKey] = ks.data[c];
                         }
                     }
-                    return new KnowledgeState(userId, new KnowledgeStateInput { data = newData, knowledgeGraphName = ks.knowledgeGraphName, subjectId = ks.subjectId });
+                    return new KnowledgeState{ data = newData, knowledgeGraphName = ks.knowledgeGraphName, subjectId = ks.subjectId };
                 }
                 catch { }
 
@@ -1449,8 +1449,7 @@ namespace Darl.GraphQL.Models.Connectivity
                         att.value = graphAtt.value;
                     if (graphAtt.confidence != null)
                         att.confidence = graphAtt.confidence ?? 1.0;
-                    if (graphAtt.type != null)
-                        att.type = graphAtt.type ?? GraphAttribute.DataType.textual;
+                    att.type = graphAtt.type;
                     if (!string.IsNullOrEmpty(graphAtt.name))
                         att.name = graphAtt.name;
                     if (graphAtt.existence != null && graphAtt.existence.Any())
@@ -1464,7 +1463,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 if (obj.properties == null)
                     obj.properties = new List<GraphAttribute>();
-                var att = new GraphAttribute { id = Guid.NewGuid().ToString(), lineage = lineage, confidence = graphAtt.confidence ?? 1.0, existence = graphAtt.existence, name = graphAtt.name, type = graphAtt.type ?? GraphAttribute.DataType.textual, value = graphAtt.value };
+                var att = new GraphAttribute { id = Guid.NewGuid().ToString(), lineage = lineage, confidence = graphAtt.confidence ?? 1.0, existence = graphAtt.existence, name = graphAtt.name, type = graphAtt.type, value = graphAtt.value };
                 obj.properties.Add(att);
                 return att;
             }
@@ -1532,6 +1531,32 @@ namespace Darl.GraphQL.Models.Connectivity
                 return null;
             }
             return lineage.Substring(pos + 1);
+        }
+
+        public static List<GraphAttribute> ConvertAttributeInputList(List<GraphAttributeInput> list)
+        {
+            var l = new List<GraphAttribute>();
+            foreach (var a in list)
+                l.Add(ConvertAttributeInput(a));
+            return l;
+        }
+
+        public static GraphAttribute ConvertAttributeInput(GraphAttributeInput a)
+        {
+            return new GraphAttribute { id = Guid.NewGuid().ToString(), confidence = a.confidence ?? 1.0, inferred = a.inferred ?? false, value = a.value, existence = a.existence, name = a.name, type = a.type, lineage = a.lineage };
+        }
+
+        public static List<GraphAttributeInput> ConvertAttributeInputList(List<GraphAttribute> list)
+        {
+            var l = new List<GraphAttributeInput>();
+            foreach (var a in list)
+                l.Add(ConvertAttributeInput(a));
+            return l;
+        }
+
+        public static GraphAttributeInput ConvertAttributeInput(GraphAttribute a)
+        {
+            return new GraphAttributeInput { confidence = a.confidence, inferred = a.inferred, value = a.value, existence = a.existence, name = a.name, type = a.type, lineage = a.lineage };
         }
 
         public async Task<KnowledgeState> GetKnowledgeStateByTypeAndAttribute(string userId, string objectId, string graphName, string attLineage, string attValue)

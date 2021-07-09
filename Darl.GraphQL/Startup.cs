@@ -233,7 +233,7 @@ namespace Darl.GraphQL
             services.AddSingleton<VRDisplayNodeType>();
             services.AddSingleton<VRDisplayLinkType>();
             services.AddSingleton<KnowledgeStateInputType>();
-            services.AddSingleton<StringListGraphAttributePairInputType>();
+            services.AddSingleton<StringListGraphAttributeInputPairInputType>();
 
 
             //root

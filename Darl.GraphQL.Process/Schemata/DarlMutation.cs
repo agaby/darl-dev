@@ -514,10 +514,10 @@ namespace Darl.GraphQL.Models.Schemata
                 ),
                 resolve: async context =>
                 {
-                    var ks = context.GetArgument<KnowledgeStateInput>("ks");
+                    KnowledgeStateInput ks = (KnowledgeStateInput)context.GetArgument(typeof(KnowledgeStateInput),"ks");
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.CreateKnowledgeState(userId,ks));
+                        async c => await graph.CreateKnowledgeState(userId,ks));
                 }
             );
             FieldAsync<KnowledgeStateType>("deleteKnowledgeState", "deletes a knowledge state", arguments: new QueryArguments(

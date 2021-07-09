@@ -148,7 +148,7 @@ namespace Darl.GraphQL.Test
             var userId = _config["userId"];
             foreach (var lv in graph.vertices.Values)
             {
-                var v = new GraphObjectInput { lineage = lv.lineage, name = lv.name ?? lv.id, externalId = lv.id, properties = lv.properties };
+                var v = new GraphObjectInput { lineage = lv.lineage, name = lv.name ?? lv.id, externalId = lv.id, properties = BlobGraphPrimitives.ConvertAttributeInputList( lv.properties) };
                 try
                 {
                     var res = await _graph.CreateGraphObject($"{userId}_grateful_dead_graph", v, OntologyAction.build);

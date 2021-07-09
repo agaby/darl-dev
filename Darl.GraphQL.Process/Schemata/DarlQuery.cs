@@ -655,6 +655,7 @@ namespace Darl.GraphQL.Models.Schemata
                 var email = context.GetArgument<string>("email");
                 return await context.TryAsyncResolve(async c => await trans.RegisterForMarketing(name, email));
             });
+
         }
 
         private string CompositeName(string userId, string graphName)

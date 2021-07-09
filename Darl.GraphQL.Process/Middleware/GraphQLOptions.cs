@@ -8,7 +8,7 @@ namespace Darl.GraphQL.Models.Middleware
 
         public bool EnableMetrics { get; set; } = true;
 
-        public bool ExposeExceptions { get; set; }
+        public bool ExposeExceptions { get; set; } = true;
 
         public bool SetFieldMiddleware { get; set; } = true;
     }

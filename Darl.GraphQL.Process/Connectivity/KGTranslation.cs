@@ -147,29 +147,26 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     subjectId = $"{from}/{to}",
                     knowledgeGraphName = backofficeKG,
-                    data = new Dictionary<string, List<GraphAttribute>>
+                    data = new List<StringListGraphAttributeInputPair>
                     {
-                        {
-                            updateObjectId,
-                            new List<GraphAttribute> {
-                                new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                        new StringListGraphAttributeInputPair{
+                            name = updateObjectId,
+                            value = new List<GraphAttributeInput> {
+                                new GraphAttributeInput {
                                     name = "existence",
                                     lineage = existenceLineage,
                                     type = GraphAttribute.DataType.temporal,
                                     existence = new List<DarlTime?> { new DarlTime(DateTime.UtcNow) },
                                     confidence = 1.0
                                 },
-                                new GraphAttribute {
+                                new GraphAttributeInput {
                                     name = "from",
-                                 id = Guid.NewGuid().ToString(),
                                     lineage = sourceLineage,
                                     type = GraphAttribute.DataType.textual,
                                     value = from,
                                     confidence = 1.0
                                 },
-                                new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                                new GraphAttributeInput {
                                     name = "to",
                                     lineage = destinationLineage,
                                     type = GraphAttribute.DataType.textual,
@@ -222,12 +219,12 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 subjectId = name,
                 knowledgeGraphName = backofficeKG,
-                data = new Dictionary<string, List<GraphAttribute>>
+                data =  new List<StringListGraphAttributeInputPair>
                 {
-                    {
-                        defaultObjectId,  new List<GraphAttribute> {
-                            new GraphAttribute {
-                                id = Guid.NewGuid().ToString(),
+                    new StringListGraphAttributeInputPair{
+                        name =  defaultObjectId,  
+                        value =   new List<GraphAttributeInput> {
+                            new GraphAttributeInput {
                                 name = "value",
                                 lineage = valueLineage,
                                 type = GraphAttribute.DataType.textual,
@@ -293,12 +290,12 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 subjectId = name,
                 knowledgeGraphName = backofficeKG,
-                data = new Dictionary<string, List<GraphAttribute>>
+                data = new List<StringListGraphAttributeInputPair>
                 {
-                    {
-                        collateralObjectId,  new List<GraphAttribute> {
-                            new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                    new StringListGraphAttributeInputPair{
+                        name = collateralObjectId,  
+                        value = new List<GraphAttributeInput> {
+                            new GraphAttributeInput {
                                 name = "value",
                                 lineage = valueLineage,
                                 type = GraphAttribute.DataType.textual,
@@ -426,90 +423,80 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 subjectId = contact.Id,
                 knowledgeGraphName = backofficeKG,
-                data = new Dictionary<string, List<GraphAttribute>> {
-                    { personObjectId, new List<GraphAttribute>
-                        {
-                            new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                data = new List<StringListGraphAttributeInputPair> {
+                    new StringListGraphAttributeInputPair{ 
+                        name = personObjectId, 
+                        value = new List<GraphAttributeInput>{
+                            new GraphAttributeInput {
                                 name = "first name",
                                 lineage = firstNameLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = contact.FirstName,
                                 confidence = 1.0
                             },
-                            new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "last name",
                                 lineage = lastNameLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = contact.LastName,
                                 confidence = 1.0
                             },
-                            new GraphAttribute {
-                                id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "email",
                                 lineage = emailLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = contact.Email,
                                 confidence = 1.0
                             },
-                            new GraphAttribute {
-                                id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "phone",
                                 lineage = phoneLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = contact.Phone,
                                 confidence = 1.0
                             },
-                            new GraphAttribute {
-                                id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "occupation",
                                 lineage = occupationLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = contact.Title
                             },
-                            new GraphAttribute {
-                                id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "notes",
                                 lineage = noteLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = contact.Notes,
                                 confidence = 1.0
                             },
-                            new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "company",
                                 lineage = companyLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = contact.Company,
                                 confidence = 1.0
                             },
-                            new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "country",
                                 lineage = countryLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = contact.Country,
                                 confidence = 1.0
                             },
-                            new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "source",
                                 lineage = sourceLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = contact.Source,
                                 confidence = 1.0
                             },
-                            new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "sector",
                                 lineage = sectorLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = contact.Sector ?? string.Empty,
                                 confidence = 1.0
                             },
-                            new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "existence",
                                 lineage = existenceLineage,
                                 type = GraphAttribute.DataType.temporal,
@@ -627,76 +614,69 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 subjectId = user.userId,
                 knowledgeGraphName = backofficeKG,
-                data = new Dictionary<string, List<GraphAttribute>> {
-                    { personObjectId,
-                        new List<GraphAttribute>
+                data = new List<StringListGraphAttributeInputPair> {
+                    new StringListGraphAttributeInputPair
+                    { 
+                        name = personObjectId,
+                        value = new List<GraphAttributeInput>
                         {
-                             new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                             new GraphAttributeInput {
                                  name = "first name",
                                  lineage = firstNameLineage,
                                  type = GraphAttribute.DataType.textual,
                                  value = names.Any() ? names.First() : string.Empty,
                                  confidence = 1.0
                             },
-                            new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "last name",
                                 lineage = lastNameLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = names.Any() && names.Count > 1 ? names.Last() : string.Empty,
                                 confidence = 1.0
                             },
-                            new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "email",
                                 lineage = emailLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = user.InvoiceEmail,
                                 confidence = 1.0
                             },
-                            new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "apiKey",
                                 lineage = keyLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = user.APIKey,
                                 confidence = 1.0
                             },
-                            new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "stripe product",
                                 lineage = subscriptionLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = user.productId,
                                 confidence = 1.0
                             },
-                            new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "Stripe id",
                                 lineage = idLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = user.StripeCustomerId,
                                 confidence = 1.0
                             },
-                            new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "account state",
                                 lineage = stateLineage,
                                 type = GraphAttribute.DataType.categorical,
                                 value = user.accountState.ToString(),
                                 confidence = 1.0
                             },
-                            new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "company",
                                 lineage = companyLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = user.InvoiceOrganization ?? string.Empty,
                                 confidence = 1.0
                             },
-                            new GraphAttribute {
-                                 id = Guid.NewGuid().ToString(),
+                            new GraphAttributeInput {
                                 name = "existence",
                                 lineage = existenceLineage,
                                 type = GraphAttribute.DataType.temporal,

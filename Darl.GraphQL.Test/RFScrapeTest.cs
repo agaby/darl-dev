@@ -503,13 +503,13 @@ namespace Darl.GraphQL.Test
             var compositeName = $"{_config["userId"]}_{graphName}";
             var root = await _graph.CreateRecognitionRoot(compositeName, "default:");
             var helloRule = "output textual response;\nif anything then response will be randomtext(\"hello, can I help ? \", \"hi, what can I do for you ? \");";
-            var hello = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "noun:01,4,05,11,03", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = helloRule } } });
+            var hello = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "noun:01,4,05,11,03", properties = new List<GraphAttributeInput> { new GraphAttributeInput { lineage = GraphObject.recognizedLineage, value = helloRule } } });
             var defaultRule = "output textual response;\nif anything then response will be \"I don't know the answer to that.\";";
-            var defaultAnswer = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "default:", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = defaultRule } } });
+            var defaultAnswer = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "default:", properties = new List<GraphAttributeInput> { new GraphAttributeInput { lineage = GraphObject.recognizedLineage, value = defaultRule } } });
             var helpRule = "output textual response;\nif anything then response will be \"This is a simple initial demonstration of maths teaching functionality. Try typing 'maths'\";";
-            var help = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "verb:397,2", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = helpRule } } });
+            var help = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "verb:397,2", properties = new List<GraphAttributeInput> { new GraphAttributeInput { lineage = GraphObject.recognizedLineage, value = helpRule } } });
             var mathRule = "output textual response;\nif anything then response will be \"Maths functionality goes here\";";
-            var math = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "noun:01,0,0,15,21,0,08,02", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = mathRule } } });
+            var math = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "noun:01,0,0,15,21,0,08,02", properties = new List<GraphAttributeInput> { new GraphAttributeInput { lineage = GraphObject.recognizedLineage, value = mathRule } } });
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = hello.id, lineage = followsLineage });
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = defaultAnswer.id, lineage = followsLineage });
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = help.id, lineage = followsLineage });
@@ -534,7 +534,7 @@ namespace Darl.GraphQL.Test
             Assert.AreEqual("Maths functionality goes here", results[0].response.Value);
             var nodeId = "1b35bb45-930a-4331-8421-d1c95f7a0bf7";
             mathRule = $"output network completed \"{nodeId}\" \"{completeLineage}\";\n if anything then completed will be seek(\"{followsLineage}\", \"{consistsLineage}\");";
-            await _graph.UpdateRecognitionObject(compositeName, new GraphObjectUpdate { id = math.id, properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = mathRule } } });
+            await _graph.UpdateRecognitionObject(compositeName, new GraphObjectUpdate { id = math.id, properties = new List<GraphAttributeInput> { new GraphAttributeInput { lineage = GraphObject.recognizedLineage, value = mathRule } } });
             results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "arithmetic" });
 
         }
@@ -546,23 +546,23 @@ namespace Darl.GraphQL.Test
             var compositeName = $"{_config["userId"]}_{graphName}";
             var root = await _graph.CreateRecognitionRoot(compositeName, "default:");
             var helloRule = "output textual response;\nif anything then response will be randomtext(\"hello, can I help ? \", \"hi, what can I do for you ? \");";
-            var hello = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "noun:01,4,05,11,03", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = helloRule } } });
+            var hello = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "noun:01,4,05,11,03", properties = new List<GraphAttributeInput> { new GraphAttributeInput { lineage = GraphObject.recognizedLineage, value = helloRule } } });
             var defaultRule = "output textual response;\nif anything then response will be \"I don't know the answer to that.\";";
-            var defaultAnswer = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "default:", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = defaultRule } } });
+            var defaultAnswer = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "default:", properties = new List<GraphAttributeInput> { new GraphAttributeInput { lineage = GraphObject.recognizedLineage, value = defaultRule } } });
             var helpRule = "output textual response;\nif anything then response will be \"This is a simple initial demonstration of maths teaching functionality. Try typing 'maths'\";";
-            var help = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "verb:397,2", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = helpRule } } });
+            var help = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "verb:397,2", properties = new List<GraphAttributeInput> { new GraphAttributeInput { lineage = GraphObject.recognizedLineage, value = helpRule } } });
             var nodeId = "1b35bb45-930a-4331-8421-d1c95f7a0bf7";
             var mathRule = $"output network completed \"{nodeId}\" \"{completeLineage}\";\n if anything then completed will be seek(\"{followsLineage}\", \"{consistsLineage}\");";
-            var math = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "noun:01,0,0,15,21,0,08,02", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = mathRule } } });
+            var math = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "noun:01,0,0,15,21,0,08,02", properties = new List<GraphAttributeInput> { new GraphAttributeInput { lineage = GraphObject.recognizedLineage, value = mathRule } } });
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = hello.id, lineage = followsLineage });
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = defaultAnswer.id, lineage = followsLineage });
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = help.id, lineage = followsLineage });
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = math.id, lineage = followsLineage });
             var navRoot = await _graph.CreateRecognitionRoot(compositeName, "navigation:"); //create a navigation tree
             var navHelpRule = "output textual response;\nif anything then response will be \"You can stop anytime by typing 'quit'.\";";
-            var navHelp = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "verb:397,2", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = navHelpRule } } });
+            var navHelp = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "verb:397,2", properties = new List<GraphAttributeInput> { new GraphAttributeInput { lineage = GraphObject.recognizedLineage, value = navHelpRule } } });
             var navQuitRule = "output categorical terminate {\"true\",\"false\"};\nif anything then terminate will be true;";
-            var navQuit = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "verb:060", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = navQuitRule } } });
+            var navQuit = await _graph.CreateRecognitionObject(compositeName, new GraphObjectInput { lineage = "verb:060", properties = new List<GraphAttributeInput> { new GraphAttributeInput { lineage = GraphObject.recognizedLineage, value = navQuitRule } } });
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = navRoot.id, endId = navHelp.id, lineage = followsLineage });
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = navRoot.id, endId = navQuit.id, lineage = followsLineage });
             await _graph.Store(compositeName);
@@ -592,12 +592,12 @@ namespace Darl.GraphQL.Test
             var compositeName = $"{_config["userId"]}_{graphName}";
             //update virtual object rules
             var activityCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if all(\"{subactivityLineage}\",\"{consistsLineage}\",\"{completeLineage}\") and all(\"{subactivityLineage}\",\"{followsLineage}\",\"{completeLineage}\") then completed will be true;";
-            await _graph.UpdateVirtualObject(compositeName, new GraphObjectUpdate { lineage = activityLineage, properties = new List<GraphAttribute> { new GraphAttribute { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = activityCode, lineage = completeLineage } } });
+            await _graph.UpdateVirtualObject(compositeName, new GraphObjectUpdate { lineage = activityLineage, properties = new List<GraphAttributeInput> { new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = activityCode, lineage = completeLineage } } });
             var testCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if all(\"{questionLineage}\",\"{consistsLineage}\",\"{completeLineage}\") and all(\"{questionLineage}\",\"{followsLineage}\",\"{completeLineage}\") then completed will be true;";
-            await _graph.UpdateVirtualObject(compositeName, new GraphObjectUpdate { lineage = testLineage, properties = new List<GraphAttribute> { new GraphAttribute { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = testCode, lineage = completeLineage } } });
+            await _graph.UpdateVirtualObject(compositeName, new GraphObjectUpdate { lineage = testLineage, properties = new List<GraphAttributeInput> { new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = testCode, lineage = completeLineage } } });
             var navQuitRule = "output categorical terminate {\"true\",\"false\"};\nif anything then terminate will be true;";
             var robj = await _graph.FindRecognition(compositeName, "navigation:", "verb:060");
-            await _graph.UpdateRecognitionObject(compositeName, new GraphObjectUpdate { id = robj.id, properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = navQuitRule } } });
+            await _graph.UpdateRecognitionObject(compositeName, new GraphObjectUpdate { id = robj.id, properties = new List<GraphAttributeInput> { new GraphAttributeInput { lineage = GraphObject.recognizedLineage, value = navQuitRule } } });
             var userId = _config["userId"];
             var activities = await _graph.GetGraphObjectsByLineage(compositeName, subactivityLineage);
             foreach(var o in activities)
@@ -641,10 +641,10 @@ namespace Darl.GraphQL.Test
             var compositeName = $"{_config["userId"]}_{graphName}";
             //Add rules to the virtual objects for Subactivity and Subtest that create the UI. 
             var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.Activity_display_rule.darl")).ReadToEnd();
-            await _graph.UpdateVirtualObject(compositeName, new GraphObjectUpdate { lineage = subactivityLineage, properties = new List<GraphAttribute> { new GraphAttribute { confidence = 1.0, name = "display", type = GraphAttribute.DataType.textual, value = source, lineage = displayLineage } } });
-            await _graph.UpdateVirtualObject(compositeName, new GraphObjectUpdate { lineage = testLineage, properties = new List<GraphAttribute> { new GraphAttribute { confidence = 1.0, name = "display", type = GraphAttribute.DataType.textual, value = source, lineage = displayLineage } } });
+            await _graph.UpdateVirtualObject(compositeName, new GraphObjectUpdate { lineage = subactivityLineage, properties = new List<GraphAttributeInput> { new GraphAttributeInput { confidence = 1.0, name = "display", type = GraphAttribute.DataType.textual, value = source, lineage = displayLineage } } });
+            await _graph.UpdateVirtualObject(compositeName, new GraphObjectUpdate { lineage = testLineage, properties = new List<GraphAttributeInput> { new GraphAttributeInput { confidence = 1.0, name = "display", type = GraphAttribute.DataType.textual, value = source, lineage = displayLineage } } });
             source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.numeric_test_display_rule.darl")).ReadToEnd();
-            await _graph.UpdateVirtualObject(compositeName, new GraphObjectUpdate { lineage = questionLineage, properties = new List<GraphAttribute> { new GraphAttribute { confidence = 1.0, name = "display", type = GraphAttribute.DataType.textual, value = source, lineage = displayLineage } } });
+            await _graph.UpdateVirtualObject(compositeName, new GraphObjectUpdate { lineage = questionLineage, properties = new List<GraphAttributeInput> { new GraphAttributeInput { confidence = 1.0, name = "display", type = GraphAttribute.DataType.textual, value = source, lineage = displayLineage } } });
             await _graph.Store(compositeName);
         }
 
@@ -653,7 +653,7 @@ namespace Darl.GraphQL.Test
         {
             var compositeName = $"{_config["userId"]}_{graphName}";
             var testCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if all(\"{questionLineage}\",\"{consistsLineage}\",\"{completeLineage}\") and all(\"{questionLineage}\",\"{followsLineage}\",\"{completeLineage}\") then completed will be true;";
-            await _graph.UpdateVirtualObject(compositeName, new GraphObjectUpdate { lineage = testLineage, properties = new List<GraphAttribute> { new GraphAttribute { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = testCode, lineage = completeLineage } } }, true);
+            await _graph.UpdateVirtualObject(compositeName, new GraphObjectUpdate { lineage = testLineage, properties = new List<GraphAttributeInput> { new GraphAttributeInput { confidence = 1.0, name = "completed", type = GraphAttribute.DataType.categorical, value = testCode, lineage = completeLineage } } }, true);
 
             var tests = await _graph.GetGraphObjectsByLineage(compositeName, questionLineage);
             foreach (var o in tests)
@@ -678,7 +678,7 @@ namespace Darl.GraphQL.Test
                 o.properties.Remove(att);
                 att.name = "text";
                 att.lineage = textLineage;
-                var obj = await _graph.UpdateGraphObject(compositeName, new GraphObjectUpdate {id = o.id,  lineage = o.lineage, properties = new List<GraphAttribute> { att} }, OntologyAction.build);
+                var obj = await _graph.UpdateGraphObject(compositeName, new GraphObjectUpdate {id = o.id,  lineage = o.lineage, properties = new List<GraphAttributeInput> { BlobGraphPrimitives.ConvertAttributeInput(att)} }, OntologyAction.build);
             }
             var tests = await _graph.GetGraphObjectsByLineage(compositeName, questionLineage);
             foreach (var o in tests)
@@ -688,7 +688,7 @@ namespace Darl.GraphQL.Test
                     o.properties.Remove(p);
                 att.name = "text";
                 att.lineage = textLineage;
-                var obj = await _graph.UpdateGraphObject(compositeName, new GraphObjectUpdate { id = o.id, lineage = o.lineage, properties = new List<GraphAttribute> { att } }, OntologyAction.build);
+                var obj = await _graph.UpdateGraphObject(compositeName, new GraphObjectUpdate { id = o.id, lineage = o.lineage, properties = new List<GraphAttributeInput> { BlobGraphPrimitives.ConvertAttributeInput(att) } }, OntologyAction.build);
             }
             await _graph.Store(compositeName);
         }

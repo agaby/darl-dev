@@ -312,7 +312,7 @@ namespace Darl.GraphQL.Test
             var nameIdLookup = new Dictionary<string, string>();
             foreach (var lv in graph.vertices.Values)
             {
-                var v = new GraphObjectInput { lineage = lv.lineage, name = lv.label ?? lv.id,  externalId = lv.id, properties = lv.properties };
+                var v = new GraphObjectInput { lineage = lv.lineage, name = lv.label ?? lv.id,  externalId = lv.id, properties = BlobGraphPrimitives.ConvertAttributeInputList(lv.properties) };
                 /*                var req = new GraphQLHttpRequest() { Variables = new { go = v }, Query = @"mutation cgo($go: graphObjectInput!){createGraphObject(graphObject: $go, ontology: BUILD){name id lineage inferred virtual}}", OperationName = "cgo" };
                                 var resp = await client.SendQueryAsync<dynamic>(req);
                                 nameIdLookup.Add(lv.id, ((Newtonsoft.Json.Linq.JObject)resp.Data).SelectToken("createGraphObject.id").ToString());
