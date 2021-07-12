@@ -177,6 +177,8 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
             }
             var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            //ensure user/graphName/subjectId combination is unique
+            await mc.DeleteManyAsync(Builders<KnowledgeState>.Filter.Eq(r => r.userId, userId) & Builders<KnowledgeState>.Filter.Eq(r => r.subjectId, state.subjectId) & Builders<KnowledgeState>.Filter.Eq(r => r.knowledgeGraphName, state.knowledgeGraphName));
             await mc.InsertOneAsync(kstate);
             return kstate;
         }
@@ -257,7 +259,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
             var query = mc.AsQueryable().Where(p => p.subjectId == ksId && p.userId == userId && p.knowledgeGraphName == graphName);
             var old = await query.FirstOrDefaultAsync();
-            await mc.DeleteOneAsync(Builders<KnowledgeState>.Filter.Eq(r => r.userId, userId) & Builders<KnowledgeState>.Filter.Eq(r => r.subjectId, ksId) & Builders<KnowledgeState>.Filter.Eq(r => r.knowledgeGraphName, graphName));
+            await mc.DeleteManyAsync(Builders<KnowledgeState>.Filter.Eq(r => r.userId, userId) & Builders<KnowledgeState>.Filter.Eq(r => r.subjectId, ksId) & Builders<KnowledgeState>.Filter.Eq(r => r.knowledgeGraphName, graphName));
             return old;
         }
 
