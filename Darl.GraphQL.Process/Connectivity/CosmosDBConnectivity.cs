@@ -191,6 +191,38 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.FirstOrDefaultAsync();
         }
 
+        /// <summary>
+        /// Get a set of KSs by subjectId
+        /// </summary>
+        /// <param name="userId">The userId</param>
+        /// <param name="ksIds">the list of subject Ids</param>
+        /// <param name="graphName">the graph name</param>
+        /// <returns>a list of KSs</returns>
+        /// <remarks>Not paged, so limited to a single MongoDB page.</remarks>
+        public async Task<List<KnowledgeState>> GetSetOfKnowledgeStates(string userId, List<string> ksIds, string graphName)
+        {
+            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var filter1 = Builders<KnowledgeState>.Filter.In(x => x.subjectId,ksIds);
+            var filter2 = Builders<KnowledgeState>.Filter.Where(x => x.knowledgeGraphName == graphName && x.userId == userId);
+            var filter3 = Builders<KnowledgeState>.Filter.And(filter1, filter2);
+            var cursor = await mc.FindAsync<KnowledgeState>(filter3);
+            await cursor.MoveNextAsync();
+            return cursor.Current.ToList();
+        }
+
+        /// <summary>
+        /// Returns an IAsyncCursor<<KnowledgeState>> you can iterate to get all the states
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="graphName"></param>
+        /// <returns></returns>
+        public async Task<IAsyncCursor<KnowledgeState>> GetKnowledgeStatesBatched(string userId, string graphName)
+        {
+            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var filter = Builders<KnowledgeState>.Filter.Where(x => x.knowledgeGraphName == graphName && x.userId == userId);
+            return  await mc.FindAsync<KnowledgeState>(filter);
+        }
+
         public async Task<KnowledgeState> GetKnowledgeStateByTypeAndAttribute(string userId, string objectId, string graphName, string attLineage, string attValue)
         {
             var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);

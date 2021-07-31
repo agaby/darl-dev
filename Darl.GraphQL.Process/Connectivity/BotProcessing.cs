@@ -41,6 +41,11 @@ namespace Darl.GraphQL.Models.Connectivity
             _cache = cache;
         }
 
+        public async Task<List<KnowledgeState>> Discover(string userId, string KnowledgeGraphName, string subjectId)
+        {
+            return await _ghandler.Discover(userId, KnowledgeGraphName, subjectId);
+        }
+
         public async Task<List<InteractTestResponse>> InteractKGAsync(string userId, string KnowledgeGraphName, string conversationId, DarlVar conversationData)
         {
             _logger.LogWarning($"{nameof(InteractKGAsync)}: {userId}, {KnowledgeGraphName}, {conversationId}, {conversationData.Value}");

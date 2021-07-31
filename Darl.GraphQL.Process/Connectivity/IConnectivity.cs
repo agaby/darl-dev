@@ -39,5 +39,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<KnowledgeState>> GetKnowledgeStatesByTypeAndAttribute(string userId, string objectId, string graphName, string attLineage, string attValue);
         Task<List<KnowledgeState>> GetKnowledgeStatesByTypeAndAttributeExistence(string userId, string objectId, string graphName, string attLineage);
         Task<string> ShareKGraph(string userId, string name, string sharerId, bool readOnly, bool hidden);
+        Task<IAsyncCursor<KnowledgeState>> GetKnowledgeStatesBatched(string userId, string graphName);
+        Task<List<KnowledgeState>> GetSetOfKnowledgeStates(string userId, List<string> ksIds, string graphName);
     }
 }

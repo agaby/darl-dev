@@ -655,6 +655,18 @@ namespace Darl.GraphQL.Models.Schemata
                 var email = context.GetArgument<string>("email");
                 return await context.TryAsyncResolve(async c => await trans.RegisterForMarketing(name, email));
             });
+            FieldAsync<ListGraphType<KnowledgeStateType>>("discover", "Discover possibilities in a graph",
+            arguments: new QueryArguments(
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge graph used" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "subjectId", Description = "the subject Id of the start point" }
+                ),
+            resolve: async context =>
+            {
+                var graphName = context.GetArgument<string>("graphName");
+                var subjectId = context.GetArgument<string>("subjectId");
+                var userId = trans.GetCurrentUserId(context.UserContext);
+                return await context.TryAsyncResolve(async c => await bot.Discover(userId, graphName, subjectId));
+            });
 
         }
 
