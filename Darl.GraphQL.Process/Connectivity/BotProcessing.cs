@@ -43,7 +43,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<List<KnowledgeState>> Discover(string userId, string KnowledgeGraphName, string subjectId)
         {
-            return await _ghandler.Discover(userId, KnowledgeGraphName, subjectId);
+            return await _ghandler.Discover(userId, KnowledgeGraphName, subjectId, null);
         }
 
         public async Task<List<InteractTestResponse>> InteractKGAsync(string userId, string KnowledgeGraphName, string conversationId, DarlVar conversationData)
@@ -85,6 +85,31 @@ namespace Darl.GraphQL.Models.Connectivity
                         }
                         resp.Add(res.Item1.First());
                         bs.pending = res.Item2;
+                    }
+                    else if(r.response.dataType == DarlVar.DataType.discover)
+                    {
+                        //emit any preceding messages before starting seek.
+                        foreach (var c in responses)
+                        {
+                            if (c == r)
+                                break;
+                            if (c.response.dataType != DarlVar.DataType.discover)
+                            {
+                                _logger.LogInformation($"Emitting text before discover: {c.response.Value}, id= {conversationId}, KGName= {KnowledgeGraphName}, userId = {userId}");
+                                resp.Add(c);
+                            }
+                        }
+                        bs.kGraphData = r.response.sequence;
+                        bs.pending = null;
+                        var discoverResp = await _ghandler.DiscoverForBot(userId, KnowledgeGraphName, r.response.sequence[0][0], r.response.sequence[1]); 
+                        if(discoverResp.Any())
+                        {
+                            resp.AddRange(discoverResp);
+                        }
+                        else
+                        {
+                            resp.Add(new InteractTestResponse { activeNodes = new List<string>(), darl = "", matches = new List<MatchedElement>(), response = new DarlVar { dataType = DarlVar.DataType.textual, Value = "nothing discovered" } });
+                        }
                     }
                     else
                     {
