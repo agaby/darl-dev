@@ -20,6 +20,19 @@
     <Compile Remove="Models\GraphElement.cs" />
     <Compile Remove="Models\GraphElementInput.cs" />
     <Compile Remove="Models\GraphElementUpdate.cs" />
+    <Compile Remove="Models\Noda\Layout\AbstractRenderer.cs" />
+    <Compile Remove="Models\Noda\Layout\Edge.cs" />
+    <Compile Remove="Models\Noda\Layout\FDGVector2.cs" />
+    <Compile Remove="Models\Noda\Layout\FDGVector3.cs" />
+    <Compile Remove="Models\Noda\Layout\Graph.cs" />
+    <Compile Remove="Models\Noda\Layout\GraphData.cs" />
+    <Compile Remove="Models\Noda\Layout\IGraph.cs" />
+    <Compile Remove="Models\Noda\Layout\IRenderer.cs" />
+    <Compile Remove="Models\Noda\Layout\Node.cs" />
+    <Compile Remove="Models\Noda\Layout\Pair.cs" />
+    <Compile Remove="Models\Noda\Layout\PriorityQueue.cs" />
+    <Compile Remove="Models\Noda\Layout\SingletonHolder.cs" />
+    <Compile Remove="Models\Noda\Layout\Triple.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -55,5 +55,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<bool> CheckEmail(string email, string ipaddress = "");
         Task<string> GetSuggestedRuleSet(string userId, string modelName, string objectId, string lineage);
         Task<List<DarlUser>> GetRecentUsers();
+        Task<object> ExportNoda(string userId, string graphName);
     }
 }

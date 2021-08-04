@@ -668,6 +668,17 @@ namespace Darl.GraphQL.Models.Schemata
                 return await context.TryAsyncResolve(async c => await bot.Discover(userId, graphName, subjectId));
             });
 
+            FieldAsync<ListGraphType<KnowledgeStateType>>("exportNoda", "Export a graph in Noda format",
+            arguments: new QueryArguments(
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge graph to export" }
+                ),
+            resolve: async context =>
+            {
+                var graphName = context.GetArgument<string>("graphName");
+                var userId = trans.GetCurrentUserId(context.UserContext);
+                return await context.TryAsyncResolve(async c => await trans.ExportNoda(userId, graphName));
+            });
+
         }
 
         private string CompositeName(string userId, string graphName)

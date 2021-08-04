@@ -1,0 +1,223 @@
+{
+  "name": "Simple",
+  "format": "v2",
+  "metaNodes": [
+    {
+      "name": "Person",
+      "kind": null,
+      "position": null,
+      "facing": null,
+      "collapsed": false,
+      "folded": false,
+      "uuid": "32afdcae-22a1-4135-bf95-6fecadaf58e0",
+      "tone": {
+        "r": 1,
+        "g": 0.596078455,
+        "b": 0,
+        "a": 1
+      },
+      "size": 5,
+      "shape": "Box",
+      "properties": null
+    }
+  ],
+  "metaLinks": [
+    {
+      "name": "Friend",
+      "title": null,
+      "kind": null,
+      "fromNode": null,
+      "toNode": null,
+      "folded": false,
+      "uuid": "9bfd7153-25d7-4b5-be02-32c35c885c25",
+      "tone": {
+        "r": 0.843137264,
+        "g": 0.843137264,
+        "b": 0.843137264,
+        "a": 1
+      },
+      "size": 3,
+      "shape": "Dash",
+      "properties": null
+    }
+  ],
+  "nodes": [
+    {
+      "kind": null,
+      "position": {
+        "x": -0.3817341,
+        "y": -0.3889501,
+        "z": 0.136225864
+      },
+      "facing": {
+        "w": -0.988399863,
+        "x": 0,
+        "y": -0.151874,
+        "z": 0
+      },
+      "collapsed": false,
+      "folded": false,
+      "uuid": "12eeafca-3338-46d2-861c-3307f1b534c4",
+      "tone": {
+        "r": 0.298039228,
+        "g": 0.6862745,
+        "b": 0.3137255,
+        "a": 1
+      },
+      "size": 5,
+      "shape": "Ball",
+      "properties": [
+        {
+          "uuid": "f65b8340-94b2-4cbc-a477-faf56fdc3d47",
+          "name": "Name",
+          "text": "Node 1",
+          "image": null,
+          "video": null,
+          "tone": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "size": 1,
+          "page": null,
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "kind": "32afdcae-22a1-4135-bf95-6fecadaf58e0",
+      "position": {
+        "x": 0.08953572,
+        "y": -0.388016224,
+        "z": 0.240516856
+      },
+      "facing": {
+        "w": -0.995298862,
+        "x": 0,
+        "y": -0.09685149,
+        "z": 0
+      },
+      "collapsed": false,
+      "folded": false,
+      "uuid": "4435577a-634e-458a-a750-e904b34e8ead",
+      "tone": {
+        "r": 1,
+        "g": 0.596078455,
+        "b": 0,
+        "a": 1
+      },
+      "size": 5,
+      "shape": "Box",
+      "properties": [
+        {
+          "uuid": "267cee05-f8e8-451b-ae21-ff2bf4993093",
+          "name": "Name",
+          "text": "Node 2",
+          "image": "1F600",
+          "video": null,
+          "tone": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "size": 1,
+          "page": "https://mysite.com/",
+          "notes": "Here is some extra textual information.\nAnd here is another line."
+        }
+      ]
+    },
+    {
+      "kind": "32afdcae-22a1-4135-bf95-6fecadaf58e0",
+      "position": {
+        "x": 0.356607467,
+        "y": -0.377610445,
+        "z": 0.0427583456
+      },
+      "facing": {
+        "w": -0.970174,
+        "x": 0,
+        "y": -0.242409542,
+        "z": 0
+      },
+      "collapsed": false,
+      "folded": false,
+      "uuid": "bd365bc4-4041-42dd-8e84-3c5f96965a1d",
+      "tone": {
+        "r": 1,
+        "g": 0.596078455,
+        "b": 0,
+        "a": 1
+      },
+      "size": 5,
+      "shape": "Box",
+      "properties": [
+        {
+          "uuid": "798ab2e2-820a-44f0-a13f-4dad2732bddb",
+          "name": "Name",
+          "text": "Node 3",
+          "image": null,
+          "video": null,
+          "tone": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "size": 1,
+          "page": null,
+          "notes": ""
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "title": "Link 1",
+      "kind": null,
+      "fromNode": {
+        "id": 0,
+        "Uuid": "12eeafca-3338-46d2-861c-3307f1b534c4"
+      },
+      "toNode": {
+        "id": 0,
+        "Uuid": "4435577a-634e-458a-a750-e904b34e8ead"
+      },
+      "folded": false,
+      "uuid": "63bcf9e0-3273-47cc-a0cd-e1643e27ffde",
+      "tone": {
+        "r": 0.09019608,
+        "g": 0.09019608,
+        "b": 0.09019608,
+        "a": 1
+      },
+      "size": 1,
+      "shape": "Solid",
+      "properties": null
+    },
+    {
+      "title": "Pals",
+      "kind": "9bfd7153-25d7-4b5-be02-32c35c885c25",
+      "fromNode": {
+        "id": 0,
+        "Uuid": "4435577a-634e-458a-a750-e904b34e8ead"
+      },
+      "toNode": {
+        "id": 0,
+        "Uuid": "bd365bc4-4041-42dd-8e84-3c5f96965a1d"
+      },
+      "folded": false,
+      "uuid": "2fd8412e-2aff-4a3d-b333-12967af2090f",
+      "tone": {
+        "r": 0.843137264,
+        "g": 0.843137264,
+        "b": 0.843137264,
+        "a": 1
+      },
+      "size": 3,
+      "shape": "Dash",
+      "properties": null
+    }
+  ]
+}

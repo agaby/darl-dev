@@ -15,6 +15,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Queue;
+using Darl.GraphQL.Models.Models.Noda;
+using Darl.GraphQL.Process.Models.Noda.Layout;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -814,7 +816,55 @@ namespace Darl.GraphQL.Models.Connectivity
             return string.Empty;
         }
 
+        /// <summary>
+        /// create a Noda version of the graph and generate a trial 3D layout.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="graphName"></param>
+        /// <returns></returns>
+        public async Task<object> ExportNoda(string userId, string graphName)
+        {
+            //read model and convert to noda format
+            var model = await _graph.GetModel(userId, graphName);
+            var nodadoc = new NodaDocument { name = graphName };
+            foreach(var k in model.vertices.Keys)
+            {
+                var tNode = model.vertices[k];
+                var n = new NodaNode { name = tNode.name, uuid = k, properties = Convert(tNode.properties) };
+                nodadoc.nodes.Add(n);
+            }
+            foreach (var k in model.edges.Keys)
+            {
+                var tLink = model.edges[k];
+                var l = new NodaLink { title = tLink.name, uuid = k, fromNode = new NodaNodeId { Uuid = tLink.startId }, toNode = new NodaNodeId { Uuid = tLink.endId }, properties = Convert(tLink.properties) };
+                nodadoc.links.Add(l);
+            }
+            //create the ancillary dictionaries
+            nodadoc.Init();
+            //run force layout on graph
+            var fd = new ForceDirected3D(nodadoc, 81.76, 40000.0, 0.5);
+            for (int n = 0; n < 100; n++)
+                fd.Calculate(0.01);
+            return nodadoc;
+        }
+
+
         #region private
+
+        private List<NodaProperty> Convert(List<GraphAttribute> properties)
+        {
+            var list = new List<NodaProperty>();
+            foreach(var a in properties)
+            {
+                list.Add(Convert(a));
+            }
+            return list;
+        }
+
+        private NodaProperty Convert(GraphAttribute att)
+        {
+            return new NodaProperty { name = att.name, text = att.value, uuid = att.id, notes = JsonConvert.SerializeObject(att) };
+        }
 
         private DarlUser Convert(KnowledgeState ks, string objectId)
         {
@@ -982,6 +1032,8 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return string.Empty;
         }
+
+ 
 
         #endregion
     }
