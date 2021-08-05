@@ -17,6 +17,7 @@ using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Queue;
 using Darl.GraphQL.Models.Models.Noda;
 using Darl.GraphQL.Process.Models.Noda.Layout;
+using System.Drawing;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -822,15 +823,30 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <param name="userId"></param>
         /// <param name="graphName"></param>
         /// <returns></returns>
-        public async Task<object> ExportNoda(string userId, string graphName)
+        public async Task<string> ExportNoda(string userId, string graphName)
         {
             //read model and convert to noda format
             var model = await _graph.GetModel(userId, graphName);
+            //for coloring the nodes get the set of lineages.
+            var lineageMap = new HashSet<string>();
+            foreach (var k in model.vertices.Keys)
+            {
+                lineageMap.Add(model.vertices[k].lineage);
+            }
+            var colors = ColorGenerator.Pick(lineageMap.Count);
+            if (!colors.Any()) //if only one lineage this will be empty
+                colors.Add(new NodaTone { r = 0.0, g = 0.0, b = 1.0, a = 1.0 });
+            int index = 0;
+            var colourMap = new Dictionary<string, NodaTone>();
+            foreach(var k in lineageMap)
+            {
+                colourMap.Add(k, colors[index++]);
+            }
             var nodadoc = new NodaDocument { name = graphName };
             foreach(var k in model.vertices.Keys)
             {
                 var tNode = model.vertices[k];
-                var n = new NodaNode { name = tNode.name, uuid = k, properties = Convert(tNode.properties) };
+                var n = new NodaNode { name = tNode.name, uuid = k, properties = Convert(tNode.properties), tone = colourMap[tNode.lineage] };
                 nodadoc.nodes.Add(n);
             }
             foreach (var k in model.edges.Keys)
@@ -845,7 +861,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var fd = new ForceDirected3D(nodadoc, 81.76, 40000.0, 0.5);
             for (int n = 0; n < 100; n++)
                 fd.Calculate(0.01);
-            return nodadoc;
+            return JsonConvert.SerializeObject(nodadoc);
         }
 
 
@@ -854,9 +870,12 @@ namespace Darl.GraphQL.Models.Connectivity
         private List<NodaProperty> Convert(List<GraphAttribute> properties)
         {
             var list = new List<NodaProperty>();
-            foreach(var a in properties)
+            if(properties != null)
             {
-                list.Add(Convert(a));
+                foreach (var a in properties)
+                {
+                    list.Add(Convert(a));
+                }
             }
             return list;
         }

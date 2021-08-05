@@ -1,41 +1,39 @@
 ﻿using Darl.GraphQL.Models.Models.Noda;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Darl.GraphQL.Process.Models.Noda.Layout
 {
-
-    public class NearestPoint{
-            public NearestPoint()
-            {
-                node=null;
-                point=null;
-                distance=null;
-            }
-            public NodaNode node;
-            public Point point;
-            public double? distance;
+    public class NearestPoint
+    {
+        public NearestPoint()
+        {
+            node = null;
+            point = null;
+            distance = null;
         }
+        public NodaNode? node;
+        public Point? point;
+        public double? distance;
+    }
 
     public class BoundingBox
     {
-        public static double defaultBB= 2.0;
+        public static double defaultBB = 2.0;
         public static double defaultPadding = 0.07; // ~5% padding
-        
+
         public BoundingBox()
         {
             topRightBack = null;
             bottomLeftFront = null;
         }
-        public AbstractVector topRightBack;
-        public AbstractVector bottomLeftFront;
+        public NodaPosition? topRightBack;
+        public NodaPosition? bottomLeftFront;
     }
 
-    public abstract class ForceDirected<Vector> : IForceDirected where Vector : IVector
+    public class ForceDirected3D
     {
-    	public double Stiffness
+
+        public double Stiffness
         {
             get;
             set;
@@ -64,8 +62,10 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
             get;
             private set;
         }
+
         protected Dictionary<string, Point> m_nodePoints;
         protected Dictionary<string, Spring> m_NodaLinkSprings;
+
         public NodaDocument graph
         {
             get;
@@ -75,41 +75,78 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
         {
             m_nodePoints.Clear();
             m_NodaLinkSprings.Clear();
-            graph.Clear();
         }
 
-        public ForceDirected(NodaDocument iGraph, double iStiffness, double iRepulsion, double iDamping)
+
+        public delegate void EdgeAction(NodaLink edge, Spring spring);
+        public delegate void NodeAction(NodaNode edge, Point point);
+        public ForceDirected3D(NodaDocument iGraph, double iStiffness, double iRepulsion, double iDamping)
         {
-            graph=iGraph;
-            Stiffness=iStiffness;
-            Repulsion=iRepulsion;
-            Damping=iDamping;
+            graph = iGraph;
+            Stiffness = iStiffness;
+            Repulsion = iRepulsion;
+            Damping = iDamping;
             m_nodePoints = new Dictionary<string, Point>();
             m_NodaLinkSprings = new Dictionary<string, Spring>();
-
             Threshold = 0.01f;
         }
 
-        public abstract Point GetPoint(NodaNode iNodaNode);
+        public Point GetPoint(NodaNode iNodaNode)
+        {
+            if (!(m_nodePoints.ContainsKey(iNodaNode.uuid)))
+            {
+                NodaPosition iniPosition = iNodaNode.position;
+                if (iniPosition == null)
+                    iniPosition = NodaPosition.Random();
+                m_nodePoints[iNodaNode.uuid] = new Point(iniPosition, NodaPosition.Zero(), NodaPosition.Zero(), iNodaNode);
+            }
+            return m_nodePoints[iNodaNode.uuid];
+        }
 
+        public BoundingBox GetBoundingBox()
+        {
+            BoundingBox boundingBox = new BoundingBox();
+            NodaPosition bottomLeft = NodaPosition.Identity().Multiply(BoundingBox.defaultBB * -1.0f);
+            NodaPosition topRight = NodaPosition.Identity().Multiply(BoundingBox.defaultBB);
+            foreach (NodaNode n in graph.nodes)
+            {
+                NodaPosition position = GetPoint(n).position;
+                if (position.x < bottomLeft.x)
+                    bottomLeft.x = position.x;
+                if (position.y < bottomLeft.y)
+                    bottomLeft.y = position.y;
+                if (position.z < bottomLeft.z)
+                    bottomLeft.z = position.z;
+                if (position.x > topRight.x)
+                    topRight.x = position.x;
+                if (position.y > topRight.y)
+                    topRight.y = position.y;
+                if (position.z > topRight.z)
+                    topRight.z = position.z;
+            }
+            NodaPosition padding = (topRight - bottomLeft).Multiply(BoundingBox.defaultPadding);
+            boundingBox.bottomLeftFront = bottomLeft.Subtract(padding);
+            boundingBox.topRightBack = topRight.Add(padding);
+            return boundingBox;
 
+        }
 
         public Spring GetSpring(NodaLink iNodaLink)
         {
-            if(!(m_NodaLinkSprings.ContainsKey(iNodaLink.uuid)))
+            if (!(m_NodaLinkSprings.ContainsKey(iNodaLink.uuid)))
             {
                 double length = iNodaLink.length;
                 Spring? existingSpring = null;
 
-                var fromNodaLink = graph.GetEdge(iNodaLink.fromNode,iNodaLink.toNode);
+                var fromNodaLink = graph.GetEdge(iNodaLink.fromNode, iNodaLink.toNode);
                 if (fromNodaLink != null)
                 {
-                        if (existingSpring == null && m_NodaLinkSprings.ContainsKey(fromNodaLink.uuid))
-                        {
-                            existingSpring = m_NodaLinkSprings[fromNodaLink.uuid];
-                        }               
+                    if (existingSpring == null && m_NodaLinkSprings.ContainsKey(fromNodaLink.uuid))
+                    {
+                        existingSpring = m_NodaLinkSprings[fromNodaLink.uuid];
+                    }
                 }
-                if(existingSpring!=null)
+                if (existingSpring != null)
                 {
                     return new Spring(existingSpring.point1, existingSpring.point2, 0.0, 0.0);
                 }
@@ -117,13 +154,13 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
                 var toNodaLink = graph.GetEdge(iNodaLink.toNode, iNodaLink.fromNode);
                 if (toNodaLink != null)
                 {
-                        if (existingSpring == null && m_NodaLinkSprings.ContainsKey(toNodaLink.uuid))
-                        {
-                            existingSpring = m_NodaLinkSprings[toNodaLink.uuid];
-                        }
+                    if (existingSpring == null && m_NodaLinkSprings.ContainsKey(toNodaLink.uuid))
+                    {
+                        existingSpring = m_NodaLinkSprings[toNodaLink.uuid];
+                    }
                 }
-                
-                if(existingSpring!=null)
+
+                if (existingSpring != null)
                 {
                     return new Spring(existingSpring.point2, existingSpring.point1, 0.0, 0.0);
                 }
@@ -133,29 +170,28 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
             return m_NodaLinkSprings[iNodaLink.uuid];
         }
 
-        // TODO: change this for group only after node grouping
         protected void applyCoulombsLaw()
         {
-            foreach(NodaNode n1 in graph.nodes)
+            foreach (NodaNode n1 in graph.nodes)
             {
                 Point point1 = GetPoint(n1);
-                foreach(NodaNode n2 in graph.nodes)
+                foreach (NodaNode n2 in graph.nodes)
                 {
                     Point point2 = GetPoint(n2);
-                    if(point1!=point2)
+                    if (!point1.Equals(point2))
                     {
                         NodaPosition d = point1.position - point2.position;
                         double distance = d.Magnitude() + 0.1;
                         NodaPosition direction = d.Normalize();
                         if (n1.Pinned && n2.Pinned)
                         {
-                            point1.ApplyForce(direction * 0.0f);
-                            point2.ApplyForce(direction * 0.0f);
+                            point1.ApplyForce(direction * 0.0);
+                            point2.ApplyForce(direction * 0.0);
                         }
                         else if (n1.Pinned)
                         {
-                            point1.ApplyForce(direction*0.0f);
-                            point2.ApplyForce((direction * Repulsion) / (distance * -1.0f));
+                            point1.ApplyForce(direction * 0.0);
+                            point2.ApplyForce((direction * Repulsion) / (distance * -1.0));
                         }
                         else if (n2.Pinned)
                         {
@@ -165,8 +201,8 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
                         else
                         {
 
-                            point1.ApplyForce((direction * Repulsion) / (distance * 0.5f));
-                            point2.ApplyForce((direction * Repulsion) / (distance * -0.5f));
+                            point1.ApplyForce((direction * Repulsion) / (distance * 0.5));
+                            point2.ApplyForce((direction * Repulsion) / (distance * -0.5));
                         }
 
                     }
@@ -176,10 +212,10 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
 
         protected void applyHookesLaw()
         {
-            foreach(NodaLink e in graph.links)
+            foreach (NodaLink e in graph.links)
             {
                 Spring spring = GetSpring(e);
-                NodaPosition d = spring.point2.position-spring.point1.position;
+                NodaPosition d = spring.point2.position - spring.point1.position;
                 double displacement = spring.Length - d.Magnitude();
                 NodaPosition direction = d.Normalize();
 
@@ -204,13 +240,13 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
                     spring.point2.ApplyForce(direction * (spring.K * displacement * 0.5f));
                 }
 
-                
+
             }
         }
 
         protected void attractToCentre()
         {
-            foreach(NodaNode n in graph.nodes)
+            foreach (NodaNode n in graph.nodes)
             {
                 Point point = GetPoint(n);
                 if (!point.node.Pinned)
@@ -218,20 +254,20 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
                     NodaPosition direction = point.position * -1.0;
                     //point.ApplyForce(direction * ((float)Math.Sqrt((double)(Repulsion / 100.0f))));
 
-                    
+
                     double displacement = direction.Magnitude();
                     direction = direction.Normalize();
                     point.ApplyForce(direction * (Stiffness * displacement * 0.4));
                 }
-             }
+            }
         }
 
         protected void updateVelocity(double iTimeStep)
         {
-            foreach(NodaNode n in graph.nodes)
+            foreach (NodaNode n in graph.nodes)
             {
                 Point point = GetPoint(n);
-                point.velocity.Add(point.acceleration*iTimeStep);
+                point.velocity.Add(point.acceleration * iTimeStep);
                 point.velocity.Multiply(Damping);
                 point.acceleration.SetZero();
             }
@@ -239,21 +275,21 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
 
         protected void updatePosition(double iTimeStep)
         {
-            foreach(NodaNode n in graph.nodes)
+            foreach (NodaNode n in graph.nodes)
             {
                 Point point = GetPoint(n);
-                point.position.Add(point.velocity*iTimeStep);
+                point.position.Add(point.velocity * iTimeStep);
             }
         }
 
         protected double getTotalEnergy()
         {
             double energy = 0.0;
-            foreach(NodaNode n in graph.nodes)
+            foreach (NodaNode n in graph.nodes)
             {
                 Point point = GetPoint(n);
                 double speed = point.velocity.Magnitude();
-                energy+=0.5f *point.mass *speed*speed;
+                energy += 0.5f * point.mass * speed * speed;
             }
             return energy;
         }
@@ -273,91 +309,21 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
                 WithinThreshold = false;
         }
 
-
-        public void EachEdge(EdgeAction del)
-        {
-            foreach(NodaLink e in graph.links)
-            {
-                del(e, GetSpring(e));
-            }
-        }
-
-        public void EachNode(NodeAction del)
-        {
-            foreach (NodaNode n in graph.nodes)
-            {
-                del(n, GetPoint(n));
-            }
-        }
-
-        public NearestPoint Nearest(AbstractVector position)
+        public NearestPoint Nearest(NodaPosition position)
         {
             NearestPoint min = new NearestPoint();
-            foreach(NodaNode n in graph.nodes)
+            foreach (NodaNode n in graph.nodes)
             {
                 Point point = GetPoint(n);
-                double distance = (point.position-position).Magnitude();
-                if(min.distance==null || distance<min.distance)
+                double distance = (point.position - position).Magnitude();
+                if (min.distance == null || distance < min.distance)
                 {
-                    min.node=n;
-                    min.point=point;
-                    min.distance=distance;
+                    min.node = n;
+                    min.point = point;
+                    min.distance = distance;
                 }
             }
             return min;
-        }
-
-        public abstract BoundingBox GetBoundingBox();
-	
-    }
-
-
-    public class ForceDirected3D : ForceDirected<NodaPosition>
-    {
-        public ForceDirected3D(NodaDocument iGraph, double iStiffness, double iRepulsion, double iDamping)
-            : base(iGraph, iStiffness, iRepulsion, iDamping)
-        {
-
-        }
-
-        public override Point GetPoint(NodaNode iNodaNode)
-        {
-            if (!(m_nodePoints.ContainsKey(iNodaNode.uuid)))
-            {
-                NodaPosition iniPosition = iNodaNode.position;
-                if (iniPosition == null)
-                    iniPosition = NodaPosition.Random() as NodaPosition;
-                m_nodePoints[iNodaNode.uuid] = new Point(iniPosition, NodaPosition.Zero(), NodaPosition.Zero(), iNodaNode);
-            }
-            return m_nodePoints[iNodaNode.uuid];
-        }
-
-        public override BoundingBox GetBoundingBox()
-        {
-            BoundingBox boundingBox = new BoundingBox();
-            NodaPosition bottomLeft = NodaPosition.Identity().Multiply(BoundingBox.defaultBB * -1.0f) as NodaPosition;
-            NodaPosition topRight = NodaPosition.Identity().Multiply(BoundingBox.defaultBB) as NodaPosition;
-            foreach (NodaNode n in graph.nodes)
-            {
-                NodaPosition position = GetPoint(n).position as NodaPosition;
-                if (position.x < bottomLeft.x)
-                    bottomLeft.x = position.x;
-                if (position.y < bottomLeft.y)
-                    bottomLeft.y = position.y;
-                if (position.z<bottomLeft.z)
-                    bottomLeft.z = position.z;
-                if (position.x > topRight.x)
-                    topRight.x = position.x;
-                if (position.y > topRight.y)
-                    topRight.y = position.y;
-                if (position.z > topRight.z)
-                    topRight.z = position.z;
-            }
-            AbstractVector padding = (topRight - bottomLeft).Multiply(BoundingBox.defaultPadding);
-            boundingBox.bottomLeftFront = bottomLeft.Subtract(padding);
-            boundingBox.topRightBack = topRight.Add(padding);
-            return boundingBox;
-
         }
     }
 }

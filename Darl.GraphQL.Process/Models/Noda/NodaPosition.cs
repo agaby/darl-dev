@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Darl.GraphQL.Models.Models.Noda
 {
-    public class NodaPosition : AbstractVector
+    public class NodaPosition
     {
 
         public NodaPosition() : base()
@@ -27,7 +27,7 @@ namespace Darl.GraphQL.Models.Models.Noda
         public double y { get; set; }
         public double z { get; set; }
 
-        public override AbstractVector Add(AbstractVector v2)
+        public NodaPosition Add(NodaPosition v2)
         {
             NodaPosition v32 = v2 as NodaPosition;
             x = x + v32.x;
@@ -36,7 +36,7 @@ namespace Darl.GraphQL.Models.Models.Noda
             return this;
         }
 
-        public override AbstractVector Subtract(AbstractVector v2)
+        public NodaPosition Subtract(NodaPosition v2)
         {
             NodaPosition v32 = v2 as NodaPosition;
             x = x - v32.x;
@@ -45,7 +45,7 @@ namespace Darl.GraphQL.Models.Models.Noda
             return this;
         }
 
-        public override AbstractVector Multiply(double n)
+        public NodaPosition Multiply(double n)
         {
             x = x * n;
             y = y * n;
@@ -53,7 +53,7 @@ namespace Darl.GraphQL.Models.Models.Noda
             return this;
         }
 
-        public override AbstractVector Divide(double n)
+        public NodaPosition Divide(double n)
         {
             if (n == 0.0f)
             {
@@ -70,25 +70,25 @@ namespace Darl.GraphQL.Models.Models.Noda
             return this;
         }
 
-        public override double Magnitude()
+        public double Magnitude()
         {
             return Math.Sqrt((double)(x * x) + (double)(y * y) + (double)(z * z));
         }
 
 
-        public override NodaPosition Normalize()
+        public NodaPosition Normalize()
         {
             return this / Magnitude();
         }
 
-        public override NodaPosition SetZero()
+        public NodaPosition SetZero()
         {
             x = 0.0f;
             y = 0.0f;
             z = 0.0f;
             return this;
         }
-        public override NodaPosition SetIdentity()
+        public NodaPosition SetIdentity()
         {
             x = 1.0f;
             y = 1.0f;
@@ -100,12 +100,12 @@ namespace Darl.GraphQL.Models.Models.Noda
             return new NodaPosition(0.0f, 0.0f, 0.0f);
         }
 
-        public static AbstractVector Identity()
+        public static NodaPosition Identity()
         {
             return new NodaPosition(1.0f, 1.0f, 1.0f);
         }
 
-        public static AbstractVector Random()
+        public static NodaPosition Random()
         {
             return new NodaPosition(10.0f * (Util.Random() - 0.5f), 10.0f * (Util.Random() - 0.5f), 10.0f * (Util.Random() - 0.5f));
         }
@@ -116,26 +116,26 @@ namespace Darl.GraphQL.Models.Models.Noda
             temp.Add(b);
             return temp;
         }
-        public static NodaPosition operator -(NodaPosition a, NodaPosition b)
+        public static NodaPosition operator - (NodaPosition a, NodaPosition b)
         {
             NodaPosition temp = new NodaPosition(a.x, a.y, a.z);
             temp.Subtract(b);
             return temp;
         }
-        public static NodaPosition operator *(NodaPosition a, double b)
+        public static NodaPosition operator * (NodaPosition a, double b)
         {
             NodaPosition temp = new NodaPosition(a.x, a.y, a.z);
             temp.Multiply(b);
             return temp;
         }
-        public static NodaPosition operator *(float a, NodaPosition b)
+        public static NodaPosition operator * (float a, NodaPosition b)
         {
             NodaPosition temp = new NodaPosition(b.x, b.y, b.z);
             temp.Multiply(a);
             return temp;
         }
 
-        public static NodaPosition operator /(NodaPosition a, double b)
+        public static NodaPosition operator / (NodaPosition a, double b)
         {
             NodaPosition temp = new NodaPosition(a.x, a.y, a.z);
             temp.Divide(b);

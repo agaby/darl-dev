@@ -668,7 +668,7 @@ namespace Darl.GraphQL.Models.Schemata
                 return await context.TryAsyncResolve(async c => await bot.Discover(userId, graphName, subjectId));
             });
 
-            FieldAsync<ListGraphType<KnowledgeStateType>>("exportNoda", "Export a graph in Noda format",
+            FieldAsync<StringGraphType>("exportNoda", "Export a graph in Noda format",
             arguments: new QueryArguments(
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge graph to export" }
                 ),
