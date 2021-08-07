@@ -101,7 +101,7 @@ namespace Darl.GraphQL.Models.Connectivity
                         }
                         bs.kGraphData = r.response.sequence;
                         bs.pending = null;
-                        var discoverResp = await _ghandler.DiscoverForBot(userId, KnowledgeGraphName, r.response.sequence[0][0], r.response.sequence[1]); 
+                        var discoverResp = await _ghandler.DiscoverForBot(userId, KnowledgeGraphName, r.response.sequence[0][0], r.response.sequence[1],conversationId); 
                         if(discoverResp.Any())
                         {
                             resp.AddRange(discoverResp);

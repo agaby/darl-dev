@@ -38,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Darl_standard" Version="1.3.377" />
+    <PackageReference Include="Darl_standard" Version="1.3.380" />
     <PackageReference Include="GraphQL" Version="3.0.0-preview-1211" />
     <PackageReference Include="GraphQL.Client" Version="1.0.3" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.16.0" />
