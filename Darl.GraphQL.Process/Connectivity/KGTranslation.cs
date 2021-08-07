@@ -869,7 +869,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 n.position = n.position * scale;
             }
-            return JsonConvert.SerializeObject(nodadoc);
+            return JsonConvert.SerializeObject(nodadoc, new Newtonsoft.Json.Converters.StringEnumConverter());
         }
 
 
