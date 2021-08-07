@@ -846,13 +846,13 @@ namespace Darl.GraphQL.Models.Connectivity
             foreach(var k in model.vertices.Keys)
             {
                 var tNode = model.vertices[k];
-                var n = new NodaNode { name = tNode.name, uuid = k, properties = Convert(tNode.properties), tone = colourMap[tNode.lineage], size = 5.0, shape = NodaNodeShapes.Ball };
+                var n = new NodaNode { title = tNode.name, uuid = k, properties = Convert(tNode.properties), tone = colourMap[tNode.lineage], size = 5.0, shape = NodaNodeShapes.Ball };
                 nodadoc.nodes.Add(n);
             }
             foreach (var k in model.edges.Keys)
             {
                 var tLink = model.edges[k];
-                var l = new NodaLink { title = tLink.name, uuid = k, fromNode = new NodaNodeId { Uuid = tLink.startId }, toNode = new NodaNodeId { Uuid = tLink.endId }, properties = Convert(tLink.properties) };
+                var l = new NodaLink { title = tLink.name, uuid = k, fromNode = new NodaNodeId { Uuid = tLink.startId }, toNode = new NodaNodeId { Uuid = tLink.endId }, properties = Convert(tLink.properties), tone = new NodaTone {r = 0.09019608, g = 0.09019608, b = 0.09019608, a = 1.0 } };
                 nodadoc.links.Add(l);
             }
             //create the ancillary dictionaries

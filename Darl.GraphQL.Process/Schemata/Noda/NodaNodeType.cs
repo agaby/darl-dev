@@ -16,7 +16,7 @@ namespace Darl.GraphQL.Models.Schemata.Noda
             Field<NodaFacingType>("facing", resolve: context => context.Source.facing);
             Field(c => c.folded);
             Field(c => c.kind);
-            Field(c => c.name);
+            Field(c => c.title);
             Field<NodaPositionType>("position", resolve: context => context.Source.position);
             Field<ListGraphType<NodaPropertyType>>("properties", resolve: context => context.Source.properties);
             Field<NodaNodeShapeEnum>("shape", resolve: context => context.Source.shape);

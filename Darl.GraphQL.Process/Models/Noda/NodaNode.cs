@@ -7,9 +7,7 @@ namespace Darl.GraphQL.Models.Models.Noda
 {
     public enum NodaNodeShapes { Ball, Box, Hourglass};
     public class NodaNode : NodaElement
-    {
-        public string name { get; set; } = "";
-        public NodaFacing facing { get; set; } = new NodaFacing();
+    {        public NodaFacing facing { get; set; } = new NodaFacing();
         public NodaPosition position { get; set; } = NodaPosition.Random();
         public NodaNodeShapes shape { get; set; }
         public bool collapsed { get; set; } = false;
