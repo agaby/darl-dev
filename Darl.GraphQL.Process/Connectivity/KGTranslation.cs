@@ -846,7 +846,7 @@ namespace Darl.GraphQL.Models.Connectivity
             foreach(var k in model.vertices.Keys)
             {
                 var tNode = model.vertices[k];
-                var n = new NodaNode { name = tNode.name, uuid = k, properties = Convert(tNode.properties), tone = colourMap[tNode.lineage] };
+                var n = new NodaNode { name = tNode.name, uuid = k, properties = Convert(tNode.properties), tone = colourMap[tNode.lineage], size = 5.0, shape = NodaNodeShapes.Ball };
                 nodadoc.nodes.Add(n);
             }
             foreach (var k in model.edges.Keys)

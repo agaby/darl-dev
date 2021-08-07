@@ -8,6 +8,8 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
 {
     public class Point
     {
+
+        public double mass = 1.0;
         public Point(NodaPosition iPosition, NodaPosition iVelocity, NodaPosition iAcceleration, NodaNode iNode)
         {
             position=iPosition;
@@ -58,17 +60,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
 
         public NodaPosition position { get; set; }
         public NodaNode node { get; private set; }
-        public double mass
-        {
-            get
-            {
-                return node.mass;
-            }
-            private set
-            {
-                node.mass = value;
-            }
-        }
+
         public NodaPosition velocity { get; private set; }
         public NodaPosition acceleration { get; private set; }
      }

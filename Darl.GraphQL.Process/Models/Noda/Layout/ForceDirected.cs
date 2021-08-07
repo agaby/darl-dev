@@ -183,28 +183,8 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
                         NodaPosition d = point1.position - point2.position;
                         double distance = d.Magnitude() + 0.1;
                         NodaPosition direction = d.Normalize();
-                        if (n1.Pinned && n2.Pinned)
-                        {
-                            point1.ApplyForce(direction * 0.0);
-                            point2.ApplyForce(direction * 0.0);
-                        }
-                        else if (n1.Pinned)
-                        {
-                            point1.ApplyForce(direction * 0.0);
-                            point2.ApplyForce((direction * Repulsion) / (distance * -1.0));
-                        }
-                        else if (n2.Pinned)
-                        {
-                            point1.ApplyForce((direction * Repulsion) / (distance));
-                            point2.ApplyForce(direction * 0.0f);
-                        }
-                        else
-                        {
-
-                            point1.ApplyForce((direction * Repulsion) / (distance * 0.5));
-                            point2.ApplyForce((direction * Repulsion) / (distance * -0.5));
-                        }
-
+                        point1.ApplyForce((direction * Repulsion) / (distance * 0.5));
+                        point2.ApplyForce((direction * Repulsion) / (distance * -0.5));
                     }
                 }
             }
@@ -218,28 +198,8 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
                 NodaPosition d = spring.point2.position - spring.point1.position;
                 double displacement = spring.Length - d.Magnitude();
                 NodaPosition direction = d.Normalize();
-
-                if (spring.point1.node.Pinned && spring.point2.node.Pinned)
-                {
-                    spring.point1.ApplyForce(direction * 0.0f);
-                    spring.point2.ApplyForce(direction * 0.0f);
-                }
-                else if (spring.point1.node.Pinned)
-                {
-                    spring.point1.ApplyForce(direction * 0.0f);
-                    spring.point2.ApplyForce(direction * (spring.K * displacement));
-                }
-                else if (spring.point2.node.Pinned)
-                {
-                    spring.point1.ApplyForce(direction * (spring.K * displacement * -1.0f));
-                    spring.point2.ApplyForce(direction * 0.0f);
-                }
-                else
-                {
-                    spring.point1.ApplyForce(direction * (spring.K * displacement * -0.5f));
-                    spring.point2.ApplyForce(direction * (spring.K * displacement * 0.5f));
-                }
-
+                spring.point1.ApplyForce(direction * (spring.K * displacement * -0.5f));
+                spring.point2.ApplyForce(direction * (spring.K * displacement * 0.5f));
 
             }
         }
@@ -249,16 +209,12 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
             foreach (NodaNode n in graph.nodes)
             {
                 Point point = GetPoint(n);
-                if (!point.node.Pinned)
-                {
-                    NodaPosition direction = point.position * -1.0;
-                    //point.ApplyForce(direction * ((float)Math.Sqrt((double)(Repulsion / 100.0f))));
-
-
-                    double displacement = direction.Magnitude();
-                    direction = direction.Normalize();
-                    point.ApplyForce(direction * (Stiffness * displacement * 0.4));
-                }
+                NodaPosition direction = point.position * -1.0;
+                //point.ApplyForce(direction * ((float)Math.Sqrt((double)(Repulsion / 100.0f))));
+                double displacement = direction.Magnitude();
+                direction = direction.Normalize();
+                point.ApplyForce(direction * (Stiffness * displacement * 0.4));
+          
             }
         }
 

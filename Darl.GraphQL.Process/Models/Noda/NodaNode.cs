@@ -14,14 +14,5 @@ namespace Darl.GraphQL.Models.Models.Noda
         public NodaNodeShapes shape { get; set; }
         public bool collapsed { get; set; } = false;
 
-
-        #region Layout
-        [JsonIgnore]
-        public bool Pinned { get; set; } = false;
-        [JsonIgnore]
-        public double mass { get; set; } = 1.0;
-
-        #endregion
-
     }
 }
