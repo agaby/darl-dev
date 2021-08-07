@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace Darl.GraphQL.Models.Models.Noda
 {
-    public enum NodaNodeShapes { Ball, Box};
+    public enum NodaNodeShapes { Ball, Box, Hourglass};
     public class NodaNode : NodaElement
     {
         public string name { get; set; } = "";

@@ -861,6 +861,14 @@ namespace Darl.GraphQL.Models.Connectivity
             var fd = new ForceDirected3D(nodadoc, 81.76, 40000.0, 0.5);
             for (int n = 0; n < 100; n++)
                 fd.Calculate(0.01);
+            var bb = fd.GetBoundingBox();
+            var diagonal = bb.topRightBack - bb.bottomLeftFront;
+            var length = diagonal.Magnitude();
+            var scale = 2.0 / length; //fit into a 2 unit diagonal bounding box
+            foreach(var n in nodadoc.nodes)
+            {
+                n.position = n.position * scale;
+            }
             return JsonConvert.SerializeObject(nodadoc);
         }
 

@@ -28,6 +28,7 @@
     <None Remove="learning_outcomes.txt" />
     <None Remove="msr_paraphrase_train.txt" />
     <None Remove="musicbusinessworldwide.json" />
+    <None Remove="nodaExample.json" />
     <None Remove="numeric_test_display_rule.darl" />
     <None Remove="WM_MusicIndustry.json" />
   </ItemGroup>
@@ -47,6 +48,7 @@
     <EmbeddedResource Include="learning_outcomes.txt" />
     <EmbeddedResource Include="msr_paraphrase_train.txt" />
     <EmbeddedResource Include="musicbusinessworldwide.json" />
+    <EmbeddedResource Include="nodaExample.json" />
     <EmbeddedResource Include="numeric_test_display_rule.darl" />
     <EmbeddedResource Include="WM_MusicIndustry.json" />
   </ItemGroup>

@@ -18,7 +18,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
 
     public class BoundingBox
     {
-        public static double defaultBB = 2.0;
+        public static double defaultBB = 0.1;
         public static double defaultPadding = 0.07; // ~5% padding
 
         public BoundingBox()
