@@ -14,7 +14,9 @@ namespace Darl.GraphQL.Models.Schemata
             Description = "A time representation that includes BC as well as AD times";
             Field(c => c.raw, true);
             Field(c => c.dateTime, true);
+            Field(c => c.dateTimeOffset, true);
             Field(c => c.precision, true);
+            Field(c => c.y, true);
         }
     }
 }

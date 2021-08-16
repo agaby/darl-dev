@@ -11,7 +11,7 @@ namespace Darl.GraphQL.Models.Models
 
         public double precision { get; set; }
 
-        public DateTime dateTime { get; set; }
+        public DateTimeOffset dateTimeOffset { get; set; }
 
         public int year { get; set; }
 

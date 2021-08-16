@@ -137,7 +137,7 @@ $(async function () {
     realkgraphdata = graph('query kgd($model: String!){getRealKGDisplay(graphName: $model){nodes{data{ id label lineage sublineage externalId}} edges{ data{ id label source target}}}}');
     virtualkgraphdata = graph('query vkgd($model: String!){getVirtualKGDisplay(graphName: $model){nodes{data{ id lineage parent label}} edges{ data{ id label source target}}}}');
     recognitionkgraphdata = graph('query rkgd($model: String!){getRecognitionKGDisplay(graphName: $model){nodes{data{ id label lineage parent label}} edges{ data{ id label source target}}}}');
-    realobjectdata = graph('query rod($model: String! $id: String!){getGraphObjectById(graphName: $model id: $id){name lineage subLineage id externalId properties {name lineage value type confidence}}}');
+    realobjectdata = graph('query rod($model: String! $id: String!){getGraphObjectById(graphName: $model id: $id){name lineage subLineage id externalId properties {name lineage value type confidence}, existence{dateTimeOffset dateTime}}}');
     realConnectiondata = graph('query rcd($model: String! $id: String!){getGraphConnectionById(graphName: $model id: $id){name lineage id weight inferred }}');
     virtualobjectdata = graph('query vod($model: String! $lineage: String!){getVirtualObjectByLineage(graphName: $model lineage: $lineage){name lineage id properties {name lineage value type confidence}}}');
     recognitionobjectdata = graph('query recod($model: String! $id: String!){getRecognitionObjectById(graphName: $model id: $id){name lineage id properties {name lineage value type confidence}}}');
@@ -552,99 +552,194 @@ async function loadGraphs() {
                             ele = ele.data("mainNode");
                         }
                         var obj = await realobjectdata({ model: mdname, id: ele.id() });
-                        if (obj) {
-                            if (obj.getGraphObjectById.existence) {
-                                for (var n = 0; n < obj.getGraphObjectById.existence.length && n < 4; n++) {
-                                    if (n == 0)
-                                        $('#time0').val(obj.existence[n]);
-                                    else if (n == 1)
-                                        $('#time1').val(obj.existence[n]);
-                                    else if (n == 2)
-                                        $('#time2').val(obj.existence[n]);
-                                    else if (n == 3)
-                                        $('#time3').val(obj.existence[n]);
-                                }
+                        if (obj)
+                        {
+                            if (dateDisplay === "Historic") {
+                                $.MessageBox({
+                                    input: {
+                                        date1: {
+                                            type: "number",
+                                            label: "Year 1, -ve for BC"
+                                        },
+                                        time1: {
+                                            type: "select",
+                                            label: "Season 1",
+                                            options: ["Winter", "Spring", "Summer", "Fall"]
+                                        },
+                                        date2: {
+                                            type: "number",
+                                            label: "Year 2, -ve for BC"
+                                        },
+                                        time2: {
+                                            type: "select",
+                                            label: "Season 2",
+                                            options: ["Winter", "Spring", "Summer", "Fall"]
+                                        },
+                                        date3: {
+                                            type: "number",
+                                            label: "Year 3, -ve for BC"
+                                        },
+                                        time3: {
+                                            type: "select",
+                                            label: "Season 3",
+                                            options: ["Winter", "Spring", "Summer", "Fall"]
+                                        },
+                                        date4: {
+                                            type: "number",
+                                            label: "Year 4, -ve for BC"
+                                        },
+                                        time4: {
+                                            type: "select",
+                                            label: "Season 4",
+                                            options: ["Winter", "Spring", "Summer", "Fall"]
+                                        },
+                                        dummy_caption: {
+                                            type: "caption",
+                                            message: "One value constitutes an event, two an interval, <br/>three a fuzzy event and four a fuzzy interval.<br/>Entries will be sorted in time-order before use."
+                                        }
+                                    },
+                                    message: "Set or change the times of this element's existence",
+                                    buttonDone: "Change",
+                                    buttonFail: "Cancel",
+                                    queue: false
+                                }).done(function (data) {
+                                    var times = new Array();
+                                    if (data.date1) {
+                                        if (data.time1) {
+                                            times.push({ dateTimeOffset: data.date1 + "T" + data.time1 });
+                                        }
+                                        else {
+                                            times.push({ dateTimeOffset: data.date1 });
+                                        }
+                                    }
+                                    if (data.date2) {
+                                        if (data.time2) {
+                                            times.push({ dateTimeOffset: data.date2 + "T" + data.time2 });
+                                        }
+                                        else {
+                                            times.push({ dateTimeOffset: data.date2 });
+                                        }
+                                    }
+                                    if (data.date3) {
+                                        if (data.time3) {
+                                            times.push({ dateTimeOffset: data.date3 + "T" + data.time3 });
+                                        }
+                                        else {
+                                            times.push({ dateTimeOffset: data.date3 });
+                                        }
+                                    }
+                                    if (data.date4) {
+                                        if (data.time4) {
+                                            times.push({ dateTimeOffset: data.date4 + "T" + data.time4 });
+                                        }
+                                        else {
+                                            times.push({ dateTimeOffset: data.date4 });
+                                        }
+                                    }
+                                    try {
+                                        await updateGraphObject({ name: mdname, obj: { id: ele.id(), existence: times, lineage: ele.data('lineage') } });
+                                    }
+                                    catch (err) {
+                                        HandleError(err);
+                                    }
+                                    console.log(data);
+                                });
                             }
-                            $.MessageBox({
-                                input: {
-                                    date1: {
-                                        type: "date",
-                                        label: "Date 1"
+                            else {
+                                $.MessageBox({
+                                    input: {
+                                        date1: {
+                                            type: "date",
+                                            label: "Date 1",
+                                            defaultValue: HandleDates(obj.getGraphObjectById.existence, 0)
+                                        },
+                                        time1: {
+                                            type: "time",
+                                            label: "Time 1",
+                                            defaultValue: HandleTimes(obj.getGraphObjectById.existence, 0)
+                                        },
+                                        date2: {
+                                            type: "date",
+                                            label: "Date 2",
+                                            defaultValue: HandleDates(obj.getGraphObjectById.existence, 1)
+                                        },
+                                        time2: {
+                                            type: "time",
+                                            label: "Time 2",
+                                            defaultValue: HandleTimes(obj.getGraphObjectById.existence, 1)
+                                        },
+                                        date3: {
+                                            type: "date",
+                                            label: "Date 3",
+                                            defaultValue: HandleDates(obj.getGraphObjectById.existence, 2)
+                                        },
+                                        time3: {
+                                            type: "time",
+                                            label: "Time 3",
+                                            defaultValue: HandleTimes(obj.getGraphObjectById.existence, 2)
+                                        },
+                                        date4: {
+                                            type: "date",
+                                            label: "Date 4",
+                                            defaultValue: HandleDates(obj.getGraphObjectById.existence, 3)
+                                        },
+                                        time4: {
+                                            type: "time",
+                                            label: "Time 4",
+                                            defaultValue: HandleTimes(obj.getGraphObjectById.existence, 3)
+                                        },
+                                        dummy_caption: {
+                                            type: "caption",
+                                            message: "One value constitutes an event, two an interval, <br/>three a fuzzy event and four a fuzzy interval.<br/>Entries will be sorted in time-order before use."
+                                        }
                                     },
-                                    time1: {
-                                        type: "time",
-                                        label: "Time 1"
-                                    },
-                                    date2: {
-                                        type: "date",
-                                        label: "Date 2"
-                                    },
-                                    time2: {
-                                        type: "time",
-                                        label: "Time 2"
-                                    },
-                                    date3: {
-                                        type: "date",
-                                        label: "Date 3"
-                                    },
-                                    time3: {
-                                        type: "time",
-                                        label: "Time 3"
-                                    },
-                                    date4: {
-                                        type: "date",
-                                        label: "Date 4"
-                                    },
-                                    time4: {
-                                        type: "time",
-                                        label: "Time 4"
-                                    },
-                                    dummy_caption: {
-                                        type: "caption",
-                                        message: "One value constitutes an event, two an interval, <br/>three a fuzzy event and four a fuzzy interval.<br/>Entries will be sorted in time-order before use."
+                                    message: "Set or change the times of this element's existence",
+                                    queue: false,
+                                    buttonDone: "Change",
+                                    buttonFail: "Cancel"
+                                }).done(async function (data) {
+                                    var times = new Array();
+                                    if (data.date1) {
+                                        if (data.time1) {
+                                            times.push({ dateTimeOffset: data.date1 + "T" + data.time1 });
+                                        }
+                                        else {
+                                            times.push({ dateTimeOffset: data.date1 });
+                                        }
                                     }
-                                },
-                                message: "Set or change the times of this element's existence",
-                                queue: false,
-                                buttonDone: "Change",
-                                buttonFail: "Cancel"
-                            }).done(async function (data) {
-                                var times = new Array();
-                                if (data.date1) {
-                                    if (data.time1) {
-                                        times.push(date1 + time1);
+                                    if (data.date2) {
+                                        if (data.time2) {
+                                            times.push({ dateTimeOffset: data.date2 + "T" + data.time2 });
+                                        }
+                                        else {
+                                            times.push({ dateTimeOffset: data.date2 });
+                                        }
                                     }
-                                    else {
-                                        times.push(date1);
+                                    if (data.date3) {
+                                        if (data.time3) {
+                                            times.push({ dateTimeOffset: data.date3 + "T" + data.time3 });
+                                        }
+                                        else {
+                                            times.push({ dateTimeOffset: data.date3 });
+                                        }
                                     }
-                                }
-                                if (data.date2) {
-                                    if (data.time2) {
-                                        times.push(date2 + time2);
+                                    if (data.date4) {
+                                        if (data.time4) {
+                                            times.push({ dateTimeOffset: data.date4 + "T" + data.time4 });
+                                        }
+                                        else {
+                                            times.push({ dateTimeOffset: data.date4 });
+                                        }
                                     }
-                                    else {
-                                        times.push(date2);
+                                    try {
+                                        await updateGraphObject({ name: mdname, obj: { id: ele.id(), existence: times, lineage: ele.data('lineage') } });
                                     }
-                                }
-                                if (data.date3) {
-                                    if (data.time3) {
-                                        times.push(date3 + time3);
+                                    catch (err) {
+                                        HandleError(err);
                                     }
-                                    else {
-                                        times.push(date3);
-                                    }
-                                }
-                                if (data.date4) {
-                                    if (data.time4) {
-                                        times.push(date4 + time4);
-                                    }
-                                    else {
-                                        times.push(date4);
-                                    }
-                                }
-                                await updateGraphObject({ name: mdname, conn: { id: ele.id(), existence: times, lineage: ele.data('lineage') } });
-                                console.log(data);
-                            });
+                                    console.log(data);
+                                });
+                            }
                         }
                     }
                 },
@@ -2920,6 +3015,24 @@ function AddOutGoingText(text) {
         '<p>' + text + '</p>' +
         '</div>' +
         '</div>');
+}
+
+function HandleDates(existence, index) {
+    if (existence === null)
+        return null;
+    if (existence.length <= index)
+        return null;
+    return existence[index].dateTime;
+}
+
+function HandleTimes(existence, index) {
+    if (existence === null)
+        return null;
+    if (existence.length <= index)
+        return null;
+    var sep = existence[index].dateTimeOffset.indexOf('T');
+    var res = existence[index].dateTimeOffset.substring(sep + 1, 9 + sep);
+    return res;
 }
 
 // takes text from a chat message box or chat button press.

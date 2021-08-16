@@ -890,7 +890,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         private NodaProperty Convert(GraphAttribute att)
         {
-            return new NodaProperty { name = att.name, text = att.value, uuid = att.id, notes = JsonConvert.SerializeObject(att) };
+            return new NodaProperty { name = att.name, text = string.IsNullOrEmpty(att.value) ? att.name : att.value, uuid = att.id, /*notes = JsonConvert.SerializeObject(att)*/ };
         }
 
         private DarlUser Convert(KnowledgeState ks, string objectId)
