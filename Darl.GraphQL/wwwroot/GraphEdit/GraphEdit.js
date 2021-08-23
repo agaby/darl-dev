@@ -70,6 +70,9 @@ var labels = "externalId";
 var inferenceTime = "Now";
 var descriptions;
 var initialTexts;
+var dateDisplays;
+var inferenceTimes;
+var fixedTimes;
 var virtualLabels = "label";
 var recLabels = "label";
 
@@ -100,7 +103,6 @@ $(async function () {
     }
     // Get real window settings
     var real = window.localStorage.getItem(realStorageName);
-    dateDisplay = (real ? (real.dateDisplay ? real.dateDisplay : "Recent") : "Recent");
     authoritative = (real ? (real.authoritative ? real.authoritative : true) : true);
     labels = (real ? (real.labels ? real.labels : "externalId") : "externalId");
 
@@ -132,8 +134,8 @@ $(async function () {
         }
     }
 
-    allkgmodels = graph(`{ kgraphs { name description initialText }}`);
-    kgraph = graph('query kg($name: String!){kGraphByName(name: $name){name description initialText}}');
+    allkgmodels = graph(`{ kgraphs { name description initialText dateDisplay inferenceTime fixedTime{raw dateTimeOffset dateTime}}}`);
+    kgraph = graph('query kg($name: String!){kGraphByName(name: $name){name description initialText dateDisplay inferenceTime fixedTime{raw dateTimeOffset dateTime}}}');
     realkgraphdata = graph('query kgd($model: String!){getRealKGDisplay(graphName: $model){nodes{data{ id label lineage sublineage externalId}} edges{ data{ id label source target}}}}');
     virtualkgraphdata = graph('query vkgd($model: String!){getVirtualKGDisplay(graphName: $model){nodes{data{ id lineage parent label}} edges{ data{ id label source target}}}}');
     recognitionkgraphdata = graph('query rkgd($model: String!){getRecognitionKGDisplay(graphName: $model){nodes{data{ id label lineage parent label}} edges{ data{ id label source target}}}}');
@@ -175,16 +177,22 @@ $(async function () {
     defaultRule = graph('query dr($name: String! $id: String! $lineage: String!){getSuggestedRuleset(graphName: $name objectId: $id lineage: $lineage)}');
     getks = graph('query gks($id: String! $name: String!){getKnowledgeState(id: $id graphName: $name external: true){knowledgeGraphName data {name value {name lineage value confidence type }}}}')
     deletekg = graph('mutation dkg($name: String!){deleteKG(name: $name)}');
-    updatekg = graph('mutation ukg($name: String! $update: KGraphUpdate!){updateKGraphMetadata(name: $name update: $update){name description}}')
+    updatekg = graph('mutation ukg($name: String! $update: KGraphUpdate!){updateKGraphMetadata(name: $name update: $update){name description dateDisplay inferenceTime fixedTime{raw dateTimeOffset dateTime precision}}}')
 
     if (mdname !== null) { // pre-loaded
         $('#fileHandling').addClass('d-none');
         descriptions = {};
         initialTexts = {};
+        dateDisplays = {};
+        inferenceTimes = {};
+        fixedTimes = {};
         try {
             var kgmeta = await kgraph({ name: mdname });
             descriptions[mdname] = kgmeta.kGraphByName.description;
             initialTexts[mdname] = kgmeta.kGraphByName.initialText;
+            dateDisplays[mdname] = kgmeta.kGraphByName.dateDisplay;
+            inferenceTimes[mdname] = kgmeta.kGraphByName.inferenceTime;
+            fixedTimes[mdname] = kgmeta.kGraphByName.fixedTime;
         }
         catch (err) {
             window.location.replace("/index");
@@ -350,10 +358,16 @@ async function updateDropdown() {
         dropdown.prop('selectedIndex', 0);
         descriptions = {};
         initialTexts = {};
+        dateDisplays = {};
+        inferenceTimes = {};
+        fixedTimes = {};
         $.each(rs.kgraphs, function (key, entry) {
             dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
             descriptions[entry.name] = entry.description;
             initialTexts[entry.name] = entry.initialText;
+            dateDisplays[entry.name] = entry.dateDisplay;
+            inferenceTimes[entry.name] = entry.inferenceTime;
+            fixedTimes[entry.name] = entry.fixedTime;
         });
     }
     catch (err) {
@@ -554,7 +568,7 @@ async function loadGraphs() {
                         var obj = await realobjectdata({ model: mdname, id: ele.id() });
                         if (obj)
                         {
-                            if (dateDisplay === "Historic") {
+                            if (dateDisplays[mdname] === "Historic") {
                                 $.MessageBox({
                                     input: {
                                         date1: {
@@ -602,7 +616,7 @@ async function loadGraphs() {
                                     buttonDone: "Change",
                                     buttonFail: "Cancel",
                                     queue: false
-                                }).done(function (data) {
+                                }).done(async function (data) {
                                     var times = new Array();
                                     if (data.date1) {
                                         if (data.time1) {
@@ -1582,10 +1596,16 @@ async function loadGraphs() {
         $('#real-time').click(function () {
             $.MessageBox({
                 input: {
+                    dateDisplay: {
+                        type: "select",
+                        label: "Select how dates are displayed",
+                        options: ["Recent", "Historic"],
+                        defaultValue: dateDisplays[mdname] === "RECENT" ? "Recent" : "Historic"
+                    },
                     inferenceTime:
                     {
                         type: "select",
-                        defaultValue: inferenceTime,
+                        defaultValue: inferenceTimes[mdname] === "FIXED" ? "Fixed" : "Now",
                         options: ["Now","Fixed"]
                     }
                 },
@@ -1594,51 +1614,90 @@ async function loadGraphs() {
                 buttonFail: "Cancel",
                 queue: false,
                 filterDone: function (data) {
-                    if (data.inferenceTime === "") return "Select an inference time or cancel.";
+                    if (data.inferenceTime === "" || data.dateDisplay === "") return "Select an inference time and display format or cancel.";
                 }
             }).done(async function (data) {
-                inferenceTime = data.inferenceTime;
-                if (inferenceTime === "Fixed") { //get the fixed time
-                    if (dateDisplay === "Historic") {
+                dateDisplays[mdname] = data.dateDisplay;
+                inferenceTimes[mdname] = data.inferenceTime;
+                if (inferenceTimes[mdname] === "Fixed") { //get the fixed time
+                    if (data.dateDisplay === "Historic") {
                         $.MessageBox({
                             input: {
-                                date: {
+                                year: {
                                     type: "number",
-                                    label: "Year, -ve for BC"
+                                    label: "Year, -ve for BC",
+                                    defaultValue: ConvertRawToYear(fixedTimes[mdname].raw)
                                 },
-                                time: {
+                                season: {
                                     type: "select",
                                     label: "season",
-                                    options: ["Winter", "Spring", "Summer", "Fall"]
+                                    options: ["Winter", "Spring", "Summer", "Fall"],
+                                    defaultValue: ConvertRawToSeason(fixedTimes[mdname].raw)
                                 }
                             },
                             message: "Fixed time for inference",
                             buttonDone: "Change",
                             buttonFail: "Cancel",
                             queue: false
-                        }).done(function (data) {
-
+                        }).done(async function (data) {
+                            var rawtime = ConvertHistoricDateTime(data.year, data.season);
+                            try {
+                                fixedTimes[mdname].raw = rawTime;
+                                await updatekg({ name: mdname, update: { fixedTime: { raw: rawtime }, inferenceTime: inferenceTimes[mdname] } });
+                            }
+                            catch (err) {
+                                HandleError(err);
+                            }
                         });
                     }
                     else { //standard format
+                        let timePart;
+                        let datePart;
+                        if (fixedTimes[mdname] !== null) {
+                            let sep = fixedTimes[mdname].dateTimeOffset.indexOf('T');
+                            timePart = fixedTimes[mdname].dateTimeOffset.substring(sep + 1, 9 + sep);
+                            datePart = fixedTimes[mdname].dateTimeOffset.substring(0, sep);
+                        }
                         $.MessageBox({
                             input: {
                                 date: {
                                     type: "date",
-                                    label: "Fixed Date"
+                                    label: "Fixed Date",
+                                    defaultValue: datePart
                                 },
                                 time: {
                                     type: "time",
-                                    label: "Fixed Time"
+                                    label: "Fixed Time",
+                                    defaultValue: timePart
                                 }
                             },
                             message: "Fixed time for inference",
                             queue: false,
                             buttonDone: "Change",
                             buttonFail: "Cancel",
-                        }).done(function (data) {
-
+                        }).done(async function (data) {
+                            try {
+                                if (data.time) {
+                                    fixedTimes[mdname] = { dateTimeOffset: data.date + "T" + data.time };
+                                    await updatekg({ name: mdname, update: { fixedTime: { dateTimeOffset: data.date + "T" + data.time }, inferenceTime: inferenceTimes[mdname], dateDisplay: dateDisplays[mdname] } });
+                                }
+                                else {
+                                    fixedTimes[mdname] = { dateTimeOffset: data.date };
+                                    await updatekg({ name: mdname, update: { fixedTime: { dateTimeOffset: data.date }, inferenceTime: inferenceTimes[mdname], dateDisplay: dateDisplays[mdname] } });
+                                }
+                            }
+                            catch (err) {
+                                HandleError(err);
+                            }
                         });
+                    }
+                }
+                else {
+                    try {
+                        await updatekg({ name: mdname, update: { inferenceTime: inferenceTimes[mdname], dateDisplay: dateDisplays[mdname] } });
+                    }
+                    catch (err) {
+                        HandleError(err);
                     }
                 }
             });
@@ -1647,12 +1706,6 @@ async function loadGraphs() {
         $('#real-settings').click(function () {
             $.MessageBox({
                 input: {
-                    dateDisplay: {
-                        type: "select",
-                        label: "Select how dates are displayed",
-                        options: ["Recent", "Historic"],
-                        defaultValue: dateDisplay
-                    },
                     authoritative: {
                         type: "checkbox",
                         label: "New lineage relationships are authoritative.",
@@ -3052,6 +3105,37 @@ async function HandleChatText(text) {
 
 function ClearChatText() {
     $('.msg_history').empty();
+}
+
+function ConvertHistoricDateTime(year, season) {
+    let secondsPerYear = 31556952.0;
+    if (season === null || season === "Winter") {
+        return year * secondsPerYear;
+    }
+    else if (season === "Spring") {
+        return year * secondsPerYear + secondsPerYear / 4.0;
+    }
+    else if (season === "Summer") {
+        return year * secondsPerYear + secondsPerYear / 2.0;
+    }
+    return year * secondsPerYear + secondsPerYear * 0.75;
+}
+
+function ConvertRawToSeason(raw) {
+    let secondsPerYear = 31556952.0;
+    var sVal = raw % secondsPerYear;
+    if (sVal > secondsPerYear * 0.75)
+        return "Fall";
+    if (sVal > secondsPerYear * 0.5)
+        return "Summer";
+    if (sVal > secondsPerYear * 0.25)
+        return "Spring";
+    return "Winter";
+}
+
+function ConvertRawToYear(raw) {
+    let secondsPerYear = 31556952.0;
+    return floor(raw / secondsPerYear);
 }
 
 async function UpdateKS() {

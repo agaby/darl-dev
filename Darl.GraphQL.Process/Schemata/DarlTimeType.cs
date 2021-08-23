@@ -16,7 +16,6 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.dateTime, true);
             Field(c => c.dateTimeOffset, true);
             Field(c => c.precision, true);
-            Field(c => c.y, true);
         }
     }
 }
