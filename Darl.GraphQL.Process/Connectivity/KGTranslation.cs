@@ -18,6 +18,9 @@ using Microsoft.Azure.Storage.Queue;
 using Darl.GraphQL.Models.Models.Noda;
 using Darl.GraphQL.Process.Models.Noda.Layout;
 using System.Drawing;
+using DarlCommon;
+using DarlCompiler;
+using Darl.Thinkbase.Meta;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -32,6 +35,9 @@ namespace Darl.GraphQL.Models.Connectivity
         private IMetaStructureHandler _meta;
         private IProducts _prods;
         private ICheckEmail _checkEmail;
+        private ILicensing _licensing;
+        private DarlMetaRunTime metaRuntime = new DarlMetaRunTime(new MetaStructureHandler());
+
 
         //fill in with single call to model at startup
         private string personObjectId { get; set; } = string.Empty;
@@ -64,7 +70,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private static string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
         private static string existenceLineage = "noun:01,5,03,3,018";//life
 
-        public KGTranslation(ILogger<KGTranslation> logger, IConfiguration config, IGraphProcessing graph, IMetaStructureHandler meta, IProducts prods, ICheckEmail checkEmail)
+        public KGTranslation(ILogger<KGTranslation> logger, IConfiguration config, IGraphProcessing graph, IMetaStructureHandler meta, IProducts prods, ICheckEmail checkEmail, ILicensing licensing)
         {
             _config = config;
             _logger = logger;
@@ -72,6 +78,7 @@ namespace Darl.GraphQL.Models.Connectivity
             _meta = meta;
             _prods = prods;
             _checkEmail = checkEmail;
+            _licensing = licensing;
             backofficeKG = _config["AppSettings:BackOfficeKG"];
             backofficeKGComp = _config["AppSettings:boaiuserid"] + '_' + backofficeKG;
             GetObjectIds().Wait();
@@ -748,7 +755,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public Task<bool> CheckKey(string userId, string key)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(_licensing.CheckKey(key));
         }
 
         #endregion
@@ -871,6 +878,65 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return JsonConvert.SerializeObject(nodadoc, new Newtonsoft.Json.Converters.StringEnumConverter());
         }
+
+        public Task<string> GetTypeWordForLineage(string lineage, string isoLanguage = "en")
+        {
+            try
+            {
+                if (LineageLibrary.lineages.ContainsKey(lineage))
+                    return Task.FromResult(LineageLibrary.lineages[lineage].typeWord);
+                return Task.FromResult(string.Empty);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Bad lineage lookup for lineage {lineage} message: {ex.Message}");
+                return Task.FromResult(string.Empty);
+            }
+        }
+
+        public async Task<List<LineageRecord>> GetLineagesForWord(string word, string isoLanguage = "en")
+        {
+            try
+            {
+                var offset = 0;
+                return LineageLibrary.WordRecognizer(new List<string> { word }, ref offset, true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Bad lineage lookup for word {word} message: {ex.Message}");
+                return new List<LineageRecord>();
+            }
+        }
+
+        public Task<List<DarlLintView>> LintDarlMeta(string darl)
+        {
+            var errorList = new List<DarlLintView>();
+            int rowoffset = 0;
+            int coloffset = 0;
+            if (!string.IsNullOrEmpty(darl))
+            {
+                try
+                {
+                    var tree = metaRuntime.CreateTreeEdit(darl);
+                    if (tree.HasErrors())
+                    {
+                        foreach (var pm in tree.ParserMessages)
+                        {
+                            errorList.Add(new DarlLintView { line_no = pm.Location.Line + 1 - rowoffset, column_no_start = pm.Location.Column + 1 - coloffset, column_no_stop = pm.Location.Column + 2 - coloffset, message = pm.Message, severity = pm.Level == ErrorLevel.Error ? "error" : "warning" });
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+            }
+            return Task.FromResult(errorList);
+        }
+
+
+
 
 
         #region private

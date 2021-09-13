@@ -9,7 +9,7 @@ We live in an analog world, and ignore the fact that all machine computation is 
 
 The young, bought up in a digital world, imagine that digital models can be indistinguishable from reality.
 
-We assume that the differences between reality and a 64 bit float representation will always be negligible. There are many cicumstance where this is not true, especially where modeled systems exhibit Chaos.
+We assume that the differences between reality and a 64 bit float representation will always be negligible. There are many circumstance where this is not true, especially where modeled systems exhibit Chaos.
 
 All measurements from the analog world contain a tolerance. Mechanical engineers and those computer scientists old enough to have used an analog computer are very aware of this.
 

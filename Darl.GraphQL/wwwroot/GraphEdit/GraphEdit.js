@@ -89,7 +89,7 @@ $(async function () {
     });
     var existing = window.localStorage.getItem(settingsStorageName);
     existing = JSON.parse(existing);
-    var url = "https://darl.dev";
+    var url = window.location.origin;
     var key = "";
     if (existing) {
         if (existing.url) {

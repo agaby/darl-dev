@@ -25,9 +25,11 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             _config = config;
             _logger = logger;
+
             var csa = CloudStorageAccount.Parse(_config["AppSettings:StorageConnectionString"]);
             _blob = csa.CreateCloudBlobClient();
             _container = _blob.GetContainerReference(_config["AppSettings:BlobContainer"]);
+
         }
 
         public async Task<byte[]> Read(string name)

@@ -97,23 +97,6 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             ).AuthorizeWith("AdminPolicy");
 
-            FieldAsync<BooleanGraphType>(
-                "createSupportRequest",
-                "Create a support request in the darl support system",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "customerName", Description = "Person reporting the bug or request" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "customerEmail", Description = "Email for Dr Andy to respond to" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "text", Description = "Request or bug text" }
-                ),
-                resolve: async context =>
-                {
-                    var customerName = context.GetArgument<string>("customerName");
-                    var customerEmail = context.GetArgument<string>("customerEmail");
-                    var text = context.GetArgument<string>("text");
-                    return await context.TryAsyncResolve(
-                        async c => await connectivity.CreateSupportRequest(customerName, customerEmail, text, _config["AppSettings:AzureProjectForWorkItem"]));
-                }
-            );
             FieldAsync<IntGraphType>(
                 "mailshot",
                 "send a mailshot",

@@ -94,7 +94,7 @@ namespace Darl.GraphQL.Test
             var conn = new Mock<IConnectivity>();
             var trans = new Mock<IKGTranslation>();
             cache.Setup(a => a.GetAsync(It.IsAny<string>(), default)).Returns(Task.FromResult<byte[]>(null));
-            _primitives = new BlobGraphPrimitives(new List<IBlobConnectivity> { blob }, cache.Object, conn.Object, bgplogger.Object);
+            _primitives = new BlobGraphPrimitives(blob, cache.Object, conn.Object, bgplogger.Object);
             _graph = new GraphProcessing(_primitives, glogger.Object,meta.Object);
             _graphStore = new GraphLocalStore(_config,logger.Object, context.Object, _graph);
         }

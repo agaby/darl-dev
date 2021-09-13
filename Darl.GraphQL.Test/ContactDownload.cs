@@ -58,7 +58,7 @@ namespace Darl.GraphQL.Test
             var cache = new Mock<IDistributedCache>();
             context.Setup(a => a.HttpContext.User.Identity.Name).Returns(_config["userId"]);
             var licensing = new Mock<ILicensing>();
-            _conv = new CosmosDBConnectivity(_config, connLogger.Object, licensing.Object, cache.Object);
+            _conv = new CosmosDBConnectivity(_config, connLogger.Object);
 
         }
 

@@ -1,4 +1,5 @@
-﻿using Standard.Licensing;
+﻿using Microsoft.Extensions.Configuration;
+using Standard.Licensing;
 using Standard.Licensing.Validation;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,17 @@ namespace Darl.GraphQL.Models.Connectivity
     public class ProductLicensing : ILicensing
     {
 
-        private static string publicKey = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEv5iZM5k8XaSHaEg7g7IBAQKAGgdjt5ePjWXWJwLJnYgiotX/uYt4uKrimOsz5jR5U5b+sG+EuT9d3hHRZld/UQ==";
-        private static string privateKey = "MHcwIwYKKoZIhvcNAQwBAzAVBBB3+q8AI4Ce3T0S9Bc3wSIkAgEKBFDM5PVY0MLQXN2ii1X7zsi6y/WBYiMgRa54eZndt6PFxBAuzod04TLuKKcTRMi//VhZPw31fWJNb6oeZl3LAO1BonlEXsNw9FCemjLbpGJPiA==";
-        private static string passPhrase = "excaliber";
+
+        public ProductLicensing(IConfiguration config)
+        {
+            publicKey = config["Licensing:publicLicenseGeneratorKey"];
+            privateKey = config["Licensing:privateLicenseGeneratorKey"];
+            passPhrase = config["Licensing:privateLicensePassPhrase"];
+        }
+
+        private string publicKey;
+        private string privateKey;
+        private string passPhrase;
 
         public string CreateKey(DateTime endDate, string company, string email)
         {

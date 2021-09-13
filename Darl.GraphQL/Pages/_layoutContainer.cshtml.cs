@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Darl.GraphQL.Pages
 {
-    public class _intelabs_layoutModel : PageModel
+    public class _layoutContainerModel : PageModel
     {
         public void OnGet()
         {

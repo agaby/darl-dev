@@ -1,123 +1,83 @@
-﻿using Darl.Forms;
-using Darl.GraphQL.Models.Middleware;
+﻿using Darl.Common;
 using Darl.GraphQL.Models.Models;
-using Darl.GraphQL.Models.Schemata;
 using Darl.Lineage;
-using Darl.Lineage.Bot;
 using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlCompiler;
 using DarlCompiler.Parsing;
 using DarlLanguage;
-using DarlLanguage.Processing;
-using GraphQL;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Options;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Stripe;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using VSTS.Net;
 using VSTS.Net.Models.WorkItems;
 using VSTS.Net.Types;
-using Default = Darl.GraphQL.Models.Models.Default;
-using MLModel = Darl.GraphQL.Models.Models.MLModel;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
     public class CosmosDBConnectivity : IConnectivity
     {
         private IConfiguration _config;
-        private ILicensing _licensing;
         public IMongoDatabase db { get; set; }
         private MongoClient mongoClient;
         private DarlRunTime runtime = new DarlRunTime();
-        private DarlMetaRunTime metaRuntime = new DarlMetaRunTime(new MetaStructureHandler());
-        private IDistributedCache _cache;
         private ILogger _logger;
         private string backgroundUserId;
 
-        public static readonly string botModelCollection = "botmodel";
-        public static readonly string mlModelCollection = "mlmodel";
-        public static readonly string botConnectionCollection = "botconnection";
-        public static readonly string botStateCollection = "botstate";
-        public static readonly string defaultResponseCollection = "defaultresponse";
-        public static readonly string rulesetCollection = "ruleset";
-        public static readonly string contactCollection = "contact";
-        public static readonly string userCollection = "user";
-        public static readonly string defaultCollection = "default";
-        public static readonly string collateralCollection = "collateral";
-        public static readonly string conversationCollection = "conversation";
-        public static readonly string updateCollection = "update";
-        public static readonly string documentCollection = "document";
         public static readonly string knowledgestateCollection = "kstate";
         public static readonly string kgraphcollection = "kgraph";
 
 
-        public CosmosDBConnectivity(IConfiguration config, ILogger<CosmosDBConnectivity> logger, ILicensing licensing, IDistributedCache cache)
+        public CosmosDBConnectivity(IConfiguration config, ILogger<CosmosDBConnectivity> logger)
         {
             _config = config;
             _logger = logger;
-            _licensing = licensing;
-            _cache = cache;
-            string connectionString = _config["AppSettings:MongoConnectionString"];
-            backgroundUserId = _config["AppSettings:boaiuserid"];
-            MongoClientSettings settings = MongoClientSettings.FromUrl(
-              new MongoUrl(connectionString)
-            );
-            settings.SslSettings =
-              new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
-            mongoClient = new MongoClient(settings);
-            db = mongoClient.GetDatabase(_config["AppSettings:MongoDatabase"]);
+            if(_config["DOTNET_RUNNING_IN_CONTAINER"] == "true")
+            {
+                var connectionString = _config["MONGOCONNECTION"];
+                mongoClient = new MongoClient(connectionString);
+                var databaseName = _config["MONGODATABASE"];
+                backgroundUserId = _config["SINGLEUSERID"];
+                db = mongoClient.GetDatabase(databaseName);
+            }
+            else
+            {
+                string connectionString = _config["AppSettings:MongoConnectionString"];
+                backgroundUserId = _config["AppSettings:boaiuserid"];
+                MongoClientSettings settings = MongoClientSettings.FromUrl(
+                  new MongoUrl(connectionString)
+                );
+                settings.SslSettings =
+                  new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
+                mongoClient = new MongoClient(settings);
+                db = mongoClient.GetDatabase(_config["AppSettings:MongoDatabase"]);
+            }
+
             BsonClassMap.RegisterClassMap<DarlVar>(cm =>
             {
                 cm.AutoMap();
                 cm.MapMember(c => c.categories).SetSerializer(new DictionaryInterfaceImplementerSerializer<Dictionary<string, double>>(DictionaryRepresentation.ArrayOfDocuments));
             });
-
-        }
-
-
-        public async Task<List<LineageRecord>> GetLineagesForWord(string word, string isoLanguage = "en")
-        {
-            try
+            BsonClassMap.RegisterClassMap<DarlTime>(cm =>
             {
-                var offset = 0;
-                return LineageLibrary.WordRecognizer(new List<string> { word }, ref offset, true);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Bad lineage lookup for word {word} message: {ex.Message}");
-                return new List<LineageRecord>();
-            }
-        }
+                cm.AutoMap();
+                cm.UnmapMember(m => m.dateTime);
+                cm.UnmapMember(m => m.dateTimeOffset);
+                cm.UnmapMember(m => m.year);
+                cm.UnmapMember(m => m.season);
+            });
 
-        public async Task<string> GetTypeWordForLineage(string lineage, string isoLanguage = "en")
-        {
-            try
-            {
-                if(LineageLibrary.lineages.ContainsKey(lineage))
-                    return LineageLibrary.lineages[lineage].typeWord;
-                return string.Empty;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Bad lineage lookup for lineage {lineage} message: {ex.Message}");
-                return string.Empty;
-            }
         }
 
         private async Task<List<DarlLanguage.Processing.DarlResult>> ProcessValues(List<DarlLanguage.Processing.DarlResult> Values, ParseTree tree)
@@ -136,34 +96,6 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return res;
         }
-
-        /// <summary>
-        /// Create a bug using the VSTS.Net library
-        /// </summary>
-        /// <remarks>Uses VSTS.Net because Microsoft products don't work with .net core</remarks>
-        /// <returns>nothing</returns>    
-        public async Task<bool> CreateSupportRequest(string customerName, string customerEmail, string text, string project)
-        {
-            try
-            { 
-                var urlBuilderFactory = new OnlineUrlBuilderFactory(_config["AppSettings:AzureDevopsAccount"]);
-                var client = VstsClient.Get(urlBuilderFactory, accessToken: _config["AppSettings:AzureDevopsPersonalAccessToken"]);
-                await client.CreateWorkItemAsync(project, "bug", new WorkItem
-                {
-                    Fields = new Dictionary<string, string> {
-                    {"System.Title", "User reported bug" },
-                    {"Microsoft.VSTS.TCM.ReproSteps",  $"Customer {customerName} with email {customerEmail} reported the following: {text}"}
-                }
-                });
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError(ex, "Error inside of CreateSupportRequest");
-                return false;
-            }
-            return true;
-        }
-
 
         public async Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state)
         {
@@ -335,18 +267,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return null;
         }
 
-
-        private Task ReportLicense(string email, string company, string key, DateTime endDate)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<bool> CheckKey(string userId, string key)
-        {
-            return _licensing.CheckKey(key);
-        }
-
-
         public async Task<List<KGraph>> GetKGraphsAsync(string userId)
         {
             var mc = db.GetCollection<KGraph>(kgraphcollection);
@@ -404,35 +324,6 @@ namespace Darl.GraphQL.Models.Connectivity
             var update = Builders<KGraph>.Update.Combine(updList);
             return await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<KGraph, KGraph> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
         }
-
-        public Task<List<DarlLintView>> LintDarlMeta(string darl)
-        {
-            var errorList = new List<DarlLintView>();
-            int rowoffset = 0;
-            int coloffset = 0;
-            if (!string.IsNullOrEmpty(darl))
-            {
-                try
-                {
-                    var tree = metaRuntime.CreateTreeEdit(darl);
-                    if (tree.HasErrors())
-                    {
-                        foreach (var pm in tree.ParserMessages)
-                        {
-                            errorList.Add(new DarlLintView { line_no = pm.Location.Line + 1 - rowoffset, column_no_start = pm.Location.Column + 1 - coloffset, column_no_stop = pm.Location.Column + 2 - coloffset, message = pm.Message, severity = pm.Level == ErrorLevel.Error ? "error" : "warning" });
-                        }
-                    }
-                }
-                catch(Exception ex)
-                {
-
-                }
- 
-            }
-            return Task.FromResult(errorList);
-        }
-
-
 
         public async Task<KGraph> DeleteKGraph(string userId, string name)
         {

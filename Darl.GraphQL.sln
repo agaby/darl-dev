@@ -9,6 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Test", "Darl.G
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Process", "Darl.GraphQL.Process\Darl.GraphQL.Process.csproj", "{2C5E0900-B138-401D-BABA-89B265AAF6FC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5157C27D-CA32-4014-AF9C-CA09C7BA1733}"
+	ProjectSection(SolutionItems) = preProject
+		.filenesting.json = .filenesting.json
+	EndProjectSection
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{228BADC3-1947-49E9-A08F-306E9EC4AD35}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +34,10 @@ Global
 		{2C5E0900-B138-401D-BABA-89B265AAF6FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C5E0900-B138-401D-BABA-89B265AAF6FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C5E0900-B138-401D-BABA-89B265AAF6FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{228BADC3-1947-49E9-A08F-306E9EC4AD35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{228BADC3-1947-49E9-A08F-306E9EC4AD35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{228BADC3-1947-49E9-A08F-306E9EC4AD35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{228BADC3-1947-49E9-A08F-306E9EC4AD35}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -12,7 +12,7 @@
   - [Ontologies and lineages](ontology.md)
   - [Fuzzy logic and sets](fuzzy_sets.md)
   - [Uncertainty](uncertainty.md)
-  - [Rule hierarchies](rule_hierarchies.md)
+  - [Knowledge and ignorance](knowledge_ignorance.md)
   - [Time Representation](time_representation.md)
   - [Aggregation](aggregation.md)
   - [Excluded middle](excluded_middle.md)

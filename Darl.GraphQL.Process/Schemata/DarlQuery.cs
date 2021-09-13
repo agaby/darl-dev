@@ -102,7 +102,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var isoLanguage = context.GetArgument<string>("isoLanguage");
                     var word = context.GetArgument<string>("word");
                     return await context.TryAsyncResolve(
-                         async c => await connectivity.GetLineagesForWord(word, isoLanguage));
+                         async c => await trans.GetLineagesForWord(word, isoLanguage));
                 });
 
             FieldAsync<StringGraphType>("getTypeWordForLineage",
@@ -115,7 +115,7 @@ namespace Darl.GraphQL.Models.Schemata
                     var isoLanguage = context.GetArgument<string>("isoLanguage");
                     var lineage = context.GetArgument<string>("lineage");
                     return await context.TryAsyncResolve(
-                         async c => await connectivity.GetTypeWordForLineage(lineage, isoLanguage));
+                         async c => await trans.GetTypeWordForLineage(lineage, isoLanguage));
                 });
 
             FieldAsync<ListGraphType<DarlUserType>>("usersByEmail",
@@ -462,7 +462,7 @@ namespace Darl.GraphQL.Models.Schemata
                 {
                     var key = context.GetArgument<string>("key");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await connectivity.CheckKey(userId, key));
+                    return await context.TryAsyncResolve(async c => await trans.CheckKey(userId, key));
                 }
             );
             FieldAsync<ListGraphType<MatchResultType>>(
@@ -606,7 +606,7 @@ namespace Darl.GraphQL.Models.Schemata
                 resolve: async context =>
                 {
                     var darl = context.GetArgument<string>("darl");
-                    return await context.TryAsyncResolve(async c => await connectivity.LintDarlMeta(darl));
+                    return await context.TryAsyncResolve(async c => await trans.LintDarlMeta(darl));
                 });
 
             FieldAsync<ListGraphType<LineageRecordType>>("getLineagesInKG", "Get existing lineages used for this element type in this KG. ",

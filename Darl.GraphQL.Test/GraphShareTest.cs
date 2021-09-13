@@ -105,9 +105,9 @@ namespace Darl.GraphQL.Test
             var clogger = new Mock<ILogger<CosmosDBConnectivity>>();
             var clicense = new Mock<ILicensing>();
             _meta = new MetaStructureHandler();
-            _conn = new CosmosDBConnectivity(_config, clogger.Object, clicense.Object, cache.Object);
+            _conn = new CosmosDBConnectivity(_config, clogger.Object);
             var trans = new Mock<IKGTranslation>();
-            _primitives = new BlobGraphPrimitives(new List<IBlobConnectivity> { blob }, cache.Object, _conn, bgplogger.Object);
+            _primitives = new BlobGraphPrimitives(blob , cache.Object, _conn, bgplogger.Object);
             _graph = new GraphProcessing(_primitives, glogger.Object,_meta);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
             var form = new Mock<IFormApi>();
@@ -151,35 +151,6 @@ namespace Darl.GraphQL.Test
                     }
                 }
             }
-        }
-
-        [TestMethod]
-        public async Task CorrectRecognitionLabels()
-        {
-            //read a KG
-            //access the recognition objects,
-            var compositeName = $"{_config["userId"]}_{graphName}";
-            var rec = await _graph.GetRecognitionDisplayGraph(compositeName);
-            foreach(var ob in rec.nodes)
-            {
-                var recObj = await _graph.GetRecognitionObjectById(compositeName, ob.id);
-                if (string.IsNullOrEmpty(recObj.name) || recObj.name == recObj.lineage)
-                {
-                    if (recObj.lineage == "navigation:")
-                    {
-                        recObj.name = "navigation root";
-                    }
-                    else
-                    {
-                        //convert the name to be the typeword if present.
-                        var typeword = await _conn.GetTypeWordForLineage(recObj.lineage);
-                        if (!string.IsNullOrEmpty(typeword))
-                            recObj.name = $"~{typeword}";
-                    }
-                }
-            }
-            //save kgraph.
-            await _graph.Store(compositeName);
         }
 
         [TestMethod]

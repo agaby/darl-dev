@@ -41,7 +41,7 @@ namespace Darl.GraphQL.Models.Connectivity
             _cache = cache;
         }
 
-        public async Task<List<KnowledgeState>> Discover(string userId, string KnowledgeGraphName, string subjectId)
+        public async Task<List<KnowledgeRecord>> Discover(string userId, string KnowledgeGraphName, string subjectId)
         {
             return await _ghandler.Discover(userId, KnowledgeGraphName, subjectId, null);
         }
@@ -78,7 +78,7 @@ namespace Darl.GraphQL.Models.Connectivity
                         }
                         bs.kGraphData = r.response.sequence;
                         bs.pending = null;
-                        var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending);
+                        var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending, GraphProcess.seek);
                         if(!res.Item1.Any())
                         {
                             //no connection found
@@ -101,10 +101,10 @@ namespace Darl.GraphQL.Models.Connectivity
                         }
                         bs.kGraphData = r.response.sequence;
                         bs.pending = null;
-                        var discoverResp = await _ghandler.DiscoverForBot(userId, KnowledgeGraphName, r.response.sequence[0][0], r.response.sequence[1],conversationId); 
-                        if(discoverResp.Any())
+                        var discoverResp = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending, GraphProcess.discover); 
+                        if(discoverResp.Item1.Any())
                         {
-                            resp.AddRange(discoverResp);
+                            resp.AddRange(discoverResp.Item1);
                         }
                         else
                         {
@@ -155,7 +155,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     bs.values.Add(request);
                     try
                     {
-                        var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, bs.kGraphData[0][0], bs.kGraphData[1], bs.kGraphData[2][0], bs.values, bs.pending);
+                        var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, bs.kGraphData[0][0], bs.kGraphData[1], bs.kGraphData[2][0], bs.values, bs.pending, GraphProcess.seek);
                         resp.Add(res.Item1.Last());
                         bs.pending = res.Item2;
                         if (res.Item1.Count > 1)

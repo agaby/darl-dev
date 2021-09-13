@@ -1,6 +1,5 @@
 ﻿using Darl.Common;
 using DarlCommon;
-using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,7 +10,7 @@ namespace Darl.GraphQL.Models.Models
     public enum InferenceTime { now,@fixed};
     public class KGraph
     {
-        public ObjectId id { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public DateDisplay? dateDisplay { get; set; } = DateDisplay.recent;

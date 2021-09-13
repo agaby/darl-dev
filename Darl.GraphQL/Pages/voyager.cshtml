@@ -1,7 +1,10 @@
 ﻿@page
 @model Darl.GraphQL.Pages.voyagerModel
 @{
-    Layout = "_Layout";
+    if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
+        Layout = "~/Pages/_layoutContainer.cshtml";
+    else
+        Layout = "~/Pages/_layout.cshtml";   
 }
 
 <div class="row">

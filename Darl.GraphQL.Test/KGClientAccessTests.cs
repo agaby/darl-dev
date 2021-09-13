@@ -49,7 +49,7 @@ namespace Darl.GraphQL.Test
             client = new GraphQLHttpClient("https://darl.dev/graphql/", new NewtonsoftJsonSerializer());
             var authcode = "8952d1af-9d34-4866-a4bc-412bf51743d6";
             client.HttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authcode);
-            conn = new CosmosDBConnectivity(_config, clogger.Object, clicense.Object, cache.Object);
+            conn = new CosmosDBConnectivity(_config, clogger.Object);
         }
 
         [TestMethod]

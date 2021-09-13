@@ -31,19 +31,17 @@ namespace Darl.GraphQL.Models.Connectivity
 
         private HashSet<string> modified = new HashSet<string>();
 
-        private Timer flushTimer;
 
         private bool modifiedToggle = false;
 
         public static int maxDepth = 0;
 
-        public BlobGraphPrimitives(IEnumerable<IBlobConnectivity> blobs, IDistributedCache cache, IConnectivity conn, ILogger<BlobGraphPrimitives> logger)
+        public BlobGraphPrimitives(IBlobConnectivity blob, IDistributedCache cache, IConnectivity conn, ILogger<BlobGraphPrimitives> logger)
         {
-            _blob = blobs.FirstOrDefault(h => h.implementation == nameof(BlobGraphConnectivity));
+            _blob = blob;
             _cache = cache;
             _conn = conn;
             _logger = logger;
-            flushTimer = new Timer(FlushTimerTimeOut, null, 500, 500);
         }
 
 
@@ -75,7 +73,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return go;
         }
 
-        public async Task CreateVirtualConnection(IGraphModel model, string child, string lineage, string connectionLabel)
+        public Task CreateVirtualConnection(IGraphModel model, string child, string lineage, string connectionLabel)
         {
             BlobGraphContent? cont = model as BlobGraphContent;
             if (cont != null && !cont.virtualEdges.ContainsKey(($"{child}->{lineage}")))
@@ -91,12 +89,14 @@ namespace Darl.GraphQL.Models.Connectivity
                     throw new ExecutionError($"Virtual vertex id {lineage} does not exist");
                 cont.virtualEdges.Add($"{child}->{lineage}", gc);
             }
+            return Task.CompletedTask;
         }
 
-        public async Task CreateVirtualObject(IGraphModel model, string lineage, string typeword, string description)
+        public Task CreateVirtualObject(IGraphModel model, string lineage, string typeword, string description)
         {
             var go = new GraphObject { id = Guid.NewGuid().ToString(), inferred = false, lineage = lineage, name = typeword, _virtual = true, properties = new List<GraphAttribute> { new GraphAttribute { name = "description", value = description, lineage = "noun:01,4,05,21,05", type = GraphAttribute.DataType.textual } } };
             ((BlobGraphContent)model).virtualVertices.Add(go.lineage, go);
+            return Task.CompletedTask;
         }
 
         public async Task<GraphConnection> DeleteConnection(string compositeName, string id)
@@ -188,9 +188,9 @@ namespace Darl.GraphQL.Models.Connectivity
             return cont.vertices.Values.Where(a => a.name == name && a.lineage.StartsWith(lineage)).ToList();
         }
 
-        public async Task<bool> LineageExists(IGraphModel model, string lineage)
+        public Task<bool> LineageExists(IGraphModel model, string lineage)
         {
-            return ((BlobGraphContent)model).virtualVertices.ContainsKey(lineage);
+            return Task.FromResult(((BlobGraphContent)model).virtualVertices.ContainsKey(lineage));
         }
 
         public async Task<GraphConnection> UpdateConnection(string compositeName, GraphConnectionUpdate gc)

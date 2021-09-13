@@ -15,13 +15,8 @@ namespace Darl.GraphQL.Models.Connectivity
 {
     public interface IConnectivity
     {
-        IMongoDatabase db { get; set; }
 
         Task<List<KGraph>> GetKGraphsAsync(string userId);
-        Task<List<LineageRecord>> GetLineagesForWord(string word, string isoLanguage = "en");
-        Task<bool> CreateSupportRequest(string customerName, string customerEmail, string text, string project);
-        Task<string> GetTypeWordForLineage(string lineage, string isoLanguage = "en");
-        Task<bool> CheckKey(string userId, string key);
         Task<KnowledgeState> GetKnowledgeState(string userId, string ksId, string graphName);
         Task<List<KnowledgeState>> GetKnowledgeStates(string userId, string graphName);
         Task<KnowledgeState> DeleteKnowledgeState(string userId, string ksId, string graphName);
@@ -30,7 +25,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<long> DeleteAllKnowledgeStates(string userId, string graphName);
         Task<KGraph> GetKGModel(string userId, string model);
         Task<KGraph> CreateKGraph(string userId, string name);
-        Task<List<DarlLintView>> LintDarlMeta(string darl);
         Task<KGraph> DeleteKGraph(string userId, string name);
         Task<KGraph> UpdateKGraph(string userId, string name, KGraphUpdate kgupdate);
         Task<int> GetKGraphCountAsync(string userId);

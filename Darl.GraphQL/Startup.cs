@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
@@ -7,13 +6,14 @@ using Darl.GraphQL.Process.Middleware;
 using Darl.GraphQL.Ui.GraphiQL;
 using Darl.GraphQL.Ui.Playground;
 using Darl.GraphQL.Ui.Voyager;
+using Darl.Lineage;
 using Darl.Lineage.Bot;
-using Darl.Lineage.Bot.Stores;
 using Darl.Thinkbase;
 using DarlLanguage.Processing;
 using GraphQL;
 using GraphQL.Http;
 using GraphQL.Validation;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -22,15 +22,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.UI;
-using Darl.Lineage;
 
 namespace Darl.GraphQL
 {
@@ -42,10 +40,13 @@ namespace Darl.GraphQL
         static readonly string firstNameClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname";
         static readonly string secondNameClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname";
 
+        private bool InDocker { get { return Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true"; } }
 
+        private bool Licensed = true; //default for web site
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
         }
 
         public IConfiguration Configuration { get; }
@@ -63,14 +64,19 @@ namespace Darl.GraphQL
                 options.AllowSynchronousIO = true;
             });
 
-            services.AddMicrosoftIdentityWebAppAuthentication(Configuration, "AzureAdB2C");
-
-            services.AddHsts(options =>
+            if (!InDocker)
             {
-                options.Preload = true;
-                options.IncludeSubDomains = true;
-                options.MaxAge = TimeSpan.FromDays(60);
-            });
+
+                services.AddMicrosoftIdentityWebAppAuthentication(Configuration, "AzureAdB2C");
+
+                services.AddHsts(options =>
+                {
+                    options.Preload = true;
+                    options.IncludeSubDomains = true;
+                    options.MaxAge = TimeSpan.FromDays(60);
+                });
+            }
+
 #if DEBUG
             services.AddDistributedMemoryCache();
 #else
@@ -90,20 +96,28 @@ namespace Darl.GraphQL
             //services
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
-            services.AddSingleton<IConnectivity, CosmosDBConnectivity>();
+            if(InDocker)
+                services.AddSingleton<IConnectivity, LocalConnectivity>();
+            else
+                services.AddSingleton<IConnectivity, CosmosDBConnectivity>();
             services.AddSingleton<IBotProcessing, BotProcessing>();
             services.AddSingleton<IEmailProcessing, EmailProcessing>();
             services.AddSingleton<IAuthChecker, AuthChecker>();
             services.AddSingleton<IGraphProcessing, GraphProcessing>();
             services.AddSingleton<ILicensing, ProductLicensing>();
-            services.AddSingleton<IBlobConnectivity, BlobConnectivity>();
+            if(InDocker)
+                services.AddSingleton<IBlobConnectivity, FileConnectivity>();
+            else 
+                services.AddSingleton<IBlobConnectivity, BlobGraphConnectivity>();
             services.AddSingleton<ISoftMatchProcessing, SoftMatchProcessing>();
             services.AddSingleton<ILocalStore, GraphLocalStore>();
             services.AddSingleton<IGraphPrimitives, BlobGraphPrimitives>();
             services.AddSingleton<IGraphHandler, GraphHandler>();
-            services.AddSingleton<IBlobConnectivity, BlobGraphConnectivity>();
             services.AddSingleton<IMetaStructureHandler, MetaStructureHandler>();
-            services.AddSingleton<IKGTranslation, KGTranslation>();
+            if (InDocker)
+                services.AddSingleton<IKGTranslation, KGContainer>();
+            else
+                services.AddSingleton<IKGTranslation, KGTranslation>();
             services.AddSingleton<IProducts, Products>();
             services.AddSingleton<ICheckEmail, EmailChecker>();
 
@@ -283,92 +297,118 @@ namespace Darl.GraphQL
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+
+
+            if (!InDocker)
             {
-                app.UseDeveloperExceptionPage();
+                if (env.IsDevelopment())
+                {
+                    app.UseDeveloperExceptionPage();
+                }
+                else
+                {
+                    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                    app.UseHsts();
+                }
+
+                app.UseHttpsRedirection();
             }
             else
             {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                app.UseDeveloperExceptionPage();
             }
-
-            app.UseHttpsRedirection();
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseRouting();
 
-            app.UseAuthentication();
-
-            app.Use(async (context, next) =>
+            if (!InDocker)
             {
 
-                DarlUser? du = null;
-                String roles = string.Empty;
-                string objectId = string.Empty;
-                string clientSecret = string.Empty;
-                var _rep = (IKGTranslation)context.RequestServices.GetService(typeof(IKGTranslation));
-                if (context.User.Identity.IsAuthenticated)
+                app.UseAuthentication();
+
+                app.Use(async (context, next) =>
                 {
-                    //look up user
-                    objectId = context.User.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
-                    du = await _rep.GetUserById(objectId);
-                    if(du == null) //new user
+
+                    DarlUser? du = null;
+                    String roles = string.Empty;
+                    string objectId = string.Empty;
+                    string clientSecret = string.Empty;
+                    var _rep = (IKGTranslation)context.RequestServices.GetService(typeof(IKGTranslation));
+                    if (context.User.Identity.IsAuthenticated)
                     {
-                        du = await AddNewUser(context, objectId, _rep);
-                        if(du == null) //can't setup user
+                        //look up user
+                        objectId = context.User.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
+                        du = await _rep.GetUserById(objectId);
+                        if (du == null) //new user
                         {
-                            await next.Invoke();
-                            return;
+                            du = await AddNewUser(context, objectId, _rep);
+                            if (du == null) //can't setup user
+                            {
+                                await next.Invoke();
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrEmpty(du.parentAccount)) //this is a sub user, log in as the parent.
+                            {
+                                du = await _rep.GetUserById(du.parentAccount);
+                            }
                         }
                     }
                     else
                     {
-                        if(!string.IsNullOrEmpty(du.parentAccount)) //this is a sub user, log in as the parent.
+                        //look for header
+                        var authHeader = context.Request.Headers["Authorization"].ToString();
+                        if (authHeader != null && authHeader.StartsWith("Basic", StringComparison.OrdinalIgnoreCase))
                         {
-                            du = await _rep.GetUserById(du.parentAccount);
+                            var token = authHeader.Substring("Basic ".Length).Trim();
+                            du = await _rep.GetUserByApiKey(token);
+                            if (du == null)// can indicate user is barred
+                            {
+                                await next.Invoke();
+                                return;
+                            }
+                            objectId = du.userId;
                         }
                     }
-                }
-                else
-                {
-                    //look for header
-                    var authHeader = context.Request.Headers["Authorization"].ToString();
-                    if (authHeader != null && authHeader.StartsWith("Basic", StringComparison.OrdinalIgnoreCase))
+                    if (du != null)//found it from one or other
                     {
-                        var token = authHeader.Substring("Basic ".Length).Trim();
-                        du = await _rep.GetUserByApiKey(token);
-                        if (du == null)// can indicate user is barred
+                        switch (du.accountState)
                         {
-                            await next.Invoke();
-                            return;
+                            case DarlUser.AccountState.admin:
+                                roles = "Admin,Corp,User";
+                                break;
+                            case DarlUser.AccountState.trial:
+                            case DarlUser.AccountState.paying:
+                            case DarlUser.AccountState.delinquent:
+                                roles = "User";
+                                break;
+                            default:
+                                roles = string.Empty;
+                                break;
                         }
-                        objectId = du.userId;
+                        //overwrite user 
+                        var identity = new GenericIdentity(objectId);
+                        identity.AddClaims(context.User.Claims);
+                        context.User = new GenericPrincipal(identity, string.IsNullOrEmpty(roles) ? Array.Empty<string>() : roles.Split(','));
                     }
-                }
-                if (du != null)//found it from one or other
+                    await next.Invoke();
+                });
+
+            }
+            else
+            {
+                app.Use(async (context, next) =>
                 {
-                    switch (du.accountState)
-                    {
-                        case DarlUser.AccountState.admin:
-                            roles = "Admin,Corp,User";
-                            break;
-                        case DarlUser.AccountState.trial:
-                        case DarlUser.AccountState.paying:
-                        case DarlUser.AccountState.delinquent:
-                            roles = "User";
-                            break;
-                        default:
-                            roles = string.Empty;
-                            break;
-                    }
-                    //overwrite user 
-                    var identity = new GenericIdentity(objectId);
+                    var identity = new GenericIdentity(Configuration["AppSettings:boaiuserid"]);
                     identity.AddClaims(context.User.Claims);
+                    var roles = "Corp,User";
                     context.User = new GenericPrincipal(identity, string.IsNullOrEmpty(roles) ? Array.Empty<string>() : roles.Split(','));
-                }
-                await next.Invoke();
-            });
+                    await next.Invoke();
+                });
+
+            }
 
             app.UseMiddleware<GraphQLHttpMiddleware<DarlSchema>>(new PathString("/graphql"));
 

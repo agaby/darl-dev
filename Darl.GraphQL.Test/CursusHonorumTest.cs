@@ -109,7 +109,7 @@ namespace Darl.GraphQL.Test
             conn.Setup(a => a.GetKnowledgeState(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<KnowledgeState>(new KnowledgeState()));
             conn.Setup(a => a.UpdateKnowledgeState(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<KnowledgeStateUpdate>()));
             var trans = new Mock<IKGTranslation>();
-            _primitives = new BlobGraphPrimitives(new List<IBlobConnectivity> { blob }, cache.Object, conn.Object, bgplogger.Object);
+            _primitives = new BlobGraphPrimitives(blob, cache.Object, conn.Object, bgplogger.Object);
             _graph = new GraphProcessing(_primitives,glogger.Object, meta.Object);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
             var form = new Mock<IFormApi>();

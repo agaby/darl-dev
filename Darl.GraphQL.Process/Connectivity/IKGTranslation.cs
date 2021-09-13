@@ -1,4 +1,6 @@
 ﻿using Darl.GraphQL.Models.Models;
+using Darl.Lineage;
+using DarlCommon;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,5 +58,9 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<string> GetSuggestedRuleSet(string userId, string modelName, string objectId, string lineage);
         Task<List<DarlUser>> GetRecentUsers();
         Task<string> ExportNoda(string userId, string graphName);
+        Task<string> GetTypeWordForLineage(string lineage, string isoLanguage = "en");
+        Task<List<LineageRecord>> GetLineagesForWord(string word, string isoLanguage = "en");
+        Task<List<DarlLintView>> LintDarlMeta(string darl);
+
     }
 }
