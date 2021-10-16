@@ -679,6 +679,16 @@ namespace Darl.GraphQL.Models.Schemata
                 return await context.TryAsyncResolve(async c => await trans.ExportNoda(userId, graphName));
             });
 
+            FieldAsync<StringGraphType>("getExportGraphUrl", "get a link to Export a graph in native format",
+            arguments: new QueryArguments(
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge graph to export" }
+                ),
+            resolve: async context =>
+            {
+                var graphName = context.GetArgument<string>("graphName");
+                var userId = trans.GetCurrentUserId(context.UserContext);
+                return await context.TryAsyncResolve(async c => await graph.CreateTimedAccessUrl(userId, graphName));
+            }).AuthorizeWith("UserPolicy");
         }
 
         private string CompositeName(string userId, string graphName)

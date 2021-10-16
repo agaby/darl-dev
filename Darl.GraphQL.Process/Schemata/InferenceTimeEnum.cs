@@ -1,5 +1,6 @@
 ﻿using Darl.GraphQL.Models.Models;
 using GraphQL.Types;
+using static Darl.Thinkbase.IGraphModel;
 
 namespace Darl.GraphQL.Models.Schemata
 {

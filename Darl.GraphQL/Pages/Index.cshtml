@@ -1,11 +1,21 @@
 ﻿@page "{kgraph?}/{tab?}"
 @model Darl.GraphQL.Pages.GraphEditModel
 @{
-        ViewData["Title"] = "Graph Edit";
-        if(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
-            Layout = "~/Pages/_layoutscrollingContainer.cshtml";    
-        else
-            Layout = "~/Pages/_layoutscrolling.cshtml";   
+    ViewData["Title"] = "Graph Edit";
+    if(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
+    {
+        if(!string.IsNullOrEmpty(Model.filepath))
+        {
+            RouteData.Values["kgraph"] = Model.filepath;
+            Layout = "~/Pages/_layoutscrollingContainer.cshtml";
+        }
+        else //empty container
+        {
+            Layout = "~/Pages/_layoutEmptyContainer.cshtml";
+        }
+    }
+    else
+        Layout = "~/Pages/_layoutscrolling.cshtml";
 }
 
 <main role="main" class="pb-3" style="padding: 0px !important">

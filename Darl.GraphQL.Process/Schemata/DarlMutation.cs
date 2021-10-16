@@ -479,17 +479,17 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await graph.CreateRecognitionRoot(CompositeName(userId, name), lineage));
                 }
             );
-            FieldAsync<KGraphType>("UpdateKGraphMetadata", "Update the meta-data of a knowledge graph", arguments: new QueryArguments(
+            FieldAsync<ModelMetaDataType>("UpdateKGraphMetadata", "Update the meta-data of a knowledge graph", arguments: new QueryArguments(
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph to update" },
-                 new QueryArgument<NonNullGraphType<KGraphUpdateType>> { Name = "update", Description = "The update" }
+                 new QueryArgument<NonNullGraphType<ModelMetaDataUpdateType>> { Name = "update", Description = "The update" }
                 ),
                 resolve: async context =>
                 {
                     var name = context.GetArgument<string>("name");
-                    var update = context.GetArgument<KGraphUpdate>("update");
+                    var update = context.GetArgument<ModelMetaData>("update");
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await connectivity.UpdateKGraph(userId, name, update));
+                        async c => await graph.UpdateKGraph(userId, name, update));
                 }
             );
             FieldAsync<KnowledgeStateType>("createKnowledgeState", "Creates or updates a knowledge state", arguments: new QueryArguments(

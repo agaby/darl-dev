@@ -93,7 +93,7 @@ namespace Darl.GraphQL.Test
 
 
             var logger = new Mock<ILogger<GraphLocalStore>>();
-            var blogger = new Mock<ILogger<BlobConnectivity>>();//
+            var blogger = new Mock<ILogger<BlobGraphConnectivity>>();//
             var bgplogger = new Mock<ILogger<BlobGraphPrimitives>>();
             var glogger = new Mock<ILogger<GraphProcessing>>();
             var context = new Mock<IHttpContextAccessor>();
@@ -107,7 +107,8 @@ namespace Darl.GraphQL.Test
             _meta = new MetaStructureHandler();
             _conn = new CosmosDBConnectivity(_config, clogger.Object);
             var trans = new Mock<IKGTranslation>();
-            _primitives = new BlobGraphPrimitives(blob , cache.Object, _conn, bgplogger.Object);
+            var lic = new Mock<ILicensing>();
+            _primitives = new BlobGraphPrimitives(blob , cache.Object, _conn, bgplogger.Object, lic.Object);
             _graph = new GraphProcessing(_primitives, glogger.Object,_meta);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
             var form = new Mock<IFormApi>();
@@ -129,28 +130,6 @@ namespace Darl.GraphQL.Test
             var demoUser = _config["AppSettings:boaiuserid"];
 //            await _conn.UpdateSubscriptionType(daveUser, DarlUser.SubscriptionType.corporate);
             await _conn.ShareKGraph(_config["userId"],graphName, demoUser, false,true);
-        }
-
-        /// <summary>
-        /// Shares descriptions from the masters to shared KGs in the demo account
-        /// </summary>
-        /// <returns></returns>
-        [TestMethod]
-        [Ignore]
-        public async Task ShareDescriptions()
-        {
-            var dest = await _conn.GetKGraphsAsync(_config["AppSettings:boaiuserid"]);
-            foreach(var kg in dest)
-            {
-                if(kg.Shared)
-                {
-                    var shared = await _conn.GetKGModel(kg.OwnerId, kg.Name);
-                    if(shared != null)
-                    {
-                        await _conn.UpdateKGraph(_config["AppSettings:boaiuserid"], kg.Name, new KGraphUpdate { Description = shared.Description });
-                    }
-                }
-            }
         }
 
         [TestMethod]
@@ -198,16 +177,6 @@ namespace Darl.GraphQL.Test
                     }
                 }
             }
-        }
-
-        [TestMethod]
-        [Ignore]
-        public async Task LoadInitialText()
-        {
-            var name = "primary_math.graph";
-            var text = "Teach me mathematics";
-            await _conn.UpdateKGraph(_config["userId"], name, new KGraphUpdate { InitialText =  text});
-            await _conn.UpdateKGraph(_config["AppSettings:boaiuserid"], name, new KGraphUpdate { InitialText = text });
         }
 
         [TestMethod]

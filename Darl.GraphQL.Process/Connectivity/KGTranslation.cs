@@ -81,6 +81,7 @@ namespace Darl.GraphQL.Models.Connectivity
             _licensing = licensing;
             backofficeKG = _config["AppSettings:BackOfficeKG"];
             backofficeKGComp = _config["AppSettings:boaiuserid"] + '_' + backofficeKG;
+            DarlMetaRunTime.SetLicense(_config["licensing:darlMetaLicense"]);
             GetObjectIds().Wait();
         }
 
@@ -534,10 +535,17 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<DarlUser> GetUserByApiKey(string apiKey)
         {
-            var ks = await _graph.GetKnowledgeStateByTypeAndAttribute(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG, keyLineage, apiKey);
-            if (ks == null)
-                return null;
-            return Convert(ks, personObjectId);
+            try
+            {
+                var ks = await _graph.GetKnowledgeStateByTypeAndAttribute(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG, keyLineage, apiKey);
+                if (ks == null)
+                    return null;
+                return Convert(ks, personObjectId);
+            }
+            catch(Exception ex)
+            {
+                throw new ExecutionError($"Error in GetUserByApiKey: {ex.Message}");
+            }
         }
 
         public async Task<DarlUser> GetUserById(string id)

@@ -24,15 +24,18 @@ namespace Darl.GraphQL.Models.Connectivity
         private string userId;
         private IConnectivity _conn;
         private DarlMetaRunTime metaRuntime = new DarlMetaRunTime(new MetaStructureHandler());
+        private IGraphProcessing _graph;
 
 
-        public KGContainer(IConfiguration config, ILogger<KGContainer> logger, ILicensing licensing, IConnectivity conn)
+        public KGContainer(IConfiguration config, ILogger<KGContainer> logger, ILicensing licensing, IConnectivity conn, IGraphProcessing graph)
         {
             _logger = logger;
             _licensing = licensing;
             _config = config;
             userId = _config["SINGLEUSERID"];
             _conn = conn;
+            _graph = graph;
+            DarlMetaRunTime.SetLicense(_config["licensing:darlMetaLicense"]);
             Init().Wait();
         }
 
@@ -82,9 +85,9 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<bool> CreateNewGraph(string userId, string modelName)
+        public async Task<bool> CreateNewGraph(string userId, string modelName)
         {
-            throw new NotImplementedException();
+            return await _graph.CreateNewGraph(userId, modelName);
         }
 
         public Task<DarlUser> CreateUserAsync(DarlUser user)

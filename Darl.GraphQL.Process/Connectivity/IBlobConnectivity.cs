@@ -12,6 +12,8 @@ namespace Darl.GraphQL.Models.Connectivity
         List<string> List(string prefix);
         Task<byte[]> Read(string name);
         Task Write(string name, byte[] data);
+        string CreateTimedAccessUrl(string name);
+
         string implementation { get; }
     }
 }

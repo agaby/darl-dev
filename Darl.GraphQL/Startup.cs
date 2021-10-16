@@ -96,28 +96,28 @@ namespace Darl.GraphQL
             //services
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
-            if(InDocker)
+            if (InDocker)
+            {
                 services.AddSingleton<IConnectivity, LocalConnectivity>();
+                services.AddSingleton<IBlobConnectivity, OneFileConnectivity>();
+                services.AddSingleton<IKGTranslation, KGContainer>();
+            }
             else
+            {
                 services.AddSingleton<IConnectivity, CosmosDBConnectivity>();
+                services.AddSingleton<IBlobConnectivity, BlobGraphConnectivity>();
+                services.AddSingleton<IKGTranslation, KGTranslation>();
+            }
             services.AddSingleton<IBotProcessing, BotProcessing>();
             services.AddSingleton<IEmailProcessing, EmailProcessing>();
             services.AddSingleton<IAuthChecker, AuthChecker>();
             services.AddSingleton<IGraphProcessing, GraphProcessing>();
             services.AddSingleton<ILicensing, ProductLicensing>();
-            if(InDocker)
-                services.AddSingleton<IBlobConnectivity, FileConnectivity>();
-            else 
-                services.AddSingleton<IBlobConnectivity, BlobGraphConnectivity>();
             services.AddSingleton<ISoftMatchProcessing, SoftMatchProcessing>();
             services.AddSingleton<ILocalStore, GraphLocalStore>();
             services.AddSingleton<IGraphPrimitives, BlobGraphPrimitives>();
             services.AddSingleton<IGraphHandler, GraphHandler>();
             services.AddSingleton<IMetaStructureHandler, MetaStructureHandler>();
-            if (InDocker)
-                services.AddSingleton<IKGTranslation, KGContainer>();
-            else
-                services.AddSingleton<IKGTranslation, KGTranslation>();
             services.AddSingleton<IProducts, Products>();
             services.AddSingleton<ICheckEmail, EmailChecker>();
 
@@ -240,7 +240,6 @@ namespace Darl.GraphQL
             services.AddSingleton<DarlTimeType>();
             services.AddSingleton<DarlTimeInputType>();
             services.AddSingleton<DarlSeasonEnum>();
-            services.AddSingleton<KGraphUpdateType>();
             services.AddSingleton<InferenceTimeEnum>();
             services.AddSingleton<DateDisplayEnum>();
             services.AddSingleton<VRDisplayModelType>();
@@ -248,6 +247,8 @@ namespace Darl.GraphQL
             services.AddSingleton<VRDisplayLinkType>();
             services.AddSingleton<KnowledgeStateInputType>();
             services.AddSingleton<StringListGraphAttributeInputPairInputType>();
+            services.AddSingleton<ModelMetaDataType>();
+            services.AddSingleton<ModelMetaDataUpdateType>();
 
 
             //root

@@ -23,6 +23,10 @@ namespace Darl.GraphQL.Models.Connectivity
         private IDistributedCache _cache;
         private IConnectivity _conn;
         private ILogger _logger;
+        private ILicensing _license;
+
+        private int modelLicenseDays = 1000;
+
 
 
         private Dictionary<string, BlobGraphContent> buffer = new Dictionary<string, BlobGraphContent>();
@@ -36,12 +40,13 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public static int maxDepth = 0;
 
-        public BlobGraphPrimitives(IBlobConnectivity blob, IDistributedCache cache, IConnectivity conn, ILogger<BlobGraphPrimitives> logger)
+        public BlobGraphPrimitives(IBlobConnectivity blob, IDistributedCache cache, IConnectivity conn, ILogger<BlobGraphPrimitives> logger, ILicensing license)
         {
             _blob = blob;
             _cache = cache;
             _conn = conn;
             _logger = logger;
+            _license = license;
         }
 
 
@@ -340,21 +345,30 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task Store(string blobName, IGraphModel model)
         {
             BlobGraphContent cont = model as BlobGraphContent;
+            cont.key = _license.CreateKey(DateTime.UtcNow + new TimeSpan(modelLicenseDays, 0, 0, 0), blobName, "");
             await _blob.Write(blobName, SerializeGraph(cont));
         }
 
         public async Task<IGraphModel> Load(string blobName)
         {
+
             if (buffer.ContainsKey(blobName))
             {
                 return buffer[blobName];
             }
             if (await _blob.Exists(blobName))
             {
-                var data = await _blob.Read(blobName);
-                var model = DeserializeGraph(data);
-                buffer.Add(blobName, model);
-                return model;
+                try
+                {
+                    var data = await _blob.Read(blobName);
+                    var model = DeserializeGraph(data);
+                    buffer.Add(blobName, model);
+                    return model;
+                }
+                catch(Exception ex)
+                {
+                    throw new ExecutionError($"Error loading {blobName}: {ex.Message}");
+                }
             }
             else
             {
@@ -362,10 +376,17 @@ namespace Darl.GraphQL.Models.Connectivity
                 var sharedState = await HandleSharedNames(blobName);
                 if (!String.IsNullOrEmpty(sharedState.Item1))
                 {
-                    var data = await _blob.Read(sharedState.Item1);
-                    var model = DeserializeGraph(data);
-                    buffer.Add(blobName, model);
-                    return model;
+                    try
+                    {
+                        var data = await _blob.Read(sharedState.Item1);
+                        var model = DeserializeGraph(data);
+                        buffer.Add(blobName, model);
+                        return model;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ExecutionError($"Error loading shared graph {blobName}: {ex.Message}");
+                    }
                 }
                 else
                 {
@@ -1400,6 +1421,12 @@ namespace Darl.GraphQL.Models.Connectivity
             return string.Empty;
         }
 
+        public string CreateTimedAccessUrl(string userId, string name)
+        {
+            return _blob.CreateTimedAccessUrl(CreateCompositeName(userId,name));
+        }
+
+
         internal static string CreateCompositeName(string userId, string name)
         {
             return userId + "_" + name.Replace(" ", "_");
@@ -1621,6 +1648,11 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<List<KnowledgeState>> GetSetOfKnowledgeStates(string userId, List<string> ksIds, string graphName)
         {
             return await _conn.GetSetOfKnowledgeStates(userId, ksIds, graphName);
+        }
+
+        public Task<ModelMetaData> UpdateKGraph(string userId, string name, ModelMetaData kgupdate)
+        {
+            throw new NotImplementedException();
         }
     }
 

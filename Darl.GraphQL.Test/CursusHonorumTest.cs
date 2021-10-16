@@ -94,7 +94,7 @@ namespace Darl.GraphQL.Test
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StorageConnectionString")]).Returns("DefaultEndpointsProtocol=https;AccountName=darlai;AccountKey=errnwefiVeXcDr0aKbHDxXjblOQhwFwHkeG4qR4caChkABnzp9MNeBBX0FP1jc4DnXPGztI67pbEBXDqA1dPCw==");
 
             var logger = new Mock<ILogger<GraphLocalStore>>();
-            var blogger = new Mock<ILogger<BlobConnectivity>>();
+            var blogger = new Mock<ILogger<BlobGraphConnectivity>>();
             var bgplogger = new Mock<ILogger<BlobGraphPrimitives>>();
             var glogger = new Mock<ILogger<GraphProcessing>>();
             var context = new Mock<IHttpContextAccessor>();
@@ -109,7 +109,8 @@ namespace Darl.GraphQL.Test
             conn.Setup(a => a.GetKnowledgeState(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<KnowledgeState>(new KnowledgeState()));
             conn.Setup(a => a.UpdateKnowledgeState(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<KnowledgeStateUpdate>()));
             var trans = new Mock<IKGTranslation>();
-            _primitives = new BlobGraphPrimitives(blob, cache.Object, conn.Object, bgplogger.Object);
+            var lic = new Mock<ILicensing>();
+            _primitives = new BlobGraphPrimitives(blob, cache.Object, conn.Object, bgplogger.Object, lic.Object);
             _graph = new GraphProcessing(_primitives,glogger.Object, meta.Object);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
             var form = new Mock<IFormApi>();

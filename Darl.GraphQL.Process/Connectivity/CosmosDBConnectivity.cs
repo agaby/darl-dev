@@ -43,27 +43,16 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             _config = config;
             _logger = logger;
-            if(_config["DOTNET_RUNNING_IN_CONTAINER"] == "true")
-            {
-                var connectionString = _config["MONGOCONNECTION"];
-                mongoClient = new MongoClient(connectionString);
-                var databaseName = _config["MONGODATABASE"];
-                backgroundUserId = _config["SINGLEUSERID"];
-                db = mongoClient.GetDatabase(databaseName);
-            }
-            else
-            {
-                string connectionString = _config["AppSettings:MongoConnectionString"];
-                backgroundUserId = _config["AppSettings:boaiuserid"];
-                MongoClientSettings settings = MongoClientSettings.FromUrl(
-                  new MongoUrl(connectionString)
-                );
-                settings.SslSettings =
-                  new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
-                mongoClient = new MongoClient(settings);
-                db = mongoClient.GetDatabase(_config["AppSettings:MongoDatabase"]);
-            }
 
+            string connectionString = _config["AppSettings:MongoConnectionString"];
+            backgroundUserId = _config["AppSettings:boaiuserid"];
+            MongoClientSettings settings = MongoClientSettings.FromUrl(
+              new MongoUrl(connectionString)
+            );
+            settings.SslSettings =
+              new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
+            mongoClient = new MongoClient(settings);
+            db = mongoClient.GetDatabase(_config["AppSettings:MongoDatabase"]);
             BsonClassMap.RegisterClassMap<DarlVar>(cm =>
             {
                 cm.AutoMap();
@@ -77,6 +66,12 @@ namespace Darl.GraphQL.Models.Connectivity
                 cm.UnmapMember(m => m.year);
                 cm.UnmapMember(m => m.season);
             });
+            BsonClassMap.RegisterClassMap<CosmosKGraph>(cm =>
+            {
+                cm.AutoMap();
+                cm.SetIgnoreExtraElements(true);
+            });
+
 
         }
 
@@ -99,7 +94,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state)
         {
-            var kstate = new KnowledgeState { knowledgeGraphName = state.knowledgeGraphName, subjectId = state.subjectId, userId = userId, created = DateTime.UtcNow };
+            var kstate = new CosmosKnowledgeState { knowledgeGraphName = state.knowledgeGraphName, subjectId = state.subjectId, userId = userId, created = DateTime.UtcNow };
             foreach(var s in state.data)
             {
                 if(!kstate.data.ContainsKey(s.name))
@@ -111,16 +106,16 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                 }
             }
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
             //ensure user/graphName/subjectId combination is unique
-            await mc.DeleteManyAsync(Builders<KnowledgeState>.Filter.Eq(r => r.userId, userId) & Builders<KnowledgeState>.Filter.Eq(r => r.subjectId, state.subjectId) & Builders<KnowledgeState>.Filter.Eq(r => r.knowledgeGraphName, state.knowledgeGraphName));
+            await mc.DeleteManyAsync(Builders<CosmosKnowledgeState>.Filter.Eq(r => r.userId, userId) & Builders<CosmosKnowledgeState>.Filter.Eq(r => r.subjectId, state.subjectId) & Builders<CosmosKnowledgeState>.Filter.Eq(r => r.knowledgeGraphName, state.knowledgeGraphName));
             await mc.InsertOneAsync(kstate);
             return kstate;
         }
 
         public async Task<KnowledgeState> GetKnowledgeState(string userId, string ksId, string graphName)
         {
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
             var query = mc.AsQueryable()
             .Where(p => p.subjectId == ksId && p.userId == userId && p.knowledgeGraphName == graphName);
             return await query.FirstOrDefaultAsync();
@@ -136,13 +131,13 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <remarks>Not paged, so limited to a single MongoDB page.</remarks>
         public async Task<List<KnowledgeState>> GetSetOfKnowledgeStates(string userId, List<string> ksIds, string graphName)
         {
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
-            var filter1 = Builders<KnowledgeState>.Filter.In(x => x.subjectId,ksIds);
-            var filter2 = Builders<KnowledgeState>.Filter.Where(x => x.knowledgeGraphName == graphName && x.userId == userId);
-            var filter3 = Builders<KnowledgeState>.Filter.And(filter1, filter2);
-            var cursor = await mc.FindAsync<KnowledgeState>(filter3);
+            var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
+            var filter1 = Builders<CosmosKnowledgeState>.Filter.In(x => x.subjectId,ksIds);
+            var filter2 = Builders<CosmosKnowledgeState>.Filter.Where(x => x.knowledgeGraphName == graphName && x.userId == userId);
+            var filter3 = Builders<CosmosKnowledgeState>.Filter.And(filter1, filter2);
+            var cursor = await mc.FindAsync<CosmosKnowledgeState>(filter3);
             await cursor.MoveNextAsync();
-            return cursor.Current.ToList();
+            return cursor.Current.ToList<KnowledgeState>();
         }
 
         /// <summary>
@@ -153,14 +148,14 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<IAsyncCursor<KnowledgeState>> GetKnowledgeStatesBatched(string userId, string graphName)
         {
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
-            var filter = Builders<KnowledgeState>.Filter.Where(x => x.knowledgeGraphName == graphName && x.userId == userId);
-            return  await mc.FindAsync<KnowledgeState>(filter);
+            var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
+            var filter = Builders<CosmosKnowledgeState>.Filter.Where(x => x.knowledgeGraphName == graphName && x.userId == userId);
+            return  await mc.FindAsync<CosmosKnowledgeState>(filter);
         }
 
         public async Task<KnowledgeState> GetKnowledgeStateByTypeAndAttribute(string userId, string objectId, string graphName, string attLineage, string attValue)
         {
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
             var query = mc.AsQueryable()
             .Where(p => p.userId == userId && p.knowledgeGraphName == graphName && p.data.ContainsKey(objectId) && p.data[objectId].Any(a => a.lineage == attLineage && a.value == attValue));
             return await query.FirstOrDefaultAsync();
@@ -168,27 +163,30 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<List<KnowledgeState>> GetKnowledgeStatesByTypeAndAttribute(string userId, string objectId, string graphName, string attLineage, string attValue)
         {
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
             var query = mc.AsQueryable()
             .Where(p => p.userId == userId && p.knowledgeGraphName == graphName && p.data.ContainsKey(objectId) && p.data[objectId].Any(a => a.lineage == attLineage && a.value == attValue));
-            return await query.ToListAsync();
+            var states =  await query.ToListAsync();
+            return states.ToList<KnowledgeState>();
         }
 
 
         public async Task<List<KnowledgeState>> GetKnowledgeStatesByType(string userId, string objectId, string graphName)
         {
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
             var query = mc.AsQueryable()
             .Where(p => p.userId == userId && p.knowledgeGraphName == graphName && p.data.ContainsKey(objectId));
-            return await query.ToListAsync();
+            var states = await query.ToListAsync();
+            return states.ToList<KnowledgeState>();
         }
 
         public async Task<List<KnowledgeState>> GetKnowledgeStates(string userId, string graphName)
         {
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
             var query = mc.AsQueryable()
             .Where(p => p.userId == userId && p.knowledgeGraphName == graphName);
-            return await query.ToListAsync();
+            var states = await query.ToListAsync();
+            return states.ToList<KnowledgeState>();
         }
 
         /// <summary>
@@ -198,35 +196,35 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <returns></returns>
         public async Task<KnowledgeState> UpdateKnowledgeState(string userId, string ksId, KnowledgeStateUpdate state)
         {
-            var updList = new List<UpdateDefinition<KnowledgeState>>();
+            var updList = new List<UpdateDefinition<CosmosKnowledgeState>>();
             if (!string.IsNullOrEmpty(state.knowledgeGraphName))
-                updList.Add(Builders<KnowledgeState>.Update.Set("knowledgeGraphName", state.knowledgeGraphName));
+                updList.Add(Builders<CosmosKnowledgeState>.Update.Set("knowledgeGraphName", state.knowledgeGraphName));
             if (state.data != null)
-                updList.Add(Builders<KnowledgeState>.Update.Set("data", state.data));
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
-            var filter = Builders<KnowledgeState>.Filter.Where(x => x.subjectId == ksId && x.userId == userId);
-            var update = Builders<KnowledgeState>.Update.Combine(updList);
-            var updated = await mc.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<KnowledgeState, KnowledgeState> { IsUpsert = true });
+                updList.Add(Builders<CosmosKnowledgeState>.Update.Set("data", state.data));
+            var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
+            var filter = Builders<CosmosKnowledgeState>.Filter.Where(x => x.subjectId == ksId && x.userId == userId);
+            var update = Builders<CosmosKnowledgeState>.Update.Combine(updList);
+            var updated = await mc.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<CosmosKnowledgeState, CosmosKnowledgeState> { IsUpsert = true });
             return updated;
         }
 
         public async Task<KnowledgeState?> UpdateKnowledgeStateAttribute(string userId, string ksId, KnowledgeStateUpdate state, string dataId, string attLineage, string attvalue)
         {
-            var updList = new List<UpdateDefinition<KnowledgeState>>();
-            updList.Add(Builders<KnowledgeState>.Update.Set("value", attvalue));
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
-            var filter = Builders<KnowledgeState>.Filter.Where(p => p.userId == userId && p.knowledgeGraphName == state.knowledgeGraphName && p.data.ContainsKey(dataId) && p.data[dataId].Any(a => a.lineage == attLineage ));
-            var update = Builders<KnowledgeState>.Update.Combine(updList);
-            var updated = await mc.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<KnowledgeState, KnowledgeState> { IsUpsert = true });
+            var updList = new List<UpdateDefinition<CosmosKnowledgeState>>();
+            updList.Add(Builders<CosmosKnowledgeState>.Update.Set("value", attvalue));
+            var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
+            var filter = Builders<CosmosKnowledgeState>.Filter.Where(p => p.userId == userId && p.knowledgeGraphName == state.knowledgeGraphName && p.data.ContainsKey(dataId) && p.data[dataId].Any(a => a.lineage == attLineage ));
+            var update = Builders<CosmosKnowledgeState>.Update.Combine(updList);
+            var updated = await mc.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<CosmosKnowledgeState, CosmosKnowledgeState> { IsUpsert = true });
             return updated;
         }
 
         public async Task<KnowledgeState> DeleteKnowledgeState(string userId, string ksId, string graphName)
         {
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
             var query = mc.AsQueryable().Where(p => p.subjectId == ksId && p.userId == userId && p.knowledgeGraphName == graphName);
             var old = await query.FirstOrDefaultAsync();
-            await mc.DeleteManyAsync(Builders<KnowledgeState>.Filter.Eq(r => r.userId, userId) & Builders<KnowledgeState>.Filter.Eq(r => r.subjectId, ksId) & Builders<KnowledgeState>.Filter.Eq(r => r.knowledgeGraphName, graphName));
+            await mc.DeleteManyAsync(Builders<CosmosKnowledgeState>.Filter.Eq(r => r.userId, userId) & Builders<CosmosKnowledgeState>.Filter.Eq(r => r.subjectId, ksId) & Builders<CosmosKnowledgeState>.Filter.Eq(r => r.knowledgeGraphName, graphName));
             return old;
         }
 
@@ -269,10 +267,11 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<List<KGraph>> GetKGraphsAsync(string userId)
         {
-            var mc = db.GetCollection<KGraph>(kgraphcollection);
+            var mc = db.GetCollection<CosmosKGraph>(kgraphcollection);
             var query = mc.AsQueryable()
             .Where(p => p.userId == userId && !(p.hidden == true));
-            return await query.ToListAsync();
+            var graphs =  await query.ToListAsync();
+            return graphs.ToList<KGraph>();
         }
 
         public async Task<int> GetKGraphCountAsync(string userId)
@@ -285,7 +284,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<KGraph> GetKGModel(string userId, string model)
         {
-            var mc = db.GetCollection<KGraph>(kgraphcollection);
+            var mc = db.GetCollection<CosmosKGraph>(kgraphcollection);
             var query = mc.AsQueryable()
             .Where(p => p.userId == userId && p.Name == model);
             return await query.FirstOrDefaultAsync();
@@ -293,8 +292,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<KGraph> CreateKGraph(string userId, string name)
         {
-            var mc = db.GetCollection<KGraph>(kgraphcollection);
-            var model = new KGraph { Name = name, userId = userId};
+            var mc = db.GetCollection<CosmosKGraph>(kgraphcollection);
+            var model = new CosmosKGraph { Name = name, userId = userId, };
             await mc.InsertOneAsync(model);
             return model;
         }
@@ -304,43 +303,34 @@ namespace Darl.GraphQL.Models.Connectivity
             var existing = await GetKGModel(userId, name);
             if (existing == null)
                 return existing;
-            var collection = db.GetCollection<KGraph>(kgraphcollection);
-            var filter = Builders<KGraph>.Filter.Where(x => x.userId == userId && x.Name == name);
-            var updList = new List<UpdateDefinition<KGraph>>();
-            if (kgupdate.Description != null)
-                updList.Add(Builders<KGraph>.Update.Set(x => x.Description, kgupdate.Description));
+            var collection = db.GetCollection<CosmosKGraph>(kgraphcollection);
+            var filter = Builders<CosmosKGraph>.Filter.Where(x => x.userId == userId && x.Name == name);
+            var updList = new List<UpdateDefinition<CosmosKGraph>>();
             if (kgupdate.ReadOnly != null)
-                updList.Add(Builders<KGraph>.Update.Set(x => x.ReadOnly, kgupdate.ReadOnly));
-            if (kgupdate.dateDisplay != null)
-                updList.Add(Builders<KGraph>.Update.Set(x => x.dateDisplay, kgupdate.dateDisplay));
-            if (kgupdate.inferenceTime != null)
-                updList.Add(Builders<KGraph>.Update.Set(x => x.inferenceTime, kgupdate.inferenceTime));
-            if (kgupdate.fixedTime != null)
-                updList.Add(Builders<KGraph>.Update.Set(x => x.fixedTime, kgupdate.fixedTime));
-            if (kgupdate.InitialText != null)
-                updList.Add(Builders<KGraph>.Update.Set(x => x.InitialText, kgupdate.InitialText));
+                updList.Add(Builders<CosmosKGraph>.Update.Set(x => x.ReadOnly, kgupdate.ReadOnly));
             if (kgupdate.hidden != null)
-                updList.Add(Builders<KGraph>.Update.Set(x => x.hidden, kgupdate.hidden));
-            var update = Builders<KGraph>.Update.Combine(updList);
-            return await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<KGraph, KGraph> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
+                updList.Add(Builders<CosmosKGraph>.Update.Set(x => x.hidden, kgupdate.hidden));
+            var update = Builders<CosmosKGraph>.Update.Combine(updList);
+            return await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<CosmosKGraph, CosmosKGraph> { IsUpsert = false, ReturnDocument = ReturnDocument.After });
         }
 
         public async Task<KGraph> DeleteKGraph(string userId, string name)
         {
-            var mc = db.GetCollection<KGraph>(kgraphcollection);
+            var mc = db.GetCollection<CosmosKGraph>(kgraphcollection);
             var query = mc.AsQueryable()
             .Where(p => p.userId == userId && p.Name == name);
             var old = await query.FirstOrDefaultAsync();
-            await mc.DeleteOneAsync(Builders<KGraph>.Filter.Eq(r => r.userId, userId) & Builders<KGraph>.Filter.Eq(r => r.Name, name));
+            await mc.DeleteOneAsync(Builders<CosmosKGraph>.Filter.Eq(r => r.userId, userId) & Builders<CosmosKGraph>.Filter.Eq(r => r.Name, name));
             return old;
         }
 
         public async Task<List<KnowledgeState>> GetKnowledgeStatesByTypeAndAttributeExistence(string userId, string objectId, string graphName, string attLineage)
         {
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
             var query = mc.AsQueryable()
             .Where(p => p.userId == userId && p.knowledgeGraphName == graphName && p.data.ContainsKey(objectId) && p.data[objectId].Any(a => a.lineage == attLineage));
-            return await query.ToListAsync();
+            var states = await query.ToListAsync();
+            return states.ToList<KnowledgeState>();
         }
 
         public async Task<string> ShareKGraph(string userId, string name, string sharerId, bool readOnly, bool hidden)
@@ -349,16 +339,16 @@ namespace Darl.GraphQL.Models.Connectivity
             if (model == null)
                 return "failed";
             //create a record with sharerId as userId and Shared set.
-            var kg = new KGraph { Name = name, OwnerId = userId, userId = sharerId, Shared = true, ReadOnly = readOnly, Description = model.Description, hidden = hidden };
-            var mc = db.GetCollection<KGraph>(kgraphcollection);
+            var kg = new CosmosKGraph { Name = name, OwnerId = userId, userId = sharerId, Shared = true, ReadOnly = readOnly, hidden = hidden };
+            var mc = db.GetCollection<CosmosKGraph>(kgraphcollection);
             await mc.InsertOneAsync(kg);
             return "success";
         }
 
         public async Task<long> DeleteAllKnowledgeStates(string userId, string graphName)
         {
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
-            var ds = await mc.DeleteManyAsync(Builders<KnowledgeState>.Filter.Eq(r => r.userId, userId) & Builders<KnowledgeState>.Filter.Eq(r => r.knowledgeGraphName, graphName));
+            var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
+            var ds = await mc.DeleteManyAsync(Builders<CosmosKnowledgeState>.Filter.Eq(r => r.userId, userId) & Builders<CosmosKnowledgeState>.Filter.Eq(r => r.knowledgeGraphName, graphName));
             return ds.DeletedCount;
         }
     }

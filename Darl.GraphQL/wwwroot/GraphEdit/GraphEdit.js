@@ -134,8 +134,8 @@ $(async function () {
         }
     }
 
-    allkgmodels = graph(`{ kgraphs { name description initialText dateDisplay inferenceTime fixedTime{raw dateTimeOffset dateTime}}}`);
-    kgraph = graph('query kg($name: String!){kGraphByName(name: $name){name description initialText dateDisplay inferenceTime fixedTime{raw dateTimeOffset dateTime}}}');
+    allkgmodels = graph(`{ kgraphs { name model {description initialText dateDisplay inferenceTime fixedTime{raw dateTimeOffset dateTime}}}}`);
+    kgraph = graph('query kg($name: String!){kGraphByName(name: $name){name model {description initialText dateDisplay inferenceTime fixedTime{raw dateTimeOffset dateTime}}}}');
     realkgraphdata = graph('query kgd($model: String!){getRealKGDisplay(graphName: $model){nodes{data{ id label lineage sublineage externalId}} edges{ data{ id label source target}}}}');
     virtualkgraphdata = graph('query vkgd($model: String!){getVirtualKGDisplay(graphName: $model){nodes{data{ id lineage parent label}} edges{ data{ id label source target}}}}');
     recognitionkgraphdata = graph('query rkgd($model: String!){getRecognitionKGDisplay(graphName: $model){nodes{data{ id label lineage parent label}} edges{ data{ id label source target}}}}');
@@ -188,11 +188,11 @@ $(async function () {
         fixedTimes = {};
         try {
             var kgmeta = await kgraph({ name: mdname });
-            descriptions[mdname] = kgmeta.kGraphByName.description;
-            initialTexts[mdname] = kgmeta.kGraphByName.initialText;
-            dateDisplays[mdname] = kgmeta.kGraphByName.dateDisplay;
-            inferenceTimes[mdname] = kgmeta.kGraphByName.inferenceTime;
-            fixedTimes[mdname] = kgmeta.kGraphByName.fixedTime;
+            descriptions[mdname] = kgmeta.kGraphByName.model.description;
+            initialTexts[mdname] = kgmeta.kGraphByName.model.initialText;
+            dateDisplays[mdname] = kgmeta.kGraphByName.model.dateDisplay;
+            inferenceTimes[mdname] = kgmeta.kGraphByName.model.inferenceTime;
+            fixedTimes[mdname] = kgmeta.kGraphByName.model.fixedTime;
         }
         catch (err) {
             window.location.replace("/index");
@@ -363,11 +363,11 @@ async function updateDropdown() {
         fixedTimes = {};
         $.each(rs.kgraphs, function (key, entry) {
             dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry.name).text(entry.name));
-            descriptions[entry.name] = entry.description;
-            initialTexts[entry.name] = entry.initialText;
-            dateDisplays[entry.name] = entry.dateDisplay;
-            inferenceTimes[entry.name] = entry.inferenceTime;
-            fixedTimes[entry.name] = entry.fixedTime;
+            descriptions[entry.name] = entry.model.description;
+            initialTexts[entry.name] = entry.model.initialText;
+            dateDisplays[entry.name] = entry.vdateDisplay;
+            inferenceTimes[entry.name] = entry.model.inferenceTime;
+            fixedTimes[entry.name] = entry.model.fixedTime;
         });
     }
     catch (err) {

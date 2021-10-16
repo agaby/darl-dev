@@ -31,21 +31,25 @@ namespace Darl.GraphQL.Models.Connectivity
             _config = config;
             _logger = logger;
             db = new LiteDatabase(_config["LOCALDATABASEPATH"]);
+            db.UtcDate = true;
             var mapper = BsonMapper.Global;
-            mapper.Entity<KGraph>().Id(x => x.Id);
+            mapper.Entity<LiteKGraph>().Id(x => x.Id);
             mapper.Entity<DarlTime>().Ignore(x => x.dateTime).Ignore(x => x.dateTimeOffset).Ignore(x => x.year).Ignore(x => x.season);
+            var mc = db.GetCollection<LiteKnowledgeState>(knowledgestateCollection);
+            mc.EnsureIndex(x => x.subjectId);
+            mc.EnsureIndex(x => x.knowledgeGraphName);
         }
         public Task<KGraph> CreateKGraph(string userId, string name)
         {
-            var mc = db.GetCollection<KGraph>(kgraphcollection);
-            var model = new KGraph { Name = name, userId = userId };
+            var mc = db.GetCollection<LiteKGraph>(kgraphcollection);
+            var model = new LiteKGraph { Name = name, userId = userId };
             mc.Insert(model);
-            return Task.FromResult(model);
+            return Task.FromResult(model as KGraph);
         }
 
         public Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state)
         {
-            var kstate = new KnowledgeState { knowledgeGraphName = state.knowledgeGraphName, subjectId = state.subjectId, userId = userId, created = DateTime.UtcNow };
+            var kstate = new LiteKnowledgeState { knowledgeGraphName = state.knowledgeGraphName, subjectId = state.subjectId, userId = userId, created = DateTime.UtcNow };
             foreach (var s in state.data)
             {
                 if (!kstate.data.ContainsKey(s.name))
@@ -57,61 +61,58 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                 }
             }
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
-            mc.EnsureIndex(x => x.subjectId);
-            mc.EnsureIndex(x => x.knowledgeGraphName);
-            //ensure user/graphName/subjectId combination is unique
+            var mc = db.GetCollection<LiteKnowledgeState>(knowledgestateCollection);
             mc.DeleteMany(x => x.subjectId == state.subjectId && x.knowledgeGraphName == state.knowledgeGraphName);
             mc.Insert(kstate);
-            return Task.FromResult(kstate);
+            return Task.FromResult(kstate as KnowledgeState);
         }
 
         public Task<long> DeleteAllKnowledgeStates(string userId, string graphName)
         {
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var mc = db.GetCollection<LiteKnowledgeState>(knowledgestateCollection);
             var ds = mc.DeleteMany(x => x.knowledgeGraphName == graphName);
             return Task.FromResult<long>(ds);
         }
 
         public Task<KGraph> DeleteKGraph(string userId, string name)
         {
-            var mc = db.GetCollection<KGraph>(kgraphcollection);
+            var mc = db.GetCollection<LiteKGraph>(kgraphcollection);
             mc.EnsureIndex(x => x.Name);
             var old = mc.FindOne(x => x.Name == name);
             mc.DeleteMany(x =>x.Name == name);
-            return Task.FromResult(old);
+            return Task.FromResult(old as KGraph);
         }
 
         public Task<KnowledgeState> DeleteKnowledgeState(string userId, string ksId, string graphName)
         {
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
+            var mc = db.GetCollection<LiteKnowledgeState>(knowledgestateCollection);
             var old = mc.FindOne(x => x.subjectId == ksId && x.knowledgeGraphName == graphName); ;
             mc.DeleteMany(x => x.subjectId == ksId && x.knowledgeGraphName == graphName);
-            return Task.FromResult(old);
+            return Task.FromResult(old as KnowledgeState);
         }
 
         public Task<KGraph> GetKGModel(string userId, string model)
         {
-            var mc = db.GetCollection<KGraph>(kgraphcollection);
-            return Task.FromResult(mc.FindOne(x => x.Name == model));
+            var mc = db.GetCollection<LiteKGraph>(kgraphcollection);
+            return Task.FromResult(mc.FindOne(x => x.Name == model) as KGraph);
         }
 
         public Task<int> GetKGraphCountAsync(string userId)
         {
-            var mc = db.GetCollection<KGraph>(kgraphcollection);
+            var mc = db.GetCollection<LiteKGraph>(kgraphcollection);
             return Task.FromResult(mc.Count());
         }
 
         public Task<List<KGraph>> GetKGraphsAsync(string userId)
         {
-            var mc = db.GetCollection<KGraph>(kgraphcollection);
-            return Task.FromResult(mc.FindAll().ToList());
+            var mc = db.GetCollection<LiteKGraph>(kgraphcollection);
+            return Task.FromResult(mc.FindAll().ToList<KGraph>());
         }
 
         public Task<KnowledgeState> GetKnowledgeState(string userId, string ksId, string graphName)
         {
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
-            return Task.FromResult(mc.FindOne(x => x.subjectId == ksId && x.knowledgeGraphName == graphName));
+            var mc = db.GetCollection<LiteKnowledgeState>(knowledgestateCollection);
+            return Task.FromResult(mc.FindOne(x => x.subjectId == ksId && x.knowledgeGraphName == graphName) as KnowledgeState);
         }
 
         public Task<KnowledgeState> GetKnowledgeStateByTypeAndAttribute(string userId, string objectId, string graphName, string attLineage, string attValue)
@@ -121,8 +122,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public Task<List<KnowledgeState>> GetKnowledgeStates(string userId, string graphName)
         {
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
-            return Task.FromResult(mc.Find(x => x.knowledgeGraphName == graphName).ToList());
+            var mc = db.GetCollection<LiteKnowledgeState>(knowledgestateCollection);
+            return Task.FromResult(mc.Find(x => x.knowledgeGraphName == graphName).ToList<KnowledgeState>());
         }
 
         public Task<IAsyncCursor<KnowledgeState>> GetKnowledgeStatesBatched(string userId, string graphName)
@@ -157,41 +158,32 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public Task<KGraph> UpdateKGraph(string userId, string name, KGraphUpdate kgupdate)
         {
-            var existing = GetKGModel(userId, name).Result;
+            var mc = db.GetCollection<LiteKGraph>(kgraphcollection);
+            var existing = mc.FindOne(x => x.Name == name);
             if (existing == null)
                 return Task.FromResult<KGraph>(null);
-            var collection = db.GetCollection<KGraph>(kgraphcollection);
-            if (kgupdate.Description != null)
-                existing.Description=  kgupdate.Description;
             if (kgupdate.ReadOnly != null)
                 existing.ReadOnly = kgupdate.ReadOnly;
-            if (kgupdate.dateDisplay != null)
-                existing.dateDisplay = kgupdate.dateDisplay;
-            if (kgupdate.inferenceTime != null)
-                existing.inferenceTime = kgupdate.inferenceTime;
-            if (kgupdate.fixedTime != null)
-                existing.fixedTime = kgupdate.fixedTime;
-            if (kgupdate.InitialText != null)
-                existing.InitialText = kgupdate.InitialText;
             if (kgupdate.hidden != null)
                 existing.hidden = kgupdate.hidden;
-            collection.Update(existing);
-            return Task.FromResult(existing);
+            mc.Update(existing);
+            return Task.FromResult(existing as KGraph);
         }
 
         public Task<KnowledgeState> UpdateKnowledgeState(string userId, string ksId, KnowledgeStateUpdate state)
         {
-            var ks = GetKnowledgeState(userId, ksId, state.knowledgeGraphName).Result;
-            if(ks != null)
+            var mc = db.GetCollection<LiteKnowledgeState>(knowledgestateCollection);
+            var ks = mc.FindOne(x => x.subjectId == ksId && x.knowledgeGraphName == state.knowledgeGraphName);
+            if(ks == null)
             {
-                if (state.data != null)
-                {
-                    ks.data = state.data;
-                }
+                ks = new LiteKnowledgeState { knowledgeGraphName = state.knowledgeGraphName, subjectId = ksId, userId = userId, created = DateTime.UtcNow };
             }
-            var mc = db.GetCollection<KnowledgeState>(knowledgestateCollection);
-            mc.Update(ks);
-            return Task.FromResult(ks);
+            if (state.data != null)
+            {
+                ks.data = state.data;
+            }
+            mc.Upsert(ks);
+            return Task.FromResult(ks as KnowledgeState);
         }
     }
 }

@@ -40,7 +40,7 @@ namespace Darl.GraphQL.Test
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StorageConnectionString")]).Returns("DefaultEndpointsProtocol=https;AccountName=darlai;AccountKey=errnwefiVeXcDr0aKbHDxXjblOQhwFwHkeG4qR4caChkABnzp9MNeBBX0FP1jc4DnXPGztI67pbEBXDqA1dPCw==");
 
 
-            var blogger = new Mock<ILogger<BlobConnectivity>>();
+            var blogger = new Mock<ILogger<BlobGraphConnectivity>>();
             var clogger = new Mock<ILogger<CosmosDBConnectivity>>();
             var clicense = new Mock<ILicensing>();
             var cache = new Mock<IDistributedCache>();

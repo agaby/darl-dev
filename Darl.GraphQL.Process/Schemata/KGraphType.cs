@@ -18,9 +18,6 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.Name).Description("The unique name of the knowledge graph");
             Field(c => c.Description, true).Description("A description of the knowledge graph");
             Field(c => c.InitialText, true).Description("Default initial text for the conversation");
-            Field<DateDisplayEnum>("dateDisplay", "Determines if the display form is recent or historic", resolve: context => context.Source.dateDisplay);
-            Field<InferenceTimeEnum>("inferenceTime", "Determines if inferences are performed with a current or fixed time.", resolve: context => context.Source.inferenceTime);
-            Field<DarlTimeType>("fixedTime", "The time of the inference process if in fixed time mode", resolve: context => context.Source.fixedTime);
             Field<GraphModelType>("model", resolve: context => graph.GetModel(context.Source.userId,context.Source.Name));
         }
     }

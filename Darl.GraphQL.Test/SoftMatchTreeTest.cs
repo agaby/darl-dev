@@ -39,7 +39,7 @@ namespace Darl.GraphQL.Test
             configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("5ee43551-c05c-4cff-8582-c08f23f84c14");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StorageConnectionString")]).Returns("DefaultEndpointsProtocol=https;AccountName=darlai;AccountKey=errnwefiVeXcDr0aKbHDxXjblOQhwFwHkeG4qR4caChkABnzp9MNeBBX0FP1jc4DnXPGztI67pbEBXDqA1dPCw==");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:BlobContainer")]).Returns("darldevblobs");
-            var bloblogger = new Mock<ILogger<BlobConnectivity>>();
+            var bloblogger = new Mock<ILogger<BlobGraphConnectivity>>();
             var cmplogger = new Mock<ILogger<SoftMatchProcessing>>();
             //            var bc = new BlobConnectivity(configuration.Object, bloblogger.Object);
             var bc = new LocalBlob();
@@ -236,6 +236,11 @@ namespace Darl.GraphQL.Test
         Dictionary<string, byte[]> localData = new Dictionary<string, byte[]>();
 
         public string implementation => nameof(LocalBlob);
+
+        public string CreateTimedAccessUrl(string name)
+        {
+            throw new NotImplementedException();
+        }
 
         public Task<bool> Delete(string name)
         {

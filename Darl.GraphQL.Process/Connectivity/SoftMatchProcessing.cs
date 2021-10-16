@@ -21,7 +21,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private ILogger _logger;
         public SoftMatchProcessing(IEnumerable<IBlobConnectivity> blobs, ILogger<SoftMatchProcessing> logger)
         {
-            _blob = blobs.FirstOrDefault(h => h.implementation == nameof(BlobConnectivity));
+            _blob = blobs.FirstOrDefault(h => h.implementation == nameof(BlobGraphConnectivity));
             _logger = logger;
         }
 

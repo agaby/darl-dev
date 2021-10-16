@@ -1,0 +1,14 @@
+﻿@page
+@model Darl.GraphQL.Pages._layoutEmptyContainerModel
+@{
+}
+
+        <form method="post" enctype="multipart/form-data">
+            <input type="file" asp-for="Upload" />
+            <input type="submit" />
+        </form>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

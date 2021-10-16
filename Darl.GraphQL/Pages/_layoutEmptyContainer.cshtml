@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>ThinkBase Container</title>
+    <style>
+
+        body {
+            height: 100%;
+            margin: 0;
+            overflow: auto;
+            width: 100%;
+        }
+    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+    @{
+        IgnoreSection("header");
+        IgnoreSection("StyleSheets");
+        IgnoreSection("Scripts");
+        IgnoreBody();
+    }
+</head>
+<body>
+    <div class="text-center">
+        <H1 style="color:blue">Welcome to the ThinkBase Docker Container</H1>
+        <p>This is provided as a reuseable runtime for a single ThinkBase knowledge graph.</p>
+        <p>To use it, first export a knowledge graph from your account at <a href="https://darl.dev">https://darl.dev</a>.</p>
+        <p>Upload the knowledge graph using the control below.</p>
+        <p>The resulting composite container can be freely used in your applications.</p>
+        <p>Knowledge graph files are signed, so this container will only work with files generated from the darl.dev site.</p>
+        <p>&nbsp;</p>
+        <div class="row">
+            <partial name="_GraphFileUpload" model="Model"/>
+        </div>
+    </div>
+
+    <footer class="footer text-center">
+        <p class="footer">&copy; @DateTime.Now.Year - Dr Andy's IP. DARL® is a registered trademark of Dr Andy's IP. <a href="https://darl.ai/home/terms" target="_blank">Terms </a><a href="https://darl.ai/home/terms" target="_blank">Privacy </a> RQRF, .Net core 3.1</p>
+    </footer>
+</body>
+</html>

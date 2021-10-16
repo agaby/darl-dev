@@ -20,7 +20,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public string implementation => nameof(BlobGraphConnectivity);
 
-        public BlobGraphConnectivity(IConfiguration config, ILogger<BlobConnectivity> logger)
+        public BlobGraphConnectivity(IConfiguration config, ILogger<BlobGraphConnectivity> logger)
         {
             _config = config;
             _logger = logger;
@@ -81,6 +81,17 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
             }
             return abbreviatedList;
+        }
+        public string CreateTimedAccessUrl(string name)
+        {
+            var blob = _container.GetBlockBlobReference(name);
+            SharedAccessBlobPolicy adHocSAS = new SharedAccessBlobPolicy()
+            {
+                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(24),
+                Permissions = SharedAccessBlobPermissions.Read
+            };
+            var sasBlobToken = blob.GetSharedAccessSignature(adHocSAS);
+            return blob.Uri + sasBlobToken;
         }
     }
 }

@@ -74,7 +74,7 @@ namespace Darl.GraphQL.Test
             var logger = new Mock<ILogger<GraphLocalStore>>();
             var botLogger = new Mock<ILogger<BotProcessing>>();
             var connLogger = new Mock<ILogger<CosmosDBConnectivity>>();
-            var blobLogger = new Mock<ILogger<BlobConnectivity>>();
+            var blobLogger = new Mock<ILogger<BlobGraphConnectivity>>();
             var bgplogger = new Mock<ILogger<BlobGraphPrimitives>>();
             var glogger = new Mock<ILogger<GraphProcessing>>();
             var context = new Mock<IHttpContextAccessor>();
@@ -87,7 +87,8 @@ namespace Darl.GraphQL.Test
             var conn = new Mock<IConnectivity>();
             var meta = new Mock<IMetaStructureHandler>();
             var trans = new Mock<IKGTranslation>();
-            var blob = new BlobGraphPrimitives(bc,cache.Object, conn.Object, bgplogger.Object);
+            var lic = new Mock<ILicensing>();
+            var blob = new BlobGraphPrimitives(bc,cache.Object, conn.Object, bgplogger.Object, lic.Object);
             _graph = new GraphProcessing(blob, glogger.Object,meta.Object);
             _graphStore = new GraphLocalStore(configuration.Object, logger.Object, context.Object, _graph);
             var ghandler = new Mock<IGraphHandler>();

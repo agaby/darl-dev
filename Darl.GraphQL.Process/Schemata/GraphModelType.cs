@@ -20,6 +20,14 @@ namespace Darl.GraphQL.Models.Schemata
             Field<ListGraphType<StringGraphConnectionPairType>>("edges", resolve: c => GetSGCPairsFromDictionary(c.Source.edges));
             Field<ListGraphType<StringGraphConnectionPairType>>("virtualEdges", resolve: c => GetSGCPairsFromDictionary(c.Source.virtualEdges));
             Field<ListGraphType<StringGraphConnectionPairType>>("recognitionEdges", resolve: c => GetSGCPairsFromDictionary(c.Source.recognitionEdges));
+            Field(c => c.author, true);
+            Field(c => c.copyright, true);
+            Field<DateDisplayEnum>("dateDisplay", resolve: c => c.Source.dateDisplay);
+            Field(c => c.description, true);
+            Field<DarlTimeType>("fixedTime", resolve: c => c.Source.fixedTime);
+            Field<InferenceTimeEnum>("inferenceTime", resolve: c => c.Source.inferenceTime);
+            Field(c => c.initialText, true);
+            Field(c => c.licenseUrl, true);
         }
 
         public static List<StringGraphObjectPair> GetSGOPairsFromDictionary(Dictionary<string, GraphObject> dict)

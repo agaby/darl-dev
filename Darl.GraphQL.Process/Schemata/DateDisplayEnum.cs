@@ -3,6 +3,7 @@ using GraphQL.Types;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static Darl.Thinkbase.IGraphModel;
 
 namespace Darl.GraphQL.Models.Schemata
 {
