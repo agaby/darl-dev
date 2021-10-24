@@ -1,8 +1,5 @@
 ﻿using Darl.Lineage.Bot;
 using GraphQL.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
@@ -14,7 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
             Description = "The bot's response to your input";
             Field(c => c.darl, true);
             Field(c => c.reference, true);
-            Field<DarlVarType>("response", resolve:  c => c.Source.response);
+            Field<DarlVarType>("response", resolve: c => c.Source.response);
             Field<ListGraphType<MatchedAnnotationType>>("matches", resolve: c => c.Source.matches);
         }
     }

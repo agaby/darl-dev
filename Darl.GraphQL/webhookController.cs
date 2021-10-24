@@ -5,9 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Stripe;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL
@@ -17,10 +15,10 @@ namespace Darl.GraphQL
     public class webhookController : ControllerBase
     {
 
-        private IHttpContextAccessor _context;
-        private IProducts _products;
-        private IKGTranslation _trans;
-        private IConfiguration _config;
+        private readonly IHttpContextAccessor _context;
+        private readonly IProducts _products;
+        private readonly IKGTranslation _trans;
+        private readonly IConfiguration _config;
 
         public webhookController(IHttpContextAccessor context, IProducts prod, IKGTranslation trans, IConfiguration config)
         {
@@ -54,7 +52,7 @@ namespace Darl.GraphQL
             if (stripeEvent.Type == "invoice.payment_succeeded")
             {
                 var invoice = stripeEvent.Data.Object as Invoice;
-                if(invoice != null)
+                if (invoice != null)
                 {
                     if (invoice.BillingReason == "subscription_create")
                     {
@@ -94,10 +92,10 @@ namespace Darl.GraphQL
             if (stripeEvent.Type == "customer.subscription.deleted")
             {
                 var subs = stripeEvent.Data.Object as Subscription;
-                if(subs != null)
+                if (subs != null)
                 {
                     var state = await _trans.GetUserAccountState(subs.CustomerId);
-                    if(state != DarlUser.AccountState.admin)
+                    if (state != DarlUser.AccountState.admin)
                     {
                         await _trans.UpdateUserAccountState(subs.CustomerId, DarlUser.AccountState.closed);
                     }

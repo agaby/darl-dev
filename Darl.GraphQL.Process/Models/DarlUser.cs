@@ -1,7 +1,6 @@
 ﻿using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Models
 {
@@ -34,7 +33,7 @@ namespace Darl.GraphQL.Models.Models
         /// </summary>
         public string InvoiceOrganization { get; set; }
 
-       /// <summary>
+        /// <summary>
         /// Email to send invoice
         /// </summary>
         public string InvoiceEmail { get; set; }
@@ -43,7 +42,7 @@ namespace Darl.GraphQL.Models.Models
         /// <summary>
         /// end of current subscription period.
         /// </summary>
-        public DateTime current_period_end { get; set; } 
+        public DateTime current_period_end { get; set; }
 
         public string StripeCustomerId { get; set; }
 

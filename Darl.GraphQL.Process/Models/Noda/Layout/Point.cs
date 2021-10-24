@@ -1,8 +1,4 @@
 ﻿using Darl.GraphQL.Models.Models.Noda;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Darl.GraphQL.Process.Models.Noda.Layout
 {
@@ -12,7 +8,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
         public double mass = 1.0;
         public Point(NodaPosition iPosition, NodaPosition iVelocity, NodaPosition iAcceleration, NodaNode iNode)
         {
-            position=iPosition;
+            position = iPosition;
             node = iNode;
             velocity = iVelocity;
             acceleration = iAcceleration;
@@ -38,7 +34,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
             }
 
             // Return true if the fields match:
-            return position==p.position;
+            return position == p.position;
         }
 
         public bool Equals(Point p)
@@ -50,12 +46,12 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
             }
 
             // Return true if the fields match:
-            return position==p.position;
+            return position == p.position;
         }
 
         public void ApplyForce(NodaPosition force)
         {
-            acceleration.Add(force/mass);
+            acceleration.Add(force / mass);
         }
 
         public NodaPosition position { get; set; }
@@ -63,5 +59,5 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
 
         public NodaPosition velocity { get; private set; }
         public NodaPosition acceleration { get; private set; }
-     }
+    }
 }

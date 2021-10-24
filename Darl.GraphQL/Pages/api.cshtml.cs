@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Darl.GraphQL.Models.Connectivity;
+﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Stripe;
 using Stripe.BillingPortal;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Pages
 {
     public class IndexModel : PageModel
     {
-        private IKGTranslation _connectivity;
-        private IConfiguration _config;
+        private readonly IKGTranslation _connectivity;
+        private readonly IConfiguration _config;
         public List<DarlProduct> products;
 
 
@@ -30,7 +28,7 @@ namespace Darl.GraphQL.Pages
 
         }
 
-        public  async Task<ActionResult> OnPostAsync()
+        public async Task<ActionResult> OnPostAsync()
         {
             if (User.Identity.Name != null)
             {

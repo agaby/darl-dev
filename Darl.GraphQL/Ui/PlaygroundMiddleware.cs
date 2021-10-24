@@ -1,15 +1,17 @@
+using Darl.GraphQL.Ui.Playground.Internal;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using Darl.GraphQL.Ui.Playground.Internal;
-using Microsoft.AspNetCore.Http;
 
-namespace Darl.GraphQL.Ui.Playground {
+namespace Darl.GraphQL.Ui.Playground
+{
 
     /// <summary>
     /// A middleware for Playground
     /// </summary>
-    public class PlaygroundMiddleware {
+    public class PlaygroundMiddleware
+    {
 
         private readonly GraphQLPlaygroundOptions settings;
 
@@ -28,7 +30,8 @@ namespace Darl.GraphQL.Ui.Playground {
         /// </summary>
         /// <param name="nextMiddleware">The Next Middleware</param>
         /// <param name="settings">The Settings of the Middleware</param>
-        public PlaygroundMiddleware(RequestDelegate nextMiddleware, GraphQLPlaygroundOptions settings) {
+        public PlaygroundMiddleware(RequestDelegate nextMiddleware, GraphQLPlaygroundOptions settings)
+        {
             this.nextMiddleware = nextMiddleware ?? throw new ArgumentNullException(nameof(nextMiddleware));
             this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
@@ -37,7 +40,8 @@ namespace Darl.GraphQL.Ui.Playground {
         /// Try to execute the logic of the middleware
         /// </summary>
         /// <param name="httpContext">The HttpContext</param>
-        public Task Invoke(HttpContext httpContext) {
+        public Task Invoke(HttpContext httpContext)
+        {
             if (httpContext == null) { throw new ArgumentNullException(nameof(httpContext)); }
 
             if (IsPlaygroundRequest(httpContext.Request))
@@ -48,12 +52,14 @@ namespace Darl.GraphQL.Ui.Playground {
             return nextMiddleware(httpContext);
         }
 
-        private bool IsPlaygroundRequest(HttpRequest httpRequest) {
+        private bool IsPlaygroundRequest(HttpRequest httpRequest)
+        {
             return httpRequest.Path.StartsWithSegments(this.settings.Path)
                 && string.Equals(httpRequest.Method, HttpMethods.Get, StringComparison.OrdinalIgnoreCase);
         }
 
-        private Task InvokePlayground(HttpResponse httpResponse) {
+        private Task InvokePlayground(HttpResponse httpResponse)
+        {
             httpResponse.ContentType = "text/html";
             httpResponse.StatusCode = 200;
 

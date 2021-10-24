@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Darl.GraphQL.Models.Models.Noda
 {
-    public enum NodaLinkShapes {Solid, Dash }
+    public enum NodaLinkShapes { Solid, Dash }
     public class NodaLink : NodaElement
     {
         public NodaNodeId fromNode { get; set; }

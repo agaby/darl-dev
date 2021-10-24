@@ -42,7 +42,7 @@ namespace Darl.GraphQL
 
         private bool InDocker { get { return Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true"; } }
 
-        private bool Licensed = true; //default for web site
+        private readonly bool Licensed = true; //default for web site
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -269,11 +269,11 @@ namespace Darl.GraphQL
                        policy.RequireRole("Corp"));
                 });
 
-            services.AddSingleton<IUserContextBuilder>(new UserContextBuilder<GraphQLUserContext>(ctx => new GraphQLUserContext{ User = ctx.User}));
+            services.AddSingleton<IUserContextBuilder>(new UserContextBuilder<GraphQLUserContext>(ctx => new GraphQLUserContext { User = ctx.User }));
 
             services.TryAddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.TryAddTransient(typeof(IGraphQLExecuter<>), typeof(DefaultGraphQLExecuter<>));
-//            services.AddSingleton(p => Options.Create(options(p)));
+            //            services.AddSingleton(p => Options.Create(options(p)));
 
             services.TryAddSingleton<IDocumentWriter>(x =>
             {
@@ -443,7 +443,7 @@ namespace Darl.GraphQL
         private async Task<DarlUser?> AddNewUser(HttpContext context, string objectId, IKGTranslation _rep)
         {
             try
-            { 
+            {
                 //extract claims that may be present
                 var firstNameClaim = context.User.Claims.Where(ai => ai.Type == firstNameClaimText).FirstOrDefault();
                 var firstName = firstNameClaim == null ? string.Empty : firstNameClaim.Value;
@@ -467,7 +467,7 @@ namespace Darl.GraphQL
                 }
                 var provider = "aadb2c";
                 var priceId = context.Request.Cookies["priceId"];
-                return await _rep.CreateAndRegisterNewUser(new DarlUserInput {userId = objectId, InvoiceEmail = emailClaim, Issuer = provider, InvoiceName = invoiceName, InvoiceOrganization = "", productId = priceId});
+                return await _rep.CreateAndRegisterNewUser(new DarlUserInput { userId = objectId, InvoiceEmail = emailClaim, Issuer = provider, InvoiceName = invoiceName, InvoiceOrganization = "", productId = priceId });
             }
             catch
             {

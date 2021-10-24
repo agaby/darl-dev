@@ -1,23 +1,23 @@
-﻿using System;
+﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.GraphQL.Models.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
-using Darl.GraphQL.Models.Connectivity;
-using Darl.GraphQL.Models.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
 
 namespace Darl.GraphQL.Pages
-{ 
+{
     public class ContactsModel : PageModel
     {
-        IKGTranslation _conn;
-        private IHttpContextAccessor _context;
+        readonly IKGTranslation _conn;
+        private readonly IHttpContextAccessor _context;
 
         public ContactsModel(IKGTranslation trans, IHttpContextAccessor context)
         {
@@ -99,9 +99,9 @@ namespace Darl.GraphQL.Pages
             {
                 var user = await _conn.GetUserByApiKey(_context.HttpContext.Request.Headers["apikey"].FirstOrDefault());
                 if (user == null || user.accountState != DarlUser.AccountState.admin)
-                    return ;
+                    return;
             }
-            else if(_context.HttpContext.User == null || !_context.HttpContext.User.IsInRole("Admin"))
+            else if (_context.HttpContext.User == null || !_context.HttpContext.User.IsInRole("Admin"))
             {
                 return;
             }
@@ -116,7 +116,7 @@ namespace Darl.GraphQL.Pages
                 if (user == null || user.accountState != DarlUser.AccountState.admin)
                     return;
             }
-            else if(_context.HttpContext.User == null || !_context.HttpContext.User.IsInRole("Admin"))
+            else if (_context.HttpContext.User == null || !_context.HttpContext.User.IsInRole("Admin"))
             {
                 return;
             }
@@ -176,7 +176,7 @@ namespace Darl.GraphQL.Pages
                         con.Created = DateTime.Now;
                         await _conn.CreateContactAsync(con);
                     }
-                    catch 
+                    catch
                     {
 
                     }

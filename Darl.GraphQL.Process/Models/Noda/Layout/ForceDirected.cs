@@ -214,7 +214,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
                 double displacement = direction.Magnitude();
                 direction = direction.Normalize();
                 point.ApplyForce(direction * (Stiffness * displacement * 0.4));
-          
+
             }
         }
 

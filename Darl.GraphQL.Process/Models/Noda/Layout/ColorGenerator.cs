@@ -1,8 +1,5 @@
 ﻿using Darl.GraphQL.Models.Models.Noda;
-using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
 
 namespace Darl.GraphQL.Process.Models.Noda.Layout
 {
@@ -13,7 +10,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
             var colors = new List<NodaTone>();
             if (num < 2)
                 return colors;
-            float dx = 1.0f / (float)(num - 1);
+            float dx = 1.0f / (num - 1);
             for (int i = 0; i < num; i++)
             {
                 colors.Add(get(i * dx));

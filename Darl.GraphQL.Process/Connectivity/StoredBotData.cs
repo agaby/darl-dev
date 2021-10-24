@@ -1,8 +1,7 @@
 ﻿using Darl.Lineage.Bot.Stores;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using ProtoBuf;
 
 namespace Darl.GraphQL.Process.Connectivity
 {
@@ -34,9 +33,9 @@ namespace Darl.GraphQL.Process.Connectivity
         {
             if (ContainsKey(v))
             {
-                if(typeof(T) == typeof(double))
+                if (typeof(T) == typeof(double))
                 {
-                    if(double.TryParse(data[v], out double dvalo))
+                    if (double.TryParse(data[v], out double dvalo))
                     {
                         dval = (T)Convert.ChangeType(data[v], typeof(T));
                         return false;

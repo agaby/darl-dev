@@ -1,6 +1,5 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Middleware;
-using Darl.GraphQL.Models.Models;
 using Darl.Thinkbase;
 using GraphQL.Types;
 using Microsoft.Extensions.Configuration;
@@ -497,10 +496,21 @@ namespace Darl.GraphQL.Models.Schemata
                 ),
                 resolve: async context =>
                 {
-                    KnowledgeStateInput ks = (KnowledgeStateInput)context.GetArgument(typeof(KnowledgeStateInput),"ks");
+                    KnowledgeStateInput ks = (KnowledgeStateInput)context.GetArgument(typeof(KnowledgeStateInput), "ks");
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await graph.CreateKnowledgeState(userId,ks));
+                        async c => await graph.CreateKnowledgeState(userId, ks));
+                }
+            );
+            FieldAsync<ListGraphType<KnowledgeStateType>>("createKnowledgeStateList", "Creates or updates a list of knowledge states in order. Maximum count is 50", arguments: new QueryArguments(
+                 new QueryArgument<NonNullGraphType<ListGraphType<KnowledgeStateInputType>>> { Name = "ksl", Description = "The new knowledge states" }
+                ),
+                resolve: async context =>
+                {
+                    var ksl = context.GetArgument<List<KnowledgeStateInput>>("ks");
+                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await graph.CreateKnowledgeStateList(userId, ksl));
                 }
             );
             FieldAsync<KnowledgeStateType>("deleteKnowledgeState", "deletes a knowledge state", arguments: new QueryArguments(

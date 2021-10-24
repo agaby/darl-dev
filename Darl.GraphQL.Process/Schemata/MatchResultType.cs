@@ -1,9 +1,5 @@
-﻿using Darl.GraphQL.Models.Models;
-using Darl.SoftMatch;
+﻿using Darl.SoftMatch;
 using GraphQL.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {

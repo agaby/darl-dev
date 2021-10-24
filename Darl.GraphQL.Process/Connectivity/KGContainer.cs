@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
@@ -18,13 +17,13 @@ namespace Darl.GraphQL.Models.Connectivity
     public class KGContainer : IKGTranslation
     {
 
-        private IConfiguration _config;
-        private ILicensing _licensing;
-        private ILogger _logger;
-        private string userId;
-        private IConnectivity _conn;
-        private DarlMetaRunTime metaRuntime = new DarlMetaRunTime(new MetaStructureHandler());
-        private IGraphProcessing _graph;
+        private readonly IConfiguration _config;
+        private readonly ILicensing _licensing;
+        private readonly ILogger _logger;
+        private readonly string userId;
+        private readonly IConnectivity _conn;
+        private readonly DarlMetaRunTime metaRuntime = new DarlMetaRunTime(new MetaStructureHandler());
+        private readonly IGraphProcessing _graph;
 
 
         public KGContainer(IConfiguration config, ILogger<KGContainer> logger, ILicensing licensing, IConnectivity conn, IGraphProcessing graph)
@@ -48,7 +47,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 if (name.EndsWith(".graph"))
                 {
                     var filename = name.Substring(name.Remove(name.Length - 6).LastIndexOf('.') + 1);
-                    if(!kgraphs.Any( a => a.Name == filename))
+                    if (!kgraphs.Any(a => a.Name == filename))
                         await _conn.CreateKGraph(userId, filename);
                 }
             }
@@ -337,13 +336,18 @@ namespace Darl.GraphQL.Models.Connectivity
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                 }
 
             }
             return Task.FromResult(errorList);
+        }
+
+        public Task<List<GraphAttribute>> GetConceptCloudData(string userId, string graphName, string address)
+        {
+            throw new NotImplementedException();
         }
     }
 }

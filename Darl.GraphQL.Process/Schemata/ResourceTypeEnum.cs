@@ -1,13 +1,10 @@
 ﻿using GraphQL.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
-    public enum ResourceType { ruleset,mlmodel,botmodel,document,collateral,simulation}
+    public enum ResourceType { ruleset, mlmodel, botmodel, document, collateral, simulation }
     public class ResourceTypeEnum : EnumerationGraphType
-    { 
+    {
         public ResourceTypeEnum()
         {
             Name = "resourceTypes";

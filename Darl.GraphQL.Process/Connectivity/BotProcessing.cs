@@ -2,16 +2,13 @@
 using Darl.GraphQL.Process.Connectivity;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
-using Darl.Lineage.Bot.Stores;
 using Darl.Thinkbase;
 using DarlCommon;
 using DarlCompiler.Interpreter;
 using GraphQL;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using ProtoBuf;
 using System;
 using System.Collections.Generic;
@@ -23,15 +20,15 @@ namespace Darl.GraphQL.Models.Connectivity
 {
     public class BotProcessing : IBotProcessing
     {
-        IConnectivity _conv;
-        private ILogger<BotProcessing> _logger;
-        private IConfiguration _config;
-        IGraphProcessing _graph;
-        IGraphHandler _ghandler;
-        IDistributedCache _cache;
+        readonly IConnectivity _conv;
+        private readonly ILogger<BotProcessing> _logger;
+        private readonly IConfiguration _config;
+        readonly IGraphProcessing _graph;
+        readonly IGraphHandler _ghandler;
+        readonly IDistributedCache _cache;
 
 
-        public BotProcessing(IConnectivity conv,  ILogger<BotProcessing> logger, IConfiguration config, IGraphProcessing graph, IGraphHandler ghandler, IDistributedCache cache)
+        public BotProcessing(IConnectivity conv, ILogger<BotProcessing> logger, IConfiguration config, IGraphProcessing graph, IGraphHandler ghandler, IDistributedCache cache)
         {
             _conv = conv;
             _logger = logger;
@@ -66,11 +63,11 @@ namespace Darl.GraphQL.Models.Connectivity
                     if (r.response.dataType == DarlVar.DataType.seek)
                     {
                         //emit any preceding messages before starting seek.
-                        foreach(var c in responses)
+                        foreach (var c in responses)
                         {
                             if (c == r)
                                 break;
-                            if(c.response.dataType != DarlVar.DataType.seek)
+                            if (c.response.dataType != DarlVar.DataType.seek)
                             {
                                 _logger.LogInformation($"Emitting text before seek: {c.response.Value}, id= {conversationId}, KGName= {KnowledgeGraphName}, userId = {userId}");
                                 resp.Add(c);
@@ -79,14 +76,14 @@ namespace Darl.GraphQL.Models.Connectivity
                         bs.kGraphData = r.response.sequence;
                         bs.pending = null;
                         var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending, GraphProcess.seek);
-                        if(!res.Item1.Any())
+                        if (!res.Item1.Any())
                         {
                             //no connection found
                         }
                         resp.Add(res.Item1.First());
                         bs.pending = res.Item2;
                     }
-                    else if(r.response.dataType == DarlVar.DataType.discover)
+                    else if (r.response.dataType == DarlVar.DataType.discover)
                     {
                         //emit any preceding messages before starting seek.
                         foreach (var c in responses)
@@ -101,8 +98,8 @@ namespace Darl.GraphQL.Models.Connectivity
                         }
                         bs.kGraphData = r.response.sequence;
                         bs.pending = null;
-                        var discoverResp = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending, GraphProcess.discover); 
-                        if(discoverResp.Item1.Any())
+                        var discoverResp = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending, GraphProcess.discover);
+                        if (discoverResp.Item1.Any())
                         {
                             resp.AddRange(discoverResp.Item1);
                         }
@@ -118,7 +115,6 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                     if (r.response.approximate)
                     {
-                        string version = "unknown";
                         _logger.LogInformation($"top level default response, text = {r.response.Value}, KGName= {KnowledgeGraphName}, userId = {userId}");
                     }
                 }
@@ -132,18 +128,18 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 //pass text through the navigation recognition tree checking for help, quit etc.
                 var responses = await _ghandler.InterpretText(userId, KnowledgeGraphName, "navigation:", conversationData);
-                if(responses.Any())
+                if (responses.Any())
                 {
                     var r = responses.Last();
-                    if(r.response.name == "response")
+                    if (r.response.name == "response")
                     {
                         resp.Add(r);
                     }
-                    else if(r.response.name == "terminate")
+                    else if (r.response.name == "terminate")
                     {
                         bs.kGraphData = null;
                         bs.pending = null;
-                        resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Quitting...", dataType = DarlVar.DataType.textual, name = "response"} });
+                        resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Quitting...", dataType = DarlVar.DataType.textual, name = "response" } });
                     }
                 }
                 else //continue processing the KGraph
@@ -171,11 +167,11 @@ namespace Darl.GraphQL.Models.Connectivity
                             }
                         }
                     }
-                    catch(ScriptException ex)
+                    catch (ScriptException ex)
                     {
-                        resp.Add(new InteractTestResponse { darl = "", response = new DarlVar { dataType= DarlVar.DataType.textual, Value = $"_Rule error: {ex.Message} location: {ex.Location}._ " } });
+                        resp.Add(new InteractTestResponse { darl = "", response = new DarlVar { dataType = DarlVar.DataType.textual, Value = $"_Rule error: {ex.Message} location: {ex.Location}._ " } });
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         throw new ExecutionError($"Internal Error in GraphPass", ex);
                     }

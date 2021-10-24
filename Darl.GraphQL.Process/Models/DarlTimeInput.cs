@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Models
 {
-    public enum DarlSeason { winter,spring,summer,fall};
+    public enum DarlSeason { winter, spring, summer, fall };
     public class DarlTimeInput
     {
         public double raw { get; set; }

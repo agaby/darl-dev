@@ -1,9 +1,9 @@
-﻿using System;
-using ZeroBounce.Models;
-using System.Net;
+﻿using Newtonsoft.Json;
+using System;
 using System.IO;
-using Newtonsoft.Json;
+using System.Net;
 using System.Threading.Tasks;
+using ZeroBounce.Models;
 
 namespace ZeroBounce
 {
@@ -14,12 +14,12 @@ namespace ZeroBounce
         private string m_api_key = "";
         public string api_key
         {
-             get
+            get
             {
                 return m_api_key;
             }
 
-             set
+            set
             {
                 m_api_key = value;
             }
@@ -97,19 +97,19 @@ namespace ZeroBounce
                 request.Timeout = RequestTimeOut;
                 request.Method = "GET";
                 Console.WriteLine("Input APIKey: " + api_key);
-          
-          
+
+
                 using (WebResponse response = await request.GetResponseAsync())
                 {
-//                    response.GetResponseStream().ReadTimeout = ReadTimeOut;
+                    //                    response.GetResponseStream().ReadTimeout = ReadTimeOut;
                     using (StreamReader ostream = new StreamReader(response.GetResponseStream()))
                     {
                         responseString = ostream.ReadToEnd();
-                        oResults = JsonConvert.DeserializeObject<ZeroBounceResultsModel>(responseString);                        
+                        oResults = JsonConvert.DeserializeObject<ZeroBounceResultsModel>(responseString);
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 if (ex.Message.Contains("The operation has timed out")) oResults.sub_status = "timeout_exceeded";
                 else oResults.sub_status = "exception_occurred";
@@ -134,25 +134,25 @@ namespace ZeroBounce
 
                 System.Net.HttpWebRequest request = (System.Net.HttpWebRequest)WebRequest.Create(apiUrl);
                 request.Timeout = RequestTimeOut;
-                request.Method = "GET";           
+                request.Method = "GET";
                 Console.WriteLine("APIKey: " + api_key);
 
-           
-                    using (WebResponse response = await request.GetResponseAsync())
+
+                using (WebResponse response = await request.GetResponseAsync())
+                {
+                    response.GetResponseStream().ReadTimeout = ReadTimeOut;
+                    using (StreamReader ostream = new StreamReader(response.GetResponseStream()))
                     {
-                        response.GetResponseStream().ReadTimeout = ReadTimeOut;
-                        using (StreamReader ostream = new StreamReader(response.GetResponseStream()))
-                        {
-                            responseString = ostream.ReadToEnd();
-                            oResults = JsonConvert.DeserializeObject<ZeroBounceCreditsModel>(responseString);
-                        }
+                        responseString = ostream.ReadToEnd();
+                        oResults = JsonConvert.DeserializeObject<ZeroBounceCreditsModel>(responseString);
                     }
                 }
-                catch (Exception ex)
-                {
-                    // Add Your Error Logging
-                }
-                return oResults;
+            }
+            catch (Exception)
+            {
+                // Add Your Error Logging
+            }
+            return oResults;
         }
     }
 }

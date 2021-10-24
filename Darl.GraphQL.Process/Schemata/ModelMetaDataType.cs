@@ -1,8 +1,5 @@
-﻿using GraphQL.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Darl.Thinkbase;
+﻿using Darl.Thinkbase;
+using GraphQL.Types;
 
 namespace Darl.GraphQL.Models.Schemata
 {

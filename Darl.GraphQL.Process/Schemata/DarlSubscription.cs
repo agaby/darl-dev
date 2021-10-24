@@ -10,7 +10,7 @@ namespace Darl.GraphQL.Models.Schemata
             Name = "Subscription";
             Description = "Darl.dev does not use subscriptions";
             AddField(new EventStreamFieldType()
-            { Name = "unsupported", Type= typeof(UpdateType)});
+            { Name = "unsupported", Type = typeof(UpdateType) });
         }
     }
 }

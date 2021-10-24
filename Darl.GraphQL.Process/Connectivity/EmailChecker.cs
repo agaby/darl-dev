@@ -1,7 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
@@ -9,7 +6,7 @@ namespace Darl.GraphQL.Models.Connectivity
     public class EmailChecker : ICheckEmail
     {
 
-        private IConfiguration _config;
+        private readonly IConfiguration _config;
 
         public EmailChecker(IConfiguration config)
         {

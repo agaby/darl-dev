@@ -1,8 +1,5 @@
 ﻿using Darl.GraphQL.Process.Models.Alexa;
 using GraphQL.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {

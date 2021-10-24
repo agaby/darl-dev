@@ -1,22 +1,20 @@
-﻿using Darl.GraphQL.Models.Connectivity;
-using Microsoft.Azure.Storage;
+﻿using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
     public class BlobGraphConnectivity : IBlobConnectivity
     {
-        private IConfiguration _config;
-        private ILogger _logger;
-        private CloudBlobClient _blob;
-        private CloudBlobContainer _container;
+        private readonly IConfiguration _config;
+        private readonly ILogger _logger;
+        private readonly CloudBlobClient _blob;
+        private readonly CloudBlobContainer _container;
 
         public string implementation => nameof(BlobGraphConnectivity);
 

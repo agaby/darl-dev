@@ -1,13 +1,12 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Darl.GraphQL.Process.Middleware;
 using GraphQL;
 using GraphQL.Execution;
 using GraphQL.Types;
 using GraphQL.Validation;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Middleware
 {
@@ -56,7 +55,7 @@ namespace Darl.GraphQL.Models.Middleware
                 EnableMetrics = _options.EnableMetrics,
                 ExposeExceptions = _options.ExposeExceptions,
                 SetFieldMiddleware = _options.SetFieldMiddleware,
-                SchemaFilter = Schema.Filter                
+                SchemaFilter = Schema.Filter
             };
 
             foreach (var listener in _listeners)

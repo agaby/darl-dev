@@ -21,9 +21,9 @@ namespace Darl.GraphQL.Models.Connectivity
             passPhrase = config["Licensing:privateLicensePassPhrase"];
         }
 
-        private string publicKey;
-        private string privateKey;
-        private string passPhrase;
+        private readonly string publicKey;
+        private readonly string privateKey;
+        private readonly string passPhrase;
 
         public string CreateKey(DateTime endDate, string company, string email)
         {
@@ -36,7 +36,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return Compress(licenseText);
         }
 
- 
+
         public static string Compress(string text)
         {
             byte[] buffer = Encoding.UTF8.GetBytes(text);
@@ -85,7 +85,7 @@ namespace Darl.GraphQL.Models.Connectivity
                                     .Signature(publicKey)
                                     .AssertValidLicense().ToList();
             }
-            catch 
+            catch
             {
                 return false;
             }

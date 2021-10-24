@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Linq;
-using System.Reflection;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Darl.GraphQL.Models.Connectivity
 {

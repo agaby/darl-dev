@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Darl.GraphQL.Process.Models.Noda.Layout
+﻿namespace Darl.GraphQL.Process.Models.Noda.Layout
 {
     public class Spring
     {

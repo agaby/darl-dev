@@ -1,9 +1,6 @@
-﻿using Darl.GraphQL.Models.Models;
-using Darl.SoftMatch;
+﻿using Darl.SoftMatch;
 using Darl.Thinkbase;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Darl.GraphQL.Ui.Voyager.Internal;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.Text;
 using System.Threading.Tasks;
-using Darl.GraphQL.Ui.Voyager.Internal;
-using Microsoft.AspNetCore.Http;
 
 namespace Darl.GraphQL.Ui.Voyager
 {

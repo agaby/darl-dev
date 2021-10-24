@@ -1,10 +1,5 @@
-﻿using Darl.GraphQL.Models.Models;
-using DarlCommon;
-using GraphQL;
+﻿using DarlCommon;
 using GraphQL.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
@@ -16,7 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.approximate, true).Description("For numeric inputs reports that alpha cuts approximations have been made.").DefaultValue(false);
             Field(c => c.unknown, true).Description("If true the value of this input is unknown.").DefaultValue(false);
             Field<ListGraphType<StringDoublePairInputType>>("categories", "possible categories of this input if categorical");
-            Field<NonNullGraphType< DarlVarDataTypeEnum >>("dataType","The data type of this input");
+            Field<NonNullGraphType<DarlVarDataTypeEnum>>("dataType", "The data type of this input");
             Field(c => c.name).Description("the name of this input");
             Field<ListGraphType<ListGraphType<StringGraphType>>>("sequence");
             Field<ListGraphType<DarlTimeInputType>>("times");

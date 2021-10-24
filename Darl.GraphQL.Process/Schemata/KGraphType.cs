@@ -1,11 +1,6 @@
-﻿using Darl.GraphQL.Models.Connectivity;
-using Darl.GraphQL.Models.Middleware;
-using Darl.GraphQL.Models.Models;
+﻿using Darl.GraphQL.Models.Models;
 using Darl.Thinkbase;
 using GraphQL.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
@@ -18,7 +13,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.Name).Description("The unique name of the knowledge graph");
             Field(c => c.Description, true).Description("A description of the knowledge graph");
             Field(c => c.InitialText, true).Description("Default initial text for the conversation");
-            Field<GraphModelType>("model", resolve: context => graph.GetModel(context.Source.userId,context.Source.Name));
+            Field<GraphModelType>("model", resolve: context => graph.GetModel(context.Source.userId, context.Source.Name));
         }
     }
 }

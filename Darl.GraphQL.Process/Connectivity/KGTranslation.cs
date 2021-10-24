@@ -1,8 +1,13 @@
 ﻿using Darl.Common;
 using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
+using Darl.GraphQL.Models.Models.Noda;
+using Darl.GraphQL.Process.Models.Noda.Layout;
 using Darl.Lineage;
 using Darl.Thinkbase;
+using Darl.Thinkbase.Meta;
+using DarlCommon;
+using DarlCompiler;
 using GraphQL;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -11,16 +16,7 @@ using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Queue;
-using Darl.GraphQL.Models.Models.Noda;
-using Darl.GraphQL.Process.Models.Noda.Layout;
-using System.Drawing;
-using DarlCommon;
-using DarlCompiler;
-using Darl.Thinkbase.Meta;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -29,14 +25,14 @@ namespace Darl.GraphQL.Models.Connectivity
     /// </summary>
     public class KGTranslation : IKGTranslation
     {
-        private IConfiguration _config;
-        private ILogger<KGTranslation> _logger;
-        private IGraphProcessing _graph;
-        private IMetaStructureHandler _meta;
-        private IProducts _prods;
-        private ICheckEmail _checkEmail;
-        private ILicensing _licensing;
-        private DarlMetaRunTime metaRuntime = new DarlMetaRunTime(new MetaStructureHandler());
+        private readonly IConfiguration _config;
+        private readonly ILogger<KGTranslation> _logger;
+        private readonly IGraphProcessing _graph;
+        private readonly IMetaStructureHandler _meta;
+        private readonly IProducts _prods;
+        private readonly ICheckEmail _checkEmail;
+        private readonly ILicensing _licensing;
+        private readonly DarlMetaRunTime metaRuntime = new DarlMetaRunTime(new MetaStructureHandler());
 
 
         //fill in with single call to model at startup
@@ -48,27 +44,27 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public static string backofficeKGComp = String.Empty;
         private static string backofficeKG = String.Empty;
-        private static string sourceLineage = "noun:01,4,04,02,21,16";
-        private static string destinationLineage = "noun:01,0,0,15,15,3";
-        private static string processLineage = "noun:00,4";
-        private static string defaultLineage = "noun:01,0,0,15,07,02,06,05";//constant
-        private static string valueLineage = "noun:01,4,04,02,07,01";//text
-        private static string collateralLineage = "noun:00,1,00,3,10,09,07";//document
-        private static string firstNameLineage = "noun:01,3,14,01,06,13";//first name
-        private static string lastNameLineage = "noun:01,3,14,01,06,11";//surname
-        private static string emailLineage = "noun:01,0,2,00,38,00,06,1";//email
-        private static string phoneLineage = "noun:01,4,07,01";//phone
-        private static string occupationLineage = "noun:01,0,2,00,23,19";//occupation
-        private static string noteLineage = "noun:01,4,05,21,28,1";//note
-        private static string companyLineage = "noun:01,2,07,10";//organization
-        private static string countryLineage = "noun:01,2,06,35";//nation
-        private static string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";//sector
-        private static string keyLineage = "noun:01,4,09,01,7,3,0";//key
-        private static string subscriptionLineage = "noun:01,0,2,00,34,6,1,5,0";
-        private static string idLineage = "noun:01,4,09,01,7,3,5";
-        private static string stateLineage = "noun:01,1,00";
-        private static string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
-        private static string existenceLineage = "noun:01,5,03,3,018";//life
+        private static readonly string sourceLineage = "noun:01,4,04,02,21,16";
+        private static readonly string destinationLineage = "noun:01,0,0,15,15,3";
+        private static readonly string processLineage = "noun:00,4";
+        private static readonly string defaultLineage = "noun:01,0,0,15,07,02,06,05";//constant
+        private static readonly string valueLineage = "noun:01,4,04,02,07,01";//text
+        private static readonly string collateralLineage = "noun:00,1,00,3,10,09,07";//document
+        private static readonly string firstNameLineage = "noun:01,3,14,01,06,13";//first name
+        private static readonly string lastNameLineage = "noun:01,3,14,01,06,11";//surname
+        private static readonly string emailLineage = "noun:01,0,2,00,38,00,06,1";//email
+        private static readonly string phoneLineage = "noun:01,4,07,01";//phone
+        private static readonly string occupationLineage = "noun:01,0,2,00,23,19";//occupation
+        private static readonly string noteLineage = "noun:01,4,05,21,28,1";//note
+        private static readonly string companyLineage = "noun:01,2,07,10";//organization
+        private static readonly string countryLineage = "noun:01,2,06,35";//nation
+        private static readonly string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";//sector
+        private static readonly string keyLineage = "noun:01,4,09,01,7,3,0";//key
+        private static readonly string subscriptionLineage = "noun:01,0,2,00,34,6,1,5,0";
+        private static readonly string idLineage = "noun:01,4,09,01,7,3,5";
+        private static readonly string stateLineage = "noun:01,1,00";
+        private static readonly string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
+        private static readonly string existenceLineage = "noun:01,5,03,3,018";//life
 
         public KGTranslation(ILogger<KGTranslation> logger, IConfiguration config, IGraphProcessing graph, IMetaStructureHandler meta, IProducts prods, ICheckEmail checkEmail, ILicensing licensing)
         {
@@ -219,7 +215,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<string> GetDefaultValue(string name)
         {
             var ks = await _graph.GetKnowledgeState(_config["AppSettings:boaiuserid"], name, backofficeKG);
-            if(ks != null)
+            if (ks != null)
                 return GetAttributeValue(ks, defaultObjectId, valueLineage) ?? string.Empty;
             return string.Empty;
         }
@@ -230,10 +226,10 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 subjectId = name,
                 knowledgeGraphName = backofficeKG,
-                data =  new List<StringListGraphAttributeInputPair>
+                data = new List<StringListGraphAttributeInputPair>
                 {
                     new StringListGraphAttributeInputPair{
-                        name =  defaultObjectId,  
+                        name =  defaultObjectId,
                         value =   new List<GraphAttributeInput> {
                             new GraphAttributeInput {
                                 name = "value",
@@ -276,7 +272,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (!string.IsNullOrEmpty(name))
             {
                 var ks = await _graph.GetKnowledgeState(_config["AppSettings:boaiuserid"], name, backofficeKG);
-                if(ks != null)
+                if (ks != null)
                     return GetAttributeValue(ks, collateralObjectId, valueLineage) ?? string.Empty;
             }
             return string.Empty;
@@ -304,7 +300,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 data = new List<StringListGraphAttributeInputPair>
                 {
                     new StringListGraphAttributeInputPair{
-                        name = collateralObjectId,  
+                        name = collateralObjectId,
                         value = new List<GraphAttributeInput> {
                             new GraphAttributeInput {
                                 name = "value",
@@ -351,7 +347,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG);
                 return kslist.Select(a => ConvertContact(a, personObjectId)).AsQueryable();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -365,7 +361,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG);
                 return kslist.Select(a => ConvertContact(a, personObjectId)).ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -435,8 +431,8 @@ namespace Darl.GraphQL.Models.Connectivity
                 subjectId = contact.Id,
                 knowledgeGraphName = backofficeKG,
                 data = new List<StringListGraphAttributeInputPair> {
-                    new StringListGraphAttributeInputPair{ 
-                        name = personObjectId, 
+                    new StringListGraphAttributeInputPair{
+                        name = personObjectId,
                         value = new List<GraphAttributeInput>{
                             new GraphAttributeInput {
                                 name = "first name",
@@ -542,7 +538,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     return null;
                 return Convert(ks, personObjectId);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new ExecutionError($"Error in GetUserByApiKey: {ex.Message}");
             }
@@ -560,10 +556,10 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             try
             {
-                var kslist = await _graph.GetKnowledgeStatesByTypeAndAttributeExistence(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG,stateLineage);
+                var kslist = await _graph.GetKnowledgeStatesByTypeAndAttributeExistence(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG, stateLineage);
                 return kslist.Select(a => Convert(a, personObjectId)).ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -634,7 +630,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 knowledgeGraphName = backofficeKG,
                 data = new List<StringListGraphAttributeInputPair> {
                     new StringListGraphAttributeInputPair
-                    { 
+                    {
                         name = personObjectId,
                         value = new List<GraphAttributeInput>
                         {
@@ -727,11 +723,11 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task UpdateUserAccountState(string customerId, DarlUser.AccountState paying)
         {
             var state = await GetUserAccountState(customerId);
-            if(state != null)
+            if (state != null)
             {
-                if(state != DarlUser.AccountState.admin) //can't downgrade admin
+                if (state != DarlUser.AccountState.admin) //can't downgrade admin
                 {
-                   // UpdateAttribute()
+                    // UpdateAttribute()
                 }
             }
         }
@@ -800,16 +796,16 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<string> RegisterForMarketing(string name, string email)
         {
-            if(await CheckEmail(email))
+            if (await CheckEmail(email))
             {
                 try
                 {
                     if (await GetContactByEmail(email) != null)
                         return "You're already in our system.";
-                    await CreateContactAsync(new Contact {Id = Guid.NewGuid().ToString(), Created = DateTime.UtcNow, Source= "newsletter", Email = email, FirstName = name });
+                    await CreateContactAsync(new Contact { Id = Guid.NewGuid().ToString(), Created = DateTime.UtcNow, Source = "newsletter", Email = email, FirstName = name });
                     return "Thanks for signing up. You'll now receive our newsletters.";
                 }
-                catch(Exception ex)
+                catch (Exception)
                 {
                     return "there was an error creating your contact record. Please try again later.";
                 }
@@ -853,12 +849,12 @@ namespace Darl.GraphQL.Models.Connectivity
                 colors.Add(new NodaTone { r = 0.0, g = 0.0, b = 1.0, a = 1.0 });
             int index = 0;
             var colourMap = new Dictionary<string, NodaTone>();
-            foreach(var k in lineageMap)
+            foreach (var k in lineageMap)
             {
                 colourMap.Add(k, colors[index++]);
             }
             var nodadoc = new NodaDocument { name = graphName };
-            foreach(var k in model.vertices.Keys)
+            foreach (var k in model.vertices.Keys)
             {
                 var tNode = model.vertices[k];
                 var n = new NodaNode { title = tNode.name, uuid = k, properties = Convert(tNode.properties), tone = colourMap[tNode.lineage], size = 5.0, shape = NodaNodeShapes.Ball };
@@ -867,7 +863,7 @@ namespace Darl.GraphQL.Models.Connectivity
             foreach (var k in model.edges.Keys)
             {
                 var tLink = model.edges[k];
-                var l = new NodaLink { title = tLink.name, uuid = k, fromNode = new NodaNodeId { Uuid = tLink.startId }, toNode = new NodaNodeId { Uuid = tLink.endId }, properties = Convert(tLink.properties), tone = new NodaTone {r = 0.09019608, g = 0.09019608, b = 0.09019608, a = 1.0 } };
+                var l = new NodaLink { title = tLink.name, uuid = k, fromNode = new NodaNodeId { Uuid = tLink.startId }, toNode = new NodaNodeId { Uuid = tLink.endId }, properties = Convert(tLink.properties), tone = new NodaTone { r = 0.09019608, g = 0.09019608, b = 0.09019608, a = 1.0 } };
                 nodadoc.links.Add(l);
             }
             //create the ancillary dictionaries
@@ -880,7 +876,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var diagonal = bb.topRightBack - bb.bottomLeftFront;
             var length = diagonal.Magnitude();
             var scale = 2.0 / length; //fit into a 2 unit diagonal bounding box
-            foreach(var n in nodadoc.nodes)
+            foreach (var n in nodadoc.nodes)
             {
                 n.position = n.position * scale;
             }
@@ -934,7 +930,7 @@ namespace Darl.GraphQL.Models.Connectivity
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                 }
@@ -943,8 +939,25 @@ namespace Darl.GraphQL.Models.Connectivity
             return Task.FromResult(errorList);
         }
 
-
-
+        public async Task<List<GraphAttribute>> GetConceptCloudData(string userId, string graphName, string address)
+        {
+            var list = new List<GraphAttribute>();
+            if (!await _graph.Exists(userId, graphName))
+                throw new ExecutionError($"{graphName} does not exist in this account");
+            var graph = await _graph.GetModel(userId, graphName);
+            if(string.IsNullOrEmpty(address))//root
+            {//return the type words for the real objects derived from the virtual
+                foreach (var g in graph.virtualVertices.Values.Where(a => a.In.Count == 0)) //All leaf virtual vertices
+                {
+                    list.Add(new GraphAttribute { value = (g.name ?? "").Replace('/','-'), name = "typeword", type = GraphAttribute.DataType.textual, lineage = g.lineage });
+                }
+            }
+            else
+            {
+                var parts = address.Split('/');
+            }
+            return list;
+        }
 
 
         #region private
@@ -952,7 +965,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private List<NodaProperty> Convert(List<GraphAttribute> properties)
         {
             var list = new List<NodaProperty>();
-            if(properties != null)
+            if (properties != null)
             {
                 foreach (var a in properties)
                 {
@@ -1008,10 +1021,10 @@ namespace Darl.GraphQL.Models.Connectivity
             var att = ks.GetAttribute(objectId, existenceLineage);
             if (att != null)
             {
-                if(att.existence != null)
+                if (att.existence != null)
                 {
                     var first = att.existence.First();
-                    if(first != null)
+                    if (first != null)
                     {
                         return first.dateTime;
                     }
@@ -1134,7 +1147,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return string.Empty;
         }
 
- 
+
 
         #endregion
     }

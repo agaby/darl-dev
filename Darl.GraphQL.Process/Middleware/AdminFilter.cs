@@ -2,7 +2,6 @@
 using GraphQL.Introspection;
 using GraphQL.Types;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Process.Middleware
@@ -12,7 +11,7 @@ namespace Darl.GraphQL.Process.Middleware
     /// </summary>
     public class AdminFilter : ISchemaFilter
     {
-        private IAuthChecker _authChecker;
+        private readonly IAuthChecker _authChecker;
         public AdminFilter(IAuthChecker authChecker)
         {
             _authChecker = authChecker;
@@ -35,10 +34,10 @@ namespace Darl.GraphQL.Process.Middleware
 
         public async Task<bool> AllowField(IGraphType parent, IFieldType field)
         {
-            if(field.Metadata != null && field.Metadata.ContainsKey(AuthorizationMetadataExtensions.PolicyKey))
+            if (field.Metadata != null && field.Metadata.ContainsKey(AuthorizationMetadataExtensions.PolicyKey))
             {
                 var policies = (List<string>)field.Metadata[AuthorizationMetadataExtensions.PolicyKey];
-                if(policies.Count == 1 && policies[0] == "AdminPolicy")
+                if (policies.Count == 1 && policies[0] == "AdminPolicy")
                 {
                     return await _authChecker.AuthorizedAdmin();
                 }

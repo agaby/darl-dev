@@ -1,9 +1,5 @@
-﻿using Darl.GraphQL.Models.Models;
-using Darl.Lineage.Bot;
+﻿using Darl.Lineage.Bot;
 using GraphQL.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
@@ -16,7 +12,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.conversationID).Description("Identifies the conversation");
             Field(c => c.darl).Description("The generated code");
             Field<ListGraphType<StoreStateType>>("stores", "The store data", resolve: context => context.Source.stores);
-            Field<ListGraphType<StringGraphType>>("conversation", "Conversation history",resolve: context => context.Source.conversation);
+            Field<ListGraphType<StringGraphType>>("conversation", "Conversation history", resolve: context => context.Source.conversation);
             Field(c => c.userText, true).Description("The user text");
         }
     }

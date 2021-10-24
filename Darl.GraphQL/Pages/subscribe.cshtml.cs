@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Stripe;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Pages
 {
@@ -16,10 +16,10 @@ namespace Darl.GraphQL.Pages
     {
 
 
-        private IHttpContextAccessor _context;
-        private IProducts _products;
-        private IKGTranslation _trans;
-        private IConfiguration _config;
+        private readonly IHttpContextAccessor _context;
+        private readonly IProducts _products;
+        private readonly IKGTranslation _trans;
+        private readonly IConfiguration _config;
         public List<DarlProduct> products;
         public string? SubscriptionId;
         public string? ClientSecret;
@@ -50,11 +50,11 @@ namespace Darl.GraphQL.Pages
                 return Redirect("/index");
             userName = user.InvoiceName;
             var prod = products.FirstOrDefault(a => a.priceId == priceId);
-            if(prod == null)
+            if (prod == null)
                 return Redirect("/index");
             product = prod.name;
             currency = prod.currency;
-            price = (((double)prod.price) / 100).ToString("0.00") ;
+            price = (((double)prod.price) / 100).ToString("0.00");
             // Create subscription
             var subscriptionOptions = new SubscriptionCreateOptions
             {

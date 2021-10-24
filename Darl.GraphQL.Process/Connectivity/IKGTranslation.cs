@@ -1,10 +1,10 @@
 ﻿using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
+using Darl.Thinkbase;
 using DarlCommon;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
@@ -61,6 +61,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<string> GetTypeWordForLineage(string lineage, string isoLanguage = "en");
         Task<List<LineageRecord>> GetLineagesForWord(string word, string isoLanguage = "en");
         Task<List<DarlLintView>> LintDarlMeta(string darl);
-
+        Task<List<GraphAttribute>> GetConceptCloudData(string userId, string graphName, string address);
     }
 }

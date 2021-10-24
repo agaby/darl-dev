@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Darl.GraphQL.Models.Models.Noda
+﻿namespace Darl.GraphQL.Models.Models.Noda
 {
     public class NodaNodeId
     {

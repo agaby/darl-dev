@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 
-namespace Darl.GraphQL.Ui.Playground {
+namespace Darl.GraphQL.Ui.Playground
+{
 
-    public class GraphQLPlaygroundOptions {
+    public class GraphQLPlaygroundOptions
+    {
 
         public PathString Path { get; set; } = "/ui/playground";
 

@@ -1,19 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 
 namespace Darl.GraphQL.Pages
 {
     public class ConceptCloudModel : PageModel
     {
         public List<DarlProduct> products;
-        private IConfiguration _config;
+        private readonly IConfiguration _config;
         public string filepath;
 
         public ConceptCloudModel(IProducts prod, IConfiguration config, IBlobConnectivity _conn)

@@ -1,10 +1,7 @@
 ﻿using Darl.GraphQL.Models.Models;
-using Darl.GraphQL.Models.Schemata;
 using Darl.Thinkbase;
 using GraphQL.Types;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
@@ -24,7 +21,7 @@ namespace Darl.GraphQL.Models.Schemata
             var list = new List<StringListGraphAttributePair>();
             foreach (var k in dict.Keys)
             {
-                list.Add(new StringListGraphAttributePair { Name = k, Value = dict[k]});
+                list.Add(new StringListGraphAttributePair { Name = k, Value = dict[k] });
             }
             return list;
         }

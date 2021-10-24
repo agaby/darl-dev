@@ -1,8 +1,5 @@
 ﻿using GraphQL.Language.AST;
 using GraphQL.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
@@ -22,7 +19,7 @@ namespace Darl.GraphQL.Models.Schemata
 
             if (int.TryParse(value.ToString(), out var intResult))
             {
-                if(intResult >= 0 && intResult <= 100)
+                if (intResult >= 0 && intResult <= 100)
                     return intResult;
             }
             return null;

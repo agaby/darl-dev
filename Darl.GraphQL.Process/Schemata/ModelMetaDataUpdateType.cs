@@ -1,8 +1,5 @@
 ﻿using Darl.Thinkbase;
 using GraphQL.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
@@ -12,7 +9,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "modelMetaDataUpdate";
             Description = "Meta data for a knowledge graph";
-            Field(c => c.author,true);
+            Field(c => c.author, true);
             Field(c => c.copyright, true);
             Field<DateDisplayEnum>("dateDisplay", resolve: c => c.Source.dateDisplay);
             Field(c => c.description, true);

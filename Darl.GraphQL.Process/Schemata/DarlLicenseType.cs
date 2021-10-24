@@ -1,9 +1,5 @@
-﻿using Darl.GraphQL.Models.Middleware;
-using Darl.GraphQL.Models.Models;
+﻿using Darl.GraphQL.Models.Models;
 using GraphQL.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
@@ -12,7 +8,7 @@ namespace Darl.GraphQL.Models.Schemata
         public DarlLicenseType()
         {
             Name = "darlLicense";
- //           this.AuthorizeWith("AdminPolicy");
+            //           this.AuthorizeWith("AdminPolicy");
 
             Description = "A License issued for DARL products.";
             Field(c => c.licensekey);

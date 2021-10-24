@@ -1,32 +1,26 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Darl.GraphQL.Pages
 {
     public class GraphEditModel : PageModel
     {
         public List<DarlProduct> products;
-        private IConfiguration _config;
+        private readonly IConfiguration _config;
         public string filepath;
 
         public GraphEditModel(IProducts prod, IConfiguration config, IBlobConnectivity _conn)
         {
             products = prod.products;
             _config = config;
-            if(_config["DOTNET_RUNNING_IN_CONTAINER"] == "true")
+            if (_config["DOTNET_RUNNING_IN_CONTAINER"] == "true")
             {
                 var fp = _config["BLOBFILEPATH"];
-                if(_conn.Exists(fp).Result)
+                if (_conn.Exists(fp).Result)
                 {
                     filepath = fp;
                 }

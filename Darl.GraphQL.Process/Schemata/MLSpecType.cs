@@ -8,7 +8,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "MLSpec";
             Description = "Machine learning model detail";
-            Field(c => c.author,true);
+            Field(c => c.author, true);
             Field(c => c.copyright, true);
             Field(c => c.darl);
             Field(c => c.dataSchema, true);

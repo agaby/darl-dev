@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Darl.GraphQL.Process.Middleware;
-using GraphQL;
+﻿using Darl.GraphQL.Process.Middleware;
 using GraphQL.Types;
 using GraphQL.Utilities;
+using System;
 
 namespace Darl.GraphQL.Models.Schemata
 {

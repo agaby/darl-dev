@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Models.Noda
 {
@@ -15,7 +14,7 @@ namespace Darl.GraphQL.Models.Models.Noda
         public List<NodaNode> nodes { get; set; } = new List<NodaNode>();
         public List<NodaLink> links { get; set; } = new List<NodaLink>();
 
-        private Dictionary<string, NodaNode>? nodeLookup { get; set; } 
+        private Dictionary<string, NodaNode>? nodeLookup { get; set; }
 
 
         private Dictionary<string, Dictionary<string, NodaLink>> linkLookup { get; set; } = new Dictionary<string, Dictionary<string, NodaLink>>();
@@ -23,9 +22,9 @@ namespace Darl.GraphQL.Models.Models.Noda
         public void Init()
         {
             nodeLookup = nodes.ToDictionary(a => a.uuid);
-            foreach(var l in links)
+            foreach (var l in links)
             {
-                if(!linkLookup.ContainsKey(l.fromNode.Uuid))
+                if (!linkLookup.ContainsKey(l.fromNode.Uuid))
                 {
                     linkLookup.Add(l.fromNode.Uuid, new Dictionary<string, NodaLink>());
                 }
@@ -38,7 +37,7 @@ namespace Darl.GraphQL.Models.Models.Noda
 
         internal NodaLink? GetEdge(NodaNodeId fromNode, NodaNodeId toNode)
         {
-            if(linkLookup.ContainsKey(fromNode.Uuid))
+            if (linkLookup.ContainsKey(fromNode.Uuid))
             {
                 if (linkLookup[fromNode.Uuid].ContainsKey(toNode.Uuid))
                     return linkLookup[fromNode.Uuid][toNode.Uuid];

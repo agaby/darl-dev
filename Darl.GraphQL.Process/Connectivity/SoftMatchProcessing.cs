@@ -1,24 +1,17 @@
-﻿using Darl.GraphQL.Models.Models;
-using Darl.Lineage;
-using Darl.SoftMatch;
+﻿using Darl.SoftMatch;
 using Darl.Thinkbase;
 using GraphQL;
 using Microsoft.Extensions.Logging;
-using Org.BouncyCastle.Asn1.Cmp;
-using QuickGraph.Algorithms.Search;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
     public class SoftMatchProcessing : ISoftMatchProcessing
     {
-        private IBlobConnectivity _blob;
-        private ILogger _logger;
+        private readonly IBlobConnectivity _blob;
+        private readonly ILogger _logger;
         public SoftMatchProcessing(IEnumerable<IBlobConnectivity> blobs, ILogger<SoftMatchProcessing> logger)
         {
             _blob = blobs.FirstOrDefault(h => h.implementation == nameof(BlobGraphConnectivity));
@@ -53,12 +46,12 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
 
- 
+
         public async Task<List<MatchResult>> InferFromSoftMatchModel(string userId, string treeName, List<string> texts)
         {
             var blobName = GenerateGraphName(userId, treeName);
 
-            if(!await _blob.Exists(blobName))
+            if (!await _blob.Exists(blobName))
                 throw new ExecutionError($"Concept match tree {treeName} not found in this account.");
             var graph = MatchList.DeserializeGraph(await _blob.Read(blobName));
             var responses = new List<MatchResult>(texts.Count);

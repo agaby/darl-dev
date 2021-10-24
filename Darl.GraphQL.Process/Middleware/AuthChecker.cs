@@ -1,17 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Process.Middleware
 {
     public class AuthChecker : IAuthChecker
     {
-        private IAuthorizationService _authServ;
-        private IHttpContextAccessor _httpContext;
-        private Dictionary<string, bool> userCache = new Dictionary<string, bool>();
+        private readonly IAuthorizationService _authServ;
+        private readonly IHttpContextAccessor _httpContext;
+        private readonly Dictionary<string, bool> userCache = new Dictionary<string, bool>();
 
         public AuthChecker(IAuthorizationService authServ, IHttpContextAccessor httpContext)
         {

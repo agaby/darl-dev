@@ -1,11 +1,4 @@
-﻿using Darl.Common;
-using DarlCommon;
-using MongoDB.Bson;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Darl.GraphQL.Models.Models
+﻿namespace Darl.GraphQL.Models.Models
 {
     public class KGraphUpdate
     {

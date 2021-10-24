@@ -7,17 +7,16 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
     public class GraphLocalStore : ILocalStore
     {
-        private IConfiguration config;
-        private ILogger<GraphLocalStore> logger;
-        private IHttpContextAccessor context;
-        private IGraphProcessing graph;
+        private readonly IConfiguration config;
+        private readonly ILogger<GraphLocalStore> logger;
+        private readonly IHttpContextAccessor context;
+        private readonly IGraphProcessing graph;
 
         public GraphLocalStore(IConfiguration config, ILogger<GraphLocalStore> logger, IHttpContextAccessor context, IGraphProcessing graph)
         {
@@ -83,7 +82,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.LogError(ex, $"Error in ReadAsync, parameters {string.Join(',', address)}");
                 return emptyResult;

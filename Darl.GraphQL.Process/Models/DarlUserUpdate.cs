@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using static Darl.GraphQL.Models.Models.DarlUser;
 
 namespace Darl.GraphQL.Models.Models
@@ -26,7 +24,7 @@ namespace Darl.GraphQL.Models.Models
         /// </summary>
         public string InvoiceEmail { get; set; }
 
-        public AccountState? accountState { get; set; } 
+        public AccountState? accountState { get; set; }
         /// <summary>
         /// end of current subscription period.
         /// </summary>

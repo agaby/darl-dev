@@ -1,13 +1,10 @@
 ﻿using Darl.Common;
 using Darl.GraphQL.Models.Models;
-using Darl.Lineage;
 using Darl.Thinkbase;
-using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlCompiler;
 using DarlCompiler.Parsing;
 using DarlLanguage;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson.Serialization;
@@ -20,20 +17,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
-using VSTS.Net;
-using VSTS.Net.Models.WorkItems;
-using VSTS.Net.Types;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
     public class CosmosDBConnectivity : IConnectivity
     {
-        private IConfiguration _config;
+        private readonly IConfiguration _config;
         public IMongoDatabase db { get; set; }
-        private MongoClient mongoClient;
-        private DarlRunTime runtime = new DarlRunTime();
-        private ILogger _logger;
-        private string backgroundUserId;
+        private readonly MongoClient mongoClient;
+        private readonly DarlRunTime runtime = new DarlRunTime();
+        private readonly ILogger _logger;
+        private readonly string backgroundUserId;
 
         public static readonly string knowledgestateCollection = "kstate";
         public static readonly string kgraphcollection = "kgraph";
@@ -95,9 +89,9 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state)
         {
             var kstate = new CosmosKnowledgeState { knowledgeGraphName = state.knowledgeGraphName, subjectId = state.subjectId, userId = userId, created = DateTime.UtcNow };
-            foreach(var s in state.data)
+            foreach (var s in state.data)
             {
-                if(!kstate.data.ContainsKey(s.name))
+                if (!kstate.data.ContainsKey(s.name))
                 {
                     kstate.data.Add(s.name, new List<GraphAttribute>());
                     foreach (var g in s.value)
@@ -132,7 +126,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<List<KnowledgeState>> GetSetOfKnowledgeStates(string userId, List<string> ksIds, string graphName)
         {
             var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
-            var filter1 = Builders<CosmosKnowledgeState>.Filter.In(x => x.subjectId,ksIds);
+            var filter1 = Builders<CosmosKnowledgeState>.Filter.In(x => x.subjectId, ksIds);
             var filter2 = Builders<CosmosKnowledgeState>.Filter.Where(x => x.knowledgeGraphName == graphName && x.userId == userId);
             var filter3 = Builders<CosmosKnowledgeState>.Filter.And(filter1, filter2);
             var cursor = await mc.FindAsync<CosmosKnowledgeState>(filter3);
@@ -150,7 +144,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
             var filter = Builders<CosmosKnowledgeState>.Filter.Where(x => x.knowledgeGraphName == graphName && x.userId == userId);
-            return  await mc.FindAsync<CosmosKnowledgeState>(filter);
+            return await mc.FindAsync<CosmosKnowledgeState>(filter);
         }
 
         public async Task<KnowledgeState> GetKnowledgeStateByTypeAndAttribute(string userId, string objectId, string graphName, string attLineage, string attValue)
@@ -166,7 +160,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
             var query = mc.AsQueryable()
             .Where(p => p.userId == userId && p.knowledgeGraphName == graphName && p.data.ContainsKey(objectId) && p.data[objectId].Any(a => a.lineage == attLineage && a.value == attValue));
-            var states =  await query.ToListAsync();
+            var states = await query.ToListAsync();
             return states.ToList<KnowledgeState>();
         }
 
@@ -213,7 +207,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var updList = new List<UpdateDefinition<CosmosKnowledgeState>>();
             updList.Add(Builders<CosmosKnowledgeState>.Update.Set("value", attvalue));
             var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
-            var filter = Builders<CosmosKnowledgeState>.Filter.Where(p => p.userId == userId && p.knowledgeGraphName == state.knowledgeGraphName && p.data.ContainsKey(dataId) && p.data[dataId].Any(a => a.lineage == attLineage ));
+            var filter = Builders<CosmosKnowledgeState>.Filter.Where(p => p.userId == userId && p.knowledgeGraphName == state.knowledgeGraphName && p.data.ContainsKey(dataId) && p.data[dataId].Any(a => a.lineage == attLineage));
             var update = Builders<CosmosKnowledgeState>.Update.Combine(updList);
             var updated = await mc.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<CosmosKnowledgeState, CosmosKnowledgeState> { IsUpsert = true });
             return updated;
@@ -236,24 +230,24 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 if (!string.IsNullOrEmpty(code))
                 {
-                        var tree = runtime.CreateTreeEdit(code);
-                        if (tree.HasErrors())
+                    var tree = runtime.CreateTreeEdit(code);
+                    if (tree.HasErrors())
+                    {
+                        var errors = new List<DarlVar>();
+                        int errorCount = 0;
+                        foreach (var pm in tree.ParserMessages)
                         {
-                            var errors = new List<DarlVar>();
-                            int errorCount = 0;
-                            foreach (var pm in tree.ParserMessages)
-                            {
-                                var level = pm.Level == ErrorLevel.Error ? "error" : "warning";
-                                errors.Add(new DarlVar { name = $"error{errorCount++}", Value = $"line_no = {pm.Location.Line + 1}, column_no_start = {pm.Location.Column + 1}, column_no_stop = {pm.Location.Column + 2}, message = {pm.Message}, severity = {level}", dataType = DarlVar.DataType.textual });
-                            }
-                            return errors; //errors, just add them to the input and quit.
+                            var level = pm.Level == ErrorLevel.Error ? "error" : "warning";
+                            errors.Add(new DarlVar { name = $"error{errorCount++}", Value = $"line_no = {pm.Location.Line + 1}, column_no_start = {pm.Location.Column + 1}, column_no_stop = {pm.Location.Column + 2}, message = {pm.Message}, severity = {level}", dataType = DarlVar.DataType.textual });
                         }
-                        //now convert the inputs to DarlVars
-                        var res = await ProcessValues(Lineage.Bot.DarlVarExtensions.Convert(DarlVarInput.Convert(inputs)), tree);
-                        _logger.LogWarning($"{nameof(InferFromDarlDarlVar)}: {userId}");
+                        return errors; //errors, just add them to the input and quit.
+                    }
+                    //now convert the inputs to DarlVars
+                    var res = await ProcessValues(Lineage.Bot.DarlVarExtensions.Convert(DarlVarInput.Convert(inputs)), tree);
+                    _logger.LogWarning($"{nameof(InferFromDarlDarlVar)}: {userId}");
 
                     return Lineage.Bot.DarlVarExtensions.Convert(res);
-                 }
+                }
             }
             catch (Exception ex)
             {
@@ -270,7 +264,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var mc = db.GetCollection<CosmosKGraph>(kgraphcollection);
             var query = mc.AsQueryable()
             .Where(p => p.userId == userId && !(p.hidden == true));
-            var graphs =  await query.ToListAsync();
+            var graphs = await query.ToListAsync();
             return graphs.ToList<KGraph>();
         }
 

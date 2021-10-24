@@ -689,6 +689,18 @@ namespace Darl.GraphQL.Models.Schemata
                 var userId = trans.GetCurrentUserId(context.UserContext);
                 return await context.TryAsyncResolve(async c => await graph.CreateTimedAccessUrl(userId, graphName));
             }).AuthorizeWith("UserPolicy");
+            FieldAsync<ListGraphType<GraphAttributeType>>("conceptCloud", "Get the data for the concept cloud",
+                arguments: new QueryArguments(
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge graph to view" },
+                new QueryArgument<StringGraphType> { Name = "address", Description = "the address to return. Empty/null = top" }
+                ),
+            resolve: async context =>
+            {
+                var graphName = context.GetArgument<string>("graphName");
+                var userId = trans.GetCurrentUserId(context.UserContext);
+                var address = context.GetArgument<string>("address");
+                return await context.TryAsyncResolve(async c => await trans.GetConceptCloudData(userId, graphName, address));
+            });
         }
 
         private string CompositeName(string userId, string graphName)

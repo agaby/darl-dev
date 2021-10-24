@@ -1,10 +1,8 @@
-﻿using Darl.GraphQL.Models.Connectivity;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
@@ -12,9 +10,9 @@ namespace Darl.GraphQL.Models.Connectivity
     public class OneFileConnectivity : IBlobConnectivity
     {
         public string implementation => nameof(OneFileConnectivity);
-        private IConfiguration _config;
-        private ILogger _logger;
-        private string filepath;
+        private readonly IConfiguration _config;
+        private readonly ILogger _logger;
+        private readonly string filepath;
 
         public OneFileConnectivity(IConfiguration config, ILogger<OneFileConnectivity> logger)
         {
@@ -36,7 +34,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public List<string> List(string prefix)
         {
-            return new List<string> {filepath};
+            return new List<string> { filepath };
         }
 
         public async Task<byte[]> Read(string name)

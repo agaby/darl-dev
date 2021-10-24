@@ -12,7 +12,7 @@ namespace Darl.GraphQL.Models.Schemata
             this.AuthorizeWith("AdminPolicy");
 
             Description = "A contact that has requested to be informed about DARL.ai";
-            Field(c => c.Company,true);
+            Field(c => c.Company, true);
             Field(c => c.Country, true);
             Field(c => c.Created, true);
             Field(c => c.Email);
@@ -25,7 +25,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.Source, true);
             Field(c => c.Title, true);
             Field<StringGraphType>("Id", resolve: c => c.Source.Id);
-            Field<ListGraphType<PurchaseType>>("purchases", resolve:  c => c.Source.purchases);
+            Field<ListGraphType<PurchaseType>>("purchases", resolve: c => c.Source.purchases);
             Field<ListGraphType<DarlLicenseType>>("licenses", resolve: c => c.Source.licenses);
         }
     }

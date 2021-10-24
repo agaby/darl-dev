@@ -1,8 +1,4 @@
-﻿using Darl.Lineage;
-using GraphQL.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using GraphQL.Types;
 
 namespace Darl.GraphQL.Models.Schemata
 {

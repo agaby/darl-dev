@@ -1,22 +1,17 @@
 ﻿using Darl.Common;
 using Darl.GraphQL.Process.Connectivity;
-using Darl.Lineage.Bot;
-using Darl.Lineage.Bot.Stores;
 using DarlCommon;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Models
 {
     [ProtoContract]
     public class BotState
     {
-        [ProtoMember(1)] 
+        [ProtoMember(1)]
         public string userId { get; set; }
 
         [ProtoMember(2)]
@@ -43,7 +38,7 @@ namespace Darl.GraphQL.Models.Models
         {
             get
             {
-                if (kGraphData == null)  
+                if (kGraphData == null)
                     return null;
                 return kGraphData.Select(p => new ProtobufArray(p)).ToList();
             }

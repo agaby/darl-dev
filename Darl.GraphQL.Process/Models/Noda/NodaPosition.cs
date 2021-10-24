@@ -1,7 +1,5 @@
 ﻿using Darl.GraphQL.Process.Models.Noda.Layout;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Models.Noda
 {
@@ -29,7 +27,7 @@ namespace Darl.GraphQL.Models.Models.Noda
 
         public NodaPosition Add(NodaPosition v2)
         {
-            NodaPosition v32 = v2 as NodaPosition;
+            NodaPosition v32 = v2;
             x = x + v32.x;
             y = y + v32.y;
             z = z + v32.z;
@@ -38,7 +36,7 @@ namespace Darl.GraphQL.Models.Models.Noda
 
         public NodaPosition Subtract(NodaPosition v2)
         {
-            NodaPosition v32 = v2 as NodaPosition;
+            NodaPosition v32 = v2;
             x = x - v32.x;
             y = y - v32.y;
             z = z - v32.z;
@@ -110,32 +108,32 @@ namespace Darl.GraphQL.Models.Models.Noda
             return new NodaPosition(10.0f * (Util.Random() - 0.5f), 10.0f * (Util.Random() - 0.5f), 10.0f * (Util.Random() - 0.5f));
         }
 
-        public static NodaPosition operator + (NodaPosition a, NodaPosition b)
+        public static NodaPosition operator +(NodaPosition a, NodaPosition b)
         {
             NodaPosition temp = new NodaPosition(a.x, a.y, a.z);
             temp.Add(b);
             return temp;
         }
-        public static NodaPosition operator - (NodaPosition a, NodaPosition b)
+        public static NodaPosition operator -(NodaPosition a, NodaPosition b)
         {
             NodaPosition temp = new NodaPosition(a.x, a.y, a.z);
             temp.Subtract(b);
             return temp;
         }
-        public static NodaPosition operator * (NodaPosition a, double b)
+        public static NodaPosition operator *(NodaPosition a, double b)
         {
             NodaPosition temp = new NodaPosition(a.x, a.y, a.z);
             temp.Multiply(b);
             return temp;
         }
-        public static NodaPosition operator * (float a, NodaPosition b)
+        public static NodaPosition operator *(float a, NodaPosition b)
         {
             NodaPosition temp = new NodaPosition(b.x, b.y, b.z);
             temp.Multiply(a);
             return temp;
         }
 
-        public static NodaPosition operator / (NodaPosition a, double b)
+        public static NodaPosition operator /(NodaPosition a, double b)
         {
             NodaPosition temp = new NodaPosition(a.x, a.y, a.z);
             temp.Divide(b);

@@ -1,10 +1,7 @@
 ﻿using Darl.Common;
-using Darl.GraphQL.Models.Models;
 using DarlCommon;
 using GraphQL;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using static DarlCommon.DarlVar;
 
 namespace Darl.GraphQL.Models.Models
@@ -82,7 +79,7 @@ namespace Darl.GraphQL.Models.Models
         public static List<DarlVar> Convert(List<DarlVarInput> inputs)
         {
             var list = new List<DarlVar>();
-            foreach(var d in inputs)
+            foreach (var d in inputs)
             {
                 list.Add(
                         new DarlVar

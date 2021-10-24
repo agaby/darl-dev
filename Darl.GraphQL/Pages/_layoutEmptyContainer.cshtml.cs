@@ -1,13 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Pages
 {
@@ -21,10 +15,10 @@ namespace Darl.GraphQL.Pages
         }
         public async Task OnPostAsync()
         {
-/*            using (var fileStream = new FileStream(_config["BLOBFILEPATH"] + Upload.FileName, FileMode.Create))
-            {
-                await Upload.CopyToAsync(fileStream);
-            }*/
+            /*            using (var fileStream = new FileStream(_config["BLOBFILEPATH"] + Upload.FileName, FileMode.Create))
+                        {
+                            await Upload.CopyToAsync(fileStream);
+                        }*/
         }
 
 

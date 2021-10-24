@@ -1,12 +1,8 @@
-﻿using Darl.GraphQL.Models.Models;
-using Darl.Thinkbase;
+﻿using Darl.Thinkbase;
 using GraphQL.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
-{ 
+{
     public class GraphObjectType : ObjectGraphType<GraphObject>
     {
         public GraphObjectType()
@@ -27,7 +23,7 @@ namespace Darl.GraphQL.Models.Schemata
         private string ExtractLineage(string lineage)
         {
             var pos = lineage.IndexOf('+');
-            if(pos == -1)
+            if (pos == -1)
             {
                 return lineage;
             }

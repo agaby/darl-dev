@@ -1,8 +1,5 @@
 ﻿using Darl.Thinkbase;
 using GraphQL.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
@@ -13,7 +10,7 @@ namespace Darl.GraphQL.Models.Schemata
             Name = "displayModel";
             Description = "A simplified version of a knowledge graph for display purposes";
             Field<ListGraphType<DisplayObjectOuterType>>("nodes", resolve: context => context.Source.nodes);
-            Field< ListGraphType<DisplayConnectionOuterType>>("edges", resolve: context => context.Source.edges);
+            Field<ListGraphType<DisplayConnectionOuterType>>("edges", resolve: context => context.Source.edges);
         }
     }
 }

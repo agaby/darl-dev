@@ -1,9 +1,5 @@
-﻿using Darl.GraphQL.Models.Models;
-using Darl.Thinkbase;
+﻿using Darl.Thinkbase;
 using GraphQL.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.GraphQL.Models.Schemata
 {
@@ -18,7 +14,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.name).Description("The name of this connection");
             Field(c => c.startId).Description("The object at the start of this connection");
             Field(c => c.endId).Description("The object at the end of this connection");
-            Field(c => c.weight,true).Description("The degree of plausibility of this connection").DefaultValue(1.0);
+            Field(c => c.weight, true).Description("The degree of plausibility of this connection").DefaultValue(1.0);
             Field(c => c.id, true).Description("The id of this connection");//cytoscape sets this...
             Field<ListGraphType<GraphAttributeInputType>>("properties", "Other properties of this connection", resolve: c => c.Source.properties);
         }

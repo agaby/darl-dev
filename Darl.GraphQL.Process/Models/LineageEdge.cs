@@ -1,8 +1,5 @@
-﻿using QuickGraph;
-using System;
-using ProtoBuf;
-using System.Collections.Generic;
-using System.Text;
+﻿using ProtoBuf;
+using QuickGraph;
 
 namespace Darl.GraphQL.Models.Models
 {

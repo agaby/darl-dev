@@ -1,8 +1,6 @@
 ﻿using Darl.Common;
 using Darl.GraphQL.Models.Models;
-using Darl.Lineage;
 using Darl.Thinkbase;
-using DarlCommon;
 using LiteDB;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -10,17 +8,16 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
     public class LocalConnectivity : IConnectivity
     {
-        private IConfiguration _config;
-        private ILogger _logger;
+        private readonly IConfiguration _config;
+        private readonly ILogger _logger;
 
-        private LiteDatabase db;
+        private readonly LiteDatabase db;
 
         public static readonly string knowledgestateCollection = "kstate";
         public static readonly string kgraphcollection = "kgraph";
@@ -79,7 +76,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var mc = db.GetCollection<LiteKGraph>(kgraphcollection);
             mc.EnsureIndex(x => x.Name);
             var old = mc.FindOne(x => x.Name == name);
-            mc.DeleteMany(x =>x.Name == name);
+            mc.DeleteMany(x => x.Name == name);
             return Task.FromResult(old as KGraph);
         }
 
@@ -174,7 +171,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var mc = db.GetCollection<LiteKnowledgeState>(knowledgestateCollection);
             var ks = mc.FindOne(x => x.subjectId == ksId && x.knowledgeGraphName == state.knowledgeGraphName);
-            if(ks == null)
+            if (ks == null)
             {
                 ks = new LiteKnowledgeState { knowledgeGraphName = state.knowledgeGraphName, subjectId = ksId, userId = userId, created = DateTime.UtcNow };
             }
