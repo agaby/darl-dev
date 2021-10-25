@@ -11,8 +11,8 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using System.Collections.Generic;
 using Darl.ai;
+using System.Collections.Generic;
 
 namespace DarlCompiler.Parsing
 {
@@ -38,11 +38,11 @@ namespace DarlCompiler.Parsing
         /// <summary>
         /// The _execute method
         /// </summary>
-        private ExecuteActionMethod _executeMethod;
+        private readonly ExecuteActionMethod _executeMethod;
         /// <summary>
         /// The _preview method
         /// </summary>
-        private PreviewActionMethod _previewMethod;
+        private readonly PreviewActionMethod _previewMethod;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomActionHint"/> class.

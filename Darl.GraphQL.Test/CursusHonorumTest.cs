@@ -9,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -31,49 +30,49 @@ namespace Darl.GraphQL.Test
         private ILogger<BotProcessing> _bplogger;
         private IHttpContextAccessor _context;
 
-        private static string industryLineage = "noun:01,2,07,10,14,3,1";
-        private static string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";
-        private static string jobLineage = "noun:01,0,2,00,23,19";
-        private static string areaLineage = "noun:01,1,00,10,09,5";
-        private static string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
-        private static string courseLineage = "noun:01,0,2,00,23,29,02";
-        private static string abilityLineage = "noun:01,0,0,04";
-        private static string enableLineage = "verb:013,210";
-        private static string ruleLineage = "noun:01,0,2,00,23,44,15";
-        private static string personLineage = "noun:00,2,00";
-        private static string universityLineage = "noun:01,2,07,10,13,7,4";
-        private static string learningOutcomeLineage = "noun:01,0,0,15,16,2";
-        private static string ownLineage = "verb:393";
-        private static string consistsLineage = "verb:019,031";
-        private static string teachLineage = "verb:034,30,01,09,01";
-        private static string topicLineage = "noun:01,4,05,06";
-        private static string skillLineage = "noun:01,0,0,04";
-        private static string createLineage = "verb:023";
-        private static string requireLineage = "verb:145";
-        private static string descriptionLineage = "noun:01,4,05,21,05";
-        private static string functionLineage = "noun:01,0,2,00,23,16,21,1";
-        private static string careerLineage = "noun:01,0,2,00,00,15,20,01,1";
-        private static string huntingLineage = "noun:01,0,2,00,23,35";
-        private static string personalityLineage = "noun:01,1,09";
-        private static string liveLineage = "adjective:7763";
-        private static string studentLineage = "noun:00,2,00,175,0";
-        private static string mathsLineage = "noun:01,0,0,15,21,0,08,02";
-        private static string yearLineage = "noun:01,5,03,3,045";
-        private static string followsLineage = "verb:534";
-        private static string activityLineage = "noun:01,0,2,00,23";
-        private static string testLineage = "noun:01,0,2,00,38,09";
-        private static string completeLineage = "adjective:5500";
-        private static string subactivityLineage = "noun:01,0,2,00,00";
-        private static string questionLineage = "noun:01,0,2,00,39,08,08,1";
-        private static string displayLineage = "noun:00,1,00,3,10,09,06";
-        private static string textLineage = "noun:01,4,04,02,07,01";
-        private static string senatorLineage = "noun:00,2,00,033,34,1,10";
-        private static string lictorLineage = "noun:00,2,00,296,0,01";
+        private static readonly string industryLineage = "noun:01,2,07,10,14,3,1";
+        private static readonly string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";
+        private static readonly string jobLineage = "noun:01,0,2,00,23,19";
+        private static readonly string areaLineage = "noun:01,1,00,10,09,5";
+        private static readonly string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
+        private static readonly string courseLineage = "noun:01,0,2,00,23,29,02";
+        private static readonly string abilityLineage = "noun:01,0,0,04";
+        private static readonly string enableLineage = "verb:013,210";
+        private static readonly string ruleLineage = "noun:01,0,2,00,23,44,15";
+        private static readonly string personLineage = "noun:00,2,00";
+        private static readonly string universityLineage = "noun:01,2,07,10,13,7,4";
+        private static readonly string learningOutcomeLineage = "noun:01,0,0,15,16,2";
+        private static readonly string ownLineage = "verb:393";
+        private static readonly string consistsLineage = "verb:019,031";
+        private static readonly string teachLineage = "verb:034,30,01,09,01";
+        private static readonly string topicLineage = "noun:01,4,05,06";
+        private static readonly string skillLineage = "noun:01,0,0,04";
+        private static readonly string createLineage = "verb:023";
+        private static readonly string requireLineage = "verb:145";
+        private static readonly string descriptionLineage = "noun:01,4,05,21,05";
+        private static readonly string functionLineage = "noun:01,0,2,00,23,16,21,1";
+        private static readonly string careerLineage = "noun:01,0,2,00,00,15,20,01,1";
+        private static readonly string huntingLineage = "noun:01,0,2,00,23,35";
+        private static readonly string personalityLineage = "noun:01,1,09";
+        private static readonly string liveLineage = "adjective:7763";
+        private static readonly string studentLineage = "noun:00,2,00,175,0";
+        private static readonly string mathsLineage = "noun:01,0,0,15,21,0,08,02";
+        private static readonly string yearLineage = "noun:01,5,03,3,045";
+        private static readonly string followsLineage = "verb:534";
+        private static readonly string activityLineage = "noun:01,0,2,00,23";
+        private static readonly string testLineage = "noun:01,0,2,00,38,09";
+        private static readonly string completeLineage = "adjective:5500";
+        private static readonly string subactivityLineage = "noun:01,0,2,00,00";
+        private static readonly string questionLineage = "noun:01,0,2,00,39,08,08,1";
+        private static readonly string displayLineage = "noun:00,1,00,3,10,09,06";
+        private static readonly string textLineage = "noun:01,4,04,02,07,01";
+        private static readonly string senatorLineage = "noun:00,2,00,033,34,1,10";
+        private static readonly string lictorLineage = "noun:00,2,00,296,0,01";
 
 
-        private static string graphName = "cursus_honorum.graph";
-        private static string graphImage = "rf1.graphml";
-         
+        private static readonly string graphName = "cursus_honorum.graph";
+        private static readonly string graphImage = "rf1.graphml";
+
         // Julius Caesar dates: Born 100BC, Military service 81BC, 71BC Military Tribune, Quaestor 69BC, 65BC Curule Aedile, 62BC Praetor, propraetor 61BC, Consul 59BC,  proconsul 58BC, Dictator 48BC https://en.wikipedia.org/wiki/Julius_Caesar
 
         [TestInitialize()]
@@ -111,7 +110,7 @@ namespace Darl.GraphQL.Test
             var trans = new Mock<IKGTranslation>();
             var lic = new Mock<ILicensing>();
             _primitives = new BlobGraphPrimitives(blob, cache.Object, conn.Object, bgplogger.Object, lic.Object);
-            _graph = new GraphProcessing(_primitives,glogger.Object, meta.Object);
+            _graph = new GraphProcessing(_primitives, glogger.Object, meta.Object);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
             var form = new Mock<IFormApi>();
             _form = form.Object;
@@ -129,14 +128,14 @@ namespace Darl.GraphQL.Test
             var compositeName = $"{_config["userId"]}_{graphName}";
             await _graph.ClearGraphContent(compositeName);
             var senator = new GraphAttributeInput { name = "senator", value = "true", lineage = senatorLineage };
-            var censor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Censor", lineage = "noun:00,2,00,127", externalId = "Censor", properties = new List<GraphAttributeInput> {senator } }, OntologyAction.build);
-            var dictator = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Dictator", lineage = "noun:00,2,00,320,04", externalId = "Dictator", properties = new List<GraphAttributeInput> { senator, new GraphAttributeInput { name = "lictors", value = "24",  lineage = lictorLineage} } }, OntologyAction.build);
+            var censor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Censor", lineage = "noun:00,2,00,127", externalId = "Censor", properties = new List<GraphAttributeInput> { senator } }, OntologyAction.build);
+            var dictator = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Dictator", lineage = "noun:00,2,00,320,04", externalId = "Dictator", properties = new List<GraphAttributeInput> { senator, new GraphAttributeInput { name = "lictors", value = "24", lineage = lictorLineage } } }, OntologyAction.build);
             var proconsul = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Proconsul", lineage = "noun:00,2,00,033,34,0,5", externalId = "Proconsul", properties = new List<GraphAttributeInput> { senator, new GraphAttributeInput { name = "lictors", value = "12", lineage = lictorLineage } } }, OntologyAction.build);
             var consul = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Consul", lineage = "noun:00,2,00,050,43,35,14,02", externalId = "Consul", properties = new List<GraphAttributeInput> { senator, new GraphAttributeInput { name = "lictors", value = "12", lineage = lictorLineage } } }, OntologyAction.build);
             var propraetor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Propraetor", lineage = "noun:00,2,00,080,0,07", externalId = "Propraetor", properties = new List<GraphAttributeInput> { senator, new GraphAttributeInput { name = "lictors", value = "6", lineage = lictorLineage } } }, OntologyAction.build);
             var praetor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Praetor", lineage = "noun:00,2,00,080,0,07", externalId = "Praetor", properties = new List<GraphAttributeInput> { senator, new GraphAttributeInput { name = "lictors", value = "6", lineage = lictorLineage } } }, OntologyAction.build);
             var curule_aedile = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Curule aedile", lineage = "noun:00,2,00,050,43,35,36", externalId = "Curule_aedile", properties = new List<GraphAttributeInput> { senator, new GraphAttributeInput { name = "lictors", value = "2", lineage = lictorLineage } } }, OntologyAction.build);
-            var plebian_aedile = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Plebian aedile", lineage = "noun:00,2,00,050,43,35,36", externalId = "Plebian_aedile", properties = new List<GraphAttributeInput> { senator} }, OntologyAction.build);
+            var plebian_aedile = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Plebian aedile", lineage = "noun:00,2,00,050,43,35,36", externalId = "Plebian_aedile", properties = new List<GraphAttributeInput> { senator } }, OntologyAction.build);
             var proquaestor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Proquaestor", lineage = "noun:00,2,00,050,43,35,36", externalId = "Proquaestor", properties = new List<GraphAttributeInput> { senator } }, OntologyAction.build);
             var quaestor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Quaestor", lineage = "noun:00,2,00,050,43,35,36", externalId = "Quaestor", properties = new List<GraphAttributeInput> { senator } }, OntologyAction.build);
             var tribune_of_the_plebs = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Tribune of the plebs", lineage = "noun:00,2,00,296,0,12", externalId = "Tribune_of_the_plebs", properties = new List<GraphAttributeInput> { senator } }, OntologyAction.build);

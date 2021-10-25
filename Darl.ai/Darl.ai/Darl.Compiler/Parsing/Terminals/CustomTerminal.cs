@@ -65,7 +65,8 @@ namespace DarlCompiler.Parsing
             /// The _handler
             /// </summary>
         }
-        MatchHandler _handler;
+
+        readonly MatchHandler _handler;
 
         /// <summary>
         /// Tries the match.

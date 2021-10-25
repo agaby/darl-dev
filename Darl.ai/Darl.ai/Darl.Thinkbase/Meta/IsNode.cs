@@ -38,8 +38,8 @@ namespace Darl.Thinkbase.Meta
         /// <param name="context">The context.</param>
         public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlMetaNode currentOutput, ConstantContext context, IGraphModel model, GraphObject currentNode)
         {
-            Left.WalkDependencies(dependencies, currentOutput, context,model, currentNode);
-            Right.WalkDependencies(dependencies, currentOutput, context,model, currentNode);
+            Left.WalkDependencies(dependencies, currentOutput, context, model, currentNode);
+            Right.WalkDependencies(dependencies, currentOutput, context, model, currentNode);
         }
 
 
@@ -50,7 +50,7 @@ namespace Darl.Thinkbase.Meta
         /// <returns>
         /// The result of the evaluation
         /// </returns>
-        protected async override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
+        protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
             thread.CurrentNode = this;  //standard prologue
             var res1 = (DarlResult)await Left.Evaluate(thread);
@@ -149,8 +149,8 @@ namespace Darl.Thinkbase.Meta
         /// <param name="currentOutput">The current output.</param>
         public override void WalkSaliences(double saliency, MetaRootNode root)
         {
-            Left.WalkSaliences(saliency,root);
-            Right.WalkSaliences(saliency,root);
+            Left.WalkSaliences(saliency, root);
+            Right.WalkSaliences(saliency, root);
         }
 
     }

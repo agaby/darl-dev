@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Darl.Thinkbase
 {
-    public class GraphConnectionInput  : GraphElementInput
+    public class GraphConnectionInput : GraphElementInput
     {
         public double? weight { get; set; }
         public string startId { get; set; }

@@ -1,10 +1,4 @@
-﻿using Darl.Thinkbase.Meta;
-using DarlCompiler.Ast;
-using DarlCompiler.Parsing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
@@ -21,7 +15,7 @@ namespace Darl.Thinkbase.Meta
             foreach (var o in grammar.currentModel.GetConnectedObjects(grammar.currentNode, connLineage, objLineage))
             {
                 var att = grammar.currentModel.FindDataAttribute(o.id, attLineage, grammar.state);
-                if(att != null)
+                if (att != null)
                     res.FuzzyAggregate(DarlVarExtensions.Convert(att));
             }
             if (!res.values.Any())

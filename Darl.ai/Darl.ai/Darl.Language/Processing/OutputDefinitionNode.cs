@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using DarlCompiler.Ast;
+﻿using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
+using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace DarlLanguage.Processing
@@ -15,7 +15,8 @@ namespace DarlLanguage.Processing
         /// <summary>
         /// Enumerates the possible output types
         /// </summary>
-        public enum OutputTypes {
+        public enum OutputTypes
+        {
             /// <summary>
             /// is numeric
             /// </summary>
@@ -129,7 +130,7 @@ namespace DarlLanguage.Processing
                         var t = iType == OutputTypes.numeric_output ? "numeric" : "temporal";
                         if (sets.Count > 0)
                         {
-                            
+
                             sb.Append($"output {t} {name} {{");
                             int setindex = 0;
                             foreach (string set in sets.Keys)

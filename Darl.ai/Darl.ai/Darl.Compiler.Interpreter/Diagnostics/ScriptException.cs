@@ -11,8 +11,8 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using System;
 using DarlCompiler.Parsing;
+using System;
 
 namespace DarlCompiler.Interpreter
 {

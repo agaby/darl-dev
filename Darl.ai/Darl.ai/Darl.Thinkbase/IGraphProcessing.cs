@@ -53,7 +53,7 @@ namespace Darl.Thinkbase
         Task<GraphObject> FindRecognition(string compositeName, string root, string path);
         Task<DisplayModel> GetRealDisplayGraph(string compositeName, string lineageFilter);
         Task<DisplayModel> GetVirtualDisplayGraph(string compositeName);
-        Task<DisplayModel> GetRecognitionDisplayGraph(string compositeName );
+        Task<DisplayModel> GetRecognitionDisplayGraph(string compositeName);
         Task<GraphObject> GetRecognitionObjectById(string compositeName, string id);
         Task SaveKSChanges(string userId, string subjectId, KnowledgeState ks);
         Task<KnowledgeState> GetKnowledgeStateByExternalId(string userId, string extId, string graphName, bool externalIds);

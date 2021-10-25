@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.Lineage.Bot.Stores
 {
@@ -9,9 +8,9 @@ namespace Darl.Lineage.Bot.Stores
     /// </summary>
     public class LocalBotData : IBotDataInterface
     {
-        Dictionary<string, string> store;
+        readonly Dictionary<string, string> store;
 
-        public LocalBotData(Dictionary<string,string> store)
+        public LocalBotData(Dictionary<string, string> store)
         {
             this.store = store;
         }
@@ -38,7 +37,7 @@ namespace Darl.Lineage.Bot.Stores
         {
             if (ContainsKey(v))
             {
-                dval = (T)Convert.ChangeType(store[v],typeof(T));
+                dval = (T)Convert.ChangeType(store[v], typeof(T));
                 return true;
             }
             dval = (T)Convert.ChangeType(0, typeof(T));

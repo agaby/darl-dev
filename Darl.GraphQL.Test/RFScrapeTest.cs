@@ -37,46 +37,46 @@ namespace Darl.GraphQL.Test
         private IHttpContextAccessor _context;
         private ILogger<GraphHandler> _ghlogger;
 
-        private static string industryLineage = "noun:01,2,07,10,14,3,1";
-        private static string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";
-        private static string jobLineage = "noun:01,0,2,00,23,19";
-        private static string areaLineage = "noun:01,1,00,10,09,5";
-        private static string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
-        private static string courseLineage = "noun:01,0,2,00,23,29,02";
-        private static string abilityLineage = "noun:01,0,0,04";
-        private static string enableLineage = "verb:013,210";
-        private static string ruleLineage = "noun:01,0,2,00,23,44,15";
-        private static string personLineage = "noun:00,2,00";
-        private static string universityLineage = "noun:01,2,07,10,13,7,4";
-        private static string learningOutcomeLineage = "noun:01,0,0,15,16,2";
-        private static string ownLineage = "verb:393";
-        private static string consistsLineage = "verb:019,031";
-        private static string teachLineage = "verb:034,30,01,09,01";
-        private static string topicLineage = "noun:01,4,05,06";
-        private static string skillLineage = "noun:01,0,0,04";
-        private static string createLineage = "verb:023";
-        private static string requireLineage = "verb:145";
-        private static string descriptionLineage = "noun:01,4,05,21,05";
-        private static string functionLineage = "noun:01,0,2,00,23,16,21,1";
-        private static string careerLineage = "noun:01,0,2,00,00,15,20,01,1";
-        private static string huntingLineage = "noun:01,0,2,00,23,35";
-        private static string personalityLineage = "noun:01,1,09";
-        private static string liveLineage = "adjective:7763";
-        private static string studentLineage = "noun:00,2,00,175,0";
-        private static string mathsLineage = "noun:01,0,0,15,21,0,08,02";
-        private static string yearLineage = "noun:01,5,03,3,045";
-        private static string followsLineage = "verb:534";
-        private static string activityLineage = "noun:01,0,2,00,23";
-        private static string testLineage = "noun:01,0,2,00,38,09"; 
-        private static string completeLineage = "adjective:5500";
-        private static string subactivityLineage = "noun:01,0,2,00,00";
-        private static string questionLineage = "noun:01,0,2,00,39,08,08,1";
-        private static string displayLineage = "noun:00,1,00,3,10,09,06";
-        private static string textLineage = "noun:01,4,04,02,07,01";
+        private static readonly string industryLineage = "noun:01,2,07,10,14,3,1";
+        private static readonly string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";
+        private static readonly string jobLineage = "noun:01,0,2,00,23,19";
+        private static readonly string areaLineage = "noun:01,1,00,10,09,5";
+        private static readonly string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
+        private static readonly string courseLineage = "noun:01,0,2,00,23,29,02";
+        private static readonly string abilityLineage = "noun:01,0,0,04";
+        private static readonly string enableLineage = "verb:013,210";
+        private static readonly string ruleLineage = "noun:01,0,2,00,23,44,15";
+        private static readonly string personLineage = "noun:00,2,00";
+        private static readonly string universityLineage = "noun:01,2,07,10,13,7,4";
+        private static readonly string learningOutcomeLineage = "noun:01,0,0,15,16,2";
+        private static readonly string ownLineage = "verb:393";
+        private static readonly string consistsLineage = "verb:019,031";
+        private static readonly string teachLineage = "verb:034,30,01,09,01";
+        private static readonly string topicLineage = "noun:01,4,05,06";
+        private static readonly string skillLineage = "noun:01,0,0,04";
+        private static readonly string createLineage = "verb:023";
+        private static readonly string requireLineage = "verb:145";
+        private static readonly string descriptionLineage = "noun:01,4,05,21,05";
+        private static readonly string functionLineage = "noun:01,0,2,00,23,16,21,1";
+        private static readonly string careerLineage = "noun:01,0,2,00,00,15,20,01,1";
+        private static readonly string huntingLineage = "noun:01,0,2,00,23,35";
+        private static readonly string personalityLineage = "noun:01,1,09";
+        private static readonly string liveLineage = "adjective:7763";
+        private static readonly string studentLineage = "noun:00,2,00,175,0";
+        private static readonly string mathsLineage = "noun:01,0,0,15,21,0,08,02";
+        private static readonly string yearLineage = "noun:01,5,03,3,045";
+        private static readonly string followsLineage = "verb:534";
+        private static readonly string activityLineage = "noun:01,0,2,00,23";
+        private static readonly string testLineage = "noun:01,0,2,00,38,09";
+        private static readonly string completeLineage = "adjective:5500";
+        private static readonly string subactivityLineage = "noun:01,0,2,00,00";
+        private static readonly string questionLineage = "noun:01,0,2,00,39,08,08,1";
+        private static readonly string displayLineage = "noun:00,1,00,3,10,09,06";
+        private static readonly string textLineage = "noun:01,4,04,02,07,01";
 
 
-        private static string graphName = "rf1.graph";
-        private static string graphImage = "rf1.graphml";
+        private static readonly string graphName = "rf1.graph";
+        private static readonly string graphImage = "rf1.graphml";
 
         [TestInitialize()]
         public void Initialize()
@@ -110,12 +110,12 @@ namespace Darl.GraphQL.Test
             var meta = new Mock<IMetaStructureHandler>();
             _conn = conn.Object;
             cache.Setup(a => a.GetAsync(It.IsAny<string>(), default)).Returns(Task.FromResult<byte[]>(null));
-            conn.Setup(a => a.GetKnowledgeState(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<KnowledgeState>(new KnowledgeState ()));
+            conn.Setup(a => a.GetKnowledgeState(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<KnowledgeState>(new KnowledgeState()));
             conn.Setup(a => a.UpdateKnowledgeState(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<KnowledgeStateUpdate>()));
             var trans = new Mock<IKGTranslation>();
             var lic = new Mock<ILicensing>();
-            _primitives = new BlobGraphPrimitives(blob , cache.Object, conn.Object, bgplogger.Object, lic.Object);
-            _graph = new GraphProcessing(_primitives,glogger.Object,meta.Object);
+            _primitives = new BlobGraphPrimitives(blob, cache.Object, conn.Object, bgplogger.Object, lic.Object);
+            _graph = new GraphProcessing(_primitives, glogger.Object, meta.Object);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
             var form = new Mock<IFormApi>();
             _form = form.Object;
@@ -423,12 +423,12 @@ namespace Darl.GraphQL.Test
                 }
             }
             var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
-            var gh = new GraphHandler(_graph, _ghlogger,new MetaStructureHandler());
+            var gh = new GraphHandler(_graph, _ghlogger, new MetaStructureHandler());
             var paths = new List<string> { consistsLineage, followsLineage };
             var subjectId = Guid.NewGuid().ToString();
             var userId = _config["userId"];
             var targetId = node.id;
-            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>(),null, GraphProcess.seek);
+            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>(), null, GraphProcess.seek);
             await _graph.Store(compositeName);
             var stream = await _graph.StoreGraphML(compositeName);
             using (var fileStream = File.Create(graphImage))
@@ -442,28 +442,28 @@ namespace Darl.GraphQL.Test
         [TestMethod]
         public async Task TestInference()
         {
-/*            var compositeName = $"{_config["userId"]}_{graphName}";
-            var model = await _primitives.Load(compositeName);
-            var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
-            var ks = new KnowledgeState { Id = Guid.NewGuid().ToString(), userId = _config["userId"], knowledgeGraphName = graphName };
-            var paths = new List<string> { consistsLineage, followsLineage };
-            var order = _graph.GetExecutionOrder(model, node, paths);
-            var nodes = _graph.FindNext(model, order, ks, node, paths, completeLineage);
-            Assert.AreEqual(1, nodes.Count);
-            Assert.AreEqual("SUBACTIVITY1", nodes[0].externalId);
-            ks.AddAttribute(nodes[0].id, new GraphAttribute { lineage = completeLineage } );
-            nodes = _graph.FindNext(model, order, ks, node, new List<string> { consistsLineage, followsLineage }, completeLineage);
-            Assert.AreEqual(1, nodes.Count);
-            Assert.AreEqual("SUBACTIVITY2", nodes[0].externalId);
-            ks.AddAttribute(nodes[0].id, new GraphAttribute { lineage = completeLineage } );
-            nodes = _graph.FindNext(model, order, ks, node, new List<string> { consistsLineage, followsLineage }, completeLineage);
-            Assert.AreEqual(1, nodes.Count);
-            Assert.AreEqual("SUBACTIVITY3", nodes[0].externalId);
-            var gh = new GraphHandler(_graph, _ghlogger);
-            var subjectId = Guid.NewGuid().ToString();
-            var userId = _config["userId"];
-            var targetId = node.id;
-            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>(), null);*/
+            /*            var compositeName = $"{_config["userId"]}_{graphName}";
+                        var model = await _primitives.Load(compositeName);
+                        var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
+                        var ks = new KnowledgeState { Id = Guid.NewGuid().ToString(), userId = _config["userId"], knowledgeGraphName = graphName };
+                        var paths = new List<string> { consistsLineage, followsLineage };
+                        var order = _graph.GetExecutionOrder(model, node, paths);
+                        var nodes = _graph.FindNext(model, order, ks, node, paths, completeLineage);
+                        Assert.AreEqual(1, nodes.Count);
+                        Assert.AreEqual("SUBACTIVITY1", nodes[0].externalId);
+                        ks.AddAttribute(nodes[0].id, new GraphAttribute { lineage = completeLineage } );
+                        nodes = _graph.FindNext(model, order, ks, node, new List<string> { consistsLineage, followsLineage }, completeLineage);
+                        Assert.AreEqual(1, nodes.Count);
+                        Assert.AreEqual("SUBACTIVITY2", nodes[0].externalId);
+                        ks.AddAttribute(nodes[0].id, new GraphAttribute { lineage = completeLineage } );
+                        nodes = _graph.FindNext(model, order, ks, node, new List<string> { consistsLineage, followsLineage }, completeLineage);
+                        Assert.AreEqual(1, nodes.Count);
+                        Assert.AreEqual("SUBACTIVITY3", nodes[0].externalId);
+                        var gh = new GraphHandler(_graph, _ghlogger);
+                        var subjectId = Guid.NewGuid().ToString();
+                        var userId = _config["userId"];
+                        var targetId = node.id;
+                        var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>(), null);*/
         }
 
         [TestMethod]
@@ -601,7 +601,7 @@ namespace Darl.GraphQL.Test
             await _graph.UpdateRecognitionObject(compositeName, new GraphObjectUpdate { id = robj.id, properties = new List<GraphAttributeInput> { new GraphAttributeInput { lineage = GraphObject.recognizedLineage, value = navQuitRule } } });
             var userId = _config["userId"];
             var activities = await _graph.GetGraphObjectsByLineage(compositeName, subactivityLineage);
-            foreach(var o in activities)
+            foreach (var o in activities)
             {
                 var name = o.name;
                 o.properties = new List<GraphAttribute>();
@@ -660,7 +660,7 @@ namespace Darl.GraphQL.Test
             foreach (var o in tests)
             {
                 var name = o.name;
-                if(o.properties == null)
+                if (o.properties == null)
                     o.properties = new List<GraphAttribute>();
                 o.properties.Add(new GraphAttribute { lineage = displayLineage, value = name, inferred = false, name = "display" });
             }
@@ -679,7 +679,7 @@ namespace Darl.GraphQL.Test
                 o.properties.Remove(att);
                 att.name = "text";
                 att.lineage = textLineage;
-                var obj = await _graph.UpdateGraphObject(compositeName, new GraphObjectUpdate {id = o.id,  lineage = o.lineage, properties = new List<GraphAttributeInput> { BlobGraphPrimitives.ConvertAttributeInput(att)} }, OntologyAction.build);
+                var obj = await _graph.UpdateGraphObject(compositeName, new GraphObjectUpdate { id = o.id, lineage = o.lineage, properties = new List<GraphAttributeInput> { BlobGraphPrimitives.ConvertAttributeInput(att) } }, OntologyAction.build);
             }
             var tests = await _graph.GetGraphObjectsByLineage(compositeName, questionLineage);
             foreach (var o in tests)
@@ -725,52 +725,52 @@ namespace Darl.GraphQL.Test
         {
             var compositeName = $"{_config["userId"]}_{graphName}";
             var prim = _primitives as BlobGraphPrimitives;
- /*           foreach(var obj in await prim.GetAllVirtualObjects(compositeName))
-            {
-                if(obj.properties != null)
-                {
-                    foreach(var prop in obj.properties)
-                    {
-                        if(prop.name == "description")
-                        {
-                            prop.type = GraphAttribute.DataType.textual;
-                        }
-                        else if(prop.value.Contains("if") && prop.value.Contains("then"))
-                        {
-                            prop.type = GraphAttribute.DataType.ruleset;
-                        }
-                        else if(double.TryParse(prop.value, out double val))
-                        {
-                            prop.type = GraphAttribute.DataType.numeric;
-                        }
-                        else
-                        {
-                            prop.type = GraphAttribute.DataType.markdown;
-                        }
-                    }
-                }
-            }
-            foreach (var obj in await prim.GetAllRealObjects(compositeName))
-            {
-                if (obj.properties != null)
-                {
-                    foreach (var prop in obj.properties)
-                    {
-                        if (prop.value.Contains("if") && prop.value.Contains("then"))
-                        {
-                            prop.type = GraphAttribute.DataType.ruleset;
-                        }
-                        else if (double.TryParse(prop.value, out double val))
-                        {
-                            prop.type = GraphAttribute.DataType.numeric;
-                        }
-                        else
-                        {
-                            prop.type = GraphAttribute.DataType.markdown;
-                        }
-                    }
-                }
-            }*/
+            /*           foreach(var obj in await prim.GetAllVirtualObjects(compositeName))
+                       {
+                           if(obj.properties != null)
+                           {
+                               foreach(var prop in obj.properties)
+                               {
+                                   if(prop.name == "description")
+                                   {
+                                       prop.type = GraphAttribute.DataType.textual;
+                                   }
+                                   else if(prop.value.Contains("if") && prop.value.Contains("then"))
+                                   {
+                                       prop.type = GraphAttribute.DataType.ruleset;
+                                   }
+                                   else if(double.TryParse(prop.value, out double val))
+                                   {
+                                       prop.type = GraphAttribute.DataType.numeric;
+                                   }
+                                   else
+                                   {
+                                       prop.type = GraphAttribute.DataType.markdown;
+                                   }
+                               }
+                           }
+                       }
+                       foreach (var obj in await prim.GetAllRealObjects(compositeName))
+                       {
+                           if (obj.properties != null)
+                           {
+                               foreach (var prop in obj.properties)
+                               {
+                                   if (prop.value.Contains("if") && prop.value.Contains("then"))
+                                   {
+                                       prop.type = GraphAttribute.DataType.ruleset;
+                                   }
+                                   else if (double.TryParse(prop.value, out double val))
+                                   {
+                                       prop.type = GraphAttribute.DataType.numeric;
+                                   }
+                                   else
+                                   {
+                                       prop.type = GraphAttribute.DataType.markdown;
+                                   }
+                               }
+                           }
+                       }*/
             foreach (var obj in await prim.GetAllRecognitionObjects(compositeName))
             {
                 if (obj.properties != null)
@@ -802,5 +802,5 @@ namespace Darl.GraphQL.Test
     }
 
 }
-    
+
 

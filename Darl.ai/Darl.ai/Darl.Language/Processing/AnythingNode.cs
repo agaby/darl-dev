@@ -37,7 +37,7 @@ namespace DarlLanguage.Processing
         /// <value>
         /// The midamble, used to reconstruct the source code.
         /// </value>
-        public override string preamble 
+        public override string preamble
         {
             get
             {

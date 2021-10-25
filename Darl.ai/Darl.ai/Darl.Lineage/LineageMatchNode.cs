@@ -1,10 +1,9 @@
-﻿using System;
+﻿using DarlCommon;
+using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using DarlCommon;
-using ProtoBuf;
 
 namespace Darl.Lineage
 {
@@ -39,7 +38,7 @@ namespace Darl.Lineage
         /// <param name="hs"></param>
         /// <returns>A new sub-graph set up for execution</returns>
         /// <remarks>As written will fail with an exception if | separated tags match existing tags in the same node of the tree. Need to handle this</remarks>
-        public LineageMatchNode CreateExecutionGraph( HashSet<LineageAnnotationNode> hs)
+        public LineageMatchNode CreateExecutionGraph(HashSet<LineageAnnotationNode> hs)
         {
             var executionNode = new LineageMatchNode();
             executionNode.element = element;
@@ -59,7 +58,7 @@ namespace Darl.Lineage
                 {
                     //evaluate the sub-children once
                     var subChildren = new SortedList<string, LineageMatchNode>(comp);
-                    foreach(var cc in lmn.children.Keys)
+                    foreach (var cc in lmn.children.Keys)
                     {
                         var slmn = lmn.children[cc];
                         subChildren.Add(cc, slmn.CreateExecutionGraph(hs));
@@ -73,17 +72,17 @@ namespace Darl.Lineage
                             var node = executionNode.children[s.Trim()];
                             if (node.annotation == null && lmn.annotation != null) //preserve annotations if present in the duplicate
                                 node.annotation = lmn.annotation;
-/*                            foreach(var sck in subChildren.Keys)
-                            {
-                                if (!node.children.ContainsKey(sck))
-                                    node.children.Add(sck, subChildren[sck]);
-                            }*/
+                            /*                            foreach(var sck in subChildren.Keys)
+                                                        {
+                                                            if (!node.children.ContainsKey(sck))
+                                                                node.children.Add(sck, subChildren[sck]);
+                                                        }*/
                         }
                     }
                 }
                 else
                 {
-                    if(!executionNode.children.ContainsKey(c)) //establishes priority of independent over composite
+                    if (!executionNode.children.ContainsKey(c)) //establishes priority of independent over composite
                         executionNode.children.Add(c, lmn.CreateExecutionGraph(hs));
                     else
                     {
@@ -132,14 +131,14 @@ namespace Darl.Lineage
 
         internal void Rationalize(StringBuilder sb)
         {
-            foreach(var elem in children.Values)
+            foreach (var elem in children.Values)
             {
-                if(elem.element.lineage.Contains('|'))
+                if (elem.element.lineage.Contains('|'))
                 {
                     elem.element.type = LineageType.composite;
                 }
             }
-            if(children.ContainsKey("New node")) //clean up bug
+            if (children.ContainsKey("New node")) //clean up bug
             {
                 var rep = children["New node"];
                 children.Remove("New node");
@@ -156,11 +155,11 @@ namespace Darl.Lineage
             }
             foreach (var lin in lineages)
             {
-                foreach(var lit in literals)
+                foreach (var lit in literals)
                 {
-                    foreach(var concept in literalConceptDictionary[lit.element.lineage])
+                    foreach (var concept in literalConceptDictionary[lit.element.lineage])
                     {
-                        if(concept.lineage.StartsWith(lin.element.lineage))
+                        if (concept.lineage.StartsWith(lin.element.lineage))
                         {
                             //merge
                             merges.Add(new MergeSet { major = lin, minor = lit });
@@ -169,16 +168,16 @@ namespace Darl.Lineage
                     }
                 }
             }
-            foreach(var merge in merges)
+            foreach (var merge in merges)
             {
                 Merge(merge);
                 children.Remove(merge.minor.element.lineage);
             }
-            foreach(var terminal in children.Values.Where(a => a.element.type == LineageType.Default || a.element.type == LineageType.value))
+            foreach (var terminal in children.Values.Where(a => a.element.type == LineageType.Default || a.element.type == LineageType.value))
             {
                 terminal.children.Clear();
             }
-            foreach(var child in children.Values)
+            foreach (var child in children.Values)
             {
                 child.Rationalize(sb);
             }
@@ -186,7 +185,7 @@ namespace Darl.Lineage
 
         private static void Merge(MergeSet merge)
         {
-            foreach(var child in merge.minor.children.Keys)
+            foreach (var child in merge.minor.children.Keys)
             {
                 if (merge.major.children.ContainsKey(child))
                 {
@@ -225,10 +224,10 @@ namespace Darl.Lineage
 
         internal void AddDescriptions()
         {
-            if(element != null && string.IsNullOrEmpty(element.description))
+            if (element != null && string.IsNullOrEmpty(element.description))
             {
 
-                switch(element.type)
+                switch (element.type)
                 {
                     case LineageType.literal:
                         element.description = $"Literal: {element.lineage}";
@@ -248,7 +247,7 @@ namespace Darl.Lineage
                         {
                             var sb = new StringBuilder();
                             sb.Append("Composite: ");
-                            foreach(var s in element.lineage.Split('|'))
+                            foreach (var s in element.lineage.Split('|'))
                             {
                                 var lin = element.lineage.Trim();
                                 sb.Append(LineageLibrary.lineages.ContainsKey(lin) ? LineageLibrary.lineages[lin].description : $"Literal: {lin}");
@@ -304,7 +303,7 @@ namespace Darl.Lineage
             {
                 return LineageLibrary.lineages[text];
             }
-            else if(text.Contains("|"))
+            else if (text.Contains("|"))
             {
                 return new LineageElement() { lineage = text, type = LineageType.composite };
             }
@@ -340,11 +339,11 @@ namespace Darl.Lineage
                     var node = children[tok];
                     if (newName.Contains(":")) //handle symbols
                     {
-                        if(newName.Contains("|")) //composite including symbol
+                        if (newName.Contains("|")) //composite including symbol
                         {
-                            foreach(var c in newName.Split('|'))
+                            foreach (var c in newName.Split('|'))
                             {
-                                if(c.Contains(":"))
+                                if (c.Contains(":"))
                                     HandleLineage(c, node);
                             }
                         }
@@ -453,12 +452,12 @@ namespace Darl.Lineage
                     }
                 }
                 //now look for value match
-                foreach(var v in children.Values)
+                foreach (var v in children.Values)
                 {
                     if (v.element.type == LineageType.value)
                     {
                         var vf = LineageLibrary.HandleValues(v.element.lineage, tokens, ref nextDepth, cs);
-                        if(!vf.unknown) //value found
+                        if (!vf.unknown) //value found
                         {
                             stack.Push(v.element.lineage);
                             children[v.element.lineage].FindSearchPaths(tokens, stack, results, nextDepth);
@@ -483,11 +482,11 @@ namespace Darl.Lineage
                 }
                 else
                 {
-                    res += string.IsNullOrEmpty(res) ? s:  "/" + s;
+                    res += string.IsNullOrEmpty(res) ? s : "/" + s;
                 }
             }
             var cand = new SearchCandidate { depth = depth, fullpath = res, path = res };
-            for(int n = depth; n < tokens.Count; n++)
+            for (int n = depth; n < tokens.Count; n++)
             {
                 cand.fullpath += n == 0 ? "" : "/";
                 if (int.TryParse(tokens[n], out int p))
@@ -501,7 +500,7 @@ namespace Darl.Lineage
                 else
                     cand.fullpath += tokens[n];
             }
-            results.Add(cand); 
+            results.Add(cand);
         }
 
         internal void Delete(List<string> tokens, int depth = 0)
@@ -556,15 +555,15 @@ namespace Darl.Lineage
             {
                 if (children[defaultLabel].annotation != null)
                 {
-                    defaultMatches.Add(new DefaultAnnotation { Node = children[defaultLabel].annotation, Depth = depth, path = IncrementPath(path,defaultLabel) });
+                    defaultMatches.Add(new DefaultAnnotation { Node = children[defaultLabel].annotation, Depth = depth, path = IncrementPath(path, defaultLabel) });
                 }
             }
             var tok = tokens[nextDepth];
             if (children.ContainsKey(tok)) //handle literal matches
             {
                 var localValues = new List<DarlVar>(values);
-                var newpath = IncrementPath( path, children[tok].element.lineage);
-                children[tok].Match(tokens, localValues, matches, defaultMatches, newpath, nextDepth + 1, fuzzy,confidence);
+                var newpath = IncrementPath(path, children[tok].element.lineage);
+                children[tok].Match(tokens, localValues, matches, defaultMatches, newpath, nextDepth + 1, fuzzy, confidence);
             }
             else //handle lineage matches and values - note, literal matches win
             {
@@ -584,11 +583,11 @@ namespace Darl.Lineage
                         }
                     }
                 }
-               int offset = nextDepth;
-               cs = LineageLibrary.WordRecognizer(tokens, ref offset);
-               foreach (var v in children.Values.Where(a => a.element.type == LineageType.value)) //handle values
-               {
-                    int relativeDepth = nextDepth; 
+                int offset = nextDepth;
+                cs = LineageLibrary.WordRecognizer(tokens, ref offset);
+                foreach (var v in children.Values.Where(a => a.element.type == LineageType.value)) //handle values
+                {
+                    int relativeDepth = nextDepth;
                     var newpath = IncrementPath(path, v.element.lineage);
                     for (int n = nextDepth; n < tokens.Count; n++)
                     {//treat value: as defining any length of text that parses
@@ -598,7 +597,7 @@ namespace Darl.Lineage
                         {
                             var localValues = new List<DarlVar>(values);
                             localValues.Add(vf);
-                            v.Match(tokens, localValues, matches, defaultMatches, newpath, n + 1,fuzzy,confidence); //was relativeDepth
+                            v.Match(tokens, localValues, matches, defaultMatches, newpath, n + 1, fuzzy, confidence); //was relativeDepth
                         }
                     }
                 }

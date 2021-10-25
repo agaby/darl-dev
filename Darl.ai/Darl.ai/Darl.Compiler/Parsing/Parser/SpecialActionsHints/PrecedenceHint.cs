@@ -11,10 +11,9 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using DarlCompiler.Parsing.Construction;
 using System.Collections.Generic;
 using System.Linq;
-
-using DarlCompiler.Parsing.Construction;
 
 namespace DarlCompiler.Parsing
 {

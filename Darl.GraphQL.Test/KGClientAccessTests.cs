@@ -6,9 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Test
@@ -57,7 +54,7 @@ namespace Darl.GraphQL.Test
         {
             var container = _config["AppSettings:GraphContainer"];
             //for each blob across accounts in darldevgraphs
-            foreach(var url in blob.List(string.Empty))
+            foreach (var url in blob.List(string.Empty))
             {
                 //add a KGraph entry
                 var l = url.IndexOf(container) + container.Length + 1;

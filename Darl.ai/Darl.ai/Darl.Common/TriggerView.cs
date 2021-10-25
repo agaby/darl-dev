@@ -6,11 +6,11 @@ namespace DarlCommon
     /// <summary>
     /// Decides if a data item is provided from a rule set result or from a fixed value
     /// </summary>
-    public enum SourceType { results, fixedvalue}
+    public enum SourceType { results, fixedvalue }
     /// <summary>
     /// Decides the format of data sent with a post
     /// </summary>
-    public enum PostType { darlvarlist, form}
+    public enum PostType { darlvarlist, form }
 
     /// <summary>
     /// Defines what is executed when a form completes.
@@ -41,7 +41,7 @@ namespace DarlCommon
 
         [Display(Name = "Subject text", Description = "Either the name of textual io or the fixed message subject")]
         public string? subjectText { get; set; }
- 
+
         [Display(Name = "Body source", Description = "Is the message body source rule-set generated or fixed?")]
         public SourceType bodySource { get; set; } = SourceType.fixedvalue;
 
@@ -50,7 +50,7 @@ namespace DarlCommon
 
         [Display(Name = "Email from", Description = "The from address for the email")]
         public string? emailFrom { get; set; }
- 
+
         [Display(Name = "send attachment source", Description = "Is the presence of an attachment rule-set generated or fixed?")]
         public SourceType sendAttachmentSource { get; set; } = SourceType.fixedvalue;
 
@@ -61,8 +61,8 @@ namespace DarlCommon
         public string? attachmentName { get; set; }
 
         [Display(Name = "The attachment uri", Description = "The source of the attachment in blob storage")]
-        public string? attachmentUri{ get; set; }
- 
+        public string? attachmentUri { get; set; }
+
         [Display(Name = "Post data source", Description = "Is the decision to send a POST message rule-set generated or fixed?")]
         public SourceType postDataSource { get; set; } = SourceType.fixedvalue;
         /// <summary>

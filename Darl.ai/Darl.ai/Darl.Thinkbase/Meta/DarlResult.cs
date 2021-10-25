@@ -1,5 +1,4 @@
 ﻿using Darl.Common;
-using Darl.Thinkbase.GraphML;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -163,7 +162,7 @@ namespace Darl.Thinkbase.Meta
         ///    3 a triangular fuzzy set,
         ///    4 a trapezoidal fuzzy set.
         /// The values must be ordered in ascending order, but it is permissible for two or more to hold the same value.</remarks>
-        public List<object> values= new List<object>();
+        public List<object> values = new List<object>();
 
         /// <summary>
         /// Gets or sets the sequence.
@@ -239,22 +238,22 @@ namespace Darl.Thinkbase.Meta
                         {
                             //convert type of r if necessary
                             var res = r.Convert(DataType.textual);
-                            if(res.weight > maxConfidence)
+                            if (res.weight > maxConfidence)
                             {
                                 maxConfidence = res.weight;
                                 list.Clear();
                                 list.Add(res.stringConstant);
                             }
-                            else if(weight == maxConfidence)
+                            else if (weight == maxConfidence)
                             {
                                 list.Add(res.stringConstant);
                             }
                             output.confidence = Math.Min(output.confidence, res.weight);
                         }
                         stringConstant = string.Empty;
-                        for(int n = 0; n < list.Count; n++)
-                        { 
-                            if(list[n].Any())
+                        for (int n = 0; n < list.Count; n++)
+                        {
+                            if (list[n].Any())
                                 stringConstant += list[n] + (n < list.Count - 1 && !Char.IsWhiteSpace(list[n].Last<char>()) ? "\n" : "");
                         }
                         Value = stringConstant;
@@ -262,7 +261,7 @@ namespace Darl.Thinkbase.Meta
 
                     }
                 }
-                else if(dataType == DataType.network) //we've got a network output, but we don't know if it's seeking or discovering
+                else if (dataType == DataType.network) //we've got a network output, but we don't know if it's seeking or discovering
                 {
                     if (values.Any())
                     {
@@ -284,7 +283,7 @@ namespace Darl.Thinkbase.Meta
                     for (int level = 0; level < cutCount; level++)
                     {//for each cut
                         int count = 0;
-                        double cutLevel = (double)level * 0.1;
+                        double cutLevel = level * 0.1;
                         foreach (DarlResult result in values)
                         {
                             double scale = result.weight / weight; // 1.0 for largest
@@ -308,7 +307,7 @@ namespace Darl.Thinkbase.Meta
                 {
                     other.Simplify(output);
                     this.Value = other.Value;
-                    this.weight = Value != null ? other.weight: 0.0;
+                    this.weight = Value != null ? other.weight : 0.0;
                     this.values = other.values;
                     this.categories = other.categories;
                     this.stringConstant = other.stringConstant;
@@ -367,7 +366,7 @@ namespace Darl.Thinkbase.Meta
                         for (int level = 0; level < cutCount; level++)
                         {//for each cut
                             int count = 0;
-                            double cutLevel = (double)level * 0.1;
+                            double cutLevel = level * 0.1;
                             foreach (DarlResult result in values)
                             {
                                 double scale = result.weight / weight; // 1.0 for largest
@@ -437,7 +436,7 @@ namespace Darl.Thinkbase.Meta
                 else
                     unknown = true;
             }
-            if(!outputSet)
+            if (!outputSet)
             {
                 output.confidence = 0.0;
                 output.Value = new DarlResult(0.0, true); //was null 07/06/17
@@ -522,7 +521,7 @@ namespace Darl.Thinkbase.Meta
             double overlap = 0.0;
             Interval.Overlap(cuts[n - 1], result.cuts[n - 1], ref overlap);
             double ratio = overlap / gap;
-            DarlResult res = new DarlResult((double)(n - 1) * 0.1 + ratio * 0.1 / (1.0 + ratio), false)
+            DarlResult res = new DarlResult((n - 1) * 0.1 + ratio * 0.1 / (1.0 + ratio), false)
             {
                 weight = Math.Min(this.weight, result.weight) //XMIN-257
             };
@@ -622,7 +621,7 @@ namespace Darl.Thinkbase.Meta
         /// Initializes a new instance of the <see cref="DarlResult"/> class.
         /// </summary>
         /// <param name="s">A string value</param>
-        public DarlResult(string name,string s)
+        public DarlResult(string name, string s)
         {
             this.name = name;
             values = new List<object>();
@@ -649,7 +648,7 @@ namespace Darl.Thinkbase.Meta
             dataType = res.dataType;
             unknown = res.unknown;
             weight = res.weight;
-            switch(dataType)
+            switch (dataType)
             {
                 case DataType.numeric:
                 case DataType.temporal:
@@ -675,7 +674,7 @@ namespace Darl.Thinkbase.Meta
                     break;
                 case DataType.sequence:
                     sequence.Clear();
-                    foreach(var seq in res.sequence)
+                    foreach (var seq in res.sequence)
                     {
                         sequence.Add(seq);
                     }
@@ -806,7 +805,7 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        public DarlResult(string name, bool numeric, double weight): this(numeric, weight)
+        public DarlResult(string name, bool numeric, double weight) : this(numeric, weight)
         {
             this.name = name;
         }
@@ -952,7 +951,7 @@ namespace Darl.Thinkbase.Meta
             double tmp2 = upper - middle;
             for (int n = 1; n < cutCount - 1; n++)//changed 08/08/2013 because first and last point was set twice
             {
-                double tmp3 = (double)n / (double)(cutCount - 1);
+                double tmp3 = n / (double)(cutCount - 1);
                 cuts[n] = new Interval(double.IsInfinity(tmp1) ? double.NegativeInfinity : lower + tmp1 * tmp3,
                                         double.IsInfinity(tmp2) ? double.PositiveInfinity : upper - tmp2 * tmp3);
             }
@@ -992,7 +991,7 @@ namespace Darl.Thinkbase.Meta
             double tmp2 = upper - highMid;
             for (int n = 0; n < cutCount - 1; n++)
             {
-                double tmp3 = (double)n / (double)(cutCount - 1);
+                double tmp3 = n / (double)(cutCount - 1);
                 cuts[n] = new Interval(double.IsInfinity(tmp1) ? double.NegativeInfinity : lower + tmp1 * tmp3,
                     double.IsInfinity(tmp2) ? double.PositiveInfinity : upper - tmp2 * tmp3);
             }
@@ -1022,7 +1021,7 @@ namespace Darl.Thinkbase.Meta
                 for (int n = 0; n < cutCount; n++)
                     cuts[n] = result.cuts[n];
             }
-            else if(dataType == DataType.categorical)
+            else if (dataType == DataType.categorical)
             {
                 foreach (string obj in result.categories.Keys)
                 {
@@ -1120,9 +1119,9 @@ namespace Darl.Thinkbase.Meta
                         {
                             List<DarlTime?> vals = obj as List<DarlTime?>;
                             vals.Sort();
-                            foreach(var i in vals)
+                            foreach (var i in vals)
                             {
-                                if(i != null)
+                                if (i != null)
                                 {
                                     values.Add(i.raw);
                                 }
@@ -1155,7 +1154,7 @@ namespace Darl.Thinkbase.Meta
                         if (obj is Int32)
                         {
                             int val = (int)obj;
-                            double dval = (double)val;
+                            double dval = val;
                             values.Add(dval);
                             this.Normalise(false);
                         }
@@ -1209,7 +1208,7 @@ namespace Darl.Thinkbase.Meta
         /// <param name="name">the name of the data contained</param>
         /// <param name="vals"></param>
         /// <param name="dataType"></param>
-        public DarlResult(string name, List<DarlResult> vals, DataType dataType) : this(name,0.0,true)
+        public DarlResult(string name, List<DarlResult> vals, DataType dataType) : this(name, 0.0, true)
         {
             //first separate out all vals that are of the right type
             var ourVals = vals.Where(a => a.name == name && a.dataType == dataType);
@@ -1219,7 +1218,7 @@ namespace Darl.Thinkbase.Meta
                 switch (dataType)
                 {
                     case DataType.numeric:
-                        
+
                         if (ourVals.Count() == 1)
                         {
 
@@ -1345,7 +1344,7 @@ namespace Darl.Thinkbase.Meta
                 //else interpolate
                 double divisor = (res2.cuts[n].upper - res2.cuts[n - 1].upper);
                 double remainder = res1.cuts[0].lower - res2.cuts[n - 1].upper;
-                return new DarlResult((double)(n - 1) * 0.1 + remainder * 0.1 / divisor, false);
+                return new DarlResult((n - 1) * 0.1 + remainder * 0.1 / divisor, false);
             }
             if (res2.cuts[0].IsSingleton())
             {
@@ -1362,7 +1361,7 @@ namespace Darl.Thinkbase.Meta
                 //else interpolate
                 double divisor = (res1.cuts[n].upper - res1.cuts[n - 1].upper);
                 double remainder = res2.cuts[0].upper - res1.cuts[n - 1].upper;
-                return new DarlResult((double)(n - 1) * 0.1 + remainder * 0.1 / divisor, false);
+                return new DarlResult((n - 1) * 0.1 + remainder * 0.1 / divisor, false);
             }
             double alpha = 0.0, m = 0.0;
             for (int i = 0; i < cutCount; i++)
@@ -1433,7 +1432,7 @@ namespace Darl.Thinkbase.Meta
                 return new DarlResult(-1.0, true);
             if (!res1.numeric || !res2.numeric)
                 throw new MetaRuleException("passing non numeric parameter(s) to a + operator");
-            DarlResult res = (res1.temporal || res2.temporal) ? new DarlResult("", 0,DarlResult.DataType.temporal) : new DarlResult();
+            DarlResult res = (res1.temporal || res2.temporal) ? new DarlResult("", 0, DarlResult.DataType.temporal) : new DarlResult();
             res.values.Clear();
             res.cuts = new Interval[cutCount];
             for (int n = 0; n < cutCount; n++)
@@ -1522,7 +1521,7 @@ namespace Darl.Thinkbase.Meta
                 cuts = new Interval[cutCount]
             };
             for (int n = 0; n < cutCount; n++)
-                res.cuts[n] = res1.cuts[n] / (double)res2;
+                res.cuts[n] = res1.cuts[n] / res2;
             res.weight = res1.weight;
             return res;
         }
@@ -1817,7 +1816,7 @@ namespace Darl.Thinkbase.Meta
                     double tmp2 = upper - highMid;
                     for (int n = 0; n < cutCount - 1; n++)
                     {
-                        double tmp3 = (double)n / (double)(cutCount - 1);
+                        double tmp3 = n / (double)(cutCount - 1);
                         cuts[n] = new Interval(lower + tmp1 * tmp3,
                             upper - tmp2 * tmp3);
                     }
@@ -1844,7 +1843,7 @@ namespace Darl.Thinkbase.Meta
             double centroid = 0.0;
             for (int n = 0; n < cutCount; n++)
                 centroid += cuts[n].Mean();
-            return centroid / (double)cutCount;
+            return centroid / cutCount;
         }
 
 
@@ -2002,7 +2001,7 @@ namespace Darl.Thinkbase.Meta
                 if (this.approximate)
                     result = "~" + result;
             }
-            else if(dataType == DataType.categorical)
+            else if (dataType == DataType.categorical)
             {
                 int seq = 0;
                 foreach (string cat in categories.Keys)
@@ -2063,7 +2062,7 @@ namespace Darl.Thinkbase.Meta
             {
                 result += stringConstant;
             }
-            else if(dataType == DataType.temporal)
+            else if (dataType == DataType.temporal)
             {
                 long ticks = (long)((double)values[0] * 10000000.0);
                 var ts = new DarlTime(new DateTime(ticks));
@@ -2071,7 +2070,7 @@ namespace Darl.Thinkbase.Meta
             }
             return result;
         }
-    
+
 
         /// <summary>
         /// updates the public data representation if revision is more accurate
@@ -2375,7 +2374,7 @@ namespace Darl.Thinkbase.Meta
 
                         case DataType.categorical:
                             {
-                              
+
                                 DarlResult res = new DarlResult("", Value == null ? string.Empty : Value.ToString(), DataType.textual)
                                 {
                                     weight = weight
@@ -2386,7 +2385,7 @@ namespace Darl.Thinkbase.Meta
                     }
                     break;
                 case DataType.temporal:
-                    switch(dataType)
+                    switch (dataType)
                     {
                         case DataType.categorical:
                             return new DarlResult(0.0, true); //no conversion
@@ -2414,7 +2413,7 @@ namespace Darl.Thinkbase.Meta
 
 
 
-       
+
 
         //Makes use of Allen, J, Maintaining Knowledge about temporal intervals, 1983 ACM 26(11)
         //and Schockaert S, et al., An Efficient Characterization of Fuzzy Temporal Interval Relations 2006 IEEE Int. Conf.
@@ -2432,11 +2431,11 @@ namespace Darl.Thinkbase.Meta
                 return new DarlResult(-1.0, true);
             if (!res1.temporal || !res2.temporal)
                 throw new MetaRuleException("passing non temporal parameters to a temporal operator");
-            if(res2.values.Count == 1)
+            if (res2.values.Count == 1)
                 return new DarlResult(0.0, false); //an interval can't be contained in a time point
             var t1 = res1.Quadrify();
             var t2 = res2.Quadrify();
-            if((double)t1.values[0] == (double)t2.values[0] && (double)t1.values[1] == (double)t2.values[1] && (double)t1.values[2] == (double)t2.values[2] && (double)t1.values[3] == (double)t2.values[3])
+            if ((double)t1.values[0] == (double)t2.values[0] && (double)t1.values[1] == (double)t2.values[1] && (double)t1.values[2] == (double)t2.values[2] && (double)t1.values[3] == (double)t2.values[3])
                 return new DarlResult(0.0, false); //during excludes strict equality
             if ((double)t1.values[0] >= (double)t2.values[3] || (double)t1.values[3] <= (double)t2.values[0])
                 return new DarlResult(0.0, false); //no overlap
@@ -2461,9 +2460,9 @@ namespace Darl.Thinkbase.Meta
                 throw new MetaRuleException("passing non temporal parameters to a temporal operator");
             var t1 = res1.Quadrify();
             var t2 = res2.Quadrify();
-            if((double)t1.values[0] > (double)t2.values[3])
+            if ((double)t1.values[0] > (double)t2.values[3])
                 return new DarlResult(1.0, false);
-            if((double)t1.values[1] <= (double)t2.values[2])
+            if ((double)t1.values[1] <= (double)t2.values[2])
                 return new DarlResult(0.0, false);
             return !Intersection(t1, t2);
         }
@@ -2484,7 +2483,7 @@ namespace Darl.Thinkbase.Meta
             var t2 = res2.Quadrify();
             if ((double)t1.values[3] < (double)t2.values[0])
                 return new DarlResult(1.0, false);
-            if ((double)t1.values[2] >= (double)t2.values[1]) 
+            if ((double)t1.values[2] >= (double)t2.values[1])
                 return new DarlResult(0.0, false);
             return !Intersection(t1, t2);
         }
@@ -2505,16 +2504,16 @@ namespace Darl.Thinkbase.Meta
             var t1 = res1.Quadrify();
             var t2 = res2.Quadrify();
             //consider before side
-            if((double)t1.values[1] < (double)t2.values[0] && (double)t1.values[3] > (double)t2.values[1] && (double)t1.values[3] < (double)t2.values[3])
+            if ((double)t1.values[1] < (double)t2.values[0] && (double)t1.values[3] > (double)t2.values[1] && (double)t1.values[3] < (double)t2.values[3])
                 return new DarlResult(1.0, false);
             //after side
             if ((double)t1.values[1] < (double)t2.values[2] && (double)t1.values[2] > (double)t2.values[2] && (double)t1.values[3] > (double)t2.values[3])
                 return new DarlResult(1.0, false);
             if ((double)t1.values[0] == (double)t2.values[0] && (double)t1.values[1] == (double)t2.values[1] && (double)t1.values[2] == (double)t2.values[2] && (double)t1.values[3] == (double)t2.values[3])
                 return new DarlResult(0.0, false); //overlapping excludes strict equality
-            if((double)t1.values[0] >= (double)t2.values[3] || (double)t1.values[3] <= (double)t2.values[0] )
+            if ((double)t1.values[0] >= (double)t2.values[3] || (double)t1.values[3] <= (double)t2.values[0])
                 return new DarlResult(0.0, false); //no overlap
-            var res = new DarlResult(1.0 - ((double)Before(t1, t2).values[0] + (double)After(t1, t2).values[0] + (double)During(t1, t2).values[0]),false);
+            var res = new DarlResult(1.0 - ((double)Before(t1, t2).values[0] + (double)After(t1, t2).values[0] + (double)During(t1, t2).values[0]), false);
             if (!res.unknown)
                 return res;
             return new DarlResult(0.0, false);
@@ -2536,8 +2535,8 @@ namespace Darl.Thinkbase.Meta
             var t1 = res1.Quadrify();
             var t2 = res2.Quadrify();
             if ((double)t1.values[0] == (double)t2.values[0] && (double)t1.values[1] == (double)t2.values[1] && (double)t1.values[2] == (double)t2.values[2] && (double)t1.values[3] == (double)t2.values[3])
-                return new DarlResult(1.0, false); 
-            return new DarlResult(0.0, false); 
+                return new DarlResult(1.0, false);
+            return new DarlResult(0.0, false);
         }
 
         /// <summary>
@@ -2546,7 +2545,7 @@ namespace Darl.Thinkbase.Meta
         private DarlResult Quadrify()
         {
             var res = new DarlResult(DataType.temporal, this.weight);
-            switch(values.Count)
+            switch (values.Count)
             {
                 default:
                     return this;
@@ -2582,18 +2581,18 @@ namespace Darl.Thinkbase.Meta
         /// source www.ambrsoft.com/MathCalc/Line/TwoLinesIntersection/TwoLinesIntersection.htm
         /// </remarks>
         public static DarlResult Intersection(DarlResult res1, DarlResult res2)
-        {         
+        {
             var confidenceProd = res1.weight * res2.weight;
             //first left side
-            var l = ((double)res1.values[0] - (double)res2.values[0]) * confidenceProd  * -1 / 
-                ((double)res1.values[1]* res2.weight - (double)res1.values[0]* res2.weight - (double)res2.values[1]* res1.weight + (double)res2.values[0]* res1.weight);
+            var l = ((double)res1.values[0] - (double)res2.values[0]) * confidenceProd * -1 /
+                ((double)res1.values[1] * res2.weight - (double)res1.values[0] * res2.weight - (double)res2.values[1] * res1.weight + (double)res2.values[0] * res1.weight);
             var r = ((double)res1.values[2] - (double)res2.values[2]) * confidenceProd * -1 /
                 ((double)res1.values[3] * res2.weight - (double)res1.values[2] * res2.weight - (double)res2.values[3] * res1.weight + (double)res2.values[2] * res1.weight);
             if (double.IsNaN(l) || double.IsNaN(r))
                 return new DarlResult(1.0, false);
-            if(double.IsNegativeInfinity(l) || double.IsNegativeInfinity(r) || double.IsPositiveInfinity(l) || double.IsPositiveInfinity(r))
+            if (double.IsNegativeInfinity(l) || double.IsNegativeInfinity(r) || double.IsPositiveInfinity(l) || double.IsPositiveInfinity(r))
                 return new DarlResult(0.0, false);
-            return new DarlResult(Math.Min(l, 1-r),false);
+            return new DarlResult(Math.Min(l, 1 - r), false);
         }
         #endregion
 

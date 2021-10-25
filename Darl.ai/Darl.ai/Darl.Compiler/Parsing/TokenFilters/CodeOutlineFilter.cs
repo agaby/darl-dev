@@ -11,9 +11,9 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using Darl.ai;
 using System;
 using System.Collections.Generic;
-using Darl.ai;
 
 namespace DarlCompiler.Parsing
 {
@@ -59,23 +59,26 @@ namespace DarlCompiler.Parsing
         /// <summary>
         /// The _grammar data
         /// </summary>
-        GrammarData _grammarData;
+        readonly GrammarData _grammarData;
+
         /// <summary>
         /// The _grammar
         /// </summary>
-        Grammar _grammar;
+        readonly Grammar _grammar;
         /// <summary>
         /// The _context
         /// </summary>
         ParsingContext _context;
+
         /// <summary>
         /// The _produce indents
         /// </summary>
-        bool _produceIndents;
+        readonly bool _produceIndents;
+
         /// <summary>
         /// The _check braces
         /// </summary>
-        bool _checkBraces, _checkOperator;
+        readonly bool _checkBraces, _checkOperator;
 
         /// <summary>
         /// The indents

@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Darl.Lineage
@@ -104,7 +103,7 @@ namespace Darl.Lineage
             templatesByPayload.Clear();
             textLookup.Clear();
             sraiLookup.Clear();
-            percentCoverage = (double)covered / (double)(covered + uncovered);
+            percentCoverage = covered / (double)(covered + uncovered);
         }
 
         public static LineageTemplate CreateLineageTemplate(string p)
@@ -126,7 +125,7 @@ namespace Darl.Lineage
             var e = XElement.Parse(t);
             var sb = new StringBuilder();
             //first scenario, just text. 
-            if(e.Descendants().Count() == 0)
+            if (e.Descendants().Count() == 0)
             {
                 sb.AppendLine($"if anything then response will be \"{e.Value}\";"); //covers 58%
                 covered++;
@@ -135,12 +134,12 @@ namespace Darl.Lineage
             {
                 bool handled = false;
                 bool responseCreated = false;
-                foreach(var n in e.Elements())
+                foreach (var n in e.Elements())
                 {
                     if (RecurseNodes(n, sb, ref responseCreated))
                         handled = true;
                 }
-                if(!responseCreated)
+                if (!responseCreated)
                 {
                     sb.AppendLine($"if anything then response will be \"{e.Value}\";");
                     handled = true;
@@ -159,12 +158,12 @@ namespace Darl.Lineage
             {
                 case "set":
                     {
-                        if(e.Parent.Name.LocalName != "set" && !string.IsNullOrEmpty(e.Parent.Value) && e.Parent.Value != e.Value)
+                        if (e.Parent.Name.LocalName != "set" && !string.IsNullOrEmpty(e.Parent.Value) && e.Parent.Value != e.Value)
                         {
                             sb.AppendLine($"if anything then response will be \"{e.Parent.Value}\";");
                             responseCreated = true;
                         }
-                        
+
                         sb.AppendLine($"if anything then {e.Attribute("name").Value} will be \"{e.Value}\";");
                         handled = true;
                     }
@@ -205,7 +204,7 @@ namespace Darl.Lineage
 
     }
 
-    
+
 
     public class SraiLookup
     {

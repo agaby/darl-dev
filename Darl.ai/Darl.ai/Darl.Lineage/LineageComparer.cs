@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Darl.Lineage
 {
@@ -24,7 +21,7 @@ namespace Darl.Lineage
             }
             if (multiMatch)
             {
-                if (x.Contains("|") && ! y.Contains("|"))
+                if (x.Contains("|") && !y.Contains("|"))
                 {
                     foreach (var s in x.Split('|'))
                     {
@@ -40,9 +37,9 @@ namespace Darl.Lineage
                             return 0; //match to multiple 
                     }
                 }
-                else if(x.Contains("|") && y.Contains("|"))
+                else if (x.Contains("|") && y.Contains("|"))
                 {
-                    if(x.Split('|').Intersect(y.Split('|')).Any())
+                    if (x.Split('|').Intersect(y.Split('|')).Any())
                     {
                         return 0;
                     }

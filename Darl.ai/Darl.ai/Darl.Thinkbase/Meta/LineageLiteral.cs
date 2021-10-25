@@ -1,9 +1,6 @@
 ﻿using Darl.Lineage;
 using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
@@ -31,7 +28,7 @@ namespace Darl.Thinkbase.Meta
 
         protected override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            return Task.FromResult<object>(new DarlResult("",literal,DarlResult.DataType.textual));
+            return Task.FromResult<object>(new DarlResult("", literal, DarlResult.DataType.textual));
         }
 
     }

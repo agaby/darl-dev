@@ -11,8 +11,8 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using DarlLanguage;
 using DarlCompiler.Parsing;
+using DarlLanguage;
 
 
 namespace DaslLanguage

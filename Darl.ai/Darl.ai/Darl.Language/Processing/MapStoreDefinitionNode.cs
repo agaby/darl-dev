@@ -12,7 +12,7 @@ namespace DarlLanguage.Processing
         /// The name of the output.
         /// </value>
         public string Name { get; set; }
- 
+
         /// <summary>
         /// Initializes the specified context.
         /// </summary>

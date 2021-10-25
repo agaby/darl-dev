@@ -1,5 +1,4 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
-using Darl.GraphQL.Models.Models;
 using Darl.Thinkbase;
 using GraphQL.Client.Http;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +18,7 @@ namespace Darl.GraphQL.Test
     [TestClass]
     public class SoftMatchTreeTest
     {
-        GraphQLHttpClient client = null;
+        readonly GraphQLHttpClient client = null;
         ISoftMatchProcessing cmp;
         IConfiguration _config;
 
@@ -233,7 +231,7 @@ namespace Darl.GraphQL.Test
 
     public class LocalBlob : IBlobConnectivity
     {
-        Dictionary<string, byte[]> localData = new Dictionary<string, byte[]>();
+        readonly Dictionary<string, byte[]> localData = new Dictionary<string, byte[]>();
 
         public string implementation => nameof(LocalBlob);
 

@@ -1,16 +1,13 @@
 ﻿using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
 {
     public class DiscoverNode : LineageMetaNode
     {
-
-        List<string> lineageStrings = new List<string>();
+        readonly List<string> lineageStrings = new List<string>();
         public override void Init(AstContext context, ParseTreeNode treeNode)
         {
             if (treeNode.ChildNodes[0].ChildNodes.Count < 1)
@@ -36,9 +33,9 @@ namespace Darl.Thinkbase.Meta
 
         public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlMetaNode currentOutput, ConstantContext context, IGraphModel model, GraphObject currentNode)
         {
-            foreach(var l in lineages)
+            foreach (var l in lineages)
             {
-                lineageStrings.Add(l is LineageLiteral ? ((LineageLiteral)l).literal : (context.lineages.ContainsKey(l.GetName()) ? context.lineages[l.GetName()].Value : ""));            
+                lineageStrings.Add(l is LineageLiteral ? ((LineageLiteral)l).literal : (context.lineages.ContainsKey(l.GetName()) ? context.lineages[l.GetName()].Value : ""));
             }
         }
     }

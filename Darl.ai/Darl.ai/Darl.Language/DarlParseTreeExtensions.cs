@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DarlCompiler.Parsing;
+﻿using DarlCompiler.Parsing;
 using DarlLanguage.Processing;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace DarlLanguage
 {
@@ -54,7 +54,7 @@ namespace DarlLanguage
             return sb.ToString();
         }
 
- 
+
         /// <summary>
         /// Gets the map root node.
         /// </summary>
@@ -130,7 +130,7 @@ namespace DarlLanguage
         public static string GetMapOutputType(this ParseTree parseTree, string name)
         {
             var outputs = GetOutputs(parseTree, name);
-            if(outputs.Count >= 1 && outputs[0] is OutputDefinitionNode)
+            if (outputs.Count >= 1 && outputs[0] is OutputDefinitionNode)
                 return ((OutputDefinitionNode)outputs[0]).iType.ToString();
             return string.Empty;
         }
@@ -147,7 +147,7 @@ namespace DarlLanguage
             DarlResult res = new DarlResult(0.0, true);
             foreach (var output in outputs)
             {
-                if(output is OutputDefinitionNode)
+                if (output is OutputDefinitionNode)
                 {
                     if (((OutputDefinitionNode)output).iType == OutputDefinitionNode.OutputTypes.numeric_output)
                     {
@@ -172,7 +172,7 @@ namespace DarlLanguage
         public static DarlResult GetMapInputRange(this ParseTree parseTree, string name)
         {
             var inputs = GetInputs(parseTree, name);
-            DarlResult res = new DarlResult(0.0,true);
+            DarlResult res = new DarlResult(0.0, true);
             foreach (var input in inputs)
             {
                 if (input.iType == InputDefinitionNode.InputTypes.numeric_input)
@@ -232,7 +232,7 @@ namespace DarlLanguage
 
         public static List<ConstantDefinitionNode> GetRuleSetConstants(this ParseTree tree, string ruleset)
         {
-            return GetRuleRoot(tree,ruleset).constants.Values.ToList();
+            return GetRuleRoot(tree, ruleset).constants.Values.ToList();
         }
 
         public static List<DurationDefinitionNode> GetRuleSetPeriods(this ParseTree tree, string ruleset)
@@ -262,12 +262,12 @@ namespace DarlLanguage
 
         public static string GetRuleSetString(this ParseTree tree, string ruleset, string name)
         {
-            return GetRuleRoot(tree, ruleset).strings[name].Value; 
+            return GetRuleRoot(tree, ruleset).strings[name].Value;
         }
 
         public static List<List<string>> GetRuleSetSequence(this ParseTree tree, string ruleset, string name)
         {
-            return GetRuleRoot(tree, ruleset).sequences[name].Value;  
+            return GetRuleRoot(tree, ruleset).sequences[name].Value;
         }
 
 
@@ -282,7 +282,7 @@ namespace DarlLanguage
         private static RuleRootNode GetRuleRoot(ParseTree tree, string ruleset)
         {
             var root = tree.Root.AstNode as MapRootNode;
-            if(!root.rulesets.ContainsKey(ruleset))
+            if (!root.rulesets.ContainsKey(ruleset))
             {
                 throw new ArgumentException($"ruleset {ruleset} not found");
             }
@@ -294,19 +294,19 @@ namespace DarlLanguage
         {
             var list = new List<string>();
             var root = GetSingleRuleRoot(tree);
-            if(root.rules.ContainsKey(output))
+            if (root.rules.ContainsKey(output))
             {
-                if(root.rules[output].Count > 0)
+                if (root.rules[output].Count > 0)
                 {
-                    foreach(var rule in root.rules[output])
+                    foreach (var rule in root.rules[output])
                     {
-                        if(rule.rhs.IsConstant())
+                        if (rule.rhs.IsConstant())
                         {
                             list.Add(((DarlNumberLiteralNode)rule.rhs).FixedResult.Value.ToString());
                         }
-                        else if(rule.rhs is RandomTextNode)
+                        else if (rule.rhs is RandomTextNode)
                         {
-                            foreach(var r in rule.rhs.ChildNodes)
+                            foreach (var r in rule.rhs.ChildNodes)
                             {
                                 if (r is DarlNumberLiteralNode)
                                 {
@@ -335,31 +335,31 @@ namespace DarlLanguage
                     {
                         if (rule.rhs.IsConstant() && values.Count == 1)
                         {
-                            ((DarlNumberLiteralNode)rule.rhs).FixedResult = new DarlResult("",values[0], DarlResult.DataType.textual);
+                            ((DarlNumberLiteralNode)rule.rhs).FixedResult = new DarlResult("", values[0], DarlResult.DataType.textual);
                         }
                         else if (rule.rhs is RandomTextNode && values.Count > 1)
                         {
                             rule.rhs.ChildNodes.Clear();
                             foreach (var s in values)
                             {
-                                rule.rhs.ChildNodes.Add(new DarlNumberLiteralNode { Parent = rule.rhs, FixedResult = new DarlResult("",s, DarlResult.DataType.textual) });
+                                rule.rhs.ChildNodes.Add(new DarlNumberLiteralNode { Parent = rule.rhs, FixedResult = new DarlResult("", s, DarlResult.DataType.textual) });
                             }
                         }
-                        else if(rule.rhs.IsConstant() && values.Count > 1) //convert text rhs to randomtext
+                        else if (rule.rhs.IsConstant() && values.Count > 1) //convert text rhs to randomtext
                         {
-                            var index = rule.ChildNodes.FindIndex( a => a.ToString() == rule.rhs.ToString());
+                            var index = rule.ChildNodes.FindIndex(a => a.ToString() == rule.rhs.ToString());
                             rule.rhs = new RandomTextNode { Parent = rule };
                             rule.rhs.ChildNodes.Clear();
                             foreach (var s in values)
                             {
-                                rule.rhs.ChildNodes.Add(new DarlNumberLiteralNode { Parent = rule.rhs, FixedResult = new DarlResult("",s, DarlResult.DataType.textual) });
+                                rule.rhs.ChildNodes.Add(new DarlNumberLiteralNode { Parent = rule.rhs, FixedResult = new DarlResult("", s, DarlResult.DataType.textual) });
                             }
                             rule.ChildNodes[index] = rule.rhs;
                         }
                         else if (rule.rhs is RandomTextNode && values.Count == 1) //convert randomtext to text rhs
                         {
                             var index = rule.ChildNodes.FindIndex(a => a.ToString() == rule.rhs.ToString());
-                            rule.rhs = new DarlNumberLiteralNode { FixedResult = new DarlResult("",values[0], DarlResult.DataType.textual), Parent = rule };
+                            rule.rhs = new DarlNumberLiteralNode { FixedResult = new DarlResult("", values[0], DarlResult.DataType.textual), Parent = rule };
                             rule.ChildNodes[index] = rule.rhs;
                         }
                     }
@@ -380,7 +380,7 @@ namespace DarlLanguage
             {
                 foreach (var x in root.rules[output])
                 {
-                    var index = root.ChildNodes.FindIndex(a => a == x );
+                    var index = root.ChildNodes.FindIndex(a => a == x);
                     root.ChildNodes.RemoveAt(index);
                 }
                 root.rules[output] = new List<RuleNode>();
@@ -388,17 +388,17 @@ namespace DarlLanguage
         }
 
 
-            /// <summary>
-            /// Gets the map output categories.
-            /// </summary>
-            /// <param name="parseTree">The parse tree.</param>
-            /// <param name="name">The name.</param>
-            /// <returns>List of categories for that output - set names if numeric</returns>
-            public static List<string> GetMapOutputCategories(this ParseTree parseTree, string name)
+        /// <summary>
+        /// Gets the map output categories.
+        /// </summary>
+        /// <param name="parseTree">The parse tree.</param>
+        /// <param name="name">The name.</param>
+        /// <returns>List of categories for that output - set names if numeric</returns>
+        public static List<string> GetMapOutputCategories(this ParseTree parseTree, string name)
         {
             HashSet<string> cats = new HashSet<string>();
             var outputs = GetOutputs(parseTree, name);
-            foreach (var output in outputs )
+            foreach (var output in outputs)
             {
                 if (output is OutputDefinitionNode)
                 {
@@ -435,7 +435,7 @@ namespace DarlLanguage
                     foreach (var cat in input.sets.Keys)
                         cats.Add(cat);
                 }
-                else if(input.iType == InputDefinitionNode.InputTypes.categorical_input)
+                else if (input.iType == InputDefinitionNode.InputTypes.categorical_input)
                 {
                     foreach (var cat in input.categories)
                         cats.Add(cat);
@@ -483,7 +483,7 @@ namespace DarlLanguage
         /// <param name="parseTree">The parse tree.</param>
         /// <param name="name">The name of the associated map output</param>
         /// <returns>A list of output definitions</returns>
-        public  static List<IOSequenceDefinitionNode> GetOutputs(this ParseTree parseTree, string name)
+        public static List<IOSequenceDefinitionNode> GetOutputs(this ParseTree parseTree, string name)
         {
             if (parseTree == null || parseTree.Root == null)
                 return null;
@@ -552,14 +552,14 @@ namespace DarlLanguage
                     //emit closing markup and move to next token
                     sb.Append(closing);
                     currentTokenindex++;
-                    if(currentTokenindex < parseTree.Tokens.Count)
+                    if (currentTokenindex < parseTree.Tokens.Count)
                     {
                         token = parseTree.Tokens[currentTokenindex];
                     }
                 }
                 if (c == '\r' || c == '\n')//not twice if cr/lf
                 {
-                    if(!skip)
+                    if (!skip)
                         sb.Append("<br/>");
                     if (currentCharIndex + 1 < parseTree.SourceText.Count())
                     {
@@ -571,7 +571,7 @@ namespace DarlLanguage
                     else
                         skip = false;
                 }
-                else 
+                else
                 {
                     sb.Append(c);
                 }

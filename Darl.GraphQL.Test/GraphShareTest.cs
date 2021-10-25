@@ -1,27 +1,20 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Darl.GraphQL.Models.Connectivity;
+﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using Darl.Thinkbase;
+using Darl.Thinkbase.Meta;
 using DarlLanguage.Processing;
-using HtmlAgilityPack;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
-using Darl.GraphQL.Models.Models;
-using Darl.Lineage;
-using Darl.Thinkbase.Meta;
 
 namespace Darl.GraphQL.Test
 {
@@ -41,29 +34,29 @@ namespace Darl.GraphQL.Test
         private IMetaStructureHandler _meta;
         private IProducts _prods;
 
-        private static string sourceLineage = "noun:01,4,04,02,21,16";
-        private static string destinationLineage = "noun:01,0,0,15,15,3";
-        private static string processLineage = "noun:00,4";
-        private static string defaultLineage = "noun:01,0,0,15,07,02,06,05";//constant
-        private static string valueLineage = "noun:01,4,04,02,07,01";//text
-        private static string collateralLineage = "noun:00,1,00,3,10,09,07";//document
-        private static string firstNameLineage = "noun:01,3,14,01,06,13";//first name
-        private static string lastNameLineage = "noun:01,3,14,01,06,11";//surname
-        private static string emailLineage = "noun:01,0,2,00,38,00,06,1";//email
-        private static string phoneLineage = "noun:01,4,07,01";//phone
-        private static string occupationLineage = "noun:01,0,2,00,23,19";//occupation
-        private static string noteLineage = "noun:01,4,05,21,28,1";//note
-        private static string companyLineage = "noun:01,2,07,10";//organization
-        private static string countryLineage = "noun:01,2,06,35";//nation
-        private static string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";//sector
-        private static string keyLineage = "noun:01,4,09,01,7,3,0";//key
-        private static string subscriptionLineage = "noun:01,0,2,00,34,6,1,5,0";
-        private static string idLineage = "noun:01,4,09,01,7,3,5";
-        private static string stateLineage = "noun:01,1,00";
-        private static string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
-        private static string existenceLineage = "noun:01,5,03,3,018";//life
+        private static readonly string sourceLineage = "noun:01,4,04,02,21,16";
+        private static readonly string destinationLineage = "noun:01,0,0,15,15,3";
+        private static readonly string processLineage = "noun:00,4";
+        private static readonly string defaultLineage = "noun:01,0,0,15,07,02,06,05";//constant
+        private static readonly string valueLineage = "noun:01,4,04,02,07,01";//text
+        private static readonly string collateralLineage = "noun:00,1,00,3,10,09,07";//document
+        private static readonly string firstNameLineage = "noun:01,3,14,01,06,13";//first name
+        private static readonly string lastNameLineage = "noun:01,3,14,01,06,11";//surname
+        private static readonly string emailLineage = "noun:01,0,2,00,38,00,06,1";//email
+        private static readonly string phoneLineage = "noun:01,4,07,01";//phone
+        private static readonly string occupationLineage = "noun:01,0,2,00,23,19";//occupation
+        private static readonly string noteLineage = "noun:01,4,05,21,28,1";//note
+        private static readonly string companyLineage = "noun:01,2,07,10";//organization
+        private static readonly string countryLineage = "noun:01,2,06,35";//nation
+        private static readonly string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";//sector
+        private static readonly string keyLineage = "noun:01,4,09,01,7,3,0";//key
+        private static readonly string subscriptionLineage = "noun:01,0,2,00,34,6,1,5,0";
+        private static readonly string idLineage = "noun:01,4,09,01,7,3,5";
+        private static readonly string stateLineage = "noun:01,1,00";
+        private static readonly string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
+        private static readonly string existenceLineage = "noun:01,5,03,3,018";//life
 
-        private static string graphName = "backoffice_test.graph";
+        private static readonly string graphName = "backoffice_test.graph";
 
         [TestInitialize()]
         public void Initialize()
@@ -108,8 +101,8 @@ namespace Darl.GraphQL.Test
             _conn = new CosmosDBConnectivity(_config, clogger.Object);
             var trans = new Mock<IKGTranslation>();
             var lic = new Mock<ILicensing>();
-            _primitives = new BlobGraphPrimitives(blob , cache.Object, _conn, bgplogger.Object, lic.Object);
-            _graph = new GraphProcessing(_primitives, glogger.Object,_meta);
+            _primitives = new BlobGraphPrimitives(blob, cache.Object, _conn, bgplogger.Object, lic.Object);
+            _graph = new GraphProcessing(_primitives, glogger.Object, _meta);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
             var form = new Mock<IFormApi>();
             _form = form.Object;
@@ -124,12 +117,12 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
-//        [Ignore]
+        //        [Ignore]
         public async Task ShareText()
         {
             var demoUser = _config["AppSettings:boaiuserid"];
-//            await _conn.UpdateSubscriptionType(daveUser, DarlUser.SubscriptionType.corporate);
-            await _conn.ShareKGraph(_config["userId"],graphName, demoUser, false,true);
+            //            await _conn.UpdateSubscriptionType(daveUser, DarlUser.SubscriptionType.corporate);
+            await _conn.ShareKGraph(_config["userId"], graphName, demoUser, false, true);
         }
 
         [TestMethod]
@@ -157,7 +150,7 @@ namespace Darl.GraphQL.Test
                 {
                     foreach (var p in v.Value.properties)
                     {
-                        if(p.value.Contains(target))
+                        if (p.value.Contains(target))
                         {
                             break;
                         }
@@ -202,7 +195,7 @@ namespace Darl.GraphQL.Test
                 {
                     foreach (var p in v.Value.properties)
                     {
-                        if(p.name == "text")
+                        if (p.name == "text")
                         {
                             p.type = GraphAttribute.DataType.markdown;
                             continue;
@@ -217,7 +210,7 @@ namespace Darl.GraphQL.Test
                             {
                                 runtime.CreateTree(p.value, v.Value, model);
                             }
-                            catch(Exception err)
+                            catch (Exception)
                             {
 
                             }
@@ -235,14 +228,14 @@ namespace Darl.GraphQL.Test
                         if (p.type == GraphAttribute.DataType.ruleset)
                         {
                             var cursor = 0;
-                            p.value = ReplaceLiterals(p.value, reverse, "noun:",ref cursor);
-                            p.value = ReplaceLiterals(p.value, reverse, "verb:",ref cursor);
+                            p.value = ReplaceLiterals(p.value, reverse, "noun:", ref cursor);
+                            p.value = ReplaceLiterals(p.value, reverse, "verb:", ref cursor);
                             p.value = ReplaceLiterals(p.value, reverse, "adjective:", ref cursor);
                             try
                             {
                                 runtime.CreateTree(p.value, v.Value, model);
                             }
-                            catch (Exception err)
+                            catch (Exception)
                             {
 
                             }
@@ -254,7 +247,7 @@ namespace Darl.GraphQL.Test
             await _graph.Store(compositeName);
         }
 
-        private string ReplaceLiterals(string code, Dictionary<string,string> reverse, string preamble, ref int cursor)
+        private string ReplaceLiterals(string code, Dictionary<string, string> reverse, string preamble, ref int cursor)
         {
             bool complete = false;
             StringBuilder sb = new StringBuilder();
@@ -267,7 +260,7 @@ namespace Darl.GraphQL.Test
             while (!complete)
             {
                 var start = code.IndexOf(preamble, cursor);
-                if(start == -1)
+                if (start == -1)
                 {
                     complete = true;
                     sb.Append(code.Substring(cursor));
@@ -277,7 +270,7 @@ namespace Darl.GraphQL.Test
                     var end = code.IndexOf("\"", start + 1);
                     var lineage = code.Substring(start, end - start);
 
-                    if(reverse.ContainsKey(lineage))
+                    if (reverse.ContainsKey(lineage))
                     {
                         sb.Append(code.Substring(cursor, start - cursor - 1));
                         sb.Append(reverse[lineage]);
@@ -285,7 +278,7 @@ namespace Darl.GraphQL.Test
                     }
                     else
                     {
-                        if(foundSoFar.ContainsKey(lineage))
+                        if (foundSoFar.ContainsKey(lineage))
                         {
                             var typeword = foundSoFar[lineage];
                             sb.Append(code.Substring(cursor, start - cursor - 1));
@@ -313,7 +306,7 @@ namespace Darl.GraphQL.Test
                                 var pword = LineageLibrary.lineages[primary].typeWord + "_" + LineageLibrary.lineages[secondary].typeWord;
                                 var insert = $"lineage {pword} \"{lineage}\";\n";
                                 sb.Insert(0, insert);
-                                offset += insert.Length; 
+                                offset += insert.Length;
                                 sb.Append(code.Substring(cursor, start - cursor - 1));
                                 sb.Append(pword);
                                 foundSoFar.Add(lineage, pword);
@@ -339,11 +332,11 @@ namespace Darl.GraphQL.Test
         public async Task UpdateAttributeConfidence()
         {
             var m = await _graph.GetModel(_config["AppSettings:boaiuserid"], "backoffice.graph");
-            foreach(var v in m.vertices.Values)
+            foreach (var v in m.vertices.Values)
             {
-                if(v.properties != null)
+                if (v.properties != null)
                 {
-                    foreach(var a in v.properties)
+                    foreach (var a in v.properties)
                     {
                         a.confidence = 1.0;
                     }
@@ -368,12 +361,12 @@ namespace Darl.GraphQL.Test
             var ids = new List<string>();
             foreach (var v in m.vertices.Values)
             {
-                if(v.lineage.StartsWith(_meta.CommonLineages["person"]))
+                if (v.lineage.StartsWith(_meta.CommonLineages["person"]))
                 {
                     ids.Add(v.id);
                 }
             }
-            foreach(var i in ids)
+            foreach (var i in ids)
             {
                 await _graph.DeleteGraphObject(comp, i);
             }

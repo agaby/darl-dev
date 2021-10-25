@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DarlCommon
+﻿namespace DarlCommon
 {
     public class GraphQLCredentials
     {

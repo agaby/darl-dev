@@ -66,12 +66,12 @@ namespace DarlCompiler.Interpreter
             }
 
             //3. Check external module imports
-/*            foreach (var imp in request.FromModule.Imports)
-            {
-                var result = imp.Bind(request);
-                if (result != null)
-                    return result;
-            }*/
+            /*            foreach (var imp in request.FromModule.Imports)
+                        {
+                            var result = imp.Bind(request);
+                            if (result != null)
+                                return result;
+                        }*/
 
             //4. If nothing found, create new slot in current scope
             if (request.Flags.IsSet(BindingRequestFlags.ExistingOrNew))

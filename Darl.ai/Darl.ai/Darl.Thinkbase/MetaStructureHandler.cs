@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Darl.Thinkbase
 {
@@ -21,7 +20,7 @@ namespace Darl.Thinkbase
         public static readonly string questionIdentifier = "__question";
 
 
-        private List<LineageRecord> defaultNodeLineages = new List<LineageRecord>
+        private readonly List<LineageRecord> defaultNodeLineages = new List<LineageRecord>
         {
             LineageLibrary.lineages["noun:01,0,2,00,26,4,0"], //appraisal
             LineageLibrary.lineages["noun:00,2,00"], //person
@@ -34,7 +33,7 @@ namespace Darl.Thinkbase
             LineageLibrary.lineages["noun:01,1,02"], //time
             LineageLibrary.lineages["noun:01,5,07,00,05,2"]//currency
         };
-        private List<LineageRecord> defaultAttLineages = new List<LineageRecord>
+        private readonly List<LineageRecord> defaultAttLineages = new List<LineageRecord>
         {
             LineageLibrary.lineages["noun:00,1,00,3,10,09,06"], //display
             LineageLibrary.lineages["adjective:5500"], //complete            
@@ -42,7 +41,7 @@ namespace Darl.Thinkbase
             LineageLibrary.lineages["noun:01,4,04,02,07,01"], //text
             LineageLibrary.lineages["noun:01,4,05,21,19"]//answer
         };
-        private List<LineageRecord> defaultConnLineages = new List<LineageRecord>
+        private readonly List<LineageRecord> defaultConnLineages = new List<LineageRecord>
         {
             LineageLibrary.lineages["verb:019,031"],//consist
             LineageLibrary.lineages["verb:534"],//postdates
@@ -62,7 +61,7 @@ namespace Darl.Thinkbase
         public MetaStructureHandler()
         {
             //assumes typewords don't clash
-            foreach(var d in defaultNodeLineages)
+            foreach (var d in defaultNodeLineages)
             {
                 CommonLineages.Add(d.typeWord, d.lineage);
             }
@@ -74,7 +73,7 @@ namespace Darl.Thinkbase
             {
                 CommonLineages.Add(d.typeWord, d.lineage);
             }
-            foreach(var c in CommonLineages.Keys)
+            foreach (var c in CommonLineages.Keys)
             {
                 PreloadLineages.Add(c, new LineageDefinitionNode { name = c, Value = CommonLineages[c], typeword = c });
             }
@@ -82,7 +81,7 @@ namespace Darl.Thinkbase
 
 
         public List<LineageRecord> DefaultNodeLineages { get => defaultNodeLineages; }
-        public List<LineageRecord> DefaultAttLineages { get => defaultAttLineages;}
+        public List<LineageRecord> DefaultAttLineages { get => defaultAttLineages; }
         public List<LineageRecord> DefaultConnLineages { get => defaultConnLineages; }
 
         public bool IsObjectLineage(string lin)
@@ -109,7 +108,7 @@ namespace Darl.Thinkbase
                 return false;
             }
             //check if this is a constant node - i.e. one with a preset or remote value.
-            if(!string.IsNullOrEmpty(res.GetAttributeValue(CommonLineages["answer"])))
+            if (!string.IsNullOrEmpty(res.GetAttributeValue(CommonLineages["answer"])))
             {
                 //in this case the parent node is the true leaf node
                 var parent = model.vertices[res.In[0].startId];
@@ -125,18 +124,18 @@ namespace Darl.Thinkbase
             pending.name = res.id;
             pending.sequence = new List<List<string>> { new List<string> { res.externalId } };
             var questionText = GetProperty(res, CommonLineages["text"]);
-            if(string.IsNullOrEmpty(questionText))
+            if (string.IsNullOrEmpty(questionText))
             {
                 questionText = $"_You have not set any question text. Add a text attribute to the {res.externalId} node._";
             }
             var answer = res.GetAttribute(CommonLineages["answer"]);
-            if(answer == null)
+            if (answer == null)
             {
                 questionText += $"\n\n_You have not set an answer attribute on the {res.externalId} node, so I can't infer the data type.\nPlease add one with an empty value_";
                 answer = new GraphAttribute { confidence = 1.0, type = GraphAttribute.DataType.textual, value = null };
             }
             pending.dataType = answer.ConvertDataType();
-            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = pending.dataType, categories = pending.categories, values = pending.values, name = questionIdentifier, Value = questionText }, reference = res.externalId, darl = "Inferred from structure", activeNodes = new List<string> {res.id } });
+            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = pending.dataType, categories = pending.categories, values = pending.values, name = questionIdentifier, Value = questionText }, reference = res.externalId, darl = "Inferred from structure", activeNodes = new List<string> { res.id } });
             return true;
         }
 
@@ -149,7 +148,7 @@ namespace Darl.Thinkbase
         public (DarlVar, InteractTestResponse) AggregateChildren(GraphObject go, IGraphModel model, string ConnectionLineage)
         {
             string aggregateLineage = "";
-            var nodes = new List<string> { go.id};
+            var nodes = new List<string> { go.id };
             DarlVar pending = new DarlVar();//will be the pending value, so needs info to tie up once response is obtained.
             pending.name = go.id;
             pending.sequence = new List<List<string>> { new List<string> { go.externalId } };
@@ -209,16 +208,16 @@ namespace Darl.Thinkbase
             switch (pending.dataType)
             {
                 case DarlVar.DataType.categorical:
-                    if(pending.categories == null)
+                    if (pending.categories == null)
                         pending.categories = new Dictionary<string, double>();
                     var p = GetProperty(child, CommonLineages["text"]);
                     if (p != null)
                     {
                         pending.categories.Add(p, 1.0);
                         var txt = GetProperty(child, CommonLineages["answer"]);
-                        if(txt != null)
+                        if (txt != null)
                         {
-                            if(pending.sequence.Count == 1)
+                            if (pending.sequence.Count == 1)
                             {
                                 pending.sequence.Add(new List<string>());
                             }
@@ -232,7 +231,7 @@ namespace Darl.Thinkbase
                     }
                     break;
                 case DarlVar.DataType.numeric:
-                    if(pending.values == null)
+                    if (pending.values == null)
                         pending.values = new List<double>();
                     pending.values.Sort();
                     var n = GetProperty(child, CommonLineages["number"]);
@@ -272,14 +271,14 @@ namespace Darl.Thinkbase
         /// <param name="ks"></param>
         public void HandleCodelessValue(IGraphModel model, GraphObject res, DarlVar pending, List<DarlVar> values, KnowledgeState ks)
         {
-            var response = values.Where(a => a.name == res.externalId ).FirstOrDefault();
+            var response = values.Where(a => a.name == res.externalId).FirstOrDefault();
             if (response == null)
                 throw new RuleException($"Codeless value {res.name} not found in returned values");
             switch (pending.dataType)
             {
                 case DarlVar.DataType.categorical:
                     //check values is a valid category
-                    if(!pending.categories.ContainsKey(response.Value))
+                    if (!pending.categories.ContainsKey(response.Value))
                     {
                         throw new RuleException($"Category {response.Value} of {res.name} not a valid category");
                     }
@@ -287,9 +286,9 @@ namespace Darl.Thinkbase
                     var cat = response.Value;
                     if (pending.sequence.Count == 2) //there's a cat translation table in the sequence
                     {
-                        for(int n = 0; n< pending.sequence[1].Count; n++)
+                        for (int n = 0; n < pending.sequence[1].Count; n++)
                         {
-                            if(pending.sequence[1][n] == cat)
+                            if (pending.sequence[1][n] == cat)
                             {
                                 cat = pending.sequence[1][n + 1];
                                 break;
@@ -340,10 +339,10 @@ namespace Darl.Thinkbase
             }
         }
 
-        public List<(string,string)> CreateCompletionRuleFirstPass(IGraphModel model, GraphObject res)
+        public List<(string, string)> CreateCompletionRuleFirstPass(IGraphModel model, GraphObject res)
         {
             var set = new HashSet<(string, string)>();
-            if(model.vertices.ContainsKey(res.id))
+            if (model.vertices.ContainsKey(res.id))
             {
                 foreach (var c in res.Out)
                 {
@@ -351,12 +350,12 @@ namespace Darl.Thinkbase
                     set.Add((c.lineage, child.lineage));
                 }
             }
-            else if(model.virtualVertices.ContainsKey(res.lineage))
+            else if (model.virtualVertices.ContainsKey(res.lineage))
             {
                 //Find all objects of this type 
-                foreach(var o in model.vertices.Where(a => a.Value.lineage.StartsWith(res.lineage)))
+                foreach (var o in model.vertices.Where(a => a.Value.lineage.StartsWith(res.lineage)))
                 {
-                    foreach(var c in o.Value.Out)
+                    foreach (var c in o.Value.Out)
                     {
                         var child = model.vertices[c.endId];
                         set.Add((c.lineage, child.lineage));
@@ -373,9 +372,9 @@ namespace Darl.Thinkbase
             var constants = new Dictionary<string, string>();
             constants.Add(CommonLineages["complete"], "complete");
             var fragments = new List<string>();
-            foreach(var c in paths)
+            foreach (var c in paths)
             {
-                if(!constants.ContainsKey(c.Item1))
+                if (!constants.ContainsKey(c.Item1))
                 {
                     constants.Add(c.Item1, LineageLibrary.lineages[c.Item1].typeWord);
                 }
@@ -386,16 +385,16 @@ namespace Darl.Thinkbase
                 fragments.Add($"{c.Item3}({constants[c.Item2]}, {constants[c.Item1]}, complete) ");
             }
             var sb = new StringBuilder();
-            foreach(var con in constants)
+            foreach (var con in constants)
             {
-                if(!PreloadLineages.ContainsKey(con.Value))
+                if (!PreloadLineages.ContainsKey(con.Value))
                 {
                     sb.AppendLine($"lineage {con.Value} \"{con.Key}\";");
                 }
             }
             sb.AppendLine($"output categorical completed {{true,false}} complete;");
             sb.Append("if ");
-            if(fragments.Any())
+            if (fragments.Any())
             {
                 sb.Append(string.Join($" {op} ", fragments));
             }
@@ -416,16 +415,16 @@ namespace Darl.Thinkbase
                     var obj = model.vertices[objectId];
                     var outsb = new StringBuilder();
                     var rulesb = new StringBuilder();
- //                   outsb.AppendLine("output categorical completed {true, false} complete;");
-                    foreach(var c in obj.Out)
+                    //                   outsb.AppendLine("output categorical completed {true, false} complete;");
+                    foreach (var c in obj.Out)
                     {
                         var source = model.vertices[c.endId];
                         var att = source.GetAttribute(CommonLineages["answer"]);
-                        if(att != null)
+                        if (att != null)
                         {
                             var outname = BuildName(source);
                             outsb.AppendLine($"output {att.type} {outname};");
-                            rulesb.AppendLine($"if anything then {outname} will be single({BuildTypeWordString(source,model)},{GetConnectionTypeWord(c)},answer);");
+                            rulesb.AppendLine($"if anything then {outname} will be single({BuildTypeWordString(source, model)},{GetConnectionTypeWord(c)},answer);");
                         }
                     }
                     return outsb.ToString() + "\n\n" + rulesb.ToString();
@@ -455,11 +454,11 @@ namespace Darl.Thinkbase
         }
         private string BuildName(GraphObject obj)
         {
-            if(!string.IsNullOrEmpty(obj.name))
+            if (!string.IsNullOrEmpty(obj.name))
             {
                 return obj.name.Trim().Replace(' ', '_');
             }
-            else if(!string.IsNullOrEmpty(obj.externalId))
+            else if (!string.IsNullOrEmpty(obj.externalId))
             {
                 return obj.externalId.Trim().Replace(' ', '_');
             }

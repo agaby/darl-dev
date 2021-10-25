@@ -1,8 +1,5 @@
 ﻿using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.Thinkbase.Meta
 {

@@ -3,9 +3,7 @@ using DarlLanguage;
 using DarlLanguage.Processing;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Darl.Lineage.Bot
 {
@@ -26,7 +24,7 @@ namespace Darl.Lineage.Bot
                 sb.AppendLine(o.ToDarl());
             }
             //emit strings, constants and sequences
-            foreach(var c in bf.Constants.Keys)
+            foreach (var c in bf.Constants.Keys)
             {
                 sb.AppendLine($"\tconstant {c} {bf.Constants[c].ToString()};");
             }
@@ -40,17 +38,17 @@ namespace Darl.Lineage.Bot
                 sb.Append("{");
                 var p = bf.Sequences[c];
                 int outercount = 0;
-                foreach(var s in p)
+                foreach (var s in p)
                 {
                     sb.Append("{");
                     int innercount = 0;
-                    foreach(var ss in s)
+                    foreach (var ss in s)
                     {
                         innercount++;
                         sb.Append(innercount == s.Count ? $"{{\"{ss}\"}}" : $"{{\"{ss}\"}},");
                     }
                     outercount++;
-                    sb.Append(outercount == p.Count ? "}" :"},");
+                    sb.Append(outercount == p.Count ? "}" : "},");
                 }
                 sb.Append("};");
             }
@@ -102,7 +100,7 @@ namespace Darl.Lineage.Bot
                 {
                     bf.Stores.Add(i.Name);
                 }
-                foreach(var c in tree.GetSingleRuleSetConstants())
+                foreach (var c in tree.GetSingleRuleSetConstants())
                 {
                     bf.Constants.Add(c.name, c.Value);
                 }

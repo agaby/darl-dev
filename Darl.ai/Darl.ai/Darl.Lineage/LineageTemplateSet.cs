@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using ProtoBuf;
+﻿using ProtoBuf;
 using System;
+using System.Collections.Generic;
 
 namespace Darl.Lineage
 {

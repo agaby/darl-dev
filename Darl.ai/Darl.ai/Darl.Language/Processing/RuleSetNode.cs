@@ -1,6 +1,6 @@
-﻿using System;
-using DarlCompiler.Ast;
+﻿using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
+using System;
 using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
@@ -13,7 +13,8 @@ namespace DarlLanguage.Processing
         /// <summary>
         /// The type of processing to apply
         /// </summary>
-        public enum ProcessType {
+        public enum ProcessType
+        {
             /// <summary>
             /// manual rule creation (default)
             /// </summary>
@@ -94,7 +95,7 @@ namespace DarlLanguage.Processing
         /// <returns>
         /// The result of the evaluation
         /// </returns>
-        protected async override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
+        protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
             thread.CurrentNode = this;  //standard prologue
             await ruleRoot.Evaluate(thread);

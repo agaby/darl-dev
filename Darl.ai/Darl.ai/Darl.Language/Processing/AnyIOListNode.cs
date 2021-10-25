@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DarlCompiler.Interpreter;
-using DarlCompiler.Ast;
+﻿using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
@@ -61,10 +57,10 @@ namespace DarlLanguage.Processing
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
             var results = new Dictionary<string, string>();
-            foreach(DarlIdentifierNode arg in arguments)
+            foreach (DarlIdentifierNode arg in arguments)
             {
                 var res = await arg.Evaluate(thread) as DarlResult;
-                if(!results.ContainsKey(arg.name)) //ignore duplicates
+                if (!results.ContainsKey(arg.name)) //ignore duplicates
                     results.Add(arg.name, res.ToStringContent());
             }
             return results;

@@ -11,11 +11,11 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using Darl.ai;
+using DarlLanguage.Processing;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Darl.ai;
-using DarlLanguage.Processing;
 
 namespace DarlCompiler.Parsing
 {
@@ -37,7 +37,7 @@ namespace DarlCompiler.Parsing
         /// <summary>
         /// The _grammar
         /// </summary>
-        private Grammar _grammar;
+        private readonly Grammar _grammar;
         //public readonly CoreParser CoreParser;
         /// <summary>
         /// The scanner
@@ -111,7 +111,7 @@ namespace DarlCompiler.Parsing
         /// <param name="sourceText">The source text.</param>
         /// <param name="fileName">Name of the file.</param>
         /// <returns>ParseTree.</returns>
-        public ParseTree Parse(string sourceText, Dictionary<string,ILocalStore>? stores = null)
+        public ParseTree Parse(string sourceText, Dictionary<string, ILocalStore>? stores = null)
         {
             SourceLocation loc = default(SourceLocation);
             Reset();

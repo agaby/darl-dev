@@ -107,7 +107,7 @@ namespace DarlCompiler.Parsing
             return array;
         }
 
-    }  
+    }
 
 
 

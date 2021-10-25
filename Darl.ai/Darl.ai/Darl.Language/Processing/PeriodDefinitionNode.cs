@@ -1,6 +1,6 @@
-﻿using System;
-using DarlCompiler.Ast;
+﻿using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
+using System;
 
 namespace DarlLanguage.Processing
 {

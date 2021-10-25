@@ -1,9 +1,6 @@
 ﻿using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
@@ -28,8 +25,8 @@ namespace Darl.Thinkbase.Meta
         }
         protected override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            var res =  new DarlResult("seek", DarlResult.DataType.seek);
-            res.sequence = new List<List<string>> { new List<string> { objLineage} };
+            var res = new DarlResult("seek", DarlResult.DataType.seek);
+            res.sequence = new List<List<string>> { new List<string> { objLineage } };
             res.SetWeight(1.0);
             return Task.FromResult<object>(res);
         }

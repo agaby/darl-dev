@@ -1,6 +1,5 @@
 ﻿using Darl.Licensing;
 using DarlCompiler.Parsing;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -86,7 +85,7 @@ namespace Darl.Thinkbase.Meta
         /// <returns></returns>
         public List<GraphObject> ExploreGraph(ParseTree tree)
         {
-            return (tree.Root.AstNode as MetaRootNode).dependentGraphObjects.ToList(); 
+            return (tree.Root.AstNode as MetaRootNode).dependentGraphObjects.ToList();
         }
 
         /// <summary>

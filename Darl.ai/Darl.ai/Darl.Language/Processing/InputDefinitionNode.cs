@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using DarlCompiler.Ast;
-using DarlCompiler.Parsing;
-using System.Text;
-using System.Diagnostics;
+﻿using DarlCompiler.Ast;
 using DarlCompiler.Interpreter;
+using DarlCompiler.Parsing;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace DarlLanguage.Processing
 {
@@ -17,7 +16,8 @@ namespace DarlLanguage.Processing
         /// <summary>
         /// Permissible input types
         /// </summary>
-        public enum InputTypes {
+        public enum InputTypes
+        {
             /// <summary>
             /// The numeric_input
             /// </summary>
@@ -69,7 +69,7 @@ namespace DarlLanguage.Processing
         /// </summary>
         public InputDefinitionNode()
         {
-            Value = new DarlResult(0.0,true);
+            Value = new DarlResult(0.0, true);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace DarlLanguage.Processing
             //edit to store node tree as well, so that toDarl can differentiate betwen string literals and identifiers, since both are permitted.
             base.Init(context, treeNode);
             var nodes = treeNode.GetMappedChildNodes();
-            iType = (InputTypes)Enum.Parse(typeof(InputTypes),nodes[0].Term.Name,true);
+            iType = (InputTypes)Enum.Parse(typeof(InputTypes), nodes[0].Term.Name, true);
             name = (string)nodes[0].Token.Value;
             switch (iType)
             {
@@ -93,13 +93,13 @@ namespace DarlLanguage.Processing
                     {
                         foreach (object key in context.Values.Keys)
                         {
-                            sets.Add((string)key,(DarlResult)context.Values[key]);
+                            sets.Add((string)key, (DarlResult)context.Values[key]);
                         }
                         context.Values.Clear();
                     }
                     break;
                 case InputTypes.categorical_input:
-                    if(nodes.Count > 1)
+                    if (nodes.Count > 1)
                     {
                         foreach (var catdef in nodes[1].ChildNodes)
                         {
@@ -142,7 +142,7 @@ namespace DarlLanguage.Processing
             }
         }
 
- 
+
         /// <summary>
         /// Gets the preamble.
         /// </summary>
@@ -154,7 +154,7 @@ namespace DarlLanguage.Processing
             get
             {
                 StringBuilder sb = new StringBuilder();
-                switch(iType)
+                switch (iType)
                 {
                     case InputTypes.arity_input:
                         sb.AppendLine($"input arity {name};");
@@ -189,9 +189,9 @@ namespace DarlLanguage.Processing
                             int setindex = 0;
                             foreach (string set in sets.Keys)
                             {
-                                sb.Append("{" + set +", ");
+                                sb.Append("{" + set + ", ");
                                 int valCount = 0;
-                                foreach(double d in sets[set].values)
+                                foreach (double d in sets[set].values)
                                 {
                                     valCount++;
                                     sb.Append(d.ToString(System.Globalization.CultureInfo.InvariantCulture) + (valCount == sets[set].values.Count ? "" : ","));
@@ -208,7 +208,7 @@ namespace DarlLanguage.Processing
                         else
                         {
                             sb.AppendLine($"input {t} {name};");
-                        }                        
+                        }
                         break;
                     case InputTypes.presence_input:
                         sb.AppendLine($"input presence {name};");
@@ -247,8 +247,8 @@ namespace DarlLanguage.Processing
                     dInputMembership[p] = 0.0;
                     foreach (int Index in indices)
                     {
-                        double inmem = CalculateMembership(Index,n);
-//                        Debug.WriteLine("input {0}, index {1}, set {2} val {3}",name, Index, n, inmem);
+                        double inmem = CalculateMembership(Index, n);
+                        //                        Debug.WriteLine("input {0}, index {1}, set {2} val {3}",name, Index, n, inmem);
                         double outmem = output.CalculateMembership(Index, p);
                         dInputMembership[p] += inmem * outmem;
                     }

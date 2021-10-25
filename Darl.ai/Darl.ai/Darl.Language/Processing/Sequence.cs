@@ -50,7 +50,7 @@ namespace DarlLanguage.Processing
                         if (RecursivelyFind(source, sequence, comparer, offset + 1, depth + 1))
                             return true;
                     }
-                    else if(depth > 0)
+                    else if (depth > 0)
                     {
                         if (RecursivelyFind(source, sequence, comparer, offset + 1, depth))
                             return true;

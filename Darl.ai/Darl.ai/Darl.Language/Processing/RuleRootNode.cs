@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DarlCompiler.Ast;
+﻿using DarlCompiler.Ast;
 using DarlCompiler.Interpreter.Ast;
 using DarlCompiler.Parsing;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
@@ -103,10 +103,10 @@ namespace DarlLanguage.Processing
                 {
                     AddChild("-", child);
                     string name = ((RuleNode)child.AstNode).GetName();
-                    if(name.Contains("."))//if output is a store
+                    if (name.Contains("."))//if output is a store
                     {
                         var storename = name.Split(new Char[] { '.' }).First(); //take the store name part
-                        if(stores.ContainsKey(storename)) //always should
+                        if (stores.ContainsKey(storename)) //always should
                         {
                             stores[storename].storeOutputs.Add(name); //record all store/address combinations used as outputs
                         }
@@ -137,7 +137,7 @@ namespace DarlLanguage.Processing
                 }
             }
             //Add all stores as outputs found to the list of outputs.
-            foreach(var s in ccontext.storeOutputs.Keys)
+            foreach (var s in ccontext.storeOutputs.Keys)
             {
                 outputs.Add(s, ccontext.storeOutputs[s]);
             }
@@ -186,7 +186,7 @@ namespace DarlLanguage.Processing
         /// <returns>
         /// The result of the evaluation
         /// </returns>
-        protected async override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
+        protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
             thread.CurrentNode = this;  //standard prologue
             DarlGrammar grammar = thread.Runtime.Language.Grammar as DarlGrammar;
@@ -195,7 +195,7 @@ namespace DarlLanguage.Processing
                 string compName = ruleset + "." + input.name;
                 input.Value = grammar.ResultByName(compName);
                 if (((object)input.Value) != null)
-                { 
+                {
                     //sanity checks
                     if (input.iType == InputDefinitionNode.InputTypes.arity_input || input.iType == InputDefinitionNode.InputTypes.numeric_input && !input.Value.IsNumeric())
                     {
@@ -218,7 +218,7 @@ namespace DarlLanguage.Processing
                                 success = true;
                                 break;
                             }
-                            else 
+                            else
                             {
                                 try
                                 {
@@ -227,14 +227,14 @@ namespace DarlLanguage.Processing
                                 catch
                                 {
                                     success = false;
-                                } 
+                                }
                             }
                         }
                         if (!success)
                             input.Value = new DarlResult(0.0, false);
-                        else 
+                        else
                         {
-                             input.Value = new DarlResult(vals);
+                            input.Value = new DarlResult(vals);
                         }
                     }
                 }
@@ -246,7 +246,7 @@ namespace DarlLanguage.Processing
                 await binding.SetValueRef(thread, input.Value);
             }
             //Add all store 
-            foreach(var s in storeInputs.Values)
+            foreach (var s in storeInputs.Values)
             {
                 var binding = thread.Bind(s.GetCompName(), DarlCompiler.Interpreter.BindingRequestFlags.Write | DarlCompiler.Interpreter.BindingRequestFlags.ExistingOrNew);
                 await binding.SetValueRef(thread, s.Value);
@@ -268,9 +268,9 @@ namespace DarlLanguage.Processing
                     foreach (RuleNode rnode in rules[outNode.name])
                     {
                         if (rnode is OtherwiseNode)
-                            other.FuzzyAggregate((DarlResult) await rnode.Evaluate(thread));
+                            other.FuzzyAggregate((DarlResult)await rnode.Evaluate(thread));
                         else
-                            result.FuzzyAggregate((DarlResult) await rnode.Evaluate(thread));
+                            result.FuzzyAggregate((DarlResult)await rnode.Evaluate(thread));
                     }
                     result.Simplify(outNode, other);
 
@@ -284,14 +284,14 @@ namespace DarlLanguage.Processing
                 if (rules.ContainsKey(outNode.GetName()) && outNode is StoreNode)
                 {
                     string compName = ruleset + "." + outNode.GetName();
-                    DarlResult result = new DarlResult(compName, true,  0.0);
-                    DarlResult other = new DarlResult(compName, true, 0.0); 
+                    DarlResult result = new DarlResult(compName, true, 0.0);
+                    DarlResult other = new DarlResult(compName, true, 0.0);
                     foreach (RuleNode rnode in rules[outNode.GetName()])
                     {
                         if (rnode is OtherwiseNode)
-                            other.FuzzyAggregate((DarlResult) await rnode.Evaluate(thread));
+                            other.FuzzyAggregate((DarlResult)await rnode.Evaluate(thread));
                         else
-                            result.FuzzyAggregate((DarlResult) await rnode.Evaluate(thread));
+                            result.FuzzyAggregate((DarlResult)await rnode.Evaluate(thread));
                     }
                     result.PolymorphicSimplify(outNode, other);
 
@@ -308,7 +308,7 @@ namespace DarlLanguage.Processing
 
         private DarlResult.DataType ConvertOType(OutputDefinitionNode.OutputTypes otype)
         {
-            switch(otype)
+            switch (otype)
             {
                 case OutputDefinitionNode.OutputTypes.categorical_output:
                     return DarlResult.DataType.categorical;
@@ -338,7 +338,7 @@ namespace DarlLanguage.Processing
                 {
                     sb.Append("\t" + input.preamble);
                 }
-                if(inputs.Any())
+                if (inputs.Any())
                     sb.Append("\n");
                 foreach (var output in outputs.Values)
                 {
@@ -391,12 +391,12 @@ namespace DarlLanguage.Processing
         {
             if (rules.ContainsKey(currentOutput)) //can be unused output
             {
-                if(outputs[currentOutput].result.IsUnknown() || outputs[currentOutput].result.GetWeight() < 1.0)
-                { 
+                if (outputs[currentOutput].result.IsUnknown() || outputs[currentOutput].result.GetWeight() < 1.0)
+                {
                     var unsatisfiedRules = rules[currentOutput].Where(a => a.IsUnknown || a.confidenceNode != null && a.confidenceNode.weight < 1.0).ToList();
                     if (unsatisfiedRules.Count > 0)
                     {
-                        double childSaliency = saliency / (double)unsatisfiedRules.Count;
+                        double childSaliency = saliency / unsatisfiedRules.Count;
                         foreach (RuleNode r in unsatisfiedRules)
                         {
                             r.WalkSaliences(childSaliency, root, currentRuleSet, currentOutput);
@@ -406,12 +406,12 @@ namespace DarlLanguage.Processing
             }
             else if (stores.ContainsKey(currentOutput)) //it's a store; walk saliences for each store.address combination that occurs as an output
             {
-                foreach(var combiName in stores[currentOutput].storeOutputs)
+                foreach (var combiName in stores[currentOutput].storeOutputs)
                 {
                     var unsatisfiedRules = rules[combiName].Where(a => a.IsUnknown || a.confidenceNode != null && a.confidenceNode.weight < 1.0).ToList();
-                    if(unsatisfiedRules.Count > 0)
-                    { 
-                        double childSaliency = saliency / (double)unsatisfiedRules.Count;
+                    if (unsatisfiedRules.Count > 0)
+                    {
+                        double childSaliency = saliency / unsatisfiedRules.Count;
                         foreach (RuleNode r in rules[combiName])
                         {
                             r.WalkSaliences(childSaliency, root, currentRuleSet, combiName);

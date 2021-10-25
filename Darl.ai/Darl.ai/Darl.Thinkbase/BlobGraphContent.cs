@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Darl.Common;
+﻿using Darl.Common;
 using Darl.Licensing;
 using Darl.Lineage;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
 using ProtoBuf;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Darl.Thinkbase
 {
@@ -36,11 +35,11 @@ namespace Darl.Thinkbase
         /// virtual edges 
         /// </summary>
         [ProtoMember(4)]
-        public Dictionary<string,GraphConnection> virtualEdges { get; set; } = new Dictionary<string, GraphConnection>();
+        public Dictionary<string, GraphConnection> virtualEdges { get; set; } = new Dictionary<string, GraphConnection>();
         [ProtoMember(10)]
-        public string modelName { get ; set ; }
+        public string modelName { get; set; }
 
-        private static DarlMetaRunTime runtime = new DarlMetaRunTime(new MetaStructureHandler());
+        private static readonly DarlMetaRunTime runtime = new DarlMetaRunTime(new MetaStructureHandler());
 
 
         /// <summary>
@@ -52,16 +51,16 @@ namespace Darl.Thinkbase
         [ProtoMember(6)]
         public Dictionary<string, GraphObject> recognitionVertices { get; set; } = new Dictionary<string, GraphObject>();
         [ProtoMember(7)]
-        public Dictionary<string,GraphConnection> recognitionEdges { get; set; } = new Dictionary<string, GraphConnection>();
+        public Dictionary<string, GraphConnection> recognitionEdges { get; set; } = new Dictionary<string, GraphConnection>();
         [ProtoMember(8)]
         public Dictionary<string, IDynamicConverter> dynamicSources { get; set; } = new Dictionary<string, IDynamicConverter>();
-        
+
         /// <summary>
         /// key used for verification of source
         /// </summary>
         [ProtoMember(9)]
         public string key { get; set; }
-        [ProtoMember(11)] 
+        [ProtoMember(11)]
         public string description { get; set; }
         [ProtoMember(12)]
         public string initialText { get; set; }
@@ -74,12 +73,12 @@ namespace Darl.Thinkbase
 
         [ProtoMember(15)]
         public string licenseUrl { get; set; }
-        public bool licensed { get; private set; }  = true; //default for legacy
-        [ProtoMember(16)] 
+        public bool licensed { get; private set; } = true; //default for legacy
+        [ProtoMember(16)]
         public IGraphModel.DateDisplay? dateDisplay { get; set; }
         [ProtoMember(17)]
         public IGraphModel.InferenceTime? inferenceTime { get; set; }
-        [ProtoMember(18)] 
+        [ProtoMember(18)]
         public DarlTime? fixedTime { get; set; }
 
         public static BlobGraphContent Load(byte[] data)
@@ -87,11 +86,11 @@ namespace Darl.Thinkbase
             using (var ms = new MemoryStream(data))
             {
                 ms.Position = 0;
-                var res =  Serializer.Deserialize<BlobGraphContent>(ms);
-                if(!string.IsNullOrEmpty(res.key))
+                var res = Serializer.Deserialize<BlobGraphContent>(ms);
+                if (!string.IsNullOrEmpty(res.key))
                 {
                     DarlLicense.license = res.key;
-                    if(!DarlLicense.licensed)
+                    if (!DarlLicense.licensed)
                     {
                         res.licensed = false;
                     }
@@ -111,10 +110,10 @@ namespace Darl.Thinkbase
             if (!vertices.ContainsKey(id))
                 return null;
             var obj = vertices[id];
-            if(obj.properties != null)
+            if (obj.properties != null)
             {
                 var att = obj.properties.Where(a => a.lineage.StartsWith(lineage)).FirstOrDefault(); //check name or lineage?
-                if(att != null)
+                if (att != null)
                 {
                     try
                     {
@@ -122,13 +121,13 @@ namespace Darl.Thinkbase
                         return att.value;
                     }
                     catch
-                    { 
-                    
+                    {
+
                     }
                 }
             }
             //no local value, try virtual
-            if(!virtualVertices.ContainsKey(obj.lineage))
+            if (!virtualVertices.ContainsKey(obj.lineage))
             {
                 return null;
             }
@@ -239,9 +238,9 @@ namespace Darl.Thinkbase
         public List<GraphObject> GetConnectedObjects(GraphObject node, string connectionLineage, string objectLineage)
         {
             var list = new List<GraphObject>();
-            foreach(var i in node.Out)
+            foreach (var i in node.Out)
             {
-                if(!string.IsNullOrEmpty(i.lineage) && i.lineage.StartsWith(connectionLineage))
+                if (!string.IsNullOrEmpty(i.lineage) && i.lineage.StartsWith(connectionLineage))
                 {
                     var obj = vertices[i.endId];
                     if (obj.lineage.StartsWith(objectLineage))
@@ -285,7 +284,7 @@ namespace Darl.Thinkbase
                 else
                 {
                     var lins = SplitCompositeLineage(l);
-                    if(lins.Item2 != null)
+                    if (lins.Item2 != null)
                     {
                         if (LineageLibrary.lineages.ContainsKey(lins.Item1) && LineageLibrary.lineages.ContainsKey(lins.Item2))
                         {
@@ -294,7 +293,7 @@ namespace Darl.Thinkbase
                             records.Add(main);
                             records.Add(sub);
                             //add the composite version too.
-                            records.Add(new LineageRecord { lineage = l, typeWord = $"{main.typeWord}_{sub.typeWord}", type= LineageType.composite });
+                            records.Add(new LineageRecord { lineage = l, typeWord = $"{main.typeWord}_{sub.typeWord}", type = LineageType.composite });
                         }
                     }
                 }

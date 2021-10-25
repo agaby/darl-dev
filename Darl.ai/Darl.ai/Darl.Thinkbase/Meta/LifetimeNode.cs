@@ -25,7 +25,7 @@ namespace Darl.Thinkbase.Meta
             var nowNode = new NowNode();
             var now = await nowNode.Evaluate(thread) as DarlResult;
             var duration = await Argument.Evaluate(thread) as DarlResult;
-            lifetime =  now + duration;
+            lifetime = now + duration;
             thread.CurrentNode = Parent; //standard epilogue
             return lifetime;
         }

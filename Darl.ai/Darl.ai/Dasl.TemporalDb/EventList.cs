@@ -5,8 +5,6 @@ using DarlLanguage.Processing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Dasl.TemporalDb
 {
@@ -33,7 +31,7 @@ namespace Dasl.TemporalDb
 
         protected int pos = 0;
 
-        private static string tstamptext = "timestamp";
+        private static readonly string tstamptext = "timestamp";
 
         /// <summary>
         /// Gets the start of the stored series.
@@ -111,11 +109,11 @@ namespace Dasl.TemporalDb
             return list;
         }
 
-        public List<List<DarlResult>> GetEventData() 
+        public List<List<DarlResult>> GetEventData()
         {
             Sort();
             var list = new List<List<DarlResult>>();
-            foreach(var e in _events)
+            foreach (var e in _events)
             {
                 e.values.Add(new DarlVar() { dataType = DarlVar.DataType.date, name = tstamptext, times = new List<DarlTime> { new DarlTime(e.timeStamp) } });
                 list.Add(DarlVarExtensions.Convert(e.values));
@@ -130,9 +128,9 @@ namespace Dasl.TemporalDb
             foreach (var s in samples)
             {
                 var sVal = s.FirstOrDefault(a => a.name == tstamptext);
-                if(((object)sVal) != null && sVal.values.Any())
-                { 
-                    list.Add(new DaslState {timeStamp =  DarlVarExtensions.Convert(sVal).times[0].dateTime, values = DarlVarExtensions.Convert(s) });
+                if (((object)sVal) != null && sVal.values.Any())
+                {
+                    list.Add(new DaslState { timeStamp = DarlVarExtensions.Convert(sVal).times[0].dateTime, values = DarlVarExtensions.Convert(s) });
                 }
                 else
                 {
@@ -163,7 +161,7 @@ namespace Dasl.TemporalDb
                 return Value; // t is earlier than the range of data.
             else if (end < t)// t is later than the range of data
             {
-                if(_events.Last() != null)
+                if (_events.Last() != null)
                     Value = _events.Last().values;
                 pos = _events.Count - 1;
             }

@@ -11,8 +11,7 @@ namespace Darl.Forms
 {
     public class DarlForms
     {
-
-        DarlRunTime runtime = new DarlRunTime();
+        readonly DarlRunTime runtime = new DarlRunTime();
 
         public async Task<QuestionSetProxy> Start(RuleForm form, QuestionCache state)
         {
@@ -48,10 +47,10 @@ namespace Darl.Forms
             //find the next n questions, where n <= the default question count.
             var tree = runtime.CreateTree(formResources.darl);
             //handle stores if present
-            if(qstate.stores != null)
+            if (qstate.stores != null)
             {
                 var storesInDarl = tree.GetMapStores();
-                foreach(var s in qstate.stores.Keys)
+                foreach (var s in qstate.stores.Keys)
                 {
                     if (storesInDarl.Where(a => a.Name == s).Any())
                         runtime.SetStoreInterface(tree, s, qstate.stores[s]);
@@ -81,7 +80,7 @@ namespace Darl.Forms
                             foreach (var cat in informat.Categories)
                             {
                                 var category = cat;
-                                if(cat.Contains("%%"))
+                                if (cat.Contains("%%"))
                                 {
                                     category = cat.Substring(0, cat.IndexOf("%%"));
                                 }
@@ -103,7 +102,7 @@ namespace Darl.Forms
                 {
                     q.values.Add(s, ufsaliences[s].ToString());
                 }
-                foreach (var r in res.Where( a => !inputNames.Contains(a.name))) //i.e. outputs only.
+                foreach (var r in res.Where(a => !inputNames.Contains(a.name))) //i.e. outputs only.
                 {
                     if (r.IsUnknown())
                     {
@@ -257,7 +256,7 @@ namespace Darl.Forms
             return noDefault ? "" : reference.Replace('_', ' ');
         }
 
-        
+
         private string LookupCategory(string input, string text, RuleForm cache, string language)
         {
             var categories = cache.language.LanguageList.Where(a => a.Name.StartsWith($"{input}.")).ToList();
@@ -346,11 +345,11 @@ namespace Darl.Forms
         {
             if (!string.IsNullOrEmpty(data))
             {
-                if (!cache.currentData.Any( a => a.name == reference))
+                if (!cache.currentData.Any(a => a.name == reference))
                 {
-                    var r = new DarlResult(reference,data, dataType);
+                    var r = new DarlResult(reference, data, dataType);
                     r.identifier = cache.currentIteration.ToString();
-                    cache.currentData.Add( r);
+                    cache.currentData.Add(r);
                 }
                 else
                 {

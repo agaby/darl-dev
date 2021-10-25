@@ -56,7 +56,8 @@ namespace DarlCompiler.Parsing
             /// The _language name
             /// </summary>
         }
-        string _languageName;
+
+        readonly string _languageName;
 
         /// <summary>
         /// Gets the version.
@@ -69,7 +70,8 @@ namespace DarlCompiler.Parsing
             /// The _version
             /// </summary>
         }
-        string _version;
+
+        readonly string _version;
 
         /// <summary>
         /// Gets the description.
@@ -82,7 +84,8 @@ namespace DarlCompiler.Parsing
             /// The _description
             /// </summary>
         }
-        string _description;
+
+        readonly string _description;
 
         /// <summary>
         /// Gets the value.

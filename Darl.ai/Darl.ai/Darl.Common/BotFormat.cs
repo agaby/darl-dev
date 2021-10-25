@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DarlCommon
 {
@@ -36,14 +32,14 @@ namespace DarlCommon
         /// </summary>
         /// <value>The String list.</value>
         [Display(Name = "Strings", Description = "String constants in the rule set")]
-        public Dictionary<string, string> Strings { get; set; }  = new Dictionary<string, string>();
+        public Dictionary<string, string> Strings { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// Gets or sets the list of constants.
         /// </summary>
         /// <value>The Constants list.</value>
         [Display(Name = "Constants", Description = "Numeric constants in the rule set")]
-        public Dictionary<string, double> Constants { get; set; }  = new Dictionary<string, double>();
+        public Dictionary<string, double> Constants { get; set; } = new Dictionary<string, double>();
 
         /// <summary>
         /// Gets or sets the list of sequences.

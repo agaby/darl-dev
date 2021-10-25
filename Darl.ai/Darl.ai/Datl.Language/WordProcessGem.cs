@@ -1,10 +1,5 @@
-﻿using System;
+﻿using GemBox.Document;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GemBox.Document;
-using GemBox.Document.MailMerging;
 using System.IO;
 
 namespace Datl.Language
@@ -43,7 +38,7 @@ namespace Datl.Language
         {
             var doc = source as DocumentModel;
             var list = new List<dynamic>();
-            foreach(var bm in  doc.Bookmarks)
+            foreach (var bm in doc.Bookmarks)
             {
                 list.Add(bm);
             }
@@ -53,12 +48,12 @@ namespace Datl.Language
         public override void PreProcess(dynamic source, Dictionary<string, string> data)
         {
             var doc = source as DocumentModel;
-            
+
             var p = new Dictionary<string, object>();
 
-            foreach(var q in data.Keys)
+            foreach (var q in data.Keys)
             {
-                p.Add(q, data[q] as object);
+                p.Add(q, data[q]);
             }
             doc.MailMerge.Execute(p, string.Empty);
         }
@@ -77,7 +72,7 @@ namespace Datl.Language
             {
                 int index = s.IndexOf(separator);
                 category = s.Substring(index + separator.Length);
-                if(category.Contains(separator)) //category has anti-duplicate extension - remove.
+                if (category.Contains(separator)) //category has anti-duplicate extension - remove.
                 {
                     var ind = category.IndexOf(separator);
                     category = category.Substring(0, ind);
@@ -102,7 +97,7 @@ namespace Datl.Language
             try
             {
                 var bm = endblock as Bookmark;
-                if(bm.Start != null)
+                if (bm.Start != null)
                     bm.GetContent(true).Delete();
             }
             catch

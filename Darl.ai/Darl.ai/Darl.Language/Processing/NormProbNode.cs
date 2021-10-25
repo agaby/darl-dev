@@ -17,7 +17,7 @@ namespace DarlLanguage.Processing
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
             thread.CurrentNode = this;  //standard prologue
-            DarlResult res1 = (DarlResult) await Argument.Evaluate(thread);
+            DarlResult res1 = (DarlResult)await Argument.Evaluate(thread);
             thread.CurrentNode = Parent;
             return res1.NormProb();
         }

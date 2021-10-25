@@ -12,11 +12,11 @@
 // <summary></summary>
 // ***********************************************************************
 using DarlCompiler.Ast;
-using DarlCompiler.Parsing;
 using DarlCompiler.Interpreter.Ast;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+using DarlCompiler.Parsing;
 using DarlLanguage.Processing;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DarlCompiler.Interpreter
 {
@@ -57,7 +57,7 @@ namespace DarlCompiler.Interpreter
         /// </summary>
         /// <param name="args">The arguments.</param>
         /// <returns>System.String.</returns>
-        public async virtual Task<string> RunSample(RunSampleArgs args)
+        public virtual async Task<string> RunSample(RunSampleArgs args)
         {
             if (_app == null || args.ParsedSample != _prevSample)
                 _app = new ScriptApp(args.Language);
@@ -91,6 +91,6 @@ namespace DarlCompiler.Interpreter
             var astBuilder = new AstBuilder(astContext);
             astBuilder.BuildAst(parseTree);
         }
-    } 
+    }
 
 }

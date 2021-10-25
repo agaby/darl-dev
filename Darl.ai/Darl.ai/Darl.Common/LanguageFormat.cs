@@ -37,7 +37,7 @@ namespace DarlCommon
         /// <value>The language list.</value>
         [Display(Name = "Text items for the form", Description = "All the text items used can be edited in this list")]
         [Required]
-        public List<LanguageText> LanguageList { get; set;}
+        public List<LanguageText> LanguageList { get; set; }
 
         /// <summary>
         /// Gets or sets the default language.

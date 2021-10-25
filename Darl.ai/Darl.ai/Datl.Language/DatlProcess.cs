@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Datl.Language
 {
@@ -166,7 +162,7 @@ namespace Datl.Language
             var stack = new Stack<DocState>();
             var blocks = FindBlocks(dest);
             dynamic startBlock = null;
-            foreach(var block in blocks)
+            foreach (var block in blocks)
             {
                 bool active = stack.Count == 0 ? true : stack.Peek().active;
                 if (active)
@@ -177,7 +173,7 @@ namespace Datl.Language
                 var variable = ExtractVariableName(block, out category);
                 if (IsStartBlock(block))
                 {
-                    if(string.IsNullOrEmpty(category))
+                    if (string.IsNullOrEmpty(category))
                     {
                         if (!values.ContainsKey(variable) || string.IsNullOrEmpty(values[variable]))
                         {
@@ -200,7 +196,7 @@ namespace Datl.Language
                     }
                     stack.Push(new DocState { name = $"{variable}{separator}{category}", active = active });
                 }
-                if(IsEndBlock(block))
+                if (IsEndBlock(block))
                 {
                     //three scenarios, the variable is on the top of the stack, or the writer has forgotten to close a variable or the variable is misspelled so impossible to take off.
                     //so if the stack includes this variable pop until it is popped, otherwise wait for the next unstacking.
@@ -217,7 +213,7 @@ namespace Datl.Language
                     }
 
                 }
-                if(IsReplaceBlock(block))
+                if (IsReplaceBlock(block))
                 {
                     if (values.ContainsKey(variable))
                     {
@@ -229,7 +225,7 @@ namespace Datl.Language
                 startBlock = block;
             }
             WriteSection(dest, startBlock, null); //write the section from the last block to the end
-            if(stack.Count != 0)
+            if (stack.Count != 0)
             {
                 ReportError(startBlock, $"Missing section terminator for {stack.Peek().name} ");
             }

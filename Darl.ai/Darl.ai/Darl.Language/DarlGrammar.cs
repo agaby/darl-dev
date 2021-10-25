@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using DarlCompiler.Parsing;
-using DarlCompiler.Interpreter.Ast;
+﻿using DarlCompiler.Ast;
 using DarlCompiler.Interpreter;
+using DarlCompiler.Interpreter.Ast;
+using DarlCompiler.Parsing;
 using DarlLanguage.Processing;
-using DarlCompiler.Ast;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using System;
 
 namespace DarlLanguage
 {
@@ -39,7 +38,7 @@ namespace DarlLanguage
         public DarlGrammar() : base(true)
         {
 
-            if(results == null)
+            if (results == null)
                 results = new List<DarlResult>();
 
             #region comments
@@ -58,21 +57,21 @@ namespace DarlLanguage
             //These are provided only so that the editor can color the source
 
 
-            var IF = Keyword("if","Introduces a new rule");
-            var ANYTHING = Keyword("anything","ensures rule will always be valid");
+            var IF = Keyword("if", "Introduces a new rule");
+            var ANYTHING = Keyword("anything", "ensures rule will always be valid");
             var IS = Keyword("is", "Determines the degree of truth of the statements surrounding it");
             var THEN = Keyword("then", "Introduces the output for the rule");
             var WILL = Keyword("will");
             var BE = Keyword("be");
-            var CONFIDENCE = Keyword("confidence","A value between 0 and 1 inclusive that assigns a plausibility to this rule. Default is 1.0");
-            var INPUT = Keyword("input","A variable provided from outside the rule set");
+            var CONFIDENCE = Keyword("confidence", "A value between 0 and 1 inclusive that assigns a plausibility to this rule. Default is 1.0");
+            var INPUT = Keyword("input", "A variable provided from outside the rule set");
             var OUTPUT = Keyword("output", "A variable created by rules in this ruleset");
-            var NUMERIC = Keyword("numeric","A purely numeric variable");
-            var CATEGORICAL = Keyword("categorical","A variable that has distinct categories, like true/false, male/female etc.");
-            var TEXTUAL = Keyword("textual","A variable containing text that is not in distinct categories");
+            var NUMERIC = Keyword("numeric", "A purely numeric variable");
+            var CATEGORICAL = Keyword("categorical", "A variable that has distinct categories, like true/false, male/female etc.");
+            var TEXTUAL = Keyword("textual", "A variable containing text that is not in distinct categories");
             var TEMPORAL = Keyword("temporal", "A variable containing a time value");
-            var CONSTANT = Keyword("constant","A numeric real valued constant.");
-            var STRING = Keyword("string","A string used for annotation or text processing.");
+            var CONSTANT = Keyword("constant", "A numeric real valued constant.");
+            var STRING = Keyword("string", "A string used for annotation or text processing.");
             var DURATION = Keyword("duration", "A time offset used for temporal processing.");
             var SUM = Keyword("sum", "Sums together a set of numeric values.");
             var PRODUCT = Keyword("product", "Multiplies together a set of numeric values.");
@@ -148,7 +147,7 @@ namespace DarlLanguage
             var sequence_constant = new DarlIdentifier("sequence_constant");
             var map_input = new DarlIdentifier("map_input");
             var map_output = new DarlIdentifier("map_output");
-            var map_store= new DarlIdentifier("map_store");
+            var map_store = new DarlIdentifier("map_store");
             var rule_identifier = new DarlIdentifier("rule_identifier");
             var store_io = new DarlIdentifier("store_io");
 
@@ -275,7 +274,7 @@ namespace DarlLanguage
             var round = new NonTerminal("round", typeof(RoundNode));
             var match = new NonTerminal("match", typeof(MatchNode));
             var product = new NonTerminal("product", typeof(ProductNode));
-            var eq = new NonTerminal("equal", typeof(EqualNode)); 
+            var eq = new NonTerminal("equal", typeof(EqualNode));
             var neq = new NonTerminal("not_equal", typeof(NotEqualNode));
             var tempeq = new NonTerminal("temp_equal", typeof(TempEqualNode));
             var tempneq = new NonTerminal("temp_not_equal", typeof(TempNotEqualNode));
@@ -286,9 +285,9 @@ namespace DarlLanguage
             var multiply = new NonTerminal("multiply", typeof(MultiplyNode));
             var divide = new NonTerminal("divide", typeof(DivideNode));
             var normprob = new NonTerminal("normprob", typeof(NormProbNode));
-            var greater = new NonTerminal("greater", typeof(GreaterNode)); 
-            var lesser = new NonTerminal("lesser", typeof(LesserNode)); 
-            var gteq = new NonTerminal("greater_equal", typeof(GreaterEqualNode)); 
+            var greater = new NonTerminal("greater", typeof(GreaterNode));
+            var lesser = new NonTerminal("lesser", typeof(LesserNode));
+            var gteq = new NonTerminal("greater_equal", typeof(GreaterEqualNode));
             var lseq = new NonTerminal("lesser_equal", typeof(LesserEqualNode));
             var anything = new NonTerminal("anything", typeof(AnythingNode));
             var document = new NonTerminal("document", typeof(DocumentNode));
@@ -316,7 +315,7 @@ namespace DarlLanguage
 
             map_list.Rule = ruleset | mapinputdefinition | mapoutputdefinition | wiredefinition | patterndefinition | delaydefinition;
 
-           
+
 
             patterndefinition.Rule = PATTERN + stringLiteral + ToTerm(";");
 
@@ -387,7 +386,7 @@ namespace DarlLanguage
 
             statement.ErrorRule = SyntaxError + ToTerm(";");
 
-            statement_content.Rule = rule | inputdefinition | outputdefinition | constantdefinition | stringdefinition | sequencedefinition | storedefinition | durationdefinition |otherwise;
+            statement_content.Rule = rule | inputdefinition | outputdefinition | constantdefinition | stringdefinition | sequencedefinition | storedefinition | durationdefinition | otherwise;
 
             confidence.Rule = Empty | (CONFIDENCE + numberLiteral);
 
@@ -401,23 +400,23 @@ namespace DarlLanguage
             rvalue_choice.Rule = textual_rvalue | numeric_rvalue | categoryChoice /*| temporal_rvalue*/;
 
             rule.Rule = (IF + top_logical_op + THEN + categorical_output + WILL + BE + categoryChoice + confidence) |
-                (IF + top_logical_op + THEN + numeric_output + WILL + BE + numeric_rvalue + confidence) | 
+                (IF + top_logical_op + THEN + numeric_output + WILL + BE + numeric_rvalue + confidence) |
                 (IF + top_logical_op + THEN + textual_output + WILL + BE + textual_rvalue + confidence) |
                 (IF + top_logical_op + THEN + temporal_output + WILL + BE + temporal_rvalue + confidence) |
                 (IF + top_logical_op + THEN + store + WILL + BE + textual_rvalue + confidence) |
                 (IF + top_logical_op + THEN + store + WILL + BE + arith_expression + confidence) |
                 (IF + top_logical_op + THEN + store + WILL + BE + categorical_input + confidence) |
-                (IF + top_logical_op + THEN + store + WILL + BE + dynamic_categorical_input + confidence); 
+                (IF + top_logical_op + THEN + store + WILL + BE + dynamic_categorical_input + confidence);
 
             otherwise.Rule = (OTHERWISE + IF + top_logical_op + THEN + categorical_output + WILL + BE + categoryChoice + confidence) |
-                (OTHERWISE + IF + top_logical_op + THEN + numeric_output + WILL + BE + numeric_rvalue + confidence) | 
+                (OTHERWISE + IF + top_logical_op + THEN + numeric_output + WILL + BE + numeric_rvalue + confidence) |
                 (OTHERWISE + IF + top_logical_op + THEN + textual_output + WILL + BE + textual_rvalue + confidence) |
                 (OTHERWISE + IF + top_logical_op + THEN + temporal_output + WILL + BE + temporal_rvalue + confidence) |
                 (OTHERWISE + IF + top_logical_op + THEN + store + WILL + BE + textual_rvalue + confidence) |
                 (OTHERWISE + IF + top_logical_op + THEN + store + WILL + BE + arith_expression + confidence) |
                 (OTHERWISE + IF + top_logical_op + THEN + store + WILL + BE + categorical_input + confidence);
 
-            top_logical_op.Rule = anything | logical_expression ; 
+            top_logical_op.Rule = anything | logical_expression;
 
             logical_expression.Rule = and | or | not | is_expression | logicalbrackets;
 
@@ -472,7 +471,7 @@ namespace DarlLanguage
             neq.Rule = "!=" + arith_expression;
             greater.Rule = ">" + arith_expression;
             lesser.Rule = "<" + arith_expression;
-            gteq.Rule = ">="  + arith_expression;
+            gteq.Rule = ">=" + arith_expression;
             lseq.Rule = "<=" + arith_expression;
 
             tempeq.Rule = "=" + temporal_expression;
@@ -509,23 +508,23 @@ namespace DarlLanguage
 
             temporal_minus.Rule = temporal_expression + PreferShiftHere() + "-" + temporal_constant;
 
-            temporal_expression.Rule = temporal_plus | temporal_minus  |  temporal_input | temporal_output | now | mintime | maxtime;
+            temporal_expression.Rule = temporal_plus | temporal_minus | temporal_input | temporal_output | now | mintime | maxtime;
 
             category_option.Rule = Empty | "{" + category_definitions + "}";
 
             set_option.Rule = Empty | "{" + set_definitions + "}";
 
             inputdefinition.Rule = (INPUT + NUMERIC + numeric_input + set_option) |
-                       (INPUT + CATEGORICAL + categorical_input +  category_option) |
-                       (INPUT + DYNAMIC + CATEGORICAL + dynamic_categorical_input +  store) |
+                       (INPUT + CATEGORICAL + categorical_input + category_option) |
+                       (INPUT + DYNAMIC + CATEGORICAL + dynamic_categorical_input + store) |
                        (INPUT + TEXTUAL + textual_input) |
                        (INPUT + TEMPORAL + temporal_input);
 
             outputdefinition.Rule = (OUTPUT + NUMERIC + numeric_output + set_option) |
                        (OUTPUT + CATEGORICAL + categorical_output + category_option) |
                        (OUTPUT + TEXTUAL + textual_output) |
-                       (OUTPUT + TEMPORAL + temporal_output); 
-            
+                       (OUTPUT + TEMPORAL + temporal_output);
+
             constantdefinition.Rule = CONSTANT + numeric_constant + numberLiteral;
 
             durationdefinition.Rule = DURATION + temporal_constant + durationLiteral;
@@ -538,7 +537,7 @@ namespace DarlLanguage
 
             store_rhs.Rule = "[" + text_expression_list + "]";
 
-            store.Rule = store_io +  store_rhs ; 
+            store.Rule = store_io + store_rhs;
 
             sum.Rule = SUM + parameter_list;
 
@@ -572,9 +571,9 @@ namespace DarlLanguage
 
             match.Rule = MATCH + textmatchchoice;
 
-           set_definitions.Rule = MakePlusRule(set_definitions, ToTerm(","), set_definition);
+            set_definitions.Rule = MakePlusRule(set_definitions, ToTerm(","), set_definition);
 
-             set_definition.Rule = "{" + set + "," + numberLiteral_list + "}";
+            set_definition.Rule = "{" + set + "," + numberLiteral_list + "}";
 
             category_definitions.Rule = MakePlusRule(category_definitions, ToTerm(","), categoryChoice);
 
@@ -607,7 +606,7 @@ namespace DarlLanguage
             text_expression_list.Rule = MakePlusRule(text_expression_list, ToTerm(","), textsourcechoice);
 
             randomtext.Rule = RANDOMTEXT + "(" + text_expression_list + ")";
-            
+
             categoryof.Rule = CATEGORYOF + "(" + categoricalio + ")";
 
             now.Rule = NOW;
@@ -624,23 +623,23 @@ namespace DarlLanguage
 
             #endregion
 
-            RegisterOperators(1,  "or");
-            RegisterOperators(2,  "and");
-            RegisterOperators(3,  "+", "-");
+            RegisterOperators(1, "or");
+            RegisterOperators(2, "and");
+            RegisterOperators(3, "+", "-");
             RegisterOperators(3, "not");
             RegisterOperators(4, "*", "/", "%");
             RegisterOperators(4, IS);
-            RegisterOperators(5,  "^");
+            RegisterOperators(5, "^");
             RegisterOperators(6, ".");
 
-            MarkPunctuation("{", "}", "(", ")", "[", "]",",", ";", ".", "if", "then", "will", "be", "confidence", "input", "output", "numeric", "categorical","arity","presence","string","constant", "or", "and","not","is","*","/","-","+","%","^",">","<","<=",">=","anything","textual", "maximum","minimum","sum","product","fuzzytuple","sigmoid","normprob","round","ruleset","wire","mapinput","mapoutput","pattern","absent","present","delay","sequence","match","document","randomtext", "store", "temporal", "categoryof", "duration", "now", "mintime", "maxtime", "after", "before", "preceding", "overlapping", "during", "finishing","starting", "dynamic");
+            MarkPunctuation("{", "}", "(", ")", "[", "]", ",", ";", ".", "if", "then", "will", "be", "confidence", "input", "output", "numeric", "categorical", "arity", "presence", "string", "constant", "or", "and", "not", "is", "*", "/", "-", "+", "%", "^", ">", "<", "<=", ">=", "anything", "textual", "maximum", "minimum", "sum", "product", "fuzzytuple", "sigmoid", "normprob", "round", "ruleset", "wire", "mapinput", "mapoutput", "pattern", "absent", "present", "delay", "sequence", "match", "document", "randomtext", "store", "temporal", "categoryof", "duration", "now", "mintime", "maxtime", "after", "before", "preceding", "overlapping", "during", "finishing", "starting", "dynamic");
             RegisterBracePair("(", ")");
             RegisterBracePair("{", "}");
             RegisterBracePair("[", "]");
-            MarkTransient(top_logical_op, statement_content, category_option, logical_expression, set_option, 
+            MarkTransient(top_logical_op, statement_content, category_option, logical_expression, set_option,
                 numeric_rvalue, arith_expression, statement, comparitives, tempcomparitives, parameter_list, brackets, setValue,
-                categoryChoice, pathchoice, minetypechoice, wirechoice, map_list, delaychoice, subsequence_choice, 
-                textmatchchoice, anyio, textual_rvalue, textsourcechoice, logicalbrackets, rvalue_choice, store_rhs, temporal_rvalue, 
+                categoryChoice, pathchoice, minetypechoice, wirechoice, map_list, delaychoice, subsequence_choice,
+                textmatchchoice, anyio, textual_rvalue, textsourcechoice, logicalbrackets, rvalue_choice, store_rhs, temporal_rvalue,
                 temporal_expression, categoricalio, bothCatInputTypes);
 
             LanguageFlags = LanguageFlags.CreateAst; // LanguageFlags.Default;// // | DarlCompiler.Parsing.LanguageFlags.NewLineBeforeEOF;   
@@ -657,14 +656,14 @@ namespace DarlLanguage
             RegisterOperators(precedence, Associativity.Left, opSymbols);
         }
 
-         /// <summary>
+        /// <summary>
         /// Gets the specified keyword.
         /// </summary>
         /// <param name="keyword">The keyword.</param>
         /// <returns>The Keyword</returns>
         public KeyTerm Keyword(string keyword)
         {
-           return Keyword(keyword, string.Empty);
+            return Keyword(keyword, string.Empty);
         }
 
         /// <summary>
@@ -724,15 +723,15 @@ namespace DarlLanguage
                 foreach (var outp in ruleset.ruleRoot.outputs.Values.Where(a => a is OutputDefinitionNode))
                 {
                     root.outputs.Add(outp.name, new MapOutputDefinitionNode { Name = outp.GetName(), Parent = root });
-                    root.wires.Add(new WireDefinitionNode { destname = outp.name, sourcename = outp.name,  sourceRuleset = name, wiretype = WireDefinitionNode.WireType.wireout, Parent = root });
+                    root.wires.Add(new WireDefinitionNode { destname = outp.name, sourcename = outp.name, sourceRuleset = name, wiretype = WireDefinitionNode.WireType.wireout, Parent = root });
                 }
-                foreach(var store in ruleset.ruleRoot.stores.Values)
+                foreach (var store in ruleset.ruleRoot.stores.Values)
                 {
                     root.stores.Add(store.name, new MapStoreDefinitionNode { Name = store.name, Parent = root });
                     root.wires.Add(new WireDefinitionNode { destname = store.name, sourcename = store.name, sourceRuleset = name, wiretype = WireDefinitionNode.WireType.wirestore, Parent = root });
                 }
             }
-            
+
         }
 
         /// <summary>
@@ -740,7 +739,7 @@ namespace DarlLanguage
         /// </summary>
         /// <param name="args">The args.</param>
         /// <returns>logged data</returns>
-        public async override Task<string> RunSample(RunSampleArgs args)
+        public override async Task<string> RunSample(RunSampleArgs args)
         {
             rulesetFilter = args.Sample;
             return await base.RunSample(args);
@@ -748,7 +747,7 @@ namespace DarlLanguage
 
         public DarlResult ResultByName(string name)
         {
-            if(results.Any(a => a.name == name))
+            if (results.Any(a => a.name == name))
             {
                 return results.First(a => a.name == name);
             }

@@ -1,11 +1,7 @@
-﻿using DarlCompiler.Ast;
-using DarlCompiler.Interpreter;
-using DarlCompiler.Parsing;
+﻿using DarlCompiler.Interpreter;
 using Datl.Language;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
@@ -23,14 +19,14 @@ namespace DarlLanguage.Processing
         protected override async Task<object> DoEvaluate(ScriptThread thread)
         {
             thread.CurrentNode = this;  //standard prologue
-            DarlResult res = (DarlResult) await Left.Evaluate(thread);
-            var pars = await Right.Evaluate(thread) as Dictionary<string,string>;
+            DarlResult res = (DarlResult)await Left.Evaluate(thread);
+            var pars = await Right.Evaluate(thread) as Dictionary<string, string>;
             string s = String.Empty;
             if (res.dataType == DarlResult.DataType.textual || res.IsUnknown())
             {
                 var doc = res.stringConstant;
                 var t = new TextProcess();
-                s = t.Parse(doc, pars) as string;              
+                s = t.Parse(doc, pars) as string;
             }
             else
             {

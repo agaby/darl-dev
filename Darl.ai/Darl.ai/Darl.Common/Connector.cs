@@ -2,7 +2,7 @@
 
 namespace DarlCommon
 {
-    public enum ConnectorType { twilio, sendgrid, skype, facebook, twitter, linkedin, custom, project, zendesk, microsoft_bot}
+    public enum ConnectorType { twilio, sendgrid, skype, facebook, twitter, linkedin, custom, project, zendesk, microsoft_bot }
     public class Connector
     {
         [Required]

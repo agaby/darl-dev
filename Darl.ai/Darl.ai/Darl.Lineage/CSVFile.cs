@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Darl.Lineage
 {
@@ -73,10 +71,10 @@ namespace Darl.Lineage
     public class CsvFileReader : CsvFileCommon, IDisposable
     {
         // Private members
-        private StreamReader Reader;
+        private readonly StreamReader Reader;
         private string CurrLine;
         private int CurrPos;
-        private EmptyLineBehavior EmptyLineBehavior;
+        private readonly EmptyLineBehavior EmptyLineBehavior;
 
         /// <summary>
         /// Initializes a new instance of the CsvFileReader class for the
@@ -251,7 +249,7 @@ namespace Darl.Lineage
     public class CsvFileWriter : CsvFileCommon, IDisposable
     {
         // Private members
-        private StreamWriter Writer;
+        private readonly StreamWriter Writer;
         private string OneQuote = null;
         private string TwoQuotes = null;
         private string QuotedFormat = null;

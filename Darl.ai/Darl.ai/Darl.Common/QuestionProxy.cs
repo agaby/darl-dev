@@ -49,75 +49,75 @@ namespace DarlCommon
         /// The id of the question
         /// </summary>
         /// <value>The reference.</value>
-        
+
         public string reference { get; set; }
         /// <summary>
         /// The text of the question
         /// </summary>
         /// <value>The text.</value>
-        
+
         public string text { get; set; }
 
         /// <summary>
         /// Gets or sets the path.
         /// </summary>
         /// <value>The path.</value>
-        
+
         public string path { get; set; }
 
         /// <summary>
         /// Gets or sets the format.
         /// </summary>
         /// <value>The format.</value>
-        
+
         public string format { get; set; }
 
         /// <summary>
         /// The type of the question
         /// </summary>
         /// <value>The qtype.</value>
-        
+
         public int qtype { get; set; }
         /// <summary>
         /// If numeric the lower bound (-infinity if unbounded)
         /// </summary>
         /// <value>The minval.</value>
-        
+
         public double minval { get; set; }
 
         /// <summary>
         /// If numeric the upper bound (+infinity if unbounded)
         /// </summary>
         /// <value>The maxval.</value>
-        
+
         public double maxval { get; set; }
 
         /// <summary>
         /// The increment to use for number selection - 1 for integers, 0 for continuum etc.
         /// </summary>
         /// <value>The increment.</value>
-        
+
         public double increment { get; set; }
 
         /// <summary>
         /// A list of permissible categories if categorical
         /// </summary>
         /// <value>The categories.</value>
-        
+
         public List<string> categories { get; set; }
 
         /// <summary>
         /// String responses
         /// </summary>
         /// <value>The s response.</value>
-        
+
         public string sResponse { get; set; }
 
         /// <summary>
         /// numeric response
         /// </summary>
         /// <value>The d response.</value>
-        
+
         public double dResponse { get; set; }
 
         /// <summary>

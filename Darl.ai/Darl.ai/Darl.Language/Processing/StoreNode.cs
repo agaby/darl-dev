@@ -1,21 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using DarlCompiler.Ast;
+﻿using DarlCompiler.Ast;
 using DarlCompiler.Interpreter;
 using DarlCompiler.Parsing;
-using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
     public class StoreNode : IOSequenceDefinitionNode
     {
-        public enum StoreType {sink,source}
+        public enum StoreType { sink, source }
         /// <summary>
         /// The left side
         /// </summary>
         public DarlIdentifierNode Left { get; private set; }
- 
+
         protected List<DarlNode> arguments = new List<DarlNode>();
 
 
@@ -34,24 +34,24 @@ namespace DarlLanguage.Processing
         {
             get
             {
- /*               if (_value.IsUnknown())
-                {
-                    if (storeDefinition != null && storeDefinition.storeInterface != null)
-                    {
-                        try
-                        {
-                            Action readStore = async () =>
-                            {
-                                _value = await storeDefinition.storeInterface.ReadAsync(address);
-                            };
-                            readStore();
-                        }
-                        catch(Exception ex)
-                        {
+                /*               if (_value.IsUnknown())
+                               {
+                                   if (storeDefinition != null && storeDefinition.storeInterface != null)
+                                   {
+                                       try
+                                       {
+                                           Action readStore = async () =>
+                                           {
+                                               _value = await storeDefinition.storeInterface.ReadAsync(address);
+                                           };
+                                           readStore();
+                                       }
+                                       catch(Exception ex)
+                                       {
 
-                        }
-                    }
-                }*/
+                                       }
+                                   }
+                               }*/
                 return _value;
             }
             internal set
@@ -59,7 +59,7 @@ namespace DarlLanguage.Processing
                 DarlResult val = value as DarlResult;
                 if (storeDefinition != null && storeDefinition.storeInterface != null)
                 {
-                    if(string.IsNullOrEmpty(val.name) && address.Count > 0)
+                    if (string.IsNullOrEmpty(val.name) && address.Count > 0)
                     {
                         val.name = address[0];
                     }
@@ -80,7 +80,7 @@ namespace DarlLanguage.Processing
             }
         }
 
-        private DarlResult _value = new DarlResult(true,0.0,true); //bug here for non numeric comparisons
+        private DarlResult _value = new DarlResult(true, 0.0, true); //bug here for non numeric comparisons
 
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace DarlLanguage.Processing
         /// <returns></returns>
         public override string GetName()
         {
-            return $"{Left.GetName()}.{string.Join("_",arguments.Select( x => x.GetName()))}"; 
+            return $"{Left.GetName()}.{string.Join("_", arguments.Select(x => x.GetName()))}";
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace DarlLanguage.Processing
         }
 
 
-        protected async override Task<object> DoEvaluate(ScriptThread thread)
+        protected override async Task<object> DoEvaluate(ScriptThread thread)
         {
             //assume sourcing
             thread.CurrentNode = this;  //standard prologue
@@ -126,9 +126,9 @@ namespace DarlLanguage.Processing
                 if (child != null)
                 {
                     DarlResult res1 = (DarlResult)await child.Evaluate(thread);
-                    if(res1.dataType == DarlResult.DataType.textual)
+                    if (res1.dataType == DarlResult.DataType.textual)
                         address.Add(res1.stringConstant);
-                    else if(res1.dataType == DarlResult.DataType.categorical)
+                    else if (res1.dataType == DarlResult.DataType.categorical)
                         address.Add(res1.Value.ToString());
                 }
             }
@@ -155,11 +155,11 @@ namespace DarlLanguage.Processing
 
         public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlNode currentOutput, ConstantContext context)
         {
-            if(context.stores.ContainsKey(Left.name))
+            if (context.stores.ContainsKey(Left.name))
             {
                 storeDefinition = context.stores[Left.name];
             }
-            if(!context.storeInputs.ContainsKey(GetName()))
+            if (!context.storeInputs.ContainsKey(GetName()))
             {
                 context.storeInputs.Add(GetName(), this);
             }

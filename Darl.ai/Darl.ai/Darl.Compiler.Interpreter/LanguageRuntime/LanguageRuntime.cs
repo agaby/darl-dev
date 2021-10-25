@@ -11,9 +11,9 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using System;
-using DarlCompiler.Parsing;
 using DarlCompiler.Interpreter.Ast;
+using DarlCompiler.Parsing;
+using System;
 
 namespace DarlCompiler.Interpreter
 {
@@ -114,7 +114,7 @@ namespace DarlCompiler.Interpreter
         /// <param name="message">The message.</param>
         /// <param name="args">The arguments.</param>
         /// <exception cref="System.Exception"></exception>
-        internal protected void ThrowError(string message, params object[] args)
+        protected internal void ThrowError(string message, params object[] args)
         {
             if (args != null && args.Length > 0)
                 message = string.Format(message, args);
@@ -127,7 +127,7 @@ namespace DarlCompiler.Interpreter
         /// <param name="message">The message.</param>
         /// <param name="args">The arguments.</param>
         /// <exception cref="DarlCompiler.Interpreter.ScriptException"></exception>
-        internal protected void ThrowScriptError(string message, params object[] args)
+        protected internal void ThrowScriptError(string message, params object[] args)
         {
             if (args != null && args.Length > 0)
                 message = string.Format(message, args);

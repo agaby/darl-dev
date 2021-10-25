@@ -24,11 +24,12 @@ namespace DarlCompiler.Parsing.Construction
         /// <summary>
         /// The _language
         /// </summary>
-        LanguageData _language;
+        readonly LanguageData _language;
+
         /// <summary>
         /// The _grammar
         /// </summary>
-        Grammar _grammar;
+        readonly Grammar _grammar;
         /// <summary>
         /// The _grammar data
         /// </summary>
@@ -37,9 +38,9 @@ namespace DarlCompiler.Parsing.Construction
         /// The _unnamed count
         /// </summary>
         int _unnamedCount; //internal counter for generating names for unnamed non-terminals
-                           /// <summary>
-                           /// The _last item identifier
-                           /// </summary>
+        /// <summary>
+        /// The _last item identifier
+        /// </summary>
         internal int _lastItemId; //each LR0Item gets its unique ID, last assigned (max) Id is kept in this field
 
         /// <summary>

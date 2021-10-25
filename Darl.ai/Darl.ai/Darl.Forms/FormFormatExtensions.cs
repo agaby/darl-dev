@@ -2,8 +2,6 @@
 using DarlCompiler.Parsing;
 using DarlLanguage;
 using DarlLanguage.Processing;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using System;
@@ -31,13 +29,13 @@ namespace Darl.Forms
             nine = 9
         }
 
-        public static  string CreateTestDataSchema(this FormFormat iOFormat)
+        public static string CreateTestDataSchema(this FormFormat iOFormat)
         {
 
             var schema = new JObject(
                     new JProperty("type", "object"),
                     new JProperty("title", "Test"),
-                    new JProperty("properties",new JObject(
+                    new JProperty("properties", new JObject(
                     from p in iOFormat.InputFormatList
                     orderby p.Name
                     select new JProperty(p.Name, CreateValue(p)),
@@ -60,11 +58,11 @@ namespace Darl.Forms
             {
                 case InputFormat.InputType.textual:
                     list.Add(new JProperty("type", "string"));
-                    if(p.MaxLength > 0)
+                    if (p.MaxLength > 0)
                     {
                         list.Add(new JProperty("maxLength", p.MaxLength));
                     }
-                    if(!string.IsNullOrEmpty(p.Regex))
+                    if (!string.IsNullOrEmpty(p.Regex))
                     {
                         list.Add(new JProperty("pattern", p.Regex));
                     }
@@ -103,7 +101,7 @@ namespace Darl.Forms
                     break;
                 case OutputFormat.OutType.numeric:
                     list.Add(new JProperty("type", "number"));
-                   //add min,max
+                    //add min,max
                     break;
                 default:
                     list.Add(new JProperty("type", "string"));
@@ -126,11 +124,11 @@ namespace Darl.Forms
             var runtime = new DarlRunTime();
             try
             {
-                tree = runtime.CreateTree(pr.darl,stores);
+                tree = runtime.CreateTree(pr.darl, stores);
                 if (tree.HasErrors())
                     return new List<dynamic>();
             }
-            catch 
+            catch
             {
                 return new List<dynamic>();
             }
@@ -139,7 +137,7 @@ namespace Darl.Forms
             if (pr.language == null)
                 pr.language = new LanguageFormat();
 
-             //Inputs first
+            //Inputs first
             bool inputformatChanges = false;
             bool outputformatChanges = false;
             bool langChanges = false;
@@ -201,7 +199,7 @@ namespace Darl.Forms
                         //dynamic categories have both cat and text, separate
                         var text = cat;
                         var category = cat;
-                        if(cat.EndsWith("%%"))
+                        if (cat.EndsWith("%%"))
                         {
                             var elements = cat.Split('%');
                             category = elements[0];
@@ -324,7 +322,7 @@ namespace Darl.Forms
                         var o = outputs.Where(a => a.Name == q.Name).FirstOrDefault();
                         if (o != null)
                         {
-                            if (res.Any( a => a.name == o.Name))
+                            if (res.Any(a => a.name == o.Name))
                             {
                                 var resval = res.First(a => a.name == o.Name);
                                 if (resval.Value != q.Value) //may be too exact for numeric...
@@ -376,7 +374,7 @@ namespace Darl.Forms
         public static Task<RuleForm> CreateNewRuleForm(string name, string username)
         {
             var darl = $"ruleset {name.Trim().Replace(' ', '_')}\r\n{{\r\n}}";
-            var rf = new RuleForm { darl = darl, name = name, version = "0.0", author = username, price = 0.0, trigger = DefaultTriggerView(), format = new FormFormat(), language = new LanguageFormat()};
+            var rf = new RuleForm { darl = darl, name = name, version = "0.0", author = username, price = 0.0, trigger = DefaultTriggerView(), format = new FormFormat(), language = new LanguageFormat() };
             return Task.FromResult<RuleForm>(rf);
         }
 
@@ -427,7 +425,7 @@ namespace Darl.Forms
             throw new NotImplementedException();
         }
 
-        
+
         /// <summary>
         /// Convert a Json schema into darl
         /// </summary>
@@ -603,9 +601,9 @@ namespace Darl.Forms
             res = res.Replace('-', ' ');
             string text = string.Empty;
             text += char.ToUpper(res[0]);
-            for(int n = 1; n < res.Length; n++)
+            for (int n = 1; n < res.Length; n++)
             {
-                if(char.IsUpper(res[n]) && char.IsLower(res[n-1]))
+                if (char.IsUpper(res[n]) && char.IsLower(res[n - 1]))
                 {
                     text += ' ';
                 }

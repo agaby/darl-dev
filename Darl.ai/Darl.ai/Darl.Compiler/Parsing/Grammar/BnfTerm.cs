@@ -222,7 +222,7 @@ namespace DarlCompiler.Parsing
         /// <summary>
         /// The _hash code
         /// </summary>
-        private int _hashCode;
+        private readonly int _hashCode;
         /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>

@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using DarlCompiler.Ast;
+using DarlCompiler.Parsing;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using DarlCompiler.Ast;
-using DarlCompiler.Parsing;
 using System.Threading.Tasks;
-using System;
 
 namespace DarlLanguage.Processing
 {
@@ -92,7 +91,7 @@ namespace DarlLanguage.Processing
                         orderedRulesets.Remove(rulesets[wire.destRuleset]);
                 }
             }
-            List<RuleSetNode> remainder = new List<RuleSetNode>(rulesets.Values.Where( a=> !orderedRulesets.Contains(a)));
+            List<RuleSetNode> remainder = new List<RuleSetNode>(rulesets.Values.Where(a => !orderedRulesets.Contains(a)));
             //now the currentwires contains all internal wires and orderedrulesets contains all rulesets not dependant on other rule sets, while remainder contains the rest.
             while (remainder.Count > 0)//check dependencies and remove orphan wires
             {
@@ -139,7 +138,7 @@ namespace DarlLanguage.Processing
         /// <returns>
         /// The result of the evaluation
         /// </returns>
-        protected async override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
+        protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
             thread.CurrentNode = this;  //standard prologue
             DarlGrammar grammar = thread.Runtime.Language.Grammar as DarlGrammar;
@@ -148,13 +147,13 @@ namespace DarlLanguage.Processing
             {
                 if (wire.wiretype == WireDefinitionNode.WireType.wirein || wire.wiretype == WireDefinitionNode.WireType.wirethrough)
                 {
-                    if(grammar.results.Any(a => a.name == wire.sourcename))
+                    if (grammar.results.Any(a => a.name == wire.sourcename))
                     {
                         grammar.results.RemoveAll(a => a.name == wire.compDest);
                         grammar.results.Add(new DarlResult(wire.compDest, grammar.ResultByName(wire.compSource)));
                     }
                 }
-                else if(wire.wiretype == WireDefinitionNode.WireType.wirestore)
+                else if (wire.wiretype == WireDefinitionNode.WireType.wirestore)
                 {
                     if (grammar.stores.ContainsKey(wire.destname))
                     {
@@ -170,8 +169,8 @@ namespace DarlLanguage.Processing
 
                 }
             }
-             //handle delays
-            foreach(var delay in delays)
+            //handle delays
+            foreach (var delay in delays)
                 await delay.Evaluate(thread);
 
             foreach (var rs in orderedRulesets)
@@ -215,7 +214,7 @@ namespace DarlLanguage.Processing
             {
                 if (IsUnfilled(currentState, outName)) //output is unknown
                 {
-                    foreach(WireDefinitionNode wire in wires.Where( a => a.destname == outName && string.IsNullOrEmpty(a.destRuleset))) //wires connecting to that output
+                    foreach (WireDefinitionNode wire in wires.Where(a => a.destname == outName && string.IsNullOrEmpty(a.destRuleset))) //wires connecting to that output
                     {
                         wire.WalkSaliences(1.0, this, string.Empty, string.Empty);
                     }
@@ -226,7 +225,7 @@ namespace DarlLanguage.Processing
                 foreach (WireDefinitionNode wire in wires.Where(a => a.destname == outName && string.IsNullOrEmpty(a.destRuleset))) //wires connecting to that store
                 {
                     wire.WalkSaliences(1.0, this, string.Empty, string.Empty);
-                }    
+                }
             }
             foreach (MapInputDefinitionNode input in inputs.Values.Where(a => a.Salience > 0.0 && IsUnfilled(currentState, a.Name)))
             {

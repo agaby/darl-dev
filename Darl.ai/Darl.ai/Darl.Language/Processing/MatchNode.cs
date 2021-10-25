@@ -16,7 +16,7 @@ namespace DarlLanguage.Processing
         /// </returns>
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            DarlResult r1 = (DarlResult) await Argument.Evaluate(thread);
+            DarlResult r1 = (DarlResult)await Argument.Evaluate(thread);
             var inp = ((DarlResult)thread.CurrentScope.Parameters[0]);
             //Use implicit comparison. Result does the work internally
             return new DarlResult(r1 == inp ? 1.0 : 0.0, false);

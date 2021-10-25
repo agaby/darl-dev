@@ -11,9 +11,9 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using Darl.ai;
 using DarlCompiler.Parsing;
 using System.Threading.Tasks;
-using Darl.ai;
 
 namespace DarlCompiler.Interpreter.Ast
 {

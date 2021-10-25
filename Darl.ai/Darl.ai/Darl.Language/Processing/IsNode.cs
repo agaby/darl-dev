@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using DarlCompiler.Ast;
+﻿using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
@@ -39,10 +39,10 @@ namespace DarlLanguage.Processing
         /// <returns>
         /// The result of the evaluation
         /// </returns>
-        protected async override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
+        protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
             thread.CurrentNode = this;  //standard prologue
-            var res1 = (DarlResult) await Left.Evaluate(thread);
+            var res1 = (DarlResult)await Left.Evaluate(thread);
             //handle certainty based responses
             if (res1.IsUnknown())
             {
@@ -50,7 +50,7 @@ namespace DarlLanguage.Processing
                     return new DarlResult(1.0, false);
                 if (Right is PresentNode)
                     return new DarlResult(0.0, true); //changed 05/05/2015, was false but prevented salience calcs
-                return new DarlResult(0.0, true);  
+                return new DarlResult(0.0, true);
             }
             else if (Right is AbsentNode)
             {
@@ -73,7 +73,7 @@ namespace DarlLanguage.Processing
                         //rhs is set or comparison
                         if (Right is DarlIdentifierNode) //must be set
                         {
-                            DarlResult res2 = (DarlResult) await Right.Evaluate(thread);
+                            DarlResult res2 = (DarlResult)await Right.Evaluate(thread);
                             DarlResult res3 = res2.Equal(res1);
                             return new DarlResult((double)res3.values[0], false);
                         }
@@ -81,13 +81,13 @@ namespace DarlLanguage.Processing
                         {
                             thread.CurrentScope.Parameters = new object[1];
                             thread.CurrentScope.SetParameter(0, res1);
-                            return (DarlResult) await Right.Evaluate(thread);
+                            return (DarlResult)await Right.Evaluate(thread);
                         }
 
                     case DarlIdentifierNode.IdentifierType.categorical_input:
                     case DarlIdentifierNode.IdentifierType.categorical_output:
                         {
-                            DarlResult res2 = (DarlResult) await Right.Evaluate(thread);
+                            DarlResult res2 = (DarlResult)await Right.Evaluate(thread);
                             var res3 = res2.Equal(res1);
                             if (res3.values.Count == 0)
                             {

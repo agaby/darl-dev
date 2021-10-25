@@ -1,9 +1,7 @@
 ﻿using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Darl.Thinkbase.Meta
 {
@@ -41,7 +39,7 @@ namespace Darl.Thinkbase.Meta
         /// <param name="context">The context.</param>
         public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlMetaNode currentOutput, ConstantContext context, IGraphModel model, GraphObject currentNode)
         {
-            Argument.WalkDependencies(dependencies, currentOutput, context,model, currentNode);
+            Argument.WalkDependencies(dependencies, currentOutput, context, model, currentNode);
         }
 
         /// <summary>
@@ -52,7 +50,7 @@ namespace Darl.Thinkbase.Meta
         /// <param name="currentOutput">The current output.</param>
         public override void WalkSaliences(double saliency, MetaRootNode root)
         {
-            Argument.WalkSaliences(saliency,root);
+            Argument.WalkSaliences(saliency, root);
         }
     }
 }

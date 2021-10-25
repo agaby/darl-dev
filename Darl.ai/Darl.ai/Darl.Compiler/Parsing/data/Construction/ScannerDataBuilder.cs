@@ -11,8 +11,8 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using System.Collections.Generic;
 using Darl.ai;
+using System.Collections.Generic;
 
 namespace DarlCompiler.Parsing.Construction
 {
@@ -24,15 +24,17 @@ namespace DarlCompiler.Parsing.Construction
         /// <summary>
         /// The _language
         /// </summary>
-        LanguageData _language;
+        readonly LanguageData _language;
+
         /// <summary>
         /// The _grammar
         /// </summary>
-        Grammar _grammar;
+        readonly Grammar _grammar;
+
         /// <summary>
         /// The _grammar data
         /// </summary>
-        GrammarData _grammarData;
+        readonly GrammarData _grammarData;
         /// <summary>
         /// The _data
         /// </summary>

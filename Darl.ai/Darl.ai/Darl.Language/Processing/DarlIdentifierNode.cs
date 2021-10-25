@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using DarlCompiler.Ast;
+﻿using DarlCompiler.Ast;
 using DarlCompiler.Interpreter;
 using DarlCompiler.Parsing;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
@@ -20,7 +20,8 @@ namespace DarlLanguage.Processing
         /// <summary>
         /// The type of the identifier
         /// </summary>
-        public enum IdentifierType {
+        public enum IdentifierType
+        {
             /// <summary>
             /// The categorical_input
             /// </summary>
@@ -182,9 +183,9 @@ namespace DarlLanguage.Processing
         /// <returns>
         /// The result of the evaluation
         /// </returns>
-        protected async override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
+        protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            if(IsConstant())
+            if (IsConstant())
             {
                 return fixedResult;
             }
@@ -193,7 +194,7 @@ namespace DarlLanguage.Processing
             this.Evaluate = _accessor.GetValueRef; // Optimization - directly set method ref to accessor's method. EvaluateReader;
             var result = await this.Evaluate(thread);
             thread.CurrentNode = Parent; //standard epilogue
-            return result;            
+            return result;
         }
 
         /// <summary>
@@ -209,7 +210,7 @@ namespace DarlLanguage.Processing
                 switch (identType)
                 {
                     case IdentifierType.category:
-                        fixedResult = new DarlResult("",name);
+                        fixedResult = new DarlResult("", name);
                         break;
                     case IdentifierType.set:
                         //look up value
@@ -233,7 +234,7 @@ namespace DarlLanguage.Processing
                         fixedResult = new DarlResult(context.constants[name].Value);
                         break;
                     case IdentifierType.string_constant:
-                        fixedResult = new DarlResult("", context.strings[name].Value,DarlResult.DataType.textual);
+                        fixedResult = new DarlResult("", context.strings[name].Value, DarlResult.DataType.textual);
                         break;
                     case IdentifierType.temporal_constant:
                         fixedResult = new DarlResult("", context.durations[name].Value, DarlResult.DataType.duration);
@@ -262,8 +263,8 @@ namespace DarlLanguage.Processing
         {
             if (identType == IdentifierType.categorical_input || identType == IdentifierType.numeric_input || identType == IdentifierType.textual_input || identType == IdentifierType.temporal_input || identType == IdentifierType.dynamic_categorical_input)
             {
-               var wire = root.NavigateDest(name, currentRuleSet);
-                if(wire != null)//might be unconnected input
+                var wire = root.NavigateDest(name, currentRuleSet);
+                if (wire != null)//might be unconnected input
                     wire.WalkSaliences(saliency * 2.0, root, currentRuleSet, currentOutput); //experimental scaling to favor deeper inputs
             }
             //Add output handling
@@ -275,7 +276,7 @@ namespace DarlLanguage.Processing
                 else //could be internal ruleset dependence.
                 {
                     var o = root.NavigateInternal(name, currentRuleSet);
-                    if(o != null)
+                    if (o != null)
                     {
                         o.WalkSaliences(saliency * 2.0, root, currentRuleSet, name);//experimental scaling to favor deeper inputs
                     }
@@ -314,10 +315,10 @@ namespace DarlLanguage.Processing
         {
             get
             {
-                switch(identType)
+                switch (identType)
                 {
                     case IdentifierType.rule_identifier:
-                        if(Parent is CompIoNode)
+                        if (Parent is CompIoNode)
                             return $"{name}.";
                         return "";
                     case IdentifierType.store_io:

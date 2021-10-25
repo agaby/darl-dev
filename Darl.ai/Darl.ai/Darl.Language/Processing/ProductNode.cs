@@ -22,7 +22,7 @@ namespace DarlLanguage.Processing
             {
                 if (child != null)
                 {
-                    DarlResult res1 = (DarlResult) await child.Evaluate(thread);
+                    DarlResult res1 = (DarlResult)await child.Evaluate(thread);
                     if (nIndex == 0)
                         res2 = res1;
                     else

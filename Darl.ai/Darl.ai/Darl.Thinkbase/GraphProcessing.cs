@@ -6,7 +6,6 @@ using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlLanguage.Processing;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,15 +20,15 @@ namespace Darl.Thinkbase
     public class GraphProcessing : IGraphProcessing
     {
 
-        private IGraphPrimitives _primitives;
+        private readonly IGraphPrimitives _primitives;
 
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
-        private IMetaStructureHandler _metaHandler;
+        private readonly IMetaStructureHandler _metaHandler;
 
-        private int maxKnowledgeStateUpdates = 50;
+        private readonly int maxKnowledgeStateUpdates = 50;
 
-        public Dictionary<string, LineageDefinitionNode> PreloadLineages { get => _metaHandler.PreloadLineages; } 
+        public Dictionary<string, LineageDefinitionNode> PreloadLineages { get => _metaHandler.PreloadLineages; }
 
         public GraphProcessing(IGraphPrimitives primitives, ILogger<GraphProcessing> logger, IMetaStructureHandler metaHandler)
         {
@@ -41,43 +40,43 @@ namespace Darl.Thinkbase
         {
             var model = await _primitives.Load(compositeName);
             if (!LineageLibrary.CheckLineage(graphConnection.lineage))
-                    throw new RuleException($"Malformed lineage: {graphConnection.lineage}.");
-                if (!_metaHandler.IsConnectionLineage(graphConnection.lineage))
-                    throw new RuleException($"Connections should have lineages of type 'verb'. This has a lineage of {graphConnection.lineage}.");
-                if (ontology != OntologyAction.ignore)//ontological compliance checks
+                throw new RuleException($"Malformed lineage: {graphConnection.lineage}.");
+            if (!_metaHandler.IsConnectionLineage(graphConnection.lineage))
+                throw new RuleException($"Connections should have lineages of type 'verb'. This has a lineage of {graphConnection.lineage}.");
+            if (ontology != OntologyAction.ignore)//ontological compliance checks
+            {
+                var startLineage = await GetGraphObjectProperty(compositeName, graphConnection.startId, "lineage");
+                var endLineage = await GetGraphObjectProperty(compositeName, graphConnection.endId, "lineage");
+                if (ontology == OntologyAction.check)
                 {
-                    var startLineage = await GetGraphObjectProperty(compositeName, graphConnection.startId, "lineage");
-                    var endLineage = await GetGraphObjectProperty(compositeName, graphConnection.endId, "lineage");
+                    if (!await OntologicalCompliance(model, graphConnection.lineage, startLineage, endLineage))
+                    {
+                        throw new RuleException($"No association exists between {startLineage}, the verb {graphConnection.lineage} and {endLineage}\n if you are sure this is correct use the definitive flag in the call.");
+                    }
+                }
+                else
+                {
+                    await BuildOntology(model, graphConnection.lineage, startLineage, endLineage);
+                }
+                foreach (var p in graphConnection.properties)
+                {
+                    if (!LineageLibrary.CheckLineage(p.lineage))
+                        throw new RuleException($"Malformed property lineage: {p.lineage}.");
                     if (ontology == OntologyAction.check)
                     {
-                        if (!await OntologicalCompliance(model, graphConnection.lineage, startLineage, endLineage))
+                        if (!await OntologicalCompliance(model, graphConnection.lineage, p.lineage))
                         {
-                            throw new RuleException($"No association exists between {startLineage}, the verb {graphConnection.lineage} and {endLineage}\n if you are sure this is correct use the definitive flag in the call.");
+                            throw new RuleException($"No association exists between {graphConnection.lineage} and {p.lineage}\n if you are sure this is correct use the definitive flag in the call.");
                         }
                     }
                     else
                     {
-                        await BuildOntology(model, graphConnection.lineage, startLineage, endLineage);
-                    }
-                    foreach (var p in graphConnection.properties)
-                    {
-                        if (!LineageLibrary.CheckLineage(p.lineage))
-                            throw new RuleException($"Malformed property lineage: {p.lineage}.");
-                        if (ontology == OntologyAction.check)
-                        {
-                            if (!await OntologicalCompliance(model, graphConnection.lineage, p.lineage))
-                            {
-                                throw new RuleException($"No association exists between {graphConnection.lineage} and {p.lineage}\n if you are sure this is correct use the definitive flag in the call.");
-                            }
-                        }
-                        else
-                        {
-                            await BuildOntology(model, graphConnection.lineage, p.lineage);
-                        }
+                        await BuildOntology(model, graphConnection.lineage, p.lineage);
                     }
                 }
-                return await _primitives.CreateConnection(compositeName, graphConnection);
-            
+            }
+            return await _primitives.CreateConnection(compositeName, graphConnection);
+
         }
 
         public async Task<GraphObject> CreateGraphObject(string compositeName, GraphObjectInput graphObject, OntologyAction ontology = OntologyAction.ignore)
@@ -115,7 +114,7 @@ namespace Darl.Thinkbase
                 }
             }
             return await _primitives.CreateObject(compositeName, graphObject);
-            
+
         }
 
         public async Task<bool> CreateNewGraph(string userId, string name)
@@ -138,7 +137,7 @@ namespace Darl.Thinkbase
         public async Task<IGraphModel> GetModel(string userId, string name)
         {
             var graphname = CreateCompositeName(userId, name);
-            var model =  await _primitives.Load(graphname);
+            var model = await _primitives.Load(graphname);
             model.modelName = graphname;
             return model;
         }
@@ -169,7 +168,7 @@ namespace Darl.Thinkbase
             return await _primitives.GetGraphObjects(compositeName, name, lineage);
         }
 
- 
+
         public async Task<string> GetGraphObjectProperty(string compositeName, string id, string property)
         {
             return await _primitives.GetGraphObjectProperty(compositeName, id, property);
@@ -184,27 +183,27 @@ namespace Darl.Thinkbase
         {
             var model = await _primitives.Load(compositeName);
             if (ontology != OntologyAction.ignore)//ontological compliance checks
+            {
+                if (graphConnection.properties != null)
                 {
-                    if (graphConnection.properties != null)
+                    foreach (var p in graphConnection.properties)
                     {
-                        foreach (var p in graphConnection.properties)
+                        if (ontology == OntologyAction.check)
                         {
-                            if (ontology == OntologyAction.check)
+                            if (!await OntologicalCompliance(model, graphConnection.lineage, p.lineage))
                             {
-                                if (!await OntologicalCompliance(model, graphConnection.lineage, p.lineage))
-                                {
-                                    throw new RuleException($"No association exists between {graphConnection.lineage} and {p.lineage}\n if you are sure this is correct use the definitive flag in the call.");
-                                }
+                                throw new RuleException($"No association exists between {graphConnection.lineage} and {p.lineage}\n if you are sure this is correct use the definitive flag in the call.");
                             }
-                            else
-                            {
-                                await BuildOntology(model, graphConnection.lineage, p.lineage);
-                            }
+                        }
+                        else
+                        {
+                            await BuildOntology(model, graphConnection.lineage, p.lineage);
                         }
                     }
                 }
-                return await _primitives.UpdateConnection(compositeName, graphConnection);
-            
+            }
+            return await _primitives.UpdateConnection(compositeName, graphConnection);
+
         }
 
         public async Task<GraphObject> UpdateGraphObject(string compositeName, GraphObjectUpdate graphObject, OntologyAction ontology = OntologyAction.ignore)
@@ -271,7 +270,7 @@ namespace Darl.Thinkbase
             return await _primitives.ProcessPath(compositeName, startExternalID, endExternalID);
         }
 
-        public async Task<string> ProcessAttribute(string compositeName,string externalID, string propertyName)
+        public async Task<string> ProcessAttribute(string compositeName, string externalID, string propertyName)
         {
             return await _primitives.GetAttribute(compositeName, externalID, propertyName);
         }
@@ -312,7 +311,7 @@ namespace Darl.Thinkbase
         }
 
 
- 
+
         public async Task CreateVirtualAttribute(string compositeName, string lineage, GraphAttributeInput att)
         {
             await _primitives.CreateVirtualAttribute(compositeName, lineage, att);
@@ -368,15 +367,15 @@ namespace Darl.Thinkbase
                         else if (e is edgetype)
                         {
                             var c = e as edgetype;
-                            var childObj = c.data.Where(a => (a as datatype).key == "startId").FirstOrDefault() as datatype;
+                            var childObj = c.data.Where(a => a.key == "startId").FirstOrDefault();
                             var child = "";
                             if (childObj != null)
                                 child = childObj.Text[0];
-                            var nameObj = c.data.Where(a => (a as datatype).key == "name").FirstOrDefault() as datatype;
+                            var nameObj = c.data.Where(a => a.key == "name").FirstOrDefault();
                             var name = "";
                             if (nameObj != null)
                                 name = nameObj.Text[0];
-                            var lineageObj = c.data.Where(a => (a as datatype).key == "endId").FirstOrDefault() as datatype;
+                            var lineageObj = c.data.Where(a => a.key == "endId").FirstOrDefault();
                             var lineage = "";
                             if (lineageObj != null)
                                 lineage = lineageObj.Text[0];
@@ -407,7 +406,7 @@ namespace Darl.Thinkbase
             var graph = graphRoot.Items[0] as graphtype;
             foreach (var e in graph.Items)
             {
-                if(e is nodetype)
+                if (e is nodetype)
                 {
                     var node = e as nodetype;
                     var obj = ConvertNode(node, atts);
@@ -417,11 +416,11 @@ namespace Darl.Thinkbase
             }
             foreach (var e in graph.Items)
             {
-                if(e is edgetype)
+                if (e is edgetype)
                 {
                     var edge = e as edgetype;
                     var obj = ConvertConnection(edge, atts);
-                    await _primitives.CreateConnection(compositeName, new GraphConnectionInput { existence = obj.existence, lineage = obj.lineage, name = obj.name, properties = obj.properties, endId = obj.endId, startId = obj.startId, weight= obj.weight });
+                    await _primitives.CreateConnection(compositeName, new GraphConnectionInput { existence = obj.existence, lineage = obj.lineage, name = obj.name, properties = obj.properties, endId = obj.endId, startId = obj.startId, weight = obj.weight });
                 }
 
             }
@@ -430,9 +429,9 @@ namespace Darl.Thinkbase
         public async Task<Stream> StoreGraphML(string compositeName)
         {
             var graphRoot = new graphmltype();
-            var realGraph = new graphtype { desc = "real"};
+            var realGraph = new graphtype { desc = "real" };
             var virtualGraph = new graphtype { desc = "virtual" };
-            graphRoot.Items = new graphtype[] { virtualGraph, realGraph,  };
+            graphRoot.Items = new graphtype[] { virtualGraph, realGraph, };
             //load object with data
             var model = await _primitives.Load(compositeName);
             var atts = new Dictionary<string, keytype>();
@@ -630,7 +629,7 @@ namespace Darl.Thinkbase
         public async Task<List<KnowledgeState>> CreateKnowledgeStateList(string userId, List<KnowledgeStateInput> states)
         {
             var results = new List<KnowledgeState>();
-            foreach(var ks in states.Take(maxKnowledgeStateUpdates))
+            foreach (var ks in states.Take(maxKnowledgeStateUpdates))
             {
                 results.Add(await CreateKnowledgeState(userId, ks));
             }
@@ -731,12 +730,12 @@ namespace Darl.Thinkbase
         public async Task<GraphAttribute> GetGraphAttribute(string userId, string graphName, string id, string lineage, string? ksUserId = null)
         {
             var model = await GetModel(userId, graphName);
-            if(model == null)
+            if (model == null)
                 throw new RuleException($"Graph not found: {graphName}");
             var obj = await GetGraphObjectByExternalId($"{userId}_{graphName}", id);
             if (obj == null)
                 obj = await GetGraphObjectById($"{userId}_{graphName}", id);
-            if(obj == null)
+            if (obj == null)
                 throw new RuleException($"Object not found: {id} in {graphName}");
             var ks = string.IsNullOrEmpty(ksUserId) ? null : await GetKnowledgeState(userId, ksUserId, graphName);
             return model.FindDataGraphAttribute(obj.id, lineage, ks);
@@ -749,12 +748,12 @@ namespace Darl.Thinkbase
 
         public async Task<string> GetGraphObjectToString(string compositeName, string id)
         {
-            return await _primitives.GetGraphObjectToString(compositeName,id);
+            return await _primitives.GetGraphObjectToString(compositeName, id);
         }
 
         public async Task<string> ShareKGraph(string userId, string name, string sharerId, bool readOnly, bool hidden)
         {
-            return await _primitives.ShareKGraph(userId, name, sharerId, readOnly,hidden);
+            return await _primitives.ShareKGraph(userId, name, sharerId, readOnly, hidden);
         }
 
         public async Task<List<KnowledgeState>> GetSetOfKnowledgeStates(string userId, List<string> ksIds, string graphName)
@@ -764,7 +763,7 @@ namespace Darl.Thinkbase
 
         public Task<string> CreateTimedAccessUrl(string userId, string name)
         {
-            return Task.FromResult(_primitives.CreateTimedAccessUrl(userId,name));
+            return Task.FromResult(_primitives.CreateTimedAccessUrl(userId, name));
         }
 
         public async Task<ModelMetaData> UpdateKGraph(string userId, string name, ModelMetaData kgupdate)
@@ -774,7 +773,7 @@ namespace Darl.Thinkbase
 
         public async Task<bool> Exists(string userId, string name)
         {
-            return await _primitives.Exists(CreateCompositeName(userId,name));
+            return await _primitives.Exists(CreateCompositeName(userId, name));
         }
 
         #region private_methods
@@ -787,7 +786,7 @@ namespace Darl.Thinkbase
             {
                 if (!atts.ContainsKey(nameof(node.existence)))
                 {
-                    atts.Add(nameof(node.existence), new keytype { @for = keyfortype.node, id = nameof(node.existence), name = nameof(node.existence), type = keytypetype.@string } );
+                    atts.Add(nameof(node.existence), new keytype { @for = keyfortype.node, id = nameof(node.existence), name = nameof(node.existence), type = keytypetype.@string });
                 }
                 items.Add(new datatype { key = nameof(node.existence), Text = node.existence.Select(a => a.ToString()).ToArray() });
             }
@@ -795,13 +794,13 @@ namespace Darl.Thinkbase
             {
                 if (!atts.ContainsKey(nameof(node.externalId)))
                 {
-                    atts.Add(nameof(node.externalId), new keytype { @for = keyfortype.node, id = nameof(node.externalId), name = nameof(node.externalId), type = keytypetype.@string  });
+                    atts.Add(nameof(node.externalId), new keytype { @for = keyfortype.node, id = nameof(node.externalId), name = nameof(node.externalId), type = keytypetype.@string });
                 }
                 items.Add(new datatype { key = nameof(node.externalId), Text = new string[] { node.externalId } });
             }
             if (!atts.ContainsKey(nameof(node.inferred)))
             {
-                atts.Add(nameof(node.inferred), new keytype { @for = keyfortype.node, id = nameof(node.inferred), name = nameof(node.inferred), type = keytypetype.boolean } );
+                atts.Add(nameof(node.inferred), new keytype { @for = keyfortype.node, id = nameof(node.inferred), name = nameof(node.inferred), type = keytypetype.boolean });
             }
             if (!string.IsNullOrEmpty(node.lineage))
             {
@@ -815,22 +814,22 @@ namespace Darl.Thinkbase
             {
                 if (!atts.ContainsKey(nameof(node.name)))
                 {
-                    atts.Add(nameof(node.name), new keytype { @for = keyfortype.node, id = nameof(node.name), name = nameof(node.name), type = keytypetype.@string } );
+                    atts.Add(nameof(node.name), new keytype { @for = keyfortype.node, id = nameof(node.name), name = nameof(node.name), type = keytypetype.@string });
                 }
                 items.Add(new datatype { key = nameof(node.name), Text = new string[] { node.name } });
             }
             if (!atts.ContainsKey("virtual"))
             {
-                atts.Add("virtual", new keytype { @for = keyfortype.node, id = "virtual", name = "virtual", type = keytypetype.boolean } );
+                atts.Add("virtual", new keytype { @for = keyfortype.node, id = "virtual", name = "virtual", type = keytypetype.boolean });
             }
             items.Add(new datatype { key = "virtual", Text = new string[] { node._virtual.ToString() } });
             if (node.properties != null)
             {
-                foreach(var s in node.properties)
-                { 
+                foreach (var s in node.properties)
+                {
                     if (!atts.ContainsKey(s.name))
                     {
-                        atts.Add(s.name, new keytype { @for = keyfortype.node, id = s.name, name = s.name, type = keytypetype.@string } );
+                        atts.Add(s.name, new keytype { @for = keyfortype.node, id = s.name, name = s.name, type = keytypetype.@string });
                     }
                     items.Add(new datatype { key = s.name, Text = new string[] { s.value } });
                 }
@@ -839,14 +838,14 @@ namespace Darl.Thinkbase
             return n;
         }
 
-        private GraphObjectInput ConvertNode(nodetype node, Dictionary<string,string> atts)
+        private GraphObjectInput ConvertNode(nodetype node, Dictionary<string, string> atts)
         {
             var go = new GraphObjectInput { properties = new List<GraphAttributeInput>() };
-            foreach(datatype i in node.Items)
+            foreach (datatype i in node.Items)
             {
-                if(atts.ContainsKey(i.key))
+                if (atts.ContainsKey(i.key))
                 {
-                    switch(atts[i.key])
+                    switch (atts[i.key])
                     {
                         case nameof(GraphObject.name):
                             go.name = i.Text[0];
@@ -860,7 +859,7 @@ namespace Darl.Thinkbase
                         case nameof(GraphObject.existence):
                             {
                                 go.existence = new List<DarlTime?>();
-                                foreach (var d in i.Text )
+                                foreach (var d in i.Text)
                                 {
                                     go.existence.Add(DarlTime.Parse(d));
                                 }
@@ -927,7 +926,7 @@ namespace Darl.Thinkbase
             {
                 if (!atts.ContainsKey(nameof(conn.existence)))
                 {
-                    atts.Add(nameof(conn.existence), new keytype { @for = keyfortype.edge, id = nameof(conn.existence), name = nameof(conn.existence), type = keytypetype.@string  });
+                    atts.Add(nameof(conn.existence), new keytype { @for = keyfortype.edge, id = nameof(conn.existence), name = nameof(conn.existence), type = keytypetype.@string });
                 }
                 items.Add(new datatype { key = nameof(conn.existence), Text = conn.existence.Select(a => a.ToString()).ToArray() });
             }
@@ -939,7 +938,7 @@ namespace Darl.Thinkbase
             {
                 if (!atts.ContainsKey(nameof(conn.lineage)))
                 {
-                    atts.Add(nameof(conn.lineage), new keytype { @for = keyfortype.edge, id = nameof(conn.lineage), name = nameof(conn.lineage), type = keytypetype.@string } );
+                    atts.Add(nameof(conn.lineage), new keytype { @for = keyfortype.edge, id = nameof(conn.lineage), name = nameof(conn.lineage), type = keytypetype.@string });
                 }
                 items.Add(new datatype { key = nameof(conn.lineage), Text = new string[] { conn.lineage } });
             }
@@ -947,7 +946,7 @@ namespace Darl.Thinkbase
             {
                 if (!atts.ContainsKey(nameof(conn.name)))
                 {
-                    atts.Add(nameof(conn.name), new keytype { @for = keyfortype.edge, id = nameof(conn.name), name = nameof(conn.name), type = keytypetype.@string } );
+                    atts.Add(nameof(conn.name), new keytype { @for = keyfortype.edge, id = nameof(conn.name), name = nameof(conn.name), type = keytypetype.@string });
                 }
                 items.Add(new datatype { key = nameof(conn.name), Text = new string[] { conn.name } });
             }
@@ -962,14 +961,14 @@ namespace Darl.Thinkbase
                 {
                     if (!atts.ContainsKey(s.name))
                     {
-                        atts.Add(s.name, new keytype { @for = keyfortype.edge, id = s.name, name = s.name, type = keytypetype.@string } );
+                        atts.Add(s.name, new keytype { @for = keyfortype.edge, id = s.name, name = s.name, type = keytypetype.@string });
                     }
                     items.Add(new datatype { key = s.name, Text = new string[] { s.value } });
                 }
             }
             if (!atts.ContainsKey(nameof(conn.weight)))
             {
-                atts.Add(nameof(conn.weight), new keytype { @for = keyfortype.edge, id = nameof(conn.weight), name = nameof(conn.weight), type = keytypetype.@double } );
+                atts.Add(nameof(conn.weight), new keytype { @for = keyfortype.edge, id = nameof(conn.weight), name = nameof(conn.weight), type = keytypetype.@double });
             }
             items.Add(new datatype { key = nameof(conn.weight), Text = new string[] { conn.weight.ToString() } });
             c.data = items.ToArray();
@@ -977,9 +976,9 @@ namespace Darl.Thinkbase
         }
 
 
-        private async Task<bool> LineageExists(IGraphModel model,string lineage)
+        private async Task<bool> LineageExists(IGraphModel model, string lineage)
         {
-            return await _primitives.LineageExists(model,lineage);
+            return await _primitives.LineageExists(model, lineage);
         }
 
 
@@ -1012,7 +1011,7 @@ namespace Darl.Thinkbase
                         }
                     }
                 }
-                if(divider != -1 ) //composite - we've added the primary part, now add the secondary
+                if (divider != -1) //composite - we've added the primary part, now add the secondary
                 {
                     var sub = lineage.Substring(divider + 1);
                     if (!await LineageExists(model, sub))
@@ -1046,7 +1045,7 @@ namespace Darl.Thinkbase
         private async Task<bool> OntologicalCompliance(IGraphModel model, string graphConnectionLineage, string startLineage, string endLineage)
         {
             //Look for a preceding and a following association in this or higher verbs that permits this.
-            if(await _primitives.VirtualAssociationExists(model, startLineage, graphConnectionLineage))
+            if (await _primitives.VirtualAssociationExists(model, startLineage, graphConnectionLineage))
             {
                 return await _primitives.VirtualAssociationExists(model, endLineage, graphConnectionLineage);
             }

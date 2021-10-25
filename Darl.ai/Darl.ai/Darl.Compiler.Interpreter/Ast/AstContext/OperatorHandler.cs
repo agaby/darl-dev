@@ -11,11 +11,10 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using DarlCompiler.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-
-using DarlCompiler.Parsing;
 
 namespace DarlCompiler.Interpreter.Ast
 {
@@ -85,7 +84,7 @@ namespace DarlCompiler.Interpreter.Ast
         /// <summary>
         /// The _registered operators
         /// </summary>
-        private OperatorInfoDictionary _registeredOperators;
+        private readonly OperatorInfoDictionary _registeredOperators;
 
 
         /// <summary>

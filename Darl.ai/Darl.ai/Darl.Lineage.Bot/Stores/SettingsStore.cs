@@ -3,9 +3,7 @@ using DarlLanguage.Processing;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Darl.Lineage.Bot;
 
 namespace Darl.Lineage.Bot.Stores
 {
@@ -21,7 +19,7 @@ namespace Darl.Lineage.Bot.Stores
         public Task<DarlResult> ReadAsync(List<string> address)
         {
             //built ins
-            if(address[0].ToLower() == "time")
+            if (address[0].ToLower() == "time")
             {
                 return Task.FromResult<DarlResult>(new DarlResult("", DateTime.UtcNow.ToShortTimeString(), DarlResult.DataType.textual));
             }
@@ -61,10 +59,10 @@ namespace Darl.Lineage.Bot.Stores
             return Task.CompletedTask;
         }
 
-        public Dictionary<string,string> ConvertSettings()
+        public Dictionary<string, string> ConvertSettings()
         {
             var simplified = new Dictionary<string, string>();
-            foreach(var s in settings.Keys)
+            foreach (var s in settings.Keys)
             {
                 simplified.Add(s, JsonConvert.DeserializeObject<DarlVar>(settings[s]).Value);
             }

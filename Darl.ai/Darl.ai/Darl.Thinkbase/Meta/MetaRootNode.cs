@@ -72,9 +72,9 @@ namespace Darl.Thinkbase.Meta
         public override void Init(AstContext context, ParseTreeNode treeNode)
         {
             //add predefined lineages
-            if(((DarlMetaGrammar)context.Language.Grammar).structure != null)
+            if (((DarlMetaGrammar)context.Language.Grammar).structure != null)
             {
-                foreach(var c in ((DarlMetaGrammar)context.Language.Grammar).structure.PreloadLineages.Keys)
+                foreach (var c in ((DarlMetaGrammar)context.Language.Grammar).structure.PreloadLineages.Keys)
                 {
                     lineages.Add(c, ((DarlMetaGrammar)context.Language.Grammar).structure.PreloadLineages[c]);
                 }
@@ -83,9 +83,9 @@ namespace Darl.Thinkbase.Meta
             var cm = ((DarlMetaGrammar)context.Language.Grammar).currentModel;
             if (cm != null)
             {
-                foreach(var c in cm.GetLineages(GraphElementType.node))
+                foreach (var c in cm.GetLineages(GraphElementType.node))
                 {
-                    if(!lineages.ContainsKey(c.typeWord))
+                    if (!lineages.ContainsKey(c.typeWord))
                     {
                         lineages.Add(c.typeWord, new LineageDefinitionNode { name = c.typeWord, Value = c.lineage, typeword = c.typeWord });
                     }
@@ -147,9 +147,9 @@ namespace Darl.Thinkbase.Meta
             //get dependency tree
             List<IntraSetDependency> dependencies = new List<IntraSetDependency>();
             ConstantContext ccontext = new ConstantContext { inputs = inputs, outputs = outputs, constants = constants, strings = strings, controllingIO = string.Empty, storeInputs = storeInputs, storeOutputs = new Dictionary<string, StoreNode>(), stores = stores, durations = durations, lineages = lineages, parseContext = context };
-            foreach(var i in inputs.Values)
+            foreach (var i in inputs.Values)
             {
-                if(i.LineageNode != null && i.iType == InputDefinitionNode.InputTypes.categorical_input)
+                if (i.LineageNode != null && i.iType == InputDefinitionNode.InputTypes.categorical_input)
                 {
                     i.LineageNode.WalkDependencies(dependencies, null, ccontext, ((DarlMetaGrammar)context.Language.Grammar).currentModel, ((DarlMetaGrammar)context.Language.Grammar).currentNode);
                     var grammar = context.Language.Grammar as DarlMetaGrammar;
@@ -241,7 +241,7 @@ namespace Darl.Thinkbase.Meta
                             var unsatisfiedRules = rules[outName].Where(a => a.IsUnknown || a.confidenceNode != null && a.confidenceNode.weight < 1.0).ToList();
                             if (unsatisfiedRules.Count > 0)
                             {
-                                double childSaliency = 1.0 / (double)unsatisfiedRules.Count;
+                                double childSaliency = 1.0 / unsatisfiedRules.Count;
                                 foreach (DarlMetaNode r in unsatisfiedRules)
                                 {
                                     r.WalkSaliences(childSaliency, this);
@@ -323,7 +323,7 @@ namespace Darl.Thinkbase.Meta
         /// <returns>
         /// The result of the evaluation
         /// </returns>
-        protected async override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
+        protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
             thread.CurrentNode = this;  //standard prologue
             DarlMetaGrammar grammar = thread.Runtime.Language.Grammar as DarlMetaGrammar;
@@ -416,7 +416,7 @@ namespace Darl.Thinkbase.Meta
                     if (!string.IsNullOrEmpty(((OutputDefinitionNode)outNode).lineage) && !outNode.result.IsUnknown() && grammar.currentNode != null) //possible confidence limit too?
                     {
                         var lineage = ((OutputDefinitionNode)outNode).lineage;
-                        var att = new GraphAttribute { lineage = lineage, confidence = outNode.confidence, name = outNode.name, inferred = true, _virtual = false, id = Guid.NewGuid().ToString(), type = (GraphAttribute.DataType)Enum.Parse(typeof(GraphAttribute.DataType), outNode.result.dataType.ToString()), value = outNode.Value is null ?  "" : outNode.Value.ToString() };
+                        var att = new GraphAttribute { lineage = lineage, confidence = outNode.confidence, name = outNode.name, inferred = true, _virtual = false, id = Guid.NewGuid().ToString(), type = (GraphAttribute.DataType)Enum.Parse(typeof(GraphAttribute.DataType), outNode.result.dataType.ToString()), value = outNode.Value is null ? "" : outNode.Value.ToString() };
                         grammar.state.AddAttribute(grammar.currentNode.id, att);
                     }
                 }

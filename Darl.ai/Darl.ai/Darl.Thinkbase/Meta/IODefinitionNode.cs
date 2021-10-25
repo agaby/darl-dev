@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.Thinkbase.Meta
 {
@@ -99,11 +98,11 @@ namespace Darl.Thinkbase.Meta
                 return 0.0; // outside of the sets
             if (rampNumber != set)
             {
-                return ((double)(index % 1000) / 1000.0);
+                return (index % 1000 / 1000.0);
             }
             else
             {
-                double offset = (double)index % 1000.0;
+                double offset = index % 1000.0;
                 return 1.0 - (offset / 1000.0);
             }
         }

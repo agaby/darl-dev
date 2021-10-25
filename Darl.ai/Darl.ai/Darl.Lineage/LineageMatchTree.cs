@@ -2,10 +2,8 @@
 using ProtoBuf;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Darl.Lineage
 {
@@ -49,7 +47,7 @@ namespace Darl.Lineage
             while (tokens.Count > 0)
             {
                 string path = string.Empty;
-                executionRoot.Match(tokens, values, matches, defaultMatches, path,0,fuzzy);
+                executionRoot.Match(tokens, values, matches, defaultMatches, path, 0, fuzzy);
                 tokens.RemoveAt(0);
             }
             matches.Sort();
@@ -59,11 +57,11 @@ namespace Darl.Lineage
             foreach (var match in defaultMatches)
             {
                 if (lan == null)
-                { 
+                {
                     lan = new MatchedAnnotation { annotation = match.Node, path = match.path };
                     lanDepth = match.Depth;
                 }
-                else if(match.Depth > lanDepth)
+                else if (match.Depth > lanDepth)
                 {
                     lan = new MatchedAnnotation { annotation = match.Node, path = match.path };
                     lanDepth = match.Depth;
@@ -197,9 +195,9 @@ namespace Darl.Lineage
         {
             var tokens = LineageLibrary.SimpleTokenizer(str);
             var noPunctuation = new List<string>();
-            foreach(var tok in tokens)
+            foreach (var tok in tokens)
             {
-                if(tok.Length > 1 || !Char.IsPunctuation(tok[0]))//strip punctuation
+                if (tok.Length > 1 || !Char.IsPunctuation(tok[0]))//strip punctuation
                 {
                     noPunctuation.Add(tok);
                 }

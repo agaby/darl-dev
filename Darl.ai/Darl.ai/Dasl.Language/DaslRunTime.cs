@@ -45,13 +45,13 @@ namespace DaslLanguage
         /// source</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">cycles</exception>
         /// <exception cref="System.ArgumentException">Compilation errors.</exception>
-        public async Task<List<List<DarlResult>>> Simulate(List<List<DarlResult>> data, int cycles, ParseTree tree )
+        public async Task<List<List<DarlResult>>> Simulate(List<List<DarlResult>> data, int cycles, ParseTree tree)
         {
             if (data == null)
                 throw new ArgumentNullException("data");
             if (cycles < 1)
                 throw new ArgumentOutOfRangeException("cycles");
- 
+
             var simResults = new List<List<DarlResult>>();
             if (tree.HasErrors())
                 throw new ArgumentException("Compilation errors.");
@@ -63,7 +63,7 @@ namespace DaslLanguage
             //start simulation
             for (int count = 0; count < cycles; count++)
             {
-                if (count < data.Count )
+                if (count < data.Count)
                 {
                     simResults.Add(await Evaluate(tree, data[count]));
                 }

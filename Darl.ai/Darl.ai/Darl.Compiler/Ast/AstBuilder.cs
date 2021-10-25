@@ -12,11 +12,11 @@
 // <summary></summary>
 // ***********************************************************************
 
+using Darl.ai;
 using DarlCompiler.Parsing;
 using System;
 using System.Reflection;
 using System.Reflection.Emit;
-using Darl.ai;
 
 
 namespace DarlCompiler.Ast

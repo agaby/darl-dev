@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using DarlCompiler.Ast;
+﻿using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
+using System.Collections.Generic;
 using System.Text;
 
 namespace DarlLanguage.Processing
@@ -61,7 +61,7 @@ namespace DarlLanguage.Processing
         {
             var sb = new StringBuilder();
             sb.Append("{");
-            foreach(var ss in seq)
+            foreach (var ss in seq)
             {
                 sb.Append("{");
                 sb.Append(string.Join(",", ss));
@@ -70,7 +70,7 @@ namespace DarlLanguage.Processing
             sb.Append("}");
             return sb.ToString();
         }
-        
+
         /// <summary>
         /// Gets the preamble.
         /// </summary>

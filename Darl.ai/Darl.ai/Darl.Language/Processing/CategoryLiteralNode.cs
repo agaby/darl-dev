@@ -35,7 +35,7 @@ namespace DarlLanguage.Processing
         /// <returns>The category as a Result</returns>
         protected override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            return Task.FromResult<object>(new DarlResult("",category));
+            return Task.FromResult<object>(new DarlResult("", category));
         }
     }
 }

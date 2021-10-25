@@ -14,7 +14,7 @@ namespace DarlLanguage.Processing
         /// <returns>
         /// The result of the evaluation
         /// </returns>
-        protected async override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
+        protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
             thread.CurrentNode = this;  //standard prologue
             int nIndex = 0;
@@ -23,7 +23,7 @@ namespace DarlLanguage.Processing
             {
                 if (child != null)
                 {
-                    DarlResult res1 = (DarlResult) await child.Evaluate(thread);
+                    DarlResult res1 = (DarlResult)await child.Evaluate(thread);
                     if (nIndex == 0)
                         res2 = res1;
                     else

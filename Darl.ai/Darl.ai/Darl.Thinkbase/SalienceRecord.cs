@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.Thinkbase
 {
@@ -19,7 +17,7 @@ namespace Darl.Thinkbase
 
         public override bool Equals(object obj)
         {
-            if(obj is SalienceRecord)
+            if (obj is SalienceRecord)
             {
                 var o = obj as SalienceRecord;
                 return (o.gobj == gobj && o.att == att);

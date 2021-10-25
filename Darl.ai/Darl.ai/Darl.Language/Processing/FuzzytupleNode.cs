@@ -25,7 +25,7 @@ namespace DarlLanguage.Processing
             {
                 if (child != null)
                 {
-                    DarlResult res1 = (DarlResult) await child.Evaluate(thread);
+                    DarlResult res1 = (DarlResult)await child.Evaluate(thread);
                     if (res1.IsUnknown())//if any children unknown, whole thing unknown.
                         return new DarlResult(0.0f, true);
                     //if the constituents of a fuzzytuple are themselves fuzzy we're into

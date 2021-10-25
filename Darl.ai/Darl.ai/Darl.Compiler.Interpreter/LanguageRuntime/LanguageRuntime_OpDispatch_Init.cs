@@ -11,12 +11,12 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using DarlCompiler.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Numerics;
-using DarlCompiler.Parsing;
 
 namespace DarlCompiler.Interpreter
 {
@@ -30,15 +30,15 @@ namespace DarlCompiler.Interpreter
         /// <summary>
         /// The _overflow operators
         /// </summary>
-        private static ExpressionType[] _overflowOperators = new ExpressionType[] { 
-       ExpressionType.Add, ExpressionType.AddChecked, ExpressionType.Subtract, ExpressionType.SubtractChecked, 
+        private static readonly ExpressionType[] _overflowOperators = new ExpressionType[] {
+       ExpressionType.Add, ExpressionType.AddChecked, ExpressionType.Subtract, ExpressionType.SubtractChecked,
        ExpressionType.Multiply, ExpressionType.MultiplyChecked, ExpressionType.Power};
 
         // Smart boxing: boxes for a bunch of integers are preallocated
         /// <summary>
         /// The _boxes
         /// </summary>
-        private object[] _boxes = new object[4096];
+        private readonly object[] _boxes = new object[4096];
         /// <summary>
         /// The _boxes middle
         /// </summary>
@@ -826,7 +826,7 @@ namespace DarlCompiler.Interpreter
         /// <summary>
         /// The _types sequence
         /// </summary>
-        static TypeList _typesSequence = new TypeList(
+        static readonly TypeList _typesSequence = new TypeList(
             typeof(sbyte), typeof(Int16), typeof(Int32), typeof(Int64), typeof(BigInteger), // typeof(Rational)
             typeof(Single), typeof(Double), typeof(Complex),
             typeof(bool), typeof(char), typeof(string)
@@ -834,7 +834,7 @@ namespace DarlCompiler.Interpreter
         /// <summary>
         /// The _unsigned types
         /// </summary>
-        static TypeList _unsignedTypes = new TypeList(
+        static readonly TypeList _unsignedTypes = new TypeList(
           typeof(byte), typeof(UInt16), typeof(UInt32), typeof(UInt64)
         );
         #endregion

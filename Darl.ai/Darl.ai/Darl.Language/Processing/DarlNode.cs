@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using DarlCompiler.Interpreter.Ast;
+﻿using DarlCompiler.Interpreter.Ast;
 using System;
+using System.Collections.Generic;
 
 namespace DarlLanguage.Processing
 {
@@ -97,7 +97,7 @@ namespace DarlLanguage.Processing
 
         }
 
-        public virtual string lineage { get;}
+        public virtual string lineage { get; }
 
         public virtual string GetName()
         {

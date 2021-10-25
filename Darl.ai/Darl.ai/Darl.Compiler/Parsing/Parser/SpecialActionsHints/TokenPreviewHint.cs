@@ -29,15 +29,15 @@ namespace DarlCompiler.Parsing
         /// <summary>
         /// The _action type
         /// </summary>
-        private PreferredActionType _actionType;
+        private readonly PreferredActionType _actionType;
         /// <summary>
         /// The _first string
         /// </summary>
-        private string _firstString;
+        private readonly string _firstString;
         /// <summary>
         /// The _before strings
         /// </summary>
-        private StringSet _beforeStrings = new StringSet();
+        private readonly StringSet _beforeStrings = new StringSet();
         /// <summary>
         /// The _first terminal
         /// </summary>
@@ -45,7 +45,7 @@ namespace DarlCompiler.Parsing
         /// <summary>
         /// The _before terminals
         /// </summary>
-        private TerminalSet _beforeTerminals = new TerminalSet();
+        private readonly TerminalSet _beforeTerminals = new TerminalSet();
         /// <summary>
         /// The _description
         /// </summary>
@@ -242,6 +242,6 @@ namespace DarlCompiler.Parsing
             return null;
         }
 
-    }  
+    }
 
 }

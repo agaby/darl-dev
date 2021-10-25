@@ -21,11 +21,11 @@ namespace Darl.Lineage.Bot
         public static string responseSignum { get; set; } = "response";
 
 
-        private static DarlRunTime runtime = new DarlRunTime();
+        private static readonly DarlRunTime runtime = new DarlRunTime();
 
-        public enum Commands  {none,quit,back,help,about,history,debug }
+        public enum Commands { none, quit, back, help, about, history, debug }
 
-        static Dictionary<string, Commands> commandLookUp = new Dictionary<string, Commands>() { { "verb:060", Commands.quit },
+        static readonly Dictionary<string, Commands> commandLookUp = new Dictionary<string, Commands>() { { "verb:060", Commands.quit },
             { "verb:399,0", Commands.quit },
             { "verb:190", Commands.quit },
             { "verb:331,02", Commands.quit },
@@ -58,10 +58,10 @@ namespace Darl.Lineage.Bot
         /// <param name="values"></param>
         /// <param name="stores"></param>
         /// <returns></returns>
-        public async static Task<string> Interact(this LineageModel model, string question, List<DarlVar> values, Dictionary<string, ILocalStore>? stores = null)
+        public static async Task<string> Interact(this LineageModel model, string question, List<DarlVar> values, Dictionary<string, ILocalStore>? stores = null)
         {
             var resp = await InteractTest(model, new DarlVar { name = nameof(question), Value = question, dataType = DarlVar.DataType.textual }, values, stores);
-            return resp.Count > 0 ? resp[0].response.Value: "";
+            return resp.Count > 0 ? resp[0].response.Value : "";
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Darl.Lineage.Bot
         /// <param name="values"></param>
         /// <param name="stores"></param>
         /// <returns></returns>
-        public async static Task<List<InteractTestResponse>> InteractTest(this LineageModel model, DarlVar question, List<DarlVar> values, Dictionary<string, ILocalStore>? stores = null, bool fuzzy = false)
+        public static async Task<List<InteractTestResponse>> InteractTest(this LineageModel model, DarlVar question, List<DarlVar> values, Dictionary<string, ILocalStore>? stores = null, bool fuzzy = false)
         {
             if (stores == null)
                 stores = new Dictionary<string, ILocalStore>();
@@ -97,24 +97,24 @@ namespace Darl.Lineage.Bot
                 var lastMatch = matches.Last();
                 var last = ((MatchedAnnotation)lastMatch).annotation;
                 values = lastMatch.values;
-                if(stores.ContainsKey("Value"))
+                if (stores.ContainsKey("Value"))
                     ((ValuesStore)stores["Value"]).values = values;
                 //construct composite rule set
                 //and apply it to the Darl runtime
                 try
                 {
-                    if(last.accessRoles != null && last.accessRoles.Any()) //this response is secured
+                    if (last.accessRoles != null && last.accessRoles.Any()) //this response is secured
                     {
-                        if(stores.ContainsKey(flagLocation))
+                        if (stores.ContainsKey(flagLocation))
                         {
                             var rolesRes = await stores[flagLocation].ReadAsync(new List<string> { accessRolesKey });
                             bool needLogin = true;
-                            if(!rolesRes.IsUnknown())
+                            if (!rolesRes.IsUnknown())
                             {
                                 var roles = JsonConvert.DeserializeObject<List<string>>(rolesRes.Value.ToString());
                                 needLogin = !roles.Intersect(last.accessRoles).Any();
                             }
-                            if(needLogin) //ask for log in
+                            if (needLogin) //ask for log in
                             {
                                 credentials.unknown = false;
                                 credentials.Value = last.accessRoles[0];
@@ -136,12 +136,12 @@ namespace Darl.Lineage.Bot
                     }
                     var res = await runtime.Evaluate(tree, DarlVarExtensions.Convert(values));
                     values = DarlVarExtensions.Convert(res);
-                    foreach(var r in res)
+                    foreach (var r in res)
                     {
                         if (r.name == nameof(response))
                         {
                             response = DarlVarExtensions.Convert(r);
-                            if(matches.Last().path.Contains(defaultSignum))
+                            if (matches.Last().path.Contains(defaultSignum))
                             {
                                 response.approximate = true; //signals a default:
                             }
@@ -178,10 +178,10 @@ namespace Darl.Lineage.Bot
                 outList.Add(new InteractTestResponse { darl = source, response = response, matches = matches });
                 if (!link.unknown)
                     outList.Add(new InteractTestResponse { darl = source, response = link, matches = matches });
-                if(!callResponse.unknown)
+                if (!callResponse.unknown)
                     outList.Add(new InteractTestResponse { darl = source, response = callResponse, matches = matches });
                 if (!credentials.unknown)
-                    outList.Add(new InteractTestResponse { darl = source, response = credentials, matches = matches });            
+                    outList.Add(new InteractTestResponse { darl = source, response = credentials, matches = matches });
                 matches.RemoveAt(matches.Count - 1); //remove the last match if no valid response
             }
             return outList;
@@ -257,13 +257,13 @@ namespace Darl.Lineage.Bot
                 if (a != null)
                 {
                     var source = CreateCompositeRuleSet(model, new List<MatchedElement> { new MatchedAnnotation { annotation = a } });
-                    var tree = runtime.CreateTreeEdit(source );
+                    var tree = runtime.CreateTreeEdit(source);
                     var goodLines = new List<string>();
-                    if(tree.HasErrors())
+                    if (tree.HasErrors())
                     {
-                        foreach(string s in a.darl)
+                        foreach (string s in a.darl)
                         {
-                            foreach( var l in s.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+                            foreach (var l in s.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
                             {
                                 var subsource = CreateCompositeRuleSet(model, new List<MatchedElement> { new MatchedAnnotation { annotation = new LineageAnnotationNode { darl = new List<string> { l } } } });
                                 var subtree = runtime.CreateTreeEdit(subsource);
@@ -271,16 +271,16 @@ namespace Darl.Lineage.Bot
                                     goodLines.Add(l);
                                 else
                                 {
-                                    foreach(var err in subtree.ParserMessages)
+                                    foreach (var err in subtree.ParserMessages)
                                     {
-                                        if(err.Message.StartsWith("Use of undeclared I/O:"))
+                                        if (err.Message.StartsWith("Use of undeclared I/O:"))
                                             diffs.Add(err.Message);
                                     }
                                 }
 
                             }
                         }
-                        if(fix)
+                        if (fix)
                             a.darl = goodLines;
                     }
                 }
@@ -321,7 +321,7 @@ namespace Darl.Lineage.Bot
                 var oldCode = string.Join("\n", result.annotation.darl).Trim();
                 if (!string.IsNullOrEmpty(code))
                 {
-                    if(oldCode != code.Trim())
+                    if (oldCode != code.Trim())
                         return code; //code exists in the annotation, and it has been updated. return the updated version.
                 }
                 //not code change - look for response or call changes
@@ -350,7 +350,7 @@ namespace Darl.Lineage.Bot
                         else if (bf.RandomResponses.Count > 0)
                         {
                             if (texts.Count > 0) //existing rule
-                            { 
+                            {
                                 if (texts.Count != bf.RandomResponses.Count || string.Join(" ", texts) != string.Join(" ", bf.RandomResponses))
                                 {
                                     tree.ChangeSingleRuleSetTextualRHS(responseSignum, bf.RandomResponses);
@@ -363,7 +363,7 @@ namespace Darl.Lineage.Bot
                             tree.DeleteSingleRulesetRules(responseSignum);
                             treeChanged = true;
                         }
-                        if(!treeChanged) //usually no response rules defined 
+                        if (!treeChanged) //usually no response rules defined 
                         {//create response
                             if (bf.RandomResponses.Count > 0)
                             {
@@ -513,7 +513,7 @@ namespace Darl.Lineage.Bot
                 var oldMulti = existing.element.lineage;
                 var existingElements = oldMulti.Split('|');
                 var remainingElements = existingElements.Except(lastElements);
-                if(remainingElements.Any())//only bother if there is a difference, otherwise sets were the same
+                if (remainingElements.Any())//only bother if there is a difference, otherwise sets were the same
                 {
                     existing.element.lineage = String.Join("|", remainingElements);
                     //modify parent's children list
@@ -543,7 +543,7 @@ namespace Darl.Lineage.Bot
             if (existing == null)
                 return; //existing phrase doesn't exist.
             var np = currentModel.PhraseCreate(phrase);
-            if(np != null)
+            if (np != null)
                 np.annotation = existing.annotation;
         }
 
@@ -559,13 +559,13 @@ namespace Darl.Lineage.Bot
         /// <param name="PrivateConversationData">Bot specific data</param>
         /// <returns>The instantiated stores</returns>
         /// <remarks>Needs to be updated for new store types - not good solution.</remarks>
-        public static Dictionary<string,ILocalStore> CreateStores(this LineageModel model, string user, IRuleFormInterface formInt, List<DarlVar> values, IBotDataInterface UserData, IBotDataInterface ConversationData, IBotDataInterface PrivateConversationData)
+        public static Dictionary<string, ILocalStore> CreateStores(this LineageModel model, string user, IRuleFormInterface formInt, List<DarlVar> values, IBotDataInterface UserData, IBotDataInterface ConversationData, IBotDataInterface PrivateConversationData)
         {
             var dict = new Dictionary<string, ILocalStore>();
             var botFormat = JsonConvert.DeserializeObject<BotFormat>(model.form);
             foreach (var store in botFormat.Stores)
             {
-                switch(store.ToLower())
+                switch (store.ToLower())
                 {
                     case "call":
                         dict.Add("Call", new CallStore(formInt, user));
@@ -663,9 +663,9 @@ namespace Darl.Lineage.Bot
             var s2list = s2.Split('\n');
             var s1list = s1.Split('\n');
             int p = 0;
-            for(int n = 0; n < s1list.Length && p < s2list.Length; n++)
+            for (int n = 0; n < s1list.Length && p < s2list.Length; n++)
             {
-                if(s1list[n].RemoveWhiteSpace() == s2list[p].RemoveWhiteSpace())
+                if (s1list[n].RemoveWhiteSpace() == s2list[p].RemoveWhiteSpace())
                 {
                     p++;
                 }
@@ -680,7 +680,7 @@ namespace Darl.Lineage.Bot
         private static string RemoveWhiteSpace(this string str)
         {
             var sb = new StringBuilder();
-            foreach(var c in str)
+            foreach (var c in str)
             {
                 if (!Char.IsWhiteSpace(c))
                     sb.Append(c);

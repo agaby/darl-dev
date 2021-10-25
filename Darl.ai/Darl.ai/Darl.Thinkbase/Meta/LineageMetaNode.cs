@@ -1,10 +1,7 @@
-﻿using Darl.Thinkbase.Meta;
-using DarlCompiler.Ast;
+﻿using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Darl.Thinkbase.Meta
 {
@@ -29,7 +26,7 @@ namespace Darl.Thinkbase.Meta
             {
                 foreach (var node in nodes[0].ChildNodes)
                 {
-                     lineages.Add((DarlMetaNode)AddChild("-", node));
+                    lineages.Add((DarlMetaNode)AddChild("-", node));
                 }
             }
         }

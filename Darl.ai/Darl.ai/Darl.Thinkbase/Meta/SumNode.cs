@@ -1,6 +1,4 @@
-﻿using DarlCompiler.Ast;
-using DarlCompiler.Parsing;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
 {
@@ -13,7 +11,7 @@ namespace Darl.Thinkbase.Meta
         /// <returns>
         /// The result of the evaluation
         /// </returns>
-        protected async override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
+        protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
             thread.CurrentNode = this;  //standard prologue
             int nIndex = 0;

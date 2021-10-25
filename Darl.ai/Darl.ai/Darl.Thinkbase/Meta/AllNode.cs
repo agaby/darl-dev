@@ -1,8 +1,4 @@
-﻿using DarlCompiler.Ast;
-using DarlCompiler.Parsing;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
 {
@@ -13,9 +9,9 @@ namespace Darl.Thinkbase.Meta
             thread.CurrentNode = this;  //standard prologue
             var grammar = thread.Runtime.Language.Grammar as DarlMetaGrammar;
             var res = new DarlResult(1.0, false);
-            foreach(var o in grammar.currentModel.GetConnectedObjects(grammar.currentNode, this.connLineage, this.objLineage))
+            foreach (var o in grammar.currentModel.GetConnectedObjects(grammar.currentNode, this.connLineage, this.objLineage))
             {
-                if(grammar.state.ContainsRecord(o.id))
+                if (grammar.state.ContainsRecord(o.id))
                 {
                     if (grammar.state.ContainsAttribute(o.id, this.attLineage))
                     {
@@ -25,7 +21,7 @@ namespace Darl.Thinkbase.Meta
                     {
                         res = new DarlResult(0.0, true);
                         break;
-                    }                       
+                    }
                 }
                 else
                 {

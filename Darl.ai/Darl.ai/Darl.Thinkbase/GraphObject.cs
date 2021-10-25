@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Darl.Lineage;
+using DarlCommon;
+using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Darl.Lineage;
-using Darl.Lineage.Bot;
-using DarlCommon;
-using ProtoBuf;
 
 namespace Darl.Thinkbase
 {
@@ -34,12 +33,12 @@ namespace Darl.Thinkbase
         {
             comp.lineageMatch = true;
             var children = new SortedList<string, GraphObject>(comp);
-            foreach(var c in Out)
+            foreach (var c in Out)
             {
-                if(model.recognitionVertices.ContainsKey(c.endId))
+                if (model.recognitionVertices.ContainsKey(c.endId))
                 {
                     var child = model.recognitionVertices[c.endId];
-                    children.Add(child.lineage,child);
+                    children.Add(child.lineage, child);
                 }
             }
             if (properties != null)
@@ -48,7 +47,7 @@ namespace Darl.Thinkbase
                 {
                     matches.Add(new MatchedGraphAttribute { terminus = properties.First(a => a.lineage == recognizedLineage), path = path, values = values, depth = depth, confidence = confidence });
                 }
-                else if(properties.Any(a => a.type == GraphAttribute.DataType.markdown))
+                else if (properties.Any(a => a.type == GraphAttribute.DataType.markdown))
                 {
                     matches.Add(new MatchedGraphAttribute { terminus = properties.First(a => a.type == GraphAttribute.DataType.markdown), path = path, values = values, depth = depth, confidence = confidence });
                 }
@@ -66,9 +65,9 @@ namespace Darl.Thinkbase
                 List<LineageRecord> cs = null;
                 if (children.ContainsKey(defaultLabel))//pick up any default rules, overwriting those further up the tree.
                 {
-                    if (children[defaultLabel].properties != null) 
+                    if (children[defaultLabel].properties != null)
                     {
-                        if(children[defaultLabel].properties.Any(a => a.lineage == recognizedLineage))
+                        if (children[defaultLabel].properties.Any(a => a.lineage == recognizedLineage))
                         {
                             defaultMatches.Add(new DefaultMatchGraphAttribute { Att = children[defaultLabel].properties.First(a => a.lineage == recognizedLineage), Depth = depth, path = IncrementPath(path, defaultLabel) });
                         }
@@ -134,10 +133,10 @@ namespace Darl.Thinkbase
                 }
                 depth++;
             }
-            
+
         }
 
- 
+
 
         /// <summary>
         /// Find the recognition tree child nodes from any given path
@@ -233,7 +232,7 @@ namespace Darl.Thinkbase
         {
             if (properties != null)
             {
-                var att =  properties.FirstOrDefault(a => a.lineage == lineage && a.confidence > 0.0 );
+                var att = properties.FirstOrDefault(a => a.lineage == lineage && a.confidence > 0.0);
                 return att != null ? att.value : null;
             }
             return null;

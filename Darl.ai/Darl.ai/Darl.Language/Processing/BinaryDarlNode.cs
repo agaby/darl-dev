@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using DarlCompiler.Ast;
+﻿using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
+using System.Collections.Generic;
 
 namespace DarlLanguage.Processing
 {
     /// <summary>
     /// Implements an interpreter functional node with arity 2.
     /// </summary>
-    public class BinaryDarlNode: DarlNode
+    public class BinaryDarlNode : DarlNode
     {
         /// <summary>
         /// The left child

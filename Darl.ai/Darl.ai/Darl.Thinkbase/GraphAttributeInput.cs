@@ -1,8 +1,4 @@
-﻿using Darl.Thinkbase;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using static Darl.Thinkbase.GraphAttribute;
+﻿using static Darl.Thinkbase.GraphAttribute;
 
 namespace Darl.Thinkbase
 {

@@ -1,7 +1,7 @@
-﻿using System;
-using DarlCompiler.Ast;
-using DarlCompiler.Parsing;
+﻿using DarlCompiler.Ast;
 using DarlCompiler.Interpreter;
+using DarlCompiler.Parsing;
+using System;
 using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing

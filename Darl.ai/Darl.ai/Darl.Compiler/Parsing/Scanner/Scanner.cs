@@ -11,8 +11,8 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using System.Collections.Generic;
 using Darl.ai;
+using System.Collections.Generic;
 
 namespace DarlCompiler.Parsing
 {
@@ -34,10 +34,11 @@ namespace DarlCompiler.Parsing
         /// The parser
         /// </summary>
         public readonly Parser Parser;
+
         /// <summary>
         /// The _grammar
         /// </summary>
-        Grammar _grammar;
+        readonly Grammar _grammar;
         //buffered tokens can come from expanding a multi-token, when Terminal.TryMatch() returns several tokens packed into one token
 
         /// <summary>

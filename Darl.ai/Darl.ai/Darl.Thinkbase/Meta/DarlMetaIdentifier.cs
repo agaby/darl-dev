@@ -2,16 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Darl.Thinkbase.Meta
 {
     public class DarlMetaIdentifier : IdentifierTerminal
     {
 
-        static HashSet<string> declarationTokens = new HashSet<string> { "numeric", "categorical", "textual", "constant", "string", "sequence", "store", "temporal", "network","duration"};
-        static HashSet<string> IOTokens = new HashSet<string>() { "numeric_input", "numeric_output", "categorical_input", "categorical_output", "textual_input", "textual_output", "temporal_output", "temporal_input", "store_io", "network_output" };
-        static HashSet<string> ConstantTokens = new HashSet<string> { "numeric_constant", "string_constant", "sequence_constant", "temporal_constant","duration_constant","lineage_constant" };
+        static readonly HashSet<string> declarationTokens = new HashSet<string> { "numeric", "categorical", "textual", "constant", "string", "sequence", "store", "temporal", "network", "duration" };
+        static readonly HashSet<string> IOTokens = new HashSet<string>() { "numeric_input", "numeric_output", "categorical_input", "categorical_output", "textual_input", "textual_output", "temporal_output", "temporal_input", "store_io", "network_output" };
+        static readonly HashSet<string> ConstantTokens = new HashSet<string> { "numeric_constant", "string_constant", "sequence_constant", "temporal_constant", "duration_constant", "lineage_constant" };
 
         public string QualifiedName { get; set; }
 

@@ -11,9 +11,9 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using Darl.ai;
 using System.Linq;
 using System.Text;
-using Darl.ai;
 
 namespace DarlCompiler.Parsing.Construction
 {
@@ -26,19 +26,21 @@ namespace DarlCompiler.Parsing.Construction
         /// <summary>
         /// The _language
         /// </summary>
-        LanguageData _language;
+        readonly LanguageData _language;
         /// <summary>
         /// The _data
         /// </summary>
         ParserData _data;
+
         /// <summary>
         /// The _grammar
         /// </summary>
-        Grammar _grammar;
+        readonly Grammar _grammar;
+
         /// <summary>
         /// The _state hash
         /// </summary>
-        ParserStateHash _stateHash = new ParserStateHash();
+        readonly ParserStateHash _stateHash = new ParserStateHash();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParserDataBuilder"/> class.

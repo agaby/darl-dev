@@ -11,9 +11,8 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using System.Collections.Generic;
-using System.Linq;
 using Darl.ai;
+using System.Collections.Generic;
 
 namespace DarlCompiler.Parsing
 {

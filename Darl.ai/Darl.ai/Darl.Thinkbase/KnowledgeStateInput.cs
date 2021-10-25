@@ -1,7 +1,5 @@
-﻿using Darl.Thinkbase;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.Thinkbase
 {
@@ -29,7 +27,7 @@ namespace Darl.Thinkbase
         public KnowledgeState Convert(string userId)
         {
             var ks = new KnowledgeState { created = DateTime.UtcNow, knowledgeGraphName = knowledgeGraphName, subjectId = subjectId, data = new Dictionary<string, List<GraphAttribute>>(), userId = userId };
-            foreach(var p in data)
+            foreach (var p in data)
             {
                 ks.data.Add(p.name, ConvertAttributeInputList(p.value));
             }

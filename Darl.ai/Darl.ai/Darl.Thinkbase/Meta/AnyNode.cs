@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
 {
@@ -14,7 +13,7 @@ namespace Darl.Thinkbase.Meta
             {
                 if (grammar.state.ContainsRecord(o.id))
                 {
-                    if (grammar.state.ContainsAttribute(o.id,this.attLineage))
+                    if (grammar.state.ContainsAttribute(o.id, this.attLineage))
                     {
                         res = new DarlResult(1.0, false);
                         break;

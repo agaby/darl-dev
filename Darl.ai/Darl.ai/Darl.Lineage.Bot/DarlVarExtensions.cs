@@ -1,7 +1,6 @@
 ﻿using Darl.Common;
 using DarlCommon;
 using DarlLanguage.Processing;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -99,13 +98,13 @@ namespace Darl.Lineage.Bot
             List<double> vals = new List<double>();
             List<DarlTime> times = new List<DarlTime>();
             if (r.values != null)
-            { 
-                if(r.dataType == DarlResult.DataType.numeric)
+            {
+                if (r.dataType == DarlResult.DataType.numeric)
                 {
                     foreach (var v in r.values)
                         vals.Add((double)v);
                 }
-                else if(r.dataType == DarlResult.DataType.temporal)
+                else if (r.dataType == DarlResult.DataType.temporal)
                 {
                     foreach (var v in r.values)
                         times.Add(new DarlTime((double)v));
@@ -140,14 +139,14 @@ namespace Darl.Lineage.Bot
                         dvValue = r.stringConstant;
                         break;
                     case DarlResult.DataType.temporal:
-                        if(times.Any())
+                        if (times.Any())
                         {
                             dvValue = times[0].dateTime.ToShortDateString();
                         }
                         break;
                 }
             }
-            else if(!r.IsUnknown())
+            else if (!r.IsUnknown())
             {
                 dvValue = r.Value.ToString();
             }
@@ -156,7 +155,7 @@ namespace Darl.Lineage.Bot
 
         private static DarlResult.DataType Convert(DarlVar.DataType d)
         {
-            switch(d)
+            switch (d)
             {
                 case DarlVar.DataType.categorical:
                     return DarlResult.DataType.categorical;
@@ -178,7 +177,7 @@ namespace Darl.Lineage.Bot
 
         private static DarlVar.DataType Convert(DarlResult.DataType d)
         {
-            switch(d)
+            switch (d)
             {
                 case DarlResult.DataType.categorical:
                     return DarlVar.DataType.categorical;

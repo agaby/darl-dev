@@ -11,10 +11,10 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using Darl.ai;
+using DarlCompiler.Ast;
 using System;
 using System.Collections.Generic;
-using DarlCompiler.Ast;
-using Darl.ai;
 
 namespace DarlCompiler.Parsing
 {
@@ -467,7 +467,7 @@ namespace DarlCompiler.Parsing
                 //we may have IsChar flag set (from startEndSymbol, like in c# single quote identifies char)
                 // in this case set type code
                 if (details.IsSet((short)StringOptions.IsChar))
-                    details.TypeCodes = new TypeCode[] { TypeCode.Char };
+                details.TypeCodes = new TypeCode[] { TypeCode.Char };
         }
 
         /// <summary>

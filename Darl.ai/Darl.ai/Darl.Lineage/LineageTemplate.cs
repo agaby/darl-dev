@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
 using ProtoBuf;
-using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Darl.Lineage
 {
@@ -17,7 +17,8 @@ namespace Darl.Lineage
         public string text { get; set; }
 
         [ProtoMember(2)]
-        public string encSequence {
+        public string encSequence
+        {
             get
             {
                 return JsonConvert.SerializeObject(sequence);

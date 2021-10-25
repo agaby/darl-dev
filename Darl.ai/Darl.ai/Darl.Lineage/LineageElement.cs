@@ -2,7 +2,7 @@
 
 namespace Darl.Lineage
 {
-    public enum LineageType { concept,reference,value,literal,Default,composite}
+    public enum LineageType { concept, reference, value, literal, Default, composite }
     [ProtoContract(AsReferenceDefault = true)]
     [ProtoInclude(10, typeof(LineageRecord))]
     public class LineageElement

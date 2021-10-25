@@ -11,9 +11,9 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using Darl.ai;
 using System;
 using System.Linq.Expressions;
-using Darl.ai;
 
 namespace DarlCompiler.Interpreter
 {

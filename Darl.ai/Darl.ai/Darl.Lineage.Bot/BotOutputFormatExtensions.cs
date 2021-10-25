@@ -1,10 +1,8 @@
 ﻿using DarlCommon;
-using System;
+using DarlLanguage.Processing;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using DarlLanguage.Processing;
 
 namespace Darl.Lineage.Bot
 {
@@ -80,7 +78,7 @@ namespace Darl.Lineage.Bot
 
         internal static OutputFormat.OutType ConvertOutputType(OutputDefinitionNode.OutputTypes oType)
         {
-            switch(oType)
+            switch (oType)
             {
                 case OutputDefinitionNode.OutputTypes.categorical_output:
                     return OutputFormat.OutType.categorical;
@@ -91,10 +89,10 @@ namespace Darl.Lineage.Bot
             }
         }
 
-        internal static List<SetDefinition> ConvertSets(Dictionary<string,DarlResult> sets )
+        internal static List<SetDefinition> ConvertSets(Dictionary<string, DarlResult> sets)
         {
             var list = new List<SetDefinition>();
-            foreach(var n in sets.Keys)
+            foreach (var n in sets.Keys)
             {
                 var vals = new List<double>();
                 foreach (double v in sets[n].values)

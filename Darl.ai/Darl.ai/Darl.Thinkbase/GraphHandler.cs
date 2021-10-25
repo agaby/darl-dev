@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -28,9 +27,9 @@ namespace Darl.Thinkbase
 
         public static string annotationSignum { get; } = "annotation";
 
-        private IGraphProcessing _graph;
-        private ILogger<GraphHandler> _logger;
-        private IMetaStructureHandler _metaHandler;
+        private readonly IGraphProcessing _graph;
+        private readonly ILogger<GraphHandler> _logger;
+        private readonly IMetaStructureHandler _metaHandler;
         public DarlMetaRunTime _runtime;
 
         public GraphHandler(IGraphProcessing graph, ILogger<GraphHandler> logger, IMetaStructureHandler metaHandler)
@@ -53,26 +52,26 @@ namespace Darl.Thinkbase
         /// <param name="values"></param>
         /// <param name="pending"></param>
         /// <returns></returns>
-        public async Task<(List<InteractTestResponse>,DarlVar?)> GraphPass(string userId, string graphName, string subjectId, string targetId, List<string> paths, string completionLineage, List<DarlVar> values, DarlVar? pending, GraphProcess graphProcess)
+        public async Task<(List<InteractTestResponse>, DarlVar?)> GraphPass(string userId, string graphName, string subjectId, string targetId, List<string> paths, string completionLineage, List<DarlVar> values, DarlVar? pending, GraphProcess graphProcess)
         {
             //validate incoming values
             string validationResponse;
             if (!Validate(pending, values, out validationResponse)) //out of range value
             {
                 _logger.LogInformation($"Validation error = {validationResponse}, KGName= {graphName}, userId = {userId}");
-                return (new List<InteractTestResponse> { new InteractTestResponse { darl = "", response = new DarlVar { name = "response", dataType = DarlVar.DataType.textual, Value = validationResponse }, matches = new List<MatchedElement>() } },pending);
+                return (new List<InteractTestResponse> { new InteractTestResponse { darl = "", response = new DarlVar { name = "response", dataType = DarlVar.DataType.textual, Value = validationResponse }, matches = new List<MatchedElement>() } }, pending);
             }
             var responses = new List<InteractTestResponse>();
             var model = await _graph.GetModel(userId, graphName);
-            var ks = await GetKnowledgeState(userId,subjectId,graphName);
+            var ks = await GetKnowledgeState(userId, subjectId, graphName);
             if (!(pending is null))
             {
                 var currentObj = model.vertices[pending.name];
                 _logger.LogInformation($"Evaluating response = {currentObj.externalId ?? currentObj.name}, KGName= {graphName}, userId = {userId}");
-                var vals = await EvaluateUIRule(model, currentObj, pending, responses, ks,values,paths,true);
+                var vals = await EvaluateUIRule(model, currentObj, pending, responses, ks, values, paths, true);
                 if (vals.Item1)
                 {
-                    return (responses,vals.Item2);
+                    return (responses, vals.Item2);
                 }
             }
             //Use inference to update state based on new information
@@ -101,18 +100,18 @@ namespace Darl.Thinkbase
             if (res != null && res.Count > 0)
             {
                 values.Clear();
-                var vals =  await EvaluateUIRule(model, res[0], pending, responses, ks,values,paths);
+                var vals = await EvaluateUIRule(model, res[0], pending, responses, ks, values, paths);
                 pending = vals.Item2;
             }
             else
             {
                 _logger.LogInformation($"Completed seek  to {targetId}, KGName= {graphName}, userId = {userId}");
                 responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.complete, Value = "This process is complete.", name = "response" } });
-                await EvaluateUIRule(model, target, pending, responses, ks, values,paths);
+                await EvaluateUIRule(model, target, pending, responses, ks, values, paths);
                 pending = null;
             }
             await _graph.SaveKSChanges(userId, subjectId, ks);
-            return (responses,pending);
+            return (responses, pending);
         }
 
         private List<GraphAbstraction>? DiscoveryProcess(IGraphModel model, GraphObject target, List<string> paths, List<GraphAbstraction> visited)
@@ -250,80 +249,80 @@ namespace Darl.Thinkbase
                 throw new MetaRuleException($"{subjectId} subjectId doesn't exist.");
             }
             //used to record progress
-            var res = new List<KnowledgeRecord> { ks  };
-//            await RecursiveDiscovery(model, ks, res, subjectId, 1.0, lineages);
+            var res = new List<KnowledgeRecord> { ks };
+            //            await RecursiveDiscovery(model, ks, res, subjectId, 1.0, lineages);
             res.Remove(ks);
             return res.Distinct().ToList();
         }
-/*
-        /// <summary>
-        /// Discovery pass interrupted by data requests when unknown values are encountered
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="graphName"></param>
-        /// <param name="subjectId"></param>
-        /// <param name="targetId"></param>
-        /// <param name="paths"></param>
-        /// <param name="completionLineage"></param>
-        /// <param name="values"></param>
-        /// <param name="pending"></param>
-        /// <returns></returns>
-        public Task<(List<InteractTestResponse>, DarlVar)> DiscoverPass(string userId, string graphName, string subjectId, string targetId, List<string> paths, string completionLineage, List<DarlVar> values, DarlVar? pending)
-        {
-            throw new NotImplementedException();
-        }*/
-
-/*        public async Task<List<InteractTestResponse>> DiscoverForBot(string userId, string KnowledgeGraphName, string subjectId, List<string> lineages, string conversationID)
-        {
-            var resultKS = new KnowledgeStateInput { knowledgeGraphName = KnowledgeGraphName, subjectId = conversationID };
-            var list = new List<InteractTestResponse>();
-            var path = new List<string>();
-            var ksList = await Discover(userId, KnowledgeGraphName, subjectId, lineages);
-            bool inTerminators = false; //ksList is in depth-first search order. After a block of leaf nodes we need to pop the last path node. 
-            foreach (var ks in ksList)
-            {
-                foreach (var i in ks.data.Keys)
+        /*
+                /// <summary>
+                /// Discovery pass interrupted by data requests when unknown values are encountered
+                /// </summary>
+                /// <param name="userId"></param>
+                /// <param name="graphName"></param>
+                /// <param name="subjectId"></param>
+                /// <param name="targetId"></param>
+                /// <param name="paths"></param>
+                /// <param name="completionLineage"></param>
+                /// <param name="values"></param>
+                /// <param name="pending"></param>
+                /// <returns></returns>
+                public Task<(List<InteractTestResponse>, DarlVar)> DiscoverPass(string userId, string graphName, string subjectId, string targetId, List<string> paths, string completionLineage, List<DarlVar> values, DarlVar? pending)
                 {
-                    if (ks.ContainsAttribute(i, _metaHandler.CommonLineages["complete"]))
-                    {//it's a discovered end point
-                        inTerminators = true;
-                        var route = new List<string>();
-                        route.AddRange(path);
-                        route.Add(ks.subjectId);
-                        var itr = new InteractTestResponse { darl = "", matches = new List<MatchedElement>(), reference = ks.subjectId, activeNodes = route };
-                        var sb = new StringBuilder();
-                        double affinity = 0.0;
-                        foreach (var att in ks.data[i])
+                    throw new NotImplementedException();
+                }*/
+
+        /*        public async Task<List<InteractTestResponse>> DiscoverForBot(string userId, string KnowledgeGraphName, string subjectId, List<string> lineages, string conversationID)
+                {
+                    var resultKS = new KnowledgeStateInput { knowledgeGraphName = KnowledgeGraphName, subjectId = conversationID };
+                    var list = new List<InteractTestResponse>();
+                    var path = new List<string>();
+                    var ksList = await Discover(userId, KnowledgeGraphName, subjectId, lineages);
+                    bool inTerminators = false; //ksList is in depth-first search order. After a block of leaf nodes we need to pop the last path node. 
+                    foreach (var ks in ksList)
+                    {
+                        foreach (var i in ks.data.Keys)
                         {
-                            if (att.lineage != _metaHandler.CommonLineages["complete"])
-                            {
-                                sb.AppendLine($"{att.name}: {att.value}");
+                            if (ks.ContainsAttribute(i, _metaHandler.CommonLineages["complete"]))
+                            {//it's a discovered end point
+                                inTerminators = true;
+                                var route = new List<string>();
+                                route.AddRange(path);
+                                route.Add(ks.subjectId);
+                                var itr = new InteractTestResponse { darl = "", matches = new List<MatchedElement>(), reference = ks.subjectId, activeNodes = route };
+                                var sb = new StringBuilder();
+                                double affinity = 0.0;
+                                foreach (var att in ks.data[i])
+                                {
+                                    if (att.lineage != _metaHandler.CommonLineages["complete"])
+                                    {
+                                        sb.AppendLine($"{att.name}: {att.value}");
+                                    }
+                                    else
+                                    {
+                                        affinity = att.confidence;
+                                    }
+                                }
+                                itr.response = new DarlVar { dataType = DarlVar.DataType.textual, name = "response", Value = sb.ToString(), weight = affinity };
+                                list.Add(itr);
+                                resultKS.data.Add(new StringListGraphAttributeInputPair { name = ks.subjectId, value = ks.ConvertInputList(i) });
                             }
                             else
                             {
-                                affinity = att.confidence;
+                                if (inTerminators)
+                                {
+                                    if (path.Any())
+                                        path.Remove(path.Last());
+                                }
+                                inTerminators = false;
+                                path.Add(ks.subjectId);
                             }
                         }
-                        itr.response = new DarlVar { dataType = DarlVar.DataType.textual, name = "response", Value = sb.ToString(), weight = affinity };
-                        list.Add(itr);
-                        resultKS.data.Add(new StringListGraphAttributeInputPair { name = ks.subjectId, value = ks.ConvertInputList(i) });
                     }
-                    else
-                    {
-                        if (inTerminators)
-                        {
-                            if (path.Any())
-                                path.Remove(path.Last());
-                        }
-                        inTerminators = false;
-                        path.Add(ks.subjectId);
-                    }
+                    await _graph.CreateKnowledgeState(userId, resultKS);
+                    return list.OrderByDescending(a => a.response.weight).ToList();
                 }
-            }
-            await _graph.CreateKnowledgeState(userId, resultKS);
-            return list.OrderByDescending(a => a.response.weight).ToList();
-        }
-*/
+        */
         #region private
 
         private async Task<KnowledgeState> GetKnowledgeState(string userId, string subjectId, string graphName)
@@ -518,9 +517,9 @@ namespace Darl.Thinkbase
             if (res != null)
             {
                 GraphObject? o = null;
-                if(res is KnowledgeRecord)
+                if (res is KnowledgeRecord)
                 {
-                    o = ((KnowledgeRecord)res).DeReference( model,lineages).Item1;
+                    o = ((KnowledgeRecord)res).DeReference(model, lineages).Item1;
                 }
                 else
                 {
@@ -593,9 +592,9 @@ namespace Darl.Thinkbase
                 {
                     continue;
                 }
-                else if(key.ContainsAttribute(completionLineage)) //preset node - dump any attributes into the KS
+                else if (key.ContainsAttribute(completionLineage)) //preset node - dump any attributes into the KS
                 {
-                    foreach(var att in key.properties)
+                    foreach (var att in key.properties)
                     {
                         ks.AddAttribute(key.id, att);
                     }
@@ -607,7 +606,7 @@ namespace Darl.Thinkbase
                         var completed = key.properties.Where(a => a.lineage.StartsWith(completionLineage)).FirstOrDefault();
                         if (completed != null)//assume state is either unknown or completed
                         {
-                            if(completed.type != GraphAttribute.DataType.ruleset)
+                            if (completed.type != GraphAttribute.DataType.ruleset)
                                 continue;
                         }
                     }
@@ -658,7 +657,7 @@ namespace Darl.Thinkbase
                         salience += saliences.Any(a => a.gobj == parentNode) ? saliences.First(a => a.gobj == parentNode).salience : 1.0;
                     }
                 }
-                saliences.Add(new SalienceRecord {gobj = o.Key as GraphObject, salience = salience });
+                saliences.Add(new SalienceRecord { gobj = o.Key as GraphObject, salience = salience });
             }
             saliences.Sort();
             var currentSalience = 0.0;
@@ -741,7 +740,7 @@ namespace Darl.Thinkbase
             return sequences.OrderByDescending(a => a.Value).ToList();
         }
 
-   
+
         /*
                 /// <summary>
                 /// Recursive Search over the network 

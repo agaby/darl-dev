@@ -1,5 +1,4 @@
-﻿using DarlCompiler.Parsing;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace DarlLanguage.Processing
@@ -55,7 +54,7 @@ namespace DarlLanguage.Processing
                 {
                     if (learningSource[index] != -1)
                     {
-                        double res = CalculateMembership(index,n);
+                        double res = CalculateMembership(index, n);
                         memberships[n] += res;
                         membershipSum += res;
                     }
@@ -102,11 +101,11 @@ namespace DarlLanguage.Processing
                 return 0.0; // outside of the sets
             if (rampNumber != set)
             {
-                return ((double)(index % 1000) / 1000.0);
+                return (index % 1000 / 1000.0);
             }
             else
             {
-                double offset = (double)index % 1000.0;
+                double offset = index % 1000.0;
                 return 1.0 - (offset / 1000.0);
             }
         }

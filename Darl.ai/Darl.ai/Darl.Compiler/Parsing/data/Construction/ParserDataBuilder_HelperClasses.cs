@@ -216,10 +216,11 @@ namespace DarlCompiler.Parsing.Construction
         /// The included by
         /// </summary>
         public readonly TransitionSet IncludedBy = new TransitionSet();
+
         /// <summary>
         /// The _hash code
         /// </summary>
-        int _hashCode;
+        readonly int _hashCode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Transition"/> class.
@@ -325,10 +326,11 @@ namespace DarlCompiler.Parsing.Construction
         /// The transition
         /// </summary>
         public Transition Transition;
+
         /// <summary>
         /// The _hash code
         /// </summary>
-        int _hashCode;
+        readonly int _hashCode;
 
         //Lookahead info for reduce items
         /// <summary>
@@ -555,7 +557,8 @@ namespace DarlCompiler.Parsing.Construction
             /// The _hash code
             /// </summary>
         }
-        int _hashCode;
+
+        readonly int _hashCode;
 
     }
 

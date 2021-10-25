@@ -35,7 +35,7 @@ namespace Darl.Thinkbase.Meta
         public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlMetaNode currentOutput, ConstantContext context, IGraphModel model, GraphObject currentNode)
         {
             foreach (var node in arguments)
-                node.WalkDependencies(dependencies, currentOutput, context,model, currentNode);
+                node.WalkDependencies(dependencies, currentOutput, context, model, currentNode);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Darl.Thinkbase.Meta
         public override void WalkSaliences(double saliency, MetaRootNode root)
         {
             foreach (var node in arguments)
-                node.WalkSaliences(saliency,root);
+                node.WalkSaliences(saliency, root);
         }
     }
 }

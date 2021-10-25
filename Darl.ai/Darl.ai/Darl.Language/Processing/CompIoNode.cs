@@ -40,7 +40,7 @@ namespace DarlLanguage.Processing
         {
             get
             {
-                switch(writeIndex)
+                switch (writeIndex)
                 {
                     case 0:
                         writeIndex++;

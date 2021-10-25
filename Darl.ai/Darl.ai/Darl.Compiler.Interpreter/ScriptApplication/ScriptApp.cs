@@ -11,13 +11,13 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using DarlCompiler.Interpreter.Ast;
+using DarlCompiler.Parsing;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Reflection;
 using System.Security;
-using DarlCompiler.Parsing;
-using DarlCompiler.Interpreter.Ast;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DarlCompiler.Interpreter
@@ -98,7 +98,7 @@ namespace DarlCompiler.Interpreter
         /// <summary>
         /// The imported assemblies
         /// </summary>
-        private IList<Assembly> ImportedAssemblies = new List<Assembly>();
+        private readonly IList<Assembly> ImportedAssemblies = new List<Assembly>();
 
         /// <summary>
         /// The output buffer
@@ -107,7 +107,7 @@ namespace DarlCompiler.Interpreter
         /// <summary>
         /// The _lock object
         /// </summary>
-        private object _lockObject = new object();
+        private readonly object _lockObject = new object();
 
         // Current mode/status variables
         /// <summary>
@@ -226,7 +226,7 @@ namespace DarlCompiler.Interpreter
         {
             try
             {
-                var parsedScript = Parser.Parse(script,null);
+                var parsedScript = Parser.Parse(script, null);
                 if (parsedScript.HasErrors())
                 {
                     Status = AppStatus.SyntaxError;

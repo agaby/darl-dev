@@ -9,7 +9,7 @@ namespace Darl.Thinkbase.Meta
 {
     public class DarlMetaIdentifierNode : DarlMetaNode
     {
-         /// <summary>
+        /// <summary>
         /// The type of the identifier
         /// </summary>
         public enum IdentifierType
@@ -183,13 +183,13 @@ namespace Darl.Thinkbase.Meta
                         fixedResult = new DarlResult("", context.durations[name].Value, DarlResult.DataType.temporal);
                         break;
                     case IdentifierType.lineage_constant:
-                        if(context.lineages.ContainsKey(name))
+                        if (context.lineages.ContainsKey(name))
                         {
                             fixedResult = new DarlResult("", context.lineages[name].Value, DarlResult.DataType.textual);
                         }
                         else
                         {
-                            if(context.parseContext != null)
+                            if (context.parseContext != null)
                             {
                                 context.parseContext.AddMessage(DarlCompiler.ErrorLevel.Error, this.ErrorAnchor, $"Lineage constant {name} not defined.");
                             }
@@ -244,7 +244,7 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        protected async override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
+        protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
             if (IsConstant())
             {

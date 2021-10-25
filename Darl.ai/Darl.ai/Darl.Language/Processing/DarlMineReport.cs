@@ -25,7 +25,7 @@
         /// <value>
         /// The test performance.
         /// </value>
-        public double testPerformance { get; internal set; } 
+        public double testPerformance { get; internal set; }
 
         /// <summary>
         /// Gets the unknown response percent.

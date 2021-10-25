@@ -84,7 +84,7 @@ namespace DarlCompiler
         /// <summary>
         /// The _case sensitive
         /// </summary>
-        bool _caseSensitive;
+        readonly bool _caseSensitive;
         /// <summary>
         /// Initializes a new instance of the <see cref="CharHashSet"/> class.
         /// </summary>

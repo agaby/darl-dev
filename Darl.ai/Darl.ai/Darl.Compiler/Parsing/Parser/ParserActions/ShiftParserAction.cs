@@ -11,8 +11,8 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using System;
 using Darl.ai;
+using System;
 
 namespace DarlCompiler.Parsing
 {

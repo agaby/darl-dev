@@ -11,11 +11,10 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using Darl.ai;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using Darl.ai;
 
 namespace DarlCompiler.Parsing
 {
@@ -244,4 +243,4 @@ namespace DarlCompiler.Parsing
 
     }
 
-} 
+}

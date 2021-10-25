@@ -11,8 +11,8 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using System.Diagnostics;
 using Darl.ai;
+using System.Diagnostics;
 
 namespace DarlCompiler.Parsing.Construction
 {
@@ -26,10 +26,11 @@ namespace DarlCompiler.Parsing.Construction
         /// The language
         /// </summary>
         internal LanguageData Language;
+
         /// <summary>
         /// The _grammar
         /// </summary>
-        Grammar _grammar;
+        readonly Grammar _grammar;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LanguageDataBuilder"/> class.

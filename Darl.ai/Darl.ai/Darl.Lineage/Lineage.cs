@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Darl.Lineage
+﻿namespace Darl.Lineage
 {
     //wrapper for an ontology
     public class Lineage : ILineage
     {
-        private string principal;
+        private readonly string principal;
         public bool IsParentOf(Lineage other)
         {
             return other.principal.StartsWith(principal);

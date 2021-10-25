@@ -25,7 +25,7 @@ namespace DarlCompiler.Interpreter
         /// <summary>
         /// The _to string
         /// </summary>
-        string _toString;
+        readonly string _toString;
 
         /// <summary>
         /// Prevents a default instance of the <see cref="NoneClass"/> class from being created.

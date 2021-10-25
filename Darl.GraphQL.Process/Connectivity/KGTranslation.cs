@@ -945,11 +945,11 @@ namespace Darl.GraphQL.Models.Connectivity
             if (!await _graph.Exists(userId, graphName))
                 throw new ExecutionError($"{graphName} does not exist in this account");
             var graph = await _graph.GetModel(userId, graphName);
-            if(string.IsNullOrEmpty(address))//root
+            if (string.IsNullOrEmpty(address))//root
             {//return the type words for the real objects derived from the virtual
                 foreach (var g in graph.virtualVertices.Values.Where(a => a.In.Count == 0)) //All leaf virtual vertices
                 {
-                    list.Add(new GraphAttribute { value = (g.name ?? "").Replace('/','-'), name = "typeword", type = GraphAttribute.DataType.textual, lineage = g.lineage });
+                    list.Add(new GraphAttribute { value = (g.name ?? "").Replace('/', '-'), name = "typeword", type = GraphAttribute.DataType.textual, lineage = g.lineage });
                 }
             }
             else

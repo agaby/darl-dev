@@ -14,7 +14,7 @@ namespace DarlLanguage.Processing
         /// <value>
         /// The name of the output.
         /// </value>
-        public string Name { get;  set; }
+        public string Name { get; set; }
         /// <summary>
         /// Gets the path of the output.
         /// </summary>

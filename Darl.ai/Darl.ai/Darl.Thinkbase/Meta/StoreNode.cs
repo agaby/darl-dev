@@ -20,7 +20,7 @@ namespace Darl.Thinkbase.Meta
 
         public StoreDefinitionNode storeDefinition { get; set; }
 
-        int writeIndex = 0;
+        readonly int writeIndex = 0;
 
         /// <summary>
         /// Data direction
@@ -48,8 +48,8 @@ namespace Darl.Thinkbase.Meta
                 context.storeInputs.Add(GetName(), this);
             }
             foreach (var node in arguments)
-                node.WalkDependencies(dependencies, currentOutput, context,model, currentNode);
-            Left.WalkDependencies(dependencies, currentOutput, context,model, currentNode);
+                node.WalkDependencies(dependencies, currentOutput, context, model, currentNode);
+            Left.WalkDependencies(dependencies, currentOutput, context, model, currentNode);
         }
 
         /// <summary>

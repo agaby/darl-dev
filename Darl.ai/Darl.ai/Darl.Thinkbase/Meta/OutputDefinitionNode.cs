@@ -2,10 +2,8 @@
 using DarlCompiler.Interpreter;
 using DarlCompiler.Parsing;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
 {
@@ -79,12 +77,12 @@ namespace Darl.Thinkbase.Meta
             iType = (OutputTypes)Enum.Parse(typeof(OutputTypes), nodes[0].Term.Name, true);
             name = (string)nodes[0].Token.Value;
             var lin = nodes.Last();
-            if(lin.Term.Name == "lineageLiteral")
+            if (lin.Term.Name == "lineageLiteral")
             {
                 //get lineage and check it.
                 var linLineage = (string)lin.Token.Value;
                 var validity = Darl.Lineage.LineageLibrary.CheckLineageWithTypeWord(linLineage);
-                if(!validity.Item1)
+                if (!validity.Item1)
                 {
                     context.AddMessage(DarlCompiler.ErrorLevel.Error, lin.Token.Location, $"'{linLineage}' is not a valid lineage.");
                 }
@@ -94,7 +92,7 @@ namespace Darl.Thinkbase.Meta
                     lineageNode = lin.AstNode as DarlMetaNode;
                 }
             }
-            else if(lin.Term.Name == "lineage_constant")
+            else if (lin.Term.Name == "lineage_constant")
             {
                 lineageNode = lin.AstNode as DarlMetaNode;
                 //can't check lineage validity
@@ -215,7 +213,7 @@ namespace Darl.Thinkbase.Meta
 
         public void SetLineage(ScriptThread thread)
         {
-            if(lineageNode != null)
+            if (lineageNode != null)
                 lineage = lineageNode is LineageLiteral ? ((LineageLiteral)lineageNode).literal : ((DarlResult)lineageNode.Evaluate(thread).Result).Value as string;
             if (CatLineageNode != null)
             {

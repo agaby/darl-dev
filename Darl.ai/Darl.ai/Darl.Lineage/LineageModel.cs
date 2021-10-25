@@ -1,16 +1,13 @@
-﻿using DarlCommon;
+﻿using Darl.Licensing;
+using DarlCommon;
+using DarlLanguage.Processing;
+using Newtonsoft.Json;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using ProtoBuf;
 using System.Diagnostics;
-using Newtonsoft.Json;
-using Darl.Licensing;
-using DarlLanguage.Processing;
+using System.IO;
+using System.Text;
 
 namespace Darl.Lineage
 {
@@ -66,7 +63,7 @@ namespace Darl.Lineage
         /// <returns></returns>
         public List<MatchedElement> Match(string text, List<DarlVar> values, bool fuzzy = false)
         {
-            var matches =  tree.Match(LineageLibrary.SimpleTokenizer(text), values,fuzzy);
+            var matches = tree.Match(LineageLibrary.SimpleTokenizer(text), values, fuzzy);
             if (matches.Count > 0)
                 Trace.WriteLine($"{matches.Count} matches to text : {text}");
             return matches;
@@ -105,8 +102,8 @@ namespace Darl.Lineage
         /// <param name="stream">The stream</param>
         public void Store(Stream stream)
         {
-            Serializer.Serialize<LineageModel>(stream,this);
-//            stream.Close();
+            Serializer.Serialize<LineageModel>(stream, this);
+            //            stream.Close();
         }
 
         /// <summary>
@@ -164,7 +161,7 @@ namespace Darl.Lineage
                             {
                                 Version v = new Version(vdv.Value);
                                 Version vnew = new Version(v.Major, v.Minor, v.Build, v.Revision + 1);
-                                modelSettings[versionString] = JsonConvert.SerializeObject(new DarlVar { unknown = false, dataType = DarlVar.DataType.textual, Value = vnew.ToString(), name= versionString });
+                                modelSettings[versionString] = JsonConvert.SerializeObject(new DarlVar { unknown = false, dataType = DarlVar.DataType.textual, Value = vnew.ToString(), name = versionString });
                             }
                             catch
                             { //non-standard format, ignore
@@ -204,15 +201,15 @@ namespace Darl.Lineage
             var res = tree.BestMatch(LineageLibrary.SimpleTokenizer(text));
             int bestdepth = -1;
             SearchCandidate s = null;
-            foreach(var p in res)
+            foreach (var p in res)
             {
-                if(p.depth > bestdepth)
+                if (p.depth > bestdepth)
                 {
                     s = p;
                     bestdepth = p.depth;
                 }
             }
-            if(s != null)
+            if (s != null)
             {
                 return s.fullpath;
             }

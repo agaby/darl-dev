@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Darl.Lineage
 {
@@ -17,7 +13,7 @@ namespace Darl.Lineage
 
         public int CompareTo(DefaultAnnotation other)
         {
-            return Depth.CompareTo(other.Depth); 
+            return Depth.CompareTo(other.Depth);
         }
     }
 }

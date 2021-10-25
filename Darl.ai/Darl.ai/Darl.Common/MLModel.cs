@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace DarlCommon
 {
@@ -68,14 +66,14 @@ namespace DarlCommon
         /// Number of sets used in traning
         /// </summary>
         [Display(Name = "Training sets")]
-        [Range(3,9)]
+        [Range(3, 9)]
         public int sets { get; set; } //only 3,5,7,9 valid
 
         /// <summary>
         /// percentage of data to reserve as test.
         /// </summary>
         [Display(Name = "Percentage to test with")]
-        [Range(0,99)]
+        [Range(0, 99)]
         public int percentTest { get; set; } //0 - 99
 
         /// <summary>

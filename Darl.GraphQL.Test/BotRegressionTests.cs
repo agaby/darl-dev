@@ -1,9 +1,7 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
-using Darl.GraphQL.Models.Models;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using Darl.Thinkbase;
-using DarlCommon;
 using DarlLanguage.Processing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
@@ -17,7 +15,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -31,7 +28,7 @@ namespace Darl.GraphQL.Test
         private IConfiguration _config;
         private IBotProcessing _bot;
         private IConnectivity _conv;
-        private IRuleFormInterface _rform;
+        private readonly IRuleFormInterface _rform;
         private IGraphProcessing _graph;
 
         private readonly string songLineage = "noun:01,4,14,1,10,33";
@@ -88,12 +85,12 @@ namespace Darl.GraphQL.Test
             var meta = new Mock<IMetaStructureHandler>();
             var trans = new Mock<IKGTranslation>();
             var lic = new Mock<ILicensing>();
-            var blob = new BlobGraphPrimitives(bc,cache.Object, conn.Object, bgplogger.Object, lic.Object);
-            _graph = new GraphProcessing(blob, glogger.Object,meta.Object);
+            var blob = new BlobGraphPrimitives(bc, cache.Object, conn.Object, bgplogger.Object, lic.Object);
+            _graph = new GraphProcessing(blob, glogger.Object, meta.Object);
             _graphStore = new GraphLocalStore(configuration.Object, logger.Object, context.Object, _graph);
             var ghandler = new Mock<IGraphHandler>();
             var dg = new Mock<IDistributedCache>();
-            _bot = new BotProcessing(_conv, botLogger.Object, _config, _graph, ghandler.Object,dg.Object);
+            _bot = new BotProcessing(_conv, botLogger.Object, _config, _graph, ghandler.Object, dg.Object);
         }
 
 
@@ -113,9 +110,9 @@ namespace Darl.GraphQL.Test
             var graph = new TempGraph();
             graph.DeserializeFromGraphML<SimpleVertex, SimpleEdge, TempGraph>(docsource, ivf, ief);
             //now fill in vertices with lineages, etc.
-            foreach(var v  in graph.vertices.Values)
+            foreach (var v in graph.vertices.Values)
             {
-                if(v.labelV == "song")
+                if (v.labelV == "song")
                 {
                     v.lineage = songLineage;
                 }
@@ -123,9 +120,9 @@ namespace Darl.GraphQL.Test
                 {
                     v.lineage = artistLineage;
                 }
-                if(!string.IsNullOrEmpty(v.songType))
+                if (!string.IsNullOrEmpty(v.songType))
                     v.properties.Add(new GraphAttribute { name = songTypeLineage, value = v.songType });
-                if(v.performances > 0)
+                if (v.performances > 0)
                     v.properties.Add(new GraphAttribute { name = performanceCountLineage, value = v.performances.ToString() });
             }
             //same with edges
@@ -149,13 +146,13 @@ namespace Darl.GraphQL.Test
             var userId = _config["userId"];
             foreach (var lv in graph.vertices.Values)
             {
-                var v = new GraphObjectInput { lineage = lv.lineage, name = lv.name ?? lv.id, externalId = lv.id, properties = BlobGraphPrimitives.ConvertAttributeInputList( lv.properties) };
+                var v = new GraphObjectInput { lineage = lv.lineage, name = lv.name ?? lv.id, externalId = lv.id, properties = BlobGraphPrimitives.ConvertAttributeInputList(lv.properties) };
                 try
                 {
                     var res = await _graph.CreateGraphObject($"{userId}_grateful_dead_graph", v, OntologyAction.build);
                     nameIdLookup.Add(lv.id, res.id);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                 }
@@ -167,7 +164,7 @@ namespace Darl.GraphQL.Test
                 {
                     await _graph.CreateGraphConnection($"{userId}_grateful_dead_graph", e, OntologyAction.build);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                 }
@@ -181,7 +178,7 @@ namespace Darl.GraphQL.Test
             var userId = _config["userId"];
             string graphName = $"{userId}_simple_graph";
             var nameIdLookup = new Dictionary<string, string>();
-            var res = await _graph.CreateGraphObject(graphName, new GraphObjectInput { name = "A", externalId = "A", lineage = "noun:00,0"}, OntologyAction.build);
+            var res = await _graph.CreateGraphObject(graphName, new GraphObjectInput { name = "A", externalId = "A", lineage = "noun:00,0" }, OntologyAction.build);
             nameIdLookup.Add("A", res.id);
             res = await _graph.CreateGraphObject(graphName, new GraphObjectInput { name = "B", externalId = "B", lineage = "noun:00,0" }, OntologyAction.build);
             nameIdLookup.Add("B", res.id);
@@ -223,9 +220,8 @@ namespace Darl.GraphQL.Test
         {
             //define lineage and label based on source and target
             var lineage = "";
-            var name = "";
             lineage = "";
-            return new SimpleEdge { id = id, Source = source, Target = target, lineage = lineage};
+            return new SimpleEdge { id = id, Source = source, Target = target, lineage = lineage };
         }
 
         public class TempGraph : QuickGraph.IMutableVertexAndEdgeListGraph<SimpleVertex, SimpleEdge>
@@ -390,7 +386,7 @@ namespace Darl.GraphQL.Test
             [XmlAttribute]
             public string name { get; set; }
 
-           [XmlAttribute]
+            [XmlAttribute]
             public string songType { get; set; }
 
             [XmlAttribute]

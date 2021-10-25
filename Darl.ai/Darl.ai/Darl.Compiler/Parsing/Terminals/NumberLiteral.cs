@@ -17,8 +17,8 @@ using System.Globalization;
 
 namespace DarlCompiler.Parsing
 {
-    using Complex64 = System.Numerics.Complex;
     using DarlCompiler.Ast; // Microsoft.Scripting.Math.Complex64;
+    using Complex64 = System.Numerics.Complex;
 
     /// <summary>
     /// Enum NumberOptions
@@ -208,7 +208,7 @@ namespace DarlCompiler.Parsing
         /// <summary>
         /// The _exponents table
         /// </summary>
-        private ExponentsTable _exponentsTable = new ExponentsTable();
+        private readonly ExponentsTable _exponentsTable = new ExponentsTable();
 
         /// <summary>
         /// Determines whether the specified option is set.
@@ -640,9 +640,9 @@ namespace DarlCompiler.Parsing
                         details.Value = Convert.ToInt64(details.Body, CultureInfo.InvariantCulture);
                 else
                     if (useULong)
-                        details.Value = Convert.ToUInt64(details.Body, radix);
-                    else
-                        details.Value = Convert.ToInt64(details.Body, radix);
+                    details.Value = Convert.ToUInt64(details.Body, radix);
+                else
+                    details.Value = Convert.ToInt64(details.Body, radix);
                 return true;
             }
             catch (OverflowException)

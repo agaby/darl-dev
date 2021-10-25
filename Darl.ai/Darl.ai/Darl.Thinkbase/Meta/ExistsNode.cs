@@ -2,10 +2,8 @@
 using Darl.Thinkbase.Meta;
 using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl_standard.Darl.Thinkbase.Meta
@@ -23,7 +21,7 @@ namespace Darl_standard.Darl.Thinkbase.Meta
             {
                 base.Init(context, treeNode);
                 var nodes = treeNode.GetMappedChildNodes();
-                if(nodes.Any())
+                if (nodes.Any())
                     Argument = (DarlMetaNode)AddChild("-", nodes.Last());
             }
             catch
@@ -48,9 +46,9 @@ namespace Darl_standard.Darl.Thinkbase.Meta
                 thread.CurrentNode = Parent;
                 return new DarlResult(0, true);
             }
-            if(res is null) //operate on object existence
+            if (res is null) //operate on object existence
             {
-                if(grammar.currentNode.existence == null || !grammar.currentNode.existence.Any())
+                if (grammar.currentNode.existence == null || !grammar.currentNode.existence.Any())
                     return new DarlResult(0, true);
                 //return the truth of the statement: now and the objects existence overlap in time.
                 var existence = new DarlResult("Existence", grammar.currentNode.existence, DarlResult.DataType.temporal);
@@ -64,7 +62,7 @@ namespace Darl_standard.Darl.Thinkbase.Meta
                 if (grammar.currentNode.properties == null)
                     return new DarlResult(0, true);
                 var att = grammar.currentModel.FindAttributeExistence(grammar.currentNode.id, res.Value.ToString(), grammar.state);
-                if(att == null)
+                if (att == null)
                 {
                     thread.CurrentNode = Parent;
                     return new DarlResult(0, true);
@@ -86,7 +84,7 @@ namespace Darl_standard.Darl.Thinkbase.Meta
         /// <param name="context">The context.</param>
         public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlMetaNode currentOutput, ConstantContext context, IGraphModel model, GraphObject currentNode)
         {
-            if(Argument != null)
+            if (Argument != null)
                 Argument.WalkDependencies(dependencies, currentOutput, context, model, currentNode);
         }
 

@@ -162,7 +162,7 @@ namespace DarlLanguage.Processing
                         break;
                 }
             }
-            
+
             thread.CurrentNode = Parent; //standard epilogue
             return Task.FromResult<object>(null);
         }
@@ -194,7 +194,7 @@ namespace DarlLanguage.Processing
                 var values = new List<string>();
                 foreach (double v in schedule.values)
                     values.Add(v.ToString());
-                return $"{{{string.Join(",",values)}}};";
+                return $"{{{string.Join(",", values)}}};";
             }
         }
     }

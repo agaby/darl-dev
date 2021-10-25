@@ -12,7 +12,6 @@
 // <summary></summary>
 // ***********************************************************************
 using DarlCompiler.Interpreter.Ast;
-using System.Threading.Tasks;
 
 namespace DarlCompiler.Interpreter
 {
@@ -71,6 +70,6 @@ namespace DarlCompiler.Interpreter
         }
     }
 
-    
+
 
 }

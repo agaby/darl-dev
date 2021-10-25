@@ -24,7 +24,7 @@ namespace DarlCompiler.Interpreter
         /// <summary>
         /// The _scope
         /// </summary>
-        ScopeBase _scope;
+        readonly ScopeBase _scope;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScopeValuesDictionary"/> class.

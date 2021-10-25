@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ProtoBuf;
+﻿using ProtoBuf;
+using System;
 
 namespace Darl.Common
 {
@@ -35,22 +33,22 @@ namespace Darl.Common
 
         public DarlTime(int year, int? month = null, int? day = null, int? hour = null, int? minute = null, double? second = null)
         {
-            if(year < 1)
+            if (year < 1)
             {
                 raw = (year - 1) * secondsPerYear;
                 precision = secondsPerYear;
             }
             else
             {
-                if(month == null)
+                if (month == null)
                 {
                     precision = secondsPerYear;
                     dateTime = new DateTime(year, 0, 0);
 
                 }
-                else if(day == null)
+                else if (day == null)
                 {
-                    precision = secondsPerYear /12.0;
+                    precision = secondsPerYear / 12.0;
                     dateTime = new DateTime(year, month ?? 0, 0);
                 }
                 else if (hour == null)
@@ -92,7 +90,7 @@ namespace Darl.Common
             }
             else //can be represented in a DateTime
             {
-                if(season == null)
+                if (season == null)
                 {
                     precision = secondsPerYear;
                     dateTime = new DateTime(year, 0, 0);
@@ -100,7 +98,7 @@ namespace Darl.Common
                 else
                 {
                     precision = secondsPerYear / 4.0;
-                    switch(season ?? 0)
+                    switch (season ?? 0)
                     {
                         case 0:
                             dateTime = new DateTime(year, 12, 21);
@@ -119,14 +117,15 @@ namespace Darl.Common
             }
         }
 
-        [ProtoMember(1)] 
+        [ProtoMember(1)]
         public double raw { get; set; }
-        [ProtoMember(2)] 
+        [ProtoMember(2)]
         public double precision { get; set; }
 
-        public DateTime dateTime 
-        { 
-            get {
+        public DateTime dateTime
+        {
+            get
+            {
                 return raw > 0.0 ? yearZero + TimeSpan.FromSeconds((double)this.raw) : DateTime.MinValue;
             }
             set
@@ -191,7 +190,7 @@ namespace Darl.Common
         public static bool TryParse(string s, out DarlTime? result)
         {
             //add code to parse "summer 46 BC" or "winter 37 AD" or just "56 BC"
-            if(!DateTime.TryParse(s, out DateTime dt ))
+            if (!DateTime.TryParse(s, out DateTime dt))
             {
                 result = null;
                 return false;
@@ -212,7 +211,7 @@ namespace Darl.Common
 
         public override string ToString()
         {
-            if(raw >= 0)
+            if (raw >= 0)
             {
                 return dateTime.ToString();
             }
@@ -226,7 +225,7 @@ namespace Darl.Common
 
         public override bool Equals(object obj)
         {
-            if( obj is DarlTime)
+            if (obj is DarlTime)
             {
                 var dt = obj as DarlTime;
                 return dt.raw == raw;

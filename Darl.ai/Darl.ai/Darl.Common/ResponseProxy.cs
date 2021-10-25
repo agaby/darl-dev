@@ -85,25 +85,25 @@ namespace DarlCommon
         /// The text to the left of the score bar
         /// </summary>
         /// <value>The low text.</value>
-        
+
         public string lowText { get; set; }
         /// <summary>
         /// the text to the right of the score bar
         /// </summary>
         /// <value>The high text.</value>
-        
+
         public string highText { get; set; }
         /// <summary>
         /// The color of the filled section of the score bar
         /// </summary>
         /// <value>The color.</value>
-        
+
         public string color { get; set; }
         /// <summary>
         /// The value representing 0 on the score bar or the lower possibility bound
         /// </summary>
         /// <value>The minimum value.</value>
-        
+
         public double minVal { get; set; }
         /// <summary>
         /// the value representing 100% on the score bar or the upper possibility bound

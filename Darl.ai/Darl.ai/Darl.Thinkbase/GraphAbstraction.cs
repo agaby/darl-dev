@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Darl.Thinkbase
 {
@@ -17,7 +15,7 @@ namespace Darl.Thinkbase
         {
             if (this is GraphObject)
                 return (this as GraphObject).ContainsAttribute(completionLineage);
-            if(this is KnowledgeRecord)
+            if (this is KnowledgeRecord)
                 return (this as KnowledgeRecord).ContainsAttribute(completionLineage);
             return false;
         }
@@ -27,7 +25,7 @@ namespace Darl.Thinkbase
             if (this is GraphObject)
                 return (this as GraphObject).Out;
             if (this is KnowledgeRecord)
-                return (this as KnowledgeRecord).DeReference(model,null).Item2;
+                return (this as KnowledgeRecord).DeReference(model, null).Item2;
             return new List<GraphConnection>();
         }
 

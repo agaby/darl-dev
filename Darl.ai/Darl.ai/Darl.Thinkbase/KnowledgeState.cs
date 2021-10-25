@@ -91,7 +91,7 @@ namespace Darl.Thinkbase
         public List<GraphAttributeInput> ConvertInputList(string i)
         {
             var l = new List<GraphAttributeInput>();
-            foreach(var a in data[i])
+            foreach (var a in data[i])
             {
                 l.Add(a.ConvertToInput());
             }

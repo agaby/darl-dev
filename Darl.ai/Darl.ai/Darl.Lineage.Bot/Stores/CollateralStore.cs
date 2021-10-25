@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using DarlLanguage.Processing;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using DarlLanguage.Processing;
 
 namespace Darl.Lineage.Bot.Stores
 {
     internal class CollateralStore : ILocalStore
     {
-
-        IRuleFormInterface coll;
+        readonly IRuleFormInterface coll;
         readonly string _user;
 
         public CollateralStore(IRuleFormInterface collInterface, string user)

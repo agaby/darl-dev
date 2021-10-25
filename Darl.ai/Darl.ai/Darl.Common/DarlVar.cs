@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using Darl.Common;
-using Darl.Thinkbase;
 using ProtoBuf;
 using System;
 using System.Collections.Generic;
@@ -127,7 +126,7 @@ namespace DarlCommon
         /// This result is unknown if true.
         /// </summary>
         /// <value><c>true</c> if unknown; otherwise, <c>false</c>.</value>
-        [Display(Name = "The value is unknown", Description ="If true the value is unknown")]
+        [Display(Name = "The value is unknown", Description = "If true the value is unknown")]
         [ProtoMember(2)]
         public bool unknown { get; set; } = false;
         /// <summary>
@@ -151,7 +150,7 @@ namespace DarlCommon
         /// The values must be ordered in ascending value, but it is permissible for two or more to hold the same value.</remarks>
         [Display(Name = "Set of numeric values", Description = "One to four values describing a fuzzy number if numeric ")]
         [ProtoMember(4)]
-        public List<double> values {get; set;}
+        public List<double> values { get; set; }
 
         /// <summary>
         /// list of categories, each indexed against a truth value.
@@ -159,7 +158,7 @@ namespace DarlCommon
         /// <value>The categories.</value>
         [Display(Name = "Set of categories", Description = "The possible categories this data item may fall into if categorical, each with confidence value.")]
         [ProtoMember(5)]
-        public Dictionary<string, double>  categories {get; set;}
+        public Dictionary<string, double> categories { get; set; }
 
         [ProtoMember(6)]
         public List<DarlTime> times { get; set; }

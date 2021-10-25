@@ -11,8 +11,8 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using System;
 using Darl.ai;
+using System;
 
 namespace DarlCompiler.Parsing
 {
@@ -25,19 +25,22 @@ namespace DarlCompiler.Parsing
         /// <summary>
         /// The _string comparison
         /// </summary>
-        StringComparison _stringComparison;
+        readonly StringComparison _stringComparison;
+
         /// <summary>
         /// The _tab width
         /// </summary>
-        int _tabWidth;
+        readonly int _tabWidth;
+
         /// <summary>
         /// The _chars
         /// </summary>
-        char[] _chars;
+        readonly char[] _chars;
+
         /// <summary>
         /// The _text length
         /// </summary>
-        int _textLength;
+        readonly int _textLength;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SourceStream"/> class.
@@ -82,7 +85,8 @@ namespace DarlCompiler.Parsing
             /// The _text
             /// </summary>
         }
-        string _text;
+
+        readonly string _text;
 
         /// <summary>
         /// Gets or sets the current position in the source file. When reading the value, returns Location.Position value.

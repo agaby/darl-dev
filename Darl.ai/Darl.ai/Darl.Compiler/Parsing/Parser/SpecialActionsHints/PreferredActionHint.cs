@@ -25,7 +25,7 @@ namespace DarlCompiler.Parsing
         /// <summary>
         /// The action type
         /// </summary>
-        PreferredActionType ActionType;
+        readonly PreferredActionType ActionType;
         /// <summary>
         /// Initializes a new instance of the <see cref="PreferredActionHint"/> class.
         /// </summary>

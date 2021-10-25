@@ -11,10 +11,10 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using DarlCompiler.Parsing.Construction;
 using System;
 using System.Linq;
 using System.Text;
-using DarlCompiler.Parsing.Construction;
 
 namespace DarlCompiler.Parsing
 {

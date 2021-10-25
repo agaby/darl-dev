@@ -1,10 +1,7 @@
 ﻿using DarlCommon;
-using System;
-using System.Collections.Generic;
+using DarlLanguage.Processing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using DarlLanguage.Processing;
 
 namespace Darl.Lineage.Bot
 {
@@ -13,16 +10,16 @@ namespace Darl.Lineage.Bot
         public static string ToDarl(this BotInputFormat bif)
         {
             var darl = $"\tinput {bif.InType.ToString()} {bif.Name}";
-            switch(bif.InType)
+            switch (bif.InType)
             {
                 case InputFormat.InputType.categorical:
-                    if(bif.Categories != null && bif.Categories.Any())
+                    if (bif.Categories != null && bif.Categories.Any())
                     {
                         var sb = new StringBuilder();
                         sb.Append("{");
-                        for(int n = 0; n < bif.Categories.Count; n++)
+                        for (int n = 0; n < bif.Categories.Count; n++)
                         {
-                            if(n < bif.Categories.Count -1)
+                            if (n < bif.Categories.Count - 1)
                             {
                                 sb.Append($"{WrapInvalidIdentifier(bif.Categories[n])}, ");
                             }
@@ -74,7 +71,7 @@ namespace Darl.Lineage.Bot
 
         private static InputFormat.InputType ConvertInputType(InputDefinitionNode.InputTypes iType)
         {
-            switch(iType)
+            switch (iType)
             {
                 case InputDefinitionNode.InputTypes.numeric_input:
                     return InputFormat.InputType.numeric;
@@ -89,7 +86,7 @@ namespace Darl.Lineage.Bot
 
         private static string WrapInvalidIdentifier(string s)
         {
-            if(s.IndexOfAny(new char[] { ' ','\t','\n','\r'}) > -1 || char.IsDigit(s[0]))
+            if (s.IndexOfAny(new char[] { ' ', '\t', '\n', '\r' }) > -1 || char.IsDigit(s[0]))
             {
                 return $"\"{s}\"";
             }

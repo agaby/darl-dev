@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using DarlCompiler.Ast;
 using DarlCompiler.Interpreter.Ast;
-using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
@@ -13,7 +13,7 @@ namespace DarlLanguage.Processing
     {
         private int writeSeq = 0;
 
-        public bool IsUnknown {get; internal set;}
+        public bool IsUnknown { get; internal set; }
 
         /// <summary>
         /// Gets the rule output or store sink.
@@ -37,7 +37,7 @@ namespace DarlLanguage.Processing
         /// <value>
         /// The RHS.
         /// </value>
-        public DarlNode rhs { get;  set; }
+        public DarlNode rhs { get; set; }
 
         /// <summary>
         /// Gets the confidence node.
@@ -63,7 +63,7 @@ namespace DarlLanguage.Processing
             AsString = "Rule";
             ChildNodes[ChildNodes.Count - 1].Flags |= AstNodeFlags.IsTail;
             IsUnknown = true;
-            if(ruleOutput is StoreNode)
+            if (ruleOutput is StoreNode)
             {
                 ((StoreNode)ruleOutput).storeType = StoreNode.StoreType.sink;
             }
@@ -76,10 +76,10 @@ namespace DarlLanguage.Processing
         /// <returns>
         /// The result of the evaluation
         /// </returns>
-        protected async override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
+        protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
             thread.CurrentNode = this;  //standard prologue
-            DarlResult condition = (DarlResult) await conditions.Evaluate(thread);
+            DarlResult condition = (DarlResult)await conditions.Evaluate(thread);
             if (condition.IsUnknown())
             {
                 thread.CurrentNode = Parent; //standard epilogue
@@ -91,17 +91,17 @@ namespace DarlLanguage.Processing
                 IsUnknown = false;
                 return new DarlResult(-1.0, true); // if condition part unknown don't continue.
             }
-            if(ruleOutput is StoreNode)
+            if (ruleOutput is StoreNode)
             {
                 await ruleOutput.Evaluate(thread); //sets the address to receive the result
             }
-            DarlResult result = (DarlResult) await rhs.Evaluate(thread);
+            DarlResult result = (DarlResult)await rhs.Evaluate(thread);
             result.Normalise(true);
             if (result.IsUnknown())
                 return new DarlResult(-1.0, true); // if result part unknown don't continue.
-            DarlResult confidence = (DarlResult) await confidenceNode.Evaluate(thread);
+            DarlResult confidence = (DarlResult)await confidenceNode.Evaluate(thread);
             thread.CurrentNode = Parent; //standard epilogue
-            var r =  new DarlResult(condition, result, confidence);
+            var r = new DarlResult(condition, result, confidence);
             IsUnknown = false;
             return r;
         }
@@ -114,7 +114,7 @@ namespace DarlLanguage.Processing
         /// <param name="context">The context.</param>
         public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlNode currentOutput, ConstantContext context)
         {
-            if(currentOutput is StoreNode)
+            if (currentOutput is StoreNode)
             {
                 var c = currentOutput as StoreNode;
                 if (context.stores.ContainsKey(c.Left.name))
@@ -125,9 +125,9 @@ namespace DarlLanguage.Processing
             conditions.WalkDependencies(dependencies, currentOutput, context);
             context.controllingIO = currentOutput.GetName();
             rhs.WalkDependencies(dependencies, currentOutput, context);
-            if(currentOutput is StoreNode)
+            if (currentOutput is StoreNode)
             {
-                if(!context.storeOutputs.ContainsKey(currentOutput.GetName()))
+                if (!context.storeOutputs.ContainsKey(currentOutput.GetName()))
                 {
                     context.storeOutputs.Add(currentOutput.GetName(), currentOutput as StoreNode);
                 }
@@ -171,7 +171,7 @@ namespace DarlLanguage.Processing
         {
             get
             {
-                switch(writeSeq)
+                switch (writeSeq)
                 {
                     case 0:
                         writeSeq++;
@@ -245,7 +245,7 @@ namespace DarlLanguage.Processing
 
         public override string GetName()
         {
-            if(ruleOutput is DarlIdentifierNode)
+            if (ruleOutput is DarlIdentifierNode)
             {
                 return ((DarlIdentifierNode)ruleOutput).name;
             }

@@ -11,10 +11,9 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using System.Linq.Expressions;
-
 using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace DarlCompiler.Interpreter.Ast

@@ -11,8 +11,8 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using DarlCompiler.Parsing;
 using DarlCompiler.Ast;
+using DarlCompiler.Parsing;
 using System.Threading.Tasks;
 
 namespace DarlCompiler.Interpreter.Ast

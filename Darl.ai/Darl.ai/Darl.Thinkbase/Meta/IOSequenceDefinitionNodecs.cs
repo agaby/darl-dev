@@ -1,7 +1,5 @@
 ﻿using DarlCompiler.Interpreter;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.Thinkbase.Meta
 {
@@ -60,8 +58,11 @@ namespace Darl.Thinkbase.Meta
         /// <value>
         /// The confidence.
         /// </value>
-        public double confidence { get; 
-            internal set; }
+        public double confidence
+        {
+            get;
+            internal set;
+        }
 
         /// <summary>
         /// Gets the value.

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using DarlCompiler.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using DarlCompiler.Parsing;
 
 namespace DarlLanguage
 {
@@ -10,9 +10,9 @@ namespace DarlLanguage
     /// </summary>
     public class DarlIdentifier : IdentifierTerminal
     {
-        static HashSet<string> declarationTokens = new HashSet<string> { "numeric", "categorical", "textual", "constant", "string", "sequence", "ruleset", "mapinput", "mapoutput", "mapstore", "store", "temporal" };
-        static HashSet<string> IOTokens = new HashSet<string>() { "numeric_input", "numeric_output", "categorical_input" , "categorical_output" , "textual_input", "textual_output", "temporal_output", "temporal_input", "store_io", "dynamic_categorical_input" };
-        static HashSet<string> ConstantTokens = new HashSet<string> { "numeric_constant", "string_constant", "sequence_constant", "temporal_constant" };
+        static readonly HashSet<string> declarationTokens = new HashSet<string> { "numeric", "categorical", "textual", "constant", "string", "sequence", "ruleset", "mapinput", "mapoutput", "mapstore", "store", "temporal" };
+        static readonly HashSet<string> IOTokens = new HashSet<string>() { "numeric_input", "numeric_output", "categorical_input", "categorical_output", "textual_input", "textual_output", "temporal_output", "temporal_input", "store_io", "dynamic_categorical_input" };
+        static readonly HashSet<string> ConstantTokens = new HashSet<string> { "numeric_constant", "string_constant", "sequence_constant", "temporal_constant" };
 
         /// <summary>
         /// Gets the Qualified name.
@@ -22,7 +22,7 @@ namespace DarlLanguage
         /// </value>
         public string QualifiedName { get; private set; }
 
-       private static Object thisLock = new Object();
+        private static readonly Object thisLock = new Object();
 
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace DarlLanguage
             try
             {
                 //check this is a declaration
-                if (declarationTokens.Contains(context.PreviousToken.Text) ) // one of the declarations, and not yet referenced
+                if (declarationTokens.Contains(context.PreviousToken.Text)) // one of the declarations, and not yet referenced
                 {
                     string name = context.CurrentToken.Text;
                     if (context.CurrentToken.Terminal.Name == "rule_identifier") //rule definition
@@ -67,7 +67,7 @@ namespace DarlLanguage
                     }
                     else if (IOTokens.Contains(context.CurrentToken.Terminal.Name))//it's a rule io definition
                     {
-                         //set the name to be ruleset.ioname
+                        //set the name to be ruleset.ioname
                         name = context.Values[rulesetname] + "." + name;
                     }
                     else if (ConstantTokens.Contains(context.CurrentToken.Terminal.Name))//it's a constant definition
@@ -111,7 +111,7 @@ namespace DarlLanguage
                     {
                         if (context.ParserStack[n].Token != null && context.ParserStack[n].Token.Terminal != null)
                         {
-                            if (context.ParserStack[n].Token.Terminal.Name == "wire" )
+                            if (context.ParserStack[n].Token.Terminal.Name == "wire")
                             {//disambiguate 
                                 Terminal termMatch = null;
                                 foreach (var term in context.CurrentTerminals)
@@ -133,12 +133,12 @@ namespace DarlLanguage
                                     return;
                                 }
                             }
-                            else if(context.ParserStack[n].Token.Terminal.Name == ".")
+                            else if (context.ParserStack[n].Token.Terminal.Name == ".")
                             {
                                 Terminal termMatch = null;
                                 string compName = context.ParserStack[n - 1].Token.Text + "." + context.CurrentToken.Text;
                                 foreach (var term in context.CurrentTerminals)
-                                {                                    
+                                {
                                     if (context.Values.ContainsKey(compName)) //generate composite identifier name
                                     {
                                         if (((Terminal)context.Values[compName]).Equals(term))
@@ -211,7 +211,7 @@ namespace DarlLanguage
                             bool io = true;
                             foreach (var s in context.CurrentTerminals)
                             {
-                                if(EditorInfo.Type == TokenType.Identifier)
+                                if (EditorInfo.Type == TokenType.Identifier)
                                     possibilities += s.ErrorAlias + " ";
                                 else
                                 {
@@ -231,7 +231,7 @@ namespace DarlLanguage
             catch (Exception ex)
             {
 
-                context.AddParserError("General error: {0}",ex.Message);
+                context.AddParserError("General error: {0}", ex.Message);
                 context.CurrentTerminals.Clear();
             }
         }

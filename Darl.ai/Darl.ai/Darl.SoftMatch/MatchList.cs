@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Darl.SoftMatch
 {
@@ -25,7 +24,7 @@ namespace Darl.SoftMatch
         /// Create a local text repository as a concept reverse lookup
         /// </summary>
         /// <param name="data"></param>
-        public void CreateTree(List<KeyValuePair<string,string>> data)
+        public void CreateTree(List<KeyValuePair<string, string>> data)
         {
             foreach (var d in data)
             {
@@ -38,7 +37,7 @@ namespace Darl.SoftMatch
                     {
                         if (l.lineage.StartsWith("noun") || l.lineage.StartsWith("verb") || l.lineage.StartsWith("adjective") || l.lineage.StartsWith("adverb")) //only index nouns and verbs
                         {
-                            if(!dict.ContainsKey(l.lineage))
+                            if (!dict.ContainsKey(l.lineage))
                             {
                                 dict.Add(l.lineage, new List<string>());
                             }
@@ -94,7 +93,7 @@ namespace Darl.SoftMatch
                         var p = dict.IndexOfKey(l.lineage);
                         List<string> closest = null;
                         double firstDistance = double.MaxValue;
-                        if(p > 0) //look at the lineage below
+                        if (p > 0) //look at the lineage below
                         {
                             var candLineage = dict.Keys[p - 1];
                             //check they share the same POS and root index
@@ -127,7 +126,7 @@ namespace Darl.SoftMatch
 
                             }
                         }
-                        if(p < dict.Count - 1) //look at the lineage above.
+                        if (p < dict.Count - 1) //look at the lineage above.
                         {
                             var candLineage = dict.Keys[p + 1];
                             //check they share the same POS and root index
@@ -259,7 +258,7 @@ namespace Darl.SoftMatch
                 var c = sorted[n];
                 r.alternatives.Add(c.index, c.matchedWords);
             }
-            r.confidence = (double)r.matchedWords / (double)nounAndVerbCount;
+            r.confidence = (double)r.matchedWords / nounAndVerbCount;
             return r;
         }
 
@@ -267,7 +266,7 @@ namespace Darl.SoftMatch
         {
             using (MemoryStream ms = new MemoryStream())
             {
-                Serializer.Serialize<MatchList>(ms,this);
+                Serializer.Serialize<MatchList>(ms, this);
                 ms.Position = 0;
                 return ms.ToArray();
             }
@@ -284,7 +283,7 @@ namespace Darl.SoftMatch
 
         public void Flush()
         {
-            
+
         }
 
         /// <summary>
@@ -295,7 +294,7 @@ namespace Darl.SoftMatch
         private double Weight(int count)
         {
             //return 1.0 / Math.Log(count);
-            return 1.0 / Math.Pow((double)count,0.5);
+            return 1.0 / Math.Pow(count, 0.5);
         }
 
     }

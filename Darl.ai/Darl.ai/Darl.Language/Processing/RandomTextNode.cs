@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using DarlCompiler.Interpreter;
+using System;
 using System.Threading.Tasks;
-using DarlCompiler.Interpreter;
-using DarlCompiler.Parsing;
 
 namespace DarlLanguage.Processing
 {
@@ -29,7 +25,7 @@ namespace DarlLanguage.Processing
                     choice = r.Next(arguments.Count);
                 }
                 string text = string.Empty;
-                DarlResult res = (DarlResult) await arguments[choice].Evaluate(thread);
+                DarlResult res = (DarlResult)await arguments[choice].Evaluate(thread);
                 if (res.dataType == DarlResult.DataType.textual)
                 {
                     thread.CurrentNode = Parent;
@@ -39,7 +35,7 @@ namespace DarlLanguage.Processing
                 {
                     throw new ScriptException($"Non-textual parameter passed to randomtext in position {choice}. ");
                 }
-            }           
+            }
         }
 
         public override string preamble

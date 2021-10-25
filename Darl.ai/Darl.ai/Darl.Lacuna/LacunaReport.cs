@@ -4,15 +4,15 @@ using System.Text;
 
 namespace Darl.Lacuna
 {
-	/// <summary>
-	/// Used to report lacunae in Rulesets
-	/// </summary>
+    /// <summary>
+    /// Used to report lacunae in Rulesets
+    /// </summary>
     [Serializable]
-	public class LacunaReport
-	{
-		public DateTime date;
-		public string generator = Assembly.GetExecutingAssembly().FullName;
-		public OutputReport [] outputs;
+    public class LacunaReport
+    {
+        public DateTime date;
+        public string generator = Assembly.GetExecutingAssembly().FullName;
+        public OutputReport[] outputs;
         public string fileName;
 
         public override string ToString()
@@ -50,52 +50,52 @@ namespace Darl.Lacuna
             }
             return build.ToString();
         }
-	}
-	/// <summary>
-	/// A report for a given output
-	/// </summary>
+    }
+    /// <summary>
+    /// A report for a given output
+    /// </summary>
     [Serializable]
-	public class OutputReport
-	{
-		public string name;
-		public SingleLacuna [] lacunae;
-	}
-	/// <summary>
-	/// A report on a lacuna
-	/// </summary>
+    public class OutputReport
+    {
+        public string name;
+        public SingleLacuna[] lacunae;
+    }
+    /// <summary>
+    /// A report on a lacuna
+    /// </summary>
     [Serializable]
-	public class SingleLacuna
-	{
-		public LacunaInput[] inputs;
-		public double minimumConfidence;
-		public int examples;
-	}
-	/// <summary>
-	/// Details for that individual input
-	/// </summary>
+    public class SingleLacuna
+    {
+        public LacunaInput[] inputs;
+        public double minimumConfidence;
+        public int examples;
+    }
+    /// <summary>
+    /// Details for that individual input
+    /// </summary>
     [Serializable]
-	public class LacunaInput
-	{
-		/// <summary>
-		/// Lower bound of the numeric lacuna
-		/// </summary>
-		public string minValue;
-		/// <summary>
-		/// upper bound of the numeric lacuna
-		/// </summary>
-		public string maxValue;
-		/// <summary>
-		/// Name opf the input
-		/// </summary>
-		public string name;
-		/// <summary>
-		/// lacuna category if categorical
-		/// </summary>
-		public string category;
-		/// <summary>
-		/// Textual version of type of input
-		/// </summary>
-		public string inputType;
-	}
+    public class LacunaInput
+    {
+        /// <summary>
+        /// Lower bound of the numeric lacuna
+        /// </summary>
+        public string minValue;
+        /// <summary>
+        /// upper bound of the numeric lacuna
+        /// </summary>
+        public string maxValue;
+        /// <summary>
+        /// Name opf the input
+        /// </summary>
+        public string name;
+        /// <summary>
+        /// lacuna category if categorical
+        /// </summary>
+        public string category;
+        /// <summary>
+        /// Textual version of type of input
+        /// </summary>
+        public string inputType;
+    }
 
 }

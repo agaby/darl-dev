@@ -84,7 +84,7 @@ namespace Darl.Thinkbase
         Task<List<KnowledgeState>> GetKnowledgeStatesByTypeAndAttributeExistence(string userId, string objectId, string graphName, string attLineage);
         Task<string> ShareKGraph(string userId, string name, string sharerId, bool readOnly, bool hidden);
         Task<List<KnowledgeState>> GetSetOfKnowledgeStates(string userId, List<string> ksIds, string graphName);
-        string CreateTimedAccessUrl(string userId,string name);
+        string CreateTimedAccessUrl(string userId, string name);
         Task<ModelMetaData> UpdateKGraph(string userId, string name, ModelMetaData kgupdate);
     }
 }

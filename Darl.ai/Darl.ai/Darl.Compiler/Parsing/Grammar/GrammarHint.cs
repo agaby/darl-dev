@@ -52,7 +52,7 @@ namespace DarlCompiler.Parsing
             // owner.State.BuilderData.Conflicts -- as set of conflict terminals
             // owner.State.Actions -- a dictionary of actions in the current state.
         }
-    } 
+    }
 
 
 }

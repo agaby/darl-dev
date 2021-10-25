@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Darl.Common;
+﻿using Darl.Common;
 using ProtoBuf;
+using System.Collections.Generic;
 
 
 namespace Darl.Thinkbase

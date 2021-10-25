@@ -1,10 +1,6 @@
-﻿using Darl.Thinkbase.Meta;
-using DarlCompiler.Ast;
+﻿using DarlCompiler.Ast;
 using DarlCompiler.Interpreter;
 using DarlCompiler.Parsing;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
@@ -18,10 +14,10 @@ namespace Darl.Thinkbase.Meta
         {
             base.Init(context, treeNode);
             var nodes = treeNode.GetMappedChildNodes();
-            foreach(var node in nodes)
+            foreach (var node in nodes)
             {
                 var a = (DarlMetaNode)AddChild("-", node);
-                switch(a.AsString)
+                switch (a.AsString)
                 {
                     case "lifetime":
                         lifetime = a as LifetimeNode;

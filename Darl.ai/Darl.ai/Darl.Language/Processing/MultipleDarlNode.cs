@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using DarlCompiler.Ast;
+﻿using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
+using System.Collections.Generic;
 
 namespace DarlLanguage.Processing
 {
@@ -25,7 +25,7 @@ namespace DarlLanguage.Processing
             var nodes = treeNode.GetMappedChildNodes();
             if (nodes.Count == 1)
             {
-                foreach(var node in nodes[0].ChildNodes)
+                foreach (var node in nodes[0].ChildNodes)
                 {
                     arguments.Add((DarlNode)AddChild("-", node));
                 }
@@ -40,7 +40,7 @@ namespace DarlLanguage.Processing
         /// <param name="context">The context.</param>
         public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlNode currentOutput, ConstantContext context)
         {
-            foreach(var node in arguments)
+            foreach (var node in arguments)
                 node.WalkDependencies(dependencies, currentOutput, context);
         }
 
@@ -55,7 +55,7 @@ namespace DarlLanguage.Processing
         {
             foreach (var node in arguments)
                 node.WalkSaliences(saliency, root, currentRuleSet, currentOutput);
-            
+
         }
     }
 }

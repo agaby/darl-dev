@@ -1,9 +1,4 @@
-﻿using Darl.Thinkbase.Meta;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
 {
@@ -18,7 +13,7 @@ namespace Darl.Thinkbase.Meta
             {
                 if (grammar.state.ContainsRecord(o.id))
                 {
-                    if (grammar.state.ContainsAttribute(o.id,attLineage))
+                    if (grammar.state.ContainsAttribute(o.id, attLineage))
                     {
                         count++;
                     }

@@ -3,10 +3,8 @@ using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl_standard.Darl.Thinkbase.Meta

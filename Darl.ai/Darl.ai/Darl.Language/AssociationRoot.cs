@@ -1,18 +1,15 @@
-﻿using System;
+﻿using DarlLanguage.Processing;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using System.Xml;
-using DarlLanguage.Processing;
 
 namespace Darl.Language
 {
 
     class AssociationRoot
     {
-        static double excitationThreshold = 0.5;
-        static public double minimumSupport = 0.005;
-        static public double minimumConfidence = 0.3;
+        static readonly double excitationThreshold = 0.5;
+        public static double minimumSupport = 0.005;
+        public static double minimumConfidence = 0.3;
         /// <summary>
         /// Pre-process the input data to create a sparse array
         /// </summary>
@@ -54,10 +51,10 @@ namespace Darl.Language
                         if (input.Value.values[index] is DarlResult)
                         {
                             DarlResult result = (DarlResult)input.Value.values[index];
- /*                           foreach (int itemCat in result.categories.Keys)
-                            {
-                                excitations.Add(new AssociationDataPoint(1.0, offset + itemCat, input));
-                            }*/ //fix this
+                            /*                           foreach (int itemCat in result.categories.Keys)
+                                                       {
+                                                           excitations.Add(new AssociationDataPoint(1.0, offset + itemCat, input));
+                                                       }*/ //fix this
                         }
                         else if (input.Value.values[index] is int)
                         {
@@ -243,8 +240,8 @@ namespace Darl.Language
 
         List<List<AssociationDataPoint>> sparseArray;
         AssociationNode root;
-        Dictionary<int, List<AssociationNode>> groups = new Dictionary<int, List<AssociationNode>>();
-        Dictionary<int, int> partitionReferences = new Dictionary<int, int>();
+        readonly Dictionary<int, List<AssociationNode>> groups = new Dictionary<int, List<AssociationNode>>();
+        readonly Dictionary<int, int> partitionReferences = new Dictionary<int, int>();
 
 
         private static int CompareSparseArrays(List<AssociationDataPoint> x, List<AssociationDataPoint> y)

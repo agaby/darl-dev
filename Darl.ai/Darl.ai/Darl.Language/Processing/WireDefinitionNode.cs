@@ -11,7 +11,8 @@ namespace DarlLanguage.Processing
         /// <summary>
         /// The possible types of wires
         /// </summary>
-        public enum WireType {
+        public enum WireType
+        {
             /// <summary>
             /// The wirein
             /// </summary>
@@ -40,7 +41,7 @@ namespace DarlLanguage.Processing
         /// <value>
         /// The sourcename.
         /// </value>
-        public string sourcename { get;  set; }
+        public string sourcename { get; set; }
 
         /// <summary>
         /// Gets the destname.
@@ -48,7 +49,7 @@ namespace DarlLanguage.Processing
         /// <value>
         /// The destname.
         /// </value>
-        public string destname { get;  set; }
+        public string destname { get; set; }
 
         /// <summary>
         /// Gets the source ruleset.
@@ -56,7 +57,7 @@ namespace DarlLanguage.Processing
         /// <value>
         /// The source ruleset.
         /// </value>
-        public string sourceRuleset { get;  set; }
+        public string sourceRuleset { get; set; }
 
         /// <summary>
         /// Gets the dest ruleset.
@@ -64,7 +65,7 @@ namespace DarlLanguage.Processing
         /// <value>
         /// The dest ruleset.
         /// </value>
-        public string destRuleset { get;  set; }
+        public string destRuleset { get; set; }
 
         /// <summary>
         /// Get the composite source
@@ -102,7 +103,7 @@ namespace DarlLanguage.Processing
         /// <value>
         /// The wiretype.
         /// </value>
-        public WireType wiretype { get;  set; }
+        public WireType wiretype { get; set; }
 
         /// <summary>
         /// Initializes the specified context.
@@ -183,7 +184,7 @@ namespace DarlLanguage.Processing
         {
             get
             {
-                switch(writeIndex)
+                switch (writeIndex)
                 {
                     case 0:
                         writeIndex++;

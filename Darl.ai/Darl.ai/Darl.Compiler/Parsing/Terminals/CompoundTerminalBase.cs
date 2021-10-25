@@ -11,9 +11,9 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using Darl.ai;
 using System;
 using System.Collections.Generic;
-using Darl.ai;
 
 namespace DarlCompiler.Parsing
 {
@@ -310,8 +310,8 @@ namespace DarlCompiler.Parsing
             if (details.IsPartial)
             {
                 //Save terminal state so we can continue
-                context.VsLineScanState.TokenSubType = (byte)details.SubTypeIndex;
-                context.VsLineScanState.TerminalFlags = (short)details.Flags;
+                context.VsLineScanState.TokenSubType = details.SubTypeIndex;
+                context.VsLineScanState.TerminalFlags = details.Flags;
                 context.VsLineScanState.TerminalIndex = this.MultilineIndex;
             }
             else

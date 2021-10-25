@@ -11,10 +11,10 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using Darl.ai;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DarlCompiler.Parsing
 {
@@ -51,7 +51,7 @@ namespace DarlCompiler.Parsing
         /// <summary>
         /// The _default start symbols
         /// </summary>
-        static string[] _defaultStartSymbols = new[] { "\\", "_" };
+        static readonly string[] _defaultStartSymbols = new[] { "\\", "_" };
         /// <summary>
         /// The line terminators
         /// </summary>

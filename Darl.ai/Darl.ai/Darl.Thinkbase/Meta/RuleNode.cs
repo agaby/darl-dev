@@ -67,7 +67,7 @@ namespace Darl.Thinkbase.Meta
             ruleOutput = AddChild("-", nodes[1]) as DarlMetaNode;
             rhs = AddChild("-", nodes[2]) as DarlMetaNode;
             var decorationNode = nodes.Count > 3 ? AddChild("-", nodes[3]) as DecorationNode : null;
-            if(decorationNode != null)
+            if (decorationNode != null)
             {
                 confidenceNode = decorationNode.confidence ?? new ConfidenceNode();
                 lifetimeNode = decorationNode.lifetime ?? new LifetimeNode();
@@ -218,8 +218,8 @@ namespace Darl.Thinkbase.Meta
         /// <param name="currentOutput">The current output.</param>
         public override void WalkSaliences(double saliency, MetaRootNode root)
         {
-            conditions.WalkSaliences(saliency,root);
-            rhs.WalkSaliences(saliency,root);
+            conditions.WalkSaliences(saliency, root);
+            rhs.WalkSaliences(saliency, root);
         }
     }
 }

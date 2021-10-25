@@ -1,6 +1,5 @@
 ﻿using Chronic;
 using Darl.Common;
-using Darl.Thinkbase;
 using DarlCommon;
 using Newtonsoft.Json;
 using System;
@@ -22,7 +21,7 @@ namespace Darl.Lineage
         /// </summary>
         private static int maxPhraseLength { get; } = 3;
 
-        private static SymSpell symSpell = new SymSpell(82765, 2);
+        private static readonly SymSpell symSpell = new SymSpell(82765, 2);
 
         /// <summary>
         /// Gets the suffixes.
@@ -30,7 +29,7 @@ namespace Darl.Lineage
         /// <value>The suffixes.</value>
         private static string[] suffixes { get { return new string[] { "s", "ses", "xes", "zes", "ches", "shes", "ies", "es", "es", "ed", "ed", "ing", "ing", "'s", "'", "er", "est", "st" }; } }
 
-        private static string[] keywords {get{ return new string[] {"noun","verb","adjective","adverb","punctuation","conjunction","article","preposition","postposition","pronoun","proper_noun","auxiliary_verb", "mathsymbol", "negative_auxiliary" };}}
+        private static string[] keywords { get { return new string[] { "noun", "verb", "adjective", "adverb", "punctuation", "conjunction", "article", "preposition", "postposition", "pronoun", "proper_noun", "auxiliary_verb", "mathsymbol", "negative_auxiliary" }; } }
 
         private static string[] ValuePlaceholders { get { return new string[] { "value:", "value:number", "value:number,integer", "value:number,float", "value:choice", "value:choice,boolean", "value:time", "value:date", "value:duration", "value:location", "value:currency", "default:", "value:text", "terminus:" }; } }
         /// <summary>
@@ -41,7 +40,7 @@ namespace Darl.Lineage
 
         //parsing numbers in text
 
-        private static Dictionary<string, int> cardinals = new Dictionary<string, int> { {"adjective:12014",0},{"adjective:12016", 1},{"adjective:12017",2},{"adjective:12018",3},
+        private static readonly Dictionary<string, int> cardinals = new Dictionary<string, int> { {"adjective:12014",0},{"adjective:12016", 1},{"adjective:12017",2},{"adjective:12018",3},
                                                                                         {"adjective:12019", 4},{"adjective:12020",5},{"adjective:12021", 6},{"adjective:12022", 7},
                                                                                         {"adjective:12023", 8},{"adjective:12024", 9},{"adjective:12025",10},{"adjective:12026", 11},
                                                                                         {"adjective:12027", 12},  {"adjective:12028", 13},   {"adjective:12029", 14},{"adjective:12030",15},
@@ -75,15 +74,15 @@ namespace Darl.Lineage
                                                                                         {"adjective:12140",100000} };
 
 
-        private static Dictionary<string, int> multipliers = new Dictionary<string, int> { { "adjective:12115", 100 }, { "adjective:12138", 1000 }, { "adjective:12141", 1000000 }, { "adjective:12142", 1000000000 }, { "adjective:12143", 1000000000 } };
-        private static List<string> punctuators = new List<string> { "punctuation:0" };
-        private static List<string> separators = new List<string> { "conjunction:25" };
-        private static List<string> indefiniteArticles = new List<string> { "article:4", "article:5" };
+        private static readonly Dictionary<string, int> multipliers = new Dictionary<string, int> { { "adjective:12115", 100 }, { "adjective:12138", 1000 }, { "adjective:12141", 1000000 }, { "adjective:12142", 1000000000 }, { "adjective:12143", 1000000000 } };
+        private static readonly List<string> punctuators = new List<string> { "punctuation:0" };
+        private static readonly List<string> separators = new List<string> { "conjunction:25" };
+        private static readonly List<string> indefiniteArticles = new List<string> { "article:4", "article:5" };
 
         //parsing time periods
-        private static Dictionary<string, TimeSpan> periods = new Dictionary<string, TimeSpan> { { "noun:01,5,15,00", new TimeSpan(1, 0, 0, 0) }, { "noun:01,5,15,04", new TimeSpan(30, 0, 0, 0) }, {"noun:01,5,03,3,045", new TimeSpan(365, 0, 0, 0) }, { "noun:01,5,15,07", new TimeSpan(1,0,0 ) }, { "noun:01,5,15,10", new TimeSpan(0,1,0) }, { "noun:01,5,15,12", new TimeSpan(0, 0, 1) }, { "noun:01,5,03,3,039", new TimeSpan(7,0,0,0) } };
+        private static readonly Dictionary<string, TimeSpan> periods = new Dictionary<string, TimeSpan> { { "noun:01,5,15,00", new TimeSpan(1, 0, 0, 0) }, { "noun:01,5,15,04", new TimeSpan(30, 0, 0, 0) }, { "noun:01,5,03,3,045", new TimeSpan(365, 0, 0, 0) }, { "noun:01,5,15,07", new TimeSpan(1, 0, 0) }, { "noun:01,5,15,10", new TimeSpan(0, 1, 0) }, { "noun:01,5,15,12", new TimeSpan(0, 0, 1) }, { "noun:01,5,03,3,039", new TimeSpan(7, 0, 0, 0) } };
 
-        private static string locationRoot = "noun:99,";
+        private static readonly string locationRoot = "noun:99,";
         /// <summary>
         /// Constructor
         /// </summary>
@@ -180,14 +179,14 @@ namespace Darl.Lineage
         /// <param name="lineageArray">the list of lineages</param>
         /// <param name="conceptFrequency">optional lineage frequency capture</param>
         /// <returns></returns>
-        public static bool Match(string text, List<string> lineageArray, Dictionary<string,int>? conceptFrequency = null)
+        public static bool Match(string text, List<string> lineageArray, Dictionary<string, int>? conceptFrequency = null)
         {
             var word = text.Trim().ToLower();
             var index = 0;
             var concepts = WordRecognizer(new List<string> { word }, ref index, true);
-            if(conceptFrequency != null)
+            if (conceptFrequency != null)
             {
-                foreach(var c in concepts)
+                foreach (var c in concepts)
                 {
                     if (conceptFrequency.ContainsKey(c.lineage))
                         conceptFrequency[c.lineage]++;
@@ -248,7 +247,7 @@ namespace Darl.Lineage
                     wordIndex--;
                     var res = HandleValues(val.lineage, wordList, ref wordIndex, currentConcepts);
                     wordIndex++;
-                    if(!res.unknown)
+                    if (!res.unknown)
                     {
                         values.Add(res);
                         var concepts = WordRecognizer(wordList, ref wordIndex, true);//was false 28/10/17
@@ -297,7 +296,7 @@ namespace Darl.Lineage
                     }
                 case "value:number":
                 case "value:number,integer":
-                case "value:number,float": 
+                case "value:number,float":
                     {
                         double v;
                         if (double.TryParse(wordList[wordIndex], out v))//was wordindex - 1
@@ -454,9 +453,9 @@ namespace Darl.Lineage
                                 found = true;
                             }
                         }
-                        
+
                     }
-                    
+
                 }
                 else //process a period
                 {
@@ -507,7 +506,7 @@ namespace Darl.Lineage
                         complete = true; //nothing found
                     }
                 }
-                else if(stepNeeded)
+                else if (stepNeeded)
                     concepts = WordRecognizer(wordList, ref wordIndex, true);
             }
             return res;
@@ -555,7 +554,7 @@ namespace Darl.Lineage
                     {
                         tokens.Add(text.Substring(tokenStart, n - tokenStart).ToLower());
                     }
-                    if(inToken == TokenizerState.token)
+                    if (inToken == TokenizerState.token)
                         inToken = TokenizerState.scanning;
                 }
                 else if (char.IsPunctuation(c))
@@ -568,9 +567,9 @@ namespace Darl.Lineage
                             tokenStart = n;
                         }
                     }
-                    else if(inToken == TokenizerState.reported_speech)
+                    else if (inToken == TokenizerState.reported_speech)
                     {
-                        if(c == '"') // terminate reported speech
+                        if (c == '"') // terminate reported speech
                         {
                             tokens.Add(text.Substring(tokenStart + 1, n - (tokenStart + 1)));//reported speech not converted to lower case.
                             inToken = TokenizerState.scanning;
@@ -595,7 +594,7 @@ namespace Darl.Lineage
             {
                 tokens.Add(text.Substring(tokenStart, text.Length - tokenStart).ToLower());
             }
-            else if(inToken == TokenizerState.reported_speech)
+            else if (inToken == TokenizerState.reported_speech)
             {
                 tokens.Add(text.Substring(tokenStart, text.Length - tokenStart)); //reported speech not converted to lower case.
             }
@@ -639,10 +638,10 @@ namespace Darl.Lineage
                     if (w != null)
                     {
                         found = true;
-//                        Trace.WriteLine($"Found word/phrase: {token}, length: {n} initial wordIndex: {wordIndex}, next wordIndex: {wordIndex + n}");
+                        //                        Trace.WriteLine($"Found word/phrase: {token}, length: {n} initial wordIndex: {wordIndex}, next wordIndex: {wordIndex + n}");
                         increment = n;
                         list = new HashSet<LineageRecord>();
-                        foreach(var s in w)
+                        foreach (var s in w)
                             list.Add(s);
                     }
                     if (n == 1) //consider matches minus suffixes even though a match may have been found. 
@@ -673,11 +672,11 @@ namespace Darl.Lineage
                                         }
                                         if (list == null)
                                         {
-                                            list = new HashSet<LineageRecord>();     
+                                            list = new HashSet<LineageRecord>();
                                         }
                                         foreach (var s in tt)
                                             list.Add(s);
-//                                        Trace.WriteLine($"Found word/phrase by stemming: {temptoken}, length: {n} initial wordIndex: {wordIndex}, next wordIndex: {wordIndex + offset}");
+                                        //                                        Trace.WriteLine($"Found word/phrase by stemming: {temptoken}, length: {n} initial wordIndex: {wordIndex}, next wordIndex: {wordIndex + offset}");
                                         increment = offset;
                                         found = true;
                                     }
@@ -694,7 +693,7 @@ namespace Darl.Lineage
             }
             if (!found)//not found any of the matches
             {
-//                Trace.WriteLine($"Not found word/phrase: {t}, length: {1} initial wordIndex: {wordIndex}, next wordIndex: {wordIndex + 1}");
+                //                Trace.WriteLine($"Not found word/phrase: {t}, length: {1} initial wordIndex: {wordIndex}, next wordIndex: {wordIndex + 1}");
                 list = new HashSet<LineageRecord> { lineages["proper_noun:18"] };
                 wordIndex++;
             }
@@ -720,7 +719,7 @@ namespace Darl.Lineage
             int oldWordIndex = 0; ;
             while (!complete)
             {
-                
+
                 bool found = false;
                 foreach (var c in concepts)
                 {
@@ -761,7 +760,7 @@ namespace Darl.Lineage
                         res.Value = sum.ToString();
                         res.unknown = false;
                         res.weight = 1.0;
-                        if(!found)
+                        if (!found)
                         {
                             currentConcepts = oldConcepts;
                             wordIndex = oldWordIndex;
@@ -779,7 +778,7 @@ namespace Darl.Lineage
                     concepts = WordRecognizer(wordList, ref wordIndex, true);
                     currentConcepts = concepts;
                 }
-                    
+
             }
             return res;
         }
@@ -795,7 +794,7 @@ namespace Darl.Lineage
         {
             int n = s.Length;
             int m = t.Length;
-            int p = Math.Max(n,m);
+            int p = Math.Max(n, m);
             int[,] d = new int[n + 1, m + 1];
 
             if (n == 0 || m == 0)
@@ -818,10 +817,10 @@ namespace Darl.Lineage
                             d[i, j - 1] + 1),   //an insertion
                             d[i - 1, j - 1] + 1 //a substitution
                             );
-            return 1 - (double)d[n, m]/(double)p;
+            return 1 - d[n, m] / (double)p;
         }
 
-        public static List<SuggestItem> SimilarWordSuggestions(string word, int maxDistance )
+        public static List<SuggestItem> SimilarWordSuggestions(string word, int maxDistance)
         {
             return symSpell.Lookup(word, Verbosity.Closest, maxDistance);
         }
@@ -863,14 +862,14 @@ namespace Darl.Lineage
             return true;
         }
 
-        public static (bool,string) CheckLineageWithTypeWord(string lineage)
+        public static (bool, string) CheckLineageWithTypeWord(string lineage)
         {
             var lin = lineage.Trim();
             if (lineages.ContainsKey(lineage))
             {
                 return (true, lineages[lineage].typeWord);
             }
-            return (CheckLineage(lineage),"");
+            return (CheckLineage(lineage), "");
         }
     }
 }

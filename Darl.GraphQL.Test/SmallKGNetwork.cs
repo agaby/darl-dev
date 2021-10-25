@@ -32,32 +32,32 @@ namespace Darl.GraphQL.Test
         private IGraphPrimitives _primitives;
         private ILocalStore _graphStore;
 
-        private static string industryLineage = "noun:01,2,07,10,14,3,1";
-        private static string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";
-        private static string jobLineage = "noun:01,0,2,00,23,19";
-        private static string areaLineage = "noun:01,1,00,10,09,5";
-        private static string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
-        private static string courseLineage = "noun:01,0,2,00,23,29,02";
-        private static string abilityLineage = "noun:01,0,0,04";
-        private static string enableLineage = "verb:013,210";
-        private static string ruleLineage = "noun:01,0,2,00,23,44,15";
-        private static string personLineage = "noun:00,2,00";
-        private static string universityLineage = "noun:01,2,07,10,13,7,4";
-        private static string learningOutcomeLineage = "noun:01,0,0,15,16,2";
-        private static string ownLineage = "verb:393";
-        private static string consistsLineage = "verb:019,031";
-        private static string teachLineage = "verb:034,30,01,09,01";
-        private static string topicLineage = "noun:01,4,05,06";
-        private static string skillLineage = "noun:01,0,0,04";
-        private static string createLineage = "verb:023";
-        private static string requireLineage = "verb:145";
-        private static string descriptionLineage = "noun:01,4,05,21,05";
-        private static string functionLineage = "noun:01,0,2,00,23,16,21,1";
-        private static string careerLineage = "noun:01,0,2,00,00,15,20,01,1";
-        private static string huntingLineage = "noun:01,0,2,00,23,35";
-        private static string personalityLineage = "noun:01,1,09";
-        private static string liveLineage = "adjective:7763";
-        private static string studentLineage = "noun:00,2,00,175,0";
+        private static readonly string industryLineage = "noun:01,2,07,10,14,3,1";
+        private static readonly string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";
+        private static readonly string jobLineage = "noun:01,0,2,00,23,19";
+        private static readonly string areaLineage = "noun:01,1,00,10,09,5";
+        private static readonly string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
+        private static readonly string courseLineage = "noun:01,0,2,00,23,29,02";
+        private static readonly string abilityLineage = "noun:01,0,0,04";
+        private static readonly string enableLineage = "verb:013,210";
+        private static readonly string ruleLineage = "noun:01,0,2,00,23,44,15";
+        private static readonly string personLineage = "noun:00,2,00";
+        private static readonly string universityLineage = "noun:01,2,07,10,13,7,4";
+        private static readonly string learningOutcomeLineage = "noun:01,0,0,15,16,2";
+        private static readonly string ownLineage = "verb:393";
+        private static readonly string consistsLineage = "verb:019,031";
+        private static readonly string teachLineage = "verb:034,30,01,09,01";
+        private static readonly string topicLineage = "noun:01,4,05,06";
+        private static readonly string skillLineage = "noun:01,0,0,04";
+        private static readonly string createLineage = "verb:023";
+        private static readonly string requireLineage = "verb:145";
+        private static readonly string descriptionLineage = "noun:01,4,05,21,05";
+        private static readonly string functionLineage = "noun:01,0,2,00,23,16,21,1";
+        private static readonly string careerLineage = "noun:01,0,2,00,00,15,20,01,1";
+        private static readonly string huntingLineage = "noun:01,0,2,00,23,35";
+        private static readonly string personalityLineage = "noun:01,1,09";
+        private static readonly string liveLineage = "adjective:7763";
+        private static readonly string studentLineage = "noun:00,2,00,175,0";
 
         [TestInitialize()]
         public void Initialize()
@@ -96,8 +96,8 @@ namespace Darl.GraphQL.Test
             cache.Setup(a => a.GetAsync(It.IsAny<string>(), default)).Returns(Task.FromResult<byte[]>(null));
             var lic = new Mock<ILicensing>();
             _primitives = new BlobGraphPrimitives(blob, cache.Object, conn.Object, bgplogger.Object, lic.Object);
-            _graph = new GraphProcessing(_primitives, glogger.Object,meta.Object);
-            _graphStore = new GraphLocalStore(_config,logger.Object, context.Object, _graph);
+            _graph = new GraphProcessing(_primitives, glogger.Object, meta.Object);
+            _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
         }
 
         [TestMethod]
@@ -121,13 +121,13 @@ namespace Darl.GraphQL.Test
             var userId = _config["userId"];
             var res = await _graphStore.ReadAsync(new List<string> { "categories", "kg1_graph", "I1", "noun:01,0,0,15,07,02,04,1,02,1", "name" });
             Assert.AreEqual(10, res.categories.Count);
-        }        
-        
+        }
+
         [TestMethod]
         public async Task TestInferenceNopath()
         {
             var userId = _config["userId"];
-            var res = await _graphStore.ReadAsync(new List<string> { "path", "kg1_graph","STUD1", "BJT408" });
+            var res = await _graphStore.ReadAsync(new List<string> { "path", "kg1_graph", "STUD1", "BJT408" });
             Assert.AreEqual("There is no path found", res.Value);
         }
 
@@ -141,13 +141,13 @@ namespace Darl.GraphQL.Test
             var v = new GraphObjectInput { lineage = studentLineage, name = "Student", externalId = "STUD1" };
             var userId = _config["userId"];
             var res = await _graph.CreateGraphObject($"{userId}_kg1_graph", v, OntologyAction.build);
-//            var studentId = "359f45d1-6c76-4761-bd9c-0ac8e23a6150";
+            //            var studentId = "359f45d1-6c76-4761-bd9c-0ac8e23a6150";
             //connect it up to all the courses via a "can take" connection
             var courses = await _graph.GetGraphObjectsByLineage($"{userId}_kg1_graph", courseLineage);
-            foreach(var c in courses)
+            foreach (var c in courses)
             {
-                if(c. externalId != null && c.externalId.StartsWith("C"))
-                { 
+                if (c.externalId != null && c.externalId.StartsWith("C"))
+                {
                     var e = new GraphConnectionInput { lineage = requireLineage, name = "can Take", weight = 1.0, startId = res.id, endId = c.id };
                     await _graph.CreateGraphConnection($"{userId}_kg1_graph", e, OntologyAction.build);
                 }
@@ -163,7 +163,7 @@ namespace Darl.GraphQL.Test
             var ivf = new IdentifiableVertexFactory<SimpleVertex>(MakeVertex);
             var ief = new IdentifiableEdgeFactory<SimpleVertex, SimpleEdge>(MakeEdge);
             var graph = new TempGraph();
-            graph.DeserializeFromGraphML<SimpleVertex, SimpleEdge, TempGraph>(docsource, ivf,ief);
+            graph.DeserializeFromGraphML<SimpleVertex, SimpleEdge, TempGraph>(docsource, ivf, ief);
             var jobroles = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.JobRoles.json"));
             var jr = jobroles.ReadToEnd();
             var roles = JArray.Parse(jr);
@@ -179,14 +179,14 @@ namespace Darl.GraphQL.Test
                 AddProperty(job, jobrole, "InterpersonalSkills", personalityLineage);
                 AddProperty(job, jobrole, "WorkLive", liveLineage);
                 //now edges
-                foreach( var jrs in jobrole.SelectToken("$.JobRoleSkills").ToList())
+                foreach (var jrs in jobrole.SelectToken("$.JobRoleSkills").ToList())
                 {
                     var js = jrs.SelectToken("$.JobSkill");
                     var bsid = js.SelectToken("$.ImportCode").ToString();
                     var skill = graph.vertices[bsid];
                     Assert.IsNotNull(skill);
                     //add link between job and skill
-//                    graph.AddEdge(new SimpleEdge { Source = job, Target = skill, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
+                    //                    graph.AddEdge(new SimpleEdge { Source = job, Target = skill, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
                     graph.AddEdge(new SimpleEdge { Source = skill, Target = job, edgelabel = "Required for", id = Guid.NewGuid().ToString(), lineage = requireLineage });
                     //now look for further links
                     foreach (var jslo in js.SelectToken("$.JobSkillLearningOutcomes").ToList())
@@ -195,7 +195,7 @@ namespace Darl.GraphQL.Test
                         var loid = js.SelectToken("$.ImportCode").ToString();
                         var loObj = graph.vertices[loid];
                         Assert.IsNotNull(loObj);
-//                        graph.AddEdge(new SimpleEdge { Source = skill, Target = loObj, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
+                        //                        graph.AddEdge(new SimpleEdge { Source = skill, Target = loObj, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
                         graph.AddEdge(new SimpleEdge { Source = loObj, Target = skill, edgelabel = "Required for", id = Guid.NewGuid().ToString(), lineage = requireLineage });
                     }
                     foreach (var jsst in js.SelectToken("$.JobSkillSubjectTopics").ToList())
@@ -204,7 +204,7 @@ namespace Darl.GraphQL.Test
                         var stid = js.SelectToken("$.ImportCode").ToString();
                         var stObj = graph.vertices[stid];
                         Assert.IsNotNull(stObj);
- //                       graph.AddEdge(new SimpleEdge { Source = skill, Target = stObj, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
+                        //                       graph.AddEdge(new SimpleEdge { Source = skill, Target = stObj, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
                         graph.AddEdge(new SimpleEdge { Source = stObj, Target = skill, edgelabel = "Required for", id = Guid.NewGuid().ToString(), lineage = requireLineage });
                     }
                     foreach (var jsts in js.SelectToken("$.JobSkillTransferableSkills").ToList())
@@ -213,7 +213,7 @@ namespace Darl.GraphQL.Test
                         var tsid = js.SelectToken("$.ImportCode").ToString();
                         var tsObj = graph.vertices[tsid];
                         Assert.IsNotNull(tsObj);
- //                       graph.AddEdge(new SimpleEdge { Source = skill, Target = tsObj, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
+                        //                       graph.AddEdge(new SimpleEdge { Source = skill, Target = tsObj, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
                         graph.AddEdge(new SimpleEdge { Source = tsObj, Target = skill, edgelabel = "Required for", id = Guid.NewGuid().ToString(), lineage = requireLineage });
                     }
                     foreach (var jsu in js.SelectToken("$.JobSkillUnits").ToList())
@@ -222,7 +222,7 @@ namespace Darl.GraphQL.Test
                         var uid = js.SelectToken("$.ImportCode").ToString();
                         var uObj = graph.vertices[uid];
                         Assert.IsNotNull(uObj);
-//                        graph.AddEdge(new SimpleEdge { Source = skill, Target = uObj, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
+                        //                        graph.AddEdge(new SimpleEdge { Source = skill, Target = uObj, edgelabel = "requires", id = Guid.NewGuid().ToString(), lineage = requireLineage });
                         graph.AddEdge(new SimpleEdge { Source = uObj, Target = skill, edgelabel = "Required for", id = Guid.NewGuid().ToString(), lineage = requireLineage });
                     }
                 }
@@ -258,14 +258,14 @@ namespace Darl.GraphQL.Test
                             {
                                 var jobName = r.SelectToken("$.Name").ToString();
                                 var match = graph.vertices.Values.Where(a => a.label == jobName).FirstOrDefault();
-                                if(match != null)
+                                if (match != null)
                                 {
                                     SimpleVertex sectorVertex;
                                     if (!graph.vertices.ContainsKey(sectorKey))
                                     {
                                         sectorVertex = new SimpleVertex { label = sectorName, id = sectorKey, lineage = sectorLineage };
                                         graph.AddVertex(sectorVertex);
-                                        graph.AddEdge(new SimpleEdge { edgelabel = "consists of", lineage = consistsLineage, weight = 1.0, Source = industryVertex, Target = sectorVertex ,id = Guid.NewGuid().ToString() });
+                                        graph.AddEdge(new SimpleEdge { edgelabel = "consists of", lineage = consistsLineage, weight = 1.0, Source = industryVertex, Target = sectorVertex, id = Guid.NewGuid().ToString() });
                                     }
                                     else
                                     {
@@ -304,7 +304,7 @@ namespace Darl.GraphQL.Test
                 }
                 sectorIndex++;
             }
-            
+
             //now load the entire thing into the cloud
             var client = new GraphQLHttpClient(_config["darlDevUrl"], new NewtonsoftJsonSerializer());
             client.HttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", _config["darlDevAPiKey"]);
@@ -313,7 +313,7 @@ namespace Darl.GraphQL.Test
             var nameIdLookup = new Dictionary<string, string>();
             foreach (var lv in graph.vertices.Values)
             {
-                var v = new GraphObjectInput { lineage = lv.lineage, name = lv.label ?? lv.id,  externalId = lv.id, properties = BlobGraphPrimitives.ConvertAttributeInputList(lv.properties) };
+                var v = new GraphObjectInput { lineage = lv.lineage, name = lv.label ?? lv.id, externalId = lv.id, properties = BlobGraphPrimitives.ConvertAttributeInputList(lv.properties) };
                 /*                var req = new GraphQLHttpRequest() { Variables = new { go = v }, Query = @"mutation cgo($go: graphObjectInput!){createGraphObject(graphObject: $go, ontology: BUILD){name id lineage inferred virtual}}", OperationName = "cgo" };
                                 var resp = await client.SendQueryAsync<dynamic>(req);
                                 nameIdLookup.Add(lv.id, ((Newtonsoft.Json.Linq.JObject)resp.Data).SelectToken("createGraphObject.id").ToString());
@@ -323,7 +323,7 @@ namespace Darl.GraphQL.Test
                     var res = await _graph.CreateGraphObject($"{userId}_kg1_graph", v, OntologyAction.build);
                     nameIdLookup.Add(lv.id, res.id);
                 }
-                catch(Exception ex)
+                catch (Exception)
                 {
 
                 }
@@ -339,7 +339,7 @@ namespace Darl.GraphQL.Test
                 {
                     await _graph.CreateGraphConnection($"{userId}_kg1_graph", e, OntologyAction.build);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                 }
@@ -351,15 +351,15 @@ namespace Darl.GraphQL.Test
         {
             //create lineage from id type
             var lineage = "";
-            if(id.StartsWith("BJT"))
+            if (id.StartsWith("BJT"))
             {//it's a job
                 lineage = jobLineage;
             }
-            else if(id.StartsWith("LO"))
+            else if (id.StartsWith("LO"))
             {//it's a learning outcome
                 lineage = learningOutcomeLineage;
             }
-            else if(id.StartsWith("BS"))
+            else if (id.StartsWith("BS"))
             {//it's a basic skill
                 lineage = skillLineage;
             }
@@ -387,9 +387,9 @@ namespace Darl.GraphQL.Test
             //define lineage and label based on source and target
             var lineage = "";
             var name = "";
-            if(source.id.StartsWith("BJT"))
+            if (source.id.StartsWith("BJT"))
             {//it's a job
-                if(target.id.StartsWith("BJT"))
+                if (target.id.StartsWith("BJT"))
                 {
                     name = "can lead to";
                 }
@@ -604,7 +604,7 @@ namespace Darl.GraphQL.Test
         [XmlAttribute]
         public int g { get; set; }
         [XmlAttribute]
-        public int  b { get; set; }
+        public int b { get; set; }
         [XmlAttribute]
         public float x { get; set; }
         [XmlAttribute]

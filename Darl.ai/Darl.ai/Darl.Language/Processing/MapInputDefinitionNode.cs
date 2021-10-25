@@ -41,7 +41,7 @@ namespace DarlLanguage.Processing
             base.Init(context, treeNode);
             var nodes = treeNode.GetMappedChildNodes();
             Name = (string)nodes[0].Token.Value;
-            if(nodes.Count == 2)
+            if (nodes.Count == 2)
                 Path = (string)nodes[1].Token.Value;
         }
 

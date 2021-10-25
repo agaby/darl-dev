@@ -1,10 +1,7 @@
 ﻿using Darl.Common;
 using Darl.Lineage;
-using Darl.Thinkbase;
 using DarlCommon;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Darl.Thinkbase
 {
@@ -21,7 +18,7 @@ namespace Darl.Thinkbase
         Dictionary<string, GraphObject> recognitionRoots { get; set; }
         Dictionary<string, GraphObject> recognitionVertices { get; set; }
         Dictionary<string, GraphConnection> recognitionEdges { get; set; }
-        Dictionary<string,IDynamicConverter> dynamicSources { get; set; }
+        Dictionary<string, IDynamicConverter> dynamicSources { get; set; }
 
         List<GraphObject> GetConnectedObjects(GraphObject node, string connectionLineage, string objectLineage);
 

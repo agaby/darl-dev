@@ -11,9 +11,9 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using DarlCompiler.Interpreter.Ast;
 using System;
 using System.Collections.Generic;
-using DarlCompiler.Interpreter.Ast;
 
 /// <summary>
 /// The Interpreter namespace.
@@ -62,11 +62,11 @@ namespace DarlCompiler.Interpreter
         /// <summary>
         /// The _slots
         /// </summary>
-        private SlotInfoDictionary _slots;
+        private readonly SlotInfoDictionary _slots;
         /// <summary>
         /// The lock object
         /// </summary>
-        internal protected object LockObject = new object();
+        protected internal object LockObject = new object();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScopeInfo"/> class.
@@ -202,4 +202,4 @@ namespace DarlCompiler.Interpreter
             return AsString;
         }
     }
-} 
+}

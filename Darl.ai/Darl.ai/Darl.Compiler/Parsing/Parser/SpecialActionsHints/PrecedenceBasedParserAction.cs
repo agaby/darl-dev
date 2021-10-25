@@ -24,11 +24,12 @@ namespace DarlCompiler.Parsing
         /// <summary>
         /// The _shift action
         /// </summary>
-        ShiftParserAction _shiftAction;
+        readonly ShiftParserAction _shiftAction;
+
         /// <summary>
         /// The _reduce action
         /// </summary>
-        ReduceParserAction _reduceAction;
+        readonly ReduceParserAction _reduceAction;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PrecedenceBasedParserAction"/> class.

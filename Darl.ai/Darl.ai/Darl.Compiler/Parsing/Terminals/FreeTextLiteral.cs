@@ -11,11 +11,11 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using Darl.ai;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Darl.ai;
 
 namespace DarlCompiler.Parsing
 {
@@ -101,7 +101,7 @@ namespace DarlCompiler.Parsing
         {
             FreeTextOptions = freeTextOptions;
             Terminators.UnionWith(terminators);
-            base.SetFlag(TermFlags.IsLiteral); 
+            base.SetFlag(TermFlags.IsLiteral);
             base.SetFlag(TermFlags.NoAstNode); //ane 12/05/18
         }
 
@@ -288,4 +288,4 @@ namespace DarlCompiler.Parsing
         }
     }
 
-} 
+}

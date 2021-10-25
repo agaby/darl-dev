@@ -11,11 +11,11 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using Darl.ai;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Globalization;
-using Darl.ai;
+using System.Runtime.InteropServices;
 
 namespace DarlCompiler.Parsing
 {

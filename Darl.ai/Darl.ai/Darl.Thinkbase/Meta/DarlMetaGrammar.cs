@@ -3,7 +3,6 @@ using Darl_standard.Darl.Thinkbase.Meta;
 using DarlCompiler.Ast;
 using DarlCompiler.Interpreter;
 using DarlCompiler.Parsing;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -328,7 +327,7 @@ namespace Darl.Thinkbase.Meta
 
             count.Rule = COUNT + "(" + lineageList + ")";
 
-            attribute.Rule = ATTRIBUTE  +  attribute_rhs;
+            attribute.Rule = ATTRIBUTE + attribute_rhs;
 
             attribute_rhs.Rule = "(" + lineage_choice + ")";
 
@@ -374,8 +373,8 @@ namespace Darl.Thinkbase.Meta
                             (durationof + IS + comparitives)
                             );
 
-            inputdefinition.Rule = (INPUT + NUMERIC + numeric_input  + set_option) |
-                       (INPUT + CATEGORICAL + categorical_input  + category_option) |
+            inputdefinition.Rule = (INPUT + NUMERIC + numeric_input + set_option) |
+                       (INPUT + CATEGORICAL + categorical_input + category_option) |
                        (INPUT + TEXTUAL + textual_input) |
                        (INPUT + TEMPORAL + temporal_input);
 
@@ -549,7 +548,7 @@ namespace Darl.Thinkbase.Meta
             RegisterOperators(5, "^");
             RegisterOperators(6, ".");
 
-            MarkPunctuation("{", "}", "(", ")", "[", "]", ",", ";", ".", "if", "then", "will", "be", "confidence", "input", "output", "numeric", "categorical", "arity", "presence", "string", "constant", "or", "and", "not", "is", "*", "/", "-", "+", "%", "^", ">", "<", "<=", ">=", "anything", "textual", "maximum", "minimum", "sum", "product", "fuzzytuple", "sigmoid", "normprob", "round", "pattern", "absent", "present", "delay", "sequence", "match", "document", "randomtext", "store", "temporal", "categoryof", "duration", "now", "mintime", "maxtime", "after", "before", "preceding", "overlapping", "during", "finishing", "starting", "all", "any", "count", "seek","network", "attribute","attributes","exists","durationof","for", "single","lineage", "discover");
+            MarkPunctuation("{", "}", "(", ")", "[", "]", ",", ";", ".", "if", "then", "will", "be", "confidence", "input", "output", "numeric", "categorical", "arity", "presence", "string", "constant", "or", "and", "not", "is", "*", "/", "-", "+", "%", "^", ">", "<", "<=", ">=", "anything", "textual", "maximum", "minimum", "sum", "product", "fuzzytuple", "sigmoid", "normprob", "round", "pattern", "absent", "present", "delay", "sequence", "match", "document", "randomtext", "store", "temporal", "categoryof", "duration", "now", "mintime", "maxtime", "after", "before", "preceding", "overlapping", "during", "finishing", "starting", "all", "any", "count", "seek", "network", "attribute", "attributes", "exists", "durationof", "for", "single", "lineage", "discover");
             RegisterBracePair("(", ")");
             RegisterBracePair("{", "}");
             RegisterBracePair("[", "]");
@@ -557,7 +556,7 @@ namespace Darl.Thinkbase.Meta
                 numeric_rvalue, arith_expression, statement, comparitives, tempcomparitives, parameter_list, brackets, setValue,
                 categoryChoice, subsequence_choice,
                 textmatchchoice, anyio, textual_rvalue, textsourcechoice, logicalbrackets, rvalue_choice, store_rhs, temporal_rvalue,
-                temporal_expression, categoricalio, lineage_option, network_rvalue, attribute_rhs, confidence_choice, text_attribute, 
+                temporal_expression, categoricalio, lineage_option, network_rvalue, attribute_rhs, confidence_choice, text_attribute,
                 node_aggregation, aggregate_rhs, lifetime_choice, duration_expression, lineage_choice);
 
             LanguageFlags = LanguageFlags.CreateAst;

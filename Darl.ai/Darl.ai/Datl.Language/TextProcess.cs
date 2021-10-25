@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Datl.Language
 {
     public class TextProcess : DatlProcess
     {
-        private StringBuilder sb = new StringBuilder();
+        private readonly StringBuilder sb = new StringBuilder();
         public override dynamic CreateDest(dynamic source)
         {
             sb.Clear();
@@ -65,7 +63,7 @@ namespace Datl.Language
         public override void WriteSection(dynamic output, dynamic startblock, dynamic endblock)
         {
             var s = output as string;
-            if(startblock == null)
+            if (startblock == null)
             {
                 if (endblock != null)
                 {
@@ -77,7 +75,7 @@ namespace Datl.Language
                     sb.Append(s);
                 }
             }
-            else if(endblock == null)
+            else if (endblock == null)
             {
                 var m = startblock as Match;
                 sb.Append(s.Substring(m.Index + m.Length));

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Darl.Lineage.Bot.Stores
 {
-    public  interface IRuleFormInterface
+    public interface IRuleFormInterface
     {
         /// <summary>
         /// Get a RuleForm object by name

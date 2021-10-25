@@ -1,6 +1,4 @@
-﻿using Darl.Lineage;
-using Darl.Lineage.Bot;
-using DarlCommon;
+﻿using DarlCommon;
 using DarlLanguage.Processing;
 using System;
 using System.Collections.Generic;
@@ -19,7 +17,7 @@ namespace Darl.Lineage.Bot.Stores
             values = _values;
         }
 
-        public  Task<DarlResult> ReadAsync(List<string> address)
+        public Task<DarlResult> ReadAsync(List<string> address)
         {
             if (address.Any() && !string.IsNullOrEmpty(address[0]))
             {
@@ -42,7 +40,7 @@ namespace Darl.Lineage.Bot.Stores
             return Task.CompletedTask;
         }
 
-        public Dictionary<string,string> ConvertSettings()
+        public Dictionary<string, string> ConvertSettings()
         {
             var dict = new Dictionary<string, string>();
             foreach (var v in values)

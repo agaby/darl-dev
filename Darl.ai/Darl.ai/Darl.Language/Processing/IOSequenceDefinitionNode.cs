@@ -1,13 +1,9 @@
 ﻿using DarlCompiler.Interpreter;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    public class IOSequenceDefinitionNode: IODefinitionNode, IComparable<IOSequenceDefinitionNode>
+    public class IOSequenceDefinitionNode : IODefinitionNode, IComparable<IOSequenceDefinitionNode>
     {
         /// <summary>
         /// Gets or sets the sequence.

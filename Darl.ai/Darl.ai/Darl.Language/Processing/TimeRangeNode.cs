@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using DarlCompiler.Interpreter;
+using System;
 using System.Threading.Tasks;
-using DarlCompiler.Interpreter;
 
 namespace DarlLanguage.Processing
 {
