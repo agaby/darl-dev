@@ -1,18 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Darl.Forms;
+using Darl.Lineage.Bot.Stores;
+using DarlLanguage.Processing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Darl.Thinkbase;
-using System.Threading.Tasks;
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using DarlLanguage;
-using DarlCommon;
-using Darl.Forms;
-using DarlLanguage.Processing;
-using Darl.Lineage.Bot.Stores;
+using System.Threading.Tasks;
 
 namespace Darl_standard_core.test
 {
@@ -26,10 +20,10 @@ namespace Darl_standard_core.test
         public void Initialize()
         {
             var gp = new Mock<ILocalStore>();
-            var testCats = new DarlResult(DarlResult.DataType.categorical,1.0);
+            var testCats = new DarlResult(DarlResult.DataType.categorical, 1.0);
             testCats.categories = new Dictionary<string, double> { { "J1%%bum%%", 1 }, { "J2%%poop%%", 1 }, { "J3%%fart%%", 1 }, { "J4%%wee%%", 1 } };
             var testText = new DarlResult("att", "text", DarlResult.DataType.textual);
-            gp.Setup(a => a.ReadAsync(It.Is<List<string>>( i => i[0] == "categories" ))).Returns(Task.FromResult(testCats));
+            gp.Setup(a => a.ReadAsync(It.Is<List<string>>(i => i[0] == "categories"))).Returns(Task.FromResult(testCats));
             gp.Setup(a => a.ReadAsync(It.Is<List<string>>(i => i[0] == "attribute"))).Returns(Task.FromResult(testText));
             _graph = gp.Object;
             var userStore = new Dictionary<string, string> { { "artist", "334" } };
@@ -40,16 +34,16 @@ namespace Darl_standard_core.test
         public async Task TestDynamicCatInputEvaluate()
         {
             //create a ruleset file
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.dynamiccategoricalinput.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.dynamiccategoricalinput.darl"));
             var source = reader.ReadToEnd();
             var ruleForm = await FormFormatExtensions.CreateNewRuleForm("dyncat.rule", "Dr Andy's IP");
             ruleForm.darl = source;
             var stores = new Dictionary<string, DarlLanguage.Processing.ILocalStore> { { "Graph", _graph } };
-//            await ruleForm.UpdateFromCode(stores);
-//            Assert.AreEqual("dyn.J1", ruleForm.language.LanguageList[1].Name);
-//            Assert.AreEqual("bum", ruleForm.language.LanguageList[1].Text);
+            //            await ruleForm.UpdateFromCode(stores);
+            //            Assert.AreEqual("dyn.J1", ruleForm.language.LanguageList[1].Name);
+            //            Assert.AreEqual("bum", ruleForm.language.LanguageList[1].Text);
             DarlForms form = new DarlForms();
-            QuestionCache qc = new QuestionCache { stores = stores  };
+            QuestionCache qc = new QuestionCache { stores = stores };
             var qsp = await form.Start(ruleForm, qc);
             Assert.AreEqual("bum", qsp.questions[0].categories[0]);
             qsp.questions[0].sResponse = qsp.questions[0].categories[1]; // poop

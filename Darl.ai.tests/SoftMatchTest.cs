@@ -1,12 +1,10 @@
 ﻿using Darl.SoftMatch;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Darl_standard_core.test
 {
@@ -20,12 +18,12 @@ namespace Darl_standard_core.test
         [TestMethod]
         public void TestMSRParaphraseList()
         {
-            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.msr_paraphrase_train.txt"));
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.msr_paraphrase_train.txt"));
             var doc = docsource.ReadToEnd();
             var lines = doc.Split('\n').ToList();
             lines.RemoveAt(0); //get rid of header
             var equivalents = new Dictionary<string, string>();
-            var dict = new List<KeyValuePair<string,string>>();
+            var dict = new List<KeyValuePair<string, string>>();
             var list = new MatchList();
             foreach (var line in lines)
             {
@@ -64,7 +62,7 @@ namespace Darl_standard_core.test
             int topThree = 0;
             var correctConfidenceDistribution = new List<double>();
             var incorrectConfidenceDistribution = new List<double>();
-            for(int n = 0; n < 100; n++)
+            for (int n = 0; n < 100; n++)
             {
                 correctConfidenceDistribution.Add(0.0);
                 incorrectConfidenceDistribution.Add(0.0);
@@ -88,17 +86,17 @@ namespace Darl_standard_core.test
                         }
                         if (res[n].alternatives.ContainsKey(indices[n]))
                             topThree++;
-                        incorrectConfidenceDistribution[(int)(res[n].confidence * 100)] += 1.0; 
+                        incorrectConfidenceDistribution[(int)(res[n].confidence * 100)] += 1.0;
                     }
                 }
             }
             var sb = new StringBuilder();
-            for(int n = 0; n < 100; n++)
+            for (int n = 0; n < 100; n++)
             {
                 sb.AppendLine($"{correctConfidenceDistribution[n]}, {incorrectConfidenceDistribution[n]}");
             }
             File.WriteAllText("confidenceDistributions.csv", sb.ToString());
-            Assert.IsTrue(((double)correct / (double)textList.Count) >= 0.78);
+            Assert.IsTrue((correct / (double)textList.Count) >= 0.78);
         }
 
         [TestMethod]

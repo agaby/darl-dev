@@ -1,12 +1,12 @@
-﻿using System;
+﻿using DarlLanguage;
+using DarlLanguage.Processing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using DarlLanguage;
-using DarlLanguage.Processing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Darl_standard_core.test
 {
@@ -17,7 +17,7 @@ namespace Darl_standard_core.test
         public async Task TestTemporalParsing()
         {
             var runtime = new DarlRunTime();
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.temporal.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.temporal.darl"));
             string source = reader.ReadToEnd();
             var tree = runtime.CreateTree(source);
             Assert.IsFalse(tree.HasErrors());
@@ -40,7 +40,7 @@ namespace Darl_standard_core.test
                 new DarlResult( "company", "", DarlResult.DataType.textual) ,
                 new DarlResult("email_to", "", DarlResult.DataType.textual) ,
                 new DarlResult("email_from", "", DarlResult.DataType.textual),
-                new DarlResult("signed_up", "false") 
+                new DarlResult("signed_up", "false")
             };
             var res = await runtime.Evaluate(tree, results);
             Assert.AreEqual("trial_expired", res.First(a => a.name == "new_account_state").Value);
@@ -203,7 +203,7 @@ namespace Darl_standard_core.test
         [TestMethod]
         public void TestDuring()
         {
-            var res2 = new DarlResult("", new List<double>{ 5, 10, 20, 25 }, DarlResult.DataType.temporal);
+            var res2 = new DarlResult("", new List<double> { 5, 10, 20, 25 }, DarlResult.DataType.temporal);
             var res1 = new DarlResult("", new List<double> { 3, 15, 15, 27 }, DarlResult.DataType.temporal);
             var res = DarlResult.During(res1, res2);
             Assert.AreEqual(0.2857, (double)res.values[0], 0.001);
@@ -220,7 +220,7 @@ namespace Darl_standard_core.test
             res = DarlResult.During(res1, res2);
             Assert.AreEqual(0.4, (double)res.values[0], 0.001);
             res2 = new DarlResult("", new List<double> { 5, 10, 20, 25 }, DarlResult.DataType.temporal);
-            res1 = new DarlResult("", new List<double> { 4,4,4,4 }, DarlResult.DataType.temporal);
+            res1 = new DarlResult("", new List<double> { 4, 4, 4, 4 }, DarlResult.DataType.temporal);
             res = DarlResult.During(res1, res2);
             Assert.AreEqual(0, (double)res.values[0], 0.001);
             res2 = new DarlResult("", new List<double> { 5, 10, 20, 25 }, DarlResult.DataType.temporal);
@@ -542,7 +542,7 @@ namespace Darl_standard_core.test
         public async Task TestNow()
         {
             var runtime = new DarlRunTime();
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.EUClaimTemporal.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.EUClaimTemporal.darl"));
             string source = reader.ReadToEnd();
             var tree = runtime.CreateTree(source);
             Assert.IsFalse(tree.HasErrors());
@@ -559,7 +559,7 @@ namespace Darl_standard_core.test
                 new DarlResult("timeOfFlight", "08:00", DarlResult.DataType.textual) ,
                 new DarlResult("fullName", "andy edmonds", DarlResult.DataType.textual) ,
                 new DarlResult("docText", "", DarlResult.DataType.textual) ,
-                new DarlResult("cannotClaimText", "", DarlResult.DataType.textual) 
+                new DarlResult("cannotClaimText", "", DarlResult.DataType.textual)
             };
             var res = await runtime.Evaluate(tree, results);
             Assert.AreEqual("true", res[32].Value);

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using DarlCommon;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
-using DarlCommon;
 
 namespace Darl.Lineage.Tests
 {

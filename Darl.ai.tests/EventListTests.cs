@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DarlCommon;
-using System.Linq;
+﻿using DarlCommon;
 using Dasl.TemporalDb;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Darl_standard_core.test
 {
@@ -14,7 +14,7 @@ namespace Darl_standard_core.test
         public void TestTemporalDbSorting()
         {
             var source = new List<DaslState>();
-            for(int n = 1; n < 31; n++)
+            for (int n = 1; n < 31; n++)
                 source.Add(new DaslState { timeStamp = new DateTime(2015, 11, n), values = new List<DarlVar> { new DarlVar { Value = n.ToString(), name = "count" } } });
             source.Reverse();
             var tdb = new EventList();
@@ -24,9 +24,9 @@ namespace Darl_standard_core.test
             Assert.AreEqual(new DateTime(2015, 11, 30), tdb.end);
             var res = tdb.SampleData();
             Assert.AreEqual(30, res.Count);
-            for(int n = 1; n < 31; n++)
+            for (int n = 1; n < 31; n++)
             {
-                Assert.AreEqual(n.ToString(), res[n-1].First(a => a.name == "count").values[0].ToString());
+                Assert.AreEqual(n.ToString(), res[n - 1].First(a => a.name == "count").values[0].ToString());
             }
         }
 

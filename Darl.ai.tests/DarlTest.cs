@@ -1,17 +1,17 @@
-﻿using DarlCompiler.Parsing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IO;
-using DarlLanguage.Processing;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using Darl.Lacuna;
 using DarlCommon;
-using System;
-using Newtonsoft.Json;
-using System.Diagnostics;
-using System.Threading.Tasks;
+using DarlCompiler.Parsing;
 using DarlLanguage;
+using DarlLanguage.Processing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using Darl.Lacuna;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Darl_standard_core.test
 {
@@ -24,8 +24,8 @@ namespace Darl_standard_core.test
 
             LanguageData language = new LanguageData(new DarlGrammar());
             Parser parser = new Parser(language);
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.FirstProg.darl"));
-            ParseTree parseTree = parser.Parse(reader.ReadToEnd(),null);
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.FirstProg.darl"));
+            ParseTree parseTree = parser.Parse(reader.ReadToEnd(), null);
             ParseTreeNode root = parseTree.Root;
             Assert.IsNotNull(root);
         }
@@ -36,8 +36,8 @@ namespace Darl_standard_core.test
 
             LanguageData language = new LanguageData(new DarlGrammar());
             Parser parser = new Parser(language);
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.SecondRule.darl"));
-            ParseTree parseTree = parser.Parse(reader.ReadToEnd(),null);
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.SecondRule.darl"));
+            ParseTree parseTree = parser.Parse(reader.ReadToEnd(), null);
             ParseTreeNode root = parseTree.Root;
             Assert.IsNotNull(root);
         }
@@ -48,7 +48,7 @@ namespace Darl_standard_core.test
 
             LanguageData language = new LanguageData(new DarlGrammar());
             Parser parser = new Parser(language);
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.MapTest.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.MapTest.darl"));
             ParseTree parseTree = parser.Parse(reader.ReadToEnd());
             ParseTreeNode root = parseTree.Root;
             Assert.IsNotNull(root);
@@ -60,7 +60,7 @@ namespace Darl_standard_core.test
             DarlGrammar grammar = new DarlGrammar();
             LanguageData language = new LanguageData(grammar);
             Parser parser = new Parser(language);
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.FirstProg.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.FirstProg.darl"));
             ParseTree parseTree = parser.Parse(reader.ReadToEnd());
             await grammar.RunSample(new RunSampleArgs(language, "", parseTree));
         }
@@ -72,7 +72,7 @@ namespace Darl_standard_core.test
             DarlGrammar grammar = new DarlGrammar();
             LanguageData language = new LanguageData(grammar);
             Parser parser = new Parser(language);
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.LoopProg.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.LoopProg.darl"));
             ParseTree parseTree = parser.Parse(reader.ReadToEnd());
             await grammar.RunSample(new RunSampleArgs(language, "", parseTree));
         }
@@ -83,7 +83,7 @@ namespace Darl_standard_core.test
             DarlGrammar grammar = new DarlGrammar();
             LanguageData language = new LanguageData(grammar);
             Parser parser = new Parser(language);
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.SequenceProg.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.SequenceProg.darl"));
             ParseTree parseTree = parser.Parse(reader.ReadToEnd());
             await grammar.RunSample(new RunSampleArgs(language, "", parseTree));
         }
@@ -93,7 +93,7 @@ namespace Darl_standard_core.test
         {
             DarlRunTime runtime = new DarlRunTime();
             var results = new List<DarlResult>();
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.SequenceProg.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.SequenceProg.darl"));
             await runtime.Evaluate(results, reader.ReadToEnd(), "SequenceProg");
             Assert.AreEqual(6, results.Count);
         }
@@ -102,7 +102,7 @@ namespace Darl_standard_core.test
         public async Task TestMRuleRunTimeUKTax()
         {
             DarlRunTime runtime = new DarlRunTime();
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.UKTax.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.UKTax.darl"));
             string source = reader.ReadToEnd();
             var results = new List<DarlResult>
             {
@@ -113,11 +113,11 @@ namespace Darl_standard_core.test
                 new DarlResult("UKTax.MARRIED", "False")
             };
             await runtime.Evaluate(results, source, "UKTax");
-            Assert.AreEqual(3288.96, (double)results.First( async => async.name == "UKTax.NI").values[0], 0.01);
-            Assert.AreEqual(8105, (double)results.First( async => async.name == "UKTax.TOTAL_ALLOWANCES").values[0], 0.01);
-            Assert.AreEqual(5379.00, (double)results.First( async => async.name == "UKTax.EARNED_TAX").values[0], 0.01);
-            Assert.AreEqual(5379.00, (double)results.First( async => async.name == "UKTax.TOTAL_TAX").values[0], 0.01);
-            Assert.AreEqual(0, (double)results.First( async => async.name == "UKTax.DIVIDEND_TAX").values[0], 0.01);
+            Assert.AreEqual(3288.96, (double)results.First(async => async.name == "UKTax.NI").values[0], 0.01);
+            Assert.AreEqual(8105, (double)results.First(async => async.name == "UKTax.TOTAL_ALLOWANCES").values[0], 0.01);
+            Assert.AreEqual(5379.00, (double)results.First(async => async.name == "UKTax.EARNED_TAX").values[0], 0.01);
+            Assert.AreEqual(5379.00, (double)results.First(async => async.name == "UKTax.TOTAL_TAX").values[0], 0.01);
+            Assert.AreEqual(0, (double)results.First(async => async.name == "UKTax.DIVIDEND_TAX").values[0], 0.01);
             results.Clear();
             results.Add(new DarlResult("UKTax.AGE_YEARS", 56));
             results.Add(new DarlResult("UKTax.EARNED_INCOME", 55000));
@@ -125,11 +125,11 @@ namespace Darl_standard_core.test
             results.Add(new DarlResult("UKTax.BLIND", "False"));
             results.Add(new DarlResult("UKTax.MARRIED", "False"));
             await runtime.Evaluate(results, source, "UKTax");
-            Assert.AreEqual(4437.36, (double)results.First( async => async.name == "UKTax.NI").values[0], 1.0);
-            Assert.AreEqual(8105, (double)results.First( async => async.name == "UKTax.TOTAL_ALLOWANCES").values[0], 1.0);
-            Assert.AreEqual(11884.0, (double)results.First( async => async.name == "UKTax.EARNED_TAX").values[0], 1.0);
-            Assert.AreEqual(11884.0, (double)results.First( async => async.name == "UKTax.TOTAL_TAX").values[0], 1.0);
-            Assert.AreEqual(0, (double)results.First( async => async.name == "UKTax.DIVIDEND_TAX").values[0], 1.0);
+            Assert.AreEqual(4437.36, (double)results.First(async => async.name == "UKTax.NI").values[0], 1.0);
+            Assert.AreEqual(8105, (double)results.First(async => async.name == "UKTax.TOTAL_ALLOWANCES").values[0], 1.0);
+            Assert.AreEqual(11884.0, (double)results.First(async => async.name == "UKTax.EARNED_TAX").values[0], 1.0);
+            Assert.AreEqual(11884.0, (double)results.First(async => async.name == "UKTax.TOTAL_TAX").values[0], 1.0);
+            Assert.AreEqual(0, (double)results.First(async => async.name == "UKTax.DIVIDEND_TAX").values[0], 1.0);
             results.Clear();
             results.Add(new DarlResult("UKTax.AGE_YEARS", 56));
             results.Add(new DarlResult("UKTax.EARNED_INCOME", 105000));
@@ -137,11 +137,11 @@ namespace Darl_standard_core.test
             results.Add(new DarlResult("UKTax.BLIND", "False"));
             results.Add(new DarlResult("UKTax.MARRIED", "False"));
             await runtime.Evaluate(results, source, "UKTax");
-            Assert.AreEqual(5437.36, (double)results.First( async => async.name == "UKTax.NI").values[0], 1.0);
-            Assert.AreEqual(5605, (double)results.First( async => async.name == "UKTax.TOTAL_ALLOWANCES").values[0], 1.0);
-            Assert.AreEqual(32884.0, (double)results.First( async => async.name == "UKTax.EARNED_TAX").values[0], 1.0);
-            Assert.AreEqual(32884.0, (double)results.First( async => async.name == "UKTax.TOTAL_TAX").values[0], 1.0);
-            Assert.AreEqual(0, (double)results.First( async => async.name == "UKTax.DIVIDEND_TAX").values[0], 1.0);
+            Assert.AreEqual(5437.36, (double)results.First(async => async.name == "UKTax.NI").values[0], 1.0);
+            Assert.AreEqual(5605, (double)results.First(async => async.name == "UKTax.TOTAL_ALLOWANCES").values[0], 1.0);
+            Assert.AreEqual(32884.0, (double)results.First(async => async.name == "UKTax.EARNED_TAX").values[0], 1.0);
+            Assert.AreEqual(32884.0, (double)results.First(async => async.name == "UKTax.TOTAL_TAX").values[0], 1.0);
+            Assert.AreEqual(0, (double)results.First(async => async.name == "UKTax.DIVIDEND_TAX").values[0], 1.0);
             results.Clear();
             results.Add(new DarlResult("UKTax.AGE_YEARS", 56));
             results.Add(new DarlResult("UKTax.EARNED_INCOME", 160000));
@@ -149,11 +149,11 @@ namespace Darl_standard_core.test
             results.Add(new DarlResult("UKTax.BLIND", "False"));
             results.Add(new DarlResult("UKTax.MARRIED", "False"));
             await runtime.Evaluate(results, source, "UKTax");
-            Assert.AreEqual(6537.36, (double)results.First( async => async.name == "UKTax.NI").values[0], 1.0);
-            Assert.AreEqual(0, (double)results.First( async => async.name == "UKTax.TOTAL_ALLOWANCES").values[0], 1.0);
-            Assert.AreEqual(58126.0, (double)results.First( async => async.name == "UKTax.EARNED_TAX").values[0], 1.0);
-            Assert.AreEqual(58126.0, (double)results.First( async => async.name == "UKTax.TOTAL_TAX").values[0], 1.0);
-            Assert.AreEqual(0, (double)results.First( async => async.name == "UKTax.DIVIDEND_TAX").values[0], 1.0);
+            Assert.AreEqual(6537.36, (double)results.First(async => async.name == "UKTax.NI").values[0], 1.0);
+            Assert.AreEqual(0, (double)results.First(async => async.name == "UKTax.TOTAL_ALLOWANCES").values[0], 1.0);
+            Assert.AreEqual(58126.0, (double)results.First(async => async.name == "UKTax.EARNED_TAX").values[0], 1.0);
+            Assert.AreEqual(58126.0, (double)results.First(async => async.name == "UKTax.TOTAL_TAX").values[0], 1.0);
+            Assert.AreEqual(0, (double)results.First(async => async.name == "UKTax.DIVIDEND_TAX").values[0], 1.0);
             results.Clear();
             results.Add(new DarlResult("UKTax.AGE_YEARS", 56));
             results.Add(new DarlResult("UKTax.EARNED_INCOME", 35000));
@@ -161,11 +161,11 @@ namespace Darl_standard_core.test
             results.Add(new DarlResult("UKTax.BLIND", "True"));
             results.Add(new DarlResult("UKTax.MARRIED", "False"));
             await runtime.Evaluate(results, source, "UKTax");
-            Assert.AreEqual(3288.96, (double)results.First( async => async.name == "UKTax.NI").values[0], 0.01);
-            Assert.AreEqual(10205, (double)results.First( async => async.name == "UKTax.TOTAL_ALLOWANCES").values[0], 0.01);
-            Assert.AreEqual(4959.00, (double)results.First( async => async.name == "UKTax.EARNED_TAX").values[0], 0.01);
-            Assert.AreEqual(4959.00, (double)results.First( async => async.name == "UKTax.TOTAL_TAX").values[0], 0.01);
-            Assert.AreEqual(0, (double)results.First( async => async.name == "UKTax.DIVIDEND_TAX").values[0], 0.01);
+            Assert.AreEqual(3288.96, (double)results.First(async => async.name == "UKTax.NI").values[0], 0.01);
+            Assert.AreEqual(10205, (double)results.First(async => async.name == "UKTax.TOTAL_ALLOWANCES").values[0], 0.01);
+            Assert.AreEqual(4959.00, (double)results.First(async => async.name == "UKTax.EARNED_TAX").values[0], 0.01);
+            Assert.AreEqual(4959.00, (double)results.First(async => async.name == "UKTax.TOTAL_TAX").values[0], 0.01);
+            Assert.AreEqual(0, (double)results.First(async => async.name == "UKTax.DIVIDEND_TAX").values[0], 0.01);
             results.Clear();
             results.Add(new DarlResult("UKTax.AGE_YEARS", 56));
             results.Add(new DarlResult("UKTax.EARNED_INCOME", 35000));
@@ -173,11 +173,11 @@ namespace Darl_standard_core.test
             results.Add(new DarlResult("UKTax.BLIND", "False"));
             results.Add(new DarlResult("UKTax.MARRIED", "False"));
             await runtime.Evaluate(results, source, "UKTax");
-            Assert.AreEqual(3288.96, (double)results.First( async => async.name == "UKTax.NI").values[0], 1.0);
-            Assert.AreEqual(8105, (double)results.First( async => async.name == "UKTax.TOTAL_ALLOWANCES").values[0], 1.0);
-            Assert.AreEqual(5379.00, (double)results.First( async => async.name == "UKTax.EARNED_TAX").values[0], 1.0);
-            Assert.AreEqual(3317.00, (double)results.First( async => async.name == "UKTax.DIVIDEND_TAX").values[0], 1.0);
-            Assert.AreEqual(8696.00, (double)results.First( async => async.name == "UKTax.TOTAL_TAX").values[0], 1.0);
+            Assert.AreEqual(3288.96, (double)results.First(async => async.name == "UKTax.NI").values[0], 1.0);
+            Assert.AreEqual(8105, (double)results.First(async => async.name == "UKTax.TOTAL_ALLOWANCES").values[0], 1.0);
+            Assert.AreEqual(5379.00, (double)results.First(async => async.name == "UKTax.EARNED_TAX").values[0], 1.0);
+            Assert.AreEqual(3317.00, (double)results.First(async => async.name == "UKTax.DIVIDEND_TAX").values[0], 1.0);
+            Assert.AreEqual(8696.00, (double)results.First(async => async.name == "UKTax.TOTAL_TAX").values[0], 1.0);
             results.Clear();
             results.Add(new DarlResult("UKTax.AGE_YEARS", 56));
             results.Add(new DarlResult("UKTax.EARNED_INCOME", 0));
@@ -185,12 +185,12 @@ namespace Darl_standard_core.test
             results.Add(new DarlResult("UKTax.BLIND", "False"));
             results.Add(new DarlResult("UKTax.MARRIED", "False"));
             await runtime.Evaluate(results, source, "UKTax");
-            Assert.AreEqual(0, (double)results.First( async => async.name == "UKTax.NI").values[0], 1.0);
-            Assert.AreEqual(8105, (double)results.First( async => async.name == "UKTax.TOTAL_ALLOWANCES").values[0], 1.0);
-            Assert.AreEqual(0, (double)results.First( async => async.name == "UKTax.EARNED_TAX").values[0], 1.0);
-            Assert.AreEqual(0, (double)results.First( async => async.name == "UKTax.DIVIDEND_TAX").values[0], 1.0);
-            Assert.AreEqual(0, (double)results.First( async => async.name == "UKTax.TOTAL_TAX").values[0], 1.0);
-            Assert.AreEqual(0, (double)results.First( async => async.name == "UKTax.TAX_TAKE_PERCENT").values[0], 1.0);
+            Assert.AreEqual(0, (double)results.First(async => async.name == "UKTax.NI").values[0], 1.0);
+            Assert.AreEqual(8105, (double)results.First(async => async.name == "UKTax.TOTAL_ALLOWANCES").values[0], 1.0);
+            Assert.AreEqual(0, (double)results.First(async => async.name == "UKTax.EARNED_TAX").values[0], 1.0);
+            Assert.AreEqual(0, (double)results.First(async => async.name == "UKTax.DIVIDEND_TAX").values[0], 1.0);
+            Assert.AreEqual(0, (double)results.First(async => async.name == "UKTax.TOTAL_TAX").values[0], 1.0);
+            Assert.AreEqual(0, (double)results.First(async => async.name == "UKTax.TAX_TAKE_PERCENT").values[0], 1.0);
         }
 
         [TestMethod, TestCategory("Darl functionality")]
@@ -198,7 +198,7 @@ namespace Darl_standard_core.test
         {
             DarlRunTime runtime = new DarlRunTime();
             var results = new List<DarlResult>();
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.NumericOut.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.NumericOut.darl"));
             await runtime.Evaluate(results, reader.ReadToEnd(), "NumericOut");
             Assert.AreEqual(2, results.Count);
         }
@@ -212,10 +212,10 @@ namespace Darl_standard_core.test
                 new DarlResult("oporder.EARNED_INCOME", 2),
                 new DarlResult("oporder.DIVIDEND_INCOME", 1)
             };
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.oporder.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.oporder.darl"));
             await runtime.Evaluate(results, reader.ReadToEnd(), "oporder");
             Assert.AreEqual(4, results.Count);
-            Assert.AreEqual(116, (double)results.First( async => async.name == "oporder.TOTAL_ALLOWANCES").values[0], 1.0);
+            Assert.AreEqual(116, (double)results.First(async => async.name == "oporder.TOTAL_ALLOWANCES").values[0], 1.0);
         }
 
 
@@ -224,7 +224,7 @@ namespace Darl_standard_core.test
         {
             LanguageData language = new LanguageData(new DarlGrammar());
             Parser parser = new Parser(language);
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.FirstProg.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.FirstProg.darl"));
             ParseTree parseTree = parser.Parse(reader.ReadToEnd());
             string newDarl = parseTree.ToDarl();
         }
@@ -249,7 +249,7 @@ namespace Darl_standard_core.test
             Assert.AreEqual(9, parseTree.ParserMessages.Count);
             Assert.AreEqual(1, parseTree.ParserMessages[5].Location.Line);
             Assert.AreEqual(22, parseTree.ParserMessages[5].Location.Column);
-//            Assert.AreEqual("Syntax error, expected: will", parseTree.ParserMessages[5].Message);
+            //            Assert.AreEqual("Syntax error, expected: will", parseTree.ParserMessages[5].Message);
             Assert.AreEqual(1, parseTree.ParserMessages[0].Location.Line);
             Assert.AreEqual(17, parseTree.ParserMessages[0].Location.Column);
             Assert.AreEqual("Wrong IO Type", parseTree.ParserMessages[0].Message);
@@ -282,14 +282,14 @@ namespace Darl_standard_core.test
         public void TestIris()
         {
             DarlRunTime runtime = new DarlRunTime();
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.IrisShell.darl"));
-            var trainSourceReader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.iris_data.xml"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.IrisShell.darl"));
+            var trainSourceReader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.iris_data.xml"));
             DarlMineReport rep = new DarlMineReport();
             string data = trainSourceReader.ReadToEnd();
             string code = reader.ReadToEnd();
             var newSource = runtime.MineSupervised(code, data, 3, 100, rep);
             Assert.IsTrue(rep.trainPerformance > 90.0);
-            Assert.AreEqual(100,rep.trainPercent);
+            Assert.AreEqual(100, rep.trainPercent);
             Assert.AreEqual(0.0, rep.testPerformance);
             newSource = runtime.MineSupervised(code, data, 5, 100, rep);
             Assert.IsTrue(rep.trainPerformance > 90.0);
@@ -310,8 +310,8 @@ namespace Darl_standard_core.test
         public async Task TestIrisAsync()
         {
             DarlRunTime runtime = new DarlRunTime();
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.IrisShell.darl"));
-            var trainSourceReader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.iris_data.xml"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.IrisShell.darl"));
+            var trainSourceReader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.iris_data.xml"));
             DarlMineReport rep = new DarlMineReport();
             string data = trainSourceReader.ReadToEnd();
             string code = reader.ReadToEnd();
@@ -338,8 +338,8 @@ namespace Darl_standard_core.test
         public async Task TestLacuna()
         {
             DarlRunTime runtime = new DarlRunTime();
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.IrisShell.darl"));
-            var trainSourceReader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.iris_data.xml"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.IrisShell.darl"));
+            var trainSourceReader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.iris_data.xml"));
             DarlMineReport rep = new DarlMineReport();
             string data = trainSourceReader.ReadToEnd();
             string code = reader.ReadToEnd();
@@ -354,8 +354,8 @@ namespace Darl_standard_core.test
         public void TestCleveHeart()
         {
             DarlRunTime runtime = new DarlRunTime();
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.cleve_heart.darl"));
-            var trainSourceReader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.cleve_heart.xml"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.cleve_heart.darl"));
+            var trainSourceReader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.cleve_heart.xml"));
             DarlMineReport rep = new DarlMineReport();
             var newSource = runtime.MineSupervised(reader.ReadToEnd(), trainSourceReader.ReadToEnd(), 3, 100, rep);
             Assert.IsTrue(rep.trainPerformance > 68.0);
@@ -367,9 +367,9 @@ namespace Darl_standard_core.test
         public void TestSine()
         {
             DarlRunTime runtime = new DarlRunTime();
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.sine.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.sine.darl"));
             string code = reader.ReadToEnd();
-            var trainSourceReader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.sine.xml"));
+            var trainSourceReader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.sine.xml"));
             string source = trainSourceReader.ReadToEnd();
             DarlMineReport rep = new DarlMineReport();
             var newSource = runtime.MineSupervised(code, source, 9, 100, rep);
@@ -394,7 +394,7 @@ namespace Darl_standard_core.test
         public async Task TestMultipleRuleMap()
         {
             DarlRunTime runtime = new DarlRunTime();
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.MultipleRuleSet.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.MultipleRuleSet.darl"));
             var results = new List<DarlResult>
             {
                 new DarlResult("age", 56),
@@ -404,7 +404,7 @@ namespace Darl_standard_core.test
                 new DarlResult("married", "False")
             };
             await runtime.Evaluate(results, reader.ReadToEnd());
-            Assert.AreEqual(5379.0, results.First( async => async.name == "earned_tax").Value);
+            Assert.AreEqual(5379.0, results.First(async => async.name == "earned_tax").Value);
         }
 
         [TestMethod, TestCategory("Darl Supervised learning")]
@@ -509,7 +509,7 @@ namespace Darl_standard_core.test
         }
 
         [TestMethod, TestCategory("Darl Supervised learning")]
-        [ExpectedException( typeof(RuleException))]
+        [ExpectedException(typeof(RuleException))]
         public void TestFindSetBoundariesException()
         {
             DarlRunTime runtime = new DarlRunTime();
@@ -585,7 +585,7 @@ namespace Darl_standard_core.test
                     Assert.AreEqual(0.0, setVal);
                 DarlResult res = new DarlResult(values[n], values[n]);
                 Assert.AreEqual(setVal, (double)input.sets[input.categories[1]].Equal(res).values[0], tolerance);
-            } 
+            }
             for (int n = 0; n < 100; n++)
             {
                 var setVal = input.CalculateSetMembership(input.learningSource[n], 2);
@@ -681,7 +681,7 @@ namespace Darl_standard_core.test
                     Assert.AreEqual(0.0, setVal);
                 DarlResult res = new DarlResult(values[n], values[n]);
                 Assert.AreEqual(setVal, (double)input.sets[input.categories[5]].Equal(res).values[0], tolerance);
-            } 
+            }
             for (int n = 0; n < 100; n++)
             {
                 var setVal = input.CalculateSetMembership(input.learningSource[n], 6);
@@ -734,7 +734,7 @@ namespace Darl_standard_core.test
                     Assert.AreEqual(0.0, setVal);
                 DarlResult res = new DarlResult(values[n], values[n]);
                 Assert.AreEqual(setVal, (double)input.sets[input.categories[3]].Equal(res).values[0], tolerance);
-            } 
+            }
             for (int n = 0; n < 100; n++)
             {
                 var setVal = input.CalculateSetMembership(input.learningSource[n], 4);
@@ -793,7 +793,7 @@ namespace Darl_standard_core.test
         public void TestCalculateSaliency()
         {
             DarlRunTime runtime = new DarlRunTime();
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.MultipleRuleSet.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.MultipleRuleSet.darl"));
             string source = reader.ReadToEnd();
             var tree = runtime.CreateTree(source);
             var results = new List<DarlResult>();
@@ -805,7 +805,7 @@ namespace Darl_standard_core.test
             Assert.AreEqual(15, sals["blind"]);
             //now test that removed values don't occur in the list.
             sals = runtime.CalculateSaliences(results, tree);
-            Assert.AreEqual(5, sals.Count); 
+            Assert.AreEqual(5, sals.Count);
             results.Add(new DarlResult("age", 56));
             results.Add(new DarlResult("earned_income", 35000));
             results.Add(new DarlResult("dividend_income", 35000));
@@ -815,7 +815,7 @@ namespace Darl_standard_core.test
             sals = runtime.CalculateSaliences(results, tree);
             Assert.AreEqual(0, sals.Count);
             //now look at a rule set where saliences must be calculated for each rule.
-            reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.SiteNavigation.darl"));
+            reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.SiteNavigation.darl"));
             source = reader.ReadToEnd();
             tree = runtime.CreateTree(source);
             results = new List<DarlResult>();
@@ -837,7 +837,7 @@ namespace Darl_standard_core.test
             results = new List<DarlResult>();
             sals = runtime.CalculateSaliences(results, tree);
             Assert.AreEqual(10, sals.Count);
-            results.Add(new DarlResult("generalType","technology"));
+            results.Add(new DarlResult("generalType", "technology"));
             fullset = runtime.Evaluate(tree, results);
             sals = runtime.CalculateSaliences(results, tree);
             Assert.AreEqual(1, sals.Count);
@@ -851,7 +851,7 @@ namespace Darl_standard_core.test
         public async Task TestParkrSalience()
         {
             DarlRunTime runtime = new DarlRunTime();
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.ParkrBuildr.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.ParkrBuildr.darl"));
             string source = reader.ReadToEnd();
             var tree = runtime.CreateTree(source);
             var results = new List<DarlResult>();
@@ -863,7 +863,7 @@ namespace Darl_standard_core.test
         public async Task TestAutoWiring()
         {
             DarlRunTime runtime = new DarlRunTime();
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.SiteNavigationSimple.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.SiteNavigationSimple.darl"));
             var source = reader.ReadToEnd();
             var tree = runtime.CreateTree(source);
             var results = new List<DarlResult>();
@@ -900,13 +900,13 @@ namespace Darl_standard_core.test
         {
             DarlRunTime runtime = new DarlRunTime();
             var results = new List<DarlResult>();
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.AbsentPresent.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.AbsentPresent.darl"));
             string ruleset = reader.ReadToEnd();
             var res1 = await runtime.Evaluate(results, ruleset, "AbsentPresent");
             Assert.AreEqual("true", res1.First(a => a.name == "AbsentPresent.bill").Value);
             results.Add(new DarlResult("AbsentPresent.c", 5));
             await runtime.Evaluate(results, ruleset, "AbsentPresent");
-            Assert.AreEqual("false", results.First( a => a.name =="AbsentPresent.bill").Value);
+            Assert.AreEqual("false", results.First(a => a.name == "AbsentPresent.bill").Value);
         }
 
         [TestMethod, TestCategory("Darl functionality")]
@@ -914,15 +914,15 @@ namespace Darl_standard_core.test
         {
             DarlRunTime runtime = new DarlRunTime();
             var results = new List<DarlResult>();
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.NumberLiteral.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.NumberLiteral.darl"));
             string ruleset = reader.ReadToEnd();
             results.Add(new DarlResult("NumberLiteral.c", 8));
             await runtime.Evaluate(results, ruleset, "NumberLiteral");
-            Assert.AreEqual("true", results.First( a => a.name =="NumberLiteral.bill").Value);
+            Assert.AreEqual("true", results.First(a => a.name == "NumberLiteral.bill").Value);
             results.Remove(results.First(a => a.name == "NumberLiteral.c"));
-            results.Add(new DarlResult("NumberLiteral.c",4));
+            results.Add(new DarlResult("NumberLiteral.c", 4));
             await runtime.Evaluate(results, ruleset, "NumberLiteral");
-            Assert.AreEqual("false", results.First( a => a.name == "NumberLiteral.bill").Value);
+            Assert.AreEqual("false", results.First(a => a.name == "NumberLiteral.bill").Value);
         }
 
         [TestMethod, TestCategory("DarlPolicy functionality")]
@@ -930,7 +930,7 @@ namespace Darl_standard_core.test
         {
             LanguageData language = new LanguageData(new DarlGrammar());
             Parser parser = new Parser(language);
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.SequenceParse.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.SequenceParse.darl"));
             ParseTree parseTree = parser.Parse(reader.ReadToEnd());
             ParseTreeNode root = parseTree.Root;
             Assert.IsNotNull(root);
@@ -941,8 +941,8 @@ namespace Darl_standard_core.test
         {
             DarlRunTime runtime = new DarlRunTime();
             var results = new List<DarlResult>();
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.SequenceParse.darl"));
-            await runtime.Evaluate(results, reader.ReadToEnd()); 
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.SequenceParse.darl"));
+            await runtime.Evaluate(results, reader.ReadToEnd());
         }
 
         [TestMethod, TestCategory("DarlPolicy functionality")]
@@ -953,7 +953,7 @@ namespace Darl_standard_core.test
             {
                 new DarlResult("arthur", "poop", DarlResult.DataType.textual)
             };
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.texttest.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.texttest.darl"));
             await runtime.Evaluate(results, reader.ReadToEnd());
         }
 
@@ -962,7 +962,7 @@ namespace Darl_standard_core.test
         {
             LanguageData language = new LanguageData(new DarlGrammar());
             Parser parser = new Parser(language);
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.textoutputtest.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.textoutputtest.darl"));
             var source = reader.ReadToEnd();
             var doc = @"This is some text with %% a %% with %% bill %% and %% c %%";
 
@@ -985,7 +985,7 @@ namespace Darl_standard_core.test
         [TestMethod, TestCategory("DarlRuntime functionality")]
         public void TestGetInputOutputNames()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.textoutputtest.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.textoutputtest.darl"));
             var source = reader.ReadToEnd();
             DarlRunTime runtime = new DarlRunTime();
             var tree = runtime.CreateTree(source);
@@ -1006,9 +1006,9 @@ namespace Darl_standard_core.test
         [TestMethod, TestCategory("Darl text functionality")]
         public async Task TestDocumentHandling()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.ParkingAppealUK.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.ParkingAppealUK.darl"));
             var source = reader.ReadToEnd();
-            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.DocumentTestTemplate.txt"));
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.DocumentTestTemplate.txt"));
             var doc = docsource.ReadToEnd();
             //grounds : res
             var results = new List<DarlResult>
@@ -1028,8 +1028,8 @@ namespace Darl_standard_core.test
                 new DarlResult("correct_date", "06/11/1966", DarlResult.DataType.textual)
             };
             DarlRunTime runtime = new DarlRunTime();
-            await runtime.Evaluate(results, source); 
-            var expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.UKParking_res.txt")).ReadToEnd();
+            await runtime.Evaluate(results, source);
+            var expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.UKParking_res.txt")).ReadToEnd();
             Assert.AreEqual(expected, results.First(a => a.name == "doc").stringConstant);
             results = new List<DarlResult>
             {
@@ -1046,7 +1046,7 @@ namespace Darl_standard_core.test
                 new DarlResult("bay_width", 150)
             };
             await runtime.Evaluate(results, source);
-            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.UKParking_parkingbay.txt")).ReadToEnd();
+            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.UKParking_parkingbay.txt")).ReadToEnd();
             Assert.AreEqual(expected, results.First(a => a.name == "doc").stringConstant);
             results = new List<DarlResult>
             {
@@ -1065,7 +1065,7 @@ namespace Darl_standard_core.test
                 new DarlResult("date_of_report", "05/11/1955", DarlResult.DataType.textual)
             };
             await runtime.Evaluate(results, source);
-            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.UKParking_stolen.txt")).ReadToEnd();
+            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.UKParking_stolen.txt")).ReadToEnd();
             Assert.AreEqual(expected, results.First(a => a.name == "doc").stringConstant);
             results = new List<DarlResult>
             {
@@ -1085,7 +1085,7 @@ namespace Darl_standard_core.test
                 new DarlResult("patient", "alfred gonad", DarlResult.DataType.textual)
             };
             await runtime.Evaluate(results, source);
-            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.UKParking_hospital.txt")).ReadToEnd();
+            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.UKParking_hospital.txt")).ReadToEnd();
             Assert.AreEqual(expected, results.First(a => a.name == "doc").stringConstant);
             results = new List<DarlResult>
             {
@@ -1104,7 +1104,7 @@ namespace Darl_standard_core.test
                 new DarlResult("date_of_purchase", "06/01/1967", DarlResult.DataType.textual)
             };
             await runtime.Evaluate(results, source);
-            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.UKParking_ownerbought.txt")).ReadToEnd();
+            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.UKParking_ownerbought.txt")).ReadToEnd();
             Assert.AreEqual(expected, results.First(a => a.name == "doc").stringConstant);
             results = new List<DarlResult>
             {
@@ -1123,7 +1123,7 @@ namespace Darl_standard_core.test
                 new DarlResult("date_of_sale", "06/01/1967", DarlResult.DataType.textual)
             };
             await runtime.Evaluate(results, source);
-            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.UKParking_ownersold.txt")).ReadToEnd();
+            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.UKParking_ownersold.txt")).ReadToEnd();
             Assert.AreEqual(expected, results.First(a => a.name == "doc").stringConstant);
             results = new List<DarlResult>
             {
@@ -1142,7 +1142,7 @@ namespace Darl_standard_core.test
                 new DarlResult("ticket_type", "congestion")
             };
             await runtime.Evaluate(results, source);
-            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.UKParking_diplomat.txt")).ReadToEnd();
+            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.UKParking_diplomat.txt")).ReadToEnd();
             Assert.AreEqual(expected, results.First(a => a.name == "doc").stringConstant);
             results = new List<DarlResult>
             {
@@ -1159,7 +1159,7 @@ namespace Darl_standard_core.test
                 new DarlResult("time_of_arrival", "5:55", DarlResult.DataType.textual)
             };
             await runtime.Evaluate(results, source);
-            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.UKParking_reg.txt")).ReadToEnd();
+            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.UKParking_reg.txt")).ReadToEnd();
             Assert.AreEqual(expected, results.First(a => a.name == "doc").stringConstant);
             results = new List<DarlResult>
             {
@@ -1176,7 +1176,7 @@ namespace Darl_standard_core.test
                 new DarlResult("summary_of_offence", "Lack of political correctness", DarlResult.DataType.textual)
             };
             await runtime.Evaluate(results, source);
-            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.UKParking_missing.txt")).ReadToEnd();
+            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.UKParking_missing.txt")).ReadToEnd();
             Assert.AreEqual(expected, results.First(a => a.name == "doc").stringConstant);
             results = new List<DarlResult>
             {
@@ -1195,7 +1195,7 @@ namespace Darl_standard_core.test
                 new DarlResult("correct_text", "you unfortunately overstayed", DarlResult.DataType.textual)
             };
             await runtime.Evaluate(results, source);
-            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.UKParking_incorrect.txt")).ReadToEnd();
+            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.UKParking_incorrect.txt")).ReadToEnd();
             Assert.AreEqual(expected, results.First(a => a.name == "doc").stringConstant);
             results = new List<DarlResult>
             {
@@ -1214,7 +1214,7 @@ namespace Darl_standard_core.test
                 new DarlResult("date_of_hire", "06/01/1967", DarlResult.DataType.textual)
             };
             await runtime.Evaluate(results, source);
-            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.UKParking_hire.txt")).ReadToEnd();
+            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.UKParking_hire.txt")).ReadToEnd();
             Assert.AreEqual(expected, results.First(a => a.name == "doc").stringConstant);
             results = new List<DarlResult>
             {
@@ -1235,7 +1235,7 @@ namespace Darl_standard_core.test
                 new DarlResult("street_name", "Great Poop St.", DarlResult.DataType.textual)
             };
             await runtime.Evaluate(results, source);
-            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.UKParking_sign_incorrect.txt")).ReadToEnd();
+            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.UKParking_sign_incorrect.txt")).ReadToEnd();
             Assert.AreEqual(expected, results.First(a => a.name == "doc").stringConstant);
             results = new List<DarlResult>
             {
@@ -1253,7 +1253,7 @@ namespace Darl_standard_core.test
                 new DarlResult("street_name", "Great Poop St.", DarlResult.DataType.textual)
             };
             await runtime.Evaluate(results, source);
-            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.UKParking_sign_absent.txt")).ReadToEnd();
+            expected = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.UKParking_sign_absent.txt")).ReadToEnd();
             Assert.AreEqual(expected, results.First(a => a.name == "doc").stringConstant);
             var dvresults = JsonConvert.SerializeObject(Convert(results));
             Assert.AreEqual(55489, dvresults.Length);
@@ -1263,9 +1263,9 @@ namespace Darl_standard_core.test
         [TestMethod, TestCategory("Darl text functionality")]
         public void TestDocumentHandling2()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.Cross_border.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.Cross_border.darl"));
             var source = reader.ReadToEnd();
-            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.Cross_border.txt"));
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.Cross_border.txt"));
             var doc = docsource.ReadToEnd();
             //grounds : res
             var results = new List<DarlResult>
@@ -1284,9 +1284,9 @@ namespace Darl_standard_core.test
         [TestMethod, TestCategory("Darl text functionality")]
         public void TestDocumentHandling3()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.Cross_border2.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.Cross_border2.darl"));
             var source = reader.ReadToEnd();
-            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.Cross_border.txt"));
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.Cross_border.txt"));
             var doc = docsource.ReadToEnd();
             //grounds : res
             var results = new List<DarlResult>
@@ -1302,7 +1302,7 @@ namespace Darl_standard_core.test
             var tree = runtime.CreateTree(source);
             var res = runtime.Evaluate(tree, results);
             var s = runtime.CalculateSaliences(results, tree);
-            foreach(var sal in s.Keys)
+            foreach (var sal in s.Keys)
             {
                 Trace.WriteLine($"input {sal} value {s[sal]}");
             }
@@ -1311,9 +1311,9 @@ namespace Darl_standard_core.test
         [TestMethod, TestCategory("Darl text functionality")]
         public void TestDocumentHandling4()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.Cross_border2.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.Cross_border2.darl"));
             var source = reader.ReadToEnd();
-            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.cross_border2.txt"));
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.cross_border2.txt"));
             var doc = docsource.ReadToEnd();
             //grounds : res
             var results = new List<DarlResult>
@@ -1333,9 +1333,9 @@ namespace Darl_standard_core.test
         [TestMethod, TestCategory("Darl text functionality")]
         public void TestDocumentHandling5()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.Cross_border3.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.Cross_border3.darl"));
             var source = reader.ReadToEnd();
-            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.cross_border2.txt"));
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.cross_border2.txt"));
             var doc = docsource.ReadToEnd();
             //grounds : res
             var results = new List<DarlResult>
@@ -1358,9 +1358,9 @@ namespace Darl_standard_core.test
         [TestMethod, TestCategory("Darl text functionality")]
         public void TestDocumentHandling6() //in this case check for no exception if document list contains duplicates
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.Cross_border4.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.Cross_border4.darl"));
             var source = reader.ReadToEnd();
-            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.cross_border2.txt"));
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.cross_border2.txt"));
             var doc = docsource.ReadToEnd();
             //grounds : res
             var results = new List<DarlResult>
@@ -1383,7 +1383,7 @@ namespace Darl_standard_core.test
         [TestMethod, TestCategory("Darl text functionality")]
         public async Task TestBlueWaveSaliency()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.BluewavePricing.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.BluewavePricing.darl"));
             var source = reader.ReadToEnd();
             var results = new List<DarlResult>
             {
@@ -1399,10 +1399,10 @@ namespace Darl_standard_core.test
         [TestMethod, TestCategory("Darl text functionality")]
         public async Task TestEUClaim()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.EUClaim.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.EUClaim.darl"));
             var source = reader.ReadToEnd();
 
-            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.EUClaimText.txt"));
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.EUClaimText.txt"));
             var doc = docsource.ReadToEnd();
 
 
@@ -1428,13 +1428,13 @@ namespace Darl_standard_core.test
             results = await runtime.Evaluate(tree, results);
             var ufsaliences = runtime.CalculateSaliences(results, tree);
             Assert.AreEqual(0, ufsaliences.Count);
-            var dvresults = JsonConvert.SerializeObject( Convert(results));
+            var dvresults = JsonConvert.SerializeObject(Convert(results));
         }
 
         [TestMethod, TestCategory("Darl otherwise functionality")]
         public async Task TestMilitary_service()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.military_service.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.military_service.darl"));
             var source = reader.ReadToEnd();
             List<DarlResult> results = new List<DarlResult>
             {
@@ -1559,7 +1559,7 @@ namespace Darl_standard_core.test
         [TestMethod, TestCategory("Dabl functionality")]
         public async Task TestFurtherStoreParsing()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.StoreTest.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.StoreTest.darl"));
             var source = reader.ReadToEnd();
             var runtime = new DarlRunTime();
             var tree = runtime.CreateTree(source);
@@ -1590,7 +1590,7 @@ namespace Darl_standard_core.test
         [TestMethod]
         public async Task TestStoreSalience()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.bot_choice.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.bot_choice.darl"));
             var source = reader.ReadToEnd();
             var runtime = new DarlRunTime();
             var tree = runtime.CreateTree(source);
@@ -1602,7 +1602,7 @@ namespace Darl_standard_core.test
         [TestMethod]
         public async Task TestStoreDependency()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.storedependency.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.storedependency.darl"));
             var source = reader.ReadToEnd();
             var runtime = new DarlRunTime();
             var tree = runtime.CreateTree(source);
@@ -1628,7 +1628,7 @@ namespace Darl_standard_core.test
         [TestMethod]
         public async Task TestMultiple()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.data_collection.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.data_collection.darl"));
             var source = reader.ReadToEnd();
             var runtime = new DarlRunTime();
             var tree = runtime.CreateTree(source);
@@ -1639,28 +1639,28 @@ namespace Darl_standard_core.test
         [TestMethod]
         public void InsertCommentTest()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.ruleseteditor.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.ruleseteditor.darl"));
             var source = reader.ReadToEnd();
             var runtime = new DarlRunTime();
             var tree = runtime.CreateTree(source);
         }
 
         [TestMethod]
-        public async Task  AlphMindTest()
+        public async Task AlphMindTest()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.Alphamind.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.Alphamind.darl"));
             var source = reader.ReadToEnd();
             var runtime = new DarlRunTime();
             var tree = runtime.CreateTree(source);
             var inputs = new List<DarlResult>();
-            inputs.Add(new DarlResult ( "rows", 0.0));
+            inputs.Add(new DarlResult("rows", 0.0));
             var res = await runtime.Evaluate(tree, inputs);
         }
 
         [TestMethod]
         public async Task DynamicCategoricalInputTest()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.dynamiccategoricalinput.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.dynamiccategoricalinput.darl"));
             var source = reader.ReadToEnd();
             var runtime = new DarlRunTime();
             var tree = runtime.CreateTree(source);
@@ -1722,8 +1722,8 @@ namespace Darl_standard_core.test
 
         public async Task<DarlResult> ReadAsync(List<string> address)
         {
-            var res =  results.FirstOrDefault(a => a.name == address[0]);
-            if(res.Exists())
+            var res = results.FirstOrDefault(a => a.name == address[0]);
+            if (res.Exists())
             {
                 return res;
             }

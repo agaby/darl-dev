@@ -1,15 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="DarlMetaTests.cs" />
-    <Compile Remove="SecurityTest.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Remove="AbsentPresent.darl" />
@@ -23,6 +18,7 @@
     <None Remove="BluewavePricing.darl" />
     <None Remove="bot_choice.darl" />
     <None Remove="brexit.darl" />
+    <None Remove="Categorical_test_displayRule.darl" />
     <None Remove="Categorical_test_displayRuleConstants.darl" />
     <None Remove="cleve_heart.darl" />
     <None Remove="cleve_heart.xml" />
@@ -136,6 +132,7 @@
     <EmbeddedResource Include="BluewavePricing.darl" />
     <EmbeddedResource Include="bot_choice.darl" />
     <EmbeddedResource Include="brexit.darl" />
+    <EmbeddedResource Include="Categorical_test_displayRule.darl" />
     <EmbeddedResource Include="Categorical_test_displayRuleConstants.darl" />
     <EmbeddedResource Include="cleve_heart.darl" />
     <EmbeddedResource Include="cleve_heart.xml" />
@@ -208,7 +205,6 @@
     <EmbeddedResource Include="TestQuestions.txt" />
     <EmbeddedResource Include="textoutputtest.darl" />
     <EmbeddedResource Include="texttest.darl" />
-    <EmbeddedResource Include="Categorical_test_displayRule.darl" />
     <EmbeddedResource Include="Textual_test_displayRule.darl" />
     <EmbeddedResource Include="thousandquestions.model" />
     <EmbeddedResource Include="thousandquestions2.model" />
@@ -239,15 +235,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="12.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-    <PackageReference Include="Moq" Version="4.13.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
-    <PackageReference Include="NJsonSchema" Version="9.13.9" />
-    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-    <PackageReference Include="System.IO.MemoryMappedFiles" Version="4.3.0" />
+    <PackageReference Include="CsvHelper" Version="27.1.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.3" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.3" />
+    <PackageReference Include="coverlet.collector" Version="3.0.2" />
+    <PackageReference Include="NJsonSchema" Version="10.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Darl.GraphQL\Darl.ai\Darl.ai\Darl.ai.csproj" />
   </ItemGroup>
 
 </Project>

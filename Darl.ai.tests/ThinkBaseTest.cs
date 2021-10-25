@@ -1,20 +1,18 @@
-﻿using Darl.Thinkbase.Meta;
+﻿using Darl.Common;
 using Darl.Thinkbase;
+using Darl.Thinkbase.Meta;
+using DarlCommon;
+using DarlLanguage;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 using System.IO;
 using System.Linq;
-using DarlCommon;
-using Microsoft.Extensions.Logging;
-using Darl.Common;
-using DarlLanguage;
-using ProtoBuf;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Darl_standard_core.test
 {
@@ -29,40 +27,40 @@ namespace Darl_standard_core.test
         ILogger<GraphHandler> _ghlogger;
         IMetaStructureHandler _metaStruct;
 
-        private static string industryLineage = "noun:01,2,07,10,14,3,1";
-        private static string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";
-        private static string jobLineage = "noun:01,0,2,00,23,19";
-        private static string areaLineage = "noun:01,1,00,10,09,5";
-        private static string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
-        private static string courseLineage = "noun:01,0,2,00,23,29,02";
-        private static string abilityLineage = "noun:01,0,0,04";
-        private static string enableLineage = "verb:013,210";
-        private static string ruleLineage = "noun:01,0,2,00,23,44,15";
-        private static string personLineage = "noun:00,2,00";
-        private static string universityLineage = "noun:01,2,07,10,13,7,4";
-        private static string learningOutcomeLineage = "noun:01,0,0,15,16,2";
-        private static string ownLineage = "verb:393";
-        private static string consistsLineage = "verb:019,031";
-        private static string teachLineage = "verb:034,30,01,09,01";
-        private static string topicLineage = "noun:01,4,05,06";
-        private static string skillLineage = "noun:01,0,0,04";
-        private static string createLineage = "verb:023";
-        private static string requireLineage = "verb:145";
-        private static string descriptionLineage = "noun:01,4,05,21,05";
-        private static string functionLineage = "noun:01,0,2,00,23,16,21,1";
-        private static string careerLineage = "noun:01,0,2,00,00,15,20,01,1";
-        private static string huntingLineage = "noun:01,0,2,00,23,35";
-        private static string personalityLineage = "noun:01,1,09";
-        private static string liveLineage = "adjective:7763";
-        private static string studentLineage = "noun:00,2,00,175,0";
-        private static string mathsLineage = "noun:01,0,0,15,21,0,08,02";
-        private static string yearLineage = "noun:01,5,03,3,045";
-        private static string followsLineage = "verb:534";
-        private static string activityLineage = "noun:01,0,2,00,23";
-        private static string testLineage = "noun:01,0,2,00,38,09";
-        private static string completeLineage = "adjective:5500";
-        private static string answerLineage = "noun:01,4,05,21,19";
-        private static string rangeLineage = "noun:01,7,03";
+        private static readonly string industryLineage = "noun:01,2,07,10,14,3,1";
+        private static readonly string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";
+        private static readonly string jobLineage = "noun:01,0,2,00,23,19";
+        private static readonly string areaLineage = "noun:01,1,00,10,09,5";
+        private static readonly string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
+        private static readonly string courseLineage = "noun:01,0,2,00,23,29,02";
+        private static readonly string abilityLineage = "noun:01,0,0,04";
+        private static readonly string enableLineage = "verb:013,210";
+        private static readonly string ruleLineage = "noun:01,0,2,00,23,44,15";
+        private static readonly string personLineage = "noun:00,2,00";
+        private static readonly string universityLineage = "noun:01,2,07,10,13,7,4";
+        private static readonly string learningOutcomeLineage = "noun:01,0,0,15,16,2";
+        private static readonly string ownLineage = "verb:393";
+        private static readonly string consistsLineage = "verb:019,031";
+        private static readonly string teachLineage = "verb:034,30,01,09,01";
+        private static readonly string topicLineage = "noun:01,4,05,06";
+        private static readonly string skillLineage = "noun:01,0,0,04";
+        private static readonly string createLineage = "verb:023";
+        private static readonly string requireLineage = "verb:145";
+        private static readonly string descriptionLineage = "noun:01,4,05,21,05";
+        private static readonly string functionLineage = "noun:01,0,2,00,23,16,21,1";
+        private static readonly string careerLineage = "noun:01,0,2,00,00,15,20,01,1";
+        private static readonly string huntingLineage = "noun:01,0,2,00,23,35";
+        private static readonly string personalityLineage = "noun:01,1,09";
+        private static readonly string liveLineage = "adjective:7763";
+        private static readonly string studentLineage = "noun:00,2,00,175,0";
+        private static readonly string mathsLineage = "noun:01,0,0,15,21,0,08,02";
+        private static readonly string yearLineage = "noun:01,5,03,3,045";
+        private static readonly string followsLineage = "verb:534";
+        private static readonly string activityLineage = "noun:01,0,2,00,23";
+        private static readonly string testLineage = "noun:01,0,2,00,38,09";
+        private static readonly string completeLineage = "adjective:5500";
+        private static readonly string answerLineage = "noun:01,4,05,21,19";
+        private static readonly string rangeLineage = "noun:01,7,03";
 
         private string id1;
         private string id2;
@@ -94,8 +92,8 @@ namespace Darl_standard_core.test
         [TestMethod]
         public async Task TestGraphMLLoad()
         {
-            var graph = new GraphProcessing(_primitives,_logger, _metaStruct);
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.left.graphml");
+            var graph = new GraphProcessing(_primitives, _logger, _metaStruct);
+            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.left.graphml");
             await graph.LoadGraphML("", stream, null);
         }
 
@@ -106,7 +104,7 @@ namespace Darl_standard_core.test
             var source = "output categorical completed {true,false};\nif any(\"\",\"\") and all(\"\",\"\") then completed will be true;";
             var tree = runtime.CreateTree(source, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>() }, _model);
             Assert.IsTrue(tree.HasErrors());
-//            Assert.AreEqual(4, tree.ParserMessages.Count);
+            //            Assert.AreEqual(4, tree.ParserMessages.Count);
             source = "output categorical completed {true,false};\nif any(\"noun:01,2,07,10,14,3,1\",\"noun:01,2,07,10,14,3,1\",\"noun:01,2,07,10,14,3,1\") and all(\"noun:01,2,07,10,14,3,1\",\"noun:01,2,07,10,14,3,1\",\"noun:01,2,07,10,14,3,1\") then completed will be true;";
             tree = runtime.CreateTree(source, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>() }, _model);
             Assert.IsFalse(tree.HasErrors());
@@ -130,7 +128,7 @@ namespace Darl_standard_core.test
             var tree = runtime.CreateTree(topicCode, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString() }, _model);
             var gos = runtime.ExploreGraph(tree);
             Assert.AreEqual(2, gos.Count);
-            var ks = new KnowledgeState ();
+            var ks = new KnowledgeState();
             var values = new List<DarlResult>();
             await runtime.Evaluate(tree, values, ks);
             Assert.AreEqual(1, values.Count);
@@ -141,7 +139,7 @@ namespace Darl_standard_core.test
             Assert.AreEqual(1, values.Count);
             Assert.AreEqual("completed", values[0].name);
             Assert.IsTrue(values[0].IsUnknown());//one matching one empty
-            ks.AddAttribute(id2, new GraphAttribute { lineage = completeLineage, confidence = 1.0 } );
+            ks.AddAttribute(id2, new GraphAttribute { lineage = completeLineage, confidence = 1.0 });
             await runtime.Evaluate(tree, values, ks);
             Assert.AreEqual(1, values.Count);
             Assert.AreEqual("completed", values[0].name);
@@ -156,7 +154,7 @@ namespace Darl_standard_core.test
             Assert.AreEqual(1, values.Count);
             Assert.AreEqual("completed", values[0].name);
             Assert.IsTrue(values[0].IsUnknown());//two matching both empty
-            ks.AddAttribute(id1,new GraphAttribute { lineage = completeLineage, confidence = 1.0 });
+            ks.AddAttribute(id1, new GraphAttribute { lineage = completeLineage, confidence = 1.0 });
             await runtime.Evaluate(tree, values, ks);
             Assert.AreEqual(1, values.Count);
             Assert.AreEqual("completed", values[0].name);
@@ -171,7 +169,7 @@ namespace Darl_standard_core.test
             //now test count operator
             topicCode = $"output categorical completed {{true,false}} \"{completeLineage}\";\n if count(\"{yearLineage}\",\"{consistsLineage}\",\"{completeLineage}\") is > 1 then completed will be true;";
             tree = runtime.CreateTree(topicCode, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString() }, _model);
-            ks = new KnowledgeState ();
+            ks = new KnowledgeState();
             values = new List<DarlResult>();
             await runtime.Evaluate(tree, values, ks);
             Assert.AreEqual(1, values.Count);
@@ -184,7 +182,7 @@ namespace Darl_standard_core.test
             Assert.AreEqual("completed", values[0].name);
             Assert.IsTrue(values[0].IsUnknown());//one matching     
             Assert.AreEqual(1, ks.RecordCount);
-            ks.AddAttribute(id2, new GraphAttribute { lineage = completeLineage, confidence = 1.0 } );
+            ks.AddAttribute(id2, new GraphAttribute { lineage = completeLineage, confidence = 1.0 });
             await runtime.Evaluate(tree, values, ks);
             Assert.AreEqual(1, values.Count);
             Assert.AreEqual("completed", values[0].name);
@@ -202,12 +200,12 @@ namespace Darl_standard_core.test
         }
 
         [TestMethod]
-        public async Task  TestAttributeGrammar()
+        public async Task TestAttributeGrammar()
         {
             model.Setup(a => a.FindDataAttribute(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<KnowledgeState>())).Returns(new DarlVar { Value = "poop", dataType = DarlVar.DataType.textual });
             var attributeCode = $"output textual response;\n if anything then response will be attribute(\"{followsLineage}\");";
             var runtime = new DarlMetaRunTime();
-            var tree = runtime.CreateTree(attributeCode, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString() ,properties = new List<GraphAttribute> { new GraphAttribute { name = followsLineage, value = "poop" } } }, _model);
+            var tree = runtime.CreateTree(attributeCode, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString(), properties = new List<GraphAttribute> { new GraphAttribute { name = followsLineage, value = "poop" } } }, _model);
             var list = new List<DarlResult>();
             var ks = new KnowledgeState();
             await runtime.Evaluate(tree, list, ks);
@@ -228,14 +226,14 @@ namespace Darl_standard_core.test
         public async Task TestGraphPass()
         {
             var graph = new GraphProcessing(_primitives, _logger, _metaStruct);
-            var gh = new GraphHandler(graph,_ghlogger, new MetaStructureHandler());
+            var gh = new GraphHandler(graph, _ghlogger, new MetaStructureHandler());
             var graphName = "graph1.graph";
             var paths = new List<string> { consistsLineage, followsLineage };
             var subjectId = Guid.NewGuid().ToString();
             var userId = Guid.NewGuid().ToString();
             var targetId = Guid.NewGuid().ToString();
             var completionLineage = completeLineage;
-            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, completionLineage, new List<DarlCommon.DarlVar>(),null,GraphProcess.seek);
+            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, completionLineage, new List<DarlCommon.DarlVar>(), null, GraphProcess.seek);
             Assert.AreEqual(1, next.Item1.Count);
         }
 
@@ -248,7 +246,7 @@ namespace Darl_standard_core.test
             var defaultRule = "output textual response;\nif anything then response will be \"I don't know the answer to that.\";";
             var root = new GraphObject { id = Guid.NewGuid().ToString() };
             recognitionIds.Add(root.id, root);
-            var subnode = new GraphObject { id = Guid.NewGuid().ToString(), lineage = "default:", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = defaultRule} } };
+            var subnode = new GraphObject { id = Guid.NewGuid().ToString(), lineage = "default:", properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = defaultRule } } };
             recognitionIds.Add(subnode.id, subnode);
             var conn = new GraphConnection { lineage = followsLineage, startId = root.id, endId = subnode.id };
             root.Out.Add(conn);
@@ -315,7 +313,7 @@ namespace Darl_standard_core.test
             results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "who is doc andy" });
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(foundRule, results[0].darl);
-            Assert.AreEqual("A complete prick.", results[0].response.Value); 
+            Assert.AreEqual("A complete prick.", results[0].response.Value);
             results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "For fuck's sake, who is dr andy" });
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(foundRule, results[0].darl);
@@ -335,8 +333,8 @@ namespace Darl_standard_core.test
         [TestMethod]
         public async Task TestDisplayRules()
         {
-            model.Setup(a => a.FindDataAttribute(It.IsAny<string>(), "noun:00,1,00,3,10,09,06",  It.IsAny<KnowledgeState>())).Returns(new DarlVar { Value = "Do something pointless", dataType = DarlVar.DataType.textual });
-            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.Activity_display_rule.darl")).ReadToEnd();
+            model.Setup(a => a.FindDataAttribute(It.IsAny<string>(), "noun:00,1,00,3,10,09,06", It.IsAny<KnowledgeState>())).Returns(new DarlVar { Value = "Do something pointless", dataType = DarlVar.DataType.textual });
+            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.Activity_display_rule.darl")).ReadToEnd();
             var runtime = new DarlMetaRunTime(new MetaStructureHandler());
             var tree = runtime.CreateTree(source, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString(), properties = new List<GraphAttribute> { new GraphAttribute { name = "noun:00,1,00,3,10,09,06", value = "Do something pointless" } } }, _model);
             var list = new List<DarlResult>();
@@ -349,14 +347,14 @@ namespace Darl_standard_core.test
             Assert.AreEqual("response", c.Keys.First());
             model.Setup(a => a.FindDataAttribute(It.IsAny<string>(), "noun:00,1,00,3,10,09,06", It.IsAny<KnowledgeState>())).Returns(new DarlVar { Value = "What is 2 + 2?", dataType = DarlVar.DataType.textual });
             model.Setup(a => a.FindDataAttribute(It.IsAny<string>(), "noun:01,4,05,21,19", It.IsAny<KnowledgeState>())).Returns(new DarlVar { Value = "4", dataType = DarlVar.DataType.numeric });
-            source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.numeric_test_display_rule.darl")).ReadToEnd();
-            tree = runtime.CreateTree(source, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString() , properties = new List<GraphAttribute> { new GraphAttribute { name = "noun:00,1,00,3,10,09,06", value = "What is 2 + 2?" }, new GraphAttribute {name = "noun:01,4,05,21,19", value = "4"  } } }, _model);
+            source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.numeric_test_display_rule.darl")).ReadToEnd();
+            tree = runtime.CreateTree(source, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString(), properties = new List<GraphAttribute> { new GraphAttribute { name = "noun:00,1,00,3,10,09,06", value = "What is 2 + 2?" }, new GraphAttribute { name = "noun:01,4,05,21,19", value = "4" } } }, _model);
             await runtime.Evaluate(tree, list, ks);
             Assert.AreEqual(4, list.Count);
             c = runtime.CalculateSaliences(list, tree);
             Assert.AreEqual(1, c.Count);
             Assert.AreEqual("response", c.Keys.First());
-            list.Add( new DarlResult("response",4));
+            list.Add(new DarlResult("response", 4));
             await runtime.Evaluate(tree, list, ks);
             Assert.AreEqual(5, list.Count);
             Assert.AreEqual(4.0, list[0].Value);
@@ -368,10 +366,10 @@ namespace Darl_standard_core.test
             Assert.AreEqual(0, c.Count);
             model.Setup(a => a.FindDataAttribute(It.IsAny<string>(), "noun:00,1,00,3,10,09,06", It.IsAny<KnowledgeState>())).Returns(new DarlVar { Value = "what should you do if you want to know the number of things?", dataType = DarlVar.DataType.textual });
             model.Setup(a => a.FindDataAttribute(It.IsAny<string>(), "noun:01,4,05,21,19", It.IsAny<KnowledgeState>())).Returns(new DarlVar { Value = "count", dataType = DarlVar.DataType.textual });
-            source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.Textual_test_displayRule.darl")).ReadToEnd();
+            source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.Textual_test_displayRule.darl")).ReadToEnd();
             list.Clear();
             tree = runtime.CreateTree(source, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString(), properties = new List<GraphAttribute> { new GraphAttribute { name = "noun:00,1,00,3,10,09,06", value = "what should you do if you want to know the number of things?" }, new GraphAttribute { name = "noun:01,4,05,21,19", value = "I should count them." } } }, _model);
-            list.Add(new DarlResult("response",DarlResult.DataType.textual, 1.0));
+            list.Add(new DarlResult("response", DarlResult.DataType.textual, 1.0));
             list[0].stringConstant = "I should count";
             list[0].Value = "I should count";
             await runtime.Evaluate(tree, list, ks);
@@ -384,19 +382,19 @@ namespace Darl_standard_core.test
             model.Setup(a => a.FindDataAttribute(It.IsAny<string>(), "noun:01,7,03", It.IsAny<KnowledgeState>())).Returns(new DarlVar { Value = "\"30\",\"39\",\"40\",\"41\"", dataType = DarlVar.DataType.textual });
             model.Setup(a => a.FindDataAttribute(It.IsAny<string>(), "noun:00,1,00,3,10,09,06", It.IsAny<KnowledgeState>())).Returns(new DarlVar { Value = "what is 40 - 1?", dataType = DarlVar.DataType.textual });
             model.Setup(a => a.FindDataAttribute(It.IsAny<string>(), "noun:01,4,05,21,19", It.IsAny<KnowledgeState>())).Returns(new DarlVar { Value = "39", dataType = DarlVar.DataType.categorical });
-            source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.Categorical_test_displayRule.darl")).ReadToEnd();
+            source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.Categorical_test_displayRule.darl")).ReadToEnd();
             list.Clear();
             tree = runtime.CreateTree(source, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString(), properties = new List<GraphAttribute> { new GraphAttribute { name = "noun:00,1,00,3,10,09,06", value = "what should you do if you want to know the number of things?" }, new GraphAttribute { name = "noun:01,4,05,21,19", value = "I should count them." } } }, _model);
             list.Add(new DarlResult("response", DarlResult.DataType.categorical, 1.0));
             list[0].Value = "39";
-            list[0].categories = new Dictionary<string, double> { { "39",1.0}};
+            list[0].categories = new Dictionary<string, double> { { "39", 1.0 } };
             var inputs = tree.GetInputs();
             await runtime.Evaluate(tree, list, ks);
             Assert.AreEqual(5, list.Count);
             Assert.AreEqual("39", list[0].Value);
             Assert.AreEqual("true", list[1].Value);
             Assert.AreEqual("true", list[3].Value);
-            source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.Categorical_test_displayRuleConstants.darl")).ReadToEnd();
+            source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.Categorical_test_displayRuleConstants.darl")).ReadToEnd();
             list.Clear();
             tree = runtime.CreateTree(source, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString(), properties = new List<GraphAttribute> { new GraphAttribute { name = "noun:00,1,00,3,10,09,06", value = "what should you do if you want to know the number of things?" }, new GraphAttribute { name = "noun:01,4,05,21,19", value = "I should count them." } } }, _model);
             list.Add(new DarlResult("response", DarlResult.DataType.categorical, 1.0));
@@ -418,13 +416,13 @@ namespace Darl_standard_core.test
             var runtime = new DarlMetaRunTime();
             var list = new List<DarlResult>();
             var ks = new KnowledgeState();
-            var tree = runtime.CreateTree(source, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString(), existence = new List<DarlTime?> {DarlTime.MinValue, DarlTime.MaxValue } } , _model);
+            var tree = runtime.CreateTree(source, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString(), existence = new List<DarlTime?> { DarlTime.MinValue, DarlTime.MaxValue } }, _model);
             await runtime.Evaluate(tree, list, ks);
             Assert.AreEqual("true", list[0].Value);
             tree = runtime.CreateTree(source, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString(), existence = new List<DarlTime?> { } }, _model);
             await runtime.Evaluate(tree, list, ks);
             Assert.AreEqual(true, list[0].IsUnknown());
-            tree = runtime.CreateTree(source, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString(), existence = new List<DarlTime?> { new DarlTime(2030,1,1), new DarlTime(2035,1,1)} }, _model);
+            tree = runtime.CreateTree(source, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString(), existence = new List<DarlTime?> { new DarlTime(2030, 1, 1), new DarlTime(2035, 1, 1) } }, _model);
             await runtime.Evaluate(tree, list, ks);
             //test with set currentTime
             source = "output categorical x {true,false}; duration lifetime 1900 ; if durationof() is < lifetime  then x will be true; if durationof() is > lifetime then x will be false;";
@@ -452,11 +450,11 @@ namespace Darl_standard_core.test
                 "output numeric nmin;\n  " +
                 "if anything then nmin will be minimum(attributes(\"noun:01\",\"noun:01\",\"noun:01\"));\n" +
                 "output numeric nmax;\n  " +
-                "if anything then nmax will be maximum(attributes(\"noun:01\",\"noun:01\",\"noun:01\"));\n"; 
+                "if anything then nmax will be maximum(attributes(\"noun:01\",\"noun:01\",\"noun:01\"));\n";
             var runtime = new DarlMetaRunTime();
             var list = new List<DarlResult>();
             var ks = new KnowledgeState();
-            var tree = runtime.CreateTree(source, new GraphObject { id = Guid.NewGuid().ToString()}, _model);
+            var tree = runtime.CreateTree(source, new GraphObject { id = Guid.NewGuid().ToString() }, _model);
             await runtime.Evaluate(tree, list, ks);
             Assert.AreEqual(14.0, list[0].Value);
             Assert.AreEqual(120.0, list[1].Value);
@@ -487,7 +485,7 @@ namespace Darl_standard_core.test
             var model = new BlobGraphContent();
             var centre = new GraphObject { name = "centre", externalId = "centre", lineage = msh.CommonLineages["appraisal"], id = Guid.NewGuid().ToString() };
             centre.properties = new List<GraphAttribute> { new GraphAttribute { lineage = msh.CommonLineages["text"], value = "That's all we want to know." } };
-            model.vertices.Add(centre.id,centre);
+            model.vertices.Add(centre.id, centre);
             var catNode = new GraphObject { name = "catNode", externalId = "catNode", lineage = msh.CommonLineages["appraisal"], id = Guid.NewGuid().ToString() };
             catNode.properties = new List<GraphAttribute> { new GraphAttribute { lineage = msh.CommonLineages["text"], value = "What category are you?" } };
             model.vertices.Add(catNode.id, catNode);
@@ -498,7 +496,7 @@ namespace Darl_standard_core.test
             textNode.properties = new List<GraphAttribute> { new GraphAttribute { lineage = msh.CommonLineages["text"], value = "Give some text" } };
             model.vertices.Add(textNode.id, textNode);
             var conn1 = new GraphConnection { id = Guid.NewGuid().ToString(), startId = centre.id, endId = catNode.id, lineage = msh.CommonLineages["consist"] };
-            model.edges.Add(conn1.id,conn1);
+            model.edges.Add(conn1.id, conn1);
             centre.Out.Add(conn1);
             catNode.In.Add(conn1);
             var conn2 = new GraphConnection { id = Guid.NewGuid().ToString(), startId = centre.id, endId = numNode.id, lineage = msh.CommonLineages["consist"] };
@@ -510,7 +508,7 @@ namespace Darl_standard_core.test
             centre.Out.Add(conn3);
             textNode.In.Add(conn3);
             var category1 = new GraphObject { name = "category1", externalId = "category1", lineage = msh.CommonLineages["category"], id = Guid.NewGuid().ToString() };
-            category1.properties = new List<GraphAttribute> { new GraphAttribute { lineage = msh.CommonLineages["text"], value = "first category" }, new GraphAttribute {lineage = answerLineage, value = "first" } };
+            category1.properties = new List<GraphAttribute> { new GraphAttribute { lineage = msh.CommonLineages["text"], value = "first category" }, new GraphAttribute { lineage = answerLineage, value = "first" } };
             model.vertices.Add(category1.id, category1);
             var category2 = new GraphObject { name = "category2", externalId = "category2", lineage = msh.CommonLineages["category"], id = Guid.NewGuid().ToString() };
             category2.properties = new List<GraphAttribute> { new GraphAttribute { lineage = msh.CommonLineages["text"], value = "second category" }, new GraphAttribute { lineage = answerLineage, value = "second" } };
@@ -600,18 +598,18 @@ namespace Darl_standard_core.test
         [TestMethod]
         public async Task TestCompletionRuleCreation()
         {
-            var model = Serializer.Deserialize<BlobGraphContent>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.primary_math.graph"));
+            var model = Serializer.Deserialize<BlobGraphContent>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.primary_math.graph"));
             var root = model.vertices.FirstOrDefault(a => a.Value.externalId == "MATH1");
             var msh = new MetaStructureHandler();
             var choices = msh.CreateCompletionRuleFirstPass(model, root.Value);
-            var paths = new List<(string, string, string)> { ( choices[0].Item1, choices[0].Item2, "all" ) };
+            var paths = new List<(string, string, string)> { (choices[0].Item1, choices[0].Item2, "all") };
             var code = msh.CreateCompletionRuleSecondPass(model, root.Value, paths, "and");
             var runtime = new DarlMetaRunTime(msh);
             var tree = runtime.CreateTree(code, root.Value, model);
             var linroot = model.virtualVertices["noun:01,0,0,15,21,0,08,02"];
             choices = msh.CreateCompletionRuleFirstPass(model, linroot);
             paths = new List<(string, string, string)>();
-            foreach(var ch in choices)
+            foreach (var ch in choices)
             {
                 paths.Add((ch.Item1, ch.Item2, "all"));
             }
@@ -635,7 +633,7 @@ namespace Darl_standard_core.test
             ks = new KnowledgeState();
             ks.AddAttribute("1b35bb45-930a-4331-8421-d1c95f7a0bf7", new GraphAttribute { confidence = 1.0, lineage = completeLineage, name = "completed", value = "true" });
             inputs = new List<DarlResult>();
-            
+
             await runtime.Evaluate(tree, inputs, ks);
             Assert.AreEqual(1, inputs.Count);
             Assert.IsFalse(inputs[0].IsUnknown());
@@ -657,8 +655,8 @@ namespace Darl_standard_core.test
         public void TestLinterforLineageConstants()
         {
             var runtime = new DarlMetaRunTime(new MetaStructureHandler());
-            var source =    "lineage correct \"adjective:3521\";\n" + 
-                            "input numeric response;\n" + 
+            var source = "lineage correct \"adjective:3521\";\n" +
+                            "input numeric response;\n" +
                             "output categorical completed { true,false} complete;\n" +
                             "output textual annotation;\n" +
                             "output categorical correct { true,false} correct;\n" +
@@ -674,11 +672,11 @@ namespace Darl_standard_core.test
         [TestMethod]
         public async Task TestTextParsingAndSalience()
         {
-            var model = Serializer.Deserialize<BlobGraphContent>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.discord_bot.graph"));
+            var model = Serializer.Deserialize<BlobGraphContent>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.discord_bot.graph"));
             primitives = new Mock<IGraphPrimitives>();
             primitives.Setup(a => a.Load(It.IsAny<string>())).Returns(Task.FromResult<IGraphModel>(model));
             primitives.Setup(a => a.GetRecognitionRoot(It.IsAny<IGraphModel>(), It.IsAny<string>())).Returns(Task.FromResult<GraphObject>(model.recognitionRoots["default:"]));
-            primitives.Setup(a => a.GetGraphObjectById(It.IsAny<string>(), It.IsAny<string>())).Returns((string compName, string id) => Task.FromResult<GraphObject>(model.vertices.FirstOrDefault( a => a.Value.externalId == id).Value));
+            primitives.Setup(a => a.GetGraphObjectById(It.IsAny<string>(), It.IsAny<string>())).Returns((string compName, string id) => Task.FromResult<GraphObject>(model.vertices.FirstOrDefault(a => a.Value.externalId == id).Value));
             _primitives = primitives.Object;
             var gp = new GraphProcessing(_primitives, _logger, new MetaStructureHandler());
             var gh = new GraphHandler(gp, _ghlogger, new MetaStructureHandler());
@@ -709,17 +707,17 @@ namespace Darl_standard_core.test
         [TestMethod]
         public async Task TestCursusHonorum()
         {
-            var model = Serializer.Deserialize<BlobGraphContent>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.cursus_honorum.graph"));
+            var model = Serializer.Deserialize<BlobGraphContent>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.cursus_honorum.graph"));
             primitives = new Mock<IGraphPrimitives>();
             primitives.Setup(a => a.Load(It.IsAny<string>())).Returns(Task.FromResult<IGraphModel>(model));
             primitives.Setup(a => a.GetRecognitionRoot(It.IsAny<IGraphModel>(), It.IsAny<string>())).Returns(Task.FromResult<GraphObject>(model.recognitionRoots["default:"]));
             primitives.Setup(a => a.GetGraphObjectById(It.IsAny<string>(), It.IsAny<string>())).Returns((string compName, string id) => Task.FromResult<GraphObject>(model.vertices.FirstOrDefault(a => a.Value.externalId == id).Value));
-            var ks = new KnowledgeState {subjectId = "person" };
-            primitives.Setup(a => a.GetKnowledgeState(It.IsAny<string>(), "person", It.IsAny<string>(),It.IsAny<bool>())).Returns(Task.FromResult(ks));
+            var ks = new KnowledgeState { subjectId = "person" };
+            primitives.Setup(a => a.GetKnowledgeState(It.IsAny<string>(), "person", It.IsAny<string>(), It.IsAny<bool>())).Returns(Task.FromResult(ks));
             _primitives = primitives.Object;
             var gp = new GraphProcessing(_primitives, _logger, new MetaStructureHandler());
             var gh = new GraphHandler(gp, _ghlogger, new MetaStructureHandler());
-    //        var res = await gh.DiscoverForBot("user", "cursus_honorum.graph", "person", new List<string>(), "abcdef");
+            //        var res = await gh.DiscoverForBot("user", "cursus_honorum.graph", "person", new List<string>(), "abcdef");
 
         }
 

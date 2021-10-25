@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿using Darl.Forms;
 using DarlCommon;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using Darl.Forms;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Darl_standard_core.test
 {
@@ -20,7 +19,7 @@ namespace Darl_standard_core.test
         {
             DarlForms form = new DarlForms();
             var jss = new JsonSerializerSettings { ContractResolver = new DefaultContractResolver(), Converters = new List<JsonConverter>() { new StringEnumConverter() } };
-            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.EU_delayed_flight_claim_copy.rule"));
+            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.EU_delayed_flight_claim_copy.rule"));
             RuleForm rf = JsonConvert.DeserializeObject<RuleForm>(source.ReadToEnd(), jss);
             QuestionCache qc = new QuestionCache();
             await rf.UpdateFromCode();
@@ -49,7 +48,7 @@ namespace Darl_standard_core.test
             Assert.AreEqual(1, qsp.responses.Count);
             Assert.IsNull(qsp.questions);
             Assert.IsNotNull(qsp.responses[0].mainText);
-            Assert.AreEqual(1249,qsp.responses[0].mainText.Length);
+            Assert.AreEqual(1249, qsp.responses[0].mainText.Length);
         }
 
         [TestMethod]
@@ -57,7 +56,7 @@ namespace Darl_standard_core.test
         {
             DarlForms form = new DarlForms();
             var jss = new JsonSerializerSettings { ContractResolver = new DefaultContractResolver(), Converters = new List<JsonConverter>() { new StringEnumConverter() } };
-            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.military_service.rule"));
+            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.military_service.rule"));
             RuleForm rf = JsonConvert.DeserializeObject<RuleForm>(source.ReadToEnd(), jss);
             QuestionCache qc = new QuestionCache();
             await rf.UpdateFromCode();
@@ -77,9 +76,9 @@ namespace Darl_standard_core.test
         {
             DarlForms form = new DarlForms();
             var jss = new JsonSerializerSettings { ContractResolver = new DefaultContractResolver(), Converters = new List<JsonConverter>() { new StringEnumConverter() } };
-            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.EU_delayed_flight_claim_copy.rule"));
+            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.EU_delayed_flight_claim_copy.rule"));
             RuleForm rf = JsonConvert.DeserializeObject<RuleForm>(source.ReadToEnd(), jss);
-            var newSource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.EUClaimTemporal.darl"));
+            var newSource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.EUClaimTemporal.darl"));
             rf.darl = newSource.ReadToEnd();
             await rf.UpdateFromCode();
             QuestionCache qc = new QuestionCache();
@@ -111,10 +110,10 @@ namespace Darl_standard_core.test
         public void TestFormFormatExtensions()
         {
             var jss = new JsonSerializerSettings { ContractResolver = new DefaultContractResolver(), Converters = new List<JsonConverter>() { new StringEnumConverter() } };
-            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.UK_Tax_NI.rule"));
+            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.UK_Tax_NI.rule"));
             RuleForm rf = JsonConvert.DeserializeObject<RuleForm>(source.ReadToEnd(), jss);
             var insert = rf.format.CreateTestDataSchema();
-            var wrapper = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.dataschema.json")).ReadToEnd();
+            var wrapper = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.dataschema.json")).ReadToEnd();
             var res = wrapper.Replace("#insert", insert);
             //check valid json
             var obj = JsonConvert.DeserializeObject(res);
@@ -124,7 +123,7 @@ namespace Darl_standard_core.test
         public async Task TestUpdateFromCode()
         {
             var jss = new JsonSerializerSettings { ContractResolver = new DefaultContractResolver(), Converters = new List<JsonConverter>() { new StringEnumConverter() } };
-            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.EU_delayed_flight_claim_copy.rule"));
+            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.EU_delayed_flight_claim_copy.rule"));
             RuleForm rf = JsonConvert.DeserializeObject<RuleForm>(source.ReadToEnd(), jss);
             var res = await rf.UpdateFromCode();
             Assert.AreEqual(5, res.Count);
@@ -169,7 +168,7 @@ namespace Darl_standard_core.test
         public async Task TestDarlFromJson()
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = "Darl_standard_core.test.example_schema.json";
+            var resourceName = "Darl.ai.tests.example_schema.json";
 
             using (Stream stream = assembly.GetManifestResourceStream(resourceName))
             using (StreamReader reader = new StreamReader(stream))
@@ -188,7 +187,7 @@ namespace Darl_standard_core.test
         {
             DarlForms form = new DarlForms();
             var jss = new JsonSerializerSettings { ContractResolver = new DefaultContractResolver(), Converters = new List<JsonConverter>() { new StringEnumConverter() } };
-            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.empty_eu.rule"));
+            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.empty_eu.rule"));
             RuleForm rf = JsonConvert.DeserializeObject<RuleForm>(source.ReadToEnd(), jss);
             await rf.UpdateFromCode();
             Assert.IsNotNull(rf.format);
@@ -200,9 +199,9 @@ namespace Darl_standard_core.test
         {
             DarlForms form = new DarlForms();
             var jss = new JsonSerializerSettings { ContractResolver = new DefaultContractResolver(), Converters = new List<JsonConverter>() { new StringEnumConverter() } };
-            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.EU_delayed_flight_claim_copy.rule"));
+            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.EU_delayed_flight_claim_copy.rule"));
             RuleForm rf = JsonConvert.DeserializeObject<RuleForm>(source.ReadToEnd(), jss);
-            var newSource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.EUClaimTemporal.darl"));
+            var newSource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.EUClaimTemporal.darl"));
             rf.darl = newSource.ReadToEnd();
             await rf.UpdateFromCode();
             Assert.IsNotNull(rf.format);
@@ -220,7 +219,7 @@ namespace Darl_standard_core.test
         {
             DarlForms form = new DarlForms();
             var jss = new JsonSerializerSettings { ContractResolver = new DefaultContractResolver(), Converters = new List<JsonConverter>() { new StringEnumConverter() } };
-            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.ai_triage.rule"));
+            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.ai_triage.rule"));
             RuleForm rf = JsonConvert.DeserializeObject<RuleForm>(source.ReadToEnd(), jss);
             QuestionCache qc = new QuestionCache();
             await rf.UpdateFromCode();
@@ -237,7 +236,7 @@ namespace Darl_standard_core.test
         {
             DarlForms form = new DarlForms();
             var jss = new JsonSerializerSettings { ContractResolver = new DefaultContractResolver(), Converters = new List<JsonConverter>() { new StringEnumConverter() } };
-            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.is_it_using_AI.rule"));
+            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.is_it_using_AI.rule"));
             RuleForm rf = JsonConvert.DeserializeObject<RuleForm>(source.ReadToEnd(), jss);
             QuestionCache qc = new QuestionCache();
             await rf.UpdateFromCode();

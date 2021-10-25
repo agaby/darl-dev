@@ -1,15 +1,15 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DarlCompiler.Parsing;
-using System.IO;
-using System.Reflection;
-using DaslLanguage;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+﻿using CsvHelper;
 using DarlCommon;
-using System;
-using System.Linq;
+using DarlCompiler.Parsing;
 using Dasl.TemporalDb;
-using CsvHelper;
+using DaslLanguage;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Darl_standard_core.test
 {
@@ -27,20 +27,20 @@ namespace Darl_standard_core.test
         {
             LanguageData language = new LanguageData(new DaslGrammar());
             Parser parser = new Parser(language);
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.Multivibrator.dasl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.Multivibrator.dasl"));
             ParseTree parseTree = parser.Parse(reader.ReadToEnd());
             ParseTreeNode root = parseTree.Root;
             Assert.IsNotNull(root);
         }
 
-       [TestMethod]
+        [TestMethod]
         public async Task TestTradingExample() //depends on csvhelper
         {
             var initial_balance = "10000";
             //get the data and ruleset from the exe
-            var csv = new CsvReader(new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.GBP_USD.csv")));
+            var csv = new CsvReader(new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.GBP_USD.csv")), System.Globalization.CultureInfo.InvariantCulture);
             var records = csv.GetRecords<TradingRecord>().ToList();
-            var code = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.trading_simulation.darl")).ReadToEnd();
+            var code = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.trading_simulation.darl")).ReadToEnd();
             //convert the csv records to a DaslSet.
             var history = new DaslSet();
             history.sampleTime = new TimeSpan(1, 0, 0, 0); // 1 day
@@ -58,13 +58,13 @@ namespace Darl_standard_core.test
             var el = new EventList();
             el.events = history.events;
             el.sample = history.sampleTime;
-           
+
             var sampled = el.GetEventData();
             var res = await sruntime.Simulate(sampled, sampled.Count, tree);
             history.events = el.ConvertToEvents(res);
             Assert.AreEqual(new DateTime(2016, 06, 30), history.events[0].timeStamp);
             Assert.AreEqual(new DateTime(2018, 06, 29), history.events[525].timeStamp);
-            Assert.AreEqual("9518.25432962368", history.events[525].values.Where( a => a.name == "sterling").First().Value);
+            Assert.AreEqual("9518.25432962368", history.events[525].values.Where(a => a.name == "sterling").First().Value);
         }
 
 

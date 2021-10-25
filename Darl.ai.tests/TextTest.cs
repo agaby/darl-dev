@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Datl.Language;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Datl.Language;
 
 namespace Darl_standard_core.test
 {
@@ -13,7 +13,7 @@ namespace Darl_standard_core.test
         [TestMethod]
         public void TestTextDocumentParse()
         {
-            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.EUClaimText.txt"));
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.EUClaimText.txt"));
             var doc = docsource.ReadToEnd();
 
 
@@ -33,7 +33,7 @@ namespace Darl_standard_core.test
             var s = t.Parse(doc, results) as string;
             Assert.IsTrue(s.Contains("400"));
 
-            docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.DocumentTestTemplate.txt"));
+            docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.DocumentTestTemplate.txt"));
             doc = docsource.ReadToEnd();
 
             results = new Dictionary<string, string>();
@@ -53,7 +53,7 @@ namespace Darl_standard_core.test
             Assert.IsTrue(s.Contains("06/11/1955"));
 
 
-            docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.Cross_border.txt"));
+            docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.Cross_border.txt"));
             doc = docsource.ReadToEnd();
             results = new Dictionary<string, string>();
             results.Add("source_country", "United Kingdom");
@@ -68,7 +68,7 @@ namespace Darl_standard_core.test
         [ExpectedException(typeof(Exception))]
         public void TestTextDocumentErrors1()
         {
-            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.unbalancedclose.txt"));
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.unbalancedclose.txt"));
             var doc = docsource.ReadToEnd();
             var results = new Dictionary<string, string>();
             results.Add("var1", "true");
@@ -81,7 +81,7 @@ namespace Darl_standard_core.test
         [ExpectedException(typeof(Exception))]
         public void TestTextDocumentErrors2()
         {
-            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.unbalancedopen.txt"));
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.unbalancedopen.txt"));
             var doc = docsource.ReadToEnd();
             var results = new Dictionary<string, string>();
             results.Add("var1", "true");
@@ -93,7 +93,7 @@ namespace Darl_standard_core.test
         [TestMethod]
         public void TestTextDocumentVariables()
         {
-            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.Variables.txt"));
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.Variables.txt"));
             var doc = docsource.ReadToEnd();
             var results = new Dictionary<string, string>();
             results.Add("var1", "true");
@@ -103,10 +103,10 @@ namespace Darl_standard_core.test
             Assert.AreEqual("true stuff true  conditional stuff ", s);
         }
 
-       [TestMethod]
+        [TestMethod]
         public void TestTextDocumentNoVariables()
         {
-            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.NoVar.txt"));
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.NoVar.txt"));
             var doc = docsource.ReadToEnd();
             var results = new Dictionary<string, string>();
             results.Add("var1", "true");

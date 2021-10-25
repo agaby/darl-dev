@@ -1,24 +1,19 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ProtoBuf;
-using System.Reflection;
-using System.Collections.Generic;
-using DarlCommon;
+﻿using Darl.Lineage;
 using Darl.Lineage.Bot;
-using System.Threading.Tasks;
-using System.IO;
-using Newtonsoft.Json;
-using DarlLanguage;
-using NJsonSchema;
-using NJsonSchema.Generation;
-using DarlLanguage.Processing;
-using Darl.Lineage;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using Darl.Lineage.Bot.Stores;
-
+using DarlCommon;
+using DarlLanguage;
+using DarlLanguage.Processing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json;
+using ProtoBuf;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Darl_standard_core.test
 {
@@ -37,7 +32,7 @@ namespace Darl_standard_core.test
         [Ignore]
         public async Task TestInteract()
         {
-            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.thousandquestions2.model"));
+            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.thousandquestions2.model"));
             vm.tree.SaveAttributes("noun:01,4,05,11,03", "if anything then response will be \"hi too\";", new List<string>(), new List<string>());
             List<DarlVar> values = new List<DarlVar>();
             var res = await vm.Interact("hi", values);
@@ -45,21 +40,21 @@ namespace Darl_standard_core.test
         }
 
         [TestMethod]
-//        [Ignore]
+        //        [Ignore]
         public async Task TestInteractMultiLevel()
         {
-            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.thousandquestions2.model"));
+            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.thousandquestions2.model"));
             vm.tree.SaveAttributes("noun:01,4,05,11,03", "if anything then response will be \"hi too\";", new List<string>(), new List<string>());
             List<DarlVar> values = new List<DarlVar>();
             var res = await vm.Interact("hi calendar", values);
-//            Assert.AreEqual("hi too\nanswer for CALENDAR", res);
+            //            Assert.AreEqual("hi too\nanswer for CALENDAR", res);
             var res2 = await vm.Interact("poop", values);
         }
 
         [TestMethod]
         public void TestCheckModelAgainstFramework()
         {
-            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.thousandquestions2.model"));
+            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.thousandquestions2.model"));
             vm.modelSettings = new Dictionary<string, string>() { { "name", "{\"name\": \"name\", \"unknown\": false, \"weight\": 1.0,\"approximate\": false,\"dataType\": \"textual\", \"value\": \"DarlBot\"}" }, { "copyright", "{\"name\": \"copyright\",\"unknown\": false,\"weight\": 1.0,\"approximate\": false,\"dataType\": \"textual\",\"value\": \"(c) 2017 Dr Andy's IP\"}" }, { "version", "{\"name\": \"version\",\"unknown\": false,\"weight\": 1.0,\"approximate\": false,\"dataType\": \"textual\",\"value\": \"1.0.0\"}" } };
             vm.form = "{\"InputFormatList\": [],\"OutputFormatList\": [{\"Name\": \"response\",\"OutputType\": \"textual\",\"displayType\": \"Text\"}]}";
             var bf = JsonConvert.DeserializeObject<BotFormat>(vm.form);
@@ -80,7 +75,7 @@ namespace Darl_standard_core.test
         [TestMethod]
         public void TestBotFormatToDarlConversion()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.UKTax.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.UKTax.darl"));
             string source = reader.ReadToEnd();
             var bf = BotFormatExtensions.ToBotFormat(source);
             LineageModel vm = new LineageModel
@@ -93,17 +88,11 @@ namespace Darl_standard_core.test
             Assert.IsFalse(tree.HasErrors());
         }
 
-        [TestMethod]
-        public async Task CreateBotFormatSchema()
-        {
-            var js = await JsonSchema4.FromTypeAsync(typeof(BotFormat), new JsonSchemaGeneratorSettings { DefaultEnumHandling = EnumHandling.String });
-            var schema = js.ToJson();
-        }
 
         [TestMethod]
         public async Task TestBotValueExtraction()
         {
-            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.thousandquestions3.model"));
+            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.thousandquestions3.model"));
             vm.tree.CreateExecutionTree();
             var stores = new Dictionary<string, ILocalStore>
             {
@@ -128,7 +117,7 @@ namespace Darl_standard_core.test
         [Ignore]
         public async Task TestBotRuleCall()
         {
-            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.thousandquestions4.model"));
+            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.thousandquestions4.model"));
             vm.tree.CreateExecutionTree();
             List<DarlVar> values = new List<DarlVar>();
             var stores = vm.CreateStores("", new CallTest(), values, new LocalBotData(new Dictionary<string, string>()), new LocalBotData(new Dictionary<string, string>()), new LocalBotData(new Dictionary<string, string>()));
@@ -176,7 +165,7 @@ namespace Darl_standard_core.test
         [TestMethod]
         public async Task TestBotValueCopy()
         {
-            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.thousandquestions4.model"));
+            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.thousandquestions4.model"));
             vm.tree.CreateExecutionTree();
             var values = new List<DarlVar>();
             //preload some of the ruleset data values and check they are copied
@@ -194,7 +183,7 @@ namespace Darl_standard_core.test
         [TestMethod]
         public void TestPhraseCreate()
         {
-            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.thousandquestions5.model"));
+            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.thousandquestions5.model"));
             vm.PhraseCreate("wurble/snurt/grooble");
             Assert.IsNotNull(vm.tree.Find("wurble/snurt/grooble"));
             vm.PhraseCreate("who/is/dr/bob");
@@ -209,7 +198,7 @@ namespace Darl_standard_core.test
         [TestMethod]
         public void TestPhraseMerge()
         {
-            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.thousandquestions5.model"));
+            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.thousandquestions5.model"));
             vm.PhraseMerge("call/dr/andy", "talk/to/doctor|dr|doc/andy");
             var n = vm.tree.Find("call/dr/andy");
             Assert.IsNotNull(n);
@@ -220,7 +209,7 @@ namespace Darl_standard_core.test
         [TestMethod]
         public void TestPhraseDelete()
         {
-            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.thousandquestions5.model"));
+            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.thousandquestions5.model"));
             Assert.IsNotNull(vm.tree.Find("talk/to/doctor|dr|doc/andy"));
             vm.PhraseDelete("talk/to/doctor|dr|doc/andy");
             Assert.IsNull(vm.tree.Find("talk/to/doctor|dr|doc/andy"));
@@ -229,7 +218,7 @@ namespace Darl_standard_core.test
         [TestMethod]
         public void TestPhraseSeparate()
         {
-            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.thousandquestions5.model"));
+            LineageModel vm = Serializer.Deserialize<LineageModel>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.thousandquestions5.model"));
             Assert.IsNotNull(vm.tree.Find("bug"));
             vm.PhraseCreate("bug|defect|mistake");
             Assert.IsNull(vm.tree.Find("bug"));
@@ -315,7 +304,7 @@ namespace Darl_standard_core.test
             Assert.AreEqual("A total cunt.", responses[0].response.Value);
             //now test with fuzzy on
             input.Value = "Who is john mcdonell?";
-            responses = await lm.InteractTest(input, new List<DarlVar>(), new Dictionary<string, ILocalStore>(),true);
+            responses = await lm.InteractTest(input, new List<DarlVar>(), new Dictionary<string, ILocalStore>(), true);
             Assert.AreEqual("A total cunt.", responses[0].response.Value);
             input.Value = "Who is Jeremy Corbin?";
             responses = await lm.InteractTest(input, new List<DarlVar>(), new Dictionary<string, ILocalStore>(), true);
@@ -350,7 +339,7 @@ namespace Darl_standard_core.test
             graphStore.Setup(a => a.ReadAsync(It.Is<List<string>>(a => a[0] == "text" && a[1] == "jeremy corbyn"))).Returns(Task.FromResult(new DarlResult("result", "A load of text related to Jeremy Corbyn All about his turdiness and vacuity........", DarlResult.DataType.textual)));
             graphStore.Setup(a => a.ReadAsync(It.Is<List<string>>(a => a[0] == "links" && a[1] == "jeremy corbyn"))).Returns(Task.FromResult(new DarlResult("result", "A bunch of people linked to that turd.", DarlResult.DataType.textual)));
             graphStore.Setup(a => a.ReadAsync(It.Is<List<string>>(a => a[0] == "path" && a[1] == "jeremy corbyn" && a[2] == "paul mason"))).Returns(Task.FromResult(new DarlResult("result", "path between jc and pm", DarlResult.DataType.textual)));
-            graphStore.Setup(a => a.ReadAsync(It.Is<List<string>>(a => a[1] != "jeremy corbyn"))).Returns(Task.FromResult(new DarlResult("result", 0.0,true)));
+            graphStore.Setup(a => a.ReadAsync(It.Is<List<string>>(a => a[1] != "jeremy corbyn"))).Returns(Task.FromResult(new DarlResult("result", 0.0, true)));
             stores.Add("Graph", graphStore.Object);
             stores.Add("Value", new ValuesStore(values));
             var input = new DarlVar();
@@ -383,7 +372,7 @@ namespace Darl_standard_core.test
         {
             Assert.IsTrue(address.Length > 0);
             Assert.IsFalse(address.Contains("\""));
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.UK Tax and NI.rule"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.UK Tax and NI.rule"));
             string source = await reader.ReadToEndAsync();
             return JsonConvert.DeserializeObject<RuleForm>(source);
         }
@@ -404,5 +393,5 @@ namespace Darl_standard_core.test
         }
     }
 
-    
+
 }

@@ -1,9 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Darl.Thinkbase.Meta;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Moq;
+using System.Collections.Generic;
 
 namespace Darl.Thinkbase.Meta.Tests
 {
@@ -24,7 +21,7 @@ namespace Darl.Thinkbase.Meta.Tests
                 "duration thirtydays 30.00:00:00.0;\n" +
                 "if anything then fred will be true for thirtydays;\n";
             var runtime = new DarlMetaRunTime();
-            var tree = runtime.CreateTree(source, new GraphObject (), _model);
+            var tree = runtime.CreateTree(source, new GraphObject(), _model);
             Assert.IsFalse(tree.HasErrors());
         }
     }

@@ -1,13 +1,12 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Reflection;
-using System.Collections.Generic;
-using System.IO;
-using DarlLanguage;
+﻿using DarlLanguage;
 using DarlLanguage.Processing;
 using Datl.Language;
-using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Darl_standard_core.test
 {
@@ -18,7 +17,7 @@ namespace Darl_standard_core.test
         [Ignore]
         public void TestWordDocumentParse()
         {
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.parkingappealnew.docx");
+            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.parkingappealnew.docx");
             var w = new WordProcessGem();
             var results = new Dictionary<string, string>();
             results.Add("name", "Alfred George Bloggs");
@@ -41,7 +40,7 @@ namespace Darl_standard_core.test
                 p.Close();
             }
 
-            results = new Dictionary<string, string>();            
+            results = new Dictionary<string, string>();
             results.Add("name", "Alfred George Bloggs");
             results.Add("email", "andy@scientio.com");
             results.Add("ticket_number", "ABC12345");
@@ -71,7 +70,7 @@ namespace Darl_standard_core.test
             results.Add("council", "Milton Keynes");
             results.Add("grounds", "stolen");
             results.Add("date_of_theft", "06/11/1955");
-            results.Add("police_station"," Milton Keynes");
+            results.Add("police_station", " Milton Keynes");
             results.Add("crime_reference", "oldbill1234567");
             results.Add("date_of_report", "05/11/1955");
             stream.Position = 0;
@@ -126,7 +125,7 @@ namespace Darl_standard_core.test
                 p.Close();
             }
 
-            results = new Dictionary<string, string>();            
+            results = new Dictionary<string, string>();
             results.Add("name", "Alfred George Bloggs");
             results.Add("email", "andy@scientio.com");
             results.Add("ticket_number", "ABC12345");
@@ -147,7 +146,7 @@ namespace Darl_standard_core.test
                 p.Close();
             }
 
-            results = new Dictionary<string, string>();            
+            results = new Dictionary<string, string>();
             results.Add("name", "Alfred George Bloggs");
             results.Add("email", "andy@scientio.com");
             results.Add("ticket_number", "ABC12345");
@@ -187,7 +186,7 @@ namespace Darl_standard_core.test
                 p.Close();
             }
 
-            results = new Dictionary<string, string>();            
+            results = new Dictionary<string, string>();
             results.Add("name", "Alfred George Bloggs");
             results.Add("email", "andy@scientio.com");
             results.Add("ticket_number", "ABC12345");
@@ -206,7 +205,7 @@ namespace Darl_standard_core.test
                 p.Close();
             }
 
-            results = new Dictionary<string, string>();     
+            results = new Dictionary<string, string>();
             results.Add("name", "Alfred George Bloggs");
             results.Add("email", "andy@scientio.com");
             results.Add("ticket_number", "ABC12345");
@@ -227,7 +226,7 @@ namespace Darl_standard_core.test
                 p.Close();
             }
 
-            results = new Dictionary<string, string>();            
+            results = new Dictionary<string, string>();
             results.Add("name", "Alfred George Bloggs");
             results.Add("email", "andy@scientio.com");
             results.Add("ticket_number", "ABC12345");
@@ -248,7 +247,7 @@ namespace Darl_standard_core.test
                 p.Close();
             }
 
-            results = new Dictionary<string, string>();           
+            results = new Dictionary<string, string>();
             results.Add("name", "Alfred George Bloggs");
             results.Add("email", "andy@scientio.com");
             results.Add("ticket_number", "ABC12345");
@@ -272,7 +271,7 @@ namespace Darl_standard_core.test
             }
 
             results = new Dictionary<string, string>();
-            
+
             results.Add("name", "Alfred George Bloggs");
             results.Add("email", "andy@scientio.com");
             results.Add("ticket_number", "ABC12345");
@@ -297,9 +296,9 @@ namespace Darl_standard_core.test
         [Ignore]
         public async Task TestMSWithWord()
         {
-            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.modernslavery.darl"));
+            var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.modernslavery.darl"));
             var source = reader.ReadToEnd();
-            var wordsource = Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.modernslaverytest.docx");
+            var wordsource = Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.modernslaverytest.docx");
             var results = new List<DarlResult>();
             results.Add(new DarlResult("mspolicyexists", "yes"));
             results.Add(new DarlResult("mspolicysteps", "yes"));
@@ -317,7 +316,7 @@ namespace Darl_standard_core.test
             Assert.AreEqual("intro_section, C", results.First(a => a.name == "intro_section").ToString());
             var w = new WordProcessGem();
             var res = new Dictionary<string, string>();
-            foreach(var k in results)
+            foreach (var k in results)
             {
                 res.Add(k.name, k.ToString());
             }
@@ -336,10 +335,10 @@ namespace Darl_standard_core.test
             results.Add(new DarlResult("part_of_group", "no"));
             results.Add(new DarlResult("email", "andy@scientio.com", DarlResult.DataType.textual));
             results.Add(new DarlResult("financial_year_end", "06/11/2016", DarlResult.DataType.textual));
-            results.Add(new DarlResult("signer","Arbuthnot Peregrine Poops", DarlResult.DataType.textual));
+            results.Add(new DarlResult("signer", "Arbuthnot Peregrine Poops", DarlResult.DataType.textual));
             results.Add(new DarlResult("signer_role", "Director", DarlResult.DataType.textual));
             results.Add(new DarlResult("organization_name", "Eastern European Sex Slaves PLC", DarlResult.DataType.textual));
-            results.Add(new DarlResult("low_risk","no"));
+            results.Add(new DarlResult("low_risk", "no"));
             await runtime.Evaluate(results, source);
             Assert.AreEqual("intro_section, D", results.First(a => a.name == "intro_section").ToString());
             res = new Dictionary<string, string>();
@@ -362,10 +361,10 @@ namespace Darl_standard_core.test
             results.Add(new DarlResult("part_of_group", "no"));
             results.Add(new DarlResult("email", "andy@scientio.com", DarlResult.DataType.textual));
             results.Add(new DarlResult("financial_year_end", "06/11/2016", DarlResult.DataType.textual));
-            results.Add(new DarlResult("signer","Arbuthnot Peregrine Poops", DarlResult.DataType.textual));
+            results.Add(new DarlResult("signer", "Arbuthnot Peregrine Poops", DarlResult.DataType.textual));
             results.Add(new DarlResult("signer_role", "Director", DarlResult.DataType.textual));
             results.Add(new DarlResult("organization_name", "Eastern European Sex Slaves PLC", DarlResult.DataType.textual));
-            results.Add(new DarlResult("low_risk","no"));
+            results.Add(new DarlResult("low_risk", "no"));
             await runtime.Evaluate(results, source);
             Assert.AreEqual("intro_section, B2", results.First(a => a.name == "intro_section").ToString());
             res = new Dictionary<string, string>();
@@ -388,10 +387,10 @@ namespace Darl_standard_core.test
             results.Add(new DarlResult("part_of_group", "no"));
             results.Add(new DarlResult("email", "andy@scientio.com", DarlResult.DataType.textual));
             results.Add(new DarlResult("financial_year_end", "06/11/2016", DarlResult.DataType.textual));
-            results.Add(new DarlResult("signer","Arbuthnot Peregrine Poops", DarlResult.DataType.textual));
+            results.Add(new DarlResult("signer", "Arbuthnot Peregrine Poops", DarlResult.DataType.textual));
             results.Add(new DarlResult("signer_role", "Director", DarlResult.DataType.textual));
             results.Add(new DarlResult("organization_name", "Eastern European Sex Slaves PLC", DarlResult.DataType.textual));
-            results.Add(new DarlResult("low_risk","no"));
+            results.Add(new DarlResult("low_risk", "no"));
             results.Add(new DarlResult("policystartknown", "no"));
             await runtime.Evaluate(results, source);
             Assert.AreEqual("intro_section, E", results.First(a => a.name == "intro_section").ToString());
@@ -413,7 +412,7 @@ namespace Darl_standard_core.test
         [Ignore]
         public async Task TestAITriage()
         {
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl_standard_core.test.ai_triage.docx");
+            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.ai_triage.docx");
             var w = new WordProcessGem();
             var results = new Dictionary<string, string>();
             results.Add("name", "Alfred George Bloggs");
