@@ -1,0 +1,63 @@
+﻿ruleset navigate
+{
+  input categorical generalType {technology, solution, company, academic};
+  input categorical technologyType {fuzzy_logic, rule_based, machine_learning, time_series};
+  input categorical solutionType {forms_engine, expert_system, chaos_analysis};
+  input categorical billingType {monthly_saas, account_saas, sdk_license, open_source,consultancy};
+  input categorical academicType {papers,collaboration};
+  input categorical companyType {contact,about};
+  input categorical deliveryType {app,website,service};
+  input numeric urgency {{immediate,5},{weeks,4}, {months,3}};
+  input textual email;
+  input textual notes;
+  input textual firstname;
+  input textual lastname;
+  
+  output categorical suggestedPage {darl,darl_language,machine_learning, darl_inference, darl_forms, dasl, datsa,personalemail,contactpage,portal,academica,about};
+  
+  if generalType is solution and solutionType is forms_engine then suggestedPage will be darl_forms confidence 1.0;
+  if generalType is solution and solutionType is expert_system then suggestedPage will be darl confidence 1.0;
+  if generalType is solution and solutionType is chaos_analysis then suggestedPage will be datsa confidence 1.0;
+  if generalType is technology and technologyType is fuzzy_logic then suggestedPage will be darl confidence 1.0;
+  if generalType is technology and technologyType is rule_based then suggestedPage will be darl confidence 1.0;
+  if generalType is technology and technologyType is machine_learning then suggestedPage will be machine_learning confidence 1.0;
+  if generalType is technology and technologyType is time_series then suggestedPage will be datsa confidence 1.0;
+  if generalType is academic and academicType is collaboration and urgency is immediate and email is present and 
+    firstname is present and lastname is present and notes is present then suggestedPage will be personalemail confidence 1.0;
+  if generalType is company and companyType is contact  and email is present and 
+    firstname is present and lastname is present and notes is present then suggestedPage will be contactpage confidence 1.0;
+  if generalType is technology then suggestedPage will be portal confidence 0.8;
+  if generalType is academic and academicType is papers then suggestedPage will be academica confidence 1.0;
+  if generalType is company and companyType is about then suggestedPage will be about confidence 1.0; 
+}
+
+mapinput generalType;
+mapinput technologyType;
+mapinput solutionType;
+mapinput billingType;
+mapinput academicType;
+mapinput companyType;
+mapinput deliveryType;
+mapinput urgency;
+mapinput email;
+mapinput notes;
+mapinput firstname;
+mapinput lastname;
+
+mapoutput suggestedPage;
+
+wire generalType navigate.generalType;
+wire technologyType navigate.technologyType;
+wire solutionType navigate.solutionType;
+wire billingType navigate.billingType;
+wire academicType navigate.academicType;
+wire companyType navigate.companyType;
+wire deliveryType navigate.deliveryType;
+wire urgency navigate.urgency;
+wire email navigate.email;
+wire notes navigate.notes;
+wire firstname navigate.firstname;
+wire lastname navigate.lastname;
+wire navigate.suggestedPage suggestedPage;
+
+

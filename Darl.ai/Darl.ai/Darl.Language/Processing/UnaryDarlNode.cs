@@ -1,0 +1,63 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using DarlCompiler.Ast;
+using DarlCompiler.Parsing;
+
+namespace DarlLanguage.Processing
+{
+    /// <summary>
+    /// Implements an operator of arity 1
+    /// </summary>
+    public class UnaryDarlNode : DarlNode
+    {
+        /// <summary>
+        /// The single argument
+        /// </summary>
+        protected DarlNode Argument;
+
+        /// <summary>
+        /// Initializes the specified context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="treeNode">The tree node.</param>
+        public override void Init(AstContext context, ParseTreeNode treeNode)
+        {
+            try
+            {
+                base.Init(context, treeNode);
+                var nodes = treeNode.GetMappedChildNodes();
+                Argument = (DarlNode)AddChild("-", nodes.Last());
+            }
+            catch
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// Establishes dependencies and initializes constants
+        /// </summary>
+        /// <param name="dependencies">list of dependencies discovered</param>
+        /// <param name="currentOutput">output for the rule being walked</param>
+        /// <param name="context">The context.</param>
+        public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlNode currentOutput, ConstantContext context)
+        {
+            Argument.WalkDependencies(dependencies, currentOutput, context);
+        }
+
+        /// <summary>
+        /// Walks the saliences.
+        /// </summary>
+        /// <param name="saliency">The incoming saliency.</param>
+        /// <param name="root">The map root.</param>
+        /// <param name="currentRuleSet">The current rule set.</param>
+        /// <param name="currentOutput">The current output.</param>
+        public override void WalkSaliences(double saliency, MapRootNode root, string currentRuleSet, string currentOutput)
+        {
+            Argument.WalkSaliences(saliency, root, currentRuleSet, currentOutput);
+        }
+    }
+
+
+}

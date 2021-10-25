@@ -1,0 +1,11 @@
+﻿ruleset AbsentPresent
+{
+	input numeric c;
+	input categorical d;
+
+	output categorical bill {true,false};
+
+	if c is absent and d is absent then bill will be true;
+
+	if c is present or d is present then bill will be false;
+}

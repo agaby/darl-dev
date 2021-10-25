@@ -1,0 +1,1 @@
+﻿%%var1%% stuff %%	var2	%% %%{var1.true %% conditional stuff %%}var1.true%%

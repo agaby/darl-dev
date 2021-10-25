@@ -1,0 +1,3889 @@
+{
+  "darl": "ruleset bluewave_pricing\r\n{\r\n  input categorical bizmodel {_product,service};\r\n  input categorical marketPreference {research,direct};\r\n  input categorical support {yes,no};\r\n  input categorical supportWebEmailIM {yes,no};\r\n  input categorical docCreation {true,false};\r\n  input categorical docCategory {true,false};\r\n  input categorical advanced {true,false};\r\n  input categorical machineLearning {true,false};\r\n  input categorical textMining {true,false};\r\n  input categorical chatbot {true,false};\r\n  input categorical chatbotFaceBookOther {true,false};\r\n  input categorical salesTracking {no,tracked,tracked_analyzed};\r\n  input categorical salesteamAccess {yes,no};\r\n  input categorical customerAccess {yes,no};\r\n  input categorical offerChangeable {yes,no};\r\n  input categorical autoOptimize {yes,no};\r\n  input numeric productCount {{low,1,6},{medium,7,12},{high,13,Infinity}};\r\n  input categorical productOptions {no,some,all};\r\n  input categorical estimatingComplex {no,sometimes,often,always};\r\n  input categorical pdfEstimate {no,yes};\r\n  input categorical estimate_transmission {download,email_client,email_you};\r\n  input categorical billing_system {no,yes};\r\n  input numeric serviceCount {{low,1,6},{medium,7,12},{high,13,Infinity}};\r\n  input categorical serviceCharging {by_hour,by_project,by_use};\r\n  input categorical serviceOptions {no,some,all};\r\n  input categorical serviceEstimatingComplex {no,sometimes,often,always};\r\n  input categorical servicePdfEstimate {no,yes};\r\n  input categorical service_estimate_transmission {download,email_client,email_you};\r\n  input categorical service_billing_system {no,yes};\r\n  input categorical marketingPlatformsSocialMedia{yes,no};\r\n  input categorical marketingPlatformsEmailWebsitesOther {yes,no};\r\n  input categorical socialMediaPlatforms {twitter, facebook, linkedin, other };\r\n  input categorical regularposting {yes, sometimes, no };\r\n  input categorical mediaOptimisation {no,trending,past_success};\r\n  input categorical dynamicInteractions {no,yes};\r\n  input categorical remoteContent {no,yes};\r\n  input categorical remoteContentWebsitesDocuments {no,yes};\r\n  input categorical remoteContentDatabase {no,yes};\r\n  input categorical researchPlatformsSocialMedia {yes,no};\r\n  input categorical researchPlatformsEmailWebsitesOther {yes,no};\r\n  input categorical researchsocialMediaPlatforms {twitter, facebook, linkedin, other };\r\n  input categorical researchTends {opinions,trends,needs,others};\r\n  input categorical researchTopics {keywords,hashtags,meaning};\r\n  input categorical researchConfigurable {very,somewhat,no}; //? no point to this.\r\n  input categorical researchMarketingSync {yes,sometimes,no};\r\n  input categorical supportPlatforms {social,skype,whatsap_sms};\r\n  input categorical supportDifficulty {very,somewhat,no};\r\n  input categorical supportExisting {docs,website,database};\r\n  input categorical supportAutoUpdates {yes,no};\r\n  input categorical supportEditable {yes,no};\r\n  input categorical contractOnWeb {yes,no};\r\n  input categorical contractOnEmail {yes,no};\r\n  input categorical contractOnThirdParty{yes,no};\r\n  input categorical contractAccount {yes,no};\r\n  input categorical contractBilling {yes,no};\r\n  input categorical contractSource {few_templates,many_templates,paras,other};\r\n  input categorical contractDifferent {few,many,verymany}; //numeric with sets\r\n  input categorical contractOnlineConfig {yes,no};\r\n  input categorical documentSort {predefined,search,other};\r\n  input categorical documentFormat {pdf_word,web};\r\n  input categorical documentSortAdvise{no,email,im};\r\n  input categorical docChangeCompare {yes,no};\r\n  input categorical advancedPreExisting {app,platform,website,no};\r\n  input categorical advancedBilling {yes,no};\r\n  input categorical advancedAccounts {yes,no};\r\n  input categorical advancedDocuments {yes,no};\r\n  input categorical advancedSocial {yes,no};\r\n  input categorical advancedIm {yes,no};\r\n  input categorical advancedSocialFBLIOther {yes,no};\r\n  input categorical ruleComplexity {simple,difficult,complex};\r\n  input categorical ruleUpdateManual {yes,no};\r\n  input categorical ruleUpdateAuto {yes,no};\r\n  input categorical machineDatabase {yes,no};\r\n  input categorical machineDataSize{small,medium,large,unknown};\r\n  input numeric machineParameters {{small,1,5},{medium,6,10},{large,11,Infinity}};\r\n  input categorical machineCalculated {yes,no};\r\n  input categorical textMiningMeaning {yes,no};\r\n  input categorical textMiningSize {tweets,pages,many_pages};\r\n  input categorical textMiningSpecialized {specific,not_very_specific,general_vocab};\r\n  input categorical textMiningCategorize {yes,no};\r\n  input categorical companySize {startup,sme,large};\r\n  input categorical companyLanguageGerman {yes,no};\r\n  input categorical companyLanguageFrench {yes,no};  \r\n  input categorical companyLanguageSpanish {yes,no};\r\n  input categorical companyLanguageOther {yes,no};\r\n  input textual companyOtherRequirements;\r\n  input textual companyContactName;\r\n  input textual companyName;\r\n  input textual companyEmail;\r\n  input textual companyPhone;\r\n  \r\n  \r\n\r\n  \r\n  output numeric docCreationCharge;\r\n  output numeric docCategoryCharge;\r\n  output numeric machineLearningCharge;\r\n  output numeric textminingCharge;\r\n  output numeric chatbotCharge;\r\n  output numeric chatbotFaceBookOtherCharge;\r\n  output numeric salesTrackingCharge;\r\n  output numeric salesteamAccessCharge;\r\n  output numeric estimatingComplexCharge;\r\n  output numeric pdfEstimateCharge;\r\n  output numeric billing_systemCharge;\r\n  output numeric serviceEstimatingComplexCharge;\r\n  output numeric servicePdfEstimateCharge;\r\n  output numeric service_billing_systemCharge;\r\n  output numeric socialMediaPlatformsCharge;\r\n  output numeric mediaOptimisationCharge;\r\n  output numeric dynamicInteractionsCharge;\r\n  output numeric remoteContentWebsitesDocumentsCharge;\r\n  output numeric remoteContentDatabaseCharge;\r\n  output numeric researchsocialMediaPlatformsCharge;\r\n  output numeric supportPlatformsCharge;\r\n  output numeric supportAutoUpdatesCharge;\r\n  output numeric supportEditableCharge;\r\n  output numeric contractAccountCharge;\r\n  output numeric contractBillingCharge;\r\n  output numeric contractOnlineConfigCharge;\r\n  output numeric documentSortCharge;\r\n  output numeric documentFormatCharge;\r\n  output numeric documentSortAdviseCharge;\r\n  output numeric docChangeCompareCharge;\r\n  output numeric advancedPreExistingCharge;\r\n  output numeric advancedBillingCharge;\r\n  output numeric advancedAccountsCharge;\r\n  output numeric advancedDocumentsCharge;\r\n  output numeric advancedSocialFBLIOtherCharge;\r\n  output numeric ruleComplexityCharge;\r\n  output numeric ruleUpdateManualCharge;\r\n  output numeric ruleUpdateAutoCharge;\r\n  output numeric machineDatabaseCharge;\r\n  output numeric machineCalculatedCharge;\r\n  output numeric textMiningMeaningCharge;\r\n  output numeric textMiningSizeCharge;\r\n  output numeric textMiningSpecializedCharge;\r\n  output numeric textMiningCategorizeCharge;\r\n  output numeric companyLanguageGermanCharge;\r\n  output numeric companyLanguageFrenchCharge;\r\n  output numeric companyLanguageSpanishCharge;\r\n  output numeric companyLanguageOtherCharge;\r\n  output numeric offerChangeableCharge;\r\n  \r\n  \r\n  output numeric productCountMultiplier;\r\n  output numeric productOptionsMultiplier;\r\n  output numeric serviceCountMultiplier;\r\n  output numeric serviceChargingMultiplier;\r\n  output numeric supportDifficultyMultiplier;\r\n  output numeric contractDifferentMultiplier;\r\n  output numeric machineDataSizeMultiplier;\r\n  output numeric machineParametersMultiplier;\r\n  output numeric companySizeMultiplier;\r\n  \r\n  \r\n  \r\n  \r\n  output categorical generalComplete {true,false};\r\n  output numeric price_multipliers;\r\n  output numeric price_sums;\r\n  output numeric total_price;\r\n  \r\n  \r\n  constant creator 2000;\r\n  constant admin 2000;\r\n  constant billing 3500;\r\n  constant account 10000;\r\n  constant tracking 4500;\r\n  constant pdf 250;\r\n  constant learning 10000;\r\n  constant Ruleset 500;\r\n  constant api 1000;\r\n  constant fb 1000;\r\n  constant li 1000;\r\n  constant ne 2000;\r\n  constant Chatbot 2000;\r\n  constant mining 5000;\r\n  \r\n  \r\n  if docCreation is true then docCreationCharge will be creator;\r\n  if docCreation is false then docCreationCharge will be 0;\r\n  if docCategory is true then docCategoryCharge will be creator;\r\n  if docCategory is false then docCategoryCharge will be 0;\r\n  if machineLearning is true then machineLearningCharge will be learning;\r\n  if machineLearning is false then machineLearningCharge will be 0;\r\n  if textMining is true then textminingCharge will be mining;\r\n  if textMining is false then textminingCharge will be 0;\r\n  if chatbot is true then chatbotCharge will be Chatbot;\r\n  if chatbot is false then chatbotCharge will be 0;\r\n  if chatbot is true and chatbotFaceBookOther is true then chatbotFaceBookOtherCharge will be api;\r\n  if chatbot is false or chatbotFaceBookOther is false then chatbotFaceBookOtherCharge will be 0;\r\n  if salesTracking is tracked then salesTrackingCharge will be tracking;\r\n  if salesTracking is tracked_analyzed then salesTrackingCharge will be tracking + admin;\r\n  if salesTracking is no then salesTrackingCharge will be 0;\r\n  if salesteamAccess is yes then salesteamAccessCharge will be account + admin;\r\n  if salesteamAccess is no then salesteamAccessCharge will be 0;\r\n  if offerChangeable is yes then offerChangeableCharge will be admin;\r\n  if offerChangeable is no then offerChangeableCharge will be 0;\r\n\r\n  if autoOptimize is yes then autoOptimizeCharge will be learning;\r\n  if autoOptimize is no then autoOptimizeCharge will be 0;\r\n\r\n  if productCount is medium and bizmodel is _product then productCountMultiplier will be 1.1;\r\n  if productCount is high and bizmodel is _product then productCountMultiplier will be 1.25;\r\n  if productCount is low and bizmodel is _product then productCountMultiplier will be 1;\r\n\r\n  if productOptions is some and bizmodel is _product then productOptionsMultiplier will be 1.025;\r\n  if productOptions is all and bizmodel is _product then productOptionsMultiplier will be 1.05;\r\n  if productOptions is no or bizmodel is service then productOptionsMultiplier will be 1;\r\n\r\n  if estimatingComplex is sometimes and bizmodel is _product then estimatingComplexCharge will be Ruleset / 3;\r\n  if estimatingComplex is often and bizmodel is _product then estimatingComplexCharge will be Ruleset / 2;\r\n  if estimatingComplex is always and bizmodel is _product then estimatingComplexCharge will be Ruleset;\r\n  if estimatingComplex is no or bizmodel is service then estimatingComplexCharge will be 0;\r\n\r\n  if pdfEstimate is yes and bizmodel is _product then pdfEstimateCharge will be pdf;\r\n  if pdfEstimate is no or bizmodel is service then pdfEstimateCharge will be 0;\r\n\r\n  if billing_system is yes and bizmodel is _product then billing_systemCharge will be billing;\r\n  if billing_system is no or bizmodel is service then billing_systemCharge will be 0;\r\n\r\n\r\n  if serviceCount is medium and bizmodel is service then serviceCountMultiplier will be 1.1;\r\n  if serviceCount is high and bizmodel is service then serviceCountMultiplier will be 1.25;\r\n  if serviceCount is low or bizmodel is _product then serviceCountMultiplier will be 1;\r\n\r\n\r\n  if serviceCharging is by_hour and bizmodel is service then serviceChargingMultiplier will be 1.025;\r\n  if serviceCharging is by_project and bizmodel is service then serviceChargingMultiplier will be 1.05;\r\n  if serviceCharging is by_use or bizmodel is _product then serviceChargingMultiplier will be 1;\r\n\r\n  if serviceEstimatingComplex is sometimes and bizmodel is service then serviceEstimatingComplexCharge will be Ruleset / 3;\r\n  if serviceEstimatingComplex is often and bizmodel is service then serviceEstimatingComplexCharge will be Ruleset / 2;\r\n  if serviceEstimatingComplex is always and bizmodel is service then serviceEstimatingComplexCharge will be Ruleset;\r\n  if serviceEstimatingComplex is no or bizmodel is _product then serviceEstimatingComplexCharge will be 0;\r\n\r\n  if servicePdfEstimate is yes and bizmodel is service then servicePdfEstimateCharge will be pdf;\r\n  if servicePdfEstimate is no or bizmodel is _product then servicePdfEstimateCharge will be 0;\r\n\r\n\r\n  if service_billing_system is yes and bizmodel is service then service_billing_systemCharge will be billing;\r\n  if service_billing_system is no or bizmodel is _product then service_billing_systemCharge will be 0;\r\n\r\n\r\n  if marketPreference is direct and marketingPlatformsSocialMedia is yes and socialMediaPlatforms is facebook or socialMediaPlatforms is linkedin or socialMediaPlatforms is other then socialMediaPlatformsCharge will be api; \r\n  if marketPreference is research or marketingPlatformsSocialMedia is no or socialMediaPlatforms is twitter then socialMediaPlatformsCharge will be 0;\r\n\r\n  if marketPreference is direct and marketingPlatformsSocialMedia is yes and mediaOptimisation is trending or mediaOptimisation is past_success  then mediaOptimisationCharge will be learning;\r\n  if marketPreference is research or marketingPlatformsSocialMedia is no or mediaOptimisation is no then mediaOptimisationCharge will be 0; \r\n\r\n\r\n\r\n  if marketPreference is direct and dynamicInteractions is yes then dynamicInteractionsCharge will be Chatbot;\r\n  if marketPreference is research or dynamicInteractions is no then dynamicInteractionsCharge will be 0;\r\n\r\n\r\n  if marketPreference is direct and remoteContent is yes and remoteContentWebsitesDocuments is yes then remoteContentWebsitesDocumentsCharge will be mining;\r\n  if marketPreference is research or remoteContent is no or remoteContentWebsitesDocuments is no then remoteContentWebsitesDocumentsCharge will be 0;\r\n\r\n\r\n\r\n  if marketPreference is direct and remoteContent is yes and remoteContentDatabase is yes then remoteContentDatabaseCharge will be api;\r\n  if marketPreference is research or remoteContent is no or remoteContentDatabase is no then remoteContentDatabaseCharge will be 0;\r\n\r\n  if marketPreference is research and researchPlatformsSocialMedia is yes and not researchsocialMediaPlatforms is twitter then researchsocialMediaPlatformsCharge will be api;\r\n  if marketPreference is direct or researchPlatformsSocialMedia is no or researchsocialMediaPlatforms is twitter then researchsocialMediaPlatformsCharge will be 0;\r\n\r\n\r\n  if supportWebEmailIM is yes and supportPlatforms is social then supportPlatformsCharge will be api;\r\n  if supportWebEmailIM is no or not supportPlatforms is social then supportPlatformsCharge will be 0;\r\n\r\n\r\n  if supportWebEmailIM is yes and supportDifficulty is somewhat then supportDifficultyMultiplier will be 1.05;\r\n  if supportWebEmailIM is yes and supportDifficulty is very then supportDifficultyMultiplier will be 1.1;\r\n  if supportWebEmailIM is no or supportDifficulty is no then supportDifficultyMultiplier will be 1;\r\n\r\n\r\n  if supportWebEmailIM is yes and supportAutoUpdates is yes then supportAutoUpdatesCharge will be learning;\r\n  if supportWebEmailIM is no or supportAutoUpdates is no then supportAutoUpdatesCharge will be 0;\r\n\r\n  if supportWebEmailIM is yes and supportEditable is yes then supportEditableCharge will be admin; \r\n  if supportWebEmailIM is no or supportEditable is no then supportEditableCharge will be 0; \r\n   \r\n  if docCreation is true and contractOnThirdParty is yes then contractOnThirdPartyCharge will be api;\r\n  if docCreation is false or contractOnThirdParty is no then contractOnThirdPartyCharge will be 0;\r\n\r\n\r\n  if docCreation is true and contractAccount is yes then contractAccountCharge will be account;\r\n  if docCreation is false or contractAccount is no then contractAccountCharge will be 0;\r\n\r\n  if docCreation is true and contractBilling is yes then contractBillingCharge will be billing;\r\n  if docCreation is false or contractBilling is no then contractBillingCharge will be 0;\r\n\r\n  if docCreation is true and contractSource is many_templates then contractSourceCharge will be Ruleset;\r\n  if docCreation is true and contractSource is paras then contractSourceCharge will be learning;\r\n  if docCreation is true and contractSource is other then contractSourceCharge will be Ruleset * 3;\r\n  if docCreation is false or contractSource is few_templates then contractSourceCharge will be 0;\r\n\r\n\r\n  if docCreation is true and contractDifferent is many then contractDifferentMultiplier will be 1.05;\r\n  if docCreation is true and contractDifferent is verymany then contractDifferentMultiplier will be 1.1;\r\n  if docCreation is false or contractDifferent is few then contractDifferentMultiplier will be 1;\r\n\r\n  if docCreation is true and contractOnlineConfig is yes then contractOnlineConfigCharge will be admin;\r\n  if docCreation is false or contractOnlineConfig is no then contractOnlineConfigCharge will be 0;\r\n\r\n  if docCategory is true and documentSort is predefined then documentSortCharge will be Ruleset;\r\n  if docCategory is true and documentSort is search then documentSortCharge will be admin;\r\n  if docCategory is true and documentSort is other then documentSortCharge will be Ruleset *3;\r\n  if docCategory is false then documentSortCharge will be 0;\r\n\r\n\r\n  if docCategory is true and documentFormat is pdf_word then documentFormatCharge will be pdf;\r\n  if docCategory is false or documentFormat is web then documentFormatCharge will be 0;\r\n\r\n  if docCategory is true and documentSortAdvise is im then documentSortAdviseCharge will be api;\r\n  if docCategory is false or documentSortAdvise is email or documentSortAdvise is no then documentSortAdviseCharge will be 0;\r\n\r\n\r\n\r\n  if docCategory is true and docChangeCompare is yes then docChangeCompareCharge will be Ruleset;\r\n  if docCategory is false or docChangeCompare is no then docChangeCompareCharge will be 0;\r\n\r\n\r\n  if advanced is true and advancedPreExisting is no then advancedPreExistingCharge will be creator * 2;\r\n  if advanced is true and advancedPreExisting is app then advancedPreExistingCharge will be api;\r\n  if advanced is true and advancedPreExisting is platform then advancedPreExistingCharge will be api;\r\n  if advanced is false or advancedPreExisting is website then advancedPreExistingCharge will be 0;\r\n\r\n\r\n  if advanced is true and advancedBilling is yes then advancedBillingCharge will be billing;\r\n  if advanced is false or advancedBilling is no then advancedBillingCharge will be 0;\r\n\r\n  if advanced is true and advancedAccounts is yes then advancedAccountsCharge will be account;\r\n  if advanced is false or advancedAccounts is no then advancedAccountsCharge will be 0;\r\n\r\n  if advanced is true and advancedDocuments is yes then advancedDocumentsCharge will be pdf * 2;\r\n  if advanced is false or advancedDocuments is no then advancedDocumentsCharge will be 0;\r\n\r\n  if advanced is true and advancedSocial is yes and advancedSocialFBLIOther is yes then advancedSocialFBLIOtherCharge will be api * 2;\r\n  if advanced is false or advancedSocial is no or advancedSocialFBLIOther is no then advancedSocialFBLIOtherCharge will be 0;\r\n\r\n\r\n  if ruleComplexity is simple then ruleComplexityCharge will be Ruleset;\r\n  if ruleComplexity is difficult then ruleComplexityCharge will be Ruleset * 2;\r\n  if ruleComplexity is complex then ruleComplexityCharge will be Ruleset * 3;\r\n\r\n  if ruleUpdateManual is yes then ruleUpdateManualCharge will be admin;\r\n  if ruleUpdateManual is no then ruleUpdateManualCharge will be 0;\r\n\r\n  if ruleUpdateAuto is yes then ruleUpdateAutoCharge will be learning;\r\n  if ruleUpdateAuto is no then ruleUpdateAutoCharge will be 0;\r\n\r\n  if machineLearning is true and machineDatabase is yes then machineDatabaseCharge will be api * 2;\r\n  if machineLearning is false or machineDatabase is no then machineDatabaseCharge will be 0;\r\n\r\n  if machineLearning is true and machineDataSize is medium then machineDataSizeMultiplier will be 1.025;\r\n  if machineLearning is true and machineDataSize is large then machineDataSizeMultiplier will be 1.05;\r\n  if machineLearning is true and machineDataSize is unknown then machineDataSizeMultiplier will be 1.05;\r\n  if machineLearning is false or machineDataSize is small then machineDataSizeMultiplier will be 1;\r\n\r\n  if machineLearning is true and machineParameters is medium then machineParametersMultiplier will be 1.05;\r\n  if machineLearning is true and machineParameters is large then machineParametersMultiplier will be 1.1;\r\n  if machineLearning is false or machineParameters is small then machineParametersMultiplier will be 1;\r\n\r\n  if machineLearning is true and machineCalculated is yes then machineCalculatedCharge will be admin * 2;\r\n  if machineLearning is false or machineCalculated is no then machineCalculatedCharge will be 0;\r\n\r\n  if textMining is true and textMiningMeaning is yes then textMiningMeaningCharge will be mining; \r\n  if textMining is false or textMiningMeaning is no then textMiningMeaningCharge will be 0; \r\n\r\n  if textMining is true and textMiningSize is many_pages then textMiningSizeCharge will be Ruleset; \r\n  if textMining is false or textMiningSize is tweets or textMiningSize is pages then textMiningSizeCharge will be 0; \r\n\r\n  if textMining is true and textMiningSpecialized is specific then textMiningSpecializedCharge will be ne * 2;\r\n  if textMining is true and textMiningSpecialized is not_very_specific then textMiningSpecializedCharge will be ne;   \r\n  if textMining is false or textMiningSpecialized is general_vocab then textMiningSpecializedCharge will be 0;   \r\n\r\n  if textMining is true and textMiningCategorize is yes then textMiningCategorizeCharge will be Ruleset * 2;   \r\n  if textMining is false or textMiningCategorize is no then textMiningCategorizeCharge will be 0;   \r\n\r\n  if companyLanguageGerman is yes then companyLanguageGermanCharge will be ne confidence 0.5;\r\n  if companyLanguageGerman is yes and marketPreference is research then companyLanguageGermanCharge will be ne * 3 confidence 0.7;\r\n  if companyLanguageGerman is yes and advanced is true then companyLanguageGermanCharge will be ne * 3 confidence 0.7;\r\n  if companyLanguageGerman is yes and docCreation is true then companyLanguageGermanCharge will be ne * 2 confidence 1.0;\r\n  if companyLanguageGerman is yes and docCategory is true then companyLanguageGermanCharge will be ne * 2 confidence 1.0;\r\n  if companyLanguageGerman is no then companyLanguageGermanCharge will be 0;\r\n\r\n\r\n  if companyLanguageFrench is yes then companyLanguageFrenchCharge will be ne confidence 0.5;\r\n  if companyLanguageFrench is yes and marketPreference is research then companyLanguageFrenchCharge will be ne * 3 confidence 0.7;\r\n  if companyLanguageFrench is yes and advanced is true then companyLanguageFrenchCharge will be ne * 3 confidence 0.7;\r\n  if companyLanguageFrench is yes and docCreation is true then companyLanguageFrenchCharge will be ne * 2 confidence 1.0;\r\n  if companyLanguageFrench is yes and docCategory is true then companyLanguageFrenchCharge will be ne * 2 confidence 1.0;\r\n  if companyLanguageFrench is no then companyLanguageFrenchCharge will be 0;\r\n\r\n  if companyLanguageSpanish is yes then companyLanguageSpanishCharge will be ne confidence 0.5;\r\n  if companyLanguageSpanish is yes and marketPreference is research then companyLanguageSpanishCharge will be ne * 3 confidence 0.7;\r\n  if companyLanguageSpanish is yes and advanced is true then companyLanguageSpanishCharge will be ne * 3 confidence 0.7;\r\n  if companyLanguageSpanish is yes and docCreation is true then companyLanguageSpanishCharge will be ne * 2 confidence 1.0;\r\n  if companyLanguageSpanish is yes and docCategory is true then companyLanguageSpanishCharge will be ne * 2 confidence 1.0;\r\n  if companyLanguageSpanish is no then companyLanguageSpanishCharge will be 0;\r\n\r\n  if companyLanguageOther is yes then companyLanguageOtherCharge will be ne * 2 confidence 0.5;\r\n  if companyLanguageOther is yes and marketPreference is research then companyLanguageOtherCharge will be ne * 5 confidence 0.7;\r\n  if companyLanguageOther is yes and advanced is true then companyLanguageOtherCharge will be ne * 5 confidence 0.7;\r\n  if companyLanguageOther is yes and docCreation is true then companyLanguageOtherCharge will be ne * 3 confidence 1.0;\r\n  if companyLanguageOther is yes and docCategory is true then companyLanguageOtherCharge will be ne * 3 confidence 1.0;\r\n  if companyLanguageOther is no then companyLanguageOtherCharge will be 0;\r\n\r\n  if companySize is sme then companySizeMultiplier will be 1.5;\r\n  if companySize is large then companySizeMultiplier will be 2;\r\n  if companySize is startup then companySizeMultiplier will be 1;\r\n  \r\n  if companyContactName is present and companyName is present and companyEmail is present and companyPhone is present then generalComplete will be true;\r\n  if anything then price_multipliers will be product(productCountMultiplier, productOptionsMultiplier, serviceCountMultiplier, serviceChargingMultiplier, supportDifficultyMultiplier, contractDifferentMultiplier, machineDataSizeMultiplier, machineParametersMultiplier, companySizeMultiplier);\r\n  if anything then price_sums will be sum(docCreationCharge, docCategoryCharge, machineLearningCharge, textminingCharge, chatbotCharge, chatbotFaceBookOtherCharge, salesTrackingCharge, salesteamAccessCharge, estimatingComplexCharge, pdfEstimateCharge, billing_systemCharge, serviceEstimatingComplexCharge, servicePdfEstimateCharge, service_billing_systemCharge, socialMediaPlatformsCharge, mediaOptimisationCharge, dynamicInteractionsCharge, remoteContentWebsitesDocumentsCharge, remoteContentDatabaseCharge, researchsocialMediaPlatformsCharge, supportPlatformsCharge, supportAutoUpdatesCharge, supportEditableCharge, contractAccountCharge, contractBillingCharge, contractOnlineConfigCharge, documentSortCharge, documentFormatCharge, documentSortAdviseCharge, docChangeCompareCharge, advancedPreExistingCharge, advancedBillingCharge, advancedAccountsCharge, advancedDocumentsCharge, advancedSocialFBLIOtherCharge, ruleComplexityCharge, ruleUpdateManualCharge, ruleUpdateAutoCharge, machineDatabaseCharge, machineCalculatedCharge, textMiningMeaningCharge, textMiningSizeCharge, textMiningSpecializedCharge, textMiningCategorizeCharge, companyLanguageGermanCharge, companyLanguageFrenchCharge, companyLanguageSpanishCharge, companyLanguageOtherCharge, offerChangeableCharge);\r\n  if generalComplete is true then total_price will be price_sums * price_multipliers;\r\n  \r\n}",
+  "name": "Bluewave development pricing",
+  "version": "1.0.0",
+  "author": "demos",
+  "copyright": null,
+  "license": null,
+  "description": "Bluewave is a developer working with the Darl range of products. Price a project using this.",
+  "format": {
+    "DefaultQuestions": 10,
+    "Edited": false,
+    "InputFormatList": [
+      {
+        "Categories": [
+          "_product",
+          "service"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "bizmodel",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "research",
+          "direct"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "marketPreference",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "support",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "supportWebEmailIM",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "true",
+          "false"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "docCreation",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "true",
+          "false"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "docCategory",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "true",
+          "false"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "advanced",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "true",
+          "false"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "machineLearning",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "true",
+          "false"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "textMining",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "true",
+          "false"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "chatbot",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "true",
+          "false"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "chatbotFaceBookOther",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "tracked",
+          "tracked_analyzed"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "salesTracking",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "salesteamAccess",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "customerAccess",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "offerChangeable",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "autoOptimize",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": 0,
+        "Name": "productCount",
+        "NumericMax": 1000.0,
+        "NumericMin": 1.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "some",
+          "all"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "productOptions",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "sometimes",
+          "often",
+          "always"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "estimatingComplex",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "pdfEstimate",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "download",
+          "email_client",
+          "email_you"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "estimate_transmission",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "billing_system",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": 0,
+        "Name": "serviceCount",
+        "NumericMax": 1000.0,
+        "NumericMin": 1.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "by_hour",
+          "by_project",
+          "by_use"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "serviceCharging",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "some",
+          "all"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "serviceOptions",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "sometimes",
+          "often",
+          "always"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "serviceEstimatingComplex",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "servicePdfEstimate",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "download",
+          "email_client",
+          "email_you"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "service_estimate_transmission",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "service_billing_system",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "marketingPlatformsSocialMedia",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "marketingPlatformsEmailWebsitesOther",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "twitter",
+          "facebook",
+          "linkedin",
+          "other"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "socialMediaPlatforms",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "sometimes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "regularposting",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "trending",
+          "past_success"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "mediaOptimisation",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "dynamicInteractions",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "remoteContent",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "remoteContentWebsitesDocuments",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "remoteContentDatabase",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "researchPlatformsSocialMedia",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "researchPlatformsEmailWebsitesOther",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "twitter",
+          "facebook",
+          "linkedin",
+          "other"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "researchsocialMediaPlatforms",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "opinions",
+          "trends",
+          "needs",
+          "others"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "researchTends",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "keywords",
+          "hashtags",
+          "meaning"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "researchTopics",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "very",
+          "somewhat",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "researchConfigurable",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "sometimes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "researchMarketingSync",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "social",
+          "skype",
+          "whatsap_sms"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "supportPlatforms",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "very",
+          "somewhat",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "supportDifficulty",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "docs",
+          "website",
+          "database"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "supportExisting",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "supportAutoUpdates",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "supportEditable",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "contractOnWeb",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "contractOnEmail",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "contractOnThirdParty",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "contractAccount",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "contractBilling",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "few_templates",
+          "many_templates",
+          "paras",
+          "other"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "contractSource",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "few",
+          "many",
+          "verymany"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "contractDifferent",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "contractOnlineConfig",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "predefined",
+          "search",
+          "other"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "documentSort",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "pdf_word",
+          "web"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "documentFormat",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "email",
+          "im"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "documentSortAdvise",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "docChangeCompare",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "app",
+          "platform",
+          "website",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "advancedPreExisting",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "advancedBilling",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "advancedAccounts",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "advancedDocuments",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "advancedSocial",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "advancedIm",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "advancedSocialFBLIOther",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "simple",
+          "difficult",
+          "complex"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "ruleComplexity",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "ruleUpdateManual",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "ruleUpdateAuto",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "machineDatabase",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "small",
+          "medium",
+          "large",
+          "unknown"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "machineDataSize",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "small",
+          "medium",
+          "large"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": 0,
+        "Name": "machineParameters",
+        "NumericMax": 1000.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "machineCalculated",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "textMiningMeaning",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "tweets",
+          "pages",
+          "many_pages"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "textMiningSize",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "specific",
+          "not_very_specific",
+          "general_vocab"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "textMiningSpecialized",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "textMiningCategorize",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "startup",
+          "sme",
+          "large"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "companySize",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "companyLanguageGerman",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "companyLanguageFrench",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "companyLanguageSpanish",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "companyLanguageOther",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "companyOtherRequirements",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "companyContactName",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "companyName",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "companyEmail",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "companyPhone",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      }
+    ],
+    "OutputFormatList": [
+      {
+        "Hide": true,
+        "Name": "docCreationCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "docCategoryCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "machineLearningCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "textminingCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "chatbotCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "chatbotFaceBookOtherCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "salesTrackingCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "salesteamAccessCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "estimatingComplexCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "pdfEstimateCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "billing_systemCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "serviceEstimatingComplexCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "servicePdfEstimateCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "service_billing_systemCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "socialMediaPlatformsCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "mediaOptimisationCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "dynamicInteractionsCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "remoteContentWebsitesDocumentsCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "remoteContentDatabaseCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "researchsocialMediaPlatformsCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "supportPlatformsCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "supportAutoUpdatesCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "supportEditableCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "contractAccountCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "contractBillingCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "contractOnlineConfigCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "documentSortCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "documentFormatCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "documentSortAdviseCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "docChangeCompareCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "advancedPreExistingCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "advancedBillingCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "advancedAccountsCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "advancedDocumentsCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "advancedSocialFBLIOtherCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "ruleComplexityCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "ruleUpdateManualCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "ruleUpdateAutoCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "machineDatabaseCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "machineCalculatedCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "textMiningMeaningCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "textMiningSizeCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "textMiningSpecializedCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "textMiningCategorizeCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "companyLanguageGermanCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "companyLanguageFrenchCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "companyLanguageSpanishCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "companyLanguageOtherCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "offerChangeableCharge",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "productCountMultiplier",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "productOptionsMultiplier",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "serviceCountMultiplier",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "serviceChargingMultiplier",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "supportDifficultyMultiplier",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "contractDifferentMultiplier",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "machineDataSizeMultiplier",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "machineParametersMultiplier",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "companySizeMultiplier",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "generalComplete",
+        "OutputType": "categorical",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "price_multipliers",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "price_sums",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": false,
+        "Name": "total_price",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      }
+    ]
+  },
+  "language": {
+    "LanguageList": [
+      {
+        "Name": "bizmodel",
+        "Text": "What are you selling, a product or service?",
+        "VariantList": []
+      },
+      {
+        "Name": "bizmodel._product",
+        "Text": "product",
+        "VariantList": []
+      },
+      {
+        "Name": "bizmodel.service",
+        "Text": "service",
+        "VariantList": []
+      },
+      {
+        "Name": "marketPreference",
+        "Text": "Are you more interested in marketing research or direct marketing?",
+        "VariantList": []
+      },
+      {
+        "Name": "marketPreference.research",
+        "Text": "research",
+        "VariantList": []
+      },
+      {
+        "Name": "marketPreference.direct",
+        "Text": "direct",
+        "VariantList": []
+      },
+      {
+        "Name": "support",
+        "Text": "Would you like to offer support on social media?",
+        "VariantList": []
+      },
+      {
+        "Name": "support.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "support.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "supportWebEmailIM",
+        "Text": "Would you like to offer support via a website, Email or IM?",
+        "VariantList": []
+      },
+      {
+        "Name": "supportWebEmailIM.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "supportWebEmailIM.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "docCreation",
+        "Text": "Do you need legal contracts to be automatically generated?",
+        "VariantList": []
+      },
+      {
+        "Name": "docCreation.true",
+        "Text": "true",
+        "VariantList": []
+      },
+      {
+        "Name": "docCreation.false",
+        "Text": "false",
+        "VariantList": []
+      },
+      {
+        "Name": "docCategory",
+        "Text": "Do you need legal documents to be automatically categorized?",
+        "VariantList": []
+      },
+      {
+        "Name": "docCategory.true",
+        "Text": "true",
+        "VariantList": []
+      },
+      {
+        "Name": "docCategory.false",
+        "Text": "false",
+        "VariantList": []
+      },
+      {
+        "Name": "advanced",
+        "Text": "Would you like your AutoAdvisor to do rule based AI?",
+        "VariantList": []
+      },
+      {
+        "Name": "advanced.true",
+        "Text": "true",
+        "VariantList": []
+      },
+      {
+        "Name": "advanced.false",
+        "Text": "false",
+        "VariantList": []
+      },
+      {
+        "Name": "machineLearning",
+        "Text": "Would you like your AutoAdvisor to do machine learning?",
+        "VariantList": []
+      },
+      {
+        "Name": "machineLearning.true",
+        "Text": "true",
+        "VariantList": []
+      },
+      {
+        "Name": "machineLearning.false",
+        "Text": "false",
+        "VariantList": []
+      },
+      {
+        "Name": "textMining",
+        "Text": "Would you like your AutoAdvisor to do text mining?",
+        "VariantList": []
+      },
+      {
+        "Name": "textMining.true",
+        "Text": "true",
+        "VariantList": []
+      },
+      {
+        "Name": "textMining.false",
+        "Text": "false",
+        "VariantList": []
+      },
+      {
+        "Name": "chatbot",
+        "Text": "Would you like your AutoAdvisor have an IM  chatbot?",
+        "VariantList": []
+      },
+      {
+        "Name": "chatbot.true",
+        "Text": "true",
+        "VariantList": []
+      },
+      {
+        "Name": "chatbot.false",
+        "Text": "false",
+        "VariantList": []
+      },
+      {
+        "Name": "chatbotFaceBookOther",
+        "Text": "Should that chatbot work with FaceBook and other sources.",
+        "VariantList": []
+      },
+      {
+        "Name": "chatbotFaceBookOther.true",
+        "Text": "true",
+        "VariantList": []
+      },
+      {
+        "Name": "chatbotFaceBookOther.false",
+        "Text": "false",
+        "VariantList": []
+      },
+      {
+        "Name": "salesTracking",
+        "Text": "Do your sales or estimates need to be tracked  and analyzed by your AutoAdvisor?",
+        "VariantList": []
+      },
+      {
+        "Name": "salesTracking.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "salesTracking.tracked",
+        "Text": "tracked",
+        "VariantList": []
+      },
+      {
+        "Name": "salesTracking.tracked_analyzed",
+        "Text": "tracked_analyzed",
+        "VariantList": []
+      },
+      {
+        "Name": "salesteamAccess",
+        "Text": "Will your sales team need special access to track their potential customers or sales?",
+        "VariantList": []
+      },
+      {
+        "Name": "salesteamAccess.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "salesteamAccess.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "customerAccess",
+        "Text": "Will customers need accounts?",
+        "VariantList": []
+      },
+      {
+        "Name": "customerAccess.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "customerAccess.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "offerChangeable",
+        "Text": "Do you need to change your offers regularly? ",
+        "VariantList": []
+      },
+      {
+        "Name": "offerChangeable.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "offerChangeable.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "autoOptimize",
+        "Text": "Would you like your sales AutoAdvisor to dynamically optimize your offers for you, improving estimates, prices, profits, etc?",
+        "VariantList": []
+      },
+      {
+        "Name": "autoOptimize.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "autoOptimize.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "productCount",
+        "Text": "How many kinds of products do you sell?",
+        "VariantList": []
+      },
+      {
+        "Name": "productOptions",
+        "Text": "Does one or more of your products have different configuration options? ",
+        "VariantList": []
+      },
+      {
+        "Name": "productOptions.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "productOptions.some",
+        "Text": "some",
+        "VariantList": []
+      },
+      {
+        "Name": "productOptions.all",
+        "Text": "all",
+        "VariantList": []
+      },
+      {
+        "Name": "estimatingComplex",
+        "Text": "Do you find it challenging to estimate the cost of your product(s)? ",
+        "VariantList": []
+      },
+      {
+        "Name": "estimatingComplex.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "estimatingComplex.sometimes",
+        "Text": "sometimes",
+        "VariantList": []
+      },
+      {
+        "Name": "estimatingComplex.often",
+        "Text": "often",
+        "VariantList": []
+      },
+      {
+        "Name": "estimatingComplex.always",
+        "Text": "always",
+        "VariantList": []
+      },
+      {
+        "Name": "pdfEstimate",
+        "Text": "Is an automatic PDF estimate or invoice for the potential customer needed? ",
+        "VariantList": []
+      },
+      {
+        "Name": "pdfEstimate.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "pdfEstimate.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "estimate_transmission",
+        "Text": "Should the estimate or invoice be downloadable via website/app, emailed to the potential client and/or emailed to you? ",
+        "VariantList": []
+      },
+      {
+        "Name": "estimate_transmission.download",
+        "Text": "download",
+        "VariantList": []
+      },
+      {
+        "Name": "estimate_transmission.email_client",
+        "Text": "email client",
+        "VariantList": []
+      },
+      {
+        "Name": "estimate_transmission.email_you",
+        "Text": "email you",
+        "VariantList": []
+      },
+      {
+        "Name": "billing_system",
+        "Text": "Should a billing/payment system be integrated so the potential customer can pay for the product directly via the website/app? ",
+        "VariantList": []
+      },
+      {
+        "Name": "billing_system.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "billing_system.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceCount",
+        "Text": "How many types of services do you offer? ",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceCharging",
+        "Text": "How do you usually charge for your services? ",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceCharging.by_hour",
+        "Text": "by hour",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceCharging.by_project",
+        "Text": "by project",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceCharging.by_use",
+        "Text": "by use",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceOptions",
+        "Text": "Does a price or price range for the final service(s) need to be displayed?",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceOptions.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceOptions.some",
+        "Text": "some",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceOptions.all",
+        "Text": "all",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceEstimatingComplex",
+        "Text": "Do you find it challenging to estimate the cost of your service(s)? ",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceEstimatingComplex.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceEstimatingComplex.sometimes",
+        "Text": "sometimes",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceEstimatingComplex.often",
+        "Text": "often",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceEstimatingComplex.always",
+        "Text": "always",
+        "VariantList": []
+      },
+      {
+        "Name": "servicePdfEstimate",
+        "Text": "Is an automatic PDF estimate or invoice for the potential customer needed? ",
+        "VariantList": []
+      },
+      {
+        "Name": "servicePdfEstimate.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "servicePdfEstimate.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "service_estimate_transmission",
+        "Text": "Should the estimate or invoice be downloadable via website, emailed to the potential client and/or emailed to you? ",
+        "VariantList": []
+      },
+      {
+        "Name": "service_estimate_transmission.download",
+        "Text": "download",
+        "VariantList": []
+      },
+      {
+        "Name": "service_estimate_transmission.email_client",
+        "Text": "email client",
+        "VariantList": []
+      },
+      {
+        "Name": "service_estimate_transmission.email_you",
+        "Text": "email you",
+        "VariantList": []
+      },
+      {
+        "Name": "service_billing_system",
+        "Text": "Should a billing/payment system be integrated so the potential customer can pay for the service directly via the website/app?",
+        "VariantList": []
+      },
+      {
+        "Name": "service_billing_system.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "service_billing_system.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "marketingPlatformsSocialMedia",
+        "Text": "Do you want to market on social media?",
+        "VariantList": []
+      },
+      {
+        "Name": "marketingPlatformsSocialMedia.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "marketingPlatformsSocialMedia.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "marketingPlatformsEmailWebsitesOther",
+        "Text": "Do you want to market on Websites, email or other?",
+        "VariantList": []
+      },
+      {
+        "Name": "marketingPlatformsEmailWebsitesOther.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "marketingPlatformsEmailWebsitesOther.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "socialMediaPlatforms",
+        "Text": "Which social media platform(s) would you like to market on? ",
+        "VariantList": []
+      },
+      {
+        "Name": "socialMediaPlatforms.twitter",
+        "Text": "twitter",
+        "VariantList": []
+      },
+      {
+        "Name": "socialMediaPlatforms.facebook",
+        "Text": "facebook",
+        "VariantList": []
+      },
+      {
+        "Name": "socialMediaPlatforms.linkedin",
+        "Text": "linkedin",
+        "VariantList": []
+      },
+      {
+        "Name": "socialMediaPlatforms.other",
+        "Text": "other",
+        "VariantList": []
+      },
+      {
+        "Name": "regularposting",
+        "Text": "Will your marketing AutoAdvisor need to regularly post content?",
+        "VariantList": []
+      },
+      {
+        "Name": "regularposting.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "regularposting.sometimes",
+        "Text": "sometimes",
+        "VariantList": []
+      },
+      {
+        "Name": "regularposting.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "mediaOptimisation",
+        "Text": "Should your marketing AutoAdvisor be able to automatically change or create posts based on current trends or success of previous posts? ",
+        "VariantList": []
+      },
+      {
+        "Name": "mediaOptimisation.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "mediaOptimisation.trending",
+        "Text": "trending",
+        "VariantList": []
+      },
+      {
+        "Name": "mediaOptimisation.past_success",
+        "Text": "past success",
+        "VariantList": []
+      },
+      {
+        "Name": "dynamicInteractions",
+        "Text": "Will your marketing AutoAdvisor have dynamic interactions with consumers? ",
+        "VariantList": []
+      },
+      {
+        "Name": "dynamicInteractions.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "dynamicInteractions.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "remoteContent",
+        "Text": "Should your marketin AutoAdvisor use remote content?",
+        "VariantList": []
+      },
+      {
+        "Name": "remoteContent.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "remoteContent.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "remoteContentWebsitesDocuments",
+        "Text": "Should your marketing AutoAdvisor use content from websites or documents?",
+        "VariantList": []
+      },
+      {
+        "Name": "remoteContentWebsitesDocuments.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "remoteContentWebsitesDocuments.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "remoteContentDatabase",
+        "Text": "Should your marketing AutoAdvisor use content from a database?",
+        "VariantList": []
+      },
+      {
+        "Name": "remoteContentDatabase.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "remoteContentDatabase.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "researchPlatformsSocialMedia",
+        "Text": "Do you want to research on scial media platforms?",
+        "VariantList": []
+      },
+      {
+        "Name": "researchPlatformsSocialMedia.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "researchPlatformsSocialMedia.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "researchPlatformsEmailWebsitesOther",
+        "Text": "Do you want to research on Websites, email or other non-social media?",
+        "VariantList": []
+      },
+      {
+        "Name": "researchPlatformsEmailWebsitesOther.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "researchPlatformsEmailWebsitesOther.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "researchsocialMediaPlatforms",
+        "Text": "Which social media platform(s) would you like to research on?",
+        "VariantList": []
+      },
+      {
+        "Name": "researchsocialMediaPlatforms.twitter",
+        "Text": "twitter",
+        "VariantList": []
+      },
+      {
+        "Name": "researchsocialMediaPlatforms.facebook",
+        "Text": "facebook",
+        "VariantList": []
+      },
+      {
+        "Name": "researchsocialMediaPlatforms.linkedin",
+        "Text": "linkedin",
+        "VariantList": []
+      },
+      {
+        "Name": "researchsocialMediaPlatforms.other",
+        "Text": "other",
+        "VariantList": []
+      },
+      {
+        "Name": "researchTends",
+        "Text": "Are you more interested in opinions, trends or needs of consumers?  ",
+        "VariantList": []
+      },
+      {
+        "Name": "researchTends.opinions",
+        "Text": "opinions",
+        "VariantList": []
+      },
+      {
+        "Name": "researchTends.trends",
+        "Text": "trends",
+        "VariantList": []
+      },
+      {
+        "Name": "researchTends.needs",
+        "Text": "needs",
+        "VariantList": []
+      },
+      {
+        "Name": "researchTends.others",
+        "Text": "others",
+        "VariantList": []
+      },
+      {
+        "Name": "researchTopics",
+        "Text": "Which of these are important to your research? ",
+        "VariantList": []
+      },
+      {
+        "Name": "researchTopics.keywords",
+        "Text": "keywords",
+        "VariantList": []
+      },
+      {
+        "Name": "researchTopics.hashtags",
+        "Text": "hashtags",
+        "VariantList": []
+      },
+      {
+        "Name": "researchTopics.meaning",
+        "Text": "meaning",
+        "VariantList": []
+      },
+      {
+        "Name": "researchConfigurable",
+        "Text": "How flexible and easy to configure should your research AutoAdvisor be? ",
+        "VariantList": []
+      },
+      {
+        "Name": "researchConfigurable.very",
+        "Text": "very",
+        "VariantList": []
+      },
+      {
+        "Name": "researchConfigurable.somewhat",
+        "Text": "somewhat",
+        "VariantList": []
+      },
+      {
+        "Name": "researchConfigurable.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "researchMarketingSync",
+        "Text": "Should your research AutoAdvisor sync with your marketing AutoAdvisor? ",
+        "VariantList": []
+      },
+      {
+        "Name": "researchMarketingSync.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "researchMarketingSync.sometimes",
+        "Text": "sometimes",
+        "VariantList": []
+      },
+      {
+        "Name": "researchMarketingSync.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "supportPlatforms",
+        "Text": "Which platform(s) would you like your support AutoAdvisor to use? ",
+        "VariantList": []
+      },
+      {
+        "Name": "supportPlatforms.social",
+        "Text": "social",
+        "VariantList": []
+      },
+      {
+        "Name": "supportPlatforms.skype",
+        "Text": "skype",
+        "VariantList": []
+      },
+      {
+        "Name": "supportPlatforms.whatsap_sms",
+        "Text": "whatsap_sms",
+        "VariantList": []
+      },
+      {
+        "Name": "supportDifficulty",
+        "Text": "How difficult is it currently to provide helpful support for your offering? ",
+        "VariantList": []
+      },
+      {
+        "Name": "supportDifficulty.very",
+        "Text": "very",
+        "VariantList": []
+      },
+      {
+        "Name": "supportDifficulty.somewhat",
+        "Text": "somewhat",
+        "VariantList": []
+      },
+      {
+        "Name": "supportDifficulty.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "supportExisting",
+        "Text": "Do you already have any of the following sources for support? ",
+        "VariantList": []
+      },
+      {
+        "Name": "supportExisting.docs",
+        "Text": "docs",
+        "VariantList": []
+      },
+      {
+        "Name": "supportExisting.website",
+        "Text": "website",
+        "VariantList": []
+      },
+      {
+        "Name": "supportExisting.database",
+        "Text": "database",
+        "VariantList": []
+      },
+      {
+        "Name": "supportAutoUpdates",
+        "Text": "Should your support AutoAdvisor update its knowledge automatically? ",
+        "VariantList": []
+      },
+      {
+        "Name": "supportAutoUpdates.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "supportAutoUpdates.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "supportEditable",
+        "Text": "Should your support AutoAdvisor be easily editable?",
+        "VariantList": []
+      },
+      {
+        "Name": "supportEditable.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "supportEditable.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "contractOnWeb",
+        "Text": "Would you like your contracts to be accessible on the web?",
+        "VariantList": []
+      },
+      {
+        "Name": "contractOnWeb.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "contractOnWeb.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "contractOnEmail",
+        "Text": "Would you like your contracts to be accessible by email?",
+        "VariantList": []
+      },
+      {
+        "Name": "contractOnEmail.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "contractOnEmail.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "contractOnThirdParty",
+        "Text": "Would you like your contracts to be accessible on third party platforms?",
+        "VariantList": []
+      },
+      {
+        "Name": "contractOnThirdParty.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "contractOnThirdParty.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "contractAccount",
+        "Text": "Would you like an integrated accounting system?",
+        "VariantList": []
+      },
+      {
+        "Name": "contractAccount.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "contractAccount.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "contractBilling",
+        "Text": "Would you like an integrated billing system?",
+        "VariantList": []
+      },
+      {
+        "Name": "contractBilling.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "contractBilling.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "contractSource",
+        "Text": "Where will the source of contracts for your contract AutoAdvisor come from? ",
+        "VariantList": []
+      },
+      {
+        "Name": "contractSource.few_templates",
+        "Text": "few templates",
+        "VariantList": []
+      },
+      {
+        "Name": "contractSource.many_templates",
+        "Text": "many templates",
+        "VariantList": []
+      },
+      {
+        "Name": "contractSource.paras",
+        "Text": "lots of legal sources",
+        "VariantList": []
+      },
+      {
+        "Name": "contractSource.other",
+        "Text": "other",
+        "VariantList": []
+      },
+      {
+        "Name": "contractDifferent",
+        "Text": "How many different contracts should be possible? ",
+        "VariantList": []
+      },
+      {
+        "Name": "contractDifferent.few",
+        "Text": "few",
+        "VariantList": []
+      },
+      {
+        "Name": "contractDifferent.many",
+        "Text": "many",
+        "VariantList": []
+      },
+      {
+        "Name": "contractDifferent.verymany",
+        "Text": "verymany",
+        "VariantList": []
+      },
+      {
+        "Name": "contractOnlineConfig",
+        "Text": "Should it be easy to add and edit new types of contracts into your AutoAdvisor? ",
+        "VariantList": []
+      },
+      {
+        "Name": "contractOnlineConfig.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "contractOnlineConfig.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "documentSort",
+        "Text": "Does your document AutoAdvisor need to automatically sort your documents based on a pre-defined criteria or should it offer a search feature? ",
+        "VariantList": []
+      },
+      {
+        "Name": "documentSort.predefined",
+        "Text": "predefined",
+        "VariantList": []
+      },
+      {
+        "Name": "documentSort.search",
+        "Text": "search",
+        "VariantList": []
+      },
+      {
+        "Name": "documentSort.other",
+        "Text": "other",
+        "VariantList": []
+      },
+      {
+        "Name": "documentFormat",
+        "Text": "What format will your documents be in? ",
+        "VariantList": []
+      },
+      {
+        "Name": "documentFormat.pdf_word",
+        "Text": "pdf or word",
+        "VariantList": []
+      },
+      {
+        "Name": "documentFormat.web",
+        "Text": "web",
+        "VariantList": []
+      },
+      {
+        "Name": "documentSortAdvise",
+        "Text": "Should your document AutoAdvisor automatically notify you when documents are sorted? ",
+        "VariantList": []
+      },
+      {
+        "Name": "documentSortAdvise.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "documentSortAdvise.email",
+        "Text": "email",
+        "VariantList": []
+      },
+      {
+        "Name": "documentSortAdvise.im",
+        "Text": "im",
+        "VariantList": []
+      },
+      {
+        "Name": "docChangeCompare",
+        "Text": "Should documents be compared with each other for differences/changes?",
+        "VariantList": []
+      },
+      {
+        "Name": "docChangeCompare.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "docChangeCompare.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedPreExisting",
+        "Text": "Do you have a pre-existing app, platform, or website for your offering? ",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedPreExisting.app",
+        "Text": "app",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedPreExisting.platform",
+        "Text": "platform",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedPreExisting.website",
+        "Text": "website",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedPreExisting.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedBilling",
+        "Text": "Does your AutoAdvisor need to work with payments/billing?",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedBilling.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedBilling.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedAccounts",
+        "Text": "Does your AutoAdvisor need to work with accounts?",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedAccounts.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedAccounts.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedDocuments",
+        "Text": "Does your AutoAdvisor need to work with documents? ",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedDocuments.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedDocuments.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedSocial",
+        "Text": "Should your AutoAdvisor connect to or interact with any other social platforms?",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedSocial.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedSocial.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedIm",
+        "Text": "Should your AutoAdvisor connect to or interact with any other IM platforms?",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedIm.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedIm.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedSocialFBLIOther",
+        "Text": "Does your AutoAdvisor need to connect with Facebook, LinkedIn or similar?",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedSocialFBLIOther.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedSocialFBLIOther.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "ruleComplexity",
+        "Text": "Rate the complexity of your knowledge system you'd like your AutoAdvisor to model",
+        "VariantList": []
+      },
+      {
+        "Name": "ruleComplexity.simple",
+        "Text": "simple",
+        "VariantList": []
+      },
+      {
+        "Name": "ruleComplexity.difficult",
+        "Text": "difficult",
+        "VariantList": []
+      },
+      {
+        "Name": "ruleComplexity.complex",
+        "Text": "complex",
+        "VariantList": []
+      },
+      {
+        "Name": "ruleUpdateManual",
+        "Text": "Do these rules need to be updated manually?",
+        "VariantList": []
+      },
+      {
+        "Name": "ruleUpdateManual.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "ruleUpdateManual.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "ruleUpdateAuto",
+        "Text": "Do these rules need to be auto-updated for optimization?",
+        "VariantList": []
+      },
+      {
+        "Name": "ruleUpdateAuto.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "ruleUpdateAuto.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "machineDatabase",
+        "Text": "Do you have a database for your AutoAdvisor to extract rules from? ",
+        "VariantList": []
+      },
+      {
+        "Name": "machineDatabase.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "machineDatabase.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "machineDataSize",
+        "Text": "Roughly how large will your dataset be? ",
+        "VariantList": []
+      },
+      {
+        "Name": "machineDataSize.small",
+        "Text": "small",
+        "VariantList": []
+      },
+      {
+        "Name": "machineDataSize.medium",
+        "Text": "medium",
+        "VariantList": []
+      },
+      {
+        "Name": "machineDataSize.large",
+        "Text": "large",
+        "VariantList": []
+      },
+      {
+        "Name": "machineDataSize.unknown",
+        "Text": "unknown",
+        "VariantList": []
+      },
+      {
+        "Name": "machineParameters",
+        "Text": "How many parameters will your dataset have? ",
+        "VariantList": []
+      },
+      {
+        "Name": "machineCalculated",
+        "Text": "Does your AutoAdvisor need to keep track of or analyze inputted or calculated data to display the results? ",
+        "VariantList": []
+      },
+      {
+        "Name": "machineCalculated.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "machineCalculated.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningMeaning",
+        "Text": "Is the meaning of all or part of text important?",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningMeaning.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningMeaning.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningSize",
+        "Text": "On average how large of a text will your AutoAdvisor be text mining? ",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningSize.tweets",
+        "Text": "tweets",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningSize.pages",
+        "Text": "pages",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningSize.many_pages",
+        "Text": "many pages",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningSpecialized",
+        "Text": "How technical or specific will the subject the AutoAdvisor will be text mining? ",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningSpecialized.specific",
+        "Text": "specific",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningSpecialized.not_very_specific",
+        "Text": "not very specific",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningSpecialized.general_vocab",
+        "Text": "general vocabulary",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningCategorize",
+        "Text": "Does your text mining AutoAdvisor need to categorize documents? ",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningCategorize.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningCategorize.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "companySize",
+        "Text": "What is the size of your company? ",
+        "VariantList": []
+      },
+      {
+        "Name": "companySize.startup",
+        "Text": "startup",
+        "VariantList": []
+      },
+      {
+        "Name": "companySize.sme",
+        "Text": "sme",
+        "VariantList": []
+      },
+      {
+        "Name": "companySize.large",
+        "Text": "medium - large",
+        "VariantList": []
+      },
+      {
+        "Name": "companyLanguageGerman",
+        "Text": "Will your AutoAdvisor use German?",
+        "VariantList": []
+      },
+      {
+        "Name": "companyLanguageGerman.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "companyLanguageGerman.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "companyLanguageFrench",
+        "Text": "Will your AutoAdvisor use French?",
+        "VariantList": []
+      },
+      {
+        "Name": "companyLanguageFrench.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "companyLanguageFrench.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "companyLanguageSpanish",
+        "Text": "Will your AutoAdvisor use Spanish?",
+        "VariantList": []
+      },
+      {
+        "Name": "companyLanguageSpanish.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "companyLanguageSpanish.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "companyLanguageOther",
+        "Text": "Will your AutoAdvisor use a language other than English,French,German or Spanish?",
+        "VariantList": []
+      },
+      {
+        "Name": "companyLanguageOther.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "companyLanguageOther.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "companyOtherRequirements",
+        "Text": "Are there any other requirements we have not mentioned?",
+        "VariantList": []
+      },
+      {
+        "Name": "companyContactName",
+        "Text": "What is your name?",
+        "VariantList": []
+      },
+      {
+        "Name": "companyName",
+        "Text": "What is your company's name?",
+        "VariantList": []
+      },
+      {
+        "Name": "companyEmail",
+        "Text": "What is your email?",
+        "VariantList": []
+      },
+      {
+        "Name": "companyPhone",
+        "Text": "What is your phone number?",
+        "VariantList": []
+      },
+      {
+        "Name": "docCreationCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "docCategoryCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "machineLearningCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "textminingCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "chatbotCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "chatbotFaceBookOtherCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "salesTrackingCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "salesteamAccessCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "estimatingComplexCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "pdfEstimateCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "billing_systemCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceEstimatingComplexCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "servicePdfEstimateCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "service_billing_systemCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "socialMediaPlatformsCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "mediaOptimisationCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "dynamicInteractionsCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "remoteContentWebsitesDocumentsCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "remoteContentDatabaseCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "researchsocialMediaPlatformsCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "supportPlatformsCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "supportAutoUpdatesCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "supportEditableCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "contractAccountCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "contractBillingCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "contractOnlineConfigCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "documentSortCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "documentFormatCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "documentSortAdviseCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "docChangeCompareCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedPreExistingCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedBillingCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedAccountsCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedDocumentsCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "advancedSocialFBLIOtherCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "ruleComplexityCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "ruleUpdateManualCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "ruleUpdateAutoCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "machineDatabaseCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "machineCalculatedCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningMeaningCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningSizeCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningSpecializedCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "textMiningCategorizeCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "companyLanguageGermanCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "companyLanguageFrenchCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "companyLanguageSpanishCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "companyLanguageOtherCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "offerChangeableCharge",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "productCountMultiplier",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "productOptionsMultiplier",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceCountMultiplier",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceChargingMultiplier",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "supportDifficultyMultiplier",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "contractDifferentMultiplier",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "machineDataSizeMultiplier",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "machineParametersMultiplier",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "companySizeMultiplier",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "generalComplete",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "generalComplete.true",
+        "Text": "true",
+        "VariantList": []
+      },
+      {
+        "Name": "generalComplete.false",
+        "Text": "false",
+        "VariantList": []
+      },
+      {
+        "Name": "price_multipliers",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "price_sums",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "total_price",
+        "Text": "The estimated total price in Euros is:",
+        "VariantList": []
+      },
+      {
+        "Name": "Format.preamble",
+        "Text": "This illustrates a complex pricing system for a software development company.",
+        "VariantList": []
+      },
+      {
+        "Name": " Format.questionHeader",
+        "Text": "Please answer the following:",
+        "VariantList": []
+      },
+      {
+        "Name": "Format.resultHeader",
+        "Text": "Results:",
+        "VariantList": []
+      }
+    ],
+    "DefaultLanguage": ""
+  },
+  "trigger": {
+    "sendEmailSource": "results",
+    "sendEmail": null,
+    "addressSource": "results",
+    "addressText": null,
+    "subjectSource": "results",
+    "subjectText": null,
+    "bodySource": "results",
+    "bodyText": null,
+    "emailFrom": null,
+    "sendAttachmentSource": "results",
+    "sendAttachment": null,
+    "attachmentName": null,
+    "attachmentUri": null,
+    "postDataSource": "results",
+    "postData": null,
+    "postDataUri": null,
+    "postType": "darlvarlist"
+  },
+  "preload": []
+}

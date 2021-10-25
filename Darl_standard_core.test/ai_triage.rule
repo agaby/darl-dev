@@ -1,0 +1,405 @@
+{
+  "darl": "ruleset ai_triage \n{ \n  input categorical analytic {true,false};\n  input categorical rapid_change {true,false};\n  input categorical humans_do_it {true,false};\n  input categorical data_type {vectors,short_text,long_text,images,other};\n  input categorical examples {io,i,sys,assoc,other};\n  input categorical transparency {true, false};\n  input textual email;\n  input textual name;\n  output categorical type {analytic,expert,super,super_whitebox,unsuper,critic_whitebox,critic,nlp,other,assoc,assoc_whitebox,super_nlp};\n  output categorical finished {true,false};\n  \n\n  // Think about adding technology type\n  \n  if (data_type is vectors or data_type is short_text) and analytic is true and rapid_change is false then type will be analytic;\n  if (data_type is vectors or data_type is short_text) and analytic is true and rapid_change is true then type will be expert;\n  if (data_type is vectors or data_type is short_text) and analytic is false and humans_do_it is true then type will be expert;\n  if (data_type is vectors or data_type is short_text) and  analytic is false and humans_do_it is false and examples is io and (transparency is false or data_type is images) then type will be super;\n  if (data_type is vectors or data_type is short_text) and analytic is false and humans_do_it is false and examples is io and transparency is true then type will be super_whitebox;\n  if (data_type is vectors or data_type is short_text) and analytic is false and humans_do_it is false and examples is i  and transparency is false then type will be unsuper;\n  if (data_type is vectors or data_type is short_text) and analytic is false and humans_do_it is false and examples is i  and transparency is true then type will be unsuper_whitebox;\n  if (data_type is vectors or data_type is short_text) and analytic is false and humans_do_it is false and examples is sys and transparency is false then type will be critic;\n  if (data_type is vectors or data_type is short_text) and analytic is false and humans_do_it is false and examples is sys and transparency is true then type will be critic_whitebox;\n  if (data_type is vectors or data_type is short_text) and analytic is false and humans_do_it is false and examples is assoc and transparency is false then type will be assoc;\n  if (data_type is vectors or data_type is short_text) and analytic is false and humans_do_it is false and examples is assoc and transparency is true then type will be assoc_whitebox;\n  if data_type is long_text and analytic is false and examples is io and transparency is true then type will be nlp;\n  if data_type is long_text and analytic is false and examples is io and transparency is false then type will be super_nlp;\n  if data_type is images and examples is io then type will be super;\n  if data_type is images and not examples is io then type will be other;\n  if data_type is long_text and not examples is io then type will be other;\n  otherwise if analytic is false and humans_do_it is false and (examples is other or data_type is other) then type will be other;\n  if type is present and name is present and email is present then finished will be true;\n  \n}",
+  "name": "ai_triage.rule",
+  "version": null,
+  "author": null,
+  "copyright": null,
+  "license": null,
+  "description": null,
+  "format": {
+    "DefaultQuestions": 1,
+    "Edited": false,
+    "InputFormatList": [
+      {
+        "Categories": [
+          "true",
+          "false"
+        ],
+        "Increment": 0,
+        "InType": 1,
+        "MaxLength": 0,
+        "Name": "analytic",
+        "NumericMax": 0,
+        "NumericMin": 0,
+        "Regex": null,
+        "ShowSets": false,
+        "EnforceCrisp": false,
+        "path": null
+      },
+      {
+        "Categories": [
+          "true",
+          "false"
+        ],
+        "Increment": 0,
+        "InType": 1,
+        "MaxLength": 0,
+        "Name": "rapid_change",
+        "NumericMax": 0,
+        "NumericMin": 0,
+        "Regex": null,
+        "ShowSets": false,
+        "EnforceCrisp": false,
+        "path": null
+      },
+      {
+        "Categories": [
+          "true",
+          "false"
+        ],
+        "Increment": 0,
+        "InType": 1,
+        "MaxLength": 0,
+        "Name": "humans_do_it",
+        "NumericMax": 0,
+        "NumericMin": 0,
+        "Regex": null,
+        "ShowSets": false,
+        "EnforceCrisp": false,
+        "path": null
+      },
+      {
+        "Categories": [
+          "vectors",
+          "short_text",
+          "long_text",
+          "images",
+          "other"
+        ],
+        "Increment": 0,
+        "InType": 1,
+        "MaxLength": 0,
+        "Name": "data_type",
+        "NumericMax": 0,
+        "NumericMin": 0,
+        "Regex": null,
+        "ShowSets": false,
+        "EnforceCrisp": false,
+        "path": null
+      },
+      {
+        "Categories": [
+          "io",
+          "i",
+          "sys",
+          "assoc",
+          "other"
+        ],
+        "Increment": 0,
+        "InType": 1,
+        "MaxLength": 0,
+        "Name": "examples",
+        "NumericMax": 0,
+        "NumericMin": 0,
+        "Regex": null,
+        "ShowSets": false,
+        "EnforceCrisp": false,
+        "path": null
+      },
+      {
+        "Categories": [
+          "true",
+          "false"
+        ],
+        "Increment": 0,
+        "InType": 1,
+        "MaxLength": 0,
+        "Name": "transparency",
+        "NumericMax": 0,
+        "NumericMin": 0,
+        "Regex": null,
+        "ShowSets": false,
+        "EnforceCrisp": false,
+        "path": null
+      },
+      {
+        "Categories": [],
+        "Increment": 0,
+        "InType": 2,
+        "MaxLength": 0,
+        "Name": "email",
+        "NumericMax": 0,
+        "NumericMin": 0,
+        "Regex": null,
+        "ShowSets": false,
+        "EnforceCrisp": false,
+        "path": null
+      },
+      {
+        "Categories": [],
+        "Increment": 0,
+        "InType": 2,
+        "MaxLength": 0,
+        "Name": "name",
+        "NumericMax": 0,
+        "NumericMin": 0,
+        "Regex": null,
+        "ShowSets": false,
+        "EnforceCrisp": false,
+        "path": null
+      }
+    ],
+    "OutputFormatList": [
+      {
+        "Hide": true,
+        "Name": "type",
+        "OutputType": 1,
+        "displayType": 1,
+        "ScoreBarColor": null,
+        "ScoreBarMaxVal": 0,
+        "ScoreBarMinVal": 0,
+        "Uncertainty": false,
+        "ValueFormat": null,
+        "path": null
+      },
+      {
+        "Hide": true,
+        "Name": "finished",
+        "OutputType": 1,
+        "displayType": 1,
+        "ScoreBarColor": null,
+        "ScoreBarMaxVal": 0,
+        "ScoreBarMinVal": 0,
+        "Uncertainty": false,
+        "ValueFormat": null,
+        "path": null
+      }
+    ]
+  },
+  "language": {
+    "LanguageList": [
+      {
+        "Name": "analytic",
+        "Text": "Is there already an analytic solution to this problem? For instance an equation, algorithm or set of rules.",
+        "VariantList": []
+      },
+      {
+        "Name": "analytic.true",
+        "Text": "true",
+        "VariantList": []
+      },
+      {
+        "Name": "analytic.false",
+        "Text": "false",
+        "VariantList": []
+      },
+      {
+        "Name": "rapid_change",
+        "Text": "Is this problem subject to rapid change?",
+        "VariantList": []
+      },
+      {
+        "Name": "rapid_change.true",
+        "Text": "true",
+        "VariantList": []
+      },
+      {
+        "Name": "rapid_change.false",
+        "Text": "false",
+        "VariantList": []
+      },
+      {
+        "Name": "humans_do_it",
+        "Text": "Is this problem already solved adequately by humans?",
+        "VariantList": []
+      },
+      {
+        "Name": "humans_do_it.true",
+        "Text": "true",
+        "VariantList": []
+      },
+      {
+        "Name": "humans_do_it.false",
+        "Text": "false",
+        "VariantList": []
+      },
+      {
+        "Name": "data_type",
+        "Text": "what form does your data take?",
+        "VariantList": []
+      },
+      {
+        "Name": "data_type.vectors",
+        "Text": "vectors of numbers and/or labels",
+        "VariantList": []
+      },
+      {
+        "Name": "data_type.short_text",
+        "Text": "short text",
+        "VariantList": []
+      },
+      {
+        "Name": "data_type.long_text",
+        "Text": "long text",
+        "VariantList": []
+      },
+      {
+        "Name": "data_type.images",
+        "Text": "images",
+        "VariantList": []
+      },
+      {
+        "Name": "data_type.other",
+        "Text": "other",
+        "VariantList": []
+      },
+      {
+        "Name": "examples",
+        "Text": "In order to train or test AI we need examples. What form do your examples take, or could take?",
+        "VariantList": []
+      },
+      {
+        "Name": "examples.io",
+        "Text": "input and expected output",
+        "VariantList": []
+      },
+      {
+        "Name": "examples.i",
+        "Text": "Just inputs, no outputs",
+        "VariantList": []
+      },
+      {
+        "Name": "examples.sys",
+        "Text": "a system that needs optimisation",
+        "VariantList": []
+      },
+      {
+        "Name": "examples.assoc",
+        "Text": "a set of items that occur together",
+        "VariantList": []
+      },
+      {
+        "Name": "examples.other",
+        "Text": "other",
+        "VariantList": []
+      },
+      {
+        "Name": "transparency",
+        "Text": "For some applications, if an incorrect prediction or classification is created you have to know why. Is this true here?",
+        "VariantList": []
+      },
+      {
+        "Name": "transparency.true",
+        "Text": "true",
+        "VariantList": []
+      },
+      {
+        "Name": "transparency.false",
+        "Text": "false",
+        "VariantList": []
+      },
+      {
+        "Name": "email",
+        "Text": "What is your email address to send the report to? ",
+        "VariantList": []
+      },
+      {
+        "Name": "name",
+        "Text": "What's your name to go on the report?",
+        "VariantList": []
+      },
+      {
+        "Name": "type",
+        "Text": "Suggested solution type:",
+        "VariantList": []
+      },
+      {
+        "Name": "type.analytic",
+        "Text": "If there is an analytic solution it is almost always better to use it than AI.",
+        "VariantList": []
+      },
+      {
+        "Name": "type.expert",
+        "Text": "This problem seems appropriate for a modern expert system, such as DARL",
+        "VariantList": []
+      },
+      {
+        "Name": "type.super",
+        "Text": "super",
+        "VariantList": []
+      },
+      {
+        "Name": "type.super_whitebox",
+        "Text": "super_whitebox",
+        "VariantList": []
+      },
+      {
+        "Name": "type.unsuper",
+        "Text": "This problem seems appropriate for an unsupervised machine learning tool.",
+        "VariantList": []
+      },
+      {
+        "Name": "type.critic_whitebox",
+        "Text": "critic_whitebox",
+        "VariantList": []
+      },
+      {
+        "Name": "type.critic",
+        "Text": "This problem seems appropriate for a reinforcement machine learning tool.",
+        "VariantList": []
+      },
+      {
+        "Name": "type.nlp",
+        "Text": "nlp",
+        "VariantList": []
+      },
+      {
+        "Name": "type.other",
+        "Text": "There are lots of different tools we can recommend. please contact us.",
+        "VariantList": []
+      },
+      {
+        "Name": "type.assoc",
+        "Text": "assoc",
+        "VariantList": []
+      },
+      {
+        "Name": "type.assoc_whitebox",
+        "Text": "assoc_whitebox",
+        "VariantList": []
+      },
+      {
+        "Name": "type.super_nlp",
+        "Text": "super_nlp",
+        "VariantList": []
+      },
+      {
+        "Name": "finished",
+        "Text": "Finished",
+        "VariantList": []
+      },
+      {
+        "Name": "finished.true",
+        "Text": "true",
+        "VariantList": []
+      },
+      {
+        "Name": "finished.false",
+        "Text": "false",
+        "VariantList": []
+      },
+      {
+        "Name": "Format.preamble",
+        "Text": "This expert system will give you initial advice about the form an AI solution might take.\nThere are a series of questions to answer. By proceeding you give us permission to contact you, from which you can unsubscribe at any time.",
+        "VariantList": []
+      },
+      {
+        "Name": "Format.questionHeader",
+        "Text": "Please answer the following:",
+        "VariantList": []
+      },
+      {
+        "Name": "Format.resultHeader",
+        "Text": "Thanks. Expect an email soon containing your report.",
+        "VariantList": []
+      }
+    ],
+    "DefaultLanguage": "en"
+  },
+  "trigger": null,
+  "preload": null,
+  "imageUrl": null,
+  "price": 0,
+  "currency": "USD",
+  "testData": null
+}

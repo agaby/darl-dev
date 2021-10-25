@@ -1,0 +1,139 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Dr Andy Edmonds</Authors>
+    <Company>Dr Andy's IP Ltd</Company>
+    <Description>A fuzzy rule and text handling library offering machine learning for bots and other applications</Description>
+    <Copyright>(c) 2020, Dr Andy's IP</Copyright>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageLicenseUrl>http://darl.ai/home/terms</PackageLicenseUrl>
+    <PackageProjectUrl>https://www.darl.ai</PackageProjectUrl>
+    <PackageIconUrl>http://www.docandys.com/images/docandy64.png</PackageIconUrl>
+    <PackageTags>AI, Machine learning, Fuzzy Logic</PackageTags>
+    <Version>1.1.6</Version>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <FileVersion>1.1.16.0</FileVersion>
+    <AssemblyVersion>1.1.16.0</AssemblyVersion>
+    <PackageId>Darl_standard</PackageId>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;RELEASE;NETSTANDARD2_0</DefineConstants>
+	<LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+
+
+
+  <ItemGroup>
+    <Compile Remove="Darl.Compiler.Interpreter\Ast\Functions\**" />
+    <Compile Remove="Darl.Compiler.Interpreter\Ast\Statements\**" />
+    <Compile Remove="Darl.Compiler.Interpreter\_Evaluator\**" />
+    <EmbeddedResource Remove="Darl.Compiler.Interpreter\Ast\Functions\**" />
+    <EmbeddedResource Remove="Darl.Compiler.Interpreter\Ast\Statements\**" />
+    <EmbeddedResource Remove="Darl.Compiler.Interpreter\_Evaluator\**" />
+    <None Remove="Darl.Compiler.Interpreter\Ast\Functions\**" />
+    <None Remove="Darl.Compiler.Interpreter\Ast\Statements\**" />
+    <None Remove="Darl.Compiler.Interpreter\_Evaluator\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="AllNode.cs" />
+    <Compile Remove="Darl.Compiler.Interpreter\Ast\Expressions\IfNode.cs" />
+    <Compile Remove="Darl.Compiler.Interpreter\Ast\Expressions\IncDecNode.cs" />
+    <Compile Remove="Darl.Compiler.Interpreter\Ast\Expressions\IndexedAccessNode.cs" />
+    <Compile Remove="Darl.Compiler.Interpreter\Ast\Expressions\MemberAccessNode.cs" />
+    <Compile Remove="Darl.Compiler.Interpreter\Ast\Expressions\UnaryOperationNode.cs" />
+    <Compile Remove="Darl.Compiler.Interpreter\Ast\PrimitiveNodes\LiteralValueNode.cs" />
+    <Compile Remove="Darl.Compiler.Interpreter\Ast\PrimitiveNodes\StringTemplateNode.cs" />
+    <Compile Remove="Darl.Compiler.Interpreter\Ast\SpecialNodes\NullNode.cs" />
+    <Compile Remove="Darl.Compiler.Interpreter\Bindings\BuiltInObjectBinding.cs" />
+    <Compile Remove="Darl.Compiler.Interpreter\Bindings\ClrInteropBindings.cs" />
+    <Compile Remove="Darl.Compiler.Interpreter\Bindings\SpecialFormBinding.cs" />
+    <Compile Remove="Darl.Compiler.Interpreter\ScriptApplication\CommandLine.cs" />
+    <Compile Remove="Darl.Compiler.Interpreter\ScriptApplication\ConsoleAdaptor.cs" />
+    <Compile Remove="Darl.Lineage.Bot\DefaultAnnotation.cs" />
+    <Compile Remove="Darl.Lineage\LineageMatchNode2.cs" />
+    <Compile Remove="Darl.Lineage\LineageMatchNode3.cs" />
+    <Compile Remove="Darl.Lineage\LineageMatchTreeold.cs" />
+    <Compile Remove="Darl.Lineage\LineageModel2.cs" />
+    <Compile Remove="Darl.Lineage\LineageTree.cs" />
+    <Compile Remove="Dasl.Language\DaslEdge.cs" />
+    <Compile Remove="Dasl.Language\DaslGraph.cs" />
+    <Compile Remove="Dasl.Language\DaslParseTreeExtensions.cs" />
+    <Compile Remove="Dasl.Language\DaslVertex.cs" />
+    <Compile Remove="Dasl.TemporalDb\DarlVarExtensions.cs" />
+    <Compile Remove="Datl.Language\WordProcess.cs" />
+    <Compile Remove="Datl.Language\WordProcessSDK.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Darl.Lineage\definitions.csv" />
+    <None Remove="Darl.Lineage\filteredAssociations.csv" />
+    <None Remove="Darl.Lineage\frequency_bigramdictionary_en_243_342.txt" />
+    <None Remove="Darl.Lineage\frequency_dictionary_en_82_765.txt" />
+    <None Remove="Darl.Lineage\words.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Darl.Lineage\definitions.csv" />
+    <EmbeddedResource Include="Darl.Lineage\filteredAssociations.csv" />
+    <EmbeddedResource Include="Darl.Lineage\frequency_bigramdictionary_en_243_342.txt" />
+    <EmbeddedResource Include="Darl.Lineage\frequency_dictionary_en_82_765.txt" />
+    <EmbeddedResource Include="Darl.Lineage\words.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GemBox.Document" Version="31.0.1175" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Services.NuGet.Bootstrap" Version="0.1.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.14" />
+    <PackageReference Include="NuGet.CommandLine" Version="5.11.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="protobuf-net" Version="2.4.6" />
+    <PackageReference Include="Standard.Licensing" Version="1.1.5" />
+    <PackageReference Include="SymSpell" Version="6.7.1" />
+    <PackageReference Include="SyrianBallas.Ported.Chronic.Signed" Version="1.1.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+  
+</Project>

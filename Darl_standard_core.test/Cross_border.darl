@@ -1,0 +1,65 @@
+﻿ruleset cross_border
+{
+  input categorical source_country {"United Kingdom", "Germany", "United States", "Hong Kong"};
+  input categorical dest_country {"United Kingdom", "Germany", "United States", "Hong Kong"};
+  input categorical data_type {normal, personal,sensitive};
+  input categorical business_purpose {"Customer Relationship Management", "Trades and Transactions","Risk and Control", "Audit", "Compliance", "AML"};
+  input categorical personal_condition1 {yes,no};
+  input categorical personal_condition2 {yes,no};
+  input categorical personal_condition3 {yes,no};
+  input categorical personal_condition4 {yes,no};
+  input categorical personal_condition5 {yes,no};
+  input categorical personal_condition6 {yes,no};
+  input textual personal_commentary1;
+  input textual personal_commentary2;
+  input textual personal_commentary3;
+  input textual personal_commentary4;
+  input textual personal_commentary5;
+  input textual personal_commentary6;
+  input categorical sensitive_condition1 {yes,no};
+  input categorical sensitive_condition2 {yes,no};
+  input categorical sensitive_condition3 {yes,no};
+  input categorical sensitive_condition4 {yes,no};
+  input textual proof1;
+  input textual proof2;
+  input textual doc;
+  input textual no_doc;
+  
+  output categorical background_complete {true, false};
+  output categorical transfer_permitted {true, false};
+  output textual commentary;
+  //conditions to get data not yet used in rules
+  if source_country is present and dest_country is present and business_purpose is present then background_complete will be true;
+  //personal conditions
+  if background_complete is true and data_type is normal then transfer_permitted will be true;
+  if background_complete is true and data_type is personal and personal_condition1 is yes and personal_commentary1 is present then transfer_permitted will be true;
+  if background_complete is true and data_type is personal and personal_condition2 is yes and personal_commentary2 is present then transfer_permitted will be true;
+  if background_complete is true and data_type is personal and personal_condition3 is yes and personal_commentary3 is present then transfer_permitted will be true;
+  if background_complete is true and data_type is personal and personal_condition4 is yes and personal_commentary4 is present then transfer_permitted will be true;
+  if background_complete is true and data_type is personal and personal_condition5 is yes and personal_commentary5 is present then transfer_permitted will be true;
+  if background_complete is true and data_type is personal and personal_condition6 is yes and personal_commentary6 is present then transfer_permitted will be true;
+ //sensitive conditions
+  if background_complete is true and data_type is sensitive and sensitive_condition1 is yes and proof1 is present then transfer_permitted will be true;
+  if background_complete is true and data_type is sensitive and sensitive_condition2 is yes and proof2 is present then transfer_permitted will be true;
+  if background_complete is true and data_type is sensitive and sensitive_condition3 is yes then transfer_permitted will be true;
+  if background_complete is true and data_type is sensitive and sensitive_condition4 is yes then transfer_permitted will be true;
+  //negative conditions
+  if background_complete is true 
+    and data_type is personal and 
+    personal_condition1 is no and 
+    personal_condition2 is no and
+    personal_condition3 is no and
+    personal_condition4 is no and
+    personal_condition5 is no and
+    personal_condition6 is no or
+    background_complete is true and
+    data_type is sensitive and 
+    sensitive_condition1 is no and
+    sensitive_condition2 is no and
+    sensitive_condition3 is no and
+    sensitive_condition4 is no
+    then transfer_permitted will be false;
+  //document creation
+  if transfer_permitted is true then commentary will be document(doc,{source_country,dest_country,data_type,business_purpose, personal_condition1, personal_condition2, personal_condition3,personal_condition4,personal_condition5,personal_condition6, personal_commentary1,personal_commentary2,personal_commentary3,personal_commentary4,personal_commentary5,personal_commentary6,sensitive_condition1, sensitive_condition2,sensitive_condition3,sensitive_condition4,proof1,proof2 });
+  if transfer_permitted is false then commentary will be no_doc;
+}

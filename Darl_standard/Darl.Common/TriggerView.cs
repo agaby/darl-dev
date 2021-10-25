@@ -1,0 +1,99 @@
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace DarlCommon
+{
+    /// <summary>
+    /// Decides if a data item is provided from a rule set result or from a fixed value
+    /// </summary>
+    public enum SourceType { results, fixedvalue}
+    /// <summary>
+    /// Decides the format of data sent with a post
+    /// </summary>
+    public enum PostType { darlvarlist, form}
+
+    /// <summary>
+    /// Defines what is executed when a form completes.
+    /// </summary>
+    [Serializable]
+    public class TriggerView
+    {
+        [Display(Name = "Send Email source", Description = "Is the sending of the email determined by the rule set or fixed?")]
+        public SourceType sendEmailSource { get; set; } = SourceType.fixedvalue;
+
+        [Display(Name = "Send Email decision", Description = "The io and category that corresponds to a decision to send the email, or \"true\",\"false\" if fixed.")]
+        public string sendEmail { get; set; } = "false";
+
+        [Display(Name = "Send Bug source", Description = "Is the sending of the bug request determined by the rule set or fixed?")]
+        public SourceType sendBugSource { get; set; } = SourceType.fixedvalue;
+
+        [Display(Name = "Send Bug decision", Description = "The io and category that corresponds to a decision to send the bug request, or \"true\",\"false\" if fixed.")]
+        public string sendBug { get; set; } = "false";
+
+        [Display(Name = "Address source", Description = "Is the email address rule-set generated or fixed?")]
+        public SourceType addressSource { get; set; } = SourceType.fixedvalue;
+
+        [Display(Name = "Address text", Description = "Either the name of textual io or the fixed email address")]
+        public string? addressText { get; set; }
+
+        [Display(Name = "Subject source", Description = "Is the message subject source rule-set generated or fixed?")]
+        public SourceType subjectSource { get; set; } = SourceType.fixedvalue;
+
+        [Display(Name = "Subject text", Description = "Either the name of textual io or the fixed message subject")]
+        public string? subjectText { get; set; }
+ 
+        [Display(Name = "Body source", Description = "Is the message body source rule-set generated or fixed?")]
+        public SourceType bodySource { get; set; } = SourceType.fixedvalue;
+
+        [Display(Name = "Body text", Description = "Either the name of textual io or the fixed message body")]
+        public string? bodyText { get; set; }
+
+        [Display(Name = "Email from", Description = "The from address for the email")]
+        public string? emailFrom { get; set; }
+ 
+        [Display(Name = "send attachment source", Description = "Is the presence of an attachment rule-set generated or fixed?")]
+        public SourceType sendAttachmentSource { get; set; } = SourceType.fixedvalue;
+
+        [Display(Name = "Send attachment decision", Description = "The io and category that corresponds to a decision to add the attachment, or \"true\",\"false\" if fixed.")]
+        public string sendAttachment { get; set; } = "false";
+
+        [Display(Name = "The attachment name", Description = "The name of the attachment in the email")]
+        public string? attachmentName { get; set; }
+
+        [Display(Name = "The attachment uri", Description = "The source of the attachment in blob storage")]
+        public string? attachmentUri{ get; set; }
+ 
+        [Display(Name = "Post data source", Description = "Is the decision to send a POST message rule-set generated or fixed?")]
+        public SourceType postDataSource { get; set; } = SourceType.fixedvalue;
+        /// <summary>
+        /// The io and category that corresponds to a decision to send the POST, or "true","false" if fixed.
+        /// </summary>
+        [Display(Name = "Post data decision", Description = "The io and category that corresponds to a decision to post, or \"true\",\"false\" if fixed.")]
+        public string postData { get; set; } = "false";
+
+        [Display(Name = "The post data uri", Description = "the uri to send the POST data to")]
+        public string? postDataUri { get; set; }
+
+        [Display(Name = "The post data type", Description = "Format sent data as json DarlVar list or as form name value pairs.")]
+        public PostType postType { get; set; } = PostType.darlvarlist;
+
+        [Display(Name = "Queue data source", Description = "Is the decision to send a the data to a queue rule-set generated or fixed?")]
+        public SourceType queueDataSource { get; set; } = SourceType.fixedvalue;
+
+        [Display(Name = "Queue decision", Description = "The io and category that corresponds to a decision to post, or \"true\",\"false\" if fixed.")]
+        public string queueData { get; set; } = "false";
+
+        [Display(Name = "Queue name", Description = "Existing within the Azure storage group accessed by your stored connection string.")]
+        public string? queueName { get; set; }
+
+        [Display(Name = "GraphQL data source", Description = "Is the decision to send a the data to a graphql endpoint rule-set generated or fixed?")]
+        public SourceType graphqlDataSource { get; set; } = SourceType.fixedvalue;
+
+        [Display(Name = "GraphQL decision", Description = "The io and category that corresponds to a decision to post, or \"true\",\"false\" if fixed.")]
+        public string graphqlData { get; set; } = "false";
+
+        [Display(Name = "GraphQL name", Description = "URL of the graphQL endpoint.")]
+        public string? graphqlName { get; set; }
+
+    }
+}

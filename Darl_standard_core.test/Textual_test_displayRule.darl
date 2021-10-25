@@ -1,0 +1,9 @@
+﻿input textual response;
+output categorical completed {true,false} "adjective:5500";
+output textual annotation;
+output categorical correct {true,false} "adjective:3521";
+output textual answer "noun:01,4,05,21,19";
+if response is match attribute("noun:01,4,05,21,19") then correct will be true;
+if anything then answer will be response;
+if response is present then completed will be true;
+if anything then annotation will be attribute("noun:00,1,00,3,10,09,06");

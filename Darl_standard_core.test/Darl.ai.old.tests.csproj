@@ -1,0 +1,253 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="DarlMetaTests.cs" />
+    <Compile Remove="SecurityTest.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="AbsentPresent.darl" />
+    <None Remove="AbsentPresentRuleSet.darl" />
+    <None Remove="Activity_display_rule.darl" />
+    <None Remove="ai_triage.docx" />
+    <None Remove="ai_triage.rule" />
+    <None Remove="Alphamind.darl" />
+    <None Remove="amended.graphml" />
+    <None Remove="Bluewave development pricing.rule" />
+    <None Remove="BluewavePricing.darl" />
+    <None Remove="bot_choice.darl" />
+    <None Remove="brexit.darl" />
+    <None Remove="Categorical_test_displayRuleConstants.darl" />
+    <None Remove="cleve_heart.darl" />
+    <None Remove="cleve_heart.xml" />
+    <None Remove="Cocomo II.rule" />
+    <None Remove="Cross_border.darl" />
+    <None Remove="Cross_border.txt" />
+    <None Remove="Cross_border2.darl" />
+    <None Remove="cross_border2.txt" />
+    <None Remove="Cross_border3.darl" />
+    <None Remove="Cross_border4.darl" />
+    <None Remove="cursus_honorum.graph" />
+    <None Remove="dataschema.json" />
+    <None Remove="data_collection.darl" />
+    <None Remove="data_collection.rf" />
+    <None Remove="discord_bot.graph" />
+    <None Remove="DocumentTestTemplate.txt" />
+    <None Remove="dynamiccategoricalinput.darl" />
+    <None Remove="empty_eu.rule" />
+    <None Remove="EU delayed flight claim.rule" />
+    <None Remove="EUClaim.darl" />
+    <None Remove="EUClaimTemporal.darl" />
+    <None Remove="EUClaimText.txt" />
+    <None Remove="EU_delayed_flight_claim_copy.rule" />
+    <None Remove="example_schema.json" />
+    <None Remove="FirstProg.darl" />
+    <None Remove="GBP_USD.csv" />
+    <None Remove="groceries.csv" />
+    <None Remove="groceries.darl" />
+    <None Remove="groceries.json" />
+    <None Remove="IrisShell.darl" />
+    <None Remove="iris_data.xml" />
+    <None Remove="is_it_using_AI.rule" />
+    <None Remove="left.graphml" />
+    <None Remove="logistic.darl" />
+    <None Remove="LoopProg.darl" />
+    <None Remove="MapTest.darl" />
+    <None Remove="military_service.darl" />
+    <None Remove="military_service.rule" />
+    <None Remove="modern slavery act statement.rule" />
+    <None Remove="modernslavery.darl" />
+    <None Remove="modernslaverytest.docx" />
+    <None Remove="msr_paraphrase_train.txt" />
+    <None Remove="MultipleRuleSet.darl" />
+    <None Remove="MultipleRuleSet2.darl" />
+    <None Remove="Multivibrator.dasl" />
+    <None Remove="NoVar.txt" />
+    <None Remove="NumberLiteral.darl" />
+    <None Remove="NumericOut.darl" />
+    <None Remove="numeric_test_display_rule.darl" />
+    <None Remove="oporder.darl" />
+    <None Remove="Parking appeal UK.rule" />
+    <None Remove="parkingappealnew.docx" />
+    <None Remove="ParkingAppealUK.darl" />
+    <None Remove="ParkrBuildr.darl" />
+    <None Remove="ParkrJob.mdarl" />
+    <None Remove="Personality test.rule" />
+    <None Remove="Personality.darl" />
+    <None Remove="primary_math.graph" />
+    <None Remove="ruleseteditor.darl" />
+    <None Remove="SecondRule.darl" />
+    <None Remove="SequenceParse.darl" />
+    <None Remove="SequenceProg.darl" />
+    <None Remove="sine.darl" />
+    <None Remove="sine.xml" />
+    <None Remove="SiteNavigation.darl" />
+    <None Remove="SiteNavigationSimple.darl" />
+    <None Remove="storedependency.darl" />
+    <None Remove="StoreTest.darl" />
+    <None Remove="temporal.darl" />
+    <None Remove="TestQuestions.txt" />
+    <None Remove="textoutputtest.darl" />
+    <None Remove="texttest.darl" />
+    <None Remove="Textual_test_displayRule.darl" />
+    <None Remove="thousandquestions.model" />
+    <None Remove="thousandquestions2.model" />
+    <None Remove="thousandquestions3.model" />
+    <None Remove="thousandquestions4.model" />
+    <None Remove="thousandquestions5.model" />
+    <None Remove="thousandquestionsold.model" />
+    <None Remove="trading_simulation.darl" />
+    <None Remove="UK Tax and NI.rule" />
+    <None Remove="UKParking_diplomat.txt" />
+    <None Remove="UKParking_hire.txt" />
+    <None Remove="UKParking_hospital.txt" />
+    <None Remove="UKParking_incorrect.txt" />
+    <None Remove="UKParking_missing.txt" />
+    <None Remove="UKParking_ownerbought.txt" />
+    <None Remove="UKParking_ownersold.txt" />
+    <None Remove="UKParking_parkingbay.txt" />
+    <None Remove="UKParking_reg.txt" />
+    <None Remove="UKParking_res.txt" />
+    <None Remove="UKParking_sign_absent.txt" />
+    <None Remove="UKParking_sign_incorrect.txt" />
+    <None Remove="UKParking_stolen.txt" />
+    <None Remove="UKTax.darl" />
+    <None Remove="UK_Tax_NI.rule" />
+    <None Remove="unbalancedclose.txt" />
+    <None Remove="unbalancedopen.txt" />
+    <None Remove="Variables.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="AbsentPresent.darl" />
+    <EmbeddedResource Include="AbsentPresentRuleSet.darl" />
+    <EmbeddedResource Include="Activity_display_rule.darl" />
+    <EmbeddedResource Include="ai_triage.docx" />
+    <EmbeddedResource Include="ai_triage.rule" />
+    <EmbeddedResource Include="Alphamind.darl" />
+    <EmbeddedResource Include="amended.graphml" />
+    <EmbeddedResource Include="Bluewave development pricing.rule" />
+    <EmbeddedResource Include="BluewavePricing.darl" />
+    <EmbeddedResource Include="bot_choice.darl" />
+    <EmbeddedResource Include="brexit.darl" />
+    <EmbeddedResource Include="Categorical_test_displayRuleConstants.darl" />
+    <EmbeddedResource Include="cleve_heart.darl" />
+    <EmbeddedResource Include="cleve_heart.xml" />
+    <EmbeddedResource Include="Cocomo II.rule" />
+    <EmbeddedResource Include="Cross_border.darl" />
+    <EmbeddedResource Include="Cross_border.txt" />
+    <EmbeddedResource Include="Cross_border2.darl" />
+    <EmbeddedResource Include="cross_border2.txt" />
+    <EmbeddedResource Include="Cross_border3.darl" />
+    <EmbeddedResource Include="Cross_border4.darl" />
+    <EmbeddedResource Include="cursus_honorum.graph" />
+    <EmbeddedResource Include="dataschema.json" />
+    <EmbeddedResource Include="data_collection.darl" />
+    <EmbeddedResource Include="data_collection.rf" />
+    <EmbeddedResource Include="discord_bot.graph" />
+    <EmbeddedResource Include="DocumentTestTemplate.txt" />
+    <EmbeddedResource Include="dynamiccategoricalinput.darl" />
+    <EmbeddedResource Include="empty_eu.rule" />
+    <EmbeddedResource Include="EU delayed flight claim.rule" />
+    <EmbeddedResource Include="EUClaim.darl" />
+    <EmbeddedResource Include="EUClaimTemporal.darl" />
+    <EmbeddedResource Include="EUClaimText.txt" />
+    <EmbeddedResource Include="EU_delayed_flight_claim_copy.rule" />
+    <EmbeddedResource Include="example_schema.json" />
+    <EmbeddedResource Include="FirstProg.darl" />
+    <EmbeddedResource Include="GBP_USD.csv" />
+    <EmbeddedResource Include="groceries.csv" />
+    <EmbeddedResource Include="groceries.darl" />
+    <EmbeddedResource Include="groceries.json" />
+    <EmbeddedResource Include="IrisShell.darl" />
+    <EmbeddedResource Include="iris_data.xml" />
+    <EmbeddedResource Include="is_it_using_AI.rule" />
+    <EmbeddedResource Include="left.graphml" />
+    <EmbeddedResource Include="logistic.darl" />
+    <EmbeddedResource Include="LoopProg.darl" />
+    <EmbeddedResource Include="MapTest.darl" />
+    <EmbeddedResource Include="military_service.darl" />
+    <EmbeddedResource Include="military_service.rule" />
+    <EmbeddedResource Include="modern slavery act statement.rule" />
+    <EmbeddedResource Include="modernslavery.darl" />
+    <EmbeddedResource Include="modernslaverytest.docx" />
+    <EmbeddedResource Include="msr_paraphrase_train.txt" />
+    <EmbeddedResource Include="MultipleRuleSet.darl" />
+    <EmbeddedResource Include="MultipleRuleSet2.darl" />
+    <EmbeddedResource Include="Multivibrator.dasl" />
+    <EmbeddedResource Include="NoVar.txt" />
+    <EmbeddedResource Include="NumberLiteral.darl" />
+    <EmbeddedResource Include="NumericOut.darl" />
+    <EmbeddedResource Include="numeric_test_display_rule.darl" />
+    <EmbeddedResource Include="oporder.darl" />
+    <EmbeddedResource Include="Parking appeal UK.rule" />
+    <EmbeddedResource Include="parkingappealnew.docx" />
+    <EmbeddedResource Include="ParkingAppealUK.darl" />
+    <EmbeddedResource Include="ParkrBuildr.darl" />
+    <EmbeddedResource Include="ParkrJob.mdarl" />
+    <EmbeddedResource Include="Personality test.rule" />
+    <EmbeddedResource Include="Personality.darl" />
+    <EmbeddedResource Include="primary_math.graph" />
+    <EmbeddedResource Include="ruleseteditor.darl" />
+    <EmbeddedResource Include="SecondRule.darl" />
+    <EmbeddedResource Include="SequenceParse.darl" />
+    <EmbeddedResource Include="SequenceProg.darl" />
+    <EmbeddedResource Include="sine.darl" />
+    <EmbeddedResource Include="sine.xml" />
+    <EmbeddedResource Include="SiteNavigation.darl" />
+    <EmbeddedResource Include="SiteNavigationSimple.darl" />
+    <EmbeddedResource Include="storedependency.darl" />
+    <EmbeddedResource Include="StoreTest.darl" />
+    <EmbeddedResource Include="temporal.darl" />
+    <EmbeddedResource Include="TestQuestions.txt" />
+    <EmbeddedResource Include="textoutputtest.darl" />
+    <EmbeddedResource Include="texttest.darl" />
+    <EmbeddedResource Include="Categorical_test_displayRule.darl" />
+    <EmbeddedResource Include="Textual_test_displayRule.darl" />
+    <EmbeddedResource Include="thousandquestions.model" />
+    <EmbeddedResource Include="thousandquestions2.model" />
+    <EmbeddedResource Include="thousandquestions3.model" />
+    <EmbeddedResource Include="thousandquestions4.model" />
+    <EmbeddedResource Include="thousandquestions5.model" />
+    <EmbeddedResource Include="thousandquestionsold.model" />
+    <EmbeddedResource Include="trading_simulation.darl" />
+    <EmbeddedResource Include="UK Tax and NI.rule" />
+    <EmbeddedResource Include="UKParking_diplomat.txt" />
+    <EmbeddedResource Include="UKParking_hire.txt" />
+    <EmbeddedResource Include="UKParking_hospital.txt" />
+    <EmbeddedResource Include="UKParking_incorrect.txt" />
+    <EmbeddedResource Include="UKParking_missing.txt" />
+    <EmbeddedResource Include="UKParking_ownerbought.txt" />
+    <EmbeddedResource Include="UKParking_ownersold.txt" />
+    <EmbeddedResource Include="UKParking_parkingbay.txt" />
+    <EmbeddedResource Include="UKParking_reg.txt" />
+    <EmbeddedResource Include="UKParking_res.txt" />
+    <EmbeddedResource Include="UKParking_sign_absent.txt" />
+    <EmbeddedResource Include="UKParking_sign_incorrect.txt" />
+    <EmbeddedResource Include="UKParking_stolen.txt" />
+    <EmbeddedResource Include="UKTax.darl" />
+    <EmbeddedResource Include="UK_Tax_NI.rule" />
+    <EmbeddedResource Include="unbalancedclose.txt" />
+    <EmbeddedResource Include="unbalancedopen.txt" />
+    <EmbeddedResource Include="Variables.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="12.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="Moq" Version="4.13.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+    <PackageReference Include="NJsonSchema" Version="9.13.9" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+    <PackageReference Include="System.IO.MemoryMappedFiles" Version="4.3.0" />
+  </ItemGroup>
+
+</Project>

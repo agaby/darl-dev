@@ -1,0 +1,15 @@
+﻿pattern "//Sine";
+
+ruleset sine supervised
+{
+	input numeric Angle;
+
+	output numeric Sine_of_angle;
+}
+
+mapinput Angle "Angle";
+
+mapoutput Sine_of_angle "Sine_of_angle";
+
+wire Angle sine.Angle;
+wire sine.Sine_of_angle Sine_of_angle;

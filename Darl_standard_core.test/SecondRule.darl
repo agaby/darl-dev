@@ -1,0 +1,16 @@
+﻿ruleset SecondRule
+{
+	constant b 4;
+	constant f 5;
+	string g "hello";
+	input textual d;
+	input numeric a;
+	input numeric c;
+	output categorical bill {poo,wee};
+
+	if a is > b and c is > f then bill will be poo;
+
+	if a is > b or c is > f then bill will be poo;
+
+	if a is > b or c is > f * b then bill will be poo;
+}

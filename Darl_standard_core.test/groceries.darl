@@ -1,0 +1,10 @@
+﻿pattern "$.baskets[*]";
+
+ruleset groceries association
+{
+	input categorical item;
+
+}
+
+mapinput item "items";
+wire item groceries.item;

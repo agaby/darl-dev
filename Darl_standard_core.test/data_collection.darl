@@ -1,0 +1,402 @@
+/* Created by Darl.JsonSchema 04/12/2018. */
+
+ruleset Root 
+{
+	input numeric Id;
+	input textual UniqueKey;
+	input textual Package;
+	input categorical OrderState_complete {true,false};
+	input categorical Checks_complete {true,false};
+	input categorical CheckGroups_complete {true,false};
+	input categorical Candidate_complete {true,false};
+
+	output categorical complete {true,false};
+	if Id is present and UniqueKey is present and Package is present and OrderState_complete is present and Checks_complete is present and CheckGroups_complete is present and Candidate_complete is present then complete will be true;
+}
+
+ruleset OrderState 
+{
+	input textual StateDescription;
+
+	output categorical complete {true,false};
+	if StateDescription is present then complete will be true;
+}
+
+ruleset Checks //multiple
+{
+	input textual CheckType;
+	input textual Id;
+	input categorical CheckState_complete {true,false};
+
+	output categorical complete {true,false};
+	if CheckType is present and Id is present and CheckState_complete is present then complete will be true;
+}
+
+ruleset CheckState 
+{
+	input textual StateDescription;
+
+	output categorical complete {true,false};
+	if StateDescription is present then complete will be true;
+}
+
+ruleset CheckGroups //multiple
+{
+	input textual RefinementIds;
+	input numeric Quantity;
+	input textual VirtualRefinementIds;
+	input textual CheckTypeId;
+	input categorical IsVolunteerEnhancedSelected {true,false};
+	input categorical IsVolunteerStandardSelected {true,false};
+	input textual JobRoleId;
+	input categorical Checks_complete {true,false};
+
+	output categorical complete {true,false};
+	if RefinementIds is present and Quantity is present and VirtualRefinementIds is present and CheckTypeId is present and IsVolunteerEnhancedSelected is present and IsVolunteerStandardSelected is present and JobRoleId is present and Checks_complete is present then complete will be true;
+}
+
+ruleset Candidate 
+{
+	input categorical PreviousNames_complete {true,false};
+	input categorical AddressList_complete {true,false};
+	input categorical CurrentName_complete {true,false};
+	input categorical PersonalInfo_complete {true,false};
+	input categorical Identity_complete {true,false};
+
+	output categorical complete {true,false};
+	if PreviousNames_complete is present and AddressList_complete is present and CurrentName_complete is present and PersonalInfo_complete is present and Identity_complete is present then complete will be true;
+}
+
+ruleset PreviousNames //multiple
+{
+	input textual Title;
+	input textual FirstName;
+	input textual LastName;
+	input textual MiddleNames;
+	input textual FullName;
+	input categorical IsFromBirth {true,false};
+	input textual KnownFromDate;
+	input textual KnownToDate;
+
+	output categorical complete {true,false};
+	if Title is present and FirstName is present and LastName is present and MiddleNames is present and FullName is present and IsFromBirth is present and KnownFromDate is present and KnownToDate is present then complete will be true;
+}
+
+ruleset AddressList //multiple
+{
+	input textual DateMovedToThisAddress;
+	input textual DateLeftThisAddress;
+	input categorical IsCurrentAddress {true,false};
+	input categorical Address_complete {true,false};
+
+	output categorical complete {true,false};
+	if DateMovedToThisAddress is present and DateLeftThisAddress is present and IsCurrentAddress is present and Address_complete is present then complete will be true;
+}
+
+ruleset Address 
+{
+	input textual BusinessName;
+	input textual FlatNumber;
+	input textual HouseNumber;
+	input textual HouseName;
+	input textual StreetName;
+	input textual Locality;
+	input textual Town;
+	input textual County;
+	input textual State;
+	input textual Postcode;
+	input textual AddressString;
+	input textual Country;
+
+	output categorical complete {true,false};
+	if BusinessName is present and FlatNumber is present and HouseNumber is present and HouseName is present and StreetName is present and Locality is present and Town is present and County is present and State is present and Postcode is present and AddressString is present and Country is present then complete will be true;
+}
+
+ruleset CurrentName 
+{
+	input textual Title;
+	input textual FirstName;
+	input textual LastName;
+	input textual MiddleNames;
+	input textual FullName;
+	input categorical IsFromBirth {true,false};
+	input textual KnownFromDate;
+
+	output categorical complete {true,false};
+	if Title is present and FirstName is present and LastName is present and MiddleNames is present and FullName is present and IsFromBirth is present and KnownFromDate is present then complete will be true;
+}
+
+ruleset PersonalInfo 
+{
+	input textual Gender;
+	input textual DateOfBirth;
+	input textual PurchaseOrderNumber;
+	input textual OtherReference;
+	input textual PositionAppliedFor;
+	input textual ApplicantNotes;
+	input categorical FSAApproved {true,false};
+	input categorical HasValidDrivingLicense {true,false};
+	input textual ApplicantType;
+	input textual CurrentNationality;
+	input textual VisaNationality;
+	input textual BirthCertificateCountry;
+	input textual EUNationalIdCardCountry;
+	input textual CandidateEmail;
+	input textual BirthCertficationNumber;
+	input textual MotherMaidenName;
+	input textual NationalityAtBirth;
+	input textual CountryOfBirth;
+	input textual TownOfBirth;
+	input categorical MobilePhone_complete {true,false};
+	input categorical HomePhone_complete {true,false};
+
+	output categorical complete {true,false};
+	if Gender is present and DateOfBirth is present and PurchaseOrderNumber is present and OtherReference is present and PositionAppliedFor is present and ApplicantNotes is present and FSAApproved is present and HasValidDrivingLicense is present and ApplicantType is present and CurrentNationality is present and VisaNationality is present and BirthCertificateCountry is present and EUNationalIdCardCountry is present and CandidateEmail is present and BirthCertficationNumber is present and MotherMaidenName is present and NationalityAtBirth is present and CountryOfBirth is present and TownOfBirth is present and MobilePhone_complete is present and HomePhone_complete is present then complete will be true;
+}
+
+ruleset MobilePhone 
+{
+	input textual PhoneNumber;
+	input textual CountryCode;
+
+	output categorical complete {true,false};
+	if PhoneNumber is present and CountryCode is present then complete will be true;
+}
+
+ruleset HomePhone 
+{
+	input textual PhoneNumber;
+	input textual CountryCode;
+
+	output categorical complete {true,false};
+	if PhoneNumber is present and CountryCode is present then complete will be true;
+}
+
+ruleset Identity 
+{
+	input categorical PassportDocument_complete {true,false};
+	input categorical DrivingDocument_complete {true,false};
+	input categorical NationalInsuranceNumberDocument_complete {true,false};
+
+	output categorical complete {true,false};
+	if PassportDocument_complete is present and DrivingDocument_complete is present and NationalInsuranceNumberDocument_complete is present then complete will be true;
+}
+
+ruleset PassportDocument 
+{
+	input textual PassportIssuingCountry;
+	input textual PassportNumber;
+	input textual PassportIssueDate;
+	input textual PassportExpiryDate;
+
+	output categorical complete {true,false};
+	if PassportIssuingCountry is present and PassportNumber is present and PassportIssueDate is present and PassportExpiryDate is present then complete will be true;
+}
+
+ruleset DrivingDocument 
+{
+	input textual DriverLicenseType;
+	input textual DriverLicenseIssuingCountry;
+	input textual DriverLicenseNumber;
+	input textual DriverLicenseDate;
+
+	output categorical complete {true,false};
+	if DriverLicenseType is present and DriverLicenseIssuingCountry is present and DriverLicenseNumber is present and DriverLicenseDate is present then complete will be true;
+}
+
+ruleset NationalInsuranceNumberDocument 
+{
+	input textual NationalInsuranceNumber;
+	input categorical OverseasIdentityNumber_complete {true,false};
+
+	output categorical complete {true,false};
+	if NationalInsuranceNumber is present and OverseasIdentityNumber_complete is present then complete will be true;
+}
+
+ruleset OverseasIdentityNumber 
+{
+	input textual IssuingCountry;
+	input textual IdentityNumber;
+
+	output categorical complete {true,false};
+	if IssuingCountry is present and IdentityNumber is present then complete will be true;
+}
+
+mapoutput Root_complete;
+
+mapinput Root_Id;
+mapinput Root_UniqueKey;
+mapinput Root_Package;
+mapinput OrderState_StateDescription;
+mapinput Checks_CheckType;
+mapinput Checks_Id;
+mapinput CheckState_StateDescription;
+mapinput CheckGroups_RefinementIds;
+mapinput CheckGroups_Quantity;
+mapinput CheckGroups_VirtualRefinementIds;
+mapinput CheckGroups_CheckTypeId;
+mapinput CheckGroups_IsVolunteerEnhancedSelected;
+mapinput CheckGroups_IsVolunteerStandardSelected;
+mapinput CheckGroups_JobRoleId;
+mapinput PreviousNames_Title;
+mapinput PreviousNames_FirstName;
+mapinput PreviousNames_LastName;
+mapinput PreviousNames_MiddleNames;
+mapinput PreviousNames_FullName;
+mapinput PreviousNames_IsFromBirth;
+mapinput PreviousNames_KnownFromDate;
+mapinput PreviousNames_KnownToDate;
+mapinput AddressList_DateMovedToThisAddress;
+mapinput AddressList_DateLeftThisAddress;
+mapinput AddressList_IsCurrentAddress;
+mapinput Address_BusinessName;
+mapinput Address_FlatNumber;
+mapinput Address_HouseNumber;
+mapinput Address_HouseName;
+mapinput Address_StreetName;
+mapinput Address_Locality;
+mapinput Address_Town;
+mapinput Address_County;
+mapinput Address_State;
+mapinput Address_Postcode;
+mapinput Address_AddressString;
+mapinput Address_Country;
+mapinput CurrentName_Title;
+mapinput CurrentName_FirstName;
+mapinput CurrentName_LastName;
+mapinput CurrentName_MiddleNames;
+mapinput CurrentName_FullName;
+mapinput CurrentName_IsFromBirth;
+mapinput CurrentName_KnownFromDate;
+mapinput PersonalInfo_Gender;
+mapinput PersonalInfo_DateOfBirth;
+mapinput PersonalInfo_PurchaseOrderNumber;
+mapinput PersonalInfo_OtherReference;
+mapinput PersonalInfo_PositionAppliedFor;
+mapinput PersonalInfo_ApplicantNotes;
+mapinput PersonalInfo_FSAApproved;
+mapinput PersonalInfo_HasValidDrivingLicense;
+mapinput PersonalInfo_ApplicantType;
+mapinput PersonalInfo_CurrentNationality;
+mapinput PersonalInfo_VisaNationality;
+mapinput PersonalInfo_BirthCertificateCountry;
+mapinput PersonalInfo_EUNationalIdCardCountry;
+mapinput PersonalInfo_CandidateEmail;
+mapinput PersonalInfo_BirthCertficationNumber;
+mapinput PersonalInfo_MotherMaidenName;
+mapinput PersonalInfo_NationalityAtBirth;
+mapinput PersonalInfo_CountryOfBirth;
+mapinput PersonalInfo_TownOfBirth;
+mapinput MobilePhone_PhoneNumber;
+mapinput MobilePhone_CountryCode;
+mapinput HomePhone_PhoneNumber;
+mapinput HomePhone_CountryCode;
+mapinput PassportDocument_PassportIssuingCountry;
+mapinput PassportDocument_PassportNumber;
+mapinput PassportDocument_PassportIssueDate;
+mapinput PassportDocument_PassportExpiryDate;
+mapinput DrivingDocument_DriverLicenseType;
+mapinput DrivingDocument_DriverLicenseIssuingCountry;
+mapinput DrivingDocument_DriverLicenseNumber;
+mapinput DrivingDocument_DriverLicenseDate;
+mapinput NationalInsuranceNumberDocument_NationalInsuranceNumber;
+mapinput OverseasIdentityNumber_IssuingCountry;
+mapinput OverseasIdentityNumber_IdentityNumber;
+
+wire Root.complete Root_complete;
+wire Root_Id Root.Id;
+wire Root_UniqueKey Root.UniqueKey;
+wire Root_Package Root.Package;
+wire OrderState_StateDescription OrderState.StateDescription;
+wire Checks_CheckType Checks.CheckType;
+wire Checks_Id Checks.Id;
+wire CheckState_StateDescription CheckState.StateDescription;
+wire CheckGroups_RefinementIds CheckGroups.RefinementIds;
+wire CheckGroups_Quantity CheckGroups.Quantity;
+wire CheckGroups_VirtualRefinementIds CheckGroups.VirtualRefinementIds;
+wire CheckGroups_CheckTypeId CheckGroups.CheckTypeId;
+wire CheckGroups_IsVolunteerEnhancedSelected CheckGroups.IsVolunteerEnhancedSelected;
+wire CheckGroups_IsVolunteerStandardSelected CheckGroups.IsVolunteerStandardSelected;
+wire CheckGroups_JobRoleId CheckGroups.JobRoleId;
+wire PreviousNames_Title PreviousNames.Title;
+wire PreviousNames_FirstName PreviousNames.FirstName;
+wire PreviousNames_LastName PreviousNames.LastName;
+wire PreviousNames_MiddleNames PreviousNames.MiddleNames;
+wire PreviousNames_FullName PreviousNames.FullName;
+wire PreviousNames_IsFromBirth PreviousNames.IsFromBirth;
+wire PreviousNames_KnownFromDate PreviousNames.KnownFromDate;
+wire PreviousNames_KnownToDate PreviousNames.KnownToDate;
+wire AddressList_DateMovedToThisAddress AddressList.DateMovedToThisAddress;
+wire AddressList_DateLeftThisAddress AddressList.DateLeftThisAddress;
+wire AddressList_IsCurrentAddress AddressList.IsCurrentAddress;
+wire Address_BusinessName Address.BusinessName;
+wire Address_FlatNumber Address.FlatNumber;
+wire Address_HouseNumber Address.HouseNumber;
+wire Address_HouseName Address.HouseName;
+wire Address_StreetName Address.StreetName;
+wire Address_Locality Address.Locality;
+wire Address_Town Address.Town;
+wire Address_County Address.County;
+wire Address_State Address.State;
+wire Address_Postcode Address.Postcode;
+wire Address_AddressString Address.AddressString;
+wire Address_Country Address.Country;
+wire CurrentName_Title CurrentName.Title;
+wire CurrentName_FirstName CurrentName.FirstName;
+wire CurrentName_LastName CurrentName.LastName;
+wire CurrentName_MiddleNames CurrentName.MiddleNames;
+wire CurrentName_FullName CurrentName.FullName;
+wire CurrentName_IsFromBirth CurrentName.IsFromBirth;
+wire CurrentName_KnownFromDate CurrentName.KnownFromDate;
+wire PersonalInfo_Gender PersonalInfo.Gender;
+wire PersonalInfo_DateOfBirth PersonalInfo.DateOfBirth;
+wire PersonalInfo_PurchaseOrderNumber PersonalInfo.PurchaseOrderNumber;
+wire PersonalInfo_OtherReference PersonalInfo.OtherReference;
+wire PersonalInfo_PositionAppliedFor PersonalInfo.PositionAppliedFor;
+wire PersonalInfo_ApplicantNotes PersonalInfo.ApplicantNotes;
+wire PersonalInfo_FSAApproved PersonalInfo.FSAApproved;
+wire PersonalInfo_HasValidDrivingLicense PersonalInfo.HasValidDrivingLicense;
+wire PersonalInfo_ApplicantType PersonalInfo.ApplicantType;
+wire PersonalInfo_CurrentNationality PersonalInfo.CurrentNationality;
+wire PersonalInfo_VisaNationality PersonalInfo.VisaNationality;
+wire PersonalInfo_BirthCertificateCountry PersonalInfo.BirthCertificateCountry;
+wire PersonalInfo_EUNationalIdCardCountry PersonalInfo.EUNationalIdCardCountry;
+wire PersonalInfo_CandidateEmail PersonalInfo.CandidateEmail;
+wire PersonalInfo_BirthCertficationNumber PersonalInfo.BirthCertficationNumber;
+wire PersonalInfo_MotherMaidenName PersonalInfo.MotherMaidenName;
+wire PersonalInfo_NationalityAtBirth PersonalInfo.NationalityAtBirth;
+wire PersonalInfo_CountryOfBirth PersonalInfo.CountryOfBirth;
+wire PersonalInfo_TownOfBirth PersonalInfo.TownOfBirth;
+wire MobilePhone_PhoneNumber MobilePhone.PhoneNumber;
+wire MobilePhone_CountryCode MobilePhone.CountryCode;
+wire HomePhone_PhoneNumber HomePhone.PhoneNumber;
+wire HomePhone_CountryCode HomePhone.CountryCode;
+wire PassportDocument_PassportIssuingCountry PassportDocument.PassportIssuingCountry;
+wire PassportDocument_PassportNumber PassportDocument.PassportNumber;
+wire PassportDocument_PassportIssueDate PassportDocument.PassportIssueDate;
+wire PassportDocument_PassportExpiryDate PassportDocument.PassportExpiryDate;
+wire DrivingDocument_DriverLicenseType DrivingDocument.DriverLicenseType;
+wire DrivingDocument_DriverLicenseIssuingCountry DrivingDocument.DriverLicenseIssuingCountry;
+wire DrivingDocument_DriverLicenseNumber DrivingDocument.DriverLicenseNumber;
+wire DrivingDocument_DriverLicenseDate DrivingDocument.DriverLicenseDate;
+wire NationalInsuranceNumberDocument_NationalInsuranceNumber NationalInsuranceNumberDocument.NationalInsuranceNumber;
+wire OverseasIdentityNumber_IssuingCountry OverseasIdentityNumber.IssuingCountry;
+wire OverseasIdentityNumber_IdentityNumber OverseasIdentityNumber.IdentityNumber;
+wire OrderState.complete Root.OrderState_complete;
+wire Checks.complete Root.Checks_complete;
+wire CheckGroups.complete Root.CheckGroups_complete;
+wire Candidate.complete Root.Candidate_complete;
+wire CheckState.complete Checks.CheckState_complete;
+wire Checks.complete CheckGroups.Checks_complete;
+wire PreviousNames.complete Candidate.PreviousNames_complete;
+wire AddressList.complete Candidate.AddressList_complete;
+wire CurrentName.complete Candidate.CurrentName_complete;
+wire PersonalInfo.complete Candidate.PersonalInfo_complete;
+wire Identity.complete Candidate.Identity_complete;
+wire Address.complete AddressList.Address_complete;
+wire MobilePhone.complete PersonalInfo.MobilePhone_complete;
+wire HomePhone.complete PersonalInfo.HomePhone_complete;
+wire PassportDocument.complete Identity.PassportDocument_complete;
+wire DrivingDocument.complete Identity.DrivingDocument_complete;
+wire NationalInsuranceNumberDocument.complete Identity.NationalInsuranceNumberDocument_complete;
+wire OverseasIdentityNumber.complete NationalInsuranceNumberDocument.OverseasIdentityNumber_complete;

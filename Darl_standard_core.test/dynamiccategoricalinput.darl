@@ -1,0 +1,11 @@
+﻿ruleset dci
+{
+	store Graph;
+
+	input dynamic categorical  dyn Graph["categories","", "", ""];
+
+	output categorical choice {true,false};
+
+	if dyn is present then choice will be true;
+
+}

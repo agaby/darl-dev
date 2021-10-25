@@ -1,0 +1,75 @@
+﻿ruleset UKParkingAppeal
+{
+  input categorical grounds {res,parkingbay,stolen,hospital,ownershipbought,ownershipsold,diplomat,reg,missing,incorrect,hire,sign};
+  input textual name;
+  input textual ticket_number;
+  input textual time_of_ticket;
+  input textual reg_number;
+  input textual summary_of_offence;
+  input textual permit_number;
+  input textual council;
+  input textual time_of_arrival;
+  input textual incorrect_date;
+  input textual correct_date;
+  input textual street_name;
+  input numeric bay_width;
+  input textual date_of_ticket;
+  input textual date_of_theft;
+  input textual police_station;
+  input textual crime_reference;
+  input textual date_of_report;
+  input textual hospital_name;
+  input textual hospital_address;
+  input textual hospital_postcode;
+  input textual medical_emergency;
+  input textual patient;
+  input textual previous_owner;
+  input textual previous_address;
+  input textual previous_postcode;
+  input textual date_of_purchase;
+  input textual subsequent_owner;
+  input textual subsequent_address;
+  input textual subsequent_postcode;
+  input textual date_of_sale;
+  input textual country;
+  input textual embassy_address;
+  input textual embassy_postcode;
+  input categorical ticket_type {parking,congestion};
+  input textual incorrect_reg;
+  input categorical missing_detail {reason,size,date,name,registration,reminder,pay,appeal,reduced,owner,address};
+  input categorical incorrect_detail{reason,size,date,name,registration,reminder,pay,appeal,reduced,owner,address};
+  input textual incorrect_text;
+  input textual correct_text;
+  input textual date_of_hire;
+  input textual renter_name;
+  input textual renter_address;
+  input textual renter_postcode;
+  input categorical signage_fault {contradictory,absent_unclear};
+  input textual sign_1_meaning;
+  input textual sign_2_meaning;
+  input categorical sign_relation {above,next,one_metre,opposite,same_road,round_corner,nearby};
+  input textual docText;
+  
+  output categorical complete {true,false};
+  output categorical common_complete {true,false}; //common fields for every choice
+  output textual doc;
+  
+  //general conditions
+  if name is present and ticket_number is present and date_of_ticket is present and time_of_ticket is present and reg_number is present and council is present then common_complete will be true;
+  //specific rules
+  if grounds is res and common_complete is true and permit_number is present and time_of_arrival is present and incorrect_date is present and correct_date is present then complete will be true;
+  if grounds is parkingbay and bay_width is < 180 and common_complete is true and street_name is present then complete will be true;
+  if grounds is stolen and common_complete is true and date_of_theft is present and police_station is present and crime_reference is present and date_of_report is present then complete will be true;
+  if grounds is hospital and common_complete is true and hospital_address is present and hospital_name is present and hospital_postcode is present and medical_emergency is present and patient is present then complete will be true;
+  if grounds is ownershipbought and common_complete is true and previous_owner is present and previous_address is present and previous_postcode is present and date_of_purchase is present then complete will be true;
+  if grounds is ownershipsold and common_complete is true and subsequent_owner is present and subsequent_address is present and subsequent_postcode is present and date_of_sale is present then complete will be true;
+  if grounds is diplomat and common_complete is true and country is present and embassy_address is present and embassy_postcode is present and ticket_type is parking or ticket_type is congestion then complete will be true;
+  if grounds is reg and common_complete is true and incorrect_reg is present and time_of_arrival is present then complete will be true;
+  if grounds is missing and common_complete is true and missing_detail is present and summary_of_offence is present then complete will be true;
+  if grounds is incorrect and common_complete is true and incorrect_detail is present and correct_text is present and incorrect_text is present and summary_of_offence is present then complete will be true;
+  if grounds is hire and common_complete is true and date_of_hire is present and renter_name is present and renter_address is present and renter_postcode is present then complete will be true;
+  if grounds is sign and signage_fault is contradictory and street_name is present and sign_1_meaning is present and sign_2_meaning is present and sign_relation is present and summary_of_offence is present then complete will be true;
+  if grounds is sign and signage_fault is absent_unclear and street_name is present and summary_of_offence is present then complete will be true;
+  //generate the appropriate text.
+  if complete is true then doc will be document(docText,{grounds,name,ticket_number,reg_number,summary_of_offence,permit_number,council,time_of_arrival,incorrect_date,correct_date,street_name,bay_width,date_of_ticket,date_of_theft,police_station,crime_reference,date_of_report,hospital_name,hospital_address,hospital_postcode,medical_emergency,patient,previous_owner,previous_address,previous_postcode,date_of_purchase,subsequent_owner,subsequent_address,subsequent_postcode,date_of_sale,country,embassy_address,embassy_postcode,ticket_type,incorrect_reg,missing_detail,incorrect_detail,incorrect_text,correct_text,date_of_hire,renter_name,renter_address,renter_postcode,signage_fault,sign_1_meaning,sign_2_meaning,sign_relation,complete,common_complete,time_of_ticket});
+}

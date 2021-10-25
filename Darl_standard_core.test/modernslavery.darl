@@ -1,0 +1,88 @@
+﻿ruleset modernslavery
+{
+  input categorical mspolicyexists {yes,no};
+  input categorical mspolicysteps {yes,no};
+  input categorical mssupchainexists {yes,no};
+  input categorical mssupchainsteps {yes,no};
+  input categorical low_risk {yes,no};
+  input categorical policystartknown {yes,no};
+  input textual mspolicystartdate;
+  input categorical companyType {manufacturer,service};
+  input textual serviceType;
+  input textual manufactures;
+  input textual sectors;
+  input categorical part_of_group {yes,no};
+  input textual parent_company;
+  input textual parent_domicile;
+  input numeric employees;
+  input categorical describe_int_trade {country_list,region_list,countrycount,none};
+  input textual operating_countries;
+  input textual regions;
+  input numeric countrycount;
+  input numeric turnover;
+  input textual email;
+  
+  input categorical business_organization {count_and_names,description};
+  input numeric business_unit_count;
+  input textual business_unit_description;
+  input textual business_organization_description;
+  
+  input textual supply_chain_description;
+  input categorical supply_chain_extensive {yes,no};
+  input textual supply_chain_extension;
+  input textual mspolicylink;
+  input textual social_policy_link;
+  input textual general_due_diligence;
+  input categorical ddrisk {yes,no};
+  input categorical ddmitigate {yes,no};
+  input categorical ddmonitor {yes,no};
+  input categorical ddwb {yes,no};
+  input categorical supaddZT {yes,no};
+  input categorical supaddcompliance {yes,no};
+  input categorical supaddrigorous {yes,no};
+  input categorical supaddIntolerance {ethics,values,both};
+  input textual supaddcomplianceoutline;
+  input categorical compliance_team {yes,no};
+  input categorical compliance_legal {yes,no};
+  input categorical compliance_audit {yes,no};
+  input categorical compliance_hr {yes,no};
+  input categorical compliance_procurement {yes,no};
+  input categorical compliance_sales {yes,no};
+  input categorical compliance_other {yes,no};
+  input textual compliance_other_desc;
+  input categorical training {yes,no};
+  input categorical partners_training {yes,no};
+  input categorical effectiveness_KPIs  {yes,no};
+  input categorical thirdparty  {yes,no};
+  input textual KPI_list;
+  input textual thirdparty_name;
+  input categorical effectiveness_review  {yes,no};
+  input categorical thisyear  {yes,no};
+  input textual furthersteps;
+  input textual financial_year_end;
+  input textual signer;
+  input categorical signer_role {director,member,general_partner,partner};
+  input textual organization_name;                              
+  
+  output categorical general_complete {true,false};
+  output categorical intro_section {A1,A2,A3,B1,B2,B3,C,D,E1};
+    
+  //catch stuff needed for minimum output
+  if mspolicyexists is present and mspolicysteps is present and mssupchainexists is present
+    and mssupchainsteps is present and part_of_group is present
+    and email is present
+    and financial_year_end is present and signer is present and signer_role is present 
+    and organization_name is present and low_risk is present
+    then general_complete will be true;
+  
+  if general_complete is true and low_risk is yes then intro_section will be C;
+  if general_complete is true and low_risk is no and mspolicyexists is no and mspolicysteps is no then intro_section will be D;
+  if general_complete is true and low_risk is no and mspolicyexists is no and mssupchainexists is no and mspolicysteps is yes then intro_section will be A1;
+  if general_complete is true and low_risk is no and mspolicyexists is yes and mssupchainexists is no and mspolicysteps is no then intro_section will be A2;
+  if general_complete is true and low_risk is no and mspolicyexists is yes and mssupchainexists is no and mspolicysteps is yes then intro_section will be A3;
+  if general_complete is true and low_risk is no and mspolicyexists is no and mssupchainexists is yes and mspolicysteps is yes and mssupchainsteps is no then intro_section will be B1;
+  if general_complete is true and low_risk is no and mspolicyexists is yes and mssupchainexists is yes and mspolicysteps is no and mssupchainsteps is no then intro_section will be B2;
+  if general_complete is true and low_risk is no and mspolicyexists is yes and mssupchainexists is yes and mspolicysteps is yes and mssupchainsteps is no then intro_section will be B3;
+  if general_complete is true and low_risk is no and mspolicyexists is yes and mssupchainexists is yes and mspolicysteps is yes and mssupchainsteps is yes and policystartknown is yes and mspolicystartdate is present then intro_section will be E;
+  if general_complete is true and low_risk is no and mspolicyexists is yes and mssupchainexists is yes and mspolicysteps is yes and mssupchainsteps is yes and policystartknown is no then intro_section will be E;
+}

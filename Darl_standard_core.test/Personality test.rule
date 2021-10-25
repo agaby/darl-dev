@@ -1,0 +1,2283 @@
+{
+  "darl": "    ruleset EPQ\r\n    {\r\n    //Input definitions\r\n    input numeric item1  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item2  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item3  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item4  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item5  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item6  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item7  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item8  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item9  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item10  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item11  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item12  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item13  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item14  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item15  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item16  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item17  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item18  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item19  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item20  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item21  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item22  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item23  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item24  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item25  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item26  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item27  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item28  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item29  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item30  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item31  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item32  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item33  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item34  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item35  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item36  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item37  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item38  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item39  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item40  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item41  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item42  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item43  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item44  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item45  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item46  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item47  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item48  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item49  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item50  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item51  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item52  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item53  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item54  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item56  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item57  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item58  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item59  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item60  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item61  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item62  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item63  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item64  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item65  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item66  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item67  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item68  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item69  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item70  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item71  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item72  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item73  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item74  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item75  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item76  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item77  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item78  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item79  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item80  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item81  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item82  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item83  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item84  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item85  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item86  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item87  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item88  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item89  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item90  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item91  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item92  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item93  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item94  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item95  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item96  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item97  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item98  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item99  {{no , 1.000, 1.000, 1.000}, {yes , 0.000, 0.000, 0.000}};\r\n    input numeric item100  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric item55  {{no , 0.000, 0.000, 0.000}, {yes , 1.000, 1.000, 1.000}};\r\n    input numeric Age  {{medium , 16.000, 45.000, 70.000}};\r\n    input categorical Gender  {male, female};\r\n    //Output definitions\r\n    output numeric RawP;\r\n    output numeric RawE;\r\n    output numeric RawN;\r\n    output numeric RawL;\r\n    output numeric NormedP;\r\n    output numeric NormedE;\r\n    output numeric NormedN;\r\n    output numeric NormedL;\r\n    //numeric constant definitions\r\n    constant PAveMale16_20 9.57;\r\n    constant PSDMale16_20 5.26;\r\n    constant PAveMale21_30 8.65;\r\n    constant PSDMale21_30 4.56;\r\n    constant PAveMale31_40 6.69;\r\n    constant PSDMale31_40 3.58;\r\n    constant PAveMale41_50 7.00;\r\n    constant PSDMale41_50 4.65;\r\n    constant PAveMale51_60 5.28;\r\n    constant PSDMale51_60 3.59;\r\n    constant PAveMale61_70 4.87;\r\n    constant PSDMale61_70 3.55;\r\n    constant PAveFemale16_20 7.06;\r\n    constant PSDFemale16_20 4.11;\r\n    constant PAveFemale21_30 6.20;\r\n    constant PSDFemale21_30 3.86;\r\n    constant PAveFemale31_40 5.87;\r\n    constant PSDFemale31_40 3.72;\r\n    constant PAveFemale41_50 4.62;\r\n    constant PSDFemale41_50 3.05;\r\n    constant PAveFemale51_60 4.05;\r\n    constant PSDFemale51_60 3.21;\r\n    constant PAveFemale61_70 4.19;\r\n    constant PSDFemale61_70 3.26;\r\n    constant EAveMale16_20 15.97;\r\n    constant ESDMale16_20 5.26;\r\n    constant EAveMale21_30 14.50;\r\n    constant ESDMale21_30 5.64;\r\n    constant EAveMale31_40 11.92;\r\n    constant ESDMale31_40 5.67;\r\n    constant EAveMale41_50 11.91;\r\n    constant ESDMale41_50 5.09;\r\n    constant EAveMale51_60 8.94;\r\n    constant ESDMale51_60 5.75;\r\n    constant EAveMale61_70 8.68;\r\n    constant ESDMale61_70 5.71;\r\n    constant EAveFemale16_20 15.47;\r\n    constant ESDFemale16_20 4.99;\r\n    constant EAveFemale21_30 14.17;\r\n    constant ESDFemale21_30 4.68;\r\n    constant EAveFemale31_40 13.55;\r\n    constant ESDFemale31_40 4.93;\r\n    constant EAveFemale41_50 12.36;\r\n    constant ESDFemale41_50 4.95;\r\n    constant EAveFemale51_60 13.62;\r\n    constant ESDFemale51_60 5.47;\r\n    constant EAveFemale61_70 12.15;\r\n    constant ESDFemale61_70 5.08;\r\n    constant NAveMale16_20 11.12;\r\n    constant NSDMale16_20 5.68;\r\n    constant NAveMale21_30 11.08;\r\n    constant NSDMale21_30 5.37;\r\n    constant NAveMale31_40 11.92;\r\n    constant NSDMale31_40 5.70;\r\n    constant NAveMale41_50 11.22;\r\n    constant NSDMale41_50 5.95;\r\n    constant NAveMale51_60 9.43;\r\n    constant NSDMale51_60 6.27;\r\n    constant NAveMale61_70 8.32;\r\n    constant NSDMale61_70 5.07;\r\n    constant NAveFemale16_20 14.03;\r\n    constant NSDFemale16_20 4.85;\r\n    constant NAveFemale21_30 12.53;\r\n    constant NSDFemale21_30 4.78;\r\n    constant NAveFemale31_40 11.71;\r\n    constant NSDFemale31_40 4.94;\r\n    constant NAveFemale41_50 10.94;\r\n    constant NSDFemale41_50 5.92;\r\n    constant NAveFemale51_60 11.31;\r\n    constant NSDFemale51_60 5.36;\r\n    constant NAveFemale61_70 9.98;\r\n    constant NSDFemale61_70 5.51;\r\n    constant LAveMale16_20 5.37;\r\n    constant LSDMale16_20 4.18;\r\n    constant LAveMale21_30 5.53;\r\n    constant LSDMale21_30 3.39;\r\n    constant LAveMale31_40 6.66;\r\n    constant LSDMale31_40 3.59;\r\n    constant LAveMale41_50 7.04;\r\n    constant LSDMale41_50 3.87;\r\n    constant LAveMale51_60 9.14;\r\n    constant LSDMale51_60 4.29;\r\n    constant LAveMale61_70 10.05;\r\n    constant LSDMale61_70 3.65;\r\n    constant LAveFemale16_20 5.45;\r\n    constant LSDFemale16_20 3.25;\r\n    constant LAveFemale21_30 6.33;\r\n    constant LSDFemale21_30 3.82;\r\n    constant LAveFemale31_40 6.79;\r\n    constant LSDFemale31_40 3.74;\r\n    constant LAveFemale41_50 8.02;\r\n    constant LSDFemale41_50 3.88;\r\n    constant LAveFemale51_60 8.82;\r\n    constant LSDFemale51_60 3.97;\r\n    constant LAveFemale61_70 11.2;\r\n    constant LSDFemale61_70 3.09;\r\n    //string constant definitions\r\n    //Rule definitions\r\n    if anything then RawE will be sum( item1 , item6 , item11 , item16 , item20 , item28 , item36 , item40 , item45 , item51 , item55 , item58 , item61 , item63 , item67 , item69 , item72 , item78 , item90 , item94 , item24 , item33 , item47 ) confidence 1.00;\r\n    if anything then RawP will be sum( item25 , item29 , item30 , item34 , item37 , item42 , item48 , item50 , item56 , item73 , item75 , item91 , item95 , item2 , item5 , item7 , item9 , item12 , item14 , item18 , item21 , item41 , item54 , item59 , item64 , item68 , item79 , item81 , item85 , item88 , item96 , item99 ) confidence 1.00;\r\n    if anything then RawN will be sum( item3 , item8 , item13 , item17 , item22 , item26 , item31 , item35 , item38 , item43 , item46 , item52 , item60 , item65 , item70 , item74 , item76 , item80 , item83 , item84 , item87 , item92 , item97 , item100 ) confidence 1.00;\r\n    if anything then RawL will be sum( item15 , item23 , item39 , item62 , item86 , item98 , item4 , item10 , item19 , item27 , item32 , item44 , item49 , item53 , item57 , item66 , item71 , item77 , item82 , item89 , item93 ) confidence 1.00;\r\n    if Age is >= 16 and Age is < 21 and Gender is male then NormedP will be 100 * normprob( ( RawP - PAveMale16_20 ) / PSDMale16_20 ) confidence 1.00;\r\n    if Age is > 20 and Age is < 31 and Gender is male then NormedP will be 100 * normprob( ( RawP - PAveMale21_30 ) / PSDMale21_30 ) confidence 1.00;\r\n    if Age is > 30 and Age is < 41 and Gender is male then NormedP will be 100 * normprob( ( RawP - PAveMale31_40 ) / PSDMale31_40 ) confidence 1.00;\r\n    if Age is > 40 and Age is < 51 and Gender is male then NormedP will be 100 * normprob( ( RawP - PAveMale41_50 ) / PSDMale41_50 ) confidence 1.00;\r\n    if Age is > 50 and Age is < 61 and Gender is male then NormedP will be 100 * normprob( ( RawP - PAveMale51_60 ) / PSDMale51_60 ) confidence 1.00;\r\n    if Age is > 60 and Age is < 71 and Gender is male then NormedP will be 100 * normprob( ( RawP - PAveMale61_70 ) / PSDMale61_70 ) confidence 1.00;\r\n    if Age is >= 16 and Age is < 21 and Gender is female then NormedP will be 100 * normprob( ( RawP - PAveFemale16_20 ) / PSDFemale16_20 ) confidence 1.00;\r\n    if Age is > 20 and Age is < 31 and Gender is female then NormedP will be 100 * normprob( ( RawP - PAveFemale21_30 ) / PSDFemale21_30 ) confidence 1.00;\r\n    if Age is > 30 and Age is < 41 and Gender is female then NormedP will be 100 * normprob( ( RawP - PAveFemale31_40 ) / PSDFemale31_40 ) confidence 1.00;\r\n    if Age is > 40 and Age is < 51 and Gender is female then NormedP will be 100 * normprob( ( RawP - PAveFemale41_50 ) / PSDFemale41_50 ) confidence 1.00;\r\n    if Age is > 50 and Age is < 61 and Gender is female then NormedP will be 100 * normprob( ( RawP - PAveFemale51_60 ) / PSDFemale51_60 ) confidence 1.00;\r\n    if Age is > 60 and Age is < 71 and Gender is female then NormedP will be 100 * normprob( ( RawP - PAveFemale61_70 ) / PSDFemale61_70 ) confidence 1.00;\r\n    if Age is >= 16 and Age is < 21 and Gender is male then NormedE will be 100 * normprob( ( RawE - EAveMale16_20 ) / ESDMale16_20 ) confidence 1.00;\r\n    if Age is > 20 and Age is < 31 and Gender is male then NormedE will be 100 * normprob( ( RawE - EAveMale21_30 ) / ESDMale21_30 ) confidence 1.00;\r\n    if Age is > 30 and Age is < 41 and Gender is male then NormedE will be 100 * normprob( ( RawE - EAveMale31_40 ) / ESDMale31_40 ) confidence 1.00;\r\n    if Age is > 40 and Age is < 51 and Gender is male then NormedE will be 100 * normprob( ( RawE - EAveMale41_50 ) / ESDMale41_50 ) confidence 1.00;\r\n    if Age is > 50 and Age is < 61 and Gender is male then NormedE will be 100 * normprob( ( RawE - EAveMale51_60 ) / ESDMale51_60 ) confidence 1.00;\r\n    if Age is > 60 and Age is < 71 and Gender is male then NormedE will be 100 * normprob( ( RawE - EAveMale61_70 ) / ESDMale61_70 ) confidence 1.00;\r\n    if Age is >= 16 and Age is < 21 and Gender is female then NormedE will be 100 * normprob( ( RawE - EAveFemale16_20 ) / ESDFemale16_20 ) confidence 1.00;\r\n    if Age is > 20 and Age is < 31 and Gender is female then NormedE will be 100 * normprob( ( RawE - EAveFemale21_30 ) / ESDFemale21_30 ) confidence 1.00;\r\n    if Age is > 30 and Age is < 41 and Gender is female then NormedE will be 100 * normprob( ( RawE - EAveFemale31_40 ) / ESDFemale31_40 ) confidence 1.00;\r\n    if Age is > 40 and Age is < 51 and Gender is female then NormedE will be 100 * normprob( ( RawE - EAveFemale41_50 ) / ESDFemale41_50 ) confidence 1.00;\r\n    if Age is > 50 and Age is < 61 and Gender is female then NormedE will be 100 * normprob( ( RawE - EAveFemale51_60 ) / ESDFemale51_60 ) confidence 1.00;\r\n    if Age is > 60 and Age is < 71 and Gender is female then NormedE will be 100 * normprob( ( RawE - EAveFemale61_70 ) / ESDFemale61_70 ) confidence 1.00;\r\n    if Age is >= 16 and Age is < 21 and Gender is male then NormedN will be 100 * normprob( ( RawN - NAveMale16_20 ) / NSDMale16_20 ) confidence 1.00;\r\n    if Age is > 20 and Age is < 31 and Gender is male then NormedN will be 100 * normprob( ( RawN - NAveMale21_30 ) / NSDMale21_30 ) confidence 1.00;\r\n    if Age is > 30 and Age is < 41 and Gender is male then NormedN will be 100 * normprob( ( RawN - NAveMale31_40 ) / NSDMale31_40 ) confidence 1.00;\r\n    if Age is > 40 and Age is < 51 and Gender is male then NormedN will be 100 * normprob( ( RawN - NAveMale41_50 ) / NSDMale41_50 ) confidence 1.00;\r\n    if Age is > 50 and Age is < 61 and Gender is male then NormedN will be 100 * normprob( ( RawN - NAveMale51_60 ) / NSDMale51_60 ) confidence 1.00;\r\n    if Age is > 60 and Age is < 71 and Gender is male then NormedN will be 100 * normprob( ( RawN - NAveMale61_70 ) / NSDMale61_70 ) confidence 1.00;\r\n    if Age is >= 16 and Age is < 21 and Gender is female then NormedN will be 100 * normprob( ( RawN - NAveFemale16_20 ) / NSDFemale16_20 ) confidence 1.00;\r\n    if Age is > 20 and Age is < 31 and Gender is female then NormedN will be 100 * normprob( ( RawN - NAveFemale21_30 ) / NSDFemale21_30 ) confidence 1.00;\r\n    if Age is > 30 and Age is < 41 and Gender is female then NormedN will be 100 * normprob( ( RawN - NAveFemale31_40 ) / NSDFemale31_40 ) confidence 1.00;\r\n    if Age is > 40 and Age is < 51 and Gender is female then NormedN will be 100 * normprob( ( RawN - NAveFemale41_50 ) / NSDFemale41_50 ) confidence 1.00;\r\n    if Age is > 50 and Age is < 61 and Gender is female then NormedN will be 100 * normprob( ( RawN - NAveFemale51_60 ) / NSDFemale51_60 ) confidence 1.00;\r\n    if Age is > 60 and Age is < 71 and Gender is female then NormedN will be 100 * normprob( ( RawN - NAveFemale61_70 ) / NSDFemale61_70 ) confidence 1.00;\r\n    if Age is >= 16 and Age is < 21 and Gender is male then NormedL will be 100 * normprob( ( RawL - LAveMale16_20 ) / LSDMale16_20 ) confidence 1.00;\r\n    if Age is > 20 and Age is < 31 and Gender is male then NormedL will be 100 * normprob( ( RawL - LAveMale21_30 ) / LSDMale21_30 ) confidence 1.00;\r\n    if Age is > 30 and Age is < 41 and Gender is male then NormedL will be 100 * normprob( ( RawL - LAveMale31_40 ) / LSDMale31_40 ) confidence 1.00;\r\n    if Age is > 40 and Age is < 51 and Gender is male then NormedL will be 100 * normprob( ( RawL - LAveMale41_50 ) / LSDMale41_50 ) confidence 1.00;\r\n    if Age is > 50 and Age is < 61 and Gender is male then NormedL will be 100 * normprob( ( RawL - LAveMale51_60 ) / LSDMale51_60 ) confidence 1.00;\r\n    if Age is > 60 and Age is < 71 and Gender is male then NormedL will be 100 * normprob( ( RawL - LAveMale61_70 ) / LSDMale61_70 ) confidence 1.00;\r\n    if Age is >= 16 and Age is < 21 and Gender is female then NormedL will be 100 * normprob( ( RawL - LAveFemale16_20 ) / LSDFemale16_20 ) confidence 1.00;\r\n    if Age is > 20 and Age is < 31 and Gender is female then NormedL will be 100 * normprob( ( RawL - LAveFemale21_30 ) / LSDFemale21_30 ) confidence 1.00;\r\n    if Age is > 30 and Age is < 41 and Gender is female then NormedL will be 100 * normprob( ( RawL - LAveFemale31_40 ) / LSDFemale31_40 ) confidence 1.00;\r\n    if Age is > 40 and Age is < 51 and Gender is female then NormedL will be 100 * normprob( ( RawL - LAveFemale41_50 ) / LSDFemale41_50 ) confidence 1.00;\r\n    if Age is > 50 and Age is < 61 and Gender is female then NormedL will be 100 * normprob( ( RawL - LAveFemale51_60 ) / LSDFemale51_60 ) confidence 1.00;\r\n    if Age is > 60 and Age is < 71 and Gender is female then NormedL will be 100 * normprob( ( RawL - LAveFemale61_70 ) / LSDFemale61_70 ) confidence 1.00;\r\n    }    ",
+  "name": "Personality test",
+  "version": "1.0.0",
+  "author": "demos",
+  "copyright": null,
+  "license": null,
+  "description": "Test four aspects of your personality using this AI based version of Eysenck's original.",
+  "format": {
+    "DefaultQuestions": 5,
+    "Edited": false,
+    "InputFormatList": [
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item1",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item2",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item3",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item4",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item5",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item6",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item7",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item8",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item9",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item10",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item11",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item12",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item13",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item14",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item15",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item16",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item17",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item18",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item19",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item20",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item21",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item22",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item23",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item24",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item25",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item26",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item27",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item28",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item29",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item30",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item31",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item32",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item33",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item34",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item35",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item36",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item37",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item38",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item39",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item40",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item41",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item42",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item43",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item44",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item45",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item46",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item47",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item48",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item49",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item50",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item51",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item52",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item53",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item54",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item56",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item57",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item58",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item59",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item60",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item61",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item62",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item63",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item64",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item65",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item66",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item67",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item68",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item69",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item70",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item71",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item72",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item73",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item74",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item75",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item76",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item77",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item78",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item79",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item80",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item81",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item82",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item83",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item84",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item85",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item86",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item87",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item88",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item89",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item90",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item91",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item92",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item93",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item94",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item95",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item96",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item97",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item98",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item99",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item100",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "no",
+          "yes"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "item55",
+        "NumericMax": 1.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": true,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "medium"
+        ],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": -1,
+        "Name": "Age",
+        "NumericMax": 70.0,
+        "NumericMin": 16.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "male",
+          "female"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": -1,
+        "Name": "Gender",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      }
+    ],
+    "OutputFormatList": [
+      {
+        "Hide": true,
+        "Name": "RawP",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "RawE",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "RawN",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "RawL",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": false,
+        "Name": "NormedP",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 100.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": false,
+        "Name": "NormedE",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 100.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": false,
+        "Name": "NormedN",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 100.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": false,
+        "Name": "NormedL",
+        "OutputType": "numeric",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 100.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      }
+    ]
+  },
+  "language": {
+    "LanguageList": [
+      {
+        "Name": "item1",
+        "Text": "Do you have many different hobbies?",
+        "VariantList": [
+          {
+            "Language": "de",
+            "Text": "Haben Sie viele verschiedene Hobbys?"
+          },
+          {
+            "Language": "fr",
+            "Text": "Avez-vous beaucoup de hobbies differents ?"
+          }
+        ]
+      },
+      {
+        "Name": "item2",
+        "Text": "Do you stop to think things over before doing anything? ",
+        "VariantList": []
+      },
+      {
+        "Name": "item3",
+        "Text": "Does your mood often go up and down?",
+        "VariantList": []
+      },
+      {
+        "Name": "item4",
+        "Text": "Have you ever taken the praise for something you knew someone else had really done?",
+        "VariantList": []
+      },
+      {
+        "Name": "item5",
+        "Text": "Do you take much notice of what people think?",
+        "VariantList": []
+      },
+      {
+        "Name": "item6",
+        "Text": "Are you a talkative person?",
+        "VariantList": []
+      },
+      {
+        "Name": "item7",
+        "Text": "Would being in debt worry you?",
+        "VariantList": []
+      },
+      {
+        "Name": "item8",
+        "Text": "Do you ever feel just miserable for no reason?",
+        "VariantList": []
+      },
+      {
+        "Name": "item9",
+        "Text": "Do you give money to charities?",
+        "VariantList": []
+      },
+      {
+        "Name": "item10",
+        "Text": "Were you ever greedy by helping yourself to more than your share of anything?",
+        "VariantList": []
+      },
+      {
+        "Name": "item11",
+        "Text": "Are you rather lively? ",
+        "VariantList": []
+      },
+      {
+        "Name": "item12",
+        "Text": "Would it upset you a lot to see a child or an animal suffer?",
+        "VariantList": []
+      },
+      {
+        "Name": "item13",
+        "Text": "Do you often worry about things you should not have done or said? ",
+        "VariantList": []
+      },
+      {
+        "Name": "item14",
+        "Text": "Do you dislike people who don&#x27;t know how to behave themselves?",
+        "VariantList": []
+      },
+      {
+        "Name": "item15",
+        "Text": "If you say you will do something, do you always keep your promise no matter how inconvenient it might be?",
+        "VariantList": []
+      },
+      {
+        "Name": "item16",
+        "Text": "Can you usually let yourself go and enjoy yourself at a lively party?",
+        "VariantList": []
+      },
+      {
+        "Name": "item17",
+        "Text": "Are you an irritable person? ",
+        "VariantList": []
+      },
+      {
+        "Name": "item18",
+        "Text": "Should people always respect the law?",
+        "VariantList": []
+      },
+      {
+        "Name": "item19",
+        "Text": "Have you ever blamed someone for doing something you knew was really your fault?",
+        "VariantList": []
+      },
+      {
+        "Name": "item20",
+        "Text": "Do you enjoy meeting new people?",
+        "VariantList": []
+      },
+      {
+        "Name": "item21",
+        "Text": "Are good manners very important?",
+        "VariantList": []
+      },
+      {
+        "Name": "item22",
+        "Text": "Are your feelings easily hurt?",
+        "VariantList": []
+      },
+      {
+        "Name": "item23",
+        "Text": "Are all your habits good and desirable ones?",
+        "VariantList": []
+      },
+      {
+        "Name": "item24",
+        "Text": "Do you tend to keep in the background on social occasions?",
+        "VariantList": []
+      },
+      {
+        "Name": "item25",
+        "Text": "Would you take drugs which may have strange or dangerous effects?",
+        "VariantList": []
+      },
+      {
+        "Name": "item26",
+        "Text": "Do you often feel &#x27;fed-up&#x27;?",
+        "VariantList": []
+      },
+      {
+        "Name": "item27",
+        "Text": "Have you ever taken anything (even a pin or button) that belonged to someone else?",
+        "VariantList": []
+      },
+      {
+        "Name": "item28",
+        "Text": "Do you like going out a lot?",
+        "VariantList": []
+      },
+      {
+        "Name": "item29",
+        "Text": "Do you prefer to go your own way rather than act by the rules?",
+        "VariantList": []
+      },
+      {
+        "Name": "item30",
+        "Text": "Do you enjoy hurting people you love?",
+        "VariantList": []
+      },
+      {
+        "Name": "item31",
+        "Text": "Are you often troubled about feelings of guilt?",
+        "VariantList": []
+      },
+      {
+        "Name": "item32",
+        "Text": "Do you sometimes talk about things you know nothing about? ",
+        "VariantList": []
+      },
+      {
+        "Name": "item33",
+        "Text": "Do you prefer reading to meeting people?",
+        "VariantList": []
+      },
+      {
+        "Name": "item34",
+        "Text": "Do you have enemies who want to harm you?",
+        "VariantList": []
+      },
+      {
+        "Name": "item35",
+        "Text": "Would you call yourself a nervous person?",
+        "VariantList": []
+      },
+      {
+        "Name": "item36",
+        "Text": "Do you have many friends?",
+        "VariantList": []
+      },
+      {
+        "Name": "item37",
+        "Text": "Do you enjoy practical jokes that can sometimes really hurt people?",
+        "VariantList": []
+      },
+      {
+        "Name": "item38",
+        "Text": "Are you a worrier?",
+        "VariantList": []
+      },
+      {
+        "Name": "item39",
+        "Text": "As a child did you do as you were told immediately and without grumbling?",
+        "VariantList": []
+      },
+      {
+        "Name": "item40",
+        "Text": "Would you call yourself happy-go-lucky?",
+        "VariantList": []
+      },
+      {
+        "Name": "item41",
+        "Text": "Do good manners and cleanliness matter much to you?",
+        "VariantList": []
+      },
+      {
+        "Name": "item42",
+        "Text": "Have you often gone against your parents&#x27; wishes?",
+        "VariantList": []
+      },
+      {
+        "Name": "item43",
+        "Text": "Do you worry about awful things that might happen?",
+        "VariantList": []
+      },
+      {
+        "Name": "item44",
+        "Text": "Have you ever broken or lost something belonging to someone else?",
+        "VariantList": []
+      },
+      {
+        "Name": "item45",
+        "Text": "Do you usually take the initiative in making new friends?",
+        "VariantList": []
+      },
+      {
+        "Name": "item46",
+        "Text": "Would you call yourself tense or &#x27;highly-strung&#x27;?",
+        "VariantList": []
+      },
+      {
+        "Name": "item47",
+        "Text": "Are you mostly quiet when you are with other people?",
+        "VariantList": []
+      },
+      {
+        "Name": "item48",
+        "Text": "Do you think marriage is old-fashioned and should be done away with?",
+        "VariantList": []
+      },
+      {
+        "Name": "item49",
+        "Text": "Do you sometimes boast a little?",
+        "VariantList": []
+      },
+      {
+        "Name": "item50",
+        "Text": "Are you more easy-going about right and wrong than most people?",
+        "VariantList": []
+      },
+      {
+        "Name": "item51",
+        "Text": "Can you easily get some life into a rather dull party?",
+        "VariantList": []
+      },
+      {
+        "Name": "item52",
+        "Text": "Do you worry about your health?",
+        "VariantList": []
+      },
+      {
+        "Name": "item53",
+        "Text": "Have you ever said anything bad or nasty about anyone?",
+        "VariantList": []
+      },
+      {
+        "Name": "item54",
+        "Text": "Do you enjoy co-operating with others?",
+        "VariantList": []
+      },
+      {
+        "Name": "item56",
+        "Text": "Do most things taste the same to you?",
+        "VariantList": []
+      },
+      {
+        "Name": "item57",
+        "Text": "As a child were you ever cheeky to your parents?",
+        "VariantList": []
+      },
+      {
+        "Name": "item58",
+        "Text": "Do you like mixing with people?",
+        "VariantList": []
+      },
+      {
+        "Name": "item59",
+        "Text": "Does it worry you if you know there are mistakes in your work?",
+        "VariantList": []
+      },
+      {
+        "Name": "item60",
+        "Text": "Do you suffer from sleeplessness?",
+        "VariantList": []
+      },
+      {
+        "Name": "item61",
+        "Text": "Have people said that you sometimes act too rashly?",
+        "VariantList": []
+      },
+      {
+        "Name": "item62",
+        "Text": "Do you always wash before a meal?",
+        "VariantList": []
+      },
+      {
+        "Name": "item63",
+        "Text": "Do you nearly always have a &#x27;ready answer&#x27; when people talk to you?",
+        "VariantList": []
+      },
+      {
+        "Name": "item64",
+        "Text": "Do you like to arrive at appointments in plenty of time?",
+        "VariantList": []
+      },
+      {
+        "Name": "item65",
+        "Text": "Have you often felt listless and tired for no reason?",
+        "VariantList": []
+      },
+      {
+        "Name": "item66",
+        "Text": "Have you ever cheated at a game?",
+        "VariantList": []
+      },
+      {
+        "Name": "item67",
+        "Text": "Do you like doing things in which you have to act quickly?",
+        "VariantList": []
+      },
+      {
+        "Name": "item68",
+        "Text": "Is (or was) your mother a good woman?",
+        "VariantList": []
+      },
+      {
+        "Name": "item69",
+        "Text": "Do you often make decisions on the spur of the moment?",
+        "VariantList": []
+      },
+      {
+        "Name": "item70",
+        "Text": "Do you often feel life is very dull?",
+        "VariantList": []
+      },
+      {
+        "Name": "item71",
+        "Text": "Have you ever taken advantage of someone?",
+        "VariantList": []
+      },
+      {
+        "Name": "item72",
+        "Text": "Do you often take on more activities than you have time for?",
+        "VariantList": []
+      },
+      {
+        "Name": "item73",
+        "Text": "Are there several people who keep trying to avoid you?",
+        "VariantList": []
+      },
+      {
+        "Name": "item74",
+        "Text": "Do you worry a lot about your looks?",
+        "VariantList": []
+      },
+      {
+        "Name": "item75",
+        "Text": "Do you think people spend too much time safeguarding their future with savings and insurance?",
+        "VariantList": []
+      },
+      {
+        "Name": "item76",
+        "Text": "Have you ever wished that you were dead?",
+        "VariantList": []
+      },
+      {
+        "Name": "item77",
+        "Text": "Would you dodge paying taxes if you were sure you could never be found out?",
+        "VariantList": []
+      },
+      {
+        "Name": "item78",
+        "Text": "Can you get a party going? ",
+        "VariantList": []
+      },
+      {
+        "Name": "item79",
+        "Text": "Do you try not to be rude to people?",
+        "VariantList": []
+      },
+      {
+        "Name": "item80",
+        "Text": "Do you worry too long after an embarrassing experience?",
+        "VariantList": []
+      },
+      {
+        "Name": "item81",
+        "Text": "Do you generally &#x27;look before you leap&#x27;?",
+        "VariantList": []
+      },
+      {
+        "Name": "item82",
+        "Text": "Have you ever insisted on having your own way?",
+        "VariantList": []
+      },
+      {
+        "Name": "item83",
+        "Text": "Do you suffer from &#x27;nerves&#x27;?",
+        "VariantList": []
+      },
+      {
+        "Name": "item84",
+        "Text": "Do you often feel lonely?",
+        "VariantList": []
+      },
+      {
+        "Name": "item85",
+        "Text": "Can you on the whole trust people to tell the truth?",
+        "VariantList": []
+      },
+      {
+        "Name": "item86",
+        "Text": "Do you always practice what you preach?",
+        "VariantList": []
+      },
+      {
+        "Name": "item87",
+        "Text": "Are you easily hurt when people find fault with you at the work you do?",
+        "VariantList": []
+      },
+      {
+        "Name": "item88",
+        "Text": "Is it better to follow society&#x27;s rules than go your own way?",
+        "VariantList": []
+      },
+      {
+        "Name": "item89",
+        "Text": "Have you ever been late for an appointment or work?",
+        "VariantList": []
+      },
+      {
+        "Name": "item90",
+        "Text": "Do you like plenty of bustle and excitement around you?",
+        "VariantList": []
+      },
+      {
+        "Name": "item91",
+        "Text": "Would you like other people to be afraid of you?",
+        "VariantList": []
+      },
+      {
+        "Name": "item92",
+        "Text": "Are you sometimes bubbling over with energy and sometimes very sluggish?",
+        "VariantList": []
+      },
+      {
+        "Name": "item93",
+        "Text": "Do you sometimes put off until tomorrow what you ought to do today?",
+        "VariantList": []
+      },
+      {
+        "Name": "item94",
+        "Text": "Do other people think of you as being very lively?",
+        "VariantList": []
+      },
+      {
+        "Name": "item95",
+        "Text": "Do people tell you a lot of lies?",
+        "VariantList": []
+      },
+      {
+        "Name": "item96",
+        "Text": "Do you believe you have special duties to your family?",
+        "VariantList": []
+      },
+      {
+        "Name": "item97",
+        "Text": "Are you touchy about some things?",
+        "VariantList": []
+      },
+      {
+        "Name": "item98",
+        "Text": "Are you always willing to admit it when you have made a mistake?",
+        "VariantList": []
+      },
+      {
+        "Name": "item99",
+        "Text": "Would you feel very sorry for an animal caught in a trap?",
+        "VariantList": []
+      },
+      {
+        "Name": "item100",
+        "Text": "When your temper rises, do you find it difficult to control yourself?",
+        "VariantList": []
+      },
+      {
+        "Name": "item55",
+        "Text": "Do you like telling jokes and funny stories to your friends?",
+        "VariantList": []
+      },
+      {
+        "Name": "Age",
+        "Text": "Age in years",
+        "VariantList": []
+      },
+      {
+        "Name": "Gender",
+        "Text": "Your gender",
+        "VariantList": []
+      },
+      {
+        "Name": "Gender.male",
+        "Text": "male",
+        "VariantList": []
+      },
+      {
+        "Name": "Gender.female",
+        "Text": "female",
+        "VariantList": []
+      },
+      {
+        "Name": "RawP",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "RawE",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "RawN",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "RawL",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "NormedP",
+        "Text": "Psychoticness percentile",
+        "VariantList": []
+      },
+      {
+        "Name": "NormedE",
+        "Text": "Extroversion percentile",
+        "VariantList": []
+      },
+      {
+        "Name": "NormedN",
+        "Text": "Neuroticness percentile",
+        "VariantList": []
+      },
+      {
+        "Name": "NormedL",
+        "Text": "Lying percentile",
+        "VariantList": []
+      },
+      {
+        "Name": "Format.preamble",
+        "Text": "This large rule set tests and scores your personality using a methodology devised by Prof. H. Eysenck - 102 questions!",
+        "VariantList": []
+      },
+      {
+        "Name": "Format.questionHeader",
+        "Text": "Please answer the following:",
+        "VariantList": []
+      },
+      {
+        "Name": "Format.resultHeader",
+        "Text": "Your results:",
+        "VariantList": []
+      },
+      {
+        "Name": "NormedP.ScoreBarLow",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "NormedP.ScoreBarHigh",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "NormedE.ScoreBarLow",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "NormedE.ScoreBarHigh",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "NormedN.ScoreBarLow",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "NormedN.ScoreBarHigh",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "NormedL.ScoreBarLow",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "NormedL.ScoreBarHigh",
+        "Text": "",
+        "VariantList": []
+      }
+    ],
+    "DefaultLanguage": "en-US"
+  },
+  "trigger": {
+    "sendEmailSource": "results",
+    "sendEmail": null,
+    "addressSource": "results",
+    "addressText": null,
+    "subjectSource": "results",
+    "subjectText": null,
+    "bodySource": "results",
+    "bodyText": null,
+    "emailFrom": null,
+    "sendAttachmentSource": "results",
+    "sendAttachment": null,
+    "attachmentName": null,
+    "attachmentUri": null,
+    "postDataSource": "results",
+    "postData": null,
+    "postDataUri": null,
+    "postType": "darlvarlist"
+  },
+  "preload": []
+}

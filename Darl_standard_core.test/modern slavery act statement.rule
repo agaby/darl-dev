@@ -1,0 +1,1728 @@
+{
+  "darl": "ruleset modernslavery\r\n{\r\n  input categorical mspolicyexists {yes,no};\r\n  input categorical mspolicysteps {yes,no};\r\n  input categorical mssupchainexists {yes,no};\r\n  input categorical mssupchainsteps {yes,no};\r\n  input categorical low_risk {yes,no};\r\n  input categorical policystartknown {yes,no};\r\n  input textual mspolicystartdate;\r\n  input categorical companyType {manufacturer,service,other};\r\n  input textual serviceType;\r\n  input textual manufactures;\r\n  input textual sectors;\r\n  input categorical part_of_group {yes,no};\r\n  input textual parent_company;\r\n  input textual parent_domicile;\r\n  input numeric employees;\r\n  input categorical describe_int_trade {country_list,region_list,countrycount,none};\r\n  input textual operating_countries;\r\n  input textual regions;\r\n  input numeric countrycount;\r\n  input numeric turnover;\r\n  input textual email;\r\n  \r\n  input categorical business_organization {count_and_names,description};\r\n  input numeric business_unit_count;\r\n  input textual business_unit_description;\r\n  input textual business_organization_description;\r\n  \r\n  input textual supply_chain_description;\r\n  input categorical supply_chain_extensive {yes,no};\r\n  input textual supply_chain_extension;\r\n  input textual mspolicylink;\r\n  input textual social_policy_link;\r\n  input textual general_due_diligence;\r\n  input categorical ddrisk {yes,no};\r\n  input categorical ddmitigate {yes,no};\r\n  input categorical ddmonitor {yes,no};\r\n  input categorical ddwb {yes,no};\r\n  input categorical supaddZT {yes,no};\r\n  input categorical supaddcompliance {yes,no};\r\n  input categorical supaddrigorous {yes,no};\r\n  input categorical supaddIntolerance {ethics,values,both};\r\n  input textual supaddcomplianceoutline;\r\n  input categorical compliance_team {yes,no};\r\n  input categorical compliance_legal {yes,no};\r\n  input categorical compliance_audit {yes,no};\r\n  input categorical compliance_hr {yes,no};\r\n  input categorical compliance_procurement {yes,no};\r\n  input categorical compliance_sales {yes,no};\r\n  input categorical compliance_other {yes,no};\r\n  input textual compliance_other_desc;\r\n  input categorical training {yes,no};\r\n  input categorical partners_training {yes,no};\r\n  input categorical effectiveness_KPIs  {yes,no};\r\n  input categorical thirdparty  {yes,no};\r\n  input textual KPI_list;\r\n  input textual thirdparty_name;\r\n  input categorical effectiveness_review  {yes,no};\r\n  input categorical thisyear  {yes,no};\r\n  input textual furthersteps;\r\n  input textual financial_year_end;\r\n  input textual signer;\r\n  input categorical signer_role {director,member,general_partner,partner};\r\n  input textual organization_name;\r\n  input categorical socialStatement {yes,no};\r\n  \r\n  output categorical general_complete {true,false};\r\n  output categorical intro_section {A1,A2,A3,B1,B2,B3,C,D,E1,none};\r\n  output categorical qualify {true,false};\r\n  output categorical needstatement {true,false};\r\n  \r\n  if turnover is >= 36000000 and not companyType is other then qualify will be true;\r\n  if turnover is < 36000000 then qualify will be false;\r\n  if companyType is other then qualify will be false;\r\n  \r\n  if qualify is true then needstatement will be true;\r\n  if qualify is false and socialStatement is yes then needstatement will be true;\r\n  if qualify is false and socialStatement is no then needstatement will be false;\r\n  \r\n    \r\n  //catch stuff needed for minimum output\r\n  if mspolicyexists is present and mspolicysteps is present and mssupchainexists is present\r\n    and mssupchainsteps is present and part_of_group is present\r\n    and email is present\r\n    and financial_year_end is present and signer is present and signer_role is present \r\n    and organization_name is present and low_risk is present and needstatement is true\r\n    then general_complete will be true;\r\n  if needstatement is false then general_complete will be true;\r\n  \r\n  if general_complete is true and low_risk is yes then intro_section will be C;\r\n  if general_complete is true and low_risk is no and mspolicyexists is no and mspolicysteps is no then intro_section will be D;\r\n  if general_complete is true and low_risk is no and mspolicyexists is no and mssupchainexists is no and mspolicysteps is yes then intro_section will be A1;\r\n  if general_complete is true and low_risk is no and mspolicyexists is yes and mssupchainexists is no and mspolicysteps is no then intro_section will be A2;\r\n  if general_complete is true and low_risk is no and mspolicyexists is yes and mssupchainexists is no and mspolicysteps is yes then intro_section will be A3;\r\n  if general_complete is true and low_risk is no and mspolicyexists is no and mssupchainexists is yes and mspolicysteps is yes and mssupchainsteps is no then intro_section will be B1;\r\n  if general_complete is true and low_risk is no and mspolicyexists is yes and mssupchainexists is yes and mspolicysteps is no and mssupchainsteps is no then intro_section will be B2;\r\n  if general_complete is true and low_risk is no and mspolicyexists is yes and mssupchainexists is yes and mspolicysteps is yes and mssupchainsteps is no then intro_section will be B3;\r\n  if general_complete is true and low_risk is no and mspolicyexists is yes and mssupchainexists is yes and mspolicysteps is yes and mssupchainsteps is yes and policystartknown is yes and mspolicystartdate is present then intro_section will be E;\r\n  if general_complete is true and low_risk is no and mspolicyexists is yes and mssupchainexists is yes and mspolicysteps is yes and mssupchainsteps is yes and policystartknown is no then intro_section will be E;\r\n  if needstatement is false then intro_section will be none;\r\n}\r\n",
+  "name": "modern slavery act statement",
+  "version": "1.0.0",
+  "author": "demos",
+  "copyright": null,
+  "license": null,
+  "description": "creates a modern slavery act statement for businesses requiring one",
+  "format": {
+    "DefaultQuestions": 1,
+    "Edited": false,
+    "InputFormatList": [
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "mspolicyexists",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "mspolicysteps",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "mssupchainexists",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "mssupchainsteps",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "low_risk",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "policystartknown",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "mspolicystartdate",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "manufacturer",
+          "service",
+          "other"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "companyType",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "serviceType",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "manufactures",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "sectors",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "part_of_group",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "parent_company",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "parent_domicile",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": 0,
+        "Name": "employees",
+        "NumericMax": 10000000.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "country_list",
+          "region_list",
+          "countrycount",
+          "none"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "describe_int_trade",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "operating_countries",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "regions",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": 0,
+        "Name": "countrycount",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": 0,
+        "Name": "turnover",
+        "NumericMax": 1000000000.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "email",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "^(?(\")(\".+?(?<!\\\\)\"@)|(([0-9a-z]((\\.(?!\\.))|[-!#\\$%&'\\*\\+/=\\?\\^`\\{\\}\\|~\\w])*)(?<=[0-9a-z])@))(?(\\[)(\\[(\\d{1,3}\\.){3}\\d{1,3}\\])|(([0-9a-z][-\\w]*[0-9a-z]*\\.)+[a-z0-9][\\-a-z0-9]{0,22}[a-z0-9]))$",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "count_and_names",
+          "description"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "business_organization",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "numeric",
+        "MaxLength": 0,
+        "Name": "business_unit_count",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "business_unit_description",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "business_organization_description",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "supply_chain_description",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "supply_chain_extensive",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "supply_chain_extension",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "mspolicylink",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "social_policy_link",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "general_due_diligence",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "ddrisk",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "ddmitigate",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "ddmonitor",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "ddwb",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "supaddZT",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "supaddcompliance",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "supaddrigorous",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "ethics",
+          "values",
+          "both"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "supaddIntolerance",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "supaddcomplianceoutline",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "compliance_team",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "compliance_legal",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "compliance_audit",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "compliance_hr",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "compliance_procurement",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "compliance_sales",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "compliance_other",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "compliance_other_desc",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "training",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "partners_training",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "effectiveness_KPIs",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "thirdparty",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "KPI_list",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "thirdparty_name",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "effectiveness_review",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "thisyear",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "furthersteps",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "financial_year_end",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "signer",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "director",
+          "member",
+          "general_partner",
+          "partner"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "signer_role",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [],
+        "Increment": 0.0,
+        "InType": "textual",
+        "MaxLength": 0,
+        "Name": "organization_name",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      },
+      {
+        "Categories": [
+          "yes",
+          "no"
+        ],
+        "Increment": 0.0,
+        "InType": "categorical",
+        "MaxLength": 0,
+        "Name": "socialStatement",
+        "NumericMax": 0.0,
+        "NumericMin": 0.0,
+        "Regex": "",
+        "ShowSets": false,
+        "EnforceCrisp": false
+      }
+    ],
+    "OutputFormatList": [
+      {
+        "Hide": true,
+        "Name": "general_complete",
+        "OutputType": "categorical",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "intro_section",
+        "OutputType": "categorical",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "qualify",
+        "OutputType": "categorical",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      },
+      {
+        "Hide": true,
+        "Name": "needstatement",
+        "OutputType": "categorical",
+        "displayType": "Text",
+        "ScoreBarColor": "",
+        "ScoreBarMaxVal": 0.0,
+        "ScoreBarMinVal": 0.0,
+        "Uncertainty": false,
+        "ValueFormat": ""
+      }
+    ]
+  },
+  "language": {
+    "LanguageList": [
+      {
+        "Name": "mspolicyexists",
+        "Text": "Does your business have an anti-slavery and human trafficking policy?",
+        "VariantList": []
+      },
+      {
+        "Name": "mspolicyexists.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "mspolicyexists.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "mspolicysteps",
+        "Text": "Does your business currently take any steps to ensure that your business does not contain any labour which is the result of human trafficking nor involving slavery?",
+        "VariantList": []
+      },
+      {
+        "Name": "mspolicysteps.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "mspolicysteps.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "mssupchainexists",
+        "Text": "Does your business have an anti-slavery and human trafficking policy for your supply chain?",
+        "VariantList": []
+      },
+      {
+        "Name": "mssupchainexists.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "mssupchainexists.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "mssupchainsteps",
+        "Text": "Does your business currently take any steps to ensure that your supply chain does not contain any labour which is the result of human trafficking nor involving slavery?",
+        "VariantList": []
+      },
+      {
+        "Name": "mssupchainsteps.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "mssupchainsteps.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "low_risk",
+        "Text": "Is your organization at a low risk of having any connection with modern slavery because of the nature of your business?",
+        "VariantList": []
+      },
+      {
+        "Name": "low_risk.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "low_risk.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "policystartknown",
+        "Text": "Do you have a start date for your Modern Slavery Policy?",
+        "VariantList": []
+      },
+      {
+        "Name": "policystartknown.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "policystartknown.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "mspolicystartdate",
+        "Text": "What is the start date for your Modern Slavery policy?",
+        "VariantList": []
+      },
+      {
+        "Name": "companyType",
+        "Text": "What kind of business is your company concerned with in the main?",
+        "VariantList": []
+      },
+      {
+        "Name": "companyType.manufacturer",
+        "Text": "manufacturer",
+        "VariantList": []
+      },
+      {
+        "Name": "companyType.service",
+        "Text": "service",
+        "VariantList": []
+      },
+      {
+        "Name": "companyType.other",
+        "Text": "other",
+        "VariantList": []
+      },
+      {
+        "Name": "serviceType",
+        "Text": "Please describe the service",
+        "VariantList": []
+      },
+      {
+        "Name": "manufactures",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "sectors",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "part_of_group",
+        "Text": "Are you part of a larger group?",
+        "VariantList": []
+      },
+      {
+        "Name": "part_of_group.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "part_of_group.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "parent_company",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "parent_domicile",
+        "Text": "Where is your parent company, or your organization, if the parent domiciled?",
+        "VariantList": []
+      },
+      {
+        "Name": "employees",
+        "Text": "How many employees do you have (approximately)?",
+        "VariantList": []
+      },
+      {
+        "Name": "describe_int_trade",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "describe_int_trade.country_list",
+        "Text": "country_list",
+        "VariantList": []
+      },
+      {
+        "Name": "describe_int_trade.region_list",
+        "Text": "region_list",
+        "VariantList": []
+      },
+      {
+        "Name": "describe_int_trade.countrycount",
+        "Text": "countrycount",
+        "VariantList": []
+      },
+      {
+        "Name": "describe_int_trade.none",
+        "Text": "none",
+        "VariantList": []
+      },
+      {
+        "Name": "operating_countries",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "regions",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "countrycount",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "turnover",
+        "Text": "What is your group turnover in Pounds Sterling?",
+        "VariantList": []
+      },
+      {
+        "Name": "email",
+        "Text": "Please supply an email address to receive your statement.",
+        "VariantList": []
+      },
+      {
+        "Name": "business_organization",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "business_organization.count_and_names",
+        "Text": "count_and_names",
+        "VariantList": []
+      },
+      {
+        "Name": "business_organization.description",
+        "Text": "description",
+        "VariantList": []
+      },
+      {
+        "Name": "business_unit_count",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "business_unit_description",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "business_organization_description",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "supply_chain_description",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "supply_chain_extensive",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "supply_chain_extensive.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "supply_chain_extensive.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "supply_chain_extension",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "mspolicylink",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "social_policy_link",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "general_due_diligence",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "ddrisk",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "ddrisk.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "ddrisk.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "ddmitigate",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "ddmitigate.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "ddmitigate.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "ddmonitor",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "ddmonitor.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "ddmonitor.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "ddwb",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "ddwb.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "ddwb.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "supaddZT",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "supaddZT.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "supaddZT.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "supaddcompliance",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "supaddcompliance.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "supaddcompliance.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "supaddrigorous",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "supaddrigorous.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "supaddrigorous.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "supaddIntolerance",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "supaddIntolerance.ethics",
+        "Text": "ethics",
+        "VariantList": []
+      },
+      {
+        "Name": "supaddIntolerance.values",
+        "Text": "values",
+        "VariantList": []
+      },
+      {
+        "Name": "supaddIntolerance.both",
+        "Text": "both",
+        "VariantList": []
+      },
+      {
+        "Name": "supaddcomplianceoutline",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_team",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_team.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_team.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_legal",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_legal.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_legal.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_audit",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_audit.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_audit.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_hr",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_hr.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_hr.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_procurement",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_procurement.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_procurement.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_sales",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_sales.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_sales.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_other",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_other.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_other.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "compliance_other_desc",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "training",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "training.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "training.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "partners_training",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "partners_training.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "partners_training.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "effectiveness_KPIs",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "effectiveness_KPIs.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "effectiveness_KPIs.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "thirdparty",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "thirdparty.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "thirdparty.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "KPI_list",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "thirdparty_name",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "effectiveness_review",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "effectiveness_review.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "effectiveness_review.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "thisyear",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "thisyear.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "thisyear.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "furthersteps",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "financial_year_end",
+        "Text": "What is your financial year end?",
+        "VariantList": []
+      },
+      {
+        "Name": "signer",
+        "Text": "Who will be signing?",
+        "VariantList": []
+      },
+      {
+        "Name": "signer_role",
+        "Text": "What is the role of the signatory in your organization?",
+        "VariantList": []
+      },
+      {
+        "Name": "signer_role.director",
+        "Text": "director",
+        "VariantList": []
+      },
+      {
+        "Name": "signer_role.member",
+        "Text": "member",
+        "VariantList": []
+      },
+      {
+        "Name": "signer_role.general_partner",
+        "Text": "general partner",
+        "VariantList": []
+      },
+      {
+        "Name": "signer_role.partner",
+        "Text": "partner",
+        "VariantList": []
+      },
+      {
+        "Name": "organization_name",
+        "Text": "What is your organization's official name?",
+        "VariantList": []
+      },
+      {
+        "Name": "socialStatement",
+        "Text": "Would you like to create a modern slavery statement whether you are required by law or not?",
+        "VariantList": []
+      },
+      {
+        "Name": "socialStatement.yes",
+        "Text": "yes",
+        "VariantList": []
+      },
+      {
+        "Name": "socialStatement.no",
+        "Text": "no",
+        "VariantList": []
+      },
+      {
+        "Name": "general_complete",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "general_complete.true",
+        "Text": "true",
+        "VariantList": []
+      },
+      {
+        "Name": "general_complete.false",
+        "Text": "false",
+        "VariantList": []
+      },
+      {
+        "Name": "intro_section",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "intro_section.A1",
+        "Text": "A1",
+        "VariantList": []
+      },
+      {
+        "Name": "intro_section.A2",
+        "Text": "A2",
+        "VariantList": []
+      },
+      {
+        "Name": "intro_section.A3",
+        "Text": "A3",
+        "VariantList": []
+      },
+      {
+        "Name": "intro_section.B1",
+        "Text": "B1",
+        "VariantList": []
+      },
+      {
+        "Name": "intro_section.B2",
+        "Text": "B2",
+        "VariantList": []
+      },
+      {
+        "Name": "intro_section.B3",
+        "Text": "B3",
+        "VariantList": []
+      },
+      {
+        "Name": "intro_section.C",
+        "Text": "C",
+        "VariantList": []
+      },
+      {
+        "Name": "intro_section.D",
+        "Text": "D",
+        "VariantList": []
+      },
+      {
+        "Name": "intro_section.E1",
+        "Text": "E1",
+        "VariantList": []
+      },
+      {
+        "Name": "qualify",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "qualify.true",
+        "Text": "true",
+        "VariantList": []
+      },
+      {
+        "Name": "qualify.false",
+        "Text": "false",
+        "VariantList": []
+      },
+      {
+        "Name": "needstatement",
+        "Text": "",
+        "VariantList": []
+      },
+      {
+        "Name": "needstatement.true",
+        "Text": "true",
+        "VariantList": []
+      },
+      {
+        "Name": "needstatement.false",
+        "Text": "false",
+        "VariantList": []
+      },
+      {
+        "Name": "Format.preamble",
+        "Text": "The Modern Slavery Act in the UK requires some companies to create a statement to use on their websites and in company reports. This rule set checks your company's eligibility and then creates a statement in Word format.",
+        "VariantList": []
+      },
+      {
+        "Name": " Format.questionHeader",
+        "Text": "Please answer the following to receive your statement:",
+        "VariantList": []
+      },
+      {
+        "Name": "Format.resultHeader",
+        "Text": "Thanks for those responses.  If applicable, you will receive your statement by email as a Word file in the next few minutes.",
+        "VariantList": []
+      }
+    ],
+    "DefaultLanguage": ""
+  },
+  "trigger": {
+    "sendEmailSource": "results",
+    "sendEmail": "needstatement",
+    "addressSource": "results",
+    "addressText": "email",
+    "subjectSource": "_fixed",
+    "subjectText": "Your Modern Slavery Act statement",
+    "bodySource": "_fixed",
+    "bodyText": "Please find your Modern Slavery Act statement attached.",
+    "emailFrom": "sales@darllaw.com",
+    "sendAttachmentSource": "_fixed",
+    "sendAttachment": "true",
+    "attachmentName": "modern_slavery_act_statement.docx",
+    "attachmentUri": "modernslaverytest.docx",
+    "postDataSource": "_fixed",
+    "postData": "false",
+    "postDataUri": "",
+    "postType": "darlvarlist"
+  },
+  "preload": []
+}

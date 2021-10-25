@@ -1,0 +1,10 @@
+﻿ruleset TextTest
+{
+	input textual arthur;
+	output numeric andy {{small,5,6,7},{medium,6,7,8},{huge,9,10,11}};
+	string p "!";
+	sequence seq {"fart",{"bum","bottom"},"pooh"};
+
+	if arthur is match p then andy will be medium;
+	if arthur is match seq then andy will be small;
+}

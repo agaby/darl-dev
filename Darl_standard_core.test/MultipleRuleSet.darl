@@ -1,0 +1,88 @@
+﻿/* this is a 
+multiline 
+comment */
+//this is a comment at the start
+ruleset allowances
+{
+	input numeric TOTAL_INCOME {{low, 0,0}, {high, 1000000, 1000000}};
+	input numeric AGE_YEARS {{low, 0,0}, {high, 100, 100}};
+	input categorical MARRIED {True,False};
+	input categorical BLIND {True,False};
+
+
+	output numeric TOTAL_ALLOWANCES;
+
+	constant Basic_Allowance 8105;
+	constant Allowance_Income_Limit 100000;
+	constant Blind_Persons_allowance 2100;
+	constant AGE_65_74_allowance 9940;
+	constant AGE_65 65;
+	constant AGE_75 75;
+	constant AGE_75_allowance 10090;
+	constant Age_related_income_limit 24000;
+	constant ZERO 0;
+	constant Allowance_derating 0.5;
+
+	//this is a cooment before the rules
+
+	if AGE_YEARS is < AGE_65 and BLIND is False then TOTAL_ALLOWANCES will be maximum(Basic_Allowance - maximum(TOTAL_INCOME - Allowance_Income_Limit, ZERO) * Allowance_derating, ZERO);
+	if AGE_YEARS is < AGE_65 and BLIND is True then TOTAL_ALLOWANCES will be maximum(Basic_Allowance + Blind_Persons_allowance - maximum(TOTAL_INCOME - Allowance_Income_Limit, ZERO) * Allowance_derating, ZERO);
+	if AGE_YEARS is >= AGE_65 and BLIND is False and TOTAL_INCOME is < Allowance_Income_Limit and AGE_YEARS is < AGE_75  then TOTAL_ALLOWANCES will be AGE_65_74_allowance;
+	if AGE_YEARS is >= AGE_75 and BLIND is False and TOTAL_INCOME is < Allowance_Income_Limit and MARRIED is False  then TOTAL_ALLOWANCES will be AGE_75_allowance;
+}
+/* this is a 
+multiline 
+comment */
+
+ruleset income_tax
+{
+	input numeric EARNED_INCOME {{low, 0,0}, {high, 1000000, 1000000}};
+	input numeric TOTAL_ALLOWANCES;
+
+	output numeric EARNED_TAX;
+	output numeric EARNED_INCOME_AFTER_ALLOWANCES;
+
+	constant Higher_rate_threshold 34371;
+	constant Basic_rate 0.2;
+	constant Higher_rate 0.4;
+	constant Additional_rate_threshold 150000;
+	constant Additional_rate 0.5;
+	constant ZERO 0;
+
+	if anything then EARNED_INCOME_AFTER_ALLOWANCES will be maximum(EARNED_INCOME - TOTAL_ALLOWANCES, ZERO);
+	if EARNED_INCOME is <= TOTAL_ALLOWANCES  then EARNED_TAX will be ZERO;
+	if EARNED_INCOME_AFTER_ALLOWANCES is <= Higher_rate_threshold  then EARNED_TAX will be EARNED_INCOME_AFTER_ALLOWANCES * Basic_rate;
+	if EARNED_INCOME_AFTER_ALLOWANCES is > Higher_rate_threshold and EARNED_INCOME_AFTER_ALLOWANCES is <= Additional_rate_threshold  then EARNED_TAX will be Higher_rate_threshold * Basic_rate + (EARNED_INCOME_AFTER_ALLOWANCES - Higher_rate_threshold) * Higher_rate;
+	if EARNED_INCOME_AFTER_ALLOWANCES is > Additional_rate_threshold  then EARNED_TAX will be Higher_rate_threshold * Basic_rate + (Additional_rate_threshold - Higher_rate_threshold) * Higher_rate + (EARNED_INCOME_AFTER_ALLOWANCES - Additional_rate_threshold) * Additional_rate;
+}
+
+ruleset income_sum
+{
+	input numeric EARNED_INCOME {{low, 0,0}, {high, 1000000, 1000000}};
+	input numeric DIVIDEND_INCOME {{low, 0,0}, {high, 1000000, 1000000}};
+
+	output numeric TOTAL_INCOME;
+
+	constant Dividend_grossing_up 1.1111111;
+
+	if anything then TOTAL_INCOME will be sum(EARNED_INCOME, DIVIDEND_INCOME * Dividend_grossing_up);
+}
+
+
+mapinput earned_income;
+mapinput dividend_income;
+mapinput age;
+mapinput married;
+mapinput blind;
+
+mapoutput earned_tax;
+
+wire age allowances.AGE_YEARS;
+wire married allowances.MARRIED;
+wire blind allowances.BLIND;
+wire earned_income income_tax.EARNED_INCOME;
+wire earned_income income_sum.EARNED_INCOME;
+wire income_tax.EARNED_TAX earned_tax;
+wire allowances.TOTAL_ALLOWANCES income_tax.TOTAL_ALLOWANCES;
+wire income_sum.TOTAL_INCOME allowances.TOTAL_INCOME;
+wire dividend_income income_sum.DIVIDEND_INCOME;

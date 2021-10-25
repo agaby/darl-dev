@@ -1,0 +1,88 @@
+﻿ruleset darl_business
+{
+    input temporal current_date;
+    input temporal trial_start;
+    input temporal last_payment_date;
+
+    input categorical account_state {trial,trial_expired,paying,delinquent,suspended, closed};
+
+    input numeric usage_count;
+    input categorical account_type {personal,corporate};
+    input categorical last_account_paid {true,false};
+    input temporal last_billing_date;
+
+    input textual invoice_template;
+    input textual delinquent_template;
+    input textual suspended_template;
+    input textual trial_expired_template;
+    input categorical signed_up {true,false};
+
+    input textual name;
+    input textual company;
+    input textual email_to;
+    input textual email_from;
+
+    output categorical create_email {true,false};
+    output categorical new_account_state {trial,trial_expired,paying,delinquent,suspended, closed};
+    output textual email_content;
+    output numeric total_charge;
+    output numeric usage_charge;
+    output numeric license_charge;
+    output categorical trial_expired_flag {true,false};
+    output categorical delinquent_flag {true,false};
+    output categorical suspended_flag {true,false};
+    output categorical invoice_flag {true,false};
+
+    constant personal_usage_allowance 1000;
+    constant corporate_usage_allowance 10000;
+    constant personal_charge 50;
+    constant corporate_charge 500;
+    constant charge_per_usage 0.02;
+
+    duration trial_duration 30.00:00:0.0;
+    duration payment_cycle_time 30.10:30:0.0;
+    duration billing_grace_period 7.00:00:0.0;
+    duration billing_suspension_period 14.00:00:0.0;
+
+
+    //handle trial expiration
+    if current_date is after trial_start + trial_duration and account_state is trial and signed_up is false then trial_expired_flag will be true;
+    otherwise if anything then trial_expired_flag will be false;
+
+    //handle unpaid invoice
+    if current_date is after last_billing_date + billing_grace_period and last_account_paid is false and suspended_flag is false then delinquent_flag will be true;
+    otherwise if anything then delinquent_flag will be false;
+
+    //handle aged unpaid invoice
+    if current_date is after last_billing_date + billing_suspension_period and last_account_paid is false then suspended_flag will be true;
+    otherwise if anything then suspended_flag will be false;
+
+    //handle new invoice
+    if current_date is after last_billing_date + payment_cycle_time and suspended_flag is false and delinquent_flag is false then invoice_flag will be true;
+    otherwise if anything then invoice_flag will be false;
+
+    //handle new_account_state transitions
+    if trial_expired_flag is true then new_account_state will be trial_expired;
+    if ( account_state is trial or account_state is trial_expired ) and signed_up is true then new_account_state will be paying;
+    if delinquent_flag is true then new_account_state will be delinquent;
+    if suspended_flag is true then new_account_state will be suspended;
+    if last_account_paid is true and account_state is delinquent then new_account_state will be paying;
+    if last_account_paid is true and account_state is suspended then new_account_state will be paying;
+    otherwise if anything then new_account_state will be categoryof(account_state);
+
+    //handle charges 
+    if account_type is personal and invoice_flag is true then usage_charge will be maximum((usage_count - personal_usage_allowance) * charge_per_usage, 0.0 );
+    if account_type is corporate and invoice_flag is true then usage_charge will be maximum((usage_count - corporate_usage_allowance) * charge_per_usage, 0.0 );
+    if account_type is personal and invoice_flag is true then license_charge will be personal_charge;
+    if account_type is corporate and invoice_flag is true then license_charge will be corporate_charge;
+    if anything then total_charge will be usage_charge + license_charge;
+
+    //handle message creation
+    if trial_expired_flag is true or delinquent_flag is true or suspended_flag is true or invoice_flag is true then create_email will be true;
+    otherwise if anything then create_email will be false;
+
+    if trial_expired_flag is true then email_content will be document(trial_expired_template, {current_date, trial_start, name, company, email_to, email_from });
+    if delinquent_flag is true then email_content will be document(delinquent_template, {current_date, last_payment_date, name, company, email_to, email_from });
+    if suspended_flag is true then email_content will be document(suspended_template, {current_date, last_payment_date, name, company, email_to, email_from });
+    if invoice_flag is true then email_content will be document(invoice_template, {current_date, usage_charge, license_charge, total_charge, name, company, email_to, email_from });
+}

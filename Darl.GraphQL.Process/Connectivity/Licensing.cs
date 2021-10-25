@@ -74,7 +74,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public bool CheckKey(string key)
         {
-            List<IValidationFailure> validationFailures = new List<IValidationFailure>();
+            List<ValidationFailure> validationFailures = new List<ValidationFailure>();
             try
             {
                 var decompressed = Decompress(key);

@@ -1,0 +1,2 @@
+﻿%% { var1.true %% some stuff here %% var2.true } %% 
+more stuff %% var1.true } %%

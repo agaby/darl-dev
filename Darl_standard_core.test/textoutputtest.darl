@@ -1,0 +1,15 @@
+﻿ruleset iorule
+{
+	input textual d;
+	input numeric a;
+	input numeric c;
+	input categorical bill { poo,wee};
+	output textual f;
+	output textual q;
+	output textual r;
+	output numeric p;
+	string text_string "this is a text string";
+	if anything then f will be document(d,{a,c,bill});
+	if anything then q will be d;
+	if anything then r will be text_string;
+}

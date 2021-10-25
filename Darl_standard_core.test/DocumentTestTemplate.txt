@@ -1,0 +1,175 @@
+﻿
+
+To whom it may concern, 
+
+On %% date_of_ticket %% at %% time_of_ticket %% my vehicle, registration number %% reg_number %% received a ticket from your authority.
+
+%% {grounds.res %%Thank you for taking into account my appeal. I am appealing on the basis that it is obvious that the date %% correct_date %% was misstated to be %% incorrect_date %% on a permit for residents. I arrived at %% time_of_arrival %% and as I was in a rush when placing a valid permit, selected %% incorrect_date %% rather than %% correct_date %% on the permit. 
+
+As I do not have a history of persistently incorrectly using permits, I feel that the rules should be consistently applied and my representation should be accepted. 
+
+I believe that it is impossible the permits, which stated, %% incorrect_date %% were used on another day, since the last %% incorrect_date %% was clearly prior to the issue of the permit. It is therefore clear that this PCN was issued for a mis-stated date, making the PCN trivial and inconsistent with other offences for which the fine is issued usually. 
+
+Furthermore, in an almost identical case, London Tribunals (formerly PATAS, Parking and Traffic Appeals Service) allowed an appeal, stating the clear precedent that this type of error is 'de minimis': 
+
+BH05920B "The PCN was issued for parking in a resident's permit space without displaying a valid permit. The appellant was a visitor. She obtained and displayed a visitor's scratch-card voucher. This required her to scratch off the day of the week, date, month and year. She made a mistake with the date, scratching off 21 instead of 22; all the other details were correct. The council claimed that this error invalidated the voucher. Held: This was the wrong approach. No contravention had occurred. The mistake was de minimis and did not invalidate the voucher. Given the combination of correct information given, the voucher could not have been used on any other day. While the adjudicator did not necessarily criticise the enforcement officer for issuing the PCN, the council should have appreciated that a minor and genuine error had occurred and canceled it. Appeal allowed" 
+
+Though I of course apologize, I believe that the council should exercise fairness in canceling a ticket that, according to the guidance, is perfectly justified to be canceled. I will of course endeavor to avoid this again, but I feel that the issue of a ticket is a disproportionate action inconsistent with PATAS precedent since I had valid permits and used them in an honest way that isn't harmful to the %% council %% community.%% grounds.res } %%%% {grounds.parkingbay %%Thank you for taking into account my appeal. I am appealing on the basis that the alleged contravention did not occur because the bay markings were less than the required 180cm, from the edge of the carriageway to the inside of the white line, and were therefore not in compliance with Schedule 6 of Traffic Signs Regulations 1994. 
+
+Though the PCN is the result of allegedly not parking within the designated bay, I argue that the 'signs' (bay markings) failed to adequately comply with the regulations. Specifically, I believe that the width of the bay, %% bay_width %%cm, is below the required 180cm. As the signage failed to inform me of the regulations, no offence has been committed under the Road Traffic Act of 1991. 
+
+Furthermore, in an almost identical case, London Tribunals (formerly PATAS, Parking and Traffic Appeals Service) allowed an appeal, stating the clear precedent that incorrect bay markings justify the cancellation of a PCN. 
+
+MR J LETTS -v LONDON BOROUGH OF LAMBETH
+Parking Appeal 1980151656
+Penalty Charge Notice lh20988622 
+
+"On the evidence before me I find that the width of this bay is less than the minimum of 180cm. Accordingly, I find that the bay is not properly marked and therefore that this contravention did not occur. For the reasons I have set out I allow this appeal." 
+
+I believe that the council should exercise fairness in canceling a ticket that, according to the guidance, is perfectly justified to be canceled. I will of course endeavour to avoid this again, but I feel that the issue of a ticket is an unlawful action inconsistent with PATAS precedent.%% grounds.parkingbay } %%%% {grounds.stolen %%Thank you for taking into account my appeal. I am appealing on the basis that I did not commit the contravention outlined in the PCN, as my vehicle was stolen on %% date_of_theft %%, which is clearly before the date of the ticket (%% date_of_ticket %%). 
+
+In accordance with the Road Traffic Act 1991, my challenge is on the basis that at the time the above PCN was issued, my vehicle had been taken without consent. 
+
+I understand that the following details will help you verify my claim. I reported to the police that the vehicle was stolen, submitting my report to the following police station: %% police_station %%. The report was submitted on %% date_of_report %% and resulted in the following crime reference number: %% crime_reference %%. 
+
+For this reason, I am looking forward to my liability for the Penalty Charge Notice being voided within 28 days. %% grounds.stolen } %%%% {grounds.hospital %%Thank you for taking into account my appeal. I am appealing on the basis that when I received a ticket on %% date_of_ticket %% at %% time_of_ticket %%, I was taking %% patient %% to an urgent medical appointment at Milton Keynes general Hospital. 
+
+When I drove %% patient %% to the unscheduled medical appointment, the urgency of the situation prevented me from having enough time to ensure that my parking was in complete compliance. 
+
+Furthermore, as a result of the medical condition, %% medical_emergency %%, I had the legitimate and reasonable concern that any additional time spent parking had the potential to cause additional physical/emotional harm to %% patient %%. 
+
+As the medical appointment was unscheduled, it was impossible to make prior parking arrangements which could have prevented the issue of the PCN. For this reason, I request that the council ensures fairness by taking into account the extenuating circumstances of this unique situation. 
+
+I understand that in these situations, the council requires additional documentary evidence to support this claim. Please find this proof attached. 
+
+The appointment was at the following location: 
+Location name: %% hospital_name %%
+Location address: %% hospital_address %%
+Location postcode: %% hospital_postcode %% 
+
+Though I understand the importance of parking enforcement, I believe my PCN should be canceled because it was the result of a genuine emergency. 
+%% grounds.hospital } %%%% { grounds.ownershipbought %%Thank you for taking into account my appeal. I am appealing on the basis that at the time the PCN was issued, %% date_of_ticket %%, I was not the owner of the vehicle concerned. Although the PCN was issued on %% date_of_ticket %%, I did not purchase/gain ownership of the vehicle until %% date_of_purchase %%. 
+
+According to the Road Traffic Act 1991, the liability for the contravention rests with the registered keeper of the vehicle at the time of the offence. As I was not the registered keeper, since I had not yet gained ownership of the vehicle, I look forward to my liability for the PCN being cancelled within 28 days. 
+
+Furthermore, I understand that the contact details of the previous keeper are necessary to support my claim. The vehicle was previously owned by %% previous_owner %%. 
+
+Please find the address of the previous keeper below: 
+
+%% previous_address %%
+%% previous_postcode %% 
+
+Though I understand the importance of parking enforcement, I look forward to my PCN being cancelled for the reasons outlined in this appeal.%% grounds.ownershipbought } %%%% { grounds.ownershipsold %%Thank you for taking into account my appeal. I am appealing on the basis that at the time the PCN was issued, %% date_of_ticket %%, I was not the owner of the vehicle concerned. Although the PCN was issued on %% date_of_ticket %%, I sold the vehicle on %% date_of_sale %%, a date prior to the alleged offence. 
+
+According to the Road Traffic Act 1991, the liability for the contravention rests with the registered keeper of the vehicle at the time of the offence. As I was not the registered keeper, since I had sold the vehicle, I look forward to my liability for the PCN being cancelled within 28 days. 
+
+Furthermore, I understand that the contact details of the new keeper are necessary to support my claim. The vehicle is now owned by %% subsequent_owner %%. 
+
+Please find the address of the new keeper below: 
+
+%% subsequent_address %%
+%% subsequent_postcode %% 
+
+Though I understand the importance of parking enforcement, I look forward to my PCN being cancelled for the reasons outlined in this appeal.%% grounds.ownershipsold } %%%% { grounds.diplomat %%Thank you for taking into account my appeal. I am appealing on the basis that when I received a ticket on %% date_of_ticket %% at %% time_of_ticket %%, the vehicle in question possessed immunity under the Vienna Convention on Diplomatic Relations 1961. 
+
+As Article 31 (section 1) of the Vienna Convention states, "A diplomatic agent shall enjoy immunity from the criminal jurisdiction of the receiving State. He shall also enjoy immunity from its civil and administrative jurisdiction," and Article 23 (section 1) states, "the sending State and the head of the mission shall be exempt from all national, regional or municipal dues and taxes in respect of the premises of the mission," the ticket should be cancelled not only because it forms part of the "civil and administrative jurisdiction" which my mission is exempt from, but also because the charge can be considered a municipal due or tax. 
+
+Furthermore, as Article 22 (section 3) states, "the premises of the mission, their furnishings and other property thereon and the means of transport of the mission shall be immune from search, requisition, attachment or execution," it is impossible to proceed with enforcing any penalty notice, making the ticket both de facto and de jure unenforceable. 
+
+For these reasons, we therefore believe that the PCN in question should be cancelled. 
+
+I understand that in these situations, the authority that issued the ticket requires additional documentary evidence to support this claim. Please find this proof attached. 
+
+Country of mission: %% country %%
+Embassy address: %% embassy_address %%
+Embassy postcode: %% embassy_postcode %%
+Vehicle registration: %% reg_number %%
+
+Though we understand the importance of parking enforcement, we hope that you will accept our appeal and cancel the relevant tickets. 
+%% grounds.diplomat } %%%% { grounds.reg %%Thank you for taking into account my appeal. I am appealing on the basis that I mis-stated my registration as '%% incorrect_reg %%' rather than '%% reg_number %%' when completing my pay and display. 
+
+I arrived at the space at %% time_of_arrival %% and, after paying in full for '%% incorrect_reg %%', left my car. I returned to find a ticket for not paying. 
+
+As I am not a repeat offender, I believe that my ticket should be cancelled because it was clear that I had paid (albeit misstating the registration) and I was not causing any significant harm to the %% council %% community. It is therefore clear that this PCN was issued for a mis-stated registration, making the PCN trivial and inconsistent with other offences for which the fine is issued usually. 
+
+Though I of course apologise, I believe that the council should exercise fairness in cancelling a ticket that, according to the guidance, is perfectly justified to be cancelled. I will of course endeavour to avoid this again, but I feel that the issue of a ticket is a disproportionate action since I made a valid payment and parked in a way that wasn't harmful to the %% council %% community. 
+%% grounds.reg } %%%% { grounds.missing %%Thank you for taking into account my appeal. I am appealing on the basis that the penalty charge notice is invalid as a result of missing details. 
+
+Though the PCN is the result of allegedly %% summary_of_offence %%, I argue that the ticket failed to adequately conform to the regulations. Specifically, the ticket was in breach of the Civil Enforcement of Parking Contraventions General Regulations (2007) as it lacked %% { missing_detail.reason %%the reason for the ticket%% missing_detail.reason } %%%% { missing_detail.size %%the size of the fine%% missing_detail.size } %%%% { missing_detail.date %%the date of the alleged offence%% missing_detail.date } %%%% { missing_detail.name %%the name of the authority%% missing_detail.name } %%%% { missing_detail.registration %%the registration number of the vehicle%% missing_detail.registration } %%%% { missing_detail.reminder %%a reminder of required payment within 28 days%% missing_detail.reminder } %%%% { missing_detail.pay %%the details on how to pay the charge%% missing_detail.pay } %%%% { missing_detail.appeal %%the grounds under which you can make an appeal%% missing_detail.appeal } %%%% { missing_detail.reduced %%a reminder of reduced payment within 14 days%% missing_detail.reduced } %%%% { missing_detail.owner %%a reminder that Notice to Owner will be sent%% missing_detail.owner } %%%% { missing_detail.address %%the address where the penalty charge must be sent%% missing_detail.address } %%. 
+
+As the ticket issued is invalid, I am not liable for any charge under the Road Traffic Act 2004. 
+
+Furthermore, in an almost identical case, PATAS (Parking and Traffic Appeals Service) allowed an appeal, stating the clear precedent that missing detail(s) from a PCN justifies the cancellation of the ticket. 
+
+London Borough of Wandsworth v Als Bar and Restaurant 
+Case Number: 2020106430 
+Penalty Charge Notice: WA04516186 
+
+"In particular, in this case, the PCN does not state that the penalty 'must' be paid within 28 day period. The word 'must' is mandatory. PCN also does not state that this period should begin with the date of the notice; also, no date of notice stated as such. PCN does not state that penalty must be paid within 14 period to begin with the date of the notice-date of issue and date of notice may not be the same. PCN also fails to refer to "before the end of the 28 day period" see sec 66(3)(e) RTA 1991 or to refer to the NTO being served by the "London authority on the person appearing to them to be the owner of the vehicle. It follows that I allow this appeal." 
+
+I believe that the council should exercise fairness in cancelling a ticket that, according to the guidance, is perfectly justified to be cancelled. I will of course endeavour to avoid this again, but I feel that the issue of a ticket is an unwlawful action inconsistent with PATAS precedent.
+%% grounds.missing } %%%% { grounds.incorrect  %%Thank you for taking into account my appeal. I am appealing on the basis that the penalty charge notice is invalid as a result of missing details. 
+
+Though the PCN is the result of allegedly %% summary_of_offence %%, I argue that the ticket failed to adequately conform to the regulations. Specifically, the ticket was in breach of the Civil Enforcement of Parking Contraventions General Regulations (2007) as it lacked the correct details in relation to %% { incorrect_detail.reason %%the reason for the ticket%% incorrect_detail.reason } %%%% { incorrect_detail.size %%the size of the fine%% incorrect_detail.size } %%%% { incorrect_detail.date %%the date of the alleged offence%% incorrect_detail.date } %%%% { incorrect_detail.name %%the name of the authority%% incorrect_detail.name } %%%% { incorrect_detail.registration %%the registration number of the vehicle%% incorrect_detail.registration } %%%% { incorrect_detail.reminder %%a reminder of required payment within 28 days%% incorrect_detail.reminder } %%%% { incorrect_detail.pay %%the details on how to pay the charge%% incorrect_detail.pay } %%%% { incorrect_detail.appeal %%the grounds under which you can make an appeal%% incorrect_detail.appeal } %%%% { incorrect_detail.reduced %%a reminder of reduced payment within 14 days%% incorrect_detail.reduced } %%%% { incorrect_detail.owner %%a reminder that Notice to Owner will be sent%% incorrect_detail.owner } %%%% { incorrect_detail.address %%the address where the penalty charge must be sent%% incorrect_detail.address } %%: 
+
+What the ticket stated: %% incorrect_text %%
+What the information should be: %% correct_text %% 
+
+As the ticket issued is invalid, I am not liable for any charge under the Road Traffic Act 2004. 
+
+Furthermore, in an almost identical case, PATAS (Parking and Traffic Appeals Service) allowed an appeal, stating the clear precedent that incorrect detail(s) in a PCN justifies the cancellation of the ticket. 
+
+London Borough of Wandsworth v Als Bar and Restaurant 
+Case Number: 2020106430 
+Penalty Charge Notice: WA04516186 
+
+"In particular, in this case, the PCN does not state that the penalty 'must' be paid within 28 day period. Word 'MUST' is mandatory. PCN also does not state that this period should begin with the date of the notice; also, no date of notice stated as such. PCN does not state that penalty must be paid within 14 period to begin with the date of the notice-date of issue and date of notice may not be the same. PCN also fails to refer to "before the end of the 28 day period" see sec 66(3)(e) RTA 1991 or to refer to the NTO being served by the "London authority on the person appearing to them to be the owner of the vehicle. It follows that I allow this appeal." 
+
+I believe that the council should exercise fairness in cancelling a ticket that, according to the guidance, is perfectly justified to be cancelled. I will of course endeavour to avoid this again, but I feel that the issue of a ticket is an unwlawful action inconsistent with PATAS precedent.
+%% grounds.incorrect } %%%% { grounds.hire %%Thank you for taking into account my appeal. I am appealing on the basis that at the time the PCN was issued, %% date_of_ticket %%, I had leased the vehicle concerned. Although the PCN was issued on %% date_of_ticket %%, the vehicle lease began on %% date_of_hire %%. 
+
+According to the Road Traffic Act 1991, the liability for the contravention rests with the registered keeper of the vehicle at the time of the offence. As I had leased the vehicle, and was therefore not responsible according to the act for traffic violations, I look forward to my liability for the PCN being cancelled within 28 days. 
+
+Furthermore, I understand that the contact details of the renter are necessary to support my claim. The vehicle was leased to %% renter_name %%. 
+
+Please find the address of the renter below: 
+
+%% renter_address %%
+%% renter_postcode %% 
+
+Though I understand the importance of parking enforcement, I look forward to my PCN being cancelled for the reasons outlined in this appeal.%% grounds.hire } %%%% { grounds.sign %%%% { signage_fault.contradictory %%Thank you for taking into account my appeal. I am appealing on the basis that the alleged contravention did not occur because of contradictory signage. 
+
+Though the PCN is the result of allegedly %% summary_of_offence %%, I argue that the signs failed to adequately inform me of the regulations. I believe that because two signs conveyed alternate instructions, the rules of parking on %% street_name %% were unclear. Therefore, I argue that no offence has been committed under the Road Traffic Act of 1991. I arrived on %% street_name %% and intended to park lawfully. However, when I observed the two signs, the following contrast immediately became clear: 
+
+Sign 1 had the following implication: %% sign_1_meaning %% 
+Yet, sign 2 had the following implication: %% sign_2_meaning %% 
+
+As one sign was %% { sign_relation.above %%above%% sign_relation.above } %%%% { sign_relation.next %%next to%% sign_relation.next } %%%% { sign_relation.one_metre %%under one metre from%% sign_relation.one_metre } %%%% { sign_relation.opposite %%opposite%% sign_relation.opposite } %%%% { sign_relation.same_road %%on the same road as%% sign_relation.same_road } %%%% { sign_relation.round_corner %%round the corner from%% sign_relation.round_corner } %%%% { sign_relation.nearby %%nearby to%% sign_relation.nearby } %%  the other, the contrast between these two instructions prevented me from making an informed decision about how to act. For this reason, I assert that liability for this penalty charge notice should be removed. 
+
+Furthermore, in an almost identical case, PATAS (Parking and Traffic Appeals Service) allowed an appeal, stating the clear precedent that contradictory signs justifies the cancellation of a PCN. 
+
+Ahmed v Redbridge (PATAS Case No. 2070185290) "he Appellant said he was confused by the signs. There were two no waiting signs and below them a single no loading sign, which it seemed was probably intended to apply to both waiting restrictions. The Adjudicator said that the use of the no loading sign to double up in this way was not lawful. There should be a separate no loading sign for each waiting restriction." 
+
+Source: Joint Annual Report of the Parking Adjudicators to London Councils Transport and Environment Committee 2007-2008 
+I believe that the council should exercise fairness in cancelling a ticket that, according to the guidance, is perfectly justified to be cancelled. I will of course endeavour to avoid this again, but I feel that the issue of a ticket is an unwlawful action inconsistent with PATAS precedent.
+
+%% signage_fault.contradictory } %%%% grounds.sign } %%%% { grounds.sign %%%% { signage_fault.absent_unclear %%Thank you for taking into account my appeal. I am appealing on the basis that the alleged contravention did not occur because there were no clear signs informing me of the regulations (as required by Schedule 6 of Traffic Signs Regulations 1994). 
+
+Though the PCN is the result of allegedly %% summary_of_offence %%, I argue that the lack of signs on %% road_name %% failed to inform me of the regulations. As the signage (or lack thereof) failed to inform me of what was required, no offence has been committed under the Road Traffic Act of 1991. 
+
+Furthermore, in an almost identical case, London Tribunals (formerly PATAS, Parking and Traffic Appeals Service) allowed an appeal, stating the clear precedent that a lack of correct signage justifies the cancellation of a PCN. 
+
+MR J LETTS -v LONDON BOROUGH OF LAMBETH
+Parking Appeal 1980151656
+Penalty Charge Notice lh20988622 
+
+"Accordingly, I find that the bay is not properly marked and therefore that this contravention did not occur. For the reasons I have set out I allow this appeal." 
+
+I believe that the council should exercise fairness in cancelling a ticket that, according to the guidance, is perfectly justified to be cancelled. I will of course endeavour to avoid this again, but I feel that the issue of a ticket is an unlawful action inconsistent with PATAS precedent.
+%%  signage_fault.absent_unclear } %%%% grounds.sign } %%
+
+Please let me know if you have any further questions. 
+
+Thank you, 
+
+%% name %% 

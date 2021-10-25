@@ -1,0 +1,78 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Darl.Lineage\definitions.csv" />
+    <None Remove="Darl.Lineage\filteredAssociations.csv" />
+    <None Remove="Darl.Lineage\frequency_bigramdictionary_en_243_342.txt" />
+    <None Remove="Darl.Lineage\frequency_dictionary_en_82_765.txt" />
+    <None Remove="Darl.Lineage\words.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\..\..\..\.nuget\packages\symspell\6.7.1\contentFiles\any\netstandard2.0\frequency_bigramdictionary_en_243_342.txt" Link="frequency_bigramdictionary_en_243_342.txt">
+      <Private>False</Private>
+      <NuGetPackageVersion>6.7.1</NuGetPackageVersion>
+      <NuGetItemType>Content</NuGetItemType>
+      <NuGetPackageId>SymSpell</NuGetPackageId>
+      <Pack>false</Pack>
+    </Content>
+    <Content Include="..\..\..\..\..\.nuget\packages\symspell\6.7.1\contentFiles\any\netstandard2.0\frequency_dictionary_en_82_765.txt" Link="frequency_dictionary_en_82_765.txt">
+      <Private>False</Private>
+      <NuGetPackageVersion>6.7.1</NuGetPackageVersion>
+      <NuGetItemType>Content</NuGetItemType>
+      <NuGetPackageId>SymSpell</NuGetPackageId>
+      <Pack>false</Pack>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Darl.Lineage\definitions.csv" />
+    <EmbeddedResource Include="Darl.Lineage\filteredAssociations.csv" />
+    <EmbeddedResource Include="Darl.Lineage\frequency_bigramdictionary_en_243_342.txt" />
+    <EmbeddedResource Include="Darl.Lineage\frequency_dictionary_en_82_765.txt" />
+    <EmbeddedResource Include="Darl.Lineage\words.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GemBox.Document" Version="33.0.1317" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.14" />
+    <PackageReference Include="protobuf-net" Version="2.4.6" />
+    <PackageReference Include="Standard.Licensing-5.0" Version="2.0.2" />
+    <PackageReference Include="SymSpell" Version="6.7.1" />
+    <PackageReference Include="SyrianBallas.Ported.Chronic.Signed" Version="1.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources.resx">
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Darl.Thinkbase\Darl.Meta.Monarch.js">
+      <SubType>Code</SubType>
+    </None>
+    <None Update="Darl.Thinkbase\graphml-attributes.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="Darl.Thinkbase\GraphML.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+
+</Project>

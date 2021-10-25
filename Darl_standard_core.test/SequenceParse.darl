@@ -1,0 +1,7 @@
+﻿ruleset FirstProg
+{
+	input textual arthur;
+	output numeric andy {{small,5,6,7},{medium,6,7,8},{huge,9,10,11}};
+	sequence toilet {"fart",{"bum","bottom"},"pooh"};
+	if arthur is match toilet then andy will be small;
+}

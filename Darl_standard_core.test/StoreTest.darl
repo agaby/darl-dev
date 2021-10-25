@@ -1,0 +1,15 @@
+﻿ruleset storetest
+{
+	input numeric c;
+	store a;
+	store b;
+
+	string a1 "this is string a1";
+	constant b1 36;
+
+	if c is >= 2 then a["poop"] will be 3;
+	if a["fred"] is match a1 then b["age"] will be 27;
+	if a["bill"] is match "test string" then b["age"] will be b1;
+	if a["john"] is > 2 then b["age"] will be 44;
+	if a["james"] is < b1 then b["name"] will be "arbuthnot";
+}

@@ -1,0 +1,68 @@
+﻿using DarlCompiler.Ast;
+using DarlCompiler.Parsing;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace Darl.Thinkbase.Meta
+{
+    public class AnyIOListNode : DarlMetaNode
+    {
+        /// <summary>
+        /// The list of arguments
+        /// </summary>
+        protected List<DarlMetaNode> arguments = new List<DarlMetaNode>();
+
+        /// <summary>
+        /// Initializes the specified context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="treeNode">The tree node.</param>
+        public override void Init(AstContext context, ParseTreeNode treeNode)
+        {
+            base.Init(context, treeNode);
+            var nodes = treeNode.GetMappedChildNodes();
+            foreach (var node in nodes)
+            {
+                arguments.Add((DarlMetaNode)AddChild("-", node));
+            }
+        }
+
+        /// <summary>
+        /// Establishes dependencies and initializes constants
+        /// </summary>
+        /// <param name="dependencies">list of dependencies discovered</param>
+        /// <param name="currentOutput">output for the rule being walked</param>
+        /// <param name="context">The context.</param>
+        public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlMetaNode currentOutput, ConstantContext context, IGraphModel model, GraphObject currentNode)
+        {
+            foreach (var node in arguments)
+                node.WalkDependencies(dependencies, currentOutput, context, model, currentNode);
+        }
+
+        protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
+        {
+            var results = new Dictionary<string, string>();
+            foreach (DarlMetaIdentifierNode arg in arguments)
+            {
+                var res = await arg.Evaluate(thread) as DarlResult;
+                if (!results.ContainsKey(arg.name)) //ignore duplicates
+                    results.Add(arg.name, res.ToStringContent());
+            }
+            return results;
+        }
+
+        /// <summary>
+        /// Walks the saliences.
+        /// </summary>
+        /// <param name="saliency">The incoming saliency.</param>
+        /// <param name="root">The map root.</param>
+        /// <param name="currentRuleSet">The current rule set.</param>
+        /// <param name="currentOutput">The current output.</param>
+        public override void WalkSaliences(double saliency, MetaRootNode root)
+        {
+            foreach (var node in arguments)
+                node.WalkSaliences(saliency, root);
+
+        }
+    }
+}

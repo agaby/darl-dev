@@ -1,0 +1,19 @@
+﻿using DarlCommon;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Darl.Lineage
+{
+    public abstract class MatchedElement
+    {
+        public string path { get; set; }
+
+        public List<DarlVar> values { get; set; }
+
+        public int depth { get; set; }
+
+        public double confidence { get; set; } = 1.0;
+
+    }
+}
