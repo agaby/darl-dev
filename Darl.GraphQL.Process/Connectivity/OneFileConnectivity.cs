@@ -13,6 +13,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private readonly IConfiguration _config;
         private readonly ILogger _logger;
         private readonly string filepath;
+        private string fileName { get; set; } = string.Empty;
 
         public OneFileConnectivity(IConfiguration config, ILogger<OneFileConnectivity> logger)
         {
@@ -34,7 +35,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public List<string> List(string prefix)
         {
-            return new List<string> { filepath };
+            return new List<string> { fileName };
         }
 
         public async Task<byte[]> Read(string name)
@@ -44,6 +45,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task Write(string name, byte[] data)
         {
+            fileName = name;
             await File.WriteAllBytesAsync(filepath, data);
         }
 

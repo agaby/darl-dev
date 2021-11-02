@@ -1,25 +1,44 @@
 ﻿@model List<Darl.GraphQL.Models.Models.DarlProduct>
 @{
 }
-    @foreach (var prod in Model)
-    {
-        @if (prod.hidden == false)
-        {
-            <div class="col-lg-4 margin-b-30">
-                <div class="price-box @(prod.price < 2000 ? "best-plan" : "")">
-                    <div class="price-header">
-                        <h1><span class="dolor">$</span>@(((double)prod.price) / 100)<span class="peroid">/Month</span></h1>
-                        <h4>@prod.name</h4>
-                    </div>
-                    <ul class="list-unstyled price-features">
-                        <li>@(prod.userCount == 1 ? "Single developer" : "Unlimited developers")</li>
-                        <li>@(prod.kgCount == 1 ? "Single graph" : prod.kgCount < 100 ? prod.kgCount + " graphs" : "Unlimited graphs")</li>
-                    </ul>
-                    <div class="price-footer">
-                        <button id ="@prod.priceId" onclick="HandlePurchase('@prod.priceId')" class="price-btn btn-rounded btn-dark-border">Subscribe</button>
-                    </div>
+<div id="modalPricing" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Subscriptions</h3>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <p>Choose a subscription</p>
+                <div class="row">
+                    @foreach (var prod in Model)
+                    {
+                        @if (prod.hidden == false)
+                        {
+                            <div class="col-lg-4 margin-b-30">
+                                <div class="price-box @(prod.price < 2000 ? "best-plan" : "")">
+                                    <div class="price-header">
+                                        <h1><span class="dolor">$</span>@(((double)prod.price) / 100)<span class="peroid">/Month</span></h1>
+                                        <h4>@prod.name</h4>
+                                    </div>
+                                    <ul class="list-unstyled price-features">
+                                        <li>@(prod.userCount == 1 ? "Single developer" : "Unlimited developers")</li>
+                                        <li>@(prod.kgCount == 1 ? "Single graph" : prod.kgCount < 100 ? prod.kgCount + " graphs" : "Unlimited graphs")</li>
+                                    </ul>
+                                    <div class="price-footer">
+                                        <button id="@prod.priceId" onclick="HandlePurchase('@prod.priceId')" class="price-btn btn-rounded btn-dark-border">Subscribe</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
                 </div>
             </div>
-        }
-    }
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 

@@ -9,5 +9,5 @@ services:
     restart: always
     environment:
       SINGLEUSERID: 8c663676-a7dc-4561-af3d-89b38555837d
-      BLOBFILEPATH: blobs
+      BLOBFILEPATH: graph.graph
       LOCALDATABASEPATH: database

@@ -63,6 +63,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
     <None Include="wwwroot\font-awesome\js\all.js" />
     <None Include="wwwroot\font-awesome\js\all.min.js" />
     <None Include="wwwroot\font-awesome\js\brands.js" />

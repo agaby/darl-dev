@@ -7,11 +7,12 @@ using System.Collections.Generic;
 
 namespace Darl.GraphQL.Pages
 {
-    public class GraphEditModel : PageModel
+    public partial class GraphEditModel : PageModel
     {
         public List<DarlProduct> products;
         private readonly IConfiguration _config;
         public string filepath;
+        private bool uninitialized = false;
 
         public GraphEditModel(IProducts prod, IConfiguration config, IBlobConnectivity _conn)
         {
@@ -24,12 +25,18 @@ namespace Darl.GraphQL.Pages
                 {
                     filepath = fp;
                 }
+                else
+                {
+                    uninitialized = true;
+                }
             }
             filepath = string.Empty;
         }
 
         public IActionResult OnGet()
         {
+            if (uninitialized)
+                return Redirect("emptyContainer");
             return new PageResult();
         }
 

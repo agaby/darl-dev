@@ -4,6 +4,7 @@ using Darl.Lineage;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
 using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -81,22 +82,30 @@ namespace Darl.Thinkbase
         [ProtoMember(18)]
         public DarlTime? fixedTime { get; set; }
 
-        public static BlobGraphContent Load(byte[] data)
+        public static BlobGraphContent? Load(byte[] data)
         {
             using (var ms = new MemoryStream(data))
             {
                 ms.Position = 0;
-                var res = Serializer.Deserialize<BlobGraphContent>(ms);
-                if (!string.IsNullOrEmpty(res.key))
+                try
                 {
-                    DarlLicense.license = res.key;
-                    if (!DarlLicense.licensed)
+                    var res = Serializer.Deserialize<BlobGraphContent>(ms);
+                    if (!string.IsNullOrEmpty(res.key))
                     {
-                        res.licensed = false;
+                        DarlLicense.license = res.key;
+                        if (!DarlLicense.licensed)
+                        {
+                            res.licensed = false;
+                        }
                     }
+                    return res;
                 }
-                return res;
-            }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                return null;
+           }
         }
 
         /// <summary>

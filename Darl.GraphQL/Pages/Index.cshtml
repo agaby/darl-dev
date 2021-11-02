@@ -2,9 +2,9 @@
 @model Darl.GraphQL.Pages.GraphEditModel
 @{
     ViewData["Title"] = "Graph Edit";
-    if(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
+    if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
     {
-        if(!string.IsNullOrEmpty(Model.filepath))
+        if (!string.IsNullOrEmpty(Model.filepath))
         {
             RouteData.Values["kgraph"] = Model.filepath;
             Layout = "~/Pages/_layoutscrollingContainer.cshtml";
@@ -29,27 +29,30 @@
                 <button class="btn btn-info" id="settings"><i class="fa fa-gear"></i></button>
             </div>
         </div>
-        <div class="row" id="fileHandling">
-            <div class="col-md-6 margin-b-40">
-                <p>Select a Knowledge Graph from your account to edit.</p>
-                <label>Knowledge Graphs </label>
-                <select id="kgmodel-dropdown" name="kgmodel-dropdown" class="dropdown"></select>
-                <button id="kg-save" class="btn btn-info">Save</button>
-                <button id="kg-copy" class="btn btn-info">Copy</button>
-                <button id="kg-delete" class="btn btn-warning">Delete</button>
+        @if (!(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true"))
+        {
+            <div class="row" id="fileHandling">
+                <div class="col-md-6 margin-b-40">
+                    <p>Select a Knowledge Graph from your account to edit.</p>
+                    <label>Knowledge Graphs </label>
+                    <select id="kgmodel-dropdown" name="kgmodel-dropdown" class="dropdown"></select>
+                    <button id="kg-save" class="btn btn-info">Save</button>
+                    <button id="kg-copy" class="btn btn-info">Copy</button>
+                    <button id="kg-delete" class="btn btn-warning">Delete</button>
+                </div>
+                <div class="col-md-6 margin-b-40">
+                    <label>Or create a new Knowledge Graph - choose a unique name.</label>
+                    <input id="kg-input" name="kgmodelname" class="form-control">
+                    <button id="kg-create" class="btn btn-info">Create</button>
+                </div>
             </div>
-            <div class="col-md-6 margin-b-40">
-                <label>Or create a new Knowledge Graph - choose a unique name.</label>
-                <input id="kg-input" name="kgmodelname" class="form-control">
-                <button id="kg-create" class="btn btn-info">Create</button>
+            <div class="row d-none" id="demohandling">
+                <div class="col-md-6 margin-b-40">
+                    <label>Demo Knowledge Graphs </label>
+                    <select id="kgdemo-dropdown" name="kgdemo-dropdown" class="dropdown"></select>
+                </div>
             </div>
-        </div>
-        <div class="row d-none" id="demohandling">
-            <div class="col-md-6 margin-b-40">
-                <label>Demo Knowledge Graphs </label>
-                <select id="kgdemo-dropdown" name="kgdemo-dropdown" class="dropdown"></select>
-            </div>
-        </div>
+        }
         <div class="space-90"><hr /></div>
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item">
@@ -65,10 +68,10 @@
                 <a class="nav-link" id="conversation-tab" data-toggle="tab" href="#conversation" role="tab" aria-controls="conversation" aria-selected="false">Conversation</a>
             </li>
             <!--
-               <li class="nav-item">
-                   <a class="nav-link" id="dynamic-tab" data-toggle="tab" href="#dynamic" role="tab" aria-controls="dynamic" aria-selected="false">Dynamic sources</a>
-               </li>
-            -->
+            <li class="nav-item">
+                <a class="nav-link" id="dynamic-tab" data-toggle="tab" href="#dynamic" role="tab" aria-controls="dynamic" aria-selected="false">Dynamic sources</a>
+            </li>
+        -->
         </ul>
         <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="real" role="tabpanel" aria-labelledby="home-tab">
@@ -129,8 +132,8 @@
                             </div>
                             <div class="type_msg">
                                 <div class="input_msg_write">
-                                    <input type="text" id="msg_input"class="write_msg" placeholder="Type a message" />
-                                    <button class="msg_send_btn" id ="msg_send_btn"type="button"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                                    <input type="text" id="msg_input" class="write_msg" placeholder="Type a message" />
+                                    <button class="msg_send_btn" id="msg_send_btn" type="button"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -141,7 +144,7 @@
             <div class="tab-pane fade" id="dynamic" role="tabpanel" aria-labelledby="dynamic-tab">
             </div>
         </div>
-    </div>
+        </div>
     <div id='kgurl' data-kgurl="@RouteData.Values["kgraph"]"></div>
     <div id='taburl' data-taburl="@RouteData.Values["tab"]"></div>
 </main>
@@ -185,6 +188,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.2/velocity.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.2/velocity.ui.min.js"></script>
     <script src="/cytoscape-edgehandles/cytoscape-edgehandles.js"></script>
+    @if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
+    {
+        <script src="/GraphEdit/ContainerInit.js"></script>
+    }
+    else
+    {
+        <script src="/GraphEdit/WebInit.js"></script>
+    }
     <script src="/GraphEdit/GraphEdit.js"></script>
     <script src="/json-viewer/jquery.json-viewer.js"></script>
 
