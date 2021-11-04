@@ -120,7 +120,7 @@ namespace DarlCommon
         [Required]
         [ProtoMember(1)]
         [Display(Name = "The name of the data value", Description = "This should match the name in any associated Darl rule sets")]
-        public string name { get; set; }
+        public string name { get; set; } = string.Empty;
 
         /// <summary>
         /// This result is unknown if true.

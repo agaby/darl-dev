@@ -11,14 +11,14 @@ namespace DarlCommon
         /// </summary>
         /// <value>The categories.</value>
         [Display(Name = "Categories defined", Description = "All the categories for this input")]
-        public List<string> Categories { get; set; }
+        public List<string>? Categories { get; set; }
 
         /// <summary>
         /// Gets or sets the categories.
         /// </summary>
         /// <value>The categories.</value>
         [Display(Name = "Sets defined", Description = "All the sets for this input")]
-        public List<SetDefinition> Sets { get; set; }
+        public List<SetDefinition>? Sets { get; set; }
 
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace DarlCommon
         /// <value>The name.</value>
         [Display(Name = "Name", Description = "The name of the output in the Darl rule set")]
         [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the type of the output.
@@ -50,7 +50,7 @@ namespace DarlCommon
         /// </summary>
         /// <value>The value format.</value>
         [Display(Name = "Value format", Description = "Format for the precision etc in standard 'C' form")]
-        public string ValueFormat { get; set; }
+        public string? ValueFormat { get; set; }
 
 
         /// <summary>

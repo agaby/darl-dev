@@ -39,7 +39,7 @@ namespace DarlCommon
         [Display(Name = "Name", Description = "The name of the output in the Darl rule set")]
         [ReadOnly(true)]
         [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } = String.Empty;
 
         /// <summary>
         /// Gets or sets the type of the output.
@@ -63,7 +63,7 @@ namespace DarlCommon
         /// </summary>
         /// <value>The color of the score bar.</value>
         [Display(Name = "Bar color", Description = "The color to use if a score bar is selected in CSS format")]
-        public string ScoreBarColor { get; set; }
+        public string? ScoreBarColor { get; set; }
 
         /// <summary>
         /// Gets or sets the score bar maximum value.
@@ -91,10 +91,10 @@ namespace DarlCommon
         /// </summary>
         /// <value>The value format.</value>
         [Display(Name = "Value format", Description = "Format for the precision etc in standard 'C' form")]
-        public string ValueFormat { get; set; }
+        public string? ValueFormat { get; set; }
 
         [Display(Name = "Path to the output", Description = "If the source data is json, this is a jsonpath expression to locate the data or place the result, if XML, Xpath, or a lineage to match variables by conceptual type. ")]
-        public string path { get; set; }
+        public string? path { get; set; }
 
 
         /// <summary>

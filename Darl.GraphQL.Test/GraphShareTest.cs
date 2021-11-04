@@ -389,9 +389,9 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
-        public async Task CreateMailshot()
+        public Task CreateMailshot()
         {
-
+            return Task.CompletedTask;
         }
 
     }

@@ -99,7 +99,7 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<Contact> DeleteContactAsync(string emailname)
+        public Task<Contact?> DeleteContactAsync(string emailname)
         {
             throw new NotImplementedException();
         }

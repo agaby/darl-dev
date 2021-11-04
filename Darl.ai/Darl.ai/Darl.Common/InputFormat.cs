@@ -31,7 +31,7 @@ namespace DarlCommon
         /// <value>The categories.</value>
         [Display(Name = "Categories defined", Description = "All the categories found in the rule set for this input")]
         [ReadOnly(true)]
-        public List<string> Categories { get; set; }
+        public List<string>? Categories { get; set; }
 
         /// <summary>
         /// Gets or sets the increment.

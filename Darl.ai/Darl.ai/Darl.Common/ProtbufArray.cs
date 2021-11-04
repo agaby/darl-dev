@@ -7,7 +7,7 @@ namespace Darl.Common
     public class ProtobufArray
     {
         [ProtoMember(1)]
-        public List<string> InnerArray;
+        public List<string>? InnerArray; 
 
         public ProtobufArray()
         { }

@@ -21,7 +21,7 @@
         /// Gets or sets the message.
         /// </summary>
         /// <value>The message.</value>
-        public string message { get; set; }
+        public string message { get; set; } = string.Empty;
         /// <summary>
         /// Gets or sets the severity.
         /// </summary>

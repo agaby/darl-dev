@@ -7,6 +7,6 @@ namespace DarlCommon
     {
         [Required]
         [Display(Name = "External connections", Description = "Connections to external SaaS vendors triggered by or triggering projects")]
-        public List<Connector> connectors { get; set; }
+        public List<Connector>? connectors { get; set; }
     }
 }

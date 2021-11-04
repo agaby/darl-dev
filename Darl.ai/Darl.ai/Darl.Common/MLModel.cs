@@ -12,55 +12,55 @@ namespace DarlCommon
         /// The darl code of the Machine learning model
         /// </summary>
         [Display(Name = "Darl code")]
-        public string darl { get; set; }
+        public string darl { get; set; } = String.Empty;
 
         /// <summary>
         /// The name of the Machine learning model
         /// </summary>
         [Display(Name = "Name")]
-        public string name { get; set; }
+        public string name { get; set; } = String.Empty;
 
         /// <summary>
         /// The version of the Machine learning model
         /// </summary>
         [Display(Name = "Version")]
-        public string version { get; set; }
+        public string version { get; set; } = String.Empty;
 
         /// <summary>
         /// The author of the Machine learning model
         /// </summary>
         [Display(Name = "Author")]
-        public string author { get; set; }
+        public string author { get; set; } = String.Empty;
 
         /// <summary>
         /// The copyright statement of the Machine learning model
         /// </summary>
         [Display(Name = "Copyright")]
-        public string copyright { get; set; }
+        public string copyright { get; set; } = String.Empty;
 
         /// <summary>
         /// The license for use of the Machine learning model
         /// </summary>
         [Display(Name = "License")]
-        public string license { get; set; }
+        public string license { get; set; } = String.Empty;
 
         /// <summary>
         /// A description of the Machine learning model
         /// </summary>
         [Display(Name = "Description")]
-        public string description { get; set; }
+        public string description { get; set; } = String.Empty;
 
         /// <summary>
         /// training data
         /// </summary>
         [Display(Name = "Training data")]
-        public string trainData { get; set; }
+        public string trainData { get; set; } = String.Empty;
 
         /// <summary>
         /// training data schema
         /// </summary>
         [Display(Name = "Training data schema")]
-        public string dataSchema { get; set; }
+        public string dataSchema { get; set; } = String.Empty;
 
         /// <summary>
         /// Number of sets used in traning
@@ -80,7 +80,7 @@ namespace DarlCommon
         /// The name of the rule set overwritten if the results are saved.
         /// </summary>
         [Display(Name = "Trained model to ruleset name")]
-        public string destinationRulesetName { get; set; }
+        public string destinationRulesetName { get; set; } = String.Empty;
 
     }
 }

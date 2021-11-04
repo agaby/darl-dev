@@ -2,7 +2,7 @@
 {
     public class GraphQLCredentials
     {
-        public string url { get; set; }
-        public string header { get; set; }
+        public string url { get; set; } = string.Empty;
+        public string header { get; set; } = string.Empty;
     }
 }

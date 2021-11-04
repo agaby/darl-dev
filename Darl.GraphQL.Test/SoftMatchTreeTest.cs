@@ -18,7 +18,6 @@ namespace Darl.GraphQL.Test
     [TestClass]
     public class SoftMatchTreeTest
     {
-        readonly GraphQLHttpClient client = null;
         ISoftMatchProcessing cmp;
         IConfiguration _config;
 
@@ -245,9 +244,9 @@ namespace Darl.GraphQL.Test
             throw new NotImplementedException();
         }
 
-        public async Task<bool> Exists(string name)
+        public Task<bool> Exists(string name)
         {
-            return localData.ContainsKey(name);
+            return Task.FromResult(localData.ContainsKey(name));
         }
 
         public List<string> List(string prefix)
@@ -260,12 +259,13 @@ namespace Darl.GraphQL.Test
             return localData[name];
         }
 
-        public async Task Write(string name, byte[] data)
+        public Task Write(string name, byte[] data)
         {
             if (localData.ContainsKey(name))
                 localData[name] = data;
             else
                 localData.Add(name, data);
+            return Task.CompletedTask;
         }
     }
 

@@ -22,11 +22,11 @@ namespace Darl.Thinkbase
 
         List<GraphObject> GetConnectedObjects(GraphObject node, string connectionLineage, string objectLineage);
 
-        string FindControlAttribute(string id, string lineage);
+        string? FindControlAttribute(string id, string lineage);
 
-        DarlVar FindDataAttribute(string id, string lineage, KnowledgeState ks);
-        List<DarlTime?> FindAttributeExistence(string id, string lineage, KnowledgeState ks);
-        GraphAttribute FindDataGraphAttribute(string id, string lineage, KnowledgeState ks);
+        DarlVar? FindDataAttribute(string id, string lineage, KnowledgeState ks);
+        List<DarlTime?>? FindAttributeExistence(string id, string lineage, KnowledgeState ks);
+        GraphAttribute? FindDataGraphAttribute(string id, string lineage, KnowledgeState ks);
         List<LineageRecord> GetLineages(GraphElementType gtype);
         (string, string) SplitCompositeLineage(string comp);
         bool licensed { get; }

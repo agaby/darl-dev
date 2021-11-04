@@ -52,7 +52,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task UpdateUserAccountState(string id, DarlUser.AccountState paying);
         Task<DarlUser.AccountState?> GetUserAccountState(string customerId);
         Task<bool> CreateNewGraph(string userId, string modelName);
-        Task<Contact> DeleteContactAsync(string emailname);
+        Task<Contact?> DeleteContactAsync(string emailname);
         Task<string> RegisterForMarketing(string name, string email);
         Task<bool> CheckEmail(string email, string ipaddress = "");
         Task<string> GetSuggestedRuleSet(string userId, string modelName, string objectId, string lineage);

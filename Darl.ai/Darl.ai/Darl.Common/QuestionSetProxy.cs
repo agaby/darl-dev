@@ -29,13 +29,13 @@ namespace DarlCommon
         /// Zero or more questions
         /// </summary>
         /// <value>The questions.</value>
-        public List<QuestionProxy> questions { get; set; }
+        public List<QuestionProxy>? questions { get; set; }
 
         /// <summary>
         /// Zero or more responses
         /// </summary>
         /// <value>The responses.</value>        
-        public List<ResponseProxy> responses { get; set; }
+        public List<ResponseProxy>? responses { get; set; }
 
         /// <summary>
         /// Percentage complete, 0-100
@@ -54,25 +54,25 @@ namespace DarlCommon
         /// </summary>
         /// <value>The ie token.</value>
         [Key]
-        public string ieToken { get; set; }
+        public string ieToken { get; set; } = String.Empty;
 
         /// <summary>
         /// text displayed before results
         /// </summary>
         /// <value>The response header.</value>       
-        public string responseHeader { get; set; }
+        public string responseHeader { get; set; } = String.Empty;
 
         /// <summary>
         /// text displayed before questions
         /// </summary>
         /// <value>The question header.</value>       
-        public string questionHeader { get; set; }
+        public string? questionHeader { get; set; }
 
         /// <summary>
         /// text displayed before form
         /// </summary>
         /// <value>The preamble.</value>        
-        public string preamble { get; set; }
+        public string? preamble { get; set; }
 
         /// <summary>
         /// Indicates that the user can unwind a previous set of answers
@@ -84,13 +84,13 @@ namespace DarlCommon
         /// Language requested
         /// </summary>
         /// <value>The language.</value>        
-        public string language { get; set; }
+        public string? language { get; set; }
 
         /// <summary>
         /// The values for reporting, valid if Complete is true.
         /// </summary>
         /// <value>The values.</value>        
-        public Dictionary<string, string> values { get; set; }
+        public Dictionary<string, string>? values { get; set; }
 
         /// <summary>
         /// Optional request for a set number of questions.
@@ -100,6 +100,6 @@ namespace DarlCommon
         /// <summary>
         /// if not empty or null signifies request to redirect to new rule set contained.
         /// </summary>
-        public string redirect { get; set; }
+        public string? redirect { get; set; }
     }
 }

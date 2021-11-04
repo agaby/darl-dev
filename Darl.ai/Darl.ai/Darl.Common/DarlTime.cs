@@ -199,9 +199,9 @@ namespace Darl.Common
             return true;
         }
 
-        public int CompareTo(DarlTime other)
+        public int CompareTo(DarlTime? other)
         {
-            return raw.CompareTo(other.raw);
+            return other == null ? -1 : raw.CompareTo(other.raw);
         }
 
         public static DarlTime Parse(string d)
@@ -223,9 +223,9 @@ namespace Darl.Common
             }
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (obj is DarlTime)
+            if (obj != null && obj is DarlTime)
             {
                 var dt = obj as DarlTime;
                 return dt.raw == raw;

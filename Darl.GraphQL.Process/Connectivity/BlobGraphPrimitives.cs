@@ -197,7 +197,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return Task.FromResult(((BlobGraphContent)model).virtualVertices.ContainsKey(lineage));
         }
 
-        public async Task<GraphConnection> UpdateConnection(string compositeName, GraphConnectionUpdate gc)
+        public async Task<GraphConnection?> UpdateConnection(string compositeName, GraphConnectionUpdate gc)
         {
             var conn = await GetConnectionById(compositeName, gc.id);
             if (conn == null)

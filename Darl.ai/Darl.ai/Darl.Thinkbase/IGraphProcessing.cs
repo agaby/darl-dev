@@ -25,7 +25,7 @@ namespace Darl.Thinkbase
         Task<GraphObject> DeleteGraphObject(string compositeName, string id);
         Task<GraphConnection> DeleteGraphConnection(string compositeName, string id);
         Task<GraphObject> UpdateGraphObject(string compositeName, GraphObjectUpdate graphObject, OntologyAction ontology = OntologyAction.ignore);
-        Task<GraphConnection> UpdateGraphConnection(string compositeName, GraphConnectionUpdate graphConnection, OntologyAction ontology = OntologyAction.ignore);
+        Task<GraphConnection?> UpdateGraphConnection(string compositeName, GraphConnectionUpdate graphConnection, OntologyAction ontology = OntologyAction.ignore);
         Task<bool> CreateNewGraph(string userId, string name);
         Task<string> GetGraphObjectProperty(string compositeName, string id, string property);
         Task<GraphConnection> GetConnectionByIds(string compositeName, string startId, string endId, string lineage);

@@ -38,7 +38,7 @@ namespace Darl.Thinkbase
         [ProtoMember(4)]
         public Dictionary<string, GraphConnection> virtualEdges { get; set; } = new Dictionary<string, GraphConnection>();
         [ProtoMember(10)]
-        public string modelName { get; set; }
+        public string modelName { get; set; } = String.Empty;
 
         private static readonly DarlMetaRunTime runtime = new DarlMetaRunTime(new MetaStructureHandler());
 
@@ -60,20 +60,20 @@ namespace Darl.Thinkbase
         /// key used for verification of source
         /// </summary>
         [ProtoMember(9)]
-        public string key { get; set; }
+        public string key { get; set; } = String.Empty;
         [ProtoMember(11)]
-        public string description { get; set; }
+        public string description { get; set; } = String.Empty;
         [ProtoMember(12)]
-        public string initialText { get; set; }
+        public string initialText { get; set; } = String.Empty;
 
         [ProtoMember(13)]
-        public string author { get; set; }
+        public string author { get; set; } = String.Empty;
 
         [ProtoMember(14)]
-        public string copyright { get; set; }
+        public string copyright { get; set; } = String.Empty;
 
         [ProtoMember(15)]
-        public string licenseUrl { get; set; }
+        public string licenseUrl { get; set; } = String.Empty;
         public bool licensed { get; private set; } = true; //default for legacy
         [ProtoMember(16)]
         public IGraphModel.DateDisplay? dateDisplay { get; set; }
@@ -114,14 +114,14 @@ namespace Darl.Thinkbase
         /// <param name="id"></param>
         /// <param name="lineage"></param>
         /// <returns></returns>
-        public string FindControlAttribute(string id, string lineage)
+        public string? FindControlAttribute(string id, string lineage)
         {
             if (!vertices.ContainsKey(id))
                 return null;
             var obj = vertices[id];
             if (obj.properties != null)
             {
-                var att = obj.properties.Where(a => a.lineage.StartsWith(lineage)).FirstOrDefault(); //check name or lineage?
+                var att = obj.properties.Where(a => a.lineage != null && a.lineage.StartsWith(lineage)).FirstOrDefault(); //check name or lineage?
                 if (att != null)
                 {
                     try
@@ -136,7 +136,7 @@ namespace Darl.Thinkbase
                 }
             }
             //no local value, try virtual
-            if (!virtualVertices.ContainsKey(obj.lineage))
+            if (obj.lineage == null || !virtualVertices.ContainsKey(obj.lineage))
             {
                 return null;
             }
@@ -151,7 +151,7 @@ namespace Darl.Thinkbase
                 {
                     foreach (var p in l.properties)
                     {
-                        if (p.lineage.StartsWith(lineage))
+                        if (p.lineage != null && p.lineage.StartsWith(lineage))
                         {
                             ruleSource = p.value;
                             found = true;
@@ -175,13 +175,13 @@ namespace Darl.Thinkbase
             }
         }
 
-        public DarlVar FindDataAttribute(string id, string lineage, KnowledgeState ks)
+        public DarlVar? FindDataAttribute(string id, string lineage, KnowledgeState ks)
         {
             var att = FindDataGraphAttribute(id, lineage, ks);
             return att != null ? att.Convert() : null;
         }
 
-        public GraphAttribute FindDataGraphAttribute(string id, string lineage, KnowledgeState ks)
+        public GraphAttribute? FindDataGraphAttribute(string id, string lineage, KnowledgeState ks)
         {
             //look in the ks
             if (ks != null && ks.ContainsRecord(id))
@@ -196,15 +196,17 @@ namespace Darl.Thinkbase
             var obj = vertices[id];
             if (obj.properties != null)
             {
-                var oatt = obj.properties.Where(a => a.lineage.StartsWith(lineage)).FirstOrDefault();
+                var oatt = obj.properties.Where(a => a.lineage != null && a.lineage.StartsWith(lineage)).FirstOrDefault();
                 if (oatt != null)
                     return oatt;
             }
             //finally in the virtual realm - generic values
+            if (obj.lineage == null)
+                return null;
             var virtNode = virtualVertices[obj.lineage];
             var list1 = new List<GraphObject> { virtNode };
             FollowHypernymy(virtNode, list1);
-            GraphAttribute data = null;
+            GraphAttribute? data = null;
             bool found = false;
             foreach (var l in list1)
             {
@@ -212,7 +214,7 @@ namespace Darl.Thinkbase
                 {
                     foreach (var p in l.properties)
                     {
-                        if (p.lineage.StartsWith(lineage))
+                        if (p.lineage != null && p.lineage.StartsWith(lineage))
                         {
                             data = p;
                             found = true;
@@ -226,7 +228,7 @@ namespace Darl.Thinkbase
             return data;
         }
 
-        public List<DarlTime?> FindAttributeExistence(string id, string lineage, KnowledgeState ks)
+        public List<DarlTime?>? FindAttributeExistence(string id, string lineage, KnowledgeState ks)
         {
             if (ks != null && ks.ContainsRecord(id))
             {
@@ -238,7 +240,7 @@ namespace Darl.Thinkbase
                 return null;
             //then in the object
             var obj = vertices[id];
-            var oatt = obj.properties.Where(a => a.lineage.StartsWith(lineage)).FirstOrDefault();
+            var oatt = obj.properties != null ? obj.properties.Where(a => a.lineage != null && a.lineage.StartsWith(lineage)).FirstOrDefault(): null;
             if (oatt != null)
                 return oatt.existence;
             return null;
@@ -252,7 +254,7 @@ namespace Darl.Thinkbase
                 if (!string.IsNullOrEmpty(i.lineage) && i.lineage.StartsWith(connectionLineage))
                 {
                     var obj = vertices[i.endId];
-                    if (obj.lineage.StartsWith(objectLineage))
+                    if (obj.lineage != null && obj.lineage.StartsWith(objectLineage))
                         list.Add(obj);
                 }
             }
@@ -272,7 +274,7 @@ namespace Darl.Thinkbase
 
         public List<LineageRecord> GetLineages(GraphElementType gtype)
         {
-            List<string> lineages = new List<string>();
+            var lineages = new List<string?>();
             switch (gtype)
             {
                 case GraphElementType.node:

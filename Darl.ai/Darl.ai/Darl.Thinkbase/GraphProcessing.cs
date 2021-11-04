@@ -179,7 +179,7 @@ namespace Darl.Thinkbase
             return await _primitives.GetGraphObjectByExternalId(compositeName, externalId);
         }
 
-        public async Task<GraphConnection> UpdateGraphConnection(string compositeName, GraphConnectionUpdate graphConnection, OntologyAction ontology = OntologyAction.ignore)
+        public async Task<GraphConnection?> UpdateGraphConnection(string compositeName, GraphConnectionUpdate graphConnection, OntologyAction ontology = OntologyAction.ignore)
         {
             var model = await _primitives.Load(compositeName);
             if (ontology != OntologyAction.ignore)//ontological compliance checks
@@ -335,10 +335,10 @@ namespace Darl.Thinkbase
 
             XmlSerializer xSerializer = new XmlSerializer(typeof(graphmltype));
 
-            graphmltype graphRoot = (graphmltype)xSerializer.Deserialize(graphML);
+            graphmltype? graphRoot = (graphmltype?)xSerializer.Deserialize(graphML);
             bool virtualPresent = false;
             bool realPresent = false;
-            if (graphRoot.Items.Length > 1)
+            if (graphRoot != null && graphRoot.Items.Length > 1)
             {
                 var model = await _primitives.Load(compositeName);
                 var virtualGraph = graphRoot.Items.Where(a => ((graphtype)a).desc == "virtual").FirstOrDefault() as graphtype;
@@ -706,7 +706,7 @@ namespace Darl.Thinkbase
             return await _primitives.GetKnowledgeState(userId, Id, graphName, external);
         }
 
-        public bool FindMetaDisplayStructure(IGraphModel model, GraphObject res, ref DarlVar pending, List<InteractTestResponse> responses)
+        public bool FindMetaDisplayStructure(IGraphModel model, GraphObject res, ref DarlVar? pending, List<InteractTestResponse> responses)
         {
             return _metaHandler.FindMetaDisplayStructure(model, res, ref pending, responses);
         }
@@ -716,7 +716,7 @@ namespace Darl.Thinkbase
             return model.FindControlAttribute(id, _metaHandler.CommonLineages["display"]);
         }
 
-        public void HandleCodelessValue(IGraphModel model, GraphObject res, DarlVar pending, List<DarlVar> values, KnowledgeState ks)
+        public void HandleCodelessValue(IGraphModel model, GraphObject res, DarlVar? pending, List<DarlVar> values, KnowledgeState ks)
         {
             _metaHandler.HandleCodelessValue(model, res, pending, values, ks);
         }

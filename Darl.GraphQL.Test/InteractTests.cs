@@ -38,7 +38,7 @@ namespace Darl.GraphQL.Test
         }
 
         [TestMethod]
-        public async Task TestDefaultHandling()
+        public Task TestDefaultHandling()
         {
             var req = new GraphQLHttpRequest()
             {
@@ -49,7 +49,7 @@ namespace Darl.GraphQL.Test
             //           var resp = await client.PostAsync(req);
             //            var responses = resp.GetDataFieldAs<List<InteractTestResponse>>("interact");
             //            Assert.IsTrue(responses[0].response.approximate);
-
+            return Task.CompletedTask;
         }
 
         [TestMethod]

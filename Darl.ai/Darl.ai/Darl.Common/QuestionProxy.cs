@@ -50,27 +50,27 @@ namespace DarlCommon
         /// </summary>
         /// <value>The reference.</value>
 
-        public string reference { get; set; }
+        public string reference { get; set; } = String.Empty;
         /// <summary>
         /// The text of the question
         /// </summary>
         /// <value>The text.</value>
 
-        public string text { get; set; }
+        public string text { get; set; } = String.Empty;
 
         /// <summary>
         /// Gets or sets the path.
         /// </summary>
         /// <value>The path.</value>
 
-        public string path { get; set; }
+        public string path { get; set; } = String.Empty;
 
         /// <summary>
         /// Gets or sets the format.
         /// </summary>
         /// <value>The format.</value>
 
-        public string format { get; set; }
+        public string format { get; set; } = String.Empty;
 
         /// <summary>
         /// The type of the question
@@ -104,14 +104,14 @@ namespace DarlCommon
         /// </summary>
         /// <value>The categories.</value>
 
-        public List<string> categories { get; set; }
+        public List<string>? categories { get; set; }
 
         /// <summary>
         /// String responses
         /// </summary>
         /// <value>The s response.</value>
 
-        public string sResponse { get; set; }
+        public string sResponse { get; set; } = String.Empty;
 
         /// <summary>
         /// numeric response

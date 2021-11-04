@@ -10,14 +10,14 @@ namespace DarlCommon
         /// </summary>
         /// <value>The categories.</value>
         [Display(Name = "Categories defined", Description = "All the categories found in the rule set for this input")]
-        public List<string> Categories { get; set; }
+        public List<string>? Categories { get; set; }
 
         /// <summary>
         /// Gets or sets the categories.
         /// </summary>
         /// <value>The categories.</value>
         [Display(Name = "Sets defined", Description = "All the sets for this input")]
-        public List<SetDefinition> Sets { get; set; }
+        public List<SetDefinition>? Sets { get; set; }
 
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace DarlCommon
         /// <value>The name.</value>
         [Display(Name = "The name", Description = "The name of the input defined in the rule set")]
         [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the numeric maximum.
@@ -69,7 +69,7 @@ namespace DarlCommon
         /// </summary>
         /// <value>The regular expression.</value>
         [Display(Name = "Regular Expression", Description = "A regular expression generating a validation error for a textual input if not met")]
-        public string Regex { get; set; }
+        public string? Regex { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to show sets.

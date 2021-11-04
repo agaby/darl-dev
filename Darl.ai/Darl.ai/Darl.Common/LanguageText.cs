@@ -30,7 +30,7 @@ namespace DarlCommon
         /// <value>The name.</value>
         [Display(Name = "The name", Description = "The name of the text item as used in the rule set")]
         [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the text.

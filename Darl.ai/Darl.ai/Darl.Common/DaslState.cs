@@ -37,6 +37,6 @@ namespace DarlCommon
         /// <value>The values.</value>
         [Required]
         [Display(Name = "The values", Description = "A set of values that changed or became valid at the given time")]
-        public List<DarlVar> values { get; set; }
+        public List<DarlVar> values { get; set; } = new List<DarlVar>();
     }
 }

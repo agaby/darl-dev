@@ -58,7 +58,7 @@ namespace DarlCommon
         /// </summary>
         /// <value>The preamble.</value>
         [DataType(DataType.MultilineText)]
-        public string preamble { get; set; }
+        public string? preamble { get; set; }
 
 
         /// <summary>
@@ -67,14 +67,14 @@ namespace DarlCommon
         /// <value>The main text.</value>
         /// 
         [DataType(DataType.MultilineText)]
-        public string mainText { get; set; }
+        public string? mainText { get; set; }
 
 
         /// <summary>
         /// The description of the answer
         /// </summary>
         /// <value>The annotation.</value>       
-        public string annotation { get; set; }
+        public string? annotation { get; set; }
 
         /// <summary>
         /// A numeric answer value if Score Bar
@@ -86,19 +86,19 @@ namespace DarlCommon
         /// </summary>
         /// <value>The low text.</value>
 
-        public string lowText { get; set; }
+        public string? lowText { get; set; }
         /// <summary>
         /// the text to the right of the score bar
         /// </summary>
         /// <value>The high text.</value>
 
-        public string highText { get; set; }
+        public string? highText { get; set; }
         /// <summary>
         /// The color of the filled section of the score bar
         /// </summary>
         /// <value>The color.</value>
 
-        public string color { get; set; }
+        public string? color { get; set; }
         /// <summary>
         /// The value representing 0 on the score bar or the lower possibility bound
         /// </summary>
@@ -115,6 +115,6 @@ namespace DarlCommon
         /// Gets or sets the format.
         /// </summary>
         /// <value>The format.</value>      
-        public string format { get; set; }
+        public string? format { get; set; }
     }
 }
