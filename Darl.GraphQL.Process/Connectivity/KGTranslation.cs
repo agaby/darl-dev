@@ -89,19 +89,19 @@ namespace Darl.GraphQL.Models.Connectivity
 
                 if (v.Value.lineage == defaultLineage)
                 {
-                    defaultObjectId = v.Value.id;
+                    defaultObjectId = v.Value.id ?? String.Empty;
                 }
                 else if (v.Value.lineage == collateralLineage)
                 {
-                    collateralObjectId = v.Value.id;
+                    collateralObjectId = v.Value.id ?? String.Empty;
                 }
                 else if (v.Value.lineage == _meta.CommonLineages["person"])
                 {
-                    personObjectId = v.Value.id;
+                    personObjectId = v.Value.id ?? String.Empty;
                 }
                 else if (v.Value.lineage == processLineage)
                 {
-                    updateObjectId = v.Value.id;
+                    updateObjectId = v.Value.id ?? String.Empty;
                 }
             }
         }
@@ -599,12 +599,12 @@ namespace Darl.GraphQL.Models.Connectivity
             return _config["AppSettings:boaiuserid"];
         }
 
-        public async Task<DarlUser> UpdateUserAsync(string userId, DarlUserUpdate darlUserUpdate)
+        public Task<DarlUser> UpdateUserAsync(string userId, DarlUserUpdate darlUserUpdate)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<string> UpdateUserAPIKey(string userId)
+        public Task<string> UpdateUserAPIKey(string userId)
         {
             throw new NotImplementedException();
         }
@@ -680,7 +680,7 @@ namespace Darl.GraphQL.Models.Connectivity
                                 name = "account state",
                                 lineage = stateLineage,
                                 type = GraphAttribute.DataType.categorical,
-                                value = user.accountState.ToString(),
+                                value = (user.accountState ?? DarlUser.AccountState.trial).ToString(),
                                 confidence = 1.0
                             },
                             new GraphAttributeInput {
@@ -842,7 +842,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var lineageMap = new HashSet<string>();
             foreach (var k in model.vertices.Keys)
             {
-                lineageMap.Add(model.vertices[k].lineage);
+                lineageMap.Add(model.vertices[k].lineage ?? String.Empty);
             }
             var colors = ColorGenerator.Pick(lineageMap.Count);
             if (!colors.Any()) //if only one lineage this will be empty
@@ -857,13 +857,13 @@ namespace Darl.GraphQL.Models.Connectivity
             foreach (var k in model.vertices.Keys)
             {
                 var tNode = model.vertices[k];
-                var n = new NodaNode { title = tNode.name, uuid = k, properties = Convert(tNode.properties), tone = colourMap[tNode.lineage], size = 5.0, shape = NodaNodeShapes.Ball };
+                var n = new NodaNode { title = tNode.name, uuid = k, properties = Convert(tNode.properties ?? new List<GraphAttribute>()), tone = colourMap[tNode.lineage ?? String.Empty], size = 5.0, shape = NodaNodeShapes.Ball };
                 nodadoc.nodes.Add(n);
             }
             foreach (var k in model.edges.Keys)
             {
                 var tLink = model.edges[k];
-                var l = new NodaLink { title = tLink.name, uuid = k, fromNode = new NodaNodeId { Uuid = tLink.startId }, toNode = new NodaNodeId { Uuid = tLink.endId }, properties = Convert(tLink.properties), tone = new NodaTone { r = 0.09019608, g = 0.09019608, b = 0.09019608, a = 1.0 } };
+                var l = new NodaLink { title = tLink.name, uuid = k, fromNode = new NodaNodeId { Uuid = tLink.startId }, toNode = new NodaNodeId { Uuid = tLink.endId }, properties = Convert(tLink.properties ?? new List<GraphAttribute>()), tone = new NodaTone { r = 0.09019608, g = 0.09019608, b = 0.09019608, a = 1.0 } };
                 nodadoc.links.Add(l);
             }
             //create the ancillary dictionaries
@@ -873,12 +873,15 @@ namespace Darl.GraphQL.Models.Connectivity
             for (int n = 0; n < 100; n++)
                 fd.Calculate(0.01);
             var bb = fd.GetBoundingBox();
-            var diagonal = bb.topRightBack - bb.bottomLeftFront;
-            var length = diagonal.Magnitude();
-            var scale = 2.0 / length; //fit into a 2 unit diagonal bounding box
-            foreach (var n in nodadoc.nodes)
+            if (bb != null)
             {
-                n.position = n.position * scale;
+                var diagonal = bb.topRightBack - bb.bottomLeftFront;
+                var length = diagonal.Magnitude();
+                var scale = 2.0 / length; //fit into a 2 unit diagonal bounding box
+                foreach (var n in nodadoc.nodes)
+                {
+                    n.position = n.position * scale;
+                }
             }
             return JsonConvert.SerializeObject(nodadoc, new Newtonsoft.Json.Converters.StringEnumConverter());
         }
@@ -898,17 +901,17 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        public async Task<List<LineageRecord>> GetLineagesForWord(string word, string isoLanguage = "en")
+        public Task<List<LineageRecord>> GetLineagesForWord(string word, string isoLanguage = "en")
         {
             try
             {
                 var offset = 0;
-                return LineageLibrary.WordRecognizer(new List<string> { word }, ref offset, true);
+                return Task.FromResult(LineageLibrary.WordRecognizer(new List<string> { word }, ref offset, true));
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Bad lineage lookup for word {word} message: {ex.Message}");
-                return new List<LineageRecord>();
+                return Task.FromResult(new List<LineageRecord>());
             }
         }
 

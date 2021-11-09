@@ -40,7 +40,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<List<KnowledgeRecord>> Discover(string userId, string KnowledgeGraphName, string subjectId)
         {
-            return await _ghandler.Discover(userId, KnowledgeGraphName, subjectId, null);
+            return await _ghandler.Discover(userId, KnowledgeGraphName, subjectId, null, new System.Text.StringBuilder());
         }
 
         public async Task<List<InteractTestResponse>> InteractKGAsync(string userId, string KnowledgeGraphName, string conversationId, DarlVar conversationData)

@@ -18,6 +18,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.confidence, true).Description("The confidence of this object");
             Field<GraphAttributeDataTypeEnum>("type", "The type of this object", resolve: c => c.Source.type);
             Field<BooleanGraphType>("virtual", "if true the object is a representative of a type, rather than a real world object", resolve: c => c.Source._virtual);
+            Field<ListGraphType<GraphAttributeType>>("properties", "sub-attributes of this attribute", resolve: c => c.Source.properties);
         }
     }
 }

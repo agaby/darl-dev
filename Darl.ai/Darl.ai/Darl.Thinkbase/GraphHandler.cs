@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -236,22 +237,25 @@ namespace Darl.Thinkbase
         /// <param name="model">The model</param>
         /// <param name="ks">The starting state</param>
         /// <returns>A list of possible accessible states in depth first search order including intermediate states.</returns>
-        public async Task<List<KnowledgeRecord>> Discover(string userId, string knowledgeGraphName, string subjectId, List<string> lineages)
+        public async Task<List<KnowledgeRecord>> Discover(string userId, string knowledgeGraphName, string subjectId, List<string> lineages, StringBuilder log)
         {
             var model = await _graph.GetModel(userId, knowledgeGraphName);
             if (model == null)
             {
                 throw new MetaRuleException($"{knowledgeGraphName} doesn't exist in your account");
             }
-            KnowledgeRecord ks = (KnowledgeRecord)await _graph.GetKnowledgeState(userId, subjectId, knowledgeGraphName);
+            KnowledgeState ks = await _graph.GetKnowledgeState(userId, subjectId, knowledgeGraphName);
             if (ks == null)
             {
                 throw new MetaRuleException($"{subjectId} subjectId doesn't exist.");
             }
             //used to record progress
-            var res = new List<KnowledgeRecord> { ks };
-            //            await RecursiveDiscovery(model, ks, res, subjectId, 1.0, lineages);
-            res.Remove(ks);
+            log.AppendLine($"Starting discovery from object {subjectId}, {DateTime.UtcNow}.");
+            var kr = new KnowledgeRecord { subjectId = ks.subjectId, userId = ks.userId, created = ks.created, knowledgeGraphName = ks.knowledgeGraphName, processId = ks.processId, data = ks.data};
+            var res = new List<KnowledgeRecord> { kr };
+            await RecursiveDiscovery(model, kr, res, subjectId, 1.0, lineages, log);
+            res.Remove(kr);
+            log.AppendLine($"Completed discovery from object {subjectId}, {DateTime.UtcNow}.");
             return res.Distinct().ToList();
         }
         /*
@@ -507,9 +511,11 @@ namespace Darl.Thinkbase
         {
             var annot = list.Where(a => a.name == annotationSignum).FirstOrDefault();
             var text = "Thanks for that information.";
+#pragma warning disable CS8604 // Possible null reference argument.
             if (annot.Exists() && !annot.IsUnknown()) //!= is overridden for DarlResult
+#pragma warning restore CS8604 // Possible null reference argument.
                 text = annot.Value.ToString();
-            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.textual, name = questionIdentifier, Value = text }, reference = res.externalId, darl = code, activeNodes = new List<string> { res.id } });
+            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.textual, name = questionIdentifier, Value = text ?? String.Empty }, reference = res.externalId, darl = code, activeNodes = new List<string> { res.id ?? String.Empty} });
         }
 
         private async Task<(bool, DarlVar?)> EvaluateUIRule(IGraphModel model, GraphAbstraction? res, DarlVar? pending, List<InteractTestResponse> responses, KnowledgeState ks, List<DarlVar> values, List<string> lineages, bool data = false)
@@ -651,7 +657,7 @@ namespace Darl.Thinkbase
                 double salience = 0.0;
                 foreach (var c in ((GraphObject)o.Key).In)
                 {
-                    if (paths.Contains(c.lineage))
+                    if (c.lineage != null && paths.Contains(c.lineage))
                     {
                         var parentNode = model.vertices[c.startId];
                         salience += saliences.Any(a => a.gobj == parentNode) ? saliences.First(a => a.gobj == parentNode).salience : 1.0;
@@ -741,94 +747,122 @@ namespace Darl.Thinkbase
         }
 
 
-        /*
-                /// <summary>
-                /// Recursive Search over the network 
-                /// </summary>
-                /// <param name="model">The model</param>
-                /// <param name="ks">The current search point</param>
-                /// <param name="res">Where we've been</param>
-                /// <param name="startSubjectId">The start subject id</param>
-                /// <param name="weight">the minimum weight of the path taken.</param>
-                /// <returns></returns>
-                private async Task RecursiveDiscovery(IGraphModel model, KnowledgeState ks, List<KnowledgeState> res, string startSubjectId, double weight, List<string> lineages, DarlVar? pending)
-                {
-                    bool usingKnowledgeStates = true;
-                    //Assume that ks holds the start node
-                    var refs = DeReferenceKS(ks,model);
-                    var currentNode = refs.Item1;
-                    var connections = refs.Item2;
 
-                    if (currentNode == null) // not using KS data
+        /// <summary>
+        /// Recursive Search over the network 
+        /// </summary>
+        /// <param name="model">The model</param>
+        /// <param name="ks">The current search point</param>
+        /// <param name="res">Where we've been</param>
+        /// <param name="startSubjectId">The start subject id</param>
+        /// <param name="weight">the minimum weight of the path taken.</param>
+        /// <param name="lineages">Lineages to limit search to</param>
+        /// <param name="pending">recently filled data value.</param>
+        /// <returns></returns>
+        private async Task RecursiveDiscovery(IGraphModel model, KnowledgeRecord ks, List<KnowledgeRecord> res, string startSubjectId, double weight, List<string> lineages, StringBuilder log)
+        {
+            bool usingKnowledgeStates = true;
+            //Assume that ks holds the start node
+            var refs = ks.DeReference(model, lineages);
+            var currentNode = refs.Item1;
+            var connections = refs.Item2;
+
+            if (currentNode == null) // not using KS data
+            {
+                currentNode = model.vertices.Values.Where(a => a.externalId == startSubjectId).FirstOrDefault();
+                usingKnowledgeStates = false;
+                if (currentNode == null)
+                    throw new MetaRuleException($"No node found in {ks.subjectId}");
+                log.AppendLine($"Processing Node: {currentNode.externalId}, { DateTime.UtcNow}.");
+            }
+            if (ks.subjectId != startSubjectId)//don't halt on the first
+            {
+                //Look at the parent object for rules related to termination
+                //find complete rule
+                var code = _graph.FindCompleteAttribute(model, currentNode.id ?? String.Empty);
+                if (!string.IsNullOrEmpty(code)) //no code implies discovery can continue.
+                {
+                    //evaluate it
+                    var tree = _runtime.CreateTree(code, currentNode, model); //findControlAttribute checks for syntax errors.
+                    var list = new List<Meta.DarlResult>();
+                    await _runtime.Evaluate(tree, list, ks);
+                    //return if further movement not possible.
+                    var complete = list.FirstOrDefault(a => a.name == "completed");
+                    if(!complete.Exists() || (complete.Value as string)  == "false" || complete.GetWeight() < 0.1)
                     {
-                        currentNode = model.vertices.Values.Where(a => a.externalId == startSubjectId).FirstOrDefault();
-                        usingKnowledgeStates = false;
-                        if (currentNode == null)
-                            throw new MetaRuleException($"No node found in {ks.subjectId}");
+                        log.AppendLine($"Node not completed. code: {code}, { DateTime.UtcNow}.");
+                        return; //rules prevent further search
                     }
-                    if (ks.subjectId != startSubjectId)//don't halt on the first
+                }               
+            }
+
+            //Search using inferred links in this KS and non-inferred in the model.
+            if (usingKnowledgeStates) // we're using KS
+            {
+                log.AppendLine($"Processing KnowledgeState: {ks.subjectId}, { DateTime.UtcNow}.");
+                //first pass collect required subject Ids and weights
+                var ids = new List<(string, double)>();
+                foreach (var s in connections.Where(a => a.inferred == true))
+                {
+                    //to speed this up, batch the GetKnowledgeState calls so that all linked KSs are fetched in one go. 
+                    foreach (var a in ks.data[s.id ?? string.Empty])
                     {
-                        //Look at the parent object for rules related to termination
-                        var vals = await EvaluateUIRule(model, currentNode, pending, res, ks, values);
-                        pending = vals.Item2;
-                    }
-                    //Search using inferred links in this KS and non-inferred in the model.
-                    if (usingKnowledgeStates) // we're using KS
-                    { 
-                        //first pass collect required subject Ids and weights
-                        var ids = new List<(string, double)>();
-                        foreach (var s in connections)
+                        if (a.type == GraphAttribute.DataType.connection)
                         {
-                            if (s.inferred == true)
+                            var subjectId = a.value;
+                            if (!res.Any(a => a.subjectId == subjectId))//avoid loops
                             {
-                                //to speed this up, batch the GetKnowledgeState calls so that all linked KSs are fetched in one go. 
-                                foreach (var a in ks.data[s.id])
-                                {
-                                    if (a.type == GraphAttribute.DataType.connection)
-                                    {
-                                        var subjectId = a.value;
-                                        if (!res.Any(a => a.subjectId == subjectId))//avoid loops
-                                        {
-                                            ids.Add((subjectId, s.weight));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        var statesToVisit = await _graph.GetSetOfKnowledgeStates(ks.userId, ids.Select(a => a.Item1).ToList(), ks.knowledgeGraphName);
-                        if (statesToVisit != null)
-                        {
-                            var index = 0;
-                            foreach (var newKs in statesToVisit)
-                            {
-                                if (newKs != null)
-                                {
-                                    res.Add(newKs);
-                                    await RecursiveDiscovery(model, newKs, res, startSubjectId, Math.Min(weight, ids[index].Item2), lineages);
-                                    index++;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            _logger.LogWarning($"Broken link: userId {ks.userId}, graphName {ks.knowledgeGraphName}, subjectId {ks.subjectId}");
-                        }
-                    }
-                    else //inference processing at KG level
-                    {
-                        foreach(var l in currentNode.Out)
-                        {
-                            var endObject = model.vertices[l.endId];
-                            if (!res.Any(a => a.subjectId == endObject.externalId))//avoid loops
-                            {
-                                var newKs = new KnowledgeState { subjectId = endObject.externalId };
-                                res.Add(newKs);
-                                await RecursiveDiscovery(model, newKs, res, startSubjectId, Math.Min(weight, l.weight), lineages);
+                                ids.Add((subjectId, s.weight));
                             }
                         }
                     }
                 }
-        */
+                var statesToVisit = await _graph.GetSetOfKnowledgeStates(ks.userId, ids.Select(a => a.Item1).ToList(), ks.knowledgeGraphName);
+                if (statesToVisit != null)
+                {
+                    var index = 0;
+                    foreach (KnowledgeRecord newKs in statesToVisit)
+                    {
+                        if (newKs != null)
+                        {
+                            res.Add(newKs);
+                            await RecursiveDiscovery(model, newKs, res, startSubjectId, Math.Min(weight, ids[index].Item2), lineages, log);
+                            index++;
+                        }
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning($"Broken link: userId {ks.userId}, graphName {ks.knowledgeGraphName}, subjectId {ks.subjectId}");
+                }
+                //handle real top level connections.
+                foreach(var s in connections.Where(a => a.inferred == false))
+                {
+                    var endObject = model.vertices[s.endId];
+                    if (!res.Any(a => a.subjectId == endObject.externalId))//avoid loops
+                    {
+                        var newKs = new KnowledgeRecord { subjectId = endObject.externalId };
+                        res.Add(newKs);
+                        await RecursiveDiscovery(model, newKs, res, endObject.externalId, Math.Min(weight, s.weight), lineages, log);
+                    }
+                }
+            }
+            else //inference processing at KG level
+            {
+                foreach (var l in currentNode.Out)
+                {
+                    var endObject = model.vertices[l.endId];
+                    if (!res.Any(a => a.subjectId == endObject.externalId))//avoid loops
+                    {
+                        var newKs = new KnowledgeRecord { subjectId = endObject.externalId };
+                        res.Add(newKs);
+                        await RecursiveDiscovery(model, newKs, res, endObject.externalId, Math.Min(weight, l.weight), lineages, log);
+                    }
+                }
+            }
+        }
+
+
 
         /// <summary>
         /// Recursively searches a network for dependencies

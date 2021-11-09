@@ -79,7 +79,7 @@ namespace Darl.Thinkbase
                 }
             }
         }
-        public GraphAttribute GetAttribute(string id, string lineage)
+        public GraphAttribute? GetAttribute(string id, string lineage)
         {
             if (data.ContainsKey(id))
                 return data[id].FirstOrDefault(a => a.lineage == lineage);

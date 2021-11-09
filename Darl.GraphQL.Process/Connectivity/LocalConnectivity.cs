@@ -145,7 +145,15 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public Task<List<KnowledgeState>> GetSetOfKnowledgeStates(string userId, List<string> ksIds, string graphName)
         {
-            throw new NotImplementedException();
+            var list = new List<KnowledgeState>();
+            var mc = db.GetCollection<LiteKnowledgeState>(knowledgestateCollection);
+            foreach(var k in ksIds)
+            {
+                var r  = mc.FindOne(x => x.subjectId == k && x.knowledgeGraphName == graphName) as KnowledgeState;
+                if(r != null)
+                    list.Add(r);
+            }
+            return Task.FromResult(list);
         }
 
         public Task<string> ShareKGraph(string userId, string name, string sharerId, bool readOnly, bool hidden)

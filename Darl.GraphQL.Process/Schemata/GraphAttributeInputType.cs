@@ -17,6 +17,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field<GraphAttributeDataTypeEnum>("type", "The type of this attribute", resolve: c => c.Source.type);
             Field(c => c.confidence, true).Description("The degree of plausibility of this attribute").DefaultValue(1.0);
             Field(c => c.inferred, true).Description("If true, the existence of this object is inferred from other sources");
+            Field<ListGraphType<GraphAttributeInputType>>("properties", "sub-attributes of this attribute", resolve: c => c.Source.properties);
         }
     }
 }

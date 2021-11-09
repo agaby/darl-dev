@@ -12,9 +12,9 @@ namespace Darl.GraphQL.Models.Connectivity
     {
         private readonly IBlobConnectivity _blob;
         private readonly ILogger _logger;
-        public SoftMatchProcessing(IEnumerable<IBlobConnectivity> blobs, ILogger<SoftMatchProcessing> logger)
+        public SoftMatchProcessing(IBlobConnectivity blob, ILogger<SoftMatchProcessing> logger)
         {
-            _blob = blobs.FirstOrDefault(h => h.implementation == nameof(BlobGraphConnectivity));
+            _blob = blob;
             _logger = logger;
         }
 
@@ -65,9 +65,9 @@ namespace Darl.GraphQL.Models.Connectivity
             return responses;
         }
 
-        public async Task<List<string>> ListSoftMatchModels(string userId)
+        public Task<List<string>> ListSoftMatchModels(string userId)
         {
-            return _blob.List(userId);
+            return Task.FromResult(_blob.List(userId));
         }
 
         public async Task<string> DeleteSoftMatchModel(string userId, string name)

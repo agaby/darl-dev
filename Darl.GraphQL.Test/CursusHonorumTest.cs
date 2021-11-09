@@ -29,6 +29,8 @@ namespace Darl.GraphQL.Test
         private ITrigger _trigger;
         private ILogger<BotProcessing> _bplogger;
         private IHttpContextAccessor _context;
+        private IMetaStructureHandler meta;
+        private IGraphHandler _graphHandler;
 
         private static readonly string industryLineage = "noun:01,2,07,10,14,3,1";
         private static readonly string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";
@@ -68,6 +70,7 @@ namespace Darl.GraphQL.Test
         private static readonly string textLineage = "noun:01,4,04,02,07,01";
         private static readonly string senatorLineage = "noun:00,2,00,033,34,1,10";
         private static readonly string lictorLineage = "noun:00,2,00,296,0,01";
+        private static readonly string socialClassLineage = "noun:01,2,06,34";
 
 
         private static readonly string graphName = "cursus_honorum.graph";
@@ -89,6 +92,7 @@ namespace Darl.GraphQL.Test
             //            configuration.Setup(a => a[It.Is<string>(s => s == "gremlinLocation")]).Returns("local");
             configuration.Setup(a => a[It.Is<string>(s => s == "darlDevUrl")]).Returns("https://darl.dev/graphql/");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:BlobContainer")]).Returns("darldevgraphs");
+            configuration.Setup(a => a[It.Is<string>(s => s == "LOCALDATABASEPATH")]).Returns("localdb");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:GraphContainer")]).Returns("darldevgraphs");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StorageConnectionString")]).Returns("DefaultEndpointsProtocol=https;AccountName=darlai;AccountKey=errnwefiVeXcDr0aKbHDxXjblOQhwFwHkeG4qR4caChkABnzp9MNeBBX0FP1jc4DnXPGztI67pbEBXDqA1dPCw==");
 
@@ -96,21 +100,20 @@ namespace Darl.GraphQL.Test
             var blogger = new Mock<ILogger<BlobGraphConnectivity>>();
             var bgplogger = new Mock<ILogger<BlobGraphPrimitives>>();
             var glogger = new Mock<ILogger<GraphProcessing>>();
+            var ghlogger = new Mock<ILogger<GraphHandler>>();
+            var lclogger = new Mock<ILogger<LocalConnectivity>>();
             var context = new Mock<IHttpContextAccessor>();
             _config = configuration.Object;
             context.Setup(a => a.HttpContext.User.Identity.Name).Returns(_config["userId"]);
             var blob = new BlobGraphConnectivity(_config, blogger.Object);
             var cache = new Mock<IDistributedCache>();
-            var conn = new Mock<IConnectivity>();
-            var meta = new Mock<IMetaStructureHandler>();
-            _conn = conn.Object;
+            meta = new MetaStructureHandler();
+            _conn = new LocalConnectivity(_config, lclogger.Object);
             cache.Setup(a => a.GetAsync(It.IsAny<string>(), default)).Returns(Task.FromResult<byte[]>(null));
-            conn.Setup(a => a.GetKnowledgeState(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<KnowledgeState>(new KnowledgeState()));
-            conn.Setup(a => a.UpdateKnowledgeState(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<KnowledgeStateUpdate>()));
             var trans = new Mock<IKGTranslation>();
             var lic = new Mock<ILicensing>();
-            _primitives = new BlobGraphPrimitives(blob, cache.Object, conn.Object, bgplogger.Object, lic.Object);
-            _graph = new GraphProcessing(_primitives, glogger.Object, meta.Object);
+            _primitives = new BlobGraphPrimitives(blob, cache.Object, _conn, bgplogger.Object, lic.Object);
+            _graph = new GraphProcessing(_primitives, glogger.Object, meta);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
             var form = new Mock<IFormApi>();
             _form = form.Object;
@@ -121,13 +124,35 @@ namespace Darl.GraphQL.Test
             var bplogger = new Mock<ILogger<BotProcessing>>();
             _bplogger = bplogger.Object;
             _context = context.Object;
+            _graphHandler = new GraphHandler(_graph, ghlogger.Object, meta);
         }
+
         [TestMethod]
         public async Task CreateGraphTest()
         {
             var compositeName = $"{_config["userId"]}_{graphName}";
             await _graph.ClearGraphContent(compositeName);
-            var senator = new GraphAttributeInput { name = "senator", value = "true", lineage = senatorLineage };
+            var senator = new GraphAttributeInput 
+            { 
+                name = "senator", 
+                value = "true", lineage = senatorLineage, 
+                type = GraphAttribute.DataType.categorical, 
+                properties = new List<GraphAttributeInput> { 
+                    new GraphAttributeInput {name = "category", lineage = meta.CommonLineages["category"], type = GraphAttribute.DataType.textual, value = "true"},
+                    new GraphAttributeInput {name = "category", lineage = meta.CommonLineages["category"], type = GraphAttribute.DataType.textual, value = "false"}
+                }
+            };
+            var socialClass = new GraphAttributeInput
+            {
+                name = "class",
+                lineage = socialClassLineage,
+                type = GraphAttribute.DataType.categorical,
+                properties = new List<GraphAttributeInput> {
+                    new GraphAttributeInput {name = "category", lineage = meta.CommonLineages["category"], type = GraphAttribute.DataType.textual, value = "plebian"},
+                    new GraphAttributeInput {name = "category", lineage = meta.CommonLineages["category"], type = GraphAttribute.DataType.textual, value = "equites"},
+                    new GraphAttributeInput {name = "category", lineage = meta.CommonLineages["category"], type = GraphAttribute.DataType.textual, value = "patrician"}
+                }
+            };
             var censor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Censor", lineage = "noun:00,2,00,127", externalId = "Censor", properties = new List<GraphAttributeInput> { senator } }, OntologyAction.build);
             var dictator = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Dictator", lineage = "noun:00,2,00,320,04", externalId = "Dictator", properties = new List<GraphAttributeInput> { senator, new GraphAttributeInput { name = "lictors", value = "24", lineage = lictorLineage } } }, OntologyAction.build);
             var proconsul = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Proconsul", lineage = "noun:00,2,00,033,34,0,5", externalId = "Proconsul", properties = new List<GraphAttributeInput> { senator, new GraphAttributeInput { name = "lictors", value = "12", lineage = lictorLineage } } }, OntologyAction.build);
@@ -140,6 +165,8 @@ namespace Darl.GraphQL.Test
             var quaestor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Quaestor", lineage = "noun:00,2,00,050,43,35,36", externalId = "Quaestor", properties = new List<GraphAttributeInput> { senator } }, OntologyAction.build);
             var tribune_of_the_plebs = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Tribune of the plebs", lineage = "noun:00,2,00,296,0,12", externalId = "Tribune_of_the_plebs", properties = new List<GraphAttributeInput> { senator } }, OntologyAction.build);
             var military_tribune = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Military Tribune", lineage = "noun:00,2,00,296,0,12", externalId = "Military_tribune" }, OntologyAction.build);
+            var candidate = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Candidate", lineage = meta.CommonLineages["person"], properties = new List<GraphAttributeInput> { socialClass } }, OntologyAction.build);
+
             await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = consul.id, endId = censor.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);
             await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = consul.id, endId = proconsul.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);
             await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = consul.id, endId = dictator.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);
@@ -156,8 +183,29 @@ namespace Darl.GraphQL.Test
             await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = tribune_of_the_plebs.id, endId = plebian_aedile.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);
             await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = military_tribune.id, endId = praetor.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);
             await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = military_tribune.id, endId = tribune_of_the_plebs.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);
-            await _graph.Store(compositeName);
 
+            await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = candidate.id, endId = tribune_of_the_plebs.id, lineage = meta.CommonLineages["have"], name = "can hold", weight = 1.0 }, OntologyAction.build);
+            await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = candidate.id, endId = consul.id, lineage = meta.CommonLineages["have"], name = "can hold", weight = 1.0 }, OntologyAction.build);
+            await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = candidate.id, endId = propraetor.id, lineage = meta.CommonLineages["have"], name = "can hold", weight = 1.0 }, OntologyAction.build);
+            await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = candidate.id, endId = praetor.id, lineage = meta.CommonLineages["have"], name = "can hold", weight = 1.0 }, OntologyAction.build);
+            await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = candidate.id, endId = curule_aedile.id, lineage = meta.CommonLineages["have"], name = "can hold", weight = 1.0 }, OntologyAction.build);
+            await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = candidate.id, endId = quaestor.id, lineage = meta.CommonLineages["have"], name = "can hold", weight = 1.0 }, OntologyAction.build);
+            await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = candidate.id, endId = military_tribune.id, lineage = meta.CommonLineages["have"], name = "can hold", weight = 1.0 }, OntologyAction.build);
+            await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = candidate.id, endId = plebian_aedile.id, lineage = meta.CommonLineages["have"], name = "can hold", weight = 1.0 }, OntologyAction.build);
+            await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = candidate.id, endId = dictator.id, lineage = meta.CommonLineages["have"], name = "can hold", weight = 1.0 }, OntologyAction.build);
+            var subjectId = "poopies";
+            var kr = new KnowledgeRecordInput { subjectId = subjectId, knowledgeGraphName = graphName };
+            kr.AddReference(candidate, "class", "patrician");
+            await _graph.CreateKnowledgeState(_config["userId"], kr);
+            var sb = new System.Text.StringBuilder();
+            var res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb);
+            Assert.AreEqual(12,res.Count);
+            //Now Add existences to the objects and check for overlap
+            kr.AddExistence(candidate, new List<Common.DarlTime?> {new Common.DarlTime(-100, 1), new Common.DarlTime(-44,0) });//life dates of Julius Caeser
+            //Add conditions based on birth
+            //Add conditions based on length of service
+            //
+            var log = sb.ToString();
         }
     }
 

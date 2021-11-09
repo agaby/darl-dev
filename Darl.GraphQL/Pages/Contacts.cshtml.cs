@@ -28,15 +28,16 @@ namespace Darl.GraphQL.Pages
         {
             try
             {
-                if (_context.HttpContext.Request.Headers.ContainsKey("apikey"))
+                if (_context != null && _context.HttpContext != null && _context.HttpContext.Request.Headers.ContainsKey("apikey"))
                 {
-                    var user = await _conn.GetUserByApiKey(_context.HttpContext.Request.Headers["apikey"].FirstOrDefault());
+                    var key = _context.HttpContext.Request.Headers["apikey"].FirstOrDefault();
+                    var user = await _conn.GetUserByApiKey(key ?? String.Empty);
                     if (user == null || user.accountState != DarlUser.AccountState.admin)
                     {
                         return new JsonResult(new { records = new List<Contact>(), total = 0 });
                     }
                 }
-                else if (_context.HttpContext.User == null || !_context.HttpContext.User.IsInRole("Admin"))
+                else if (_context != null && _context.HttpContext != null && (_context.HttpContext.User == null || !_context.HttpContext.User.IsInRole("Admin")))
                 {
                     return new JsonResult(new { records = new List<Contact>(), total = 0 });
                 }

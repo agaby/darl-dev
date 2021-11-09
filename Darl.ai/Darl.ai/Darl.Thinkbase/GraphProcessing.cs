@@ -711,9 +711,14 @@ namespace Darl.Thinkbase
             return _metaHandler.FindMetaDisplayStructure(model, res, ref pending, responses);
         }
 
-        public string FindDisplayAttribute(IGraphModel model, string id)
+        public string? FindDisplayAttribute(IGraphModel model, string id)
         {
             return model.FindControlAttribute(id, _metaHandler.CommonLineages["display"]);
+        }
+
+        public string? FindCompleteAttribute(IGraphModel model, string id)
+        {
+            return model.FindControlAttribute(id, _metaHandler.CommonLineages["complete"]);
         }
 
         public void HandleCodelessValue(IGraphModel model, GraphObject res, DarlVar? pending, List<DarlVar> values, KnowledgeState ks)

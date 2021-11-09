@@ -30,7 +30,7 @@ namespace Darl.GraphQL.Pages
 
         public async Task<ActionResult> OnPostAsync()
         {
-            if (User.Identity.Name != null)
+            if (User != null && User.Identity != null && User.Identity.Name != null)
             {
                 var user = await _connectivity.GetUserById(User.Identity.Name);
                 if (!string.IsNullOrEmpty(user.StripeCustomerId))

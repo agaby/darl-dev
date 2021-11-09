@@ -44,13 +44,27 @@ namespace Darl.Thinkbase
                         throw new MetaRuleException($"linked item not found: {key}");
                     }
                 }
+                //now add any non-infered parent connections
+                if(currentNode != null)
+                {
+                    foreach(var c in currentNode.Out)
+                    {
+                        if(!c.inferred)
+                        {
+                            if (CheckPermittedLineages(c.lineage, lineages))
+                            {
+                                connections.Add(c);
+                            }
+                        }
+                    }
+                }
             }
             return (currentNode, connections);
         }
 
-        private bool CheckPermittedLineages(string lineage, List<string> lineages)
+        private bool CheckPermittedLineages(string? lineage, List<string>? lineages)
         {
-            if (lineages == null || !lineages.Any())
+            if (lineages == null || !lineages.Any() || lineage == null)
                 return true;
             foreach (var l in lineages)
             {
