@@ -1,4 +1,5 @@
-﻿using Darl.Thinkbase.Meta;
+﻿using Darl.Common;
+using Darl.Thinkbase.Meta;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,7 +16,7 @@ namespace Darl.Thinkbase
         /// <param name="model"></param>
         /// <param name="lineages"></param>
         /// <returns></returns>
-        public (GraphObject?, List<GraphConnection>) DeReference(IGraphModel model, List<string>? lineages)
+        public override (GraphObject?, List<GraphConnection>) DeReference(IGraphModel model, List<string>? lineages)
         {
             GraphObject? currentNode = null;
             var connections = new List<GraphConnection>();
@@ -44,7 +45,7 @@ namespace Darl.Thinkbase
                         throw new MetaRuleException($"linked item not found: {key}");
                     }
                 }
-                //now add any non-infered parent connections
+                //now add any non-inferred parent connections
                 if(currentNode != null)
                 {
                     foreach(var c in currentNode.Out)
@@ -74,5 +75,32 @@ namespace Darl.Thinkbase
             return false;
         }
 
+        public List<DarlTime>? GetExistence(IGraphModel model)
+        {
+            GraphObject? currentNode = null;
+            if (data != null && data.Any())
+            {
+                foreach (var key in data.Keys)
+                {
+                    if (model.vertices.ContainsKey(key))
+                    {
+                        if (currentNode != null)
+                        {
+                            throw new MetaRuleException($"Multiple nodes found.");
+                        }
+                        currentNode = model.vertices[key];
+                    }
+                }
+                var att = data[currentNode.id].FirstOrDefault(x => x.name == "existence");
+                if (att != null)
+                    return att.existence;
+            }
+            return null;
+        }
+
+        public override bool ContainsAttribute(string completionLineage)
+        {
+            return base.ContainsAttribute(completionLineage);
+        }
     }
 }

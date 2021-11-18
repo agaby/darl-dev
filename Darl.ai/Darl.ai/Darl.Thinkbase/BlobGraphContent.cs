@@ -40,9 +40,6 @@ namespace Darl.Thinkbase
         [ProtoMember(10)]
         public string modelName { get; set; } = String.Empty;
 
-        private static readonly DarlMetaRunTime runtime = new DarlMetaRunTime(new MetaStructureHandler());
-
-
         /// <summary>
         /// Recognition DAG networks  in this model, indexed by lineage
         /// The top level network has the index "default:"
@@ -124,15 +121,7 @@ namespace Darl.Thinkbase
                 var att = obj.properties.Where(a => a.lineage != null && a.lineage.StartsWith(lineage)).FirstOrDefault(); //check name or lineage?
                 if (att != null)
                 {
-                    try
-                    {
-                        runtime.CreateTree(att.value, obj, this);
-                        return att.value;
-                    }
-                    catch
-                    {
-
-                    }
+                    return att.value;
                 }
             }
             //no local value, try virtual
@@ -164,15 +153,7 @@ namespace Darl.Thinkbase
             }
             if (ruleSource == string.Empty)
                 return null;
-            try
-            {
-                runtime.CreateTree(ruleSource, obj, this);
-                return ruleSource;
-            }
-            catch
-            {
-                return null;
-            }
+            return ruleSource;
         }
 
         public DarlVar? FindDataAttribute(string id, string lineage, KnowledgeState ks)

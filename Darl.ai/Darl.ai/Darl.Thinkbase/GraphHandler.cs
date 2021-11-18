@@ -1,4 +1,5 @@
-﻿using Darl.Lineage;
+﻿using Darl.Common;
+using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
@@ -31,14 +32,14 @@ namespace Darl.Thinkbase
         private readonly IGraphProcessing _graph;
         private readonly ILogger<GraphHandler> _logger;
         private readonly IMetaStructureHandler _metaHandler;
-        public DarlMetaRunTime _runtime;
+        public IDarlMetaRunTime _runtime;
 
-        public GraphHandler(IGraphProcessing graph, ILogger<GraphHandler> logger, IMetaStructureHandler metaHandler)
+        public GraphHandler(IGraphProcessing graph, ILogger<GraphHandler> logger, IMetaStructureHandler metaHandler, IDarlMetaRunTime runtime)
         {
             _graph = graph;
             _logger = logger;
             _metaHandler = metaHandler;
-            _runtime = new DarlMetaRunTime(_metaHandler);
+            _runtime = runtime;
         }
 
         /// <summary>
@@ -234,10 +235,15 @@ namespace Darl.Thinkbase
         /// <summary>
         /// Single step discovery operator
         /// </summary>
-        /// <param name="model">The model</param>
-        /// <param name="ks">The starting state</param>
+        /// <param name="userId"></param>
+        /// <param name="knowledgeGraphName"></param>
+        /// <param name="subjectId">KS start name or externalId</param>
+        /// <param name="lineages">permitted paths</param>
+        /// <param name="log">Verbose description of path taken and why</param>
+        /// <param name="currentTime">The time to use for the analysis if temporal.</param>
         /// <returns>A list of possible accessible states in depth first search order including intermediate states.</returns>
-        public async Task<List<KnowledgeRecord>> Discover(string userId, string knowledgeGraphName, string subjectId, List<string> lineages, StringBuilder log)
+        /// <exception cref="MetaRuleException"></exception>
+        public async Task<KnowledgeState> Discover(string userId, string knowledgeGraphName, string subjectId, List<string> lineages, StringBuilder log, DarlTime? currentTime)
         {
             var model = await _graph.GetModel(userId, knowledgeGraphName);
             if (model == null)
@@ -251,12 +257,11 @@ namespace Darl.Thinkbase
             }
             //used to record progress
             log.AppendLine($"Starting discovery from object {subjectId}, {DateTime.UtcNow}.");
-            var kr = new KnowledgeRecord { subjectId = ks.subjectId, userId = ks.userId, created = ks.created, knowledgeGraphName = ks.knowledgeGraphName, processId = ks.processId, data = ks.data};
-            var res = new List<KnowledgeRecord> { kr };
-            await RecursiveDiscovery(model, kr, res, subjectId, 1.0, lineages, log);
-            res.Remove(kr);
+            var kr = new KnowledgeRecord { subjectId = ks.subjectId, userId = ks.userId, created = ks.created, knowledgeGraphName = ks.knowledgeGraphName, processId = ks.processId, data = ks.data };
+            var res = new KnowledgeState { userId = userId, knowledgeGraphName = knowledgeGraphName};
+            await RecursiveDiscovery(model, kr, res, subjectId, 1.0, lineages, log, currentTime);
             log.AppendLine($"Completed discovery from object {subjectId}, {DateTime.UtcNow}.");
-            return res.Distinct().ToList();
+            return res;
         }
         /*
                 /// <summary>
@@ -515,7 +520,7 @@ namespace Darl.Thinkbase
             if (annot.Exists() && !annot.IsUnknown()) //!= is overridden for DarlResult
 #pragma warning restore CS8604 // Possible null reference argument.
                 text = annot.Value.ToString();
-            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.textual, name = questionIdentifier, Value = text ?? String.Empty }, reference = res.externalId, darl = code, activeNodes = new List<string> { res.id ?? String.Empty} });
+            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.textual, name = questionIdentifier, Value = text ?? String.Empty }, reference = res.externalId, darl = code, activeNodes = new List<string> { res.id ?? String.Empty } });
         }
 
         private async Task<(bool, DarlVar?)> EvaluateUIRule(IGraphModel model, GraphAbstraction? res, DarlVar? pending, List<InteractTestResponse> responses, KnowledgeState ks, List<DarlVar> values, List<string> lineages, bool data = false)
@@ -749,7 +754,7 @@ namespace Darl.Thinkbase
 
 
         /// <summary>
-        /// Recursive Search over the network 
+        /// Recursive Search over KnowledgeRecords 
         /// </summary>
         /// <param name="model">The model</param>
         /// <param name="ks">The current search point</param>
@@ -757,11 +762,11 @@ namespace Darl.Thinkbase
         /// <param name="startSubjectId">The start subject id</param>
         /// <param name="weight">the minimum weight of the path taken.</param>
         /// <param name="lineages">Lineages to limit search to</param>
-        /// <param name="pending">recently filled data value.</param>
+        /// <param name="log">Textual log of discovery process</param>
+        /// <param name="currentTime">The time of the analysis</param>
         /// <returns></returns>
-        private async Task RecursiveDiscovery(IGraphModel model, KnowledgeRecord ks, List<KnowledgeRecord> res, string startSubjectId, double weight, List<string> lineages, StringBuilder log)
+        private async Task RecursiveDiscovery(IGraphModel model, KnowledgeRecord ks, KnowledgeState state, string startSubjectId, double weight, List<string> lineages, StringBuilder log, DarlTime? currentTime)
         {
-            bool usingKnowledgeStates = true;
             //Assume that ks holds the start node
             var refs = ks.DeReference(model, lineages);
             var currentNode = refs.Item1;
@@ -770,97 +775,147 @@ namespace Darl.Thinkbase
             if (currentNode == null) // not using KS data
             {
                 currentNode = model.vertices.Values.Where(a => a.externalId == startSubjectId).FirstOrDefault();
-                usingKnowledgeStates = false;
                 if (currentNode == null)
                     throw new MetaRuleException($"No node found in {ks.subjectId}");
                 log.AppendLine($"Processing Node: {currentNode.externalId}, { DateTime.UtcNow}.");
+                state.data.Add(currentNode.id ?? String.Empty, new List<GraphAttribute> { new GraphAttribute { name = "completed", type = GraphAttribute.DataType.categorical, value = "true", lineage = _metaHandler.CommonLineages["complete"] } });
+                await RecursiveDiscovery(model, state, currentNode, weight, lineages, log, currentTime);
+                return;
             }
             if (ks.subjectId != startSubjectId)//don't halt on the first
             {
-                //Look at the parent object for rules related to termination
-                //find complete rule
-                var code = _graph.FindCompleteAttribute(model, currentNode.id ?? String.Empty);
-                if (!string.IsNullOrEmpty(code)) //no code implies discovery can continue.
-                {
-                    //evaluate it
-                    var tree = _runtime.CreateTree(code, currentNode, model); //findControlAttribute checks for syntax errors.
-                    var list = new List<Meta.DarlResult>();
-                    await _runtime.Evaluate(tree, list, ks);
-                    //return if further movement not possible.
-                    var complete = list.FirstOrDefault(a => a.name == "completed");
-                    if(!complete.Exists() || (complete.Value as string)  == "false" || complete.GetWeight() < 0.1)
-                    {
-                        log.AppendLine($"Node not completed. code: {code}, { DateTime.UtcNow}.");
-                        return; //rules prevent further search
-                    }
-                }               
+                if (!await CheckCodeCompletion(model, state, currentNode, log, currentTime))
+                    return;
             }
 
             //Search using inferred links in this KS and non-inferred in the model.
-            if (usingKnowledgeStates) // we're using KS
+
+            log.AppendLine($"Processing KnowledgeState: {ks.subjectId}, { DateTime.UtcNow}.");
+            //first pass collect required subject Ids and weights
+            var ids = new List<(string, double)>();
+            foreach (var s in connections.Where(a => a.inferred == true))
             {
-                log.AppendLine($"Processing KnowledgeState: {ks.subjectId}, { DateTime.UtcNow}.");
-                //first pass collect required subject Ids and weights
-                var ids = new List<(string, double)>();
-                foreach (var s in connections.Where(a => a.inferred == true))
+                //to speed this up, batch the GetKnowledgeState calls so that all linked KSs are fetched in one go. 
+                foreach (var a in ks.data[s.id ?? string.Empty])
                 {
-                    //to speed this up, batch the GetKnowledgeState calls so that all linked KSs are fetched in one go. 
-                    foreach (var a in ks.data[s.id ?? string.Empty])
+                    if (a.type == GraphAttribute.DataType.connection)
                     {
-                        if (a.type == GraphAttribute.DataType.connection)
+                        var subjectId = a.value;
+                        if (!state.ContainsRecord(subjectId))//avoid loops
                         {
-                            var subjectId = a.value;
-                            if (!res.Any(a => a.subjectId == subjectId))//avoid loops
-                            {
-                                ids.Add((subjectId, s.weight));
-                            }
+                            ids.Add((subjectId, s.weight));
                         }
-                    }
-                }
-                var statesToVisit = await _graph.GetSetOfKnowledgeStates(ks.userId, ids.Select(a => a.Item1).ToList(), ks.knowledgeGraphName);
-                if (statesToVisit != null)
-                {
-                    var index = 0;
-                    foreach (KnowledgeRecord newKs in statesToVisit)
-                    {
-                        if (newKs != null)
-                        {
-                            res.Add(newKs);
-                            await RecursiveDiscovery(model, newKs, res, startSubjectId, Math.Min(weight, ids[index].Item2), lineages, log);
-                            index++;
-                        }
-                    }
-                }
-                else
-                {
-                    _logger.LogWarning($"Broken link: userId {ks.userId}, graphName {ks.knowledgeGraphName}, subjectId {ks.subjectId}");
-                }
-                //handle real top level connections.
-                foreach(var s in connections.Where(a => a.inferred == false))
-                {
-                    var endObject = model.vertices[s.endId];
-                    if (!res.Any(a => a.subjectId == endObject.externalId))//avoid loops
-                    {
-                        var newKs = new KnowledgeRecord { subjectId = endObject.externalId };
-                        res.Add(newKs);
-                        await RecursiveDiscovery(model, newKs, res, endObject.externalId, Math.Min(weight, s.weight), lineages, log);
                     }
                 }
             }
-            else //inference processing at KG level
+            var distinctIds = ids.Select(a => a.Item1).Distinct().ToList();
+            var statesToVisit = await _graph.GetSetofConnectedObjects(ks.userId, distinctIds, ks.knowledgeGraphName);
+            if (statesToVisit != null)
             {
-                foreach (var l in currentNode.Out)
+                var index = 0;
+                foreach (var newKs in statesToVisit)
                 {
-                    var endObject = model.vertices[l.endId];
-                    if (!res.Any(a => a.subjectId == endObject.externalId))//avoid loops
+                    if (Coexists(newKs, ks, model, currentTime))
                     {
-                        var newKs = new KnowledgeRecord { subjectId = endObject.externalId };
-                        res.Add(newKs);
-                        await RecursiveDiscovery(model, newKs, res, endObject.externalId, Math.Min(weight, l.weight), lineages, log);
+
+                        if (newKs is KnowledgeRecord)
+                        {
+                            state.data.Add(ks.subjectId, new List<GraphAttribute> { new GraphAttribute { name = "completed", type = GraphAttribute.DataType.categorical, value = "true", lineage = _metaHandler.CommonLineages["complete"] } });
+                            await RecursiveDiscovery(model, (KnowledgeRecord)newKs, state, startSubjectId, Math.Min(weight, ids[index].Item2), lineages, log, currentTime);
+                        }
+                        else if (newKs is GraphObject)
+                        {
+                            var go = (GraphObject)newKs;
+                            state.data.Add(go.id ?? String.Empty, new List<GraphAttribute> { new GraphAttribute { name = "completed", type = GraphAttribute.DataType.categorical, value = "true", lineage = _metaHandler.CommonLineages["complete"] } });
+                            await RecursiveDiscovery(model, state, go, Math.Min(weight, ids[index].Item2), lineages, log, currentTime);
+                        }
+                        index++;
                     }
+                }
+            }
+            else
+            {
+                _logger.LogWarning($"Broken link: userId {ks.userId}, graphName {ks.knowledgeGraphName}, subjectId {ks.subjectId}");
+            }
+            //handle real top level connections.
+            foreach (var s in connections.Where(a => a.inferred == false))
+            {
+                var endObject = model.vertices[s.endId];
+                if (!CheckForLoop(state,endObject) && Coexists(endObject, ks, model, currentTime))//avoid loops
+                {
+                    state.data.Add(endObject.id ?? String.Empty, new List<GraphAttribute> { new GraphAttribute { name = "completed", type = GraphAttribute.DataType.categorical, value = "true", lineage = _metaHandler.CommonLineages["complete"] } });
+                    await RecursiveDiscovery(model, state, endObject, Math.Min(weight, s.weight), lineages, log, currentTime);
+                }
+            }
+
+
+        }
+
+        private async Task<bool> CheckCodeCompletion(IGraphModel model, KnowledgeState ks, GraphObject currentNode, StringBuilder log, DarlTime? currentTime)
+        {
+            var code = _graph.FindCompleteAttribute(model, currentNode.id ?? String.Empty);
+            if (!string.IsNullOrEmpty(code)) //no code implies discovery can continue.
+            {
+                //evaluate it
+                var tree = _runtime.CreateTree(code, currentNode, model); //findControlAttribute checks for syntax errors.
+                var list = new List<Meta.DarlResult>();
+                await _runtime.Evaluate(tree, list, ks); //add current time for eval
+                //return false if further movement not possible.
+                var complete = list.FirstOrDefault(a => a.name == "completed");
+                if (!complete.Exists() || (complete.Value as string) == "false" || complete.GetWeight() < 0.1)
+                {
+                    log.AppendLine($"Node not completed. code: {code}, { DateTime.UtcNow}.");
+                    return false; //rules prevent further search
+                }
+            }
+            return true;
+        }
+
+        private bool CheckForLoop(KnowledgeState state, GraphObject next)
+        {
+            if(!string.IsNullOrEmpty(next.id))
+            {
+                return state.ContainsRecord(next.id);
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Recursive search over GraphObjects
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="ks"></param>
+        /// <param name="res"></param>
+        /// <param name="currentNode"></param>
+        /// <param name="weight"></param>
+        /// <param name="lineages"></param>
+        /// <param name="log"></param>
+        /// <param name="currentTime"></param>
+        /// <returns></returns>
+        private async Task RecursiveDiscovery(IGraphModel model, KnowledgeState state, GraphObject currentNode, double weight, List<string> lineages, StringBuilder log, DarlTime? currentTime)
+        {
+
+            if (!await CheckCodeCompletion(model, state, currentNode, log, currentTime))
+                return;
+            log.AppendLine($"Processing GraphObject: {currentNode.externalId}, { DateTime.UtcNow}.");
+            foreach (var l in currentNode.Out)
+            {
+                var endObject = model.vertices[l.endId];
+                if (!CheckForLoop(state, endObject) && Coexists(endObject, currentNode, model, currentTime))//avoid loops and objects that don't coexist
+                {
+                    state.data.Add(endObject.id ?? String.Empty, new List<GraphAttribute> { new GraphAttribute { name = "completed", type = GraphAttribute.DataType.categorical, value = "true", lineage = _metaHandler.CommonLineages["complete"] } });
+                    await RecursiveDiscovery(model, state, endObject, Math.Min(weight, l.weight), lineages, log, currentTime);
                 }
             }
         }
+
+
+        private bool Coexists(GraphAbstraction endObject, GraphAbstraction currentNode, IGraphModel model, DarlTime? currentTime)
+        {
+            return currentNode.Coexists(endObject, model, currentTime) > 0.0;
+        }
+
+
 
 
 

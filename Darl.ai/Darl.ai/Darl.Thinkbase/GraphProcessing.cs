@@ -732,7 +732,7 @@ namespace Darl.Thinkbase
         }
 
 
-        public async Task<GraphAttribute> GetGraphAttribute(string userId, string graphName, string id, string lineage, string? ksUserId = null)
+        public async Task<GraphAttribute?> GetGraphAttribute(string userId, string graphName, string id, string lineage, string? ksUserId = null)
         {
             var model = await GetModel(userId, graphName);
             if (model == null)
@@ -764,6 +764,11 @@ namespace Darl.Thinkbase
         public async Task<List<KnowledgeState>> GetSetOfKnowledgeStates(string userId, List<string> ksIds, string graphName)
         {
             return await _primitives.GetSetOfKnowledgeStates(userId, ksIds, graphName);
+        }
+
+        public async Task<List<GraphAbstraction>> GetSetofConnectedObjects(string userId, List<string> ksIds, string graphName)
+        {
+            return await _primitives.GetSetofConnectedObjects(userId, ksIds, graphName);
         }
 
         public Task<string> CreateTimedAccessUrl(string userId, string name)
@@ -1101,7 +1106,6 @@ namespace Darl.Thinkbase
                 return lineage;
             return $"{lineage}+{subLineage}";
         }
-
 
 
         #endregion

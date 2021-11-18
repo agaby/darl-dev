@@ -40,7 +40,7 @@ namespace Darl.GraphQL.Test
             var cmplogger = new Mock<ILogger<SoftMatchProcessing>>();
             //            var bc = new BlobConnectivity(configuration.Object, bloblogger.Object);
             var bc = new LocalBlob();
-            cmp = new SoftMatchProcessing(new List<IBlobConnectivity> { bc }, cmplogger.Object);
+            cmp = new SoftMatchProcessing(bc, cmplogger.Object);
             _config = configuration.Object;
         }
 

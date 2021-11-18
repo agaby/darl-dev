@@ -221,14 +221,14 @@ namespace Darl.Thinkbase
             return sb.ToString();
         }
 
-        public bool ContainsAttribute(string completionLineage)
+        public override bool ContainsAttribute(string completionLineage)
         {
             if (properties != null)
                 return properties.Any(a => a.lineage == completionLineage && a.confidence > 0.0 && a.type != GraphAttribute.DataType.ruleset);
             return false;
         }
 
-        public string GetAttributeValue(string lineage)
+        public string? GetAttributeValue(string lineage)
         {
             if (properties != null)
             {
@@ -254,17 +254,22 @@ namespace Darl.Thinkbase
 
         private bool IsLiteral()
         {
-            return !lineage.Contains(':');
+            return !(lineage ?? String.Empty).Contains(':');
         }
 
         private bool IsComposite()
         {
-            return lineage.Contains('+');
+            return (lineage ?? String.Empty).Contains('+');
         }
 
         private bool IsValue()
         {
-            return lineage.Contains("value:");
+            return (lineage ?? String.Empty).Contains("value:");
+        }
+
+        public override (GraphObject?, List<GraphConnection>) DeReference(IGraphModel model, List<string>? lineages)
+        {
+            return (this,Out);
         }
 
 

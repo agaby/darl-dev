@@ -49,6 +49,11 @@ namespace Darl.Thinkbase
             }
         }
 
+        /// <summary>
+        /// Add existence to a knowledge state.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="existence"></param>
         public void AddExistence(GraphObject parent, List<DarlTime?> existence)
         {
             if (!data.Any(a => a.name == parent.id))
@@ -64,6 +69,15 @@ namespace Darl.Thinkbase
             {
                 att.existence = existence;
             }
+        }
+
+        public void AddConnection(GraphConnection link, string remoteId, List<DarlTime>? existence = null)
+        {
+            if (!data.Any(a => a.name == (link.id ?? string.Empty)))
+            {
+                data.Add(new StringListGraphAttributeInputPair { name = (link.id ?? string.Empty), value = new List<GraphAttributeInput>() });
+            }
+            data.First(a => a.name == (link.id ?? string.Empty)).value.Add(new GraphAttributeInput { name = (link.name ?? string.Empty), type = GraphAttribute.DataType.connection, confidence = link.weight, lineage = link.lineage ?? string.Empty, inferred = true, value = remoteId, existence = existence});
         }
     }
 }

@@ -135,6 +135,36 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
         /// <summary>
+        /// Handle a set of requests that may combine GraphObjects and KnowledgeStates mixed in.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="ksIds"></param>
+        /// <param name="graphName"></param>
+        /// <param name="notFound">ids not found, probably graphObjects</param>
+        /// <returns></returns>
+        public async Task<List<GraphAbstraction>> GetSetofConnectedObjects(string userId, List<string> ksIds, string graphName, List<string> notFound)
+        {
+            var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
+            var filter1 = Builders<CosmosKnowledgeState>.Filter.In(x => x.subjectId, ksIds);
+            var filter2 = Builders<CosmosKnowledgeState>.Filter.Where(x => x.knowledgeGraphName == graphName && x.userId == userId);
+            var filter3 = Builders<CosmosKnowledgeState>.Filter.And(filter1, filter2);
+            var cursor = await mc.FindAsync<CosmosKnowledgeState>(filter3);
+            await cursor.MoveNextAsync();
+            var res =  cursor.Current.ToList<KnowledgeState>();
+            foreach(var r in ksIds)
+            {
+                if(!res.Any(a => a.subjectId == r))
+                    notFound.Add(r);
+            }
+            var list = new List<GraphAbstraction>();
+            foreach(var rs in res)
+            {
+                list.Add(rs);
+            }
+            return list;
+        }
+
+        /// <summary>
         /// Returns an IAsyncCursor<<KnowledgeState>> you can iterate to get all the states
         /// </summary>
         /// <param name="userId"></param>
@@ -345,5 +375,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var ds = await mc.DeleteManyAsync(Builders<CosmosKnowledgeState>.Filter.Eq(r => r.userId, userId) & Builders<CosmosKnowledgeState>.Filter.Eq(r => r.knowledgeGraphName, graphName));
             return ds.DeletedCount;
         }
+
+
     }
 }

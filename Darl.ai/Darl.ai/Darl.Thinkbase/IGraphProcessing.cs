@@ -73,7 +73,7 @@ namespace Darl.Thinkbase
         Task<VRDisplayModel> GetRealVRDisplayGraph(string compositeName, string lineageFilter);
         void HandleCodelessValue(IGraphModel model, GraphObject res, DarlVar? pending, List<DarlVar> values, KnowledgeState ks);
         void HandleCodelessCompletion(IGraphModel model, GraphObject res, KnowledgeState ks);
-        Task<GraphAttribute> GetGraphAttribute(string userId, string graphName, string externalId, string lineage, string? ksUserId = null);
+        Task<GraphAttribute?> GetGraphAttribute(string userId, string graphName, string externalId, string lineage, string? ksUserId = null);
         Task<int> GetKGraphCountAsync(string userId);
         Task<string> GetGraphObjectToString(string compositeName, string id);
         Task<KnowledgeState> GetKnowledgeStateByTypeAndAttribute(string userId, string objectId, string graphName, string attLineage, string attValue);
@@ -84,6 +84,7 @@ namespace Darl.Thinkbase
         Task<List<KnowledgeState>> GetKnowledgeStatesByTypeAndAttributeExistence(string userId, string objectId, string graphName, string attLineage);
         Task<string> ShareKGraph(string userId, string name, string sharerId, bool readOnly, bool hidden);
         Task<List<KnowledgeState>> GetSetOfKnowledgeStates(string userId, List<string> ksIds, string graphName);
+        Task<List<GraphAbstraction>> GetSetofConnectedObjects(string userId, List<string> ksIds, string graphName);
         public Task<string> CreateTimedAccessUrl(string userId, string name);
         Task<ModelMetaData> UpdateKGraph(string userId, string name, ModelMetaData kgupdate);
         Task<bool> Exists(string userId, string name);

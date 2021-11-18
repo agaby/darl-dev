@@ -32,7 +32,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private readonly IProducts _prods;
         private readonly ICheckEmail _checkEmail;
         private readonly ILicensing _licensing;
-        private readonly DarlMetaRunTime metaRuntime = new DarlMetaRunTime(new MetaStructureHandler());
+        private readonly IDarlMetaRunTime _metaRuntime;
 
 
         //fill in with single call to model at startup
@@ -66,7 +66,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private static readonly string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
         private static readonly string existenceLineage = "noun:01,5,03,3,018";//life
 
-        public KGTranslation(ILogger<KGTranslation> logger, IConfiguration config, IGraphProcessing graph, IMetaStructureHandler meta, IProducts prods, ICheckEmail checkEmail, ILicensing licensing)
+        public KGTranslation(ILogger<KGTranslation> logger, IConfiguration config, IGraphProcessing graph, IMetaStructureHandler meta, IProducts prods, ICheckEmail checkEmail, ILicensing licensing, IDarlMetaRunTime metaRuntime)
         {
             _config = config;
             _logger = logger;
@@ -75,9 +75,9 @@ namespace Darl.GraphQL.Models.Connectivity
             _prods = prods;
             _checkEmail = checkEmail;
             _licensing = licensing;
+            _metaRuntime = metaRuntime; 
             backofficeKG = _config["AppSettings:BackOfficeKG"];
             backofficeKGComp = _config["AppSettings:boaiuserid"] + '_' + backofficeKG;
-            DarlMetaRunTime.SetLicense(_config["licensing:darlMetaLicense"]);
             GetObjectIds().Wait();
         }
 
@@ -515,7 +515,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
             };
             await _graph.CreateKnowledgeState(_config["AppSettings:boaiuserid"], goi);
-            return contact; throw new NotImplementedException();
+            return contact; 
         }
 
         public async Task<Contact?> DeleteContactAsync(string email)
@@ -924,7 +924,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 try
                 {
-                    var tree = metaRuntime.CreateTreeEdit(darl);
+                    var tree = _metaRuntime.CreateTreeEdit(darl);
                     if (tree.HasErrors())
                     {
                         foreach (var pm in tree.ParserMessages)

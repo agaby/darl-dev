@@ -24,7 +24,7 @@ namespace Darl.Thinkbase
         [ProtoMember(3)]
         public string? lineage { get; set; }
         [ProtoMember(4)]
-        public List<DarlTime?>? existence { get; set; }
+        public List<DarlTime>? existence { get; set; }
         [ProtoMember(5)]
         public bool inferred { get; set; } = false;
         [ProtoMember(6)]

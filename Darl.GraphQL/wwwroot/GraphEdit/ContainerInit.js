@@ -159,7 +159,7 @@ $(async function () {
     defaultRule = graph('query dr($name: String! $id: String! $lineage: String!){getSuggestedRuleset(graphName: $name objectId: $id lineage: $lineage)}');
     getks = graph('query gks($id: String! $name: String!){getKnowledgeState(id: $id graphName: $name external: true){knowledgeGraphName data {name value {name lineage value confidence type }}}}')
     deletekg = graph('mutation dkg($name: String!){deleteKG(name: $name)}');
-    updatekg = graph('mutation ukg($name: String! $update: KGraphUpdate!){updateKGraphMetadata(name: $name update: $update){name description dateDisplay inferenceTime fixedTime{raw dateTimeOffset dateTime precision}}}')
+    updatekg = graph('mutation ukg($name: String! $update: modelMetaDataUpdate!){updateKGraphMetadata(name: $name update: $update){description dateDisplay inferenceTime fixedTime{raw dateTimeOffset dateTime precision}}}')
 
 
     try {

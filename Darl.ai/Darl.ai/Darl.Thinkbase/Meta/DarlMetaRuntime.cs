@@ -1,5 +1,6 @@
 ﻿using Darl.Licensing;
 using DarlCompiler.Parsing;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
 {
-    public class DarlMetaRunTime
+    public class DarlMetaRunTime : IDarlMetaRunTime
     {
 
         /// <summary>
@@ -23,9 +24,11 @@ namespace Darl.Thinkbase.Meta
         /// </summary>
         protected Parser parser;
 
-        public static bool licensed { get; private set; } = false;
+        public string licenseLocation { get; set; } = "licensing:darlMetaLicense";
 
-        public static void SetLicense(string license)
+        public  bool licensed { get; private set; } = false;
+
+        public  void SetLicense(string license)
         {
             licensed = DarlLicense.ProcessLicense(license);
         }
@@ -33,12 +36,13 @@ namespace Darl.Thinkbase.Meta
         /// <summary>
         /// Initializes a new instance of the <see cref="DarlRunTime"/> class.
         /// </summary>
-        public DarlMetaRunTime(IMetaStructureHandler? structure = null)
+        public DarlMetaRunTime(IConfiguration config, IMetaStructureHandler structure)
         {
             grammar = new DarlMetaGrammar();
             grammar.structure = structure;
             language = new LanguageData(grammar);
             parser = new Parser(language);
+            SetLicense(config[licenseLocation]);
         }
 
         /// <summary>

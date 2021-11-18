@@ -155,6 +155,29 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return Task.FromResult(list);
         }
+        /// <summary>
+        /// Handle a set of requests that may combine GraphObjects and KnowledgeStates mixed in.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="ksIds"></param>
+        /// <param name="graphName"></param>
+        /// <param name="notFound">ids not found, probably graphObjects</param>
+        /// <returns></returns>
+        public Task<List<GraphAbstraction>> GetSetofConnectedObjects(string userId, List<string> ksIds, string graphName, List<string> notFound)
+        {
+            var list = new List<GraphAbstraction>();
+            var mc = db.GetCollection<LiteKnowledgeState>(knowledgestateCollection);
+            foreach (var k in ksIds)
+            {
+                var r = mc.FindOne(x => x.subjectId == k && x.knowledgeGraphName == graphName) as KnowledgeState;
+                if (r != null)
+                    list.Add(r);
+                else
+                    notFound.Add(k);
+            }
+            return Task.FromResult(list);
+
+        }
 
         public Task<string> ShareKGraph(string userId, string name, string sharerId, bool readOnly, bool hidden)
         {
@@ -190,5 +213,7 @@ namespace Darl.GraphQL.Models.Connectivity
             mc.Upsert(ks);
             return Task.FromResult(ks as KnowledgeState);
         }
+
+ 
     }
 }

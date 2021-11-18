@@ -82,6 +82,7 @@ namespace Darl.GraphQL.Test
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:boaiuserid")]).Returns("8c663676-a7dc-4561-af3d-89b38555837d");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:BackOfficeKG")]).Returns("backoffice_test.graph");
             //           configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StripeTrialPeriodDays")]).Returns<int>(a >= 30);
+            configuration.Setup(a => a[It.Is<string>(s => s == "licensing:darlMetaLicense")]).Returns("RwEAAB+LCAAAAAAAAApVkEtPwzAQhO+V+h984xCEyauUyrVoHqKOkjQlUVRxc4mhLnk6sUr49UQWCDh+s7Mzq0Uhf2F1z/B8BgDKxpbhdKB1QUWBoEI18D9aLujAmxpnJ3kNdBMEsgbGrWEB3VhZ9sq4B49RhuAfp9p0ZT80FROKJo5pxbAnwKYuxqsekASEw1Sl5G+LX1Fe4l62bSOGh+mU8obyKVnJKhT+S0Upf6vpIAXDkb93iR/LT+891+y83bsmLM6tvnBOZ/J6l5Ry8WQcD2PwrBVenmsb7ljEHHfJznMO22WXdHpXenlIuN4E8SKNDMs+biNikiVrLus1gr9d8xmCP9/7AhubQj1HAQAA");
 
 
 
@@ -185,7 +186,7 @@ namespace Darl.GraphQL.Test
             var model = await _graph.GetModel(_config["userId"], graphName) as BlobGraphContent;
             var compositeName = $"{_config["userId"]}_{graphName}";
             var msh = new MetaStructureHandler();
-            var runtime = new DarlMetaRunTime(msh);
+            var runtime = new DarlMetaRunTime(_config,msh);
             var reverse = new Dictionary<string, string>();
             foreach (var c in msh.CommonLineages)
                 reverse.Add(c.Value, c.Key);

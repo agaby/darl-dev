@@ -8,6 +8,6 @@ namespace Darl.Lineage.Bot
     public interface IBotProcessing
     {
         Task<List<InteractTestResponse>> InteractKGAsync(string userId, string KnowledgeGraphName, string conversationId, DarlVar conversationData);
-        Task<List<KnowledgeRecord>> Discover(string userId, string KnowledgeGraphName, string subjectId);
+        Task<KnowledgeState> Discover(string userId, string KnowledgeGraphName, string subjectId);
     }
 }

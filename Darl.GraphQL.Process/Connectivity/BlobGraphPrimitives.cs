@@ -70,8 +70,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<GraphObject?> CreateObject(string compositeName, GraphObjectInput graphObject)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont != null)
+            if (await Load(compositeName) is BlobGraphContent cont)
             {
                 var go = new GraphObject { existence = graphObject.existence, externalId = graphObject.externalId, id = Guid.NewGuid().ToString(), inferred = false, lineage = graphObject.lineage, name = graphObject.name, _virtual = false, properties = ConvertAttributeInputList(graphObject.properties) };
                 cont.vertices.Add(go.id, go);
@@ -83,8 +82,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public Task CreateVirtualConnection(IGraphModel model, string child, string lineage, string connectionLabel)
         {
-            BlobGraphContent? cont = model as BlobGraphContent;
-            if (cont != null && !cont.virtualEdges.ContainsKey(($"{child}->{lineage}")))
+            if (model is BlobGraphContent cont && !cont.virtualEdges.ContainsKey(($"{child}->{lineage}")))
             {
                 var gc = new GraphConnection { id = Guid.NewGuid().ToString(), endId = lineage, inferred = false, name = connectionLabel, startId = child, weight = 1.0, _virtual = true };
                 if (cont.virtualVertices.ContainsKey(child))
@@ -109,8 +107,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<GraphConnection?> DeleteConnection(string compositeName, string id)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont != null)
+            if (await Load(compositeName) is BlobGraphContent cont)
             {
                 if (!cont.edges.ContainsKey(id))
                 {
@@ -134,8 +131,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<GraphObject?> DeleteObject(string compositeName, string id)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont != null)
+            if (await Load(compositeName) is BlobGraphContent cont)
             {
                 if (!cont.vertices.ContainsKey(id))
                 {
@@ -150,7 +146,7 @@ namespace Darl.GraphQL.Models.Connectivity
                         var end = cont.vertices[c.endId];
                         var endLink = end.In.Where(a => a.id == c.id).FirstOrDefault();
                         if (endLink != null)
-                        { 
+                        {
                             var success = end.In.Remove(endLink);
                         }
                     }
@@ -178,9 +174,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<GraphConnection?> GetConnectionByIds(string compositeName, string startId, string endId, string lineage)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont != null)
-            { 
+            if (await Load(compositeName) is BlobGraphContent cont)
+            {
                 var start = cont.vertices[startId];
                 return start.Out.Where(a => a.lineage == lineage && a.endId == endId).FirstOrDefault();
             }
@@ -189,8 +184,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<GraphObject?> GetGraphObjectByExternalId(string compositeName, string externalId)
         {//will need to see if it is worth adding another index.
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if(cont != null)
+            if (await Load(compositeName) is BlobGraphContent cont)
                 return cont.vertices.Values.Where(a => a.externalId == externalId).FirstOrDefault();
             return null;
         }
@@ -198,8 +192,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<GraphObject?> GetGraphObjectById(string compositeName, string id)
         {
             //if id doesn't match but externalId does, return that
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont != null)
+            if (await Load(compositeName) is BlobGraphContent cont)
             {
                 if (cont.vertices.ContainsKey(id))
                     return cont.vertices[id];
@@ -218,8 +211,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<List<GraphObject>?> GetGraphObjects(string compositeName, string name, string lineage)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont != null)
+            if (await Load(compositeName) is BlobGraphContent cont)
             {
                 return cont.vertices.Values.Where(a => a.name == name && (a.lineage ?? String.Empty).StartsWith(lineage)).ToList();
             }
@@ -347,8 +339,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public Task<bool> VirtualAssociationExists(IGraphModel model, string lineage1, string lineage2)
         {
-            var cont = model as BlobGraphContent;
-            if (cont != null)
+            if (model is BlobGraphContent cont)
             {
                 if (!cont.virtualVertices.ContainsKey(lineage1) || !cont.virtualVertices.ContainsKey(lineage2))
                     return Task.FromResult(false);
@@ -372,9 +363,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
         private void FollowHypernymy(IGraphModel model, GraphObject g, List<GraphObject> list)
         {
-            var cont = model as BlobGraphContent;
-            if (cont != null)
-            { 
+            if (model is BlobGraphContent cont)
+            {
                 foreach (var l in g.Out.Where(a => a.name == "kind_of"))
                 {
                     var parent = cont.virtualVertices[l.endId];
@@ -386,8 +376,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task Store(string blobName, IGraphModel model)
         {
-            var cont = model as BlobGraphContent;
-            if (cont != null)
+            if (model is BlobGraphContent cont)
             {
                 cont.key = _license.CreateKey(DateTime.UtcNow + new TimeSpan(modelLicenseDays, 0, 0, 0), blobName, "");
                 await _blob.Write(blobName, SerializeGraph(cont));
@@ -445,8 +434,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public byte[] SerializeGraph(IGraphModel model)
         {
-            var cont = model as BlobGraphContent;
-            if (cont != null)
+            if (model is BlobGraphContent cont)
             {
                 using (MemoryStream ms = new MemoryStream())
                 {
@@ -1052,8 +1040,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<GraphConnection> CreateRecognitionConnection(string compositeName, GraphConnectionInput graphConnection)
         {
             //should test for DAG if new connection added
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
+            if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph {compositeName} does not exist.");
             if (cont.recognitionVertices[graphConnection.startId].lineage == GraphObject.terminatingLabel)
             {
@@ -1072,8 +1059,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<GraphObject> CreateRecognitionObject(string compositeName, GraphObjectInput graphObject)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
+            if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
             var obj = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = graphObject.lineage.ToLower(), name = graphObject.name, properties = ConvertAttributeInputList(graphObject.properties) };
             cont.recognitionVertices.Add(obj.id, obj);
@@ -1082,8 +1068,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<GraphObject> DeleteRecognitionObject(string compositeName, string id)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null || !cont.recognitionVertices.ContainsKey(id))
+            if (await Load(compositeName) is not BlobGraphContent cont || !cont.recognitionVertices.ContainsKey(id))
                 throw new ExecutionError($"GraphConnection id '{id}' does not exist.");
             var obj = cont.recognitionVertices[id];
             foreach (var c in obj.In)
@@ -1104,8 +1089,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<GraphObject> DeleteRecognitionRoot(string compositeName, string rootLineage)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
+            if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
             if (cont.recognitionRoots.ContainsKey(rootLineage))
                 throw new ExecutionError($"Recognition root '{rootLineage}' does not exist");
@@ -1117,8 +1101,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<GraphObject> UpdateRecognitionObject(string compositeName, GraphObjectUpdate go)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
+            if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
             if (!cont.recognitionVertices.ContainsKey(go.id))
                 throw new ExecutionError($"GraphConnection id '{go.id}' does not exist.");
@@ -1161,8 +1144,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<List<GraphObject>> NavigateRecognition(string compositeName, string root, string path)
         {
             var list = new List<GraphObject>();
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
+            if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
             if (!cont.recognitionRoots.ContainsKey(root))
                 return list;
@@ -1172,8 +1154,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<GraphObject> UpdateVirtualObject(string compositeName, GraphObjectUpdate go, bool merge = false)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
+            if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
             if (!cont.virtualVertices.ContainsKey(go.lineage))
                 return null;
@@ -1211,8 +1192,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<GraphObject> FindRecognition(string compositeName, string root, string path)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
+            if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
             if (!cont.recognitionRoots.ContainsKey(root))
                 return null;
@@ -1222,8 +1202,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<GraphObject> GetVirtualObjectByLineage(string compositeName, string lineage)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
+            if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
             if (cont.virtualVertices.ContainsKey(lineage))
                 return cont.virtualVertices[lineage];
@@ -1232,8 +1211,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<GraphObject> GetRecognitionObjectById(string compositeName, string id)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
+            if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
             if (cont.recognitionVertices.ContainsKey(id))
                 return cont.recognitionVertices[id];
@@ -1243,8 +1221,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<DisplayModel> GetRealDisplayGraph(string compositeName, string lineageFilter)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
+            if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
             var dmodel = new DisplayModel { nodes = new List<DisplayObject>(), edges = new List<DisplayConnection>() };
             if (string.IsNullOrEmpty(lineageFilter)) //return everything
@@ -1262,8 +1239,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<DisplayModel> GetVirtualDisplayGraph(string compositeName)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
+            if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
             var dmodel = new DisplayModel { nodes = new List<DisplayObject>(), edges = new List<DisplayConnection>() };
             dmodel.nodes.AddRange(cont.virtualVertices.Values.Select(i => new DisplayObject { id = i.lineage.Replace(',', '-').Replace(':', '-'), name = i.name, lineage = i.lineage }));
@@ -1274,8 +1250,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<DisplayModel> GetRecognitionDisplayGraph(string compositeName)
         {
             var dmodel = new DisplayModel { nodes = new List<DisplayObject>(), edges = new List<DisplayConnection>() };
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
+            if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
             foreach (var robj in cont.recognitionRoots.Values)
             {
@@ -1286,8 +1261,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task CorrectBrokenLinks(string compositeName)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
+            if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
             var deleteList = new List<GraphConnection>();
             foreach (var n in cont.vertices.Values)
@@ -1352,8 +1326,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task ClearGraphContent(string compositeName)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
+            if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
             cont.edges.Clear();
             cont.recognitionEdges.Clear();
@@ -1427,16 +1400,14 @@ namespace Darl.GraphQL.Models.Connectivity
         //very brute force and slow. consider caching, or using virtual world
         public async Task<List<LineageRecord>> GetLineagesInKG(string compositeName, GraphElementType gtype)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
+            if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
             return cont.GetLineages(gtype);
         }
 
         public async Task<GraphConnection> GetConnectionById(string compositeName, string id)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
+            if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
             if (!cont.edges.ContainsKey(id))
                 return null;
@@ -1445,8 +1416,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<VRDisplayModel> GetRealVRDisplayGraph(string compositeName, string lineageFilter)
         {
-            var cont = await Load(compositeName) as BlobGraphContent;
-            if (cont == null)
+            if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
             var dmodel = new VRDisplayModel { nodes = new List<VRDisplayNode>(), links = new List<VRDisplayLink>() };
             if (string.IsNullOrEmpty(lineageFilter)) //return everything
@@ -1674,8 +1644,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<string> KStateIntegrityCheck(string userId, string name)
         {
-            var model = await Load(CreateCompositeName(userId, name)) as BlobGraphContent;
-            if (model == null)
+            if (await Load(CreateCompositeName(userId, name)) is not BlobGraphContent model)
                 throw new Exception($"{name} could not be found in your account.");
             var subjectIds = new HashSet<string>();
             int ksCount = 0;
@@ -1710,9 +1679,62 @@ namespace Darl.GraphQL.Models.Connectivity
             return await _conn.GetSetOfKnowledgeStates(userId, ksIds, graphName);
         }
 
-        public Task<ModelMetaData> UpdateKGraph(string userId, string name, ModelMetaData kgupdate)
+        public async Task<ModelMetaData> UpdateKGraph(string userId, string name, ModelMetaData kgupdate)
         {
-            throw new NotImplementedException();
+            if (await Load(CreateCompositeName(userId, name)) is not BlobGraphContent model)
+                throw new Exception($"{name} could not be found in your account."); 
+            if(kgupdate.description != null)
+            {
+                model.description = kgupdate.description;
+            }
+            if (kgupdate.author != null)
+            {
+                model.author = kgupdate.author;
+            }
+            if (kgupdate.copyright != null)
+            {
+                model.copyright = kgupdate.copyright;
+            }
+            if (kgupdate.initialText != null)
+            {
+                model.initialText = kgupdate.initialText;
+            }
+            if (kgupdate.licenseUrl != null)
+            {
+                model.licenseUrl = kgupdate.licenseUrl;
+            }
+            if (kgupdate.dateDisplay != null)
+            {
+                model.dateDisplay = kgupdate.dateDisplay;
+            }
+            if (kgupdate.inferenceTime != null)
+            {
+                model.inferenceTime = kgupdate.inferenceTime;
+            }
+            if (kgupdate.fixedTime != null)
+            {
+                model.fixedTime = kgupdate.fixedTime;
+            }
+            await Store(CreateCompositeName(userId, name), model);
+            return kgupdate;
+        }
+
+        public async Task<List<GraphAbstraction>> GetSetofConnectedObjects(string userId, List<string> ksIds, string graphName)
+        {
+            var notFound = new List<string>();
+            var res = await _conn.GetSetofConnectedObjects(userId, ksIds, graphName, notFound);
+            if(notFound.Any())
+            {
+                var compositeName = userId + "_" + graphName;
+                if (await Load(compositeName) is not BlobGraphContent cont)
+                    throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
+                foreach (var ids in notFound)
+                {
+                    if(cont.vertices.ContainsKey(ids))  
+                        res.Add(cont.vertices[ids]);
+                }
+            }
+            return res;
         }
     }
 

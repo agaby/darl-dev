@@ -9,6 +9,7 @@ using Darl.GraphQL.Ui.Voyager;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
+using Darl.Thinkbase.Meta;
 using DarlLanguage.Processing;
 using GraphQL;
 using GraphQL.Http;
@@ -120,6 +121,7 @@ namespace Darl.GraphQL
             services.AddSingleton<IMetaStructureHandler, MetaStructureHandler>();
             services.AddSingleton<IProducts, Products>();
             services.AddSingleton<ICheckEmail, EmailChecker>();
+            services.AddSingleton<IDarlMetaRunTime, DarlMetaRunTime>();
 
             //types
             services.AddSingleton<DictionarySequenceType>();
@@ -192,8 +194,6 @@ namespace Darl.GraphQL
             services.AddSingleton<DaslStateInputType>();
             services.AddSingleton<DarlSubscription>();
             services.AddSingleton<StringDoublePairInputType>();
-            services.AddSingleton<ModelDetailsType>();
-            services.AddSingleton<ModelDetailsInputType>();
             services.AddSingleton<ModelTypeEnum>();
             services.AddSingleton<GraphQLCredentialsType>();
             services.AddSingleton<InteractionModelType>();

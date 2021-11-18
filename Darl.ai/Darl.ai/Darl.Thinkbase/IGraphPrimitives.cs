@@ -86,5 +86,6 @@ namespace Darl.Thinkbase
         Task<List<KnowledgeState>> GetSetOfKnowledgeStates(string userId, List<string> ksIds, string graphName);
         string CreateTimedAccessUrl(string userId, string name);
         Task<ModelMetaData> UpdateKGraph(string userId, string name, ModelMetaData kgupdate);
+        Task<List<GraphAbstraction>> GetSetofConnectedObjects(string userId, List<string> ksIds, string graphName);
     }
 }

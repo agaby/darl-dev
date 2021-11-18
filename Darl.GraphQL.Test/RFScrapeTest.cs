@@ -2,6 +2,7 @@
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using Darl.Thinkbase;
+using Darl.Thinkbase.Meta;
 using DarlLanguage.Processing;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Http;
@@ -36,6 +37,7 @@ namespace Darl.GraphQL.Test
         private ILogger<BotProcessing> _bplogger;
         private IHttpContextAccessor _context;
         private ILogger<GraphHandler> _ghlogger;
+        private IDarlMetaRunTime _runtime;
 
         private static readonly string industryLineage = "noun:01,2,07,10,14,3,1";
         private static readonly string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";
@@ -84,7 +86,7 @@ namespace Darl.GraphQL.Test
             var configuration = new Mock<IConfiguration>();
 
             //            configuration.Setup(a => a[It.Is<string>(s => s == "darlDevAPiKey")]).Returns("7ecb39be-fb44-4c13-92df-68ec152a4edb");
-            configuration.Setup(a => a[It.Is<string>(s => s == "darlDevAPiKey")]).Returns("2495b08b-93c3-4498-85b7-f4bdd36b6f01");
+            configuration.Setup(a => a[It.Is<string>(s => s == "licensing:darlMetaLicense")]).Returns("RwEAAB+LCAAAAAAAAApVkEtPwzAQhO+V+h984xCEyauUyrVoHqKOkjQlUVRxc4mhLnk6sUr49UQWCDh+s7Mzq0Uhf2F1z/B8BgDKxpbhdKB1QUWBoEI18D9aLujAmxpnJ3kNdBMEsgbGrWEB3VhZ9sq4B49RhuAfp9p0ZT80FROKJo5pxbAnwKYuxqsekASEw1Sl5G+LX1Fe4l62bSOGh+mU8obyKVnJKhT+S0Upf6vpIAXDkb93iR/LT+891+y83bsmLM6tvnBOZ/J6l5Ry8WQcD2PwrBVenmsb7ljEHHfJznMO22WXdHpXenlIuN4E8SKNDMs+biNikiVrLus1gr9d8xmCP9/7AhubQj1HAQAA");
             //            configuration.Setup(a => a[It.Is<string>(s => s == "darlDevAPiKey")]).Returns("e438440e-9d90-46e8-87ed-080e19c43aed");
             //configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("33db770b-29e9-46ae-8a19-c1947bd775d8");
             //            configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("5ee43551-c05c-4cff-8582-c08f23f84c14");
@@ -126,6 +128,7 @@ namespace Darl.GraphQL.Test
             var bplogger = new Mock<ILogger<BotProcessing>>();
             _bplogger = bplogger.Object;
             _context = context.Object;
+            _runtime = new DarlMetaRunTime(_config, meta.Object);
         }
 
 
@@ -423,7 +426,7 @@ namespace Darl.GraphQL.Test
                 }
             }
             var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
-            var gh = new GraphHandler(_graph, _ghlogger, new MetaStructureHandler());
+            var gh = new GraphHandler(_graph, _ghlogger, new MetaStructureHandler(), _runtime);
             var paths = new List<string> { consistsLineage, followsLineage };
             var subjectId = Guid.NewGuid().ToString();
             var userId = _config["userId"];
@@ -471,7 +474,7 @@ namespace Darl.GraphQL.Test
         public async Task TestGraphPass()
         {
             var compositeName = $"{_config["userId"]}_{graphName}";
-            var gh = new GraphHandler(_graph, _ghlogger, new MetaStructureHandler());
+            var gh = new GraphHandler(_graph, _ghlogger, new MetaStructureHandler(), _runtime);
             var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
             var paths = new List<string> { consistsLineage, followsLineage };
             var subjectId = Guid.NewGuid().ToString();
@@ -516,7 +519,7 @@ namespace Darl.GraphQL.Test
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = defaultAnswer.id, lineage = followsLineage });
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = help.id, lineage = followsLineage });
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = math.id, lineage = followsLineage });
-            var gh = new GraphHandler(_graph, _ghlogger, new MetaStructureHandler());
+            var gh = new GraphHandler(_graph, _ghlogger, new MetaStructureHandler(), _runtime);
             var userId = _config["userId"];
             var subjectId = "default:";
             var results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "hello" });
@@ -575,7 +578,7 @@ namespace Darl.GraphQL.Test
         {
             var compositeName = $"{_config["userId"]}_{graphName}";
             var userId = _config["userId"];
-            var gh = new GraphHandler(_graph, _ghlogger, new MetaStructureHandler());
+            var gh = new GraphHandler(_graph, _ghlogger, new MetaStructureHandler(), _runtime);
             var cache = new Mock<IDistributedCache>();
             var bp = new BotProcessing(_conn, _bplogger, _config, _graph, gh, cache.Object);
             var conversationId = Guid.NewGuid().ToString();

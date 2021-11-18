@@ -11,6 +11,7 @@
     <Compile Remove="GraphProcessTest.cs" />
     <Compile Remove="GraphProcesTest.cs" />
     <Compile Remove="LoadTests.cs" />
+    <Compile Remove="MLModelTest.cs" />
   </ItemGroup>
 
   <ItemGroup>

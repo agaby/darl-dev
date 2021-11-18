@@ -22,11 +22,11 @@ namespace Darl.GraphQL.Models.Connectivity
         private readonly ILogger _logger;
         private readonly string userId;
         private readonly IConnectivity _conn;
-        private readonly DarlMetaRunTime metaRuntime = new DarlMetaRunTime(new MetaStructureHandler());
+        private readonly IDarlMetaRunTime _metaRuntime;
         private readonly IGraphProcessing _graph;
 
 
-        public KGContainer(IConfiguration config, ILogger<KGContainer> logger, ILicensing licensing, IConnectivity conn, IGraphProcessing graph)
+        public KGContainer(IConfiguration config, ILogger<KGContainer> logger, ILicensing licensing, IConnectivity conn, IGraphProcessing graph, IDarlMetaRunTime metaRuntime)
         {
             _logger = logger;
             _licensing = licensing;
@@ -34,7 +34,7 @@ namespace Darl.GraphQL.Models.Connectivity
             userId = _config["SINGLEUSERID"];
             _conn = conn;
             _graph = graph;
-            DarlMetaRunTime.SetLicense(_config["licensing:darlMetaLicense"]);
+            _metaRuntime = metaRuntime;
             Init().Wait();
         }
 
@@ -327,7 +327,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 try
                 {
-                    var tree = metaRuntime.CreateTreeEdit(darl);
+                    var tree = _metaRuntime.CreateTreeEdit(darl);
                     if (tree.HasErrors())
                     {
                         foreach (var pm in tree.ParserMessages)
