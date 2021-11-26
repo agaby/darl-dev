@@ -23,7 +23,8 @@ namespace Darl.Thinkbase.Meta
             {
                 base.Init(context, treeNode);
                 var nodes = treeNode.GetMappedChildNodes();
-                Argument = (DarlMetaNode)AddChild("-", nodes.Last());
+                if (nodes.Any())
+                    Argument = (DarlMetaNode)AddChild("-", nodes.Last());
             }
             catch
             {
@@ -39,7 +40,8 @@ namespace Darl.Thinkbase.Meta
         /// <param name="context">The context.</param>
         public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlMetaNode currentOutput, ConstantContext context, IGraphModel model, GraphObject currentNode)
         {
-            Argument.WalkDependencies(dependencies, currentOutput, context, model, currentNode);
+            if (Argument != null)
+                Argument.WalkDependencies(dependencies, currentOutput, context, model, currentNode);
         }
 
         /// <summary>
@@ -50,7 +52,8 @@ namespace Darl.Thinkbase.Meta
         /// <param name="currentOutput">The current output.</param>
         public override void WalkSaliences(double saliency, MetaRootNode root)
         {
-            Argument.WalkSaliences(saliency, root);
+            if (Argument != null)
+                Argument.WalkSaliences(saliency, root);
         }
     }
 }

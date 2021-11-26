@@ -258,8 +258,8 @@ namespace Darl.Thinkbase
             //used to record progress
             log.AppendLine($"Starting discovery from object {subjectId}, {DateTime.UtcNow}.");
             var kr = new KnowledgeRecord { subjectId = ks.subjectId, userId = ks.userId, created = ks.created, knowledgeGraphName = ks.knowledgeGraphName, processId = ks.processId, data = ks.data };
-            var res = new KnowledgeState { userId = userId, knowledgeGraphName = knowledgeGraphName};
-            await RecursiveDiscovery(model, kr, res, subjectId, 1.0, lineages, log, currentTime);
+            var res = new KnowledgeState { userId = userId, knowledgeGraphName = knowledgeGraphName, subjectId = Guid.NewGuid().ToString(), created = DateTime.UtcNow};
+            await RecursiveDiscovery(model, kr, res, subjectId, 1.0, lineages, log, currentTime, 0);
             log.AppendLine($"Completed discovery from object {subjectId}, {DateTime.UtcNow}.");
             return res;
         }
@@ -765,7 +765,7 @@ namespace Darl.Thinkbase
         /// <param name="log">Textual log of discovery process</param>
         /// <param name="currentTime">The time of the analysis</param>
         /// <returns></returns>
-        private async Task RecursiveDiscovery(IGraphModel model, KnowledgeRecord ks, KnowledgeState state, string startSubjectId, double weight, List<string> lineages, StringBuilder log, DarlTime? currentTime)
+        private async Task RecursiveDiscovery(IGraphModel model, KnowledgeRecord ks, KnowledgeState state, string startSubjectId, double weight, List<string> lineages, StringBuilder log, DarlTime? currentTime, int depth)
         {
             //Assume that ks holds the start node
             var refs = ks.DeReference(model, lineages);
@@ -777,20 +777,25 @@ namespace Darl.Thinkbase
                 currentNode = model.vertices.Values.Where(a => a.externalId == startSubjectId).FirstOrDefault();
                 if (currentNode == null)
                     throw new MetaRuleException($"No node found in {ks.subjectId}");
-                log.AppendLine($"Processing Node: {currentNode.externalId}, { DateTime.UtcNow}.");
+                log.AppendLine($"{DepthIndicator(depth)}Processing Node: {currentNode.externalId}, { DateTime.UtcNow}.");
                 state.data.Add(currentNode.id ?? String.Empty, new List<GraphAttribute> { new GraphAttribute { name = "completed", type = GraphAttribute.DataType.categorical, value = "true", lineage = _metaHandler.CommonLineages["complete"] } });
-                await RecursiveDiscovery(model, state, currentNode, weight, lineages, log, currentTime);
+                await RecursiveDiscovery(model, state, currentNode, weight, lineages, log, currentTime, depth +1);
                 return;
-            }
-            if (ks.subjectId != startSubjectId)//don't halt on the first
+            } 
+            if (!await CheckCodeCompletion(model, state, currentNode, log, currentTime, depth))
+                return;
+            if (ks.subjectId == startSubjectId) //copy attributes from ks into state
             {
-                if (!await CheckCodeCompletion(model, state, currentNode, log, currentTime))
-                    return;
+                if(!state.data.ContainsKey(currentNode.id ?? string.Empty))
+                {
+                    state.data.Add(currentNode.id ?? string.Empty, new List<GraphAttribute>());
+                }
+                state.data[currentNode.id ?? string.Empty].AddRange(ks.data[currentNode.id ?? string.Empty]);
             }
 
             //Search using inferred links in this KS and non-inferred in the model.
 
-            log.AppendLine($"Processing KnowledgeState: {ks.subjectId}, { DateTime.UtcNow}.");
+            log.AppendLine($"{DepthIndicator(depth)}Processing KnowledgeState: {ks.subjectId}, { DateTime.UtcNow}.");
             //first pass collect required subject Ids and weights
             var ids = new List<(string, double)>();
             foreach (var s in connections.Where(a => a.inferred == true))
@@ -821,13 +826,13 @@ namespace Darl.Thinkbase
                         if (newKs is KnowledgeRecord)
                         {
                             state.data.Add(ks.subjectId, new List<GraphAttribute> { new GraphAttribute { name = "completed", type = GraphAttribute.DataType.categorical, value = "true", lineage = _metaHandler.CommonLineages["complete"] } });
-                            await RecursiveDiscovery(model, (KnowledgeRecord)newKs, state, startSubjectId, Math.Min(weight, ids[index].Item2), lineages, log, currentTime);
+                            await RecursiveDiscovery(model, (KnowledgeRecord)newKs, state, startSubjectId, Math.Min(weight, ids[index].Item2), lineages, log, currentTime, depth + 1);
                         }
                         else if (newKs is GraphObject)
                         {
                             var go = (GraphObject)newKs;
                             state.data.Add(go.id ?? String.Empty, new List<GraphAttribute> { new GraphAttribute { name = "completed", type = GraphAttribute.DataType.categorical, value = "true", lineage = _metaHandler.CommonLineages["complete"] } });
-                            await RecursiveDiscovery(model, state, go, Math.Min(weight, ids[index].Item2), lineages, log, currentTime);
+                            await RecursiveDiscovery(model, state, go, Math.Min(weight, ids[index].Item2), lineages, log, currentTime, depth + 1);
                         }
                         index++;
                     }
@@ -844,28 +849,36 @@ namespace Darl.Thinkbase
                 if (!CheckForLoop(state,endObject) && Coexists(endObject, ks, model, currentTime))//avoid loops
                 {
                     state.data.Add(endObject.id ?? String.Empty, new List<GraphAttribute> { new GraphAttribute { name = "completed", type = GraphAttribute.DataType.categorical, value = "true", lineage = _metaHandler.CommonLineages["complete"] } });
-                    await RecursiveDiscovery(model, state, endObject, Math.Min(weight, s.weight), lineages, log, currentTime);
+                    await RecursiveDiscovery(model, state, endObject, Math.Min(weight, s.weight), lineages, log, currentTime, depth + 1);
                 }
             }
 
 
         }
 
-        private async Task<bool> CheckCodeCompletion(IGraphModel model, KnowledgeState ks, GraphObject currentNode, StringBuilder log, DarlTime? currentTime)
+        private async Task<bool> CheckCodeCompletion(IGraphModel model, KnowledgeState ks, GraphObject currentNode, StringBuilder log, DarlTime? currentTime, int depth)
         {
             var code = _graph.FindCompleteAttribute(model, currentNode.id ?? String.Empty);
             if (!string.IsNullOrEmpty(code)) //no code implies discovery can continue.
             {
-                //evaluate it
-                var tree = _runtime.CreateTree(code, currentNode, model); //findControlAttribute checks for syntax errors.
-                var list = new List<Meta.DarlResult>();
-                await _runtime.Evaluate(tree, list, ks); //add current time for eval
-                //return false if further movement not possible.
-                var complete = list.FirstOrDefault(a => a.name == "completed");
-                if (!complete.Exists() || (complete.Value as string) == "false" || complete.GetWeight() < 0.1)
+                try
                 {
-                    log.AppendLine($"Node not completed. code: {code}, { DateTime.UtcNow}.");
-                    return false; //rules prevent further search
+                    //evaluate it
+                    var tree = _runtime.CreateTree(code, currentNode, model); //findControlAttribute checks for syntax errors.
+                    var list = new List<Meta.DarlResult>();
+                    await _runtime.Evaluate(tree, list, ks); //add current time for eval
+                                                             //return false if further movement not possible.
+                    var complete = list.FirstOrDefault(a => a.name == "completed");
+                    if (!complete.Exists() || (complete.Value as string) == "false" || complete.GetWeight() < 0.1)
+                    {
+                        log.AppendLine($"{DepthIndicator(depth)}Node not completed. {currentNode.externalId} { DateTime.UtcNow}.");
+                        return false; //rules prevent further search
+                    }
+                }
+                catch(Exception ex)
+                {
+                    log.AppendLine($"Error in evaluating code: \n{code}\nmessage: \n{ex.Message}\n { DateTime.UtcNow}.");
+                    return false;
                 }
             }
             return true;
@@ -892,19 +905,19 @@ namespace Darl.Thinkbase
         /// <param name="log"></param>
         /// <param name="currentTime"></param>
         /// <returns></returns>
-        private async Task RecursiveDiscovery(IGraphModel model, KnowledgeState state, GraphObject currentNode, double weight, List<string> lineages, StringBuilder log, DarlTime? currentTime)
+        private async Task RecursiveDiscovery(IGraphModel model, KnowledgeState state, GraphObject currentNode, double weight, List<string> lineages, StringBuilder log, DarlTime? currentTime, int depth)
         {
 
-            if (!await CheckCodeCompletion(model, state, currentNode, log, currentTime))
+            if (!await CheckCodeCompletion(model, state, currentNode, log, currentTime, depth))
                 return;
-            log.AppendLine($"Processing GraphObject: {currentNode.externalId}, { DateTime.UtcNow}.");
+            log.AppendLine($"{DepthIndicator(depth)}Processing GraphObject: {currentNode.externalId}, { DateTime.UtcNow}.");
             foreach (var l in currentNode.Out)
             {
                 var endObject = model.vertices[l.endId];
                 if (!CheckForLoop(state, endObject) && Coexists(endObject, currentNode, model, currentTime))//avoid loops and objects that don't coexist
                 {
                     state.data.Add(endObject.id ?? String.Empty, new List<GraphAttribute> { new GraphAttribute { name = "completed", type = GraphAttribute.DataType.categorical, value = "true", lineage = _metaHandler.CommonLineages["complete"] } });
-                    await RecursiveDiscovery(model, state, endObject, Math.Min(weight, l.weight), lineages, log, currentTime);
+                    await RecursiveDiscovery(model, state, endObject, Math.Min(weight, l.weight), lineages, log, currentTime, depth + 1);
                 }
             }
         }
@@ -915,7 +928,15 @@ namespace Darl.Thinkbase
             return currentNode.Coexists(endObject, model, currentTime) > 0.0;
         }
 
-
+        private string DepthIndicator(int depth)
+        {
+            var di = string.Empty;
+            for(int n = 0; n < depth; n++)
+            {
+                di += "- ";
+            }
+            return di;
+        }
 
 
 

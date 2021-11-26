@@ -1750,7 +1750,7 @@ namespace Darl.Thinkbase.Meta
         /// </summary>
         /// <remarks>May involve approximation.</remarks>
         /// <param name="cutsToValues">if true values are initialized from cuts, otherwise the inverse</param>
-        internal void Normalise(bool cutsToValues)
+        public void Normalise(bool cutsToValues)
         {
             approximate = false;
             if (IsNumeric() && !IsUnknown())
@@ -2517,6 +2517,162 @@ namespace Darl.Thinkbase.Meta
             if (!res.unknown)
                 return res;
             return new DarlResult(0.0, false);
+        }
+
+        public static DarlResult Age(DarlResult res1, DarlResult now)
+        {
+            if (res1.IsUnknown() || now.IsUnknown() || res1.GetWeight() == 0.0 || now.GetWeight() == 0.0 || res1.values.Count == 0 || now.values.Count == 0)
+                return new DarlResult(-1.0, true);
+            if (!res1.temporal || !now.temporal)
+                throw new MetaRuleException("passing non temporal parameters to a temporal operator");
+            var duration = new DarlResult("duration", DarlResult.DataType.duration);
+            switch (res1.values.Count)
+            {
+                case 1:
+                    return new DarlResult(-1.0, true);
+                case 2:
+                    if ((double)now.values[0] > (double)res1.values[1])
+                        return new DarlResult(-1.0, true);
+                    switch (now.values.Count)
+                    {
+                        case 1:
+                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
+                            duration.Normalise(false);
+                            return duration;
+                        case 2:
+                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
+                            duration.values.Add(Math.Min((double)now.values[1] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
+                            duration.Normalise(false);
+                            return duration;
+                        case 3:
+                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
+                            duration.values.Add(Math.Min((double)now.values[1] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
+                            duration.values.Add(Math.Min((double)now.values[2] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
+                            duration.Normalise(false);
+                            return duration;
+                        case 4:
+                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
+                            duration.values.Add(Math.Min((double)now.values[1] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
+                            duration.values.Add(Math.Min((double)now.values[2] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
+                            duration.values.Add(Math.Min((double)now.values[3] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
+                            duration.Normalise(false);
+                            return duration;
+                        default:
+                            return new DarlResult(-1.0, true);
+                    }
+                case 3:
+                    if ((double)now.values[0] > (double)res1.values[2])
+                        return new DarlResult(-1.0, true);
+                    switch (now.values.Count)
+                    {
+                        case 1:
+                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
+                            duration.values.Add(Math.Min((double)now.values[0] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
+                            duration.Normalise(false);
+                            return duration;
+                        case 2:
+                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
+                            duration.values.Add(Math.Min((double)now.values[0] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
+                            duration.values.Add(Math.Min((double)now.values[1] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
+                            duration.Normalise(false);
+                            return duration;
+                        case 3:
+                        case 4:
+                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
+                            duration.values.Add(Math.Min((double)now.values[1] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
+                            duration.values.Add(Math.Min((double)now.values[2] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
+                            duration.values.Add(Math.Min((double)now.values[3] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
+                            duration.Normalise(false);
+                            return duration;
+                        default:
+                            return new DarlResult(-1.0, true);
+                    }
+                case 4:
+                    if ((double)now.values[0] > (double)res1.values[3])
+                        return new DarlResult(-1.0, true);
+                    switch (now.values.Count)
+                    {
+                        case 1:
+                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
+                            duration.values.Add(Math.Min((double)now.values[1] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
+                            duration.values.Add(Math.Min((double)now.values[2] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
+                            duration.Normalise(false);
+                            return duration;
+                        case 2:
+                        case 3:
+                        case 4:
+                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
+                            duration.values.Add(Math.Min((double)now.values[1] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
+                            duration.values.Add(Math.Min((double)now.values[2] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
+                            duration.values.Add(Math.Min((double)now.values[3] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
+                            duration.Normalise(false);
+                            return duration;
+                        default:
+                            return new DarlResult(-1.0, true);
+                    }
+            }
+            return new DarlResult(-1.0, true);
+        }
+
+        private DarlResult DeQuadrify()
+        {
+            if (values.Count != 4)
+                return this;
+            var vals = new List<double>();
+            foreach(double p in values)
+                vals.Add(p);
+            vals.Sort();
+            values.Clear();
+            if(vals[0] == vals[1])
+            {
+                if(vals[1] == vals[2])
+                {
+                    if(vals[2] == vals[3])
+                    {
+                        values.Add(vals[3]);
+                    }
+                    else
+                    {
+                        values.Add(vals[2]);
+                        values.Add(vals[3]);
+                    }
+                }
+                else
+                {
+                    values.Add(vals[1]);
+                    values.Add(vals[2]);
+                    if(vals[2] != vals[3])
+                    {
+                        values.Add(vals[3]);
+                    }
+                }
+            }
+            else
+            {
+                values.Add(vals[0]);
+                if (vals[1] == vals[2])
+                {
+                    if (vals[2] == vals[3])
+                    {
+                        values.Add(vals[3]);
+                    }
+                    else
+                    {
+                        values.Add(vals[2]);
+                        values.Add(vals[3]);
+                    }
+                }
+                else
+                {
+                    values.Add(vals[1]);
+                    values.Add(vals[2]);
+                    if (vals[2] != vals[3])
+                    {
+                        values.Add(vals[3]);
+                    }
+                }
+            }
+            return this;
         }
 
         /// <summary>

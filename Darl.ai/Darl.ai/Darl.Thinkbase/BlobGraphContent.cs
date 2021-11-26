@@ -119,7 +119,7 @@ namespace Darl.Thinkbase
             if (obj.properties != null)
             {
                 var att = obj.properties.Where(a => a.lineage != null && a.lineage.StartsWith(lineage)).FirstOrDefault(); //check name or lineage?
-                if (att != null)
+                if (att != null && att.type == GraphAttribute.DataType.ruleset)
                 {
                     return att.value;
                 }
@@ -140,7 +140,7 @@ namespace Darl.Thinkbase
                 {
                     foreach (var p in l.properties)
                     {
-                        if (p.lineage != null && p.lineage.StartsWith(lineage))
+                        if (p.lineage != null && p.lineage.StartsWith(lineage) && p.type == GraphAttribute.DataType.ruleset)
                         {
                             ruleSource = p.value;
                             found = true;
@@ -235,6 +235,15 @@ namespace Darl.Thinkbase
                 if (!string.IsNullOrEmpty(i.lineage) && i.lineage.StartsWith(connectionLineage))
                 {
                     var obj = vertices[i.endId];
+                    if (obj.lineage != null && obj.lineage.StartsWith(objectLineage))
+                        list.Add(obj);
+                }
+            }
+            foreach (var i in node.In)
+            {
+                if (!string.IsNullOrEmpty(i.lineage) && i.lineage.StartsWith(connectionLineage))
+                {
+                    var obj = vertices[i.startId];
                     if (obj.lineage != null && obj.lineage.StartsWith(objectLineage))
                         list.Add(obj);
                 }

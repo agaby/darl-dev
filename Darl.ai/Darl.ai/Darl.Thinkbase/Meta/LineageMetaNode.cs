@@ -19,7 +19,7 @@ namespace Darl.Thinkbase.Meta
             base.Init(context, treeNode);
             if (treeNode.ChildNodes[0].ChildNodes.Count != 3)
             {
-                context.AddMessage(DarlCompiler.ErrorLevel.Error, treeNode.ChildNodes[0].FindToken().Location, $"This operator takes 3 lineages, either the source and the attribute, or the source, the connection and the attribute.");
+                context.AddMessage(DarlCompiler.ErrorLevel.Error, treeNode.ChildNodes[0].FindToken().Location, $"This operator takes 3 lineages: the source, the connection and the attribute.");
             }
             var nodes = treeNode.GetMappedChildNodes();
             if (nodes.Count == 1)

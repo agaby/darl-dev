@@ -1797,7 +1797,6 @@
   <ItemGroup>
     <Folder Include="wwwroot\jstree\themes\" />
     <Folder Include="wwwroot\cytoscape-cxtmenu\" />
-    <Folder Include="wwwroot\demo\" />
     <Folder Include="wwwroot\md\videos\" />
   </ItemGroup>
 

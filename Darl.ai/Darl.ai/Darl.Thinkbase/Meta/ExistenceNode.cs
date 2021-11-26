@@ -1,13 +1,16 @@
 ﻿using Darl.Common;
-using DarlCompiler.Ast;
-using DarlCompiler.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
 {
-    public class DurationOfNode : UnaryDarlMetaNode
+    /// <summary>
+    /// Extracts a time value representing the existence of the referenced node or attribute.
+    /// </summary>
+    public  class ExistenceNode : UnaryDarlMetaNode
     {
 
         /// <summary>
@@ -33,7 +36,7 @@ namespace Darl.Thinkbase.Meta
                     return new DarlResult(0, true);
                 //return the truth of the statement: now and the objects existence overlap in time.
                 thread.CurrentNode = Parent;
-                return CalculateDuration(grammar.currentNode.existence);
+                return ConvertTime(grammar.currentNode.existence); //convert to DarlResult
             }
             else //existence of an attribute or external node
             {
@@ -42,23 +45,23 @@ namespace Darl.Thinkbase.Meta
                 var att = grammar.currentModel.FindAttributeExistence(grammar.currentNode.id, res.Value.ToString(), grammar.state);
                 if (att == null)
                 {
-                    if(grammar.currentModel.vertices.ContainsKey(res.Value.ToString()))
+                    if (grammar.currentModel.vertices.ContainsKey(res.Value.ToString()))
                     {
-                        return CalculateDuration(grammar.currentModel.vertices[res.Value.ToString()].existence);
+                        return ConvertTime(grammar.currentModel.vertices[res.Value.ToString()].existence);
                     }
                     else
                     {
                         var nodebyExtId = grammar.currentModel.vertices.Values.FirstOrDefault(a => a.externalId == res.Value.ToString());
-                        if(nodebyExtId != null)
+                        if (nodebyExtId != null)
                         {
-                            return CalculateDuration(nodebyExtId.existence);
+                            return ConvertTime(nodebyExtId.existence);
                         }
                     }
                     thread.CurrentNode = Parent;
                     return new DarlResult(0, true);
                 }
                 thread.CurrentNode = Parent;
-                return CalculateDuration(att);
+                return att;
             }
         }
 
@@ -73,7 +76,7 @@ namespace Darl.Thinkbase.Meta
         {
             get
             {
-                return "durationof( ";
+                return "existence( ";
             }
         }
         public override string postamble
@@ -84,36 +87,15 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
-        /// Handles fuzzy dateTimes up to degree 4
-        /// </summary>
-        /// <param name="existence"></param>
-        /// <returns></returns>
-        private DarlResult CalculateDuration(List<DarlTime?> existence)
+        private DarlResult ConvertTime(List<DarlTime> darlTimes)
         {
-            var duration = new DarlResult("duration", DarlResult.DataType.duration);
-            switch (existence.Count)
+            var duration = new DarlResult("existence", DarlResult.DataType.temporal);
+            foreach(var i in darlTimes)
             {
-                default:
-                case 0:
-                case 1:
-                    duration.values.Add(0);
-                    break;
-                case 2:
-                    duration.values.Add((existence[1] ?? DarlTime.MinValue).raw - (existence[0] ?? DarlTime.MinValue).raw);
-                    break;
-                case 3:
-                    duration.values.Add((existence[1] ?? DarlTime.MinValue).raw - (existence[0] ?? DarlTime.MinValue).raw);
-                    duration.values.Add((existence[2] ?? DarlTime.MinValue).raw - (existence[0] ?? DarlTime.MinValue).raw);
-                    break;
-                case 4:
-                    duration.values.Add((existence[2] ?? DarlTime.MinValue).raw - (existence[1] ?? DarlTime.MinValue).raw);
-                    duration.values.Add((existence[3] ?? DarlTime.MinValue).raw - (existence[0] ?? DarlTime.MinValue).raw);
-                    break;
-            }
+                duration.values.Add((i ?? DarlTime.MinValue).raw);
+            }            
             duration.Normalise(false);
             return duration;
-
         }
     }
 }

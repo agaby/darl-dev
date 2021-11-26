@@ -53,6 +53,7 @@ namespace Darl.Thinkbase.Meta
             var CONSTANT = Keyword("constant", "A numeric real valued constant.");
             var STRING = Keyword("string", "A string used for annotation or text processing.");
             var DURATION = Keyword("duration", "A time offset used for temporal processing.");
+            var EXISTENCE = Keyword("existence", "the period of existence of the related node or attribute.");
             var AND = Keyword("and", "The logical 'and' of the operands either side, implemented as the minimum of their degrees of truth.");
             var OR = Keyword("or", "The logical 'or' of the operands either side, implemented as the maximum of their degrees of truth.");
             var NOT = Keyword("not", "The logical inverse of the operand after, implemented as 1 - the degree of truth.");
@@ -95,6 +96,7 @@ namespace Darl.Thinkbase.Meta
             var SEEK = Keyword("seek", "Seeks a goal within the network.");
             var ATTRIBUTE = Keyword("attribute", "Returns the value of an attribute. ");
             var DURATIONOF = Keyword("durationof", "Returns the duration of the existence of an object or attribute. ");
+            var AGE = Keyword("age", "Returns the duration of the existence of an object or attribute relative to the current simulation time. ");
             var ATTRIBUTES = Keyword("attributes", "Returns the values of an attribute over a set of connected objects. ");
             var FOR = Keyword("for", "Adds a lifetime to an output value ");
             var SINGLE = Keyword("single", "Returns the first value of an attribute over a set of connected objects.");
@@ -149,6 +151,7 @@ namespace Darl.Thinkbase.Meta
             var category_option = new NonTerminal("category_option");
             var set_option = new NonTerminal("set_option");
             var lineage_option = new NonTerminal("lineage_option");
+            var network_source_option = new NonTerminal("network_source_option");
             var rule = new NonTerminal("rule", typeof(RuleNode));
             var top_logical_op = new NonTerminal("top_logical_op");
             var program_root = new NonTerminal("program_root", typeof(MetaRootNode));
@@ -204,6 +207,8 @@ namespace Darl.Thinkbase.Meta
             var attribute = new NonTerminal("attribute", typeof(AttributeNode));
             var exists = new NonTerminal("exists", typeof(ExistsNode));
             var durationof = new NonTerminal("durationof", typeof(DurationOfNode));
+            var existence = new NonTerminal("existence", typeof(ExistenceNode));
+            var age = new NonTerminal("age", typeof(AgeNode));
             var attributes = new NonTerminal("attributes", typeof(AttributesNode));
             var single = new NonTerminal("single", typeof(SingleNode));
             var node_aggregation = new NonTerminal("node_aggregation");
@@ -276,7 +281,7 @@ namespace Darl.Thinkbase.Meta
 
             lifetime.Rule = FOR + duration_expression;
 
-            duration_expression.Rule = duration_constant | durationLiteral;
+            duration_expression.Rule = duration_constant | durationLiteral | age | durationof;
 
             lifetime_choice.Rule = Empty | lifetime;
 
@@ -315,7 +320,11 @@ namespace Darl.Thinkbase.Meta
 
             exists.Rule = EXISTS + "(" + lineage_option + ")";
 
+            existence.Rule = EXISTENCE + "(" + network_source_option + ")";
+
             durationof.Rule = DURATIONOF + "(" + lineage_option + ")";
+
+            age.Rule = AGE + "(" + temporal_expression + ")";
 
             lineage_choice.Rule = lineage_constant | lineageLiteral;
 
@@ -370,7 +379,8 @@ namespace Darl.Thinkbase.Meta
                             (store + IS + absent) |
                             (store + IS + present) |
                             (count + IS + comparitives) |
-                            (durationof + IS + comparitives)
+                            (durationof + IS + comparitives) |
+                            (age + IS + comparitives)
                             );
 
             inputdefinition.Rule = (INPUT + NUMERIC + numeric_input + set_option) |
@@ -406,6 +416,8 @@ namespace Darl.Thinkbase.Meta
 
             lineage_option.Rule = Empty | lineage_choice;
 
+            network_source_option.Rule = Empty | lineage_choice | nodeIdLiteral;
+
 
             eq.Rule = "=" + arith_expression;
             neq.Rule = "!=" + arith_expression;
@@ -414,7 +426,7 @@ namespace Darl.Thinkbase.Meta
             gteq.Rule = ">=" + arith_expression;
             lseq.Rule = "<=" + arith_expression;
 
-            arith_expression.Rule = plus | minus | multiply | divide | modulus | power | numeric_constant | numeric_input | numeric_output | sum | product | fuzzytuple | minimum | maximum | sigmoid | normprob | round | brackets | numberLiteral | count | attribute | durationof | duration_constant | single;
+            arith_expression.Rule = plus | minus | multiply | divide | modulus | power | numeric_constant | numeric_input | numeric_output | sum | product | fuzzytuple | minimum | maximum | sigmoid | normprob | round | brackets | numberLiteral | count | attribute | durationof | duration_constant | single | age;
 
             tempeq.Rule = "=" + temporal_expression;
             tempneq.Rule = "!=" + temporal_expression;
@@ -474,11 +486,11 @@ namespace Darl.Thinkbase.Meta
 
             power.Rule = arith_expression + PreferShiftHere() + "^" + arith_expression;
 
-            temporal_plus.Rule = temporal_expression + PreferShiftHere() + "+" + duration_constant | duration_constant + PreferShiftHere() + "+" + temporal_expression;
+            temporal_plus.Rule = temporal_expression + PreferShiftHere() + "+" + duration_expression | duration_expression + PreferShiftHere() + "+" + temporal_expression;
 
-            temporal_minus.Rule = temporal_expression + PreferShiftHere() + "-" + duration_constant;
+            temporal_minus.Rule = temporal_expression + PreferShiftHere() + "-" + duration_expression;
 
-            temporal_expression.Rule = temporal_plus | temporal_minus | temporal_input | temporal_output | now | mintime | maxtime | attribute | single;
+            temporal_expression.Rule = temporal_plus | temporal_minus | temporal_input | temporal_output | now | mintime | maxtime | attribute | single | existence;
 
             parameter_list.Rule = "(" + arith_expression_list + ")";
 
@@ -557,7 +569,7 @@ namespace Darl.Thinkbase.Meta
                 categoryChoice, subsequence_choice,
                 textmatchchoice, anyio, textual_rvalue, textsourcechoice, logicalbrackets, rvalue_choice, store_rhs, temporal_rvalue,
                 temporal_expression, categoricalio, lineage_option, network_rvalue, attribute_rhs, confidence_choice, text_attribute,
-                node_aggregation, aggregate_rhs, lifetime_choice, duration_expression, lineage_choice);
+                node_aggregation, aggregate_rhs, lifetime_choice, duration_expression, lineage_choice, network_source_option);
 
             LanguageFlags = LanguageFlags.CreateAst;
 

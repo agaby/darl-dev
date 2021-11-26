@@ -97,6 +97,7 @@ namespace Darl.GraphQL.Test
             configuration.Setup(a => a[It.Is<string>(s => s == "LOCALDATABASEPATH")]).Returns("localdb");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:GraphContainer")]).Returns("darldevgraphs");
             configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StorageConnectionString")]).Returns("DefaultEndpointsProtocol=https;AccountName=darlai;AccountKey=errnwefiVeXcDr0aKbHDxXjblOQhwFwHkeG4qR4caChkABnzp9MNeBBX0FP1jc4DnXPGztI67pbEBXDqA1dPCw==");
+            configuration.Setup(a => a[It.Is<string>(s => s == "licensing:darlMetaLicense")]).Returns("RwEAAB+LCAAAAAAAAApVkEtPwzAQhO+V+h984xCEyauUyrVoHqKOkjQlUVRxc4mhLnk6sUr49UQWCDh+s7Mzq0Uhf2F1z/B8BgDKxpbhdKB1QUWBoEI18D9aLujAmxpnJ3kNdBMEsgbGrWEB3VhZ9sq4B49RhuAfp9p0ZT80FROKJo5pxbAnwKYuxqsekASEw1Sl5G+LX1Fe4l62bSOGh+mU8obyKVnJKhT+S0Upf6vpIAXDkb93iR/LT+891+y83bsmLM6tvnBOZ/J6l5Ry8WQcD2PwrBVenmsb7ljEHHfJznMO22WXdHpXenlIuN4E8SKNDMs+biNikiVrLus1gr9d8xmCP9/7AhubQj1HAQAA");
 
             var logger = new Mock<ILogger<GraphLocalStore>>();
             var blogger = new Mock<ILogger<BlobGraphConnectivity>>();
@@ -196,17 +197,18 @@ namespace Darl.GraphQL.Test
             var mtconn = await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = candidate.id, endId = military_tribune.id, lineage = meta.CommonLineages["have"], name = "can hold", weight = 1.0 }, OntologyAction.build);
             var paconn = await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = candidate.id, endId = plebian_aedile.id, lineage = meta.CommonLineages["have"], name = "can hold", weight = 1.0 }, OntologyAction.build);
             var diconn = await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = candidate.id, endId = dictator.id, lineage = meta.CommonLineages["have"], name = "can hold", weight = 1.0 }, OntologyAction.build);
+            var pqconn = await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = candidate.id, endId = proquaestor.id, lineage = meta.CommonLineages["have"], name = "can hold", weight = 1.0 }, OntologyAction.build);
             var subjectId = "poopies";
             var kr = new KnowledgeRecordInput { subjectId = subjectId, knowledgeGraphName = graphName };
-            kr.AddReference(candidate, "class", "patrician");
+            kr.AddReference(candidate, "class", "plebian");
             await _graph.CreateKnowledgeState(_config["userId"], kr);
             var sb = new System.Text.StringBuilder();
             var res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, null);
             var log = sb.ToString();
             sb.Clear();
-            Assert.AreEqual(12,res.data.Count);
+            Assert.AreEqual(13,res.data.Count);
             //Now Add existences to the objects and check for overlap
-            kr.AddExistence(candidate, new List<Common.DarlTime> {new Common.DarlTime(-100, 1), new Common.DarlTime(-44,0) });//life dates of Julius Caeser
+            kr.AddExistence(candidate, new List<Common.DarlTime> {new Common.DarlTime(-100, 1), new Common.DarlTime(-44,0) });//life dates of Julius Caesar
             await _graph.CreateKnowledgeState(_config["userId"], kr);
             consul.existence = new List<Common.DarlTime> { new Common.DarlTime(-589, 1), new Common.DarlTime(887, 0) };
             censor.existence = new List<Common.DarlTime> { new Common.DarlTime(-443, 1), new Common.DarlTime(-22, 0) };
@@ -224,16 +226,16 @@ namespace Darl.GraphQL.Test
             res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, null);
             log = sb.ToString();
             sb.Clear(); 
-            Assert.AreEqual(12, res.data.Count);
+            Assert.AreEqual(13, res.data.Count);
             res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, Common.DarlTime.UtcNow);
             log = sb.ToString();
             sb.Clear(); 
-            Assert.AreEqual(0, res.data.Count);
+            Assert.AreEqual(1, res.data.Count);
             res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.DarlTime(-50, 0));
             log = sb.ToString();
             sb.Clear(); 
-            Assert.AreEqual(12, res.data.Count);
-            //add state of candidate as military tribune an the period.
+            Assert.AreEqual(13, res.data.Count);
+            //add state of candidate as military tribune and the period.
             tpconn.inferred = true;
             coconn.inferred = true;
             ppconn.inferred = true;
@@ -243,6 +245,7 @@ namespace Darl.GraphQL.Test
             mtconn.inferred = true;
             paconn.inferred = true;
             diconn.inferred = true;
+            pqconn.inferred = true;
             kr.AddConnection(mtconn, military_tribune.id, new List<Common.DarlTime> { new Common.DarlTime(-81, 1), new Common.DarlTime(-69, 0) });
             await _graph.CreateKnowledgeState(_config["userId"], kr);
             res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.DarlTime(-50, 0));
@@ -250,20 +253,31 @@ namespace Darl.GraphQL.Test
             sb.Clear(); 
             //Add conditions to kg based on birth
             //patrician only
-            var patricianRule = "output categorical completed {true, false} complete;\noutput categorical class {\"plebian\",\"equites\",\"patrician\"};\nif anything then class will be single(candidate,have,class);\nIf class is patrician then completed will be true; ";
+            var patricianRule = $"lineage social_class \"{socialClassLineage}\";\noutput categorical completed {{true, false}} complete;\noutput categorical class {{plebian,equites,patrician}} social_class;\nif anything then class will be single(person,have,social_class);\nif class is patrician then completed will be true; ";
             quaestor.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = patricianRule });
             proquaestor.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = patricianRule });
             curule_aedile.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = patricianRule });
             //plebian or equites only
-            var plebianRule = "output categorical completed {true, false} complete;\noutput categorical class {\"plebian\",\"equites\",\"patrician\"};\nif anything then class will be single(candidate,have,class);\nIf class is equites or class is plebian then completed will be true; ";
+            var plebianRule = $"lineage social_class \"{socialClassLineage}\";\noutput categorical completed {{true, false}} complete;\noutput categorical class {{plebian, equites,patrician}} social_class;\nif anything then class will be single(person,have,social_class);\nif class is equites or class is plebian then completed will be true; ";
             tribune_of_the_plebs.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = plebianRule });
             plebian_aedile.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = plebianRule });
             res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.DarlTime(-50, 0));
+            Assert.AreEqual(11, res.data.Count);
             log = sb.ToString();
-            sb.Clear(); 
-            //Add conditions based on length of service
-
+            sb.Clear();
+            kr.AddReference(candidate, "class", "patrician");
+            await _graph.CreateKnowledgeState(_config["userId"], kr);
+            res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.DarlTime(-50, 0));
+            Assert.AreEqual(12, res.data.Count);
+            log = sb.ToString();
+            sb.Clear();
             //add conditions based on age
+            var military_tribune_rule = "lineage social_class \"noun:01,2,06,34\";\nduration patrician_age 6574.00:00:00.0; // 18 years\nduration plebian_age 7300.00:00:00.0; // 20 years\noutput categorical completed { true,false};\noutput categorical class {plebian,equites,patrician} social_class;\nif anything then class will be single(person, have, social_class);\nif class is patrician and age(existence(candidate)) is > patrician_age then completed will be true;\nif (class is plebian or class is equites) and age(existence(candidate)) is > plebian_age then completed will be true;";
+            military_tribune.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = military_tribune_rule });
+            res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.DarlTime(-50, 0));
+            Assert.AreEqual(12, res.data.Count);
+            log = sb.ToString();            //Add conditions based on length of service
+
         }
     }
 
