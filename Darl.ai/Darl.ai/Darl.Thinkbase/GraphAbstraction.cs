@@ -47,7 +47,16 @@ namespace Darl.Thinkbase
             return string.Empty;
         }
 
-        public double Coexists(GraphAbstraction other, IGraphModel model, DarlTime? currentTime)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <param name="model"></param>
+        /// <param name="currentTime"></param>
+        /// <returns></returns>
+        /// <remarks>Currently only works for singletons</remarks>
+
+        public double Coexists(GraphAbstraction other, IGraphModel model, FuzzyTime? currentTime)
         {
             List<DarlTime>? thisExistence = null;
             List<DarlTime>? otherExistence = null;
@@ -79,12 +88,12 @@ namespace Darl.Thinkbase
             }
             if (otherExistence != null && currentTime != null) //check existence includes current time
             {
-                if (currentTime.raw > otherExistence[3].raw || currentTime.raw < otherExistence[0].raw)
+                if (currentTime.darlTimes[0].raw > otherExistence[3].raw || currentTime.darlTimes[0].raw < otherExistence[0].raw)
                     return 0;//not existant at currentTime
             }
             if (thisExistence != null && currentTime != null) //check existence includes current time
             {
-                if (currentTime.raw > thisExistence[3].raw || currentTime.raw < thisExistence[0].raw)
+                if (currentTime.darlTimes[0].raw > thisExistence[3].raw || currentTime.darlTimes[0].raw < thisExistence[0].raw)
                     return 0;//not existant at currentTime
             }
             if (otherExistence == null || thisExistence == null)

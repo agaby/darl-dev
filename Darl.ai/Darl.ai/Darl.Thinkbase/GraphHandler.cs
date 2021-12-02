@@ -243,7 +243,7 @@ namespace Darl.Thinkbase
         /// <param name="currentTime">The time to use for the analysis if temporal.</param>
         /// <returns>A list of possible accessible states in depth first search order including intermediate states.</returns>
         /// <exception cref="MetaRuleException"></exception>
-        public async Task<KnowledgeState> Discover(string userId, string knowledgeGraphName, string subjectId, List<string> lineages, StringBuilder log, DarlTime? currentTime)
+        public async Task<KnowledgeState> Discover(string userId, string knowledgeGraphName, string subjectId, List<string> lineages, StringBuilder log, FuzzyTime? currentTime)
         {
             var model = await _graph.GetModel(userId, knowledgeGraphName);
             if (model == null)
@@ -256,7 +256,7 @@ namespace Darl.Thinkbase
                 throw new MetaRuleException($"{subjectId} subjectId doesn't exist.");
             }
             //used to record progress
-            log.AppendLine($"Starting discovery from object {subjectId}, {DateTime.UtcNow}.");
+            log.AppendLine($"Starting discovery from object {subjectId}, Evaluation Time: {currentTime ?? new FuzzyTime(DarlTime.UtcNow)} {DateTime.UtcNow}.");
             var kr = new KnowledgeRecord { subjectId = ks.subjectId, userId = ks.userId, created = ks.created, knowledgeGraphName = ks.knowledgeGraphName, processId = ks.processId, data = ks.data };
             var res = new KnowledgeState { userId = userId, knowledgeGraphName = knowledgeGraphName, subjectId = Guid.NewGuid().ToString(), created = DateTime.UtcNow};
             await RecursiveDiscovery(model, kr, res, subjectId, 1.0, lineages, log, currentTime, 0);
@@ -765,7 +765,7 @@ namespace Darl.Thinkbase
         /// <param name="log">Textual log of discovery process</param>
         /// <param name="currentTime">The time of the analysis</param>
         /// <returns></returns>
-        private async Task RecursiveDiscovery(IGraphModel model, KnowledgeRecord ks, KnowledgeState state, string startSubjectId, double weight, List<string> lineages, StringBuilder log, DarlTime? currentTime, int depth)
+        private async Task RecursiveDiscovery(IGraphModel model, KnowledgeRecord ks, KnowledgeState state, string startSubjectId, double weight, List<string> lineages, StringBuilder log, FuzzyTime? currentTime, int depth)
         {
             //Assume that ks holds the start node
             var refs = ks.DeReference(model, lineages);
@@ -856,7 +856,7 @@ namespace Darl.Thinkbase
 
         }
 
-        private async Task<bool> CheckCodeCompletion(IGraphModel model, KnowledgeState ks, GraphObject currentNode, StringBuilder log, DarlTime? currentTime, int depth)
+        private async Task<bool> CheckCodeCompletion(IGraphModel model, KnowledgeState ks, GraphObject currentNode, StringBuilder log, FuzzyTime? currentTime, int depth)
         {
             var code = _graph.FindCompleteAttribute(model, currentNode.id ?? String.Empty);
             if (!string.IsNullOrEmpty(code)) //no code implies discovery can continue.
@@ -866,7 +866,7 @@ namespace Darl.Thinkbase
                     //evaluate it
                     var tree = _runtime.CreateTree(code, currentNode, model); //findControlAttribute checks for syntax errors.
                     var list = new List<Meta.DarlResult>();
-                    await _runtime.Evaluate(tree, list, ks); //add current time for eval
+                    await _runtime.Evaluate(tree, list, ks, currentTime); //add current time for eval
                                                              //return false if further movement not possible.
                     var complete = list.FirstOrDefault(a => a.name == "completed");
                     if (!complete.Exists() || (complete.Value as string) == "false" || complete.GetWeight() < 0.1)
@@ -905,7 +905,7 @@ namespace Darl.Thinkbase
         /// <param name="log"></param>
         /// <param name="currentTime"></param>
         /// <returns></returns>
-        private async Task RecursiveDiscovery(IGraphModel model, KnowledgeState state, GraphObject currentNode, double weight, List<string> lineages, StringBuilder log, DarlTime? currentTime, int depth)
+        private async Task RecursiveDiscovery(IGraphModel model, KnowledgeState state, GraphObject currentNode, double weight, List<string> lineages, StringBuilder log, FuzzyTime? currentTime, int depth)
         {
 
             if (!await CheckCodeCompletion(model, state, currentNode, log, currentTime, depth))
@@ -923,7 +923,7 @@ namespace Darl.Thinkbase
         }
 
 
-        private bool Coexists(GraphAbstraction endObject, GraphAbstraction currentNode, IGraphModel model, DarlTime? currentTime)
+        private bool Coexists(GraphAbstraction endObject, GraphAbstraction currentNode, IGraphModel model, FuzzyTime? currentTime)
         {
             return currentNode.Coexists(endObject, model, currentTime) > 0.0;
         }
@@ -961,6 +961,8 @@ namespace Darl.Thinkbase
                 }
             }
         }
+
+
 
 
 

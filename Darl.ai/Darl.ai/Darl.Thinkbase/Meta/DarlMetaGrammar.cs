@@ -20,7 +20,7 @@ namespace Darl.Thinkbase.Meta
 
         public KnowledgeState state { get; set; }
 
-        public List<DarlTime> now { get; set; }
+        public List<DarlTime>? now { get; set; }
 
         public IMetaStructureHandler structure { get; set; }
 
@@ -560,7 +560,7 @@ namespace Darl.Thinkbase.Meta
             RegisterOperators(5, "^");
             RegisterOperators(6, ".");
 
-            MarkPunctuation("{", "}", "(", ")", "[", "]", ",", ";", ".", "if", "then", "will", "be", "confidence", "input", "output", "numeric", "categorical", "arity", "presence", "string", "constant", "or", "and", "not", "is", "*", "/", "-", "+", "%", "^", ">", "<", "<=", ">=", "anything", "textual", "maximum", "minimum", "sum", "product", "fuzzytuple", "sigmoid", "normprob", "round", "pattern", "absent", "present", "delay", "sequence", "match", "document", "randomtext", "store", "temporal", "categoryof", "duration", "now", "mintime", "maxtime", "after", "before", "preceding", "overlapping", "during", "finishing", "starting", "all", "any", "count", "seek", "network", "attribute", "attributes", "exists", "durationof", "for", "single", "lineage", "discover");
+            MarkPunctuation("{", "}", "(", ")", "[", "]", ",", ";", ".", "if", "then", "will", "be", "confidence", "input", "output", "numeric", "categorical", "arity", "presence", "string", "constant", "or", "and", "not", "is", "*", "/", "-", "+", "%", "^", ">", "<", "<=", ">=", "anything", "textual", "maximum", "minimum", "sum", "product", "fuzzytuple", "sigmoid", "normprob", "round", "pattern", "absent", "present", "delay", "sequence", "match", "document", "randomtext", "store", "temporal", "categoryof", "duration", "now", "mintime", "maxtime", "after", "before", "preceding", "overlapping", "during", "finishing", "starting", "all", "any", "count", "seek", "network", "attribute", "attributes", "exists", "durationof", "for", "single", "lineage", "discover","existence","age");
             RegisterBracePair("(", ")");
             RegisterBracePair("{", "}");
             RegisterBracePair("[", "]");

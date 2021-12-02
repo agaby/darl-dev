@@ -1,4 +1,5 @@
-﻿using Darl.Licensing;
+﻿using Darl.Common;
+using Darl.Licensing;
 using DarlCompiler.Parsing;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
@@ -31,6 +32,11 @@ namespace Darl.Thinkbase.Meta
         public  void SetLicense(string license)
         {
             licensed = DarlLicense.ProcessLicense(license);
+        }
+
+        public void SetEvaluationTime(List<DarlTime> now)
+        {
+            grammar.now = now;
         }
 
         /// <summary>
@@ -159,11 +165,12 @@ namespace Darl.Thinkbase.Meta
         /// <param name="parseTree">The tree to evaluate</param>
         /// <param name="inputs">a set of input values</param>
         /// <param name="ks">The knowledge state to use and modify</param>
-        public virtual async Task Evaluate(ParseTree parseTree, List<DarlResult> inputs, KnowledgeState ks)
+        public virtual async Task Evaluate(ParseTree parseTree, List<DarlResult> inputs, KnowledgeState ks, FuzzyTime? evalTime = null)
         {
             LicenseCheck();
             grammar.results = inputs;
             grammar.state = ks;
+            grammar.now = evalTime == null ? null : evalTime.darlTimes; // not reentrant - fix. 
             await grammar.RunSample(new RunSampleArgs(language, string.Empty, parseTree));
         }
 

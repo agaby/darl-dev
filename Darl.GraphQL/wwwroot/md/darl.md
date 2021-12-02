@@ -182,11 +182,18 @@ duration trial_duration 30.00:00:0.0;
 The format of a duration definition is <days>.<hours>:<minutes>:<seconds> where days, hours and minutes are integers and seconds ids a real number.
 Examples are:
 
-```
+```darl
 duration trial_duration 30.00:00:0.0; // 30 days
 duration trial_duration 0.02:00:0.0; // 2 hours
 duration trial_duration 0.00:55:30.5; // 55 minutes and 30.5 seconds
 ```
+
+Another format is permissible where durations are specified in years:
+
+```darl
+duration majority_duration 18Y;
+```
+"Y" or "y" are permitted.
 
 # Rule level elements
 Part of the flexibility of DARL is the ability to represent many kinds of relationships with one structure
@@ -330,13 +337,13 @@ These are arranged to be orthogonal; i.e. a given pair of fuzzy times the sum of
 
 The operators are:
 
-### During
+### during
 Compares two fuzzy times to calculate the degree the left element occurs during the right element.
 
 ```darl
 if event_time is during timerange(start_time, end_time) then alarm will be true;
 ```
-### Before
+### before
 Compares two fuzzy times to calculate the degree the left element occurs before the right element.
 ```darl
 if event_time is before timerange(start_time, end_time) then alarm will be false;
@@ -354,7 +361,25 @@ Compares two fuzzy times to calculate the degree the left element overlaps the r
 if event_time is overlapping timerange(start_time, end_time) then alarm will be true;
 ```
 
+## Temporal functions
 
+### Age
+
+Takes a fuzzy time derived from the existence of a node or attribute and the current processing time to create a fuzzy duration value that is the age of that element relative to the current time.
+
+```darl
+output categorical can_vote {true,false};
+duration majority_age 18Y;
+if age(existence(voter)) > majority_age then can_vote will be true;
+```
+
+## Temporal functions with network parameters
+
+### exists
+
+### existence
+
+### durationof
 
 
 

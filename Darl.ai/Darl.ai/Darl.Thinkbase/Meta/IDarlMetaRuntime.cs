@@ -1,4 +1,5 @@
-﻿using DarlCompiler.Parsing;
+﻿using Darl.Common;
+using DarlCompiler.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,8 +16,9 @@ namespace Darl.Thinkbase.Meta
         Dictionary<string, double> CalculateSaliences(List<DarlResult> currentState, ParseTree tree);
         ParseTree CreateTree(string source, GraphObject node, IGraphModel model);
         ParseTree CreateTreeEdit(string source);
-        Task Evaluate(ParseTree parseTree, List<DarlResult> inputs, KnowledgeState ks);
+        Task Evaluate(ParseTree parseTree, List<DarlResult> inputs, KnowledgeState ks, FuzzyTime? evalTime = null);
         List<GraphObject> ExploreGraph(ParseTree tree);
+        void SetEvaluationTime(List<DarlTime> now);
         void SetLicense(string license);
         string TermToDarl(DarlMetaNode node);
         string ToDarl(ParseTree parseTree);

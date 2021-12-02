@@ -32,7 +32,7 @@ namespace Darl.Thinkbase
             LineageLibrary.lineages["noun:00,1,01,19,14,1"], //address
             LineageLibrary.lineages["noun:01,1,02"], //time
             LineageLibrary.lineages["noun:01,5,07,00,05,2"],//currency
-            LineageLibrary.lineages["noun:01,5,03,3,018"]//life
+            LineageLibrary.lineages["noun:01,5,03,3,018"]//life 
         };
         private readonly List<LineageRecord> defaultAttLineages = new List<LineageRecord>
         {

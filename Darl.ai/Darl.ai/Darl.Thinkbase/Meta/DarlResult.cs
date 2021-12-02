@@ -1670,7 +1670,7 @@ namespace Darl.Thinkbase.Meta
         /// <param name="res1">Fuzzy number 1</param>
         /// <param name="res2">Fuzzy number 2</param>
         /// <returns>Fuzzy number representing the minimum</returns>
-        internal static DarlResult Minimum(DarlResult res1, DarlResult res2)
+        public static DarlResult Minimum(DarlResult res1, DarlResult res2)
         {
             if (res1.unknown || res2.unknown)
                 return new DarlResult(-1.0, true);
@@ -1689,7 +1689,7 @@ namespace Darl.Thinkbase.Meta
         /// <param name="res1">Fuzzy number 1</param>
         /// <param name="res2">Fuzzy number 2</param>
         /// <returns>Fuzzy number representing the maximum</returns>
-        internal static DarlResult Maximum(DarlResult res1, DarlResult res2)
+        public static DarlResult Maximum(DarlResult res1, DarlResult res2)
         {
             if (res1.unknown || res2.unknown)
                 return new DarlResult(-1.0, true);
@@ -1750,7 +1750,8 @@ namespace Darl.Thinkbase.Meta
         /// </summary>
         /// <remarks>May involve approximation.</remarks>
         /// <param name="cutsToValues">if true values are initialized from cuts, otherwise the inverse</param>
-        public void Normalise(bool cutsToValues)
+        /// <param name="linear">Use outer bounds to determine envelope, otherwise midpoint is used, default midpoint</param>
+        public void Normalise(bool cutsToValues, bool linear = false)
         {
             approximate = false;
             if (IsNumeric() && !IsUnknown())
@@ -1776,26 +1777,26 @@ namespace Darl.Thinkbase.Meta
                     //lines from the peak through the 0.5 truth level.
                     if (cuts[cutCount - 1].IsSingleton())
                     {
-                        double lowerMid = cuts[(cutCount - 1) / 2].lower;
+                        double lowerMid = linear ? cuts[0].lower : cuts[(cutCount - 1) / 2].lower;
                         double centre = cuts[cutCount - 1].lower;
-                        values.Add(lowerMid - (centre - lowerMid));
+                        values.Add(linear ? lowerMid : lowerMid - (centre - lowerMid));
                         values.Add(centre);
-                        double upperMid = cuts[(cutCount - 1) / 2].upper;
-                        values.Add(upperMid + (upperMid - centre));
+                        double upperMid = linear ? cuts[0].upper : cuts[(cutCount - 1) / 2].upper;
+                        values.Add(linear ? upperMid : upperMid + (upperMid - centre));
                         if (lowerMid - (centre - lowerMid) != cuts[0].lower ||
                             upperMid + (upperMid - centre) != cuts[0].upper)
                             approximate = true;
                     }
                     else // trapezoid - approximate as above
                     {
-                        double lowerMid = cuts[(cutCount - 1) / 2].lower;
+                        double lowerMid = linear ? cuts[0].lower : cuts[(cutCount - 1) / 2].lower;
                         double lowerTop = cuts[cutCount - 1].lower;
                         double upperTop = cuts[cutCount - 1].upper;
-                        values.Add(lowerMid - (lowerTop - lowerMid));
+                        values.Add(linear ? lowerMid : lowerMid - (lowerTop - lowerMid));
                         values.Add(lowerTop);
                         values.Add(upperTop);
-                        double upperMid = cuts[(cutCount - 1) / 2].upper;
-                        values.Add(upperMid + (upperMid - upperTop));
+                        double upperMid = linear ? cuts[0].upper : cuts[(cutCount - 1) / 2].upper;
+                        values.Add(linear ? upperMid : upperMid + (upperMid - upperTop));
                         if (lowerMid - (lowerTop - lowerMid) != cuts[0].lower ||
                             upperMid + (upperMid - upperTop) != cuts[0].upper)
                             approximate = true;
@@ -2213,6 +2214,26 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
+
+        public static DarlResult Range(DarlResult res)
+        {
+            if (res == null)
+                return res;
+            if (!res.numeric)
+                throw new InvalidCastException("Passing a non-numeric value to a range operation.");
+            double lowest = double.MaxValue;
+            for (int n = 0; n < cutCount; n++)
+            {
+                if (res.cuts[n].lower < lowest)
+                    lowest = res.cuts[n].lower;
+            }
+            for (int n = 0; n < cutCount; n++)
+            {
+                res.cuts[n] -= lowest;
+            }
+            return res;
+        }
+
         /// <summary>
         /// returns the support of the given sets.
         /// </summary>
@@ -2513,105 +2534,35 @@ namespace Darl.Thinkbase.Meta
                 return new DarlResult(0.0, false); //overlapping excludes strict equality
             if ((double)t1.values[0] >= (double)t2.values[3] || (double)t1.values[3] <= (double)t2.values[0])
                 return new DarlResult(0.0, false); //no overlap
-            var res = new DarlResult(1.0 - ((double)Before(t1, t2).values[0] + (double)After(t1, t2).values[0] + (double)During(t1, t2).values[0]), false);
+            var res = new DarlResult(1.0 - ((double)Before(t1, t2).values[0] + (double)After(t1, t2).values[0] /*+ (double)During(t2, t1).values[0]*/), false);
             if (!res.unknown)
                 return res;
             return new DarlResult(0.0, false);
         }
 
+        /// <summary>
+        /// Calculate the fuzzy age of a fuzzy existence expressed as a temporal variable relative to a given (fuzzy) time.
+        /// </summary>
+        /// <param name="res1">The existence</param>
+        /// <param name="now">the time of analysis</param>
+        /// <returns>The age as a duration</returns>
+        /// <exception cref="MetaRuleException"></exception>
+        /// <remarks>Duration of 0 is a null duration.</remarks>
         public static DarlResult Age(DarlResult res1, DarlResult now)
         {
             if (res1.IsUnknown() || now.IsUnknown() || res1.GetWeight() == 0.0 || now.GetWeight() == 0.0 || res1.values.Count == 0 || now.values.Count == 0)
                 return new DarlResult(-1.0, true);
             if (!res1.temporal || !now.temporal)
                 throw new MetaRuleException("passing non temporal parameters to a temporal operator");
+            if((double)(DarlResult.Overlapping(res1,now).values[0]) == 0.0)
+                return new DarlResult(-1.0, true); //time doesn't overlap with existence
             var duration = new DarlResult("duration", DarlResult.DataType.duration);
-            switch (res1.values.Count)
-            {
-                case 1:
-                    return new DarlResult(-1.0, true);
-                case 2:
-                    if ((double)now.values[0] > (double)res1.values[1])
-                        return new DarlResult(-1.0, true);
-                    switch (now.values.Count)
-                    {
-                        case 1:
-                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
-                            duration.Normalise(false);
-                            return duration;
-                        case 2:
-                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
-                            duration.values.Add(Math.Min((double)now.values[1] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
-                            duration.Normalise(false);
-                            return duration;
-                        case 3:
-                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
-                            duration.values.Add(Math.Min((double)now.values[1] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
-                            duration.values.Add(Math.Min((double)now.values[2] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
-                            duration.Normalise(false);
-                            return duration;
-                        case 4:
-                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
-                            duration.values.Add(Math.Min((double)now.values[1] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
-                            duration.values.Add(Math.Min((double)now.values[2] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
-                            duration.values.Add(Math.Min((double)now.values[3] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
-                            duration.Normalise(false);
-                            return duration;
-                        default:
-                            return new DarlResult(-1.0, true);
-                    }
-                case 3:
-                    if ((double)now.values[0] > (double)res1.values[2])
-                        return new DarlResult(-1.0, true);
-                    switch (now.values.Count)
-                    {
-                        case 1:
-                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
-                            duration.values.Add(Math.Min((double)now.values[0] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
-                            duration.Normalise(false);
-                            return duration;
-                        case 2:
-                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
-                            duration.values.Add(Math.Min((double)now.values[0] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
-                            duration.values.Add(Math.Min((double)now.values[1] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
-                            duration.Normalise(false);
-                            return duration;
-                        case 3:
-                        case 4:
-                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
-                            duration.values.Add(Math.Min((double)now.values[1] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
-                            duration.values.Add(Math.Min((double)now.values[2] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
-                            duration.values.Add(Math.Min((double)now.values[3] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
-                            duration.Normalise(false);
-                            return duration;
-                        default:
-                            return new DarlResult(-1.0, true);
-                    }
-                case 4:
-                    if ((double)now.values[0] > (double)res1.values[3])
-                        return new DarlResult(-1.0, true);
-                    switch (now.values.Count)
-                    {
-                        case 1:
-                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
-                            duration.values.Add(Math.Min((double)now.values[1] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
-                            duration.values.Add(Math.Min((double)now.values[2] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
-                            duration.Normalise(false);
-                            return duration;
-                        case 2:
-                        case 3:
-                        case 4:
-                            duration.values.Add((double)now.values[0] - (double)res1.values[0]);
-                            duration.values.Add(Math.Min((double)now.values[1] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
-                            duration.values.Add(Math.Min((double)now.values[2] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
-                            duration.values.Add(Math.Min((double)now.values[3] - (double)res1.values[0], (double)res1.values[1] - (double)res1.values[0]));
-                            duration.Normalise(false);
-                            return duration;
-                        default:
-                            return new DarlResult(-1.0, true);
-                    }
-            }
-            return new DarlResult(-1.0, true);
+            var res3 = DarlResult.Minimum(DarlResult.Maximum(now - res1, new DarlResult(0.0)), Range(res1));
+            res3.Normalise(true,true);
+            duration.values.AddRange(res3.values);
+            duration.Normalise(false);
+            duration.weight = res3.weight;
+            return duration;
         }
 
         private DarlResult DeQuadrify()

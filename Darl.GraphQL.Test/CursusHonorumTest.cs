@@ -169,7 +169,7 @@ namespace Darl.GraphQL.Test
             var quaestor = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Quaestor", lineage = "noun:00,2,00,050,43,35,36", externalId = "Quaestor", properties = new List<GraphAttributeInput> { senator } }, OntologyAction.build);
             var tribune_of_the_plebs = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Tribune of the plebs", lineage = "noun:00,2,00,296,0,12", externalId = "Tribune_of_the_plebs", properties = new List<GraphAttributeInput> { senator } }, OntologyAction.build);
             var military_tribune = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Military Tribune", lineage = "noun:00,2,00,296,0,12", externalId = "Military_tribune" }, OntologyAction.build);
-            var candidate = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Candidate", lineage = meta.CommonLineages["person"], properties = new List<GraphAttributeInput> { socialClass } }, OntologyAction.build);
+            var candidate = await _graph.CreateGraphObject(compositeName, new GraphObjectInput { name = "Candidate", lineage = meta.CommonLineages["person"], externalId = "candidate", properties = new List<GraphAttributeInput> { socialClass } }, OntologyAction.build);
 
             await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = consul.id, endId = censor.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);
             await _graph.CreateGraphConnection(compositeName, new GraphConnectionInput { startId = consul.id, endId = proconsul.id, lineage = followsLineage, name = "can be followed by", weight = 1.0 }, OntologyAction.build);
@@ -227,11 +227,11 @@ namespace Darl.GraphQL.Test
             log = sb.ToString();
             sb.Clear(); 
             Assert.AreEqual(13, res.data.Count);
-            res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, Common.DarlTime.UtcNow);
+            res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.FuzzyTime(Common.DarlTime.UtcNow));
             log = sb.ToString();
             sb.Clear(); 
             Assert.AreEqual(1, res.data.Count);
-            res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.DarlTime(-50, 0));
+            res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.FuzzyTime(new Common.DarlTime(-50, 0)));
             log = sb.ToString();
             sb.Clear(); 
             Assert.AreEqual(13, res.data.Count);
@@ -248,7 +248,7 @@ namespace Darl.GraphQL.Test
             pqconn.inferred = true;
             kr.AddConnection(mtconn, military_tribune.id, new List<Common.DarlTime> { new Common.DarlTime(-81, 1), new Common.DarlTime(-69, 0) });
             await _graph.CreateKnowledgeState(_config["userId"], kr);
-            res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.DarlTime(-50, 0));
+            res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.FuzzyTime(new Common.DarlTime(-50, 0)));
             log = sb.ToString();
             sb.Clear(); 
             //Add conditions to kg based on birth
@@ -261,21 +261,48 @@ namespace Darl.GraphQL.Test
             var plebianRule = $"lineage social_class \"{socialClassLineage}\";\noutput categorical completed {{true, false}} complete;\noutput categorical class {{plebian, equites,patrician}} social_class;\nif anything then class will be single(person,have,social_class);\nif class is equites or class is plebian then completed will be true; ";
             tribune_of_the_plebs.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = plebianRule });
             plebian_aedile.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = plebianRule });
-            res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.DarlTime(-50, 0));
+            res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.FuzzyTime(new Common.DarlTime(-50, 0)));
             Assert.AreEqual(11, res.data.Count);
             log = sb.ToString();
             sb.Clear();
             kr.AddReference(candidate, "class", "patrician");
             await _graph.CreateKnowledgeState(_config["userId"], kr);
-            res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.DarlTime(-50, 0));
+            res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.FuzzyTime(new Common.DarlTime(-50, 0)));
             Assert.AreEqual(12, res.data.Count);
             log = sb.ToString();
             sb.Clear();
             //add conditions based on age
-            var military_tribune_rule = "lineage social_class \"noun:01,2,06,34\";\nduration patrician_age 6574.00:00:00.0; // 18 years\nduration plebian_age 7300.00:00:00.0; // 20 years\noutput categorical completed { true,false};\noutput categorical class {plebian,equites,patrician} social_class;\nif anything then class will be single(person, have, social_class);\nif class is patrician and age(existence(candidate)) is > patrician_age then completed will be true;\nif (class is plebian or class is equites) and age(existence(candidate)) is > plebian_age then completed will be true;";
+            var military_tribune_rule = "lineage social_class \"noun:01,2,06,34\";\nduration patrician_age 18Y;\nduration plebian_age 20Y;\noutput categorical completed { true,false};\noutput categorical class {plebian,equites,patrician} social_class;\nif anything then class will be single(person, have, social_class);\nif class is patrician and age(existence(\"candidate\")) is > patrician_age then completed will be true;\nif (class is plebian or class is equites) and age(existence(\"candidate\")) is > plebian_age then completed will be true;";
             military_tribune.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = military_tribune_rule });
-            res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.DarlTime(-50, 0));
-            Assert.AreEqual(12, res.data.Count);
+            var tribune_of_the_plebs_rule = "duration plebian_age 27Y; \noutput categorical completed { true,false};\nif age(existence(\"candidate\")) is > plebian_age then completed will be true;";
+            tribune_of_the_plebs.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = tribune_of_the_plebs_rule });
+            var quaestor_rule = "duration patrician_age 30Y;\noutput categorical completed { true,false};\nif age(existence(\"candidate\")) is > patrician_age then completed will be true;\n";
+            quaestor.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = quaestor_rule });
+            var proquaestor_rule = "duration patrician_age 31Y;\noutput categorical completed { true,false};\nif age(existence(\"candidate\")) is > patrician_age then completed will be true;\n";
+            proquaestor.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = proquaestor_rule });
+            var curule_aedile_rule = "duration patrician_age 36Y;\noutput categorical completed { true,false};\nif age(existence(\"candidate\")) is > patrician_age then completed will be true;\n";
+            curule_aedile.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = curule_aedile_rule });
+            var plebian_aedile_rule = "duration plebian_age 36Y;\noutput categorical completed { true,false};\nif age(existence(\"candidate\")) is > plebian_age then completed will be true;\n";
+            plebian_aedile.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = plebian_aedile_rule });
+            var praetor_rule = "lineage social_class \"noun:01,2,06,34\";\nduration patrician_age 37Y;\nduration plebian_age 39;\noutput categorical completed { true,false};\noutput categorical class {plebian,equites,patrician} social_class;\nif anything then class will be single(person, have, social_class);\nif class is patrician and age(existence(\"candidate\")) is > patrician_age then completed will be true;\nif (class is plebian or class is equites) and age(existence(\"candidate\")) is > plebian_age then completed will be true;";
+            praetor.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = praetor_rule });
+            var propraetor_rule = "lineage social_class \"noun:01,2,06,34\";\nduration patrician_age 38Y;\nduration plebian_age 40Y;\noutput categorical completed { true,false};\noutput categorical class {plebian,equites,patrician} social_class;\nif anything then class will be single(person, have, social_class);\nif class is patrician and age(existence(\"candidate\")) is > patrician_age then completed will be true;\nif (class is plebian or class is equites) and age(existence(\"candidate\")) is > plebian_age then completed will be true;";
+            propraetor.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = propraetor_rule });
+            var consul_rule = "lineage social_class \"noun:01,2,06,34\";\nduration patrician_age 40Y;\nduration plebian_age 42Y;\noutput categorical completed { true,false};\noutput categorical class {plebian,equites,patrician} social_class;\nif anything then class will be single(person, have, social_class);\nif class is patrician and age(existence(\"candidate\")) is > patrician_age then completed will be true;\nif (class is plebian or class is equites) and age(existence(\"candidate\")) is > plebian_age then completed will be true;";
+            consul.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = consul_rule });
+            var proconsul_rule = "lineage social_class \"noun:01,2,06,34\";\nduration patrician_age 41Y; \nduration plebian_age 43Y;\noutput categorical completed { true,false};\noutput categorical class {plebian,equites,patrician} social_class;\nif anything then class will be single(person, have, social_class);\nif class is patrician and age(existence(\"candidate\")) is > patrician_age then completed will be true;\nif (class is plebian or class is equites) and age(existence(\"candidate\")) is > plebian_age then completed will be true;";
+            proconsul.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = proconsul_rule });
+            var dictator_rule = "lineage social_class \"noun:01,2,06,34\";\nduration patrician_age 41Y; \nduration plebian_age 43Y;\noutput categorical completed { true,false};\noutput categorical class {plebian,equites,patrician} social_class;\nif anything then class will be single(person, have, social_class);\nif class is patrician and age(existence(\"candidate\")) is > patrician_age then completed will be true;\nif (class is plebian or class is equites) and age(existence(\"candidate\")) is > plebian_age then completed will be true;";
+            dictator.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = dictator_rule });
+            var censor_rule = "lineage social_class \"noun:01,2,06,34\";\nduration patrician_age 41Y; \nduration plebian_age 43Y;\noutput categorical completed { true,false};\noutput categorical class {plebian,equites,patrician} social_class;\nif anything then class will be single(person, have, social_class);\nif class is patrician and age(existence(\"candidate\")) is > patrician_age then completed will be true;\nif (class is plebian or class is equites) and age(existence(\"candidate\")) is > plebian_age then completed will be true;";
+            censor.properties.Add(new GraphAttribute { name = "completed", lineage = meta.CommonLineages["complete"], type = GraphAttribute.DataType.ruleset, value = censor_rule });
+            //set the current time
+            res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.FuzzyTime(new Common.DarlTime(-68, 0)));
+            log = sb.ToString();            //Add conditions based on length of service
+            Assert.AreEqual(7, res.data.Count);
+            sb.Clear();
+            //_runtime.SetEvaluationTime(new List<Common.DarlTime> { new Common.DarlTime(-68, 1) });
+            res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.FuzzyTime(new Common.DarlTime(-60, 0)));
             log = sb.ToString();            //Add conditions based on length of service
 
         }
