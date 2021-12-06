@@ -337,7 +337,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             DateTime cutOff = DateTime.UtcNow - new TimeSpan(7, 0, 0, 0);
             var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG);
-            return kslist.Where(a => GetExistenceStart(a, personObjectId) > cutOff).Select(a => ConvertContact(a, personObjectId)).ToList();
+            return kslist.Where(a => a.created > cutOff).Select(a => ConvertContact(a, personObjectId)).ToList();
         }
 
         public async Task<IQueryable<Contact>> GetContactsQueryable()
@@ -411,17 +411,21 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<long> GetContactsCount(string userId)
         {
             var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG);
-            return kslist.Select(a => Convert(a, personObjectId)).Count();
+            return kslist.Count();
         }
 
-        public Task<long> GetContactsDayCount(string userId)
+        public async Task<long> GetContactsDayCount(string userId)
         {
-            throw new NotImplementedException();
+            var dayAgo = DateTime.UtcNow - new TimeSpan(10,0,0,0);
+            var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG);
+            return kslist.Count(a => a.created > dayAgo);
         }
 
-        public Task<long> GetContactsMonthCount(string userId)
+        public async Task<long> GetContactsMonthCount(string userId)
         {
-            throw new NotImplementedException();
+            var monthAgo = DateTime.UtcNow - new TimeSpan(30, 0, 0, 0);
+            var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG);
+            return kslist.Count(a => a.created > monthAgo); throw new NotImplementedException();
         }
 
         public async Task<Contact> CreateContactAsync(Contact contact)

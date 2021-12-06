@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <Copyright>(c) Dr Andy's IP</Copyright>
     <Description>Knowledge graph processing code</Description>
     <Authors>Dr Andy Edmonds</Authors>

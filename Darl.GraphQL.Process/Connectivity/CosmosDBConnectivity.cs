@@ -372,7 +372,13 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<long> DeleteAllKnowledgeStates(string userId, string graphName)
         {
             var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
-            var ds = await mc.DeleteManyAsync(Builders<CosmosKnowledgeState>.Filter.Eq(r => r.userId, userId) & Builders<CosmosKnowledgeState>.Filter.Eq(r => r.knowledgeGraphName, graphName));
+            var filter = Builders<CosmosKnowledgeState>.Filter
+                .And(
+                    Builders<CosmosKnowledgeState>.Filter.Eq(r => r.userId, userId),
+                    Builders<CosmosKnowledgeState>.Filter.Eq(r => r.knowledgeGraphName, graphName)
+                    );
+                var count = await mc.Find(filter).CountDocumentsAsync();
+            var ds = await mc.DeleteManyAsync(filter);
             return ds.DeletedCount;
         }
 
