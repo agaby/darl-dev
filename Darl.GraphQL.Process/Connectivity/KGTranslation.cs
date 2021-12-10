@@ -573,7 +573,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<List<DarlUser>> GetRecentUsers()
         {
             DateTime cutOff = DateTime.UtcNow - new TimeSpan(7, 0, 0, 0);
-            var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG);
+            var kslist = await _graph.GetKnowledgeStatesByTypeAndAttributeExistence(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG, stateLineage);
             return kslist.Where(a => GetExistenceStart(a, personObjectId) > cutOff).Select(a => Convert(a, personObjectId)).ToList();
         }
 

@@ -20,7 +20,12 @@
     @RenderSection("header", required: false)
 
     @RenderSection("StyleSheets", required: false)
-    <script>(function(){window.ldbrry = window.ldbrry || {};(function(dom, s, ss, root){root = dom.getElementsByTagName(s)[0];function cltr(src){var image = dom.createElement(s);image.src = src;setTimeout(function(){root.parentNode.insertBefore(image,root)}, 1);}cltr(ss);})(document, 'script', 'https://app.leadberry.com/trackers/lb-23969-23969-4740.js');})();</script>
+    <script>
+     (function () {
+       var e,i=["https://fastbase.com/fscript.js","U4SjcJZnNl","script"],a=document,s=a.createElement(i[2]);
+       s.async=!0,s.id=i[1],s.src=i[0],(e=a.getElementsByTagName(i[2])[0]).parentNode.insertBefore(s,e)
+     })();
+    </script>
 </head>
 <body>
     @RenderBody()
