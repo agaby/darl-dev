@@ -40,6 +40,8 @@ namespace Darl.GraphQL.Models.Connectivity
         private string defaultObjectId { get; set; } = string.Empty;
         private string collateralObjectId { get; set; } = string.Empty;
         private string updateObjectId { get; set; } = string.Empty;
+        private string pushObjectId { get; set; } = string.Empty;
+
 
 
         public static string backofficeKGComp = String.Empty;
@@ -65,6 +67,12 @@ namespace Darl.GraphQL.Models.Connectivity
         private static readonly string stateLineage = "noun:01,1,00";
         private static readonly string typeLineage = "noun:01,0,0,15,07,02,02,0,01";
         private static readonly string existenceLineage = "noun:01,5,03,3,018";//life
+        private static readonly string pushSubscriptionLineage = "noun:01,0,2,00,00,15,20,01,0+noun:01,0,2,00,34,6,1,5,0";
+        private static readonly string addressLineage = "noun:01,4,04,01,01,1,00";
+        private static readonly string pushEndPoinLineage = "noun:00,4,00,0,3,13,13+noun:00,1,01,20,15,1,11";
+        private static readonly string pushKeyLineage = "noun:00,4,00,0,3,13,13+noun:01,0,0,11,1,1,09,2";
+        private static readonly string pushAuthLineage = "noun:00,4,00,0,3,13,13+noun:01,0,2,01,13,09,09";
+
 
         public KGTranslation(ILogger<KGTranslation> logger, IConfiguration config, IGraphProcessing graph, IMetaStructureHandler meta, IProducts prods, ICheckEmail checkEmail, ILicensing licensing, IDarlMetaRunTime metaRuntime)
         {
@@ -102,6 +110,10 @@ namespace Darl.GraphQL.Models.Connectivity
                 else if (v.Value.lineage == processLineage)
                 {
                     updateObjectId = v.Value.id ?? String.Empty;
+                }
+                else if (v.Value.lineage == pushSubscriptionLineage)
+                {
+                    pushObjectId = v.Value.id ?? String.Empty;
                 }
             }
         }
@@ -1152,6 +1164,59 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
             }
             return string.Empty;
+        }
+
+        public async Task<string> CreatePushSubscription(string userId, string pushEndpoint, string pushP256DH, string pushAuth, string ipAddress)
+        {
+            var goi = new KnowledgeStateInput
+            {
+                subjectId = "pushSubscription" + pushEndpoint,
+                knowledgeGraphName = backofficeKG,
+                data = new List<StringListGraphAttributeInputPair> {
+                    new StringListGraphAttributeInputPair{
+                        name = personObjectId,
+                        value = new List<GraphAttributeInput>{
+                            new GraphAttributeInput {
+                                name = "push endpoint",
+                                lineage = pushEndPoinLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = pushEndpoint,
+                                confidence = 1.0
+                            },
+                            new GraphAttributeInput {
+                                name = "push P256DH key",
+                                lineage = pushKeyLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = pushP256DH,
+                                confidence = 1.0
+                            },
+                            new GraphAttributeInput {
+                                name = "push Auth",
+                                lineage = pushAuthLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = pushAuth,
+                                confidence = 1.0
+                            },
+                            new GraphAttributeInput {
+                                name = "ip Address",
+                                lineage = addressLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = ipAddress,
+                                confidence = 1.0
+                            }, 
+                            new GraphAttributeInput {
+                                name = "existence",
+                                lineage = existenceLineage,
+                                type = GraphAttribute.DataType.temporal,
+                                existence = new List<DarlTime?> { DarlTime.UtcNow, DarlTime.MaxValue },
+                                confidence = 1.0
+                            }
+                        }
+                    }
+                }
+            };
+            await _graph.CreateKnowledgeState(_config["AppSettings:boaiuserid"], goi);
+            return goi.subjectId; 
         }
 
 

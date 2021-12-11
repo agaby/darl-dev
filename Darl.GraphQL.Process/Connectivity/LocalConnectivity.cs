@@ -213,7 +213,5 @@ namespace Darl.GraphQL.Models.Connectivity
             mc.Upsert(ks);
             return Task.FromResult(ks as KnowledgeState);
         }
-
- 
     }
 }

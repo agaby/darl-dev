@@ -382,6 +382,5 @@ namespace Darl.GraphQL.Models.Connectivity
             return ds.DeletedCount;
         }
 
-
     }
 }

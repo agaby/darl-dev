@@ -349,5 +349,10 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             throw new NotImplementedException();
         }
+
+        public Task<string> CreatePushSubscription(string userId, string pushEndpoint, string pushP256DH, string pushAuth, string ipAddress)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

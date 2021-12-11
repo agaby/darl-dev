@@ -62,5 +62,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<LineageRecord>> GetLineagesForWord(string word, string isoLanguage = "en");
         Task<List<DarlLintView>> LintDarlMeta(string darl);
         Task<List<GraphAttribute>> GetConceptCloudData(string userId, string graphName, string address);
+        Task<string> CreatePushSubscription(string userId, string pushEndpoint, string pushP256DH, string pushAuth, string ipAddress);
     }
 }
