@@ -175,6 +175,16 @@ namespace Darl.GraphQL.Models.Schemata
                 }
             ).AuthorizeWith("AdminPolicy");
 
+            FieldAsync<ListGraphType<PushSubType>>(
+                "pushSubs",
+                "Get push subscriptions",
+                resolve: async context =>
+                {
+                    return await context.TryAsyncResolve(
+                        async c => await trans.GetPushSubs());
+                }
+            ).AuthorizeWith("AdminPolicy");
+
             FieldAsync<DateTimeGraphType>(
                 "getLastUpdate",
                 "Get the utc time of a system wide update.",

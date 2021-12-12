@@ -249,6 +249,7 @@ namespace Darl.GraphQL
             services.AddSingleton<StringListGraphAttributeInputPairInputType>();
             services.AddSingleton<ModelMetaDataType>();
             services.AddSingleton<ModelMetaDataUpdateType>();
+            services.AddSingleton<PushSubType>();
 
 
             //root

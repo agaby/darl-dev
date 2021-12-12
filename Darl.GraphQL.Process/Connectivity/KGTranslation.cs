@@ -352,6 +352,12 @@ namespace Darl.GraphQL.Models.Connectivity
             return kslist.Where(a => a.created > cutOff).Select(a => ConvertContact(a, personObjectId)).ToList();
         }
 
+        public async Task<List<PushSub>> GetPushSubs()
+        {
+            var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], pushObjectId, backofficeKG);
+            return kslist.Select(a => ConvertPushSub(a, pushObjectId)).ToList();
+        }
+
         public async Task<IQueryable<Contact>> GetContactsQueryable()
         {
             try
@@ -1140,6 +1146,17 @@ namespace Darl.GraphQL.Models.Connectivity
             };
         }
 
+        private PushSub ConvertPushSub(KnowledgeState ks, string pushObjectId)
+        {
+            return new PushSub
+            {
+                ipAddress = GetAttributeValue(ks, pushObjectId, addressLineage),
+                pushAuth =  GetAttributeValue(ks, pushObjectId, pushAuthLineage),
+                pushEndPoint = GetAttributeValue(ks, pushObjectId, pushAuthLineage),
+                pushKey = GetAttributeValue(ks, pushObjectId, pushKeyLineage)
+            };
+        }
+
         private async Task<string> CreateStripeCustomer(string userId, string email, string name = "")
         {
             var sak = _config["AppSettings:StripeAPIKey"];
@@ -1174,7 +1191,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 knowledgeGraphName = backofficeKG,
                 data = new List<StringListGraphAttributeInputPair> {
                     new StringListGraphAttributeInputPair{
-                        name = personObjectId,
+                        name = pushObjectId,
                         value = new List<GraphAttributeInput>{
                             new GraphAttributeInput {
                                 name = "push endpoint",
