@@ -550,23 +550,6 @@ namespace Darl.GraphQL.Models.Schemata
                         async c => await connectivity.DeleteAllKnowledgeStates(userId, name));
                 }
             );
-            FieldAsync<StringGraphType>("registerPushSubscription", "Register a new push subscription", arguments: new QueryArguments(
-                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "pushEndpoint", Description = "The endpoint for the browser" },
-                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "pushP256DH", Description = "The push key code" },
-                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "pushAuth", Description = "The push key Auth" },
-                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ipAddress", Description = "The user's IP address" }
-                ),
-                resolve: async context =>
-                {
-                    var pushEndpoint = context.GetArgument<string>("pushEndpoint");
-                    var pushP256DH = context.GetArgument<string>("pushP256DH");
-                    var pushAuth = context.GetArgument<string>("pushAuth");
-                    var ipAddress = context.GetArgument<string>("ipAddress");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await trans.CreatePushSubscription(userId, pushEndpoint, pushP256DH, pushAuth, ipAddress));
-                }
-            ).AuthorizeWith("AdminPolicy");
         }
 
         private string CompositeName(string userId, string graphName)
