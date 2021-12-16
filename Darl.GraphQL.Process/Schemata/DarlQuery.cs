@@ -658,13 +658,19 @@ namespace Darl.GraphQL.Models.Schemata
             FieldAsync<StringGraphType>("registerForMarketing", "Receive marketing communications from DARL ",
             arguments: new QueryArguments(
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "name of the contact" },
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email", Description = "email of the contact" }
-             ),
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email", Description = "email of the contact" },
+                  new QueryArgument<StringGraphType> { Name = "ipAddress", Description = "The user's IP address" },
+                 new QueryArgument<StringGraphType> { Name = "longitude", Description = "The user's longitude" },
+                 new QueryArgument<StringGraphType> { Name = "latitude", Description = "The user's latitude" }
+            ),
             resolve: async context =>
             {
                 var name = context.GetArgument<string>("name");
                 var email = context.GetArgument<string>("email");
-                return await context.TryAsyncResolve(async c => await trans.RegisterForMarketing(name, email));
+                var ipAddress = context.GetArgument<string>("ipAddress");
+                var longitude = context.GetArgument<string>("longitude");
+                var latitude = context.GetArgument<string>("latitude");
+                return await context.TryAsyncResolve(async c => await trans.RegisterForMarketing(name, email, ipAddress, longitude, latitude));
             });
             FieldAsync<StringGraphType>("registerPushSubscription", "Register a new push subscription", arguments: new QueryArguments(
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "pushEndpoint", Description = "The endpoint for the browser" },

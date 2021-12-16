@@ -819,7 +819,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return await _graph.ShareKGraph(userId, name, sharerId, readOnly, hidden);
         }
 
-        public async Task<string> RegisterForMarketing(string name, string email)
+        public async Task<string> RegisterForMarketing(string name, string email, string? ipAddress, string? longitude, string? latitude)
         {
             if (await CheckEmail(email))
             {

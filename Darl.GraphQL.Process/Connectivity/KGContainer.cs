@@ -239,7 +239,7 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<string> RegisterForMarketing(string name, string email)
+        public Task<string> RegisterForMarketing(string name, string email, string? ipAddress, string? longitude, string? latitude)
         {
             return Task.FromResult("Not available in container version.");
         }
