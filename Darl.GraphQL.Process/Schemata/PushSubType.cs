@@ -12,6 +12,8 @@ namespace Darl.GraphQL.Models.Schemata
     {
         public PushSubType()
         {
+            Name = "pushSubType";
+            Description = "The data for a push subscription.";
             Field(c => c.pushEndPoint);
             Field(c => c.pushAuth);
             Field(c => c.pushKey);

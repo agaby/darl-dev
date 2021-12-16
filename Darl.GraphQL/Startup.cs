@@ -250,6 +250,9 @@ namespace Darl.GraphQL
             services.AddSingleton<ModelMetaDataType>();
             services.AddSingleton<ModelMetaDataUpdateType>();
             services.AddSingleton<PushSubType>();
+            services.AddSingleton<WebPushActionInputType>();
+            services.AddSingleton<WebPushPayloadInputType>();
+            services.AddSingleton<WebPushOptionsInputType>();
 
 
             //root

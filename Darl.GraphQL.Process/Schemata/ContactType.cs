@@ -24,6 +24,9 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.Sector, true);
             Field(c => c.Source, true);
             Field(c => c.Title, true);
+            Field(c => c.latitude, true);
+            Field(c => c.longitude, true);
+            Field(c => c.IPAddress, true);
             Field<StringGraphType>("Id", resolve: c => c.Source.Id);
             Field<ListGraphType<PurchaseType>>("purchases", resolve: c => c.Source.purchases);
             Field<ListGraphType<DarlLicenseType>>("licenses", resolve: c => c.Source.licenses);

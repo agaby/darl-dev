@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebPush;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -72,6 +73,8 @@ namespace Darl.GraphQL.Models.Connectivity
         private static readonly string pushEndPoinLineage = "noun:00,4,00,0,3,13,13+noun:00,1,01,20,15,1,11";
         private static readonly string pushKeyLineage = "noun:00,4,00,0,3,13,13+noun:01,0,0,11,1,1,09,2";
         private static readonly string pushAuthLineage = "noun:00,4,00,0,3,13,13+noun:01,0,2,01,13,09,09";
+        private static readonly string latitudeLineage = "noun:01,1,01,09,2,08,04,0";
+        private static readonly string longitudeLineage = "noun:01,1,01,09,2,08,04,1";
 
 
         public KGTranslation(ILogger<KGTranslation> logger, IConfiguration config, IGraphProcessing graph, IMetaStructureHandler meta, IProducts prods, ICheckEmail checkEmail, ILicensing licensing, IDarlMetaRunTime metaRuntime)
@@ -1183,7 +1186,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return string.Empty;
         }
 
-        public async Task<string> CreatePushSubscription(string userId, string pushEndpoint, string pushP256DH, string pushAuth, string ipAddress)
+        public async Task<string> CreatePushSubscription(string userId, string pushEndpoint, string pushP256DH, string pushAuth, string? ipAddress, string? longitude, string? latitude)
         {
             var goi = new KnowledgeStateInput
             {
@@ -1215,13 +1218,6 @@ namespace Darl.GraphQL.Models.Connectivity
                                 confidence = 1.0
                             },
                             new GraphAttributeInput {
-                                name = "ip Address",
-                                lineage = addressLineage,
-                                type = GraphAttribute.DataType.textual,
-                                value = ipAddress,
-                                confidence = 1.0
-                            }, 
-                            new GraphAttributeInput {
                                 name = "existence",
                                 lineage = existenceLineage,
                                 type = GraphAttribute.DataType.temporal,
@@ -1232,8 +1228,65 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                 }
             };
+            if(ipAddress != null)
+            {
+                goi.data[0].value.Add(new GraphAttributeInput
+                {
+                    name = "ip Address",
+                    lineage = addressLineage,
+                    type = GraphAttribute.DataType.textual,
+                    value = ipAddress,
+                    confidence = 1.0
+                });
+            }
+            if(longitude != null && latitude != null)
+            {
+                goi.data[0].value.Add(new GraphAttributeInput
+                {
+                    name = "longitude",
+                    lineage = longitudeLineage,
+                    type = GraphAttribute.DataType.textual,
+                    value = longitude,
+                    confidence = 1.0
+                });
+                goi.data[0].value.Add(new GraphAttributeInput
+                {
+                    name = "latitude",
+                    lineage = latitudeLineage,
+                    type = GraphAttribute.DataType.textual,
+                    value = latitude,
+                    confidence = 1.0
+                });
+            }
             await _graph.CreateKnowledgeState(_config["AppSettings:boaiuserid"], goi);
             return goi.subjectId; 
+        }
+
+        public async Task<string> FireWebPush(WebPushOptions payload)
+        {
+            string vapidPublicKey = _config.GetSection("VapidKeys")["PublicKey"];
+            string vapidPrivateKey = _config.GetSection("VapidKeys")["PrivateKey"];
+            var vapidDetails = new VapidDetails("mailto:support@darl.ai", vapidPublicKey, vapidPrivateKey);
+            var webPushClient = new WebPushClient();
+            var source = JsonConvert.SerializeObject(payload);
+            int sent = 0;
+            int errored = 0;
+            foreach(var sub in await GetPushSubs())
+            {
+                try
+                {
+                    var pushSubscription = new PushSubscription(sub.pushEndPoint, sub.pushKey, sub.pushAuth);
+                    webPushClient.SendNotification(pushSubscription, source, vapidDetails);
+                    sent++;
+                }
+                catch(Exception ex)
+                {
+                    errored++;
+                }
+
+            }
+            return $"{sent} sent, {errored} failed.";
+   
         }
 
 

@@ -1,5 +1,6 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Middleware;
+using Darl.GraphQL.Models.Models;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
@@ -669,7 +670,9 @@ namespace Darl.GraphQL.Models.Schemata
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "pushEndpoint", Description = "The endpoint for the browser" },
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "pushP256DH", Description = "The push key code" },
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "pushAuth", Description = "The push key Auth" },
-                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "ipAddress", Description = "The user's IP address" }
+                 new QueryArgument<StringGraphType> { Name = "ipAddress", Description = "The user's IP address" },
+                 new QueryArgument<StringGraphType> { Name = "longitude", Description = "The user's longitude" },
+                 new QueryArgument<StringGraphType> { Name = "latitude", Description = "The user's latitude" }
                 ),
                 resolve: async context =>
                 {
@@ -677,9 +680,11 @@ namespace Darl.GraphQL.Models.Schemata
                     var pushP256DH = context.GetArgument<string>("pushP256DH");
                     var pushAuth = context.GetArgument<string>("pushAuth");
                     var ipAddress = context.GetArgument<string>("ipAddress");
+                    var longitude = context.GetArgument<string>("longitude");
+                    var latitude = context.GetArgument<string>("latitude");
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     return await context.TryAsyncResolve(
-                        async c => await trans.CreatePushSubscription(userId, pushEndpoint, pushP256DH, pushAuth, ipAddress));
+                        async c => await trans.CreatePushSubscription(userId, pushEndpoint, pushP256DH, pushAuth, ipAddress, longitude, latitude));
                 }
             );
             FieldAsync<ListGraphType<KnowledgeStateType>>("discover", "Discover possibilities in a graph",
@@ -728,6 +733,16 @@ namespace Darl.GraphQL.Models.Schemata
                 var address = context.GetArgument<string>("address");
                 return await context.TryAsyncResolve(async c => await trans.GetConceptCloudData(userId, graphName, address));
             });
+            FieldAsync<StringGraphType>("FireWebPush", "Sends a web push method to all registered endpoints", arguments: new QueryArguments(
+                 new QueryArgument<NonNullGraphType<WebPushPayloadInputType>> { Name = "payload", Description = "The details of the notification." }
+                ),
+                resolve: async context =>
+                {
+                    var payload = context.GetArgument<WebPushOptions>("payload");
+                    return await context.TryAsyncResolve(
+                        async c => await trans.FireWebPush(payload));
+                }
+            ).AuthorizeWith("AdminPolicy");
         }
 
         private string CompositeName(string userId, string graphName)

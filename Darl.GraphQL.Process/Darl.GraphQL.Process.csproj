@@ -72,6 +72,7 @@
     <PackageReference Include="Standard.Licensing" Version="1.1.5" />
     <PackageReference Include="Stripe.net" Version="39.49.0" />
     <PackageReference Include="VSTS.Net.AspNetCore" Version="0.2.5" />
+    <PackageReference Include="WebPush" Version="1.0.12" />
   </ItemGroup>
 
   <ItemGroup>

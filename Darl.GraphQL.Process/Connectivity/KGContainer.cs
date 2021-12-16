@@ -350,12 +350,17 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<string> CreatePushSubscription(string userId, string pushEndpoint, string pushP256DH, string pushAuth, string ipAddress)
+        public Task<string> CreatePushSubscription(string userId, string pushEndpoint, string pushP256DH, string pushAuth, string? ipAddress, string? longitude, string? latitude)
         {
             throw new NotImplementedException();
         }
 
         public Task<List<PushSub>> GetPushSubs()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> FireWebPush(WebPushOptions payload)
         {
             throw new NotImplementedException();
         }

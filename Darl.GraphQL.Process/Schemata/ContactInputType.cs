@@ -20,6 +20,8 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.Phone, true);
             Field(c => c.Sector, true);
             Field(c => c.Source, true);
+            Field(c => c.latitude, true);
+            Field(c => c.longitude, true);
         }
 
     }
