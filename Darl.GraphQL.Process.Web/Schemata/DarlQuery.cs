@@ -744,7 +744,7 @@ namespace Darl.GraphQL.Models.Schemata
                 ),
                 resolve: async context =>
                 {
-                    var payload = context.GetArgument<WebPushOptions>("payload");
+                    var payload = context.GetArgument<WebPushPayload>("payload");
                     return await context.TryAsyncResolve(
                         async c => await trans.FireWebPush(payload));
                 }

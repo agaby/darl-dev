@@ -4,7 +4,6 @@ using Darl.Thinkbase;
 using LiteDB;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -121,11 +120,6 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var mc = db.GetCollection<LiteKnowledgeState>(knowledgestateCollection);
             return Task.FromResult(mc.Find(x => x.knowledgeGraphName == graphName).ToList<KnowledgeState>());
-        }
-
-        public Task<IAsyncCursor<KnowledgeState>> GetKnowledgeStatesBatched(string userId, string graphName)
-        {
-            throw new NotImplementedException();
         }
 
         public Task<List<KnowledgeState>> GetKnowledgeStatesByType(string userId, string objectId, string graphName)

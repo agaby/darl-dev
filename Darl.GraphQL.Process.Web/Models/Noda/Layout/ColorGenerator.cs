@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Darl.GraphQL.Process.Models.Noda.Layout
 {
-    class ColorGenerator
+    public class ColorGenerator
     {
         public static List<NodaTone> Pick(int num)
         {

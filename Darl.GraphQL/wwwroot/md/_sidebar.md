@@ -22,6 +22,7 @@
   - [The DARL editor](darl_editor.md)
   - [Graphical editing](graphical_editing.md)
 - API access
+  - [Finding your API Key](Finding_your_API_key.md)
   - [The APi user interfaces](darl_dev.md)
   - [Accessing the GraphQL API](GraphQL.md)
   - [DarlVar, universal data](DarlVar.md)

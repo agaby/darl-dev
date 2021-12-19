@@ -28,6 +28,7 @@ using Microsoft.Identity.Web.UI;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
@@ -41,7 +42,6 @@ namespace Darl.GraphQL
         static readonly string firstNameClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname";
         static readonly string secondNameClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname";
 
-        private bool InDocker { get { return Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true"; } }
 
         private readonly bool Licensed = true; //default for web site
         public Startup(IConfiguration configuration)
@@ -65,18 +65,17 @@ namespace Darl.GraphQL
                 options.AllowSynchronousIO = true;
             });
 
-            if (!InDocker)
+
+
+            services.AddMicrosoftIdentityWebAppAuthentication(Configuration, "AzureAdB2C");
+
+            services.AddHsts(options =>
             {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(60);
+            });
 
-                services.AddMicrosoftIdentityWebAppAuthentication(Configuration, "AzureAdB2C");
-
-                services.AddHsts(options =>
-                {
-                    options.Preload = true;
-                    options.IncludeSubDomains = true;
-                    options.MaxAge = TimeSpan.FromDays(60);
-                });
-            }
 
 #if DEBUG
             services.AddDistributedMemoryCache();
@@ -97,18 +96,9 @@ namespace Darl.GraphQL
             //services
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
-            if (InDocker)
-            {
-                services.AddSingleton<IConnectivity, LocalConnectivity>();
-                services.AddSingleton<IBlobConnectivity, OneFileConnectivity>();
-                services.AddSingleton<IKGTranslation, KGContainer>();
-            }
-            else
-            {
-                services.AddSingleton<IConnectivity, CosmosDBConnectivity>();
-                services.AddSingleton<IBlobConnectivity, BlobGraphConnectivity>();
-                services.AddSingleton<IKGTranslation, KGTranslation>();
-            }
+            services.AddSingleton<IConnectivity, CosmosDBConnectivity>();
+            services.AddSingleton<IBlobConnectivity, BlobGraphConnectivity>();
+            services.AddSingleton<IKGTranslation, KGTranslation>();
             services.AddSingleton<IBotProcessing, BotProcessing>();
             services.AddSingleton<IEmailProcessing, EmailProcessing>();
             services.AddSingleton<IAuthChecker, AuthChecker>();
@@ -180,9 +170,6 @@ namespace Darl.GraphQL
             services.AddSingleton<LineageNodeAttributeResourceType>();
             services.AddSingleton<CollateralType>();
             services.AddSingleton<UpdateType>();
-            services.AddSingleton<ConversationType>();
-            services.AddSingleton<ConversationInputType>();
-            services.AddSingleton<DocumentType>();
             services.AddSingleton<DQTypeEnum>();
             services.AddSingleton<ResourceTypeEnum>();
             services.AddSingleton<PurchaseType>();
@@ -304,116 +291,99 @@ namespace Darl.GraphQL
         {
 
 
-            if (!InDocker)
-            {
-                if (env.IsDevelopment())
-                {
-                    app.UseDeveloperExceptionPage();
-                }
-                else
-                {
-                    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                    app.UseHsts();
-                }
 
-                app.UseHttpsRedirection();
-            }
-            else
+            if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
+
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseRouting();
 
-            if (!InDocker)
+
+
+            app.UseAuthentication();
+
+            app.Use(async (context, next) =>
             {
 
-                app.UseAuthentication();
-
-                app.Use(async (context, next) =>
+                DarlUser? du = null;
+                String roles = string.Empty;
+                string objectId = string.Empty;
+                string clientSecret = string.Empty;
+                var _rep = (IKGTranslation?)context.RequestServices.GetService(typeof(IKGTranslation));
+                if (_rep != null && context.User.Identity != null && context.User.Identity.IsAuthenticated)
                 {
-
-                    DarlUser? du = null;
-                    String roles = string.Empty;
-                    string objectId = string.Empty;
-                    string clientSecret = string.Empty;
-                    var _rep = (IKGTranslation)context.RequestServices.GetService(typeof(IKGTranslation));
-                    if (context.User.Identity.IsAuthenticated)
+                    //look up user
+                    objectId = context.User.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
+                    du = await _rep.GetUserById(objectId);
+                    if (du == null) //new user
                     {
-                        //look up user
-                        objectId = context.User.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
-                        du = await _rep.GetUserById(objectId);
-                        if (du == null) //new user
+                        du = await AddNewUser(context, objectId, _rep);
+                        if (du == null) //can't setup user
                         {
-                            du = await AddNewUser(context, objectId, _rep);
-                            if (du == null) //can't setup user
-                            {
-                                await next.Invoke();
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            if (!string.IsNullOrEmpty(du.parentAccount)) //this is a sub user, log in as the parent.
-                            {
-                                du = await _rep.GetUserById(du.parentAccount);
-                            }
+                            await next.Invoke();
+                            return;
                         }
                     }
                     else
                     {
-                        //look for header
-                        var authHeader = context.Request.Headers["Authorization"].ToString();
-                        if (authHeader != null && authHeader.StartsWith("Basic", StringComparison.OrdinalIgnoreCase))
+                        if (!string.IsNullOrEmpty(du.parentAccount)) //this is a sub user, log in as the parent.
                         {
-                            var token = authHeader.Substring("Basic ".Length).Trim();
-                            du = await _rep.GetUserByApiKey(token);
-                            if (du == null)// can indicate user is barred
-                            {
-                                await next.Invoke();
-                                return;
-                            }
-                            objectId = du.userId;
+                            du = await _rep.GetUserById(du.parentAccount);
                         }
                     }
-                    if (du != null)//found it from one or other
-                    {
-                        switch (du.accountState)
-                        {
-                            case DarlUser.AccountState.admin:
-                                roles = "Admin,Corp,User";
-                                break;
-                            case DarlUser.AccountState.trial:
-                            case DarlUser.AccountState.paying:
-                            case DarlUser.AccountState.delinquent:
-                                roles = "User";
-                                break;
-                            default:
-                                roles = string.Empty;
-                                break;
-                        }
-                        //overwrite user 
-                        var identity = new GenericIdentity(objectId);
-                        identity.AddClaims(context.User.Claims);
-                        context.User = new GenericPrincipal(identity, string.IsNullOrEmpty(roles) ? Array.Empty<string>() : roles.Split(','));
-                    }
-                    await next.Invoke();
-                });
-
-            }
-            else
-            {
-                app.Use(async (context, next) =>
+                }
+                else if(_rep != null)
                 {
-                    var identity = new GenericIdentity(Configuration["AppSettings:boaiuserid"]);
+                    //look for header
+                    var authHeader = context.Request.Headers["Authorization"].ToString();
+                    if (authHeader != null && authHeader.StartsWith("Basic", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var token = authHeader.Substring("Basic ".Length).Trim();
+                        du = await _rep.GetUserByApiKey(token);
+                        if (du == null)// can indicate user is barred
+                        {
+                            await next.Invoke();
+                            return;
+                        }
+                        objectId = du.userId;
+                    }
+                }
+                if (du != null)//found it from one or other
+                {
+                    switch (du.accountState)
+                    {
+                        case DarlUser.AccountState.admin:
+                            roles = "Admin,Corp,User";
+                            break;
+                        case DarlUser.AccountState.trial:
+                        case DarlUser.AccountState.paying:
+                        case DarlUser.AccountState.delinquent:
+                            roles = "User";
+                            break;
+                        default:
+                            roles = string.Empty;
+                            break;
+                    }
+                    //overwrite user 
+                    var identity = new GenericIdentity(objectId);
                     identity.AddClaims(context.User.Claims);
-                    var roles = "Corp,User";
+                    identity.AddClaim(new Claim("apikey", du.APIKey));
                     context.User = new GenericPrincipal(identity, string.IsNullOrEmpty(roles) ? Array.Empty<string>() : roles.Split(','));
-                    await next.Invoke();
-                });
+                }
+                await next.Invoke();
+            });
 
-            }
+
 
             app.UseMiddleware<GraphQLHttpMiddleware<DarlSchema>>(new PathString("/graphql"));
 

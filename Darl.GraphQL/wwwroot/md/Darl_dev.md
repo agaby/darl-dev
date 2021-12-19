@@ -11,11 +11,11 @@ You can access the GraphQL endpoint programmatically at [https://darl.dev/graphq
 The rest of the site is concerned with making it possible for you to develop applications using our API.
 
 # Accounts
-The darl.dev site is _tenanted_. This means that each user gets a separate account with their own data objects such as rulesets, machine learning models and bot models.
-When you first sign up a set of default objects are created for you. You can delete these or modify them as you choose.
+The darl.dev site is _tenanted_. This means that each user gets a separate account with their own data objects such as Knowledge Graphs.
+
 
 ## Anonymous access
-When you first access the site without registering and logging in, you will have access to a set of demo objects. While you can view these and do things like evaluating rulesets, you cannot do anything involving _mutation_. I.e. you can't change anything.
+When you first access the site without registering and logging in, you will have access to a set of demo objects. While you can view these and do things like evaluating Knowledge graphs, you cannot do anything involving _mutation_. I.e. you can't change anything.
 
 ## Registering
 
@@ -34,15 +34,21 @@ The registration dialog looks like this:
 ![Register](images/register.png)
 
 # Access to the API
-When you are logged in to the site you are also logged in to the API, so you can access it directly via the various interfaces. 
+The API is accessed independently from the rest of the site.
 
-However, this won't work if you want to access the API from your web server or a mobile app. For this case we provide each user with an API key.
-To use this add the following header to your accesses:
+Once you are logged in you can find your API key by clicking on the "key" symbol on the navbar.
+
+![Get API Key](images/api_key.png)
+
+The general format of the header to access the API is: 
+
 ```
-"Authorization": "Basic <your api key here>"
+{"Authorization": "Basic <your api key here>"}
 ```
 
-You can find your API key with the query ```GetAPIKey``` while logged in through one of our interfaces.
+Click on the copy icon to copy the header info to the clipboard and paste it into the bottom left of the API page, to access the API through your account rather than  the demo account.
+
+![Paste API Key](images/api_headers.png)
 
 You can change the API key by calling the mutation ```ResetAPIKey```
 

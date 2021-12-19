@@ -1,10 +1,7 @@
-﻿using MongoDB.Bson;
-
-namespace Darl.GraphQL.Models.Models
+﻿namespace Darl.GraphQL.Models.Models
 {
     public class Collateral
     {
-        public ObjectId Id { get; set; }
         public string Name { get; set; }
         public string Value { get; set; }
         public string userId { get; set; }

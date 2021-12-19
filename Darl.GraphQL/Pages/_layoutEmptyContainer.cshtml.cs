@@ -11,15 +11,6 @@ namespace Darl.GraphQL.Pages
         public IFormFile Upload { get; set; }
 
 
-        public async Task OnPostAsync()
-        {
-            /*            using (var fileStream = new FileStream(_config["BLOBFILEPATH"] + Upload.FileName, FileMode.Create))
-                        {
-                            await Upload.CopyToAsync(fileStream);
-                        }*/
-        }
-
-
     }
 
 }

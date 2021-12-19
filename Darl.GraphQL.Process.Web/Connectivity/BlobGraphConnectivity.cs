@@ -1,7 +1,7 @@
-﻿using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Blob;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,7 +63,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public List<string> List(string prefix)
         {
-            var list = _container.ListBlobs(prefix).Select(a => a.Uri.ToString()).ToList();
+            var listseg =  _container.ListBlobsSegmentedAsync(prefix, null).Result;
+            var list = listseg.Results.Select(a => a.Uri.ToString()).ToList();
             //response is full url, remove all but the model name.
             var abbreviatedList = new List<string>();
             foreach (var l in list)

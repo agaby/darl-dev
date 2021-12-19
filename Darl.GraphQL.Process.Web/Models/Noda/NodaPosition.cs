@@ -3,7 +3,7 @@ using System;
 
 namespace Darl.GraphQL.Models.Models.Noda
 {
-    public class NodaPosition
+    public class NodaPosition : AbstractVector
     {
 
         public NodaPosition() : base()
@@ -43,7 +43,7 @@ namespace Darl.GraphQL.Models.Models.Noda
             return this;
         }
 
-        public NodaPosition Multiply(double n)
+        public override NodaPosition Multiply(double n)
         {
             x = x * n;
             y = y * n;
@@ -51,7 +51,7 @@ namespace Darl.GraphQL.Models.Models.Noda
             return this;
         }
 
-        public NodaPosition Divide(double n)
+        public override NodaPosition Divide(double n)
         {
             if (n == 0.0f)
             {
@@ -68,25 +68,25 @@ namespace Darl.GraphQL.Models.Models.Noda
             return this;
         }
 
-        public double Magnitude()
+        public override double Magnitude()
         {
             return Math.Sqrt((double)(x * x) + (double)(y * y) + (double)(z * z));
         }
 
 
-        public NodaPosition Normalize()
+        public override NodaPosition Normalize()
         {
             return this / Magnitude();
         }
 
-        public NodaPosition SetZero()
+        public override NodaPosition SetZero()
         {
             x = 0.0f;
             y = 0.0f;
             z = 0.0f;
             return this;
         }
-        public NodaPosition SetIdentity()
+        public override NodaPosition SetIdentity()
         {
             x = 1.0f;
             y = 1.0f;
@@ -106,6 +106,16 @@ namespace Darl.GraphQL.Models.Models.Noda
         public static NodaPosition Random()
         {
             return new NodaPosition(10.0f * (Util.Random() - 0.5f), 10.0f * (Util.Random() - 0.5f), 10.0f * (Util.Random() - 0.5f));
+        }
+
+        public override NodaPosition Add(AbstractVector v2)
+        {
+            return Add(v2 as NodaPosition);
+        }
+
+        public override NodaPosition Subtract(AbstractVector v2)
+        {
+            return Subtract(v2 as NodaPosition);
         }
 
         public static NodaPosition operator +(NodaPosition a, NodaPosition b)

@@ -67,6 +67,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Darl.GraphQL.Process.Container\Darl.GraphQL.Process.Container.csproj" />
+    <ProjectReference Include="..\Darl.GraphQL.Process.Web\Darl.GraphQL.Process.Web.csproj" />
     <ProjectReference Include="..\Darl.GraphQL.Process\Darl.GraphQL.Process.csproj" />
   </ItemGroup>
 

@@ -64,6 +64,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<GraphAttribute>> GetConceptCloudData(string userId, string graphName, string address);
         Task<string> CreatePushSubscription(string userId, string pushEndpoint, string pushP256DH, string pushAuth, string? ipAddress, string? longitude, string? latitude);
         Task<List<PushSub>> GetPushSubs();
-        Task<string> FireWebPush(WebPushOptions payload);
+        Task<string> FireWebPush(WebPushPayload payload);
     }
 }

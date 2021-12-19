@@ -1642,38 +1642,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return await _conn.ShareKGraph(userId, name, sharerId, readOnly, hidden);
         }
 
-        public async Task<string> KStateIntegrityCheck(string userId, string name)
-        {
-            if (await Load(CreateCompositeName(userId, name)) is not BlobGraphContent model)
-                throw new Exception($"{name} could not be found in your account.");
-            var subjectIds = new HashSet<string>();
-            int ksCount = 0;
-            //first pass
-            var cursor = await _conn.GetKnowledgeStatesBatched(userId, name);
-            while (await cursor.MoveNextAsync())
-            {
-                foreach (var ks in cursor.Current)
-                {
-                    //read links and look for reverse links to add
-                    foreach (var key in ks.data.Keys)
-                    {
-                        foreach (var att in ks.data[key])
-                        {
-                            if (att.type == GraphAttribute.DataType.connection)
-                            {
-                                //check if a matching link is required in the opposite direction.
-
-                            }
-                        }
-                    }
-                    subjectIds.Add(ks.subjectId);
-                    ksCount++;
-                }
-            }
-
-            return $"Passed, {ksCount} knowledge states processed";
-        }
-
         public async Task<List<KnowledgeState>> GetSetOfKnowledgeStates(string userId, List<string> ksIds, string graphName)
         {
             return await _conn.GetSetOfKnowledgeStates(userId, ksIds, graphName);

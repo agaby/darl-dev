@@ -36,27 +36,40 @@
                     <li class="nav-item">
                         @if (!User.Identity.IsAuthenticated)
                         {
-                            <a href="/MicrosoftIdentity/account/signin" class="btn btn-rounded btn-primary">Log in/Register</a>
+                            <a href="/MicrosoftIdentity/account/signin" class="nav-link text-dark"><i class="fas fa-sign-in-alt"></i></a>
                         }
                         else
                         {
-                            <a href="/MicrosoftIdentity/account/signout" class="btn btn-rounded btn-primary">Log out</a>
+                            <a href="/MicrosoftIdentity/account/signout" class="nav-link text-dark" title="Sign out"><i class="fas fa-sign-out-alt"></i></a>
                         }
                     </li>
                     @if (User.Identity.IsAuthenticated)
                     {
                         <li class="nav-item">
                             <form method="POST" asp-page="./index">
-                                <button class="btn btn-rounded btn-primary" type="submit">Billing</button>
+                                <button class="btn btn-link text-dark" type="submit"><i class="fas fa-file-invoice-dollar" title="Billing"></i></button>
                             </form>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="API key">
+                                <i class="fa fa-key"></i>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <textarea class="dropdown-item text-dark" id="authHeader">{"Authorization": "Basic @User.Claims.Single(a => a.Type == "apikey").Value"}</textarea>
+                                <button class="btn btn-link text-dark" type="button" id="copyButton" onclick="copyKey()" title="Copy to clipboard"><i class="far fa-copy"></i></button>
+                            </div>
+                        </li>            
                     }
 
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" href="docs/darl_dev/" target="_blank"><img src="~/images/help_small.png" /></a>
-                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 </header>
+<script>
+    function copyKey ()
+    {
+        var keyText = $('#authHeader').val();
+        navigator.clipboard.writeText(keyText);
+    }
+</script>

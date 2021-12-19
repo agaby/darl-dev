@@ -1,5 +1,4 @@
 ﻿using DarlCommon;
-using MongoDB.Bson;
 using System.Collections.Generic;
 
 namespace Darl.GraphQL.Models.Models
@@ -7,7 +6,6 @@ namespace Darl.GraphQL.Models.Models
     public enum ModelType { ruleset, botmodel, mlmodel, simmodel };
     public class RuleSet
     {
-        public ObjectId id { get; set; }
 
         public string Name { get; set; }
         public RuleForm Contents { get; set; } = new RuleForm();

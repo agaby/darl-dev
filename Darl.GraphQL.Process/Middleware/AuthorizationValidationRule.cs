@@ -83,23 +83,9 @@ namespace Darl.GraphQL.Models.Middleware
                 return;
             }
 
-            var policyNames = type.GetPolicies();
-            if (policyNames.Count == 0)
+            foreach (var policyName in type.GetPolicies())
             {
-                return;
-            }
-
-            var tasks = new List<Task<AuthorizationResult>>(policyNames.Count);
-            foreach (var policyName in policyNames)
-            {
-                var task = _authorizationService.AuthorizeAsync(this._httpContextAccessor.HttpContext.User, policyName);
-                tasks.Add(task);
-            }
-            await Task.WhenAll(tasks);
-
-            foreach (var task in tasks)
-            {
-                var result = task.Result;
+                var result = await _authorizationService.AuthorizeAsync(this._httpContextAccessor.HttpContext.User, policyName);
                 if (!result.Succeeded)
                 {
                     var stringBuilder = new StringBuilder("You are not authorized to run this ");

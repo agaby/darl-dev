@@ -20,21 +20,6 @@
     <Compile Remove="Models\GraphElement.cs" />
     <Compile Remove="Models\GraphElementInput.cs" />
     <Compile Remove="Models\GraphElementUpdate.cs" />
-    <Compile Remove="Models\Noda\Layout\AbstractRenderer.cs" />
-    <Compile Remove="Models\Noda\Layout\AbstractVector.cs" />
-    <Compile Remove="Models\Noda\Layout\Edge.cs" />
-    <Compile Remove="Models\Noda\Layout\FDGVector2.cs" />
-    <Compile Remove="Models\Noda\Layout\FDGVector3.cs" />
-    <Compile Remove="Models\Noda\Layout\Graph.cs" />
-    <Compile Remove="Models\Noda\Layout\GraphData.cs" />
-    <Compile Remove="Models\Noda\Layout\IGraph.cs" />
-    <Compile Remove="Models\Noda\Layout\IRenderer.cs" />
-    <Compile Remove="Models\Noda\Layout\IVector.cs" />
-    <Compile Remove="Models\Noda\Layout\Node.cs" />
-    <Compile Remove="Models\Noda\Layout\Pair.cs" />
-    <Compile Remove="Models\Noda\Layout\PriorityQueue.cs" />
-    <Compile Remove="Models\Noda\Layout\SingletonHolder.cs" />
-    <Compile Remove="Models\Noda\Layout\Triple.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,23 +41,11 @@
   <ItemGroup>
     <PackageReference Include="GraphQL" Version="3.0.0-preview-1211" />
     <PackageReference Include="GraphQL.Client" Version="1.0.3" />
-    <PackageReference Include="LiteDB" Version="5.0.11" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.16.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.1.6" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Azure.DocumentDB" Version="2.14.1" />
-    <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.14.1" />
-    <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="11.2.3" />
-    <PackageReference Include="Microsoft.Azure.Storage.Queue" Version="11.2.3" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.6" />
-    <PackageReference Include="MongoDB.Bson" Version="2.12.3" />
-    <PackageReference Include="MongoDB.Driver" Version="2.12.3" />
-    <PackageReference Include="QuickGraph.NETStandard" Version="3.8.0" />
-    <PackageReference Include="Sendgrid" Version="9.23.2" />
     <PackageReference Include="Standard.Licensing" Version="1.1.5" />
-    <PackageReference Include="Stripe.net" Version="39.49.0" />
-    <PackageReference Include="VSTS.Net.AspNetCore" Version="0.2.5" />
-    <PackageReference Include="WebPush" Version="1.0.12" />
   </ItemGroup>
 
   <ItemGroup>

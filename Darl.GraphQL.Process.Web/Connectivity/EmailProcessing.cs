@@ -1,10 +1,10 @@
 ﻿using Darl.GraphQL.Models.Models;
 using Datl.Language;
 using GraphQL;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Queue;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

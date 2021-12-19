@@ -1262,7 +1262,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return goi.subjectId; 
         }
 
-        public async Task<string> FireWebPush(WebPushOptions payload)
+        public async Task<string> FireWebPush(WebPushPayload payload)
         {
             string vapidPublicKey = _config.GetSection("VapidKeys")["PublicKey"];
             string vapidPrivateKey = _config.GetSection("VapidKeys")["PrivateKey"];
