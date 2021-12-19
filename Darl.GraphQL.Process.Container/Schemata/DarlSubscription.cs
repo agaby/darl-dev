@@ -1,7 +1,7 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using GraphQL.Types;
 
-namespace Darl.GraphQL.Models.Schemata
+namespace Darl.GraphQL.Container.Models.Schemata
 {
     public class DarlSubscription : ObjectGraphType<object>
     {

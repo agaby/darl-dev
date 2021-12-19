@@ -6,6 +6,7 @@ using Darl.GraphQL.Process.Middleware;
 using Darl.GraphQL.Ui.GraphiQL;
 using Darl.GraphQL.Ui.Playground;
 using Darl.GraphQL.Ui.Voyager;
+using Darl.GraphQL.Web.Models.Schemata;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
@@ -94,8 +95,6 @@ namespace Darl.GraphQL
 
 
             //services
-            services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
-            services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddSingleton<IConnectivity, CosmosDBConnectivity>();
             services.AddSingleton<IBlobConnectivity, BlobGraphConnectivity>();
             services.AddSingleton<IKGTranslation, KGTranslation>();

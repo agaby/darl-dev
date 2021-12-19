@@ -1,6 +1,7 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
+using Darl.GraphQL.Models.Schemata;
 using Darl.Thinkbase;
 using GraphQL.Types;
 using Microsoft.Extensions.Configuration;
@@ -8,11 +9,11 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace Darl.GraphQL.Models.Schemata
+namespace Darl.GraphQL.Container.Models.Schemata
 {
     public class DarlMutation : ObjectGraphType<object>
     {
-        public DarlMutation(IConnectivity connectivity, IEmailProcessing email, IGraphProcessing graph, IConfiguration _config, ISoftMatchProcessing cmp, IKGTranslation trans)
+        public DarlMutation(IConnectivity connectivity, IGraphProcessing graph, IConfiguration _config, ISoftMatchProcessing cmp, IKGTranslation trans)
         {
             Name = "Mutation";
             Description = "Make changes to the contents of your account.";
@@ -162,14 +163,6 @@ namespace Darl.GraphQL.Models.Schemata
                 return await context.TryAsyncResolve(
                     async c => { await graph.Store(CompositeName(userId, name)); return ""; });
             });
-
-            FieldAsync<StringGraphType>("inviteUser", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }), resolve: async context =>
-            {
-                var newUserEmail = context.GetArgument<string>("email");
-                var userId = trans.GetCurrentUserId(context.UserContext);
-                return await context.TryAsyncResolve(
-                    async c => await email.InviteUser(userId, newUserEmail));
-            }).AuthorizeWith("CorpPolicy");
 
             FieldAsync<StringGraphType>("copyRenamKG", "copy and rename a Knowledge graph", arguments: new QueryArguments(
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph to copy" },

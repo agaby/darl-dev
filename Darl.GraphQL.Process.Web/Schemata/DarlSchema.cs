@@ -3,7 +3,7 @@ using GraphQL.Types;
 using GraphQL.Utilities;
 using System;
 
-namespace Darl.GraphQL.Models.Schemata
+namespace Darl.GraphQL.Web.Models.Schemata
 {
     public class DarlSchema : Schema
     {

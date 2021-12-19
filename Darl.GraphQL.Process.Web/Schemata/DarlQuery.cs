@@ -1,6 +1,7 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
+using Darl.GraphQL.Models.Schemata;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
@@ -9,7 +10,7 @@ using GraphQL.Types;
 using System;
 using System.Collections.Generic;
 
-namespace Darl.GraphQL.Models.Schemata
+namespace Darl.GraphQL.Web.Models.Schemata
 {
     public class DarlQuery : ObjectGraphType<object>
     {
