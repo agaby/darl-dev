@@ -539,6 +539,36 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                 }
             };
+            if (contact.IPAddress != null)
+            {
+                goi.data[0].value.Add(new GraphAttributeInput
+                {
+                    name = "ip Address",
+                    lineage = addressLineage,
+                    type = GraphAttribute.DataType.textual,
+                    value = contact.IPAddress,
+                    confidence = 1.0
+                });
+            }
+            if (contact.longitude != null && contact.latitude != null)
+            {
+                goi.data[0].value.Add(new GraphAttributeInput
+                {
+                    name = "longitude",
+                    lineage = longitudeLineage,
+                    type = GraphAttribute.DataType.textual,
+                    value = contact.longitude,
+                    confidence = 1.0
+                });
+                goi.data[0].value.Add(new GraphAttributeInput
+                {
+                    name = "latitude",
+                    lineage = latitudeLineage,
+                    type = GraphAttribute.DataType.textual,
+                    value = contact.latitude,
+                    confidence = 1.0
+                });
+            }
             await _graph.CreateKnowledgeState(_config["AppSettings:boaiuserid"], goi);
             return contact; 
         }
@@ -1145,7 +1175,10 @@ namespace Darl.GraphQL.Models.Connectivity
                 Sector = GetAttributeValue(ks, personObjectId, sectorLineage),
                 Phone = GetAttributeValue(ks, personObjectId, phoneLineage),
                 Source = GetAttributeValue(ks, personObjectId, sourceLineage),
-                Created = GetExistenceStart(ks, personObjectId)
+                Created = GetExistenceStart(ks, personObjectId),
+                IPAddress = GetAttributeValue(ks, personObjectId, addressLineage),
+                latitude = GetAttributeValue(ks, personObjectId, latitudeLineage),
+                longitude = GetAttributeValue(ks, personObjectId, longitudeLineage),
             };
         }
 
