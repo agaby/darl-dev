@@ -857,7 +857,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     if (await GetContactByEmail(email) != null)
                         return "You're already in our system.";
-                    await CreateContactAsync(new Contact { Id = Guid.NewGuid().ToString(), Created = DateTime.UtcNow, Source = "newsletter", Email = email, FirstName = name });
+                    await CreateContactAsync(new Contact { Id = Guid.NewGuid().ToString(), Created = DateTime.UtcNow, Source = "newsletter", Email = email, FirstName = name, IPAddress = ipAddress, longitude = longitude, latitude = latitude });
                     return "Thanks for signing up. You'll now receive our newsletters.";
                 }
                 catch (Exception)
