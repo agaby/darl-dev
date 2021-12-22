@@ -18,6 +18,9 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.pushAuth);
             Field(c => c.pushKey);
             Field(c => c.ipAddress);
+            Field(c => c.longitude);
+            Field(c => c.latitude);
+            Field(c => c.created, true);
         }
     }
 }

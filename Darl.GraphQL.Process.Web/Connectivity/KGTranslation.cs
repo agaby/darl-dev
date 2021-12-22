@@ -1156,7 +1156,10 @@ namespace Darl.GraphQL.Models.Connectivity
                 ipAddress = GetAttributeValue(ks, pushObjectId, addressLineage),
                 pushAuth =  GetAttributeValue(ks, pushObjectId, pushAuthLineage),
                 pushEndPoint = GetAttributeValue(ks, pushObjectId, pushEndPoinLineage),
-                pushKey = GetAttributeValue(ks, pushObjectId, pushKeyLineage)
+                pushKey = GetAttributeValue(ks, pushObjectId, pushKeyLineage),
+                longitude = GetAttributeValue(ks, pushObjectId, longitudeLineage),
+                latitude = GetAttributeValue(ks, pushObjectId, latitudeLineage),
+                created = GetExistenceStart(ks, pushObjectId)   
             };
         }
 

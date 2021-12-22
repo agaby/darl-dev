@@ -3,11 +3,11 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
-namespace Darl.GraphQL.Ui.Playground.Internal
+namespace Darl.GraphQL.Container.Ui.Playground.Internal
 {
 
     // https://docs.microsoft.com/en-us/aspnet/core/mvc/razor-pages/?tabs=netcore-cli
-    internal class PlaygroundPageModel
+    public class PlaygroundPageModel
     {
 
         private string? playgroundCSHtml;

@@ -1,8 +1,9 @@
 using Darl.GraphQL.Container.Models.Schemata;
+using Darl.GraphQL.Container.Ui.GraphiQL;
+using Darl.GraphQL.Container.Ui.Playground;
 using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Schemata;
-using Darl.GraphQL.Ui.Playground;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
@@ -14,15 +15,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Principal;
-using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Container
 {
@@ -203,7 +200,6 @@ namespace Darl.GraphQL.Container
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseRouting();
 
@@ -222,6 +218,12 @@ namespace Darl.GraphQL.Container
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions()
             {
                 Path = "/ui/playground",
+            });
+
+            app.UseGraphiQLServer(new GraphiQLOptions
+            {
+                GraphiQLPath = "/ui/graphiql",
+                GraphQLEndPoint = "/graphql"
             });
 
             app.UseEndpoints(endpoints =>

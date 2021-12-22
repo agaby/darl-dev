@@ -1,10 +1,4 @@
-﻿using Darl.GraphQL.Models.Connectivity;
-using Darl.GraphQL.Models.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Darl.GraphQL.Container.Pages
 {
