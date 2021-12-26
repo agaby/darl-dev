@@ -65,5 +65,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<string> CreatePushSubscription(string userId, string pushEndpoint, string pushP256DH, string pushAuth, string? ipAddress, string? longitude, string? latitude);
         Task<List<PushSub>> GetPushSubs();
         Task<string> FireWebPush(WebPushPayload payload);
+        Task<byte[]> RenderRSS(string scheme);
     }
 }

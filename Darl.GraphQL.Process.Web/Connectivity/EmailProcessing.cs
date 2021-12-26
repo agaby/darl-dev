@@ -1,10 +1,9 @@
-﻿using Darl.GraphQL.Models.Models;
+﻿using Azure.Storage.Queues;
+using Darl.GraphQL.Models.Models;
 using Datl.Language;
 using GraphQL;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -18,7 +17,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private readonly IConfiguration _config;
         private readonly IKGTranslation _connectivity;
         private readonly ICheckEmail _checkEmail;
-        private readonly CloudQueue queue;
+        private readonly QueueClient queue;
         private readonly IDistributedCache _cache;
         private static readonly TimeSpan cacheExpiration = new TimeSpan(1, 0, 0, 0);
 
@@ -27,8 +26,8 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             _config = config;
             _connectivity = connectivity;
-            var csa = CloudStorageAccount.Parse(_config["AppSettings:StorageConnectionString"]);
-            queue = csa.CreateCloudQueueClient().GetQueueReference("support-messages");
+            queue = new QueueClient(_config["AppSettings:StorageConnectionString"], "support-messages");
+            queue.CreateIfNotExists();
             _cache = cache;
         }
 
@@ -80,7 +79,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var smm = new SupportMailMessage { from = sendfrom, subject = subject, to = emailAddress, content = body };
             //add to queue
-            await queue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(smm)));
+            await queue.SendMessageAsync(JsonConvert.SerializeObject(smm));
             return smm.content;
         }
     }

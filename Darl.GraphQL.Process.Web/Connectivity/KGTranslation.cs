@@ -9,14 +9,19 @@ using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlCompiler;
 using GraphQL;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Stripe;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.ServiceModel.Syndication;
+using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using WebPush;
 
 namespace Darl.GraphQL.Models.Connectivity
@@ -59,7 +64,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private static readonly string phoneLineage = "noun:01,4,07,01";//phone
         private static readonly string occupationLineage = "noun:01,0,2,00,23,19";//occupation
         private static readonly string noteLineage = "noun:01,4,05,21,28,1";//note
-        private static readonly string companyLineage = "noun:01,2,07,10";//organization
+        private static readonly string organizationLineage = "noun:01,2,07,10";//organization
         private static readonly string countryLineage = "noun:01,2,06,35";//nation
         private static readonly string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";//sector
         private static readonly string keyLineage = "noun:01,4,09,01,7,3,0";//key
@@ -75,6 +80,11 @@ namespace Darl.GraphQL.Models.Connectivity
         private static readonly string pushAuthLineage = "noun:00,4,00,0,3,13,13+noun:01,0,2,01,13,09,09";
         private static readonly string latitudeLineage = "noun:01,1,01,09,2,08,04,0";
         private static readonly string longitudeLineage = "noun:01,1,01,09,2,08,04,1";
+        private static readonly string companyLineage = "noun:01,2,07,10,13,4"; //company
+        private static readonly string websiteLineage = "noun:00,1,00,3,21,04,073,06,09"; //web site
+        private static readonly string newsLetterLineage = "noun:01,4,05,13,09+noun:01,4,04,02,07,01,06"; //news + letter
+        private static readonly string titleLineage = "noun:01,3,14,01,06,21"; //title 
+        private static readonly string descriptionLineage = "noun:01,4,05,21,05"; //description
 
 
         public KGTranslation(ILogger<KGTranslation> logger, IConfiguration config, IGraphProcessing graph, IMetaStructureHandler meta, IProducts prods, ICheckEmail checkEmail, ILicensing licensing, IDarlMetaRunTime metaRuntime)
@@ -417,7 +427,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 UpdateAttribute(ks, personObjectId, phoneLineage, "phone", contact.Phone);
                 UpdateAttribute(ks, personObjectId, noteLineage, "notes", contact.Notes);
                 UpdateAttribute(ks, personObjectId, occupationLineage, "occupation", contact.Title);
-                UpdateAttribute(ks, personObjectId, companyLineage, "company", contact.Company);
+                UpdateAttribute(ks, personObjectId, organizationLineage, "company", contact.Company);
                 UpdateAttribute(ks, personObjectId, countryLineage, "country", contact.Country);
                 UpdateAttribute(ks, personObjectId, sourceLineage, "source", contact.Source);
                 UpdateAttribute(ks, personObjectId, sectorLineage, "sector", contact.Sector);
@@ -502,7 +512,7 @@ namespace Darl.GraphQL.Models.Connectivity
                             },
                             new GraphAttributeInput {
                                 name = "company",
-                                lineage = companyLineage,
+                                lineage = organizationLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = contact.Company,
                                 confidence = 1.0
@@ -740,7 +750,7 @@ namespace Darl.GraphQL.Models.Connectivity
                             },
                             new GraphAttributeInput {
                                 name = "company",
-                                lineage = companyLineage,
+                                lineage = organizationLineage,
                                 type = GraphAttribute.DataType.textual,
                                 value = user.InvoiceOrganization ?? string.Empty,
                                 confidence = 1.0
@@ -1017,8 +1027,157 @@ namespace Darl.GraphQL.Models.Connectivity
             return list;
         }
 
+        public async Task<string> CreatePushSubscription(string userId, string pushEndpoint, string pushP256DH, string pushAuth, string? ipAddress, string? longitude, string? latitude)
+        {
+            var goi = new KnowledgeStateInput
+            {
+                subjectId = "pushSubscription" + pushEndpoint,
+                knowledgeGraphName = backofficeKG,
+                data = new List<StringListGraphAttributeInputPair> {
+                    new StringListGraphAttributeInputPair{
+                        name = pushObjectId,
+                        value = new List<GraphAttributeInput>{
+                            new GraphAttributeInput {
+                                name = "push endpoint",
+                                lineage = pushEndPoinLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = pushEndpoint,
+                                confidence = 1.0
+                            },
+                            new GraphAttributeInput {
+                                name = "push P256DH key",
+                                lineage = pushKeyLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = pushP256DH,
+                                confidence = 1.0
+                            },
+                            new GraphAttributeInput {
+                                name = "push Auth",
+                                lineage = pushAuthLineage,
+                                type = GraphAttribute.DataType.textual,
+                                value = pushAuth,
+                                confidence = 1.0
+                            },
+                            new GraphAttributeInput {
+                                name = "existence",
+                                lineage = existenceLineage,
+                                type = GraphAttribute.DataType.temporal,
+                                existence = new List<DarlTime?> { DarlTime.UtcNow, DarlTime.MaxValue },
+                                confidence = 1.0
+                            }
+                        }
+                    }
+                }
+            };
+            if (ipAddress != null)
+            {
+                goi.data[0].value.Add(new GraphAttributeInput
+                {
+                    name = "ip Address",
+                    lineage = addressLineage,
+                    type = GraphAttribute.DataType.textual,
+                    value = ipAddress,
+                    confidence = 1.0
+                });
+            }
+            if (longitude != null && latitude != null)
+            {
+                goi.data[0].value.Add(new GraphAttributeInput
+                {
+                    name = "longitude",
+                    lineage = longitudeLineage,
+                    type = GraphAttribute.DataType.textual,
+                    value = longitude,
+                    confidence = 1.0
+                });
+                goi.data[0].value.Add(new GraphAttributeInput
+                {
+                    name = "latitude",
+                    lineage = latitudeLineage,
+                    type = GraphAttribute.DataType.textual,
+                    value = latitude,
+                    confidence = 1.0
+                });
+            }
+            await _graph.CreateKnowledgeState(_config["AppSettings:boaiuserid"], goi);
+            return goi.subjectId;
+        }
+
+        public async Task<string> FireWebPush(WebPushPayload payload)
+        {
+            string vapidPublicKey = _config.GetSection("VapidKeys")["PublicKey"];
+            string vapidPrivateKey = _config.GetSection("VapidKeys")["PrivateKey"];
+            var vapidDetails = new VapidDetails("mailto:support@darl.ai", vapidPublicKey, vapidPrivateKey);
+            var webPushClient = new WebPushClient();
+            var source = JsonConvert.SerializeObject(payload);
+            int sent = 0;
+            int errored = 0;
+            foreach (var sub in await GetPushSubs())
+            {
+                try
+                {
+                    var pushSubscription = new PushSubscription(sub.pushEndPoint, sub.pushKey, sub.pushAuth);
+                    webPushClient.SendNotification(pushSubscription, source, vapidDetails);
+                    sent++;
+                }
+                catch (Exception ex)
+                {
+                    errored++;
+                }
+
+            }
+            return $"{sent} sent, {errored} failed.";
+
+        }
+
+        public async Task<byte[]> RenderRSS(string scheme)
+        {
+            var companyObj = (await _graph.GetGraphObjectsByLineage(backofficeKGComp, organizationLineage)).First();
+            var newsLetterObj = (await _graph.GetGraphObjectsByLineage(backofficeKGComp, newsLetterLineage)).First();
+            var title = newsLetterObj.GetAttributeValue(titleLineage);
+            var description = newsLetterObj.GetAttributeValue(descriptionLineage);
+            var url = companyObj.GetAttributeValue(websiteLineage);
+            var feed = new SyndicationFeed(title, description, new Uri(url), "RSSUrl", DateTime.Now);
+            var companyName = companyObj.GetAttributeValue(companyLineage);
+            feed.Copyright = new TextSyndicationContent($"{DateTime.Now.Year} {companyName}");
+            var items = new List<SyndicationItem>();
+ /* var postings = _blogDataService.ListBlogForRss();
+            
+            foreach (var item in postings)
+            {
+                var postUrl = Url.Action("Article", "Blog", new { id = item.UrlSlug }, scheme);
+                var title = item.Title;
+                var description = item.Preview;
+                items.Add(new SyndicationItem(title, description, new Uri(postUrl), item.UrlSlug, item.PostDate));
+            }*/
+
+            feed.Items = items;
+            var settings = new XmlWriterSettings
+            {
+                Encoding = Encoding.UTF8,
+                NewLineHandling = NewLineHandling.Entitize,
+                NewLineOnAttributes = true,
+                Indent = true
+            };
+            using (var stream = new MemoryStream())
+            {
+                using (var xmlWriter = XmlWriter.Create(stream, settings))
+                {
+                    var rssFormatter = new Rss20FeedFormatter(feed, false);
+                    rssFormatter.WriteTo(xmlWriter);
+                    xmlWriter.Flush();
+                }
+                return stream.ToArray();
+            }
+        }
+
 
         #region private
+
+        private string CompositeName(string userId, string graphName)
+        {
+            return $"{userId}_{graphName}";
+        }
 
         private List<NodaProperty> Convert(List<GraphAttribute> properties)
         {
@@ -1046,7 +1205,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 userId = ks.subjectId,
                 InvoiceEmail = GetAttributeValue(ks, objectId, emailLineage),
                 InvoiceName = ($"{GetAttributeValue(ks, objectId, firstNameLineage)} {GetAttributeValue(ks, objectId, lastNameLineage)}").Trim(),
-                InvoiceOrganization = GetAttributeValue(ks, objectId, companyLineage),
+                InvoiceOrganization = GetAttributeValue(ks, objectId, organizationLineage),
                 APIKey = GetAttributeValue(ks, objectId, keyLineage),
                 productId = GetAttributeValue(ks, objectId, subscriptionLineage),
                 StripeCustomerId = GetAttributeValue(ks, objectId, idLineage),
@@ -1168,7 +1327,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 Email = GetAttributeValue(ks, personObjectId, emailLineage),
                 FirstName = GetAttributeValue(ks, personObjectId, firstNameLineage),
                 LastName = GetAttributeValue(ks, personObjectId, lastNameLineage),
-                Company = GetAttributeValue(ks, personObjectId, companyLineage),
+                Company = GetAttributeValue(ks, personObjectId, organizationLineage),
                 Title = GetAttributeValue(ks, personObjectId, occupationLineage),
                 Notes = GetAttributeValue(ks, personObjectId, noteLineage),
                 Country = GetAttributeValue(ks, personObjectId, countryLineage),
@@ -1222,108 +1381,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return string.Empty;
         }
 
-        public async Task<string> CreatePushSubscription(string userId, string pushEndpoint, string pushP256DH, string pushAuth, string? ipAddress, string? longitude, string? latitude)
-        {
-            var goi = new KnowledgeStateInput
-            {
-                subjectId = "pushSubscription" + pushEndpoint,
-                knowledgeGraphName = backofficeKG,
-                data = new List<StringListGraphAttributeInputPair> {
-                    new StringListGraphAttributeInputPair{
-                        name = pushObjectId,
-                        value = new List<GraphAttributeInput>{
-                            new GraphAttributeInput {
-                                name = "push endpoint",
-                                lineage = pushEndPoinLineage,
-                                type = GraphAttribute.DataType.textual,
-                                value = pushEndpoint,
-                                confidence = 1.0
-                            },
-                            new GraphAttributeInput {
-                                name = "push P256DH key",
-                                lineage = pushKeyLineage,
-                                type = GraphAttribute.DataType.textual,
-                                value = pushP256DH,
-                                confidence = 1.0
-                            },
-                            new GraphAttributeInput {
-                                name = "push Auth",
-                                lineage = pushAuthLineage,
-                                type = GraphAttribute.DataType.textual,
-                                value = pushAuth,
-                                confidence = 1.0
-                            },
-                            new GraphAttributeInput {
-                                name = "existence",
-                                lineage = existenceLineage,
-                                type = GraphAttribute.DataType.temporal,
-                                existence = new List<DarlTime?> { DarlTime.UtcNow, DarlTime.MaxValue },
-                                confidence = 1.0
-                            }
-                        }
-                    }
-                }
-            };
-            if(ipAddress != null)
-            {
-                goi.data[0].value.Add(new GraphAttributeInput
-                {
-                    name = "ip Address",
-                    lineage = addressLineage,
-                    type = GraphAttribute.DataType.textual,
-                    value = ipAddress,
-                    confidence = 1.0
-                });
-            }
-            if(longitude != null && latitude != null)
-            {
-                goi.data[0].value.Add(new GraphAttributeInput
-                {
-                    name = "longitude",
-                    lineage = longitudeLineage,
-                    type = GraphAttribute.DataType.textual,
-                    value = longitude,
-                    confidence = 1.0
-                });
-                goi.data[0].value.Add(new GraphAttributeInput
-                {
-                    name = "latitude",
-                    lineage = latitudeLineage,
-                    type = GraphAttribute.DataType.textual,
-                    value = latitude,
-                    confidence = 1.0
-                });
-            }
-            await _graph.CreateKnowledgeState(_config["AppSettings:boaiuserid"], goi);
-            return goi.subjectId; 
-        }
 
-        public async Task<string> FireWebPush(WebPushPayload payload)
-        {
-            string vapidPublicKey = _config.GetSection("VapidKeys")["PublicKey"];
-            string vapidPrivateKey = _config.GetSection("VapidKeys")["PrivateKey"];
-            var vapidDetails = new VapidDetails("mailto:support@darl.ai", vapidPublicKey, vapidPrivateKey);
-            var webPushClient = new WebPushClient();
-            var source = JsonConvert.SerializeObject(payload);
-            int sent = 0;
-            int errored = 0;
-            foreach(var sub in await GetPushSubs())
-            {
-                try
-                {
-                    var pushSubscription = new PushSubscription(sub.pushEndPoint, sub.pushKey, sub.pushAuth);
-                    webPushClient.SendNotification(pushSubscription, source, vapidDetails);
-                    sent++;
-                }
-                catch(Exception ex)
-                {
-                    errored++;
-                }
-
-            }
-            return $"{sent} sent, {errored} failed.";
-   
-        }
 
 
 

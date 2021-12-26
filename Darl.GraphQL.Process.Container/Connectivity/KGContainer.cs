@@ -369,5 +369,10 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             throw new NotImplementedException();
         }
+
+        public Task<byte[]> RenderRSS(string scheme)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

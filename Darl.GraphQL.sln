@@ -21,9 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.ai.tests", "Darl.ai.te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Container", "Darl.GraphQL.Container\Darl.GraphQL.Container.csproj", "{9B012A06-F135-4E26-AAB6-586D30024571}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Darl.GraphQL.Process.Web", "Darl.GraphQL.Process.Web\Darl.GraphQL.Process.Web.csproj", "{356F72EA-CF09-4731-9687-E4A6AA793F23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Process.Web", "Darl.GraphQL.Process.Web\Darl.GraphQL.Process.Web.csproj", "{356F72EA-CF09-4731-9687-E4A6AA793F23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Darl.GraphQL.Process.Container", "Darl.GraphQL.Process.Container\Darl.GraphQL.Process.Container.csproj", "{C89BEBFB-6DE9-43C4-84AE-ACA01AB50AB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Process.Container", "Darl.GraphQL.Process.Container\Darl.GraphQL.Process.Container.csproj", "{C89BEBFB-6DE9-43C4-84AE-ACA01AB50AB0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

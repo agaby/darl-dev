@@ -23,8 +23,4 @@
     <ProjectReference Include="..\Darl.GraphQL.Process\Darl.GraphQL.Process.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
-
 </Project>

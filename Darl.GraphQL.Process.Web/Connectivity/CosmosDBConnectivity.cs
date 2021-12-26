@@ -295,7 +295,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var query = mc.AsQueryable()
             .Where(p => p.userId == userId && !(p.hidden == true));
             var graphs = await query.ToListAsync();
-            return graphs.ToList<KGraph>();
+            return graphs.OrderBy(a => a.Name).ToList<KGraph>();
         }
 
         public async Task<int> GetKGraphCountAsync(string userId)

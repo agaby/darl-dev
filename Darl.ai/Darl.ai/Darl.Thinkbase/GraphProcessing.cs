@@ -696,7 +696,7 @@ namespace Darl.Thinkbase
                     lins.AddRange(_metaHandler.DefaultConnLineages);
                     break;
             }
-            return lins;
+            return lins.OrderBy(a => a.typeWord).ToList();
         }
 
 

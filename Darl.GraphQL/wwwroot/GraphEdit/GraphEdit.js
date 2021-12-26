@@ -2535,6 +2535,41 @@ async function UpdateAttributeValue(id, newAtt, type) {
             });
             break;
         case "CATEGORICAL":
+            $.MessageBox({
+                input: {
+                    newVal:
+                    {
+                        type: "select",
+                        label: "categories",
+                        options: att
+                    },
+                    val: {
+                        type: "text",
+                        label: "new category",
+                        defaultValue: newAtt.value
+                    },
+
+                    empty: {
+                        type: "checkbox",
+                        label: "Leave empty",
+                        defaultValue: !(newAtt.value)
+                    }
+                },
+                message: "Choose a category",
+                buttonDone: "Change",
+                buttonFail: "Cancel",
+                queue: false,
+                filterDone: function (data) {
+                    if (data.val === "" && data.newVal === "" && !data.empty) return "Give a value, new category or set to empty.";
+                }
+            }).done(function (valdata) {
+                let content = valdata.empty ? "" : valdata.val;
+                if (newAtt.value !== content || valdata.empty) {
+                    newAtt.value = content;
+                    Upsert(id, newAtt, type);
+                }
+            });
+            break;
         case "TEXTUAL":
             $.MessageBox({
                 input: {

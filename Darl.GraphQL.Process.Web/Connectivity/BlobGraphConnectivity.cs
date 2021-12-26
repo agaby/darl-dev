@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Azure.Storage.Blobs;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -13,8 +13,7 @@ namespace Darl.GraphQL.Models.Connectivity
     {
         private readonly IConfiguration _config;
         private readonly ILogger _logger;
-        private readonly CloudBlobClient _blob;
-        private readonly CloudBlobContainer _container;
+        private readonly BlobContainerClient _container;
 
         public string implementation => nameof(BlobGraphConnectivity);
 
@@ -22,26 +21,29 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             _config = config;
             _logger = logger;
-            var csa = CloudStorageAccount.Parse(_config["AppSettings:StorageConnectionString"]);
-            _blob = csa.CreateCloudBlobClient();
-            _container = _blob.GetContainerReference(_config["AppSettings:GraphContainer"]);
+            _container = new BlobContainerClient(_config["AppSettings:StorageConnectionString"], _config["AppSettings:GraphContainer"]);
+            _container.CreateIfNotExists();
         }
 
         public async Task<byte[]> Read(string name)
         {
-            var b = _container.GetBlockBlobReference(name);
-            await b.FetchAttributesAsync();
-            byte[] target = new byte[b.Properties.Length];
-            await b.DownloadToByteArrayAsync(target, 0);
-            return target;
+            var b = _container.GetBlobClient(name);
+            using(var m = new MemoryStream())
+            {
+                await b.DownloadToAsync(m);
+                return m.ToArray();
+            }
         }
 
         public async Task Write(string name, byte[] data)
         {
             try
             {
-                var b = _container.GetBlockBlobReference(name);
-                await b.UploadFromByteArrayAsync(data, 0, data.Length);
+                var b = _container.GetBlobClient(name);
+                using(var m = new MemoryStream(data))
+                {
+                    await b.UploadAsync(m);
+                }             
             }
             catch (Exception ex)
             {
@@ -51,46 +53,26 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<bool> Exists(string name)
         {
-            var b = _container.GetBlockBlobReference(name);
+            var b = _container.GetBlobClient(name);
             return await b.ExistsAsync();
         }
 
         public async Task<bool> Delete(string name)
         {
-            var b = _container.GetBlockBlobReference(name);
+            var b = _container.GetBlobClient(name);
             return await b.DeleteIfExistsAsync();
         }
 
         public List<string> List(string prefix)
         {
-            var listseg =  _container.ListBlobsSegmentedAsync(prefix, null).Result;
-            var list = listseg.Results.Select(a => a.Uri.ToString()).ToList();
-            //response is full url, remove all but the model name.
-            var abbreviatedList = new List<string>();
-            foreach (var l in list)
-            {
-                if (!string.IsNullOrEmpty(prefix))
-                {
-                    int loc = l.LastIndexOf(prefix);
-                    abbreviatedList.Add(l.Substring(loc + prefix.Length + 1));
-                }
-                else
-                {
-                    abbreviatedList.Add(l);
-                }
-            }
-            return abbreviatedList;
+            var listseg =  _container.GetBlobs(prefix: prefix);
+            return listseg.Select(a => a.Name.ToString()).ToList();
         }
+
         public string CreateTimedAccessUrl(string name)
         {
-            var blob = _container.GetBlockBlobReference(name);
-            SharedAccessBlobPolicy adHocSAS = new SharedAccessBlobPolicy()
-            {
-                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(24),
-                Permissions = SharedAccessBlobPermissions.Read
-            };
-            var sasBlobToken = blob.GetSharedAccessSignature(adHocSAS);
-            return blob.Uri + sasBlobToken;
+            var blob = _container.GetBlobClient(name);
+            return blob.GenerateSasUri(Azure.Storage.Sas.BlobSasPermissions.Read, DateTime.UtcNow.AddHours(24)).ToString();
         }
     }
 }
