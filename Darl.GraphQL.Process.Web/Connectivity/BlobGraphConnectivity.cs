@@ -42,7 +42,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 var b = _container.GetBlobClient(name);
                 using(var m = new MemoryStream(data))
                 {
-                    await b.UploadAsync(m);
+                    await b.UploadAsync(m, true);
                 }             
             }
             catch (Exception ex)

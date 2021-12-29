@@ -1500,6 +1500,16 @@ namespace Darl.GraphQL.Models.Connectivity
                     {
                         att.existence = graphAtt.existence;
                     }
+                    if (graphAtt.properties != null)
+                    {
+                        if(att.properties == null)
+                            att.properties = new List<GraphAttribute>();
+                        foreach (var prop in graphAtt.properties)
+                        {
+                            if(!att.properties.Any(a => a.name == prop.name && a.value == prop.value))
+                                att.properties.Add(new GraphAttribute { id = Guid.NewGuid().ToString(), lineage = prop.lineage, name = prop.name, type = prop.type, value = prop.value, confidence = prop.confidence ?? 1.0 });
+                        }
+                    }
                 }
                 return att;
             }
@@ -1508,6 +1518,14 @@ namespace Darl.GraphQL.Models.Connectivity
                 if (obj.properties == null)
                     obj.properties = new List<GraphAttribute>();
                 var att = new GraphAttribute { id = Guid.NewGuid().ToString(), lineage = lineage, confidence = graphAtt.confidence ?? 1.0, existence = graphAtt.existence, name = graphAtt.name, type = graphAtt.type, value = graphAtt.value };
+                if(graphAtt.properties != null)
+                {
+                    att.properties = new List<GraphAttribute>();
+                    foreach (var prop in graphAtt.properties)
+                    {
+                        att.properties.Add(new GraphAttribute { id = Guid.NewGuid().ToString(), lineage =  prop.lineage, name = prop.name, type = prop.type, value = prop.value, confidence = prop.confidence ?? 1.0});
+                    }
+                }
                 obj.properties.Add(att);
                 return att;
             }

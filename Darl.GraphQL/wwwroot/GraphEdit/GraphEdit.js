@@ -2121,7 +2121,8 @@ async function CreateNewAttribute(id, type) {
         }
     }).done(async function (data) {
         //can only set value when creating, not existence
-        var newAtt = { type: data.typeSelect, name: data.name, value: "", lineage: "", subLineage: "" };
+        var newAtt = {
+            type: data.typeSelect, name: data.name, value: "", lineage: "", subLineage: "", properties: [] };
         if (data.existinglineage) {
             newAtt.lineage = data.existinglineage;
         }
@@ -2249,10 +2250,12 @@ async function EditRealAttributes(id) {
                 var att = {};
                 var types = {};
                 var values = {};
+                var atts = {};
                 $.each(obj.getGraphObjectById.properties, function (i, item) {
                     att[item.lineage] = item.name;
                     types[item.lineage] = item.type;
                     values[item.lineage] = item.value;
+                    atts[item.lineage] = item;
                 });
                 //select existing or add message box
                 //make list of properties by name
@@ -2294,7 +2297,7 @@ async function EditRealAttributes(id) {
                         }
                     }
                     else {
-                        var newAtt = { value: values[data.attChoice], lineage: data.attChoice, type: types[data.attChoice] };
+                        var newAtt = atts[data.attChoice];
                         await UpdateAttributeValue(id, newAtt, "real");
                     }
                 });
@@ -2535,18 +2538,27 @@ async function UpdateAttributeValue(id, newAtt, type) {
             });
             break;
         case "CATEGORICAL":
+            var currentCats = [];
+            if (newAtt.properties) {
+                newAtt.properties.forEach(function (v) {
+                    if (v.name === "category") {
+                        currentCats.push(v.value);
+                    }
+                });
+            }
+
             $.MessageBox({
                 input: {
                     newVal:
                     {
                         type: "select",
                         label: "categories",
-                        options: att
+                        options: currentCats,
+                        defaultValue: newAtt.value
                     },
                     val: {
                         type: "text",
                         label: "new category",
-                        defaultValue: newAtt.value
                     },
 
                     empty: {
@@ -2563,10 +2575,32 @@ async function UpdateAttributeValue(id, newAtt, type) {
                     if (data.val === "" && data.newVal === "" && !data.empty) return "Give a value, new category or set to empty.";
                 }
             }).done(function (valdata) {
-                let content = valdata.empty ? "" : valdata.val;
-                if (newAtt.value !== content || valdata.empty) {
-                    newAtt.value = content;
+                if (valdata.empty) { //Can add new category
+                    if (valdata.val !== "" && !currentCats.includes(valdata.val)) {
+                        if (!newAtt.properties) {
+                            newAtt.properties = [];
+                        }
+                        newAtt.properties.push({
+                            name: "category", lineage: "noun:01,0,0,15,07,02,02", type: "TEXTUAL", value: valdata.val
+                        });
+                    }
                     Upsert(id, newAtt, type);
+                }
+                else {
+                    if (newAtt.value !== valdata.newVal && valdata.newVal !== "") {
+                        newAtt.value = valdata.newVal;
+                    }
+                    if (valdata.val !== "" && !currentCats.includes(valdata.val)) {
+                        if (newAtt.properties === null) {
+                            newAtt.properties = [];
+                        }
+                        newAtt.properties.push({
+                            name: "category", lineage: "noun:01,0,0,15,07,02,02", type: "TEXTUAL", value: valdata.val
+                        });
+                        if (valdata.newVal === "") {
+                            newAtt.value = valdata.val;
+                        }
+                    }
                 }
             });
             break;
