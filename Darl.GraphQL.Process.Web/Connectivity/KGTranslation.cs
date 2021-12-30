@@ -9,6 +9,7 @@ using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlCompiler;
 using GraphQL;
+using Markdig;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -52,6 +53,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public static string backofficeKGComp = String.Empty;
         private static string backofficeKG = String.Empty;
+        private static string backofficeUser = String.Empty;
         private static readonly string sourceLineage = "noun:01,4,04,02,21,16";
         private static readonly string destinationLineage = "noun:01,0,0,15,15,3";
         private static readonly string processLineage = "noun:00,4";
@@ -85,6 +87,10 @@ namespace Darl.GraphQL.Models.Connectivity
         private static readonly string newsLetterLineage = "noun:01,4,05,13,09+noun:01,4,04,02,07,01,06"; //news + letter
         private static readonly string titleLineage = "noun:01,3,14,01,06,21"; //title 
         private static readonly string descriptionLineage = "noun:01,4,05,21,05"; //description
+        private static readonly string newsItemLineage = "noun:01,4,05,13,09+noun:01,3,14,02"; //description
+        private static readonly string newsItemTitleLineage = "noun:01,4,05,13,09+noun:01,3,14,01,06,21"; //description
+        private static readonly string newsItemContentLineage = "noun:01,4,05,13,09+noun:01,4,05,21,05"; //description
+        private static readonly string newsItemCategoryLineage = "noun:01,4,05,13,09+noun:01,0,0,15,07,02,02"; //description
 
 
         public KGTranslation(ILogger<KGTranslation> logger, IConfiguration config, IGraphProcessing graph, IMetaStructureHandler meta, IProducts prods, ICheckEmail checkEmail, ILicensing licensing, IDarlMetaRunTime metaRuntime)
@@ -98,7 +104,8 @@ namespace Darl.GraphQL.Models.Connectivity
             _licensing = licensing;
             _metaRuntime = metaRuntime; 
             backofficeKG = _config["AppSettings:BackOfficeKG"];
-            backofficeKGComp = _config["AppSettings:boaiuserid"] + '_' + backofficeKG;
+            backofficeUser = _config["AppSettings:boaiuserid"];
+            backofficeKGComp = backofficeUser + '_' + backofficeKG;
             GetObjectIds().Wait();
         }
 
@@ -1103,37 +1110,13 @@ namespace Darl.GraphQL.Models.Connectivity
             return goi.subjectId;
         }
 
-        public async Task<string> FireWebPush(WebPushPayload payload)
-        {
-            string vapidPublicKey = _config.GetSection("VapidKeys")["PublicKey"];
-            string vapidPrivateKey = _config.GetSection("VapidKeys")["PrivateKey"];
-            var vapidDetails = new VapidDetails("mailto:support@darl.ai", vapidPublicKey, vapidPrivateKey);
-            var webPushClient = new WebPushClient();
-            var source = JsonConvert.SerializeObject(payload);
-            int sent = 0;
-            int errored = 0;
-            foreach (var sub in await GetPushSubs())
-            {
-                try
-                {
-                    var pushSubscription = new PushSubscription(sub.pushEndPoint, sub.pushKey, sub.pushAuth);
-                    webPushClient.SendNotification(pushSubscription, source, vapidDetails);
-                    sent++;
-                }
-                catch (Exception ex)
-                {
-                    errored++;
-                }
 
-            }
-            return $"{sent} sent, {errored} failed.";
-
-        }
 
         public async Task<byte[]> RenderRSS(string scheme)
         {
             var companyObj = (await _graph.GetGraphObjectsByLineage(backofficeKGComp, organizationLineage)).First();
             var newsLetterObj = (await _graph.GetGraphObjectsByLineage(backofficeKGComp, newsLetterLineage)).First();
+            var newsItemObj = (await _graph.GetGraphObjectsByLineage(backofficeKGComp, newsItemLineage)).First();
             var title = newsLetterObj.GetAttributeValue(titleLineage);
             var description = newsLetterObj.GetAttributeValue(descriptionLineage);
             var url = companyObj.GetAttributeValue(websiteLineage);
@@ -1141,16 +1124,20 @@ namespace Darl.GraphQL.Models.Connectivity
             var companyName = companyObj.GetAttributeValue(companyLineage);
             feed.Copyright = new TextSyndicationContent($"{DateTime.Now.Year} {companyName}");
             var items = new List<SyndicationItem>();
- /* var postings = _blogDataService.ListBlogForRss();
-            
-            foreach (var item in postings)
+            var newsItems = await _graph.GetKnowledgeStatesByType(backofficeUser, newsItemObj.id, backofficeKG);            
+            foreach (var item in newsItems.OrderBy(a => a.created))
             {
-                var postUrl = Url.Action("Article", "Blog", new { id = item.UrlSlug }, scheme);
-                var title = item.Title;
-                var description = item.Preview;
-                items.Add(new SyndicationItem(title, description, new Uri(postUrl), item.UrlSlug, item.PostDate));
-            }*/
-
+                var itemTitle = item.GetAttribute(newsItemObj.id, newsItemTitleLineage).value;
+                var itemDescription = Markdown.ToHtml(item.GetAttribute(newsItemObj.id, newsItemContentLineage).value);
+                var created = item.created;
+                var newsCategory = item.GetAttribute(newsItemObj.id, newsItemCategoryLineage).value;
+                var newsItem = new SyndicationItem();
+                newsItem.Title = new TextSyndicationContent(itemTitle);
+                newsItem.Content = new TextSyndicationContent(itemDescription, TextSyndicationContentKind.Html);
+                newsItem.PublishDate = (DateTimeOffset)created;
+                newsItem.Categories.Add(new SyndicationCategory(newsCategory));
+                items.Add(newsItem);
+            }
             feed.Items = items;
             var settings = new XmlWriterSettings
             {

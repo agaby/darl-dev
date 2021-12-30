@@ -83,7 +83,7 @@ namespace Darl.Thinkbase
         public override string ToString()
         {
             var sb = new StringBuilder();
-            var truncValue = value.Length > 10 ? (value.Substring(0, 10) + "...") : value;
+            var truncValue = value == null ? String.Empty : value.Length > 10 ? (value.Substring(0, 10) + "...") : value;
             sb.AppendLine($"Name = {name},");
             sb.AppendLine($"lineage = {lineage},");
             sb.AppendLine($"type = {type},");

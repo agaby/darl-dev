@@ -2671,6 +2671,11 @@ async function UpdateAttributeValue(id, newAtt, type) {
                         type: "markdown",
                         defaultValue: newAtt.value,
                         resize: true
+                    },
+                    empty: {
+                        type: "checkbox",
+                        label: "Leave empty",
+                        defaultValue: !(newAtt.value)
                     }
                 },
                 message: "Set the attribute's value",
@@ -2681,8 +2686,9 @@ async function UpdateAttributeValue(id, newAtt, type) {
                     if (data.val === "") return "Give a value.";
                 }
             }).done(function (valdata) {
-                if (newAtt.value !== valdata[0]) {
-                    newAtt.value = valdata[0];
+                let content = valdata.empty ? "" : valdata.val;
+                if (newAtt.value !== content || valdata.empty) {
+                    newAtt.value = content;
                     Upsert(id, newAtt, type);
                 }
             });

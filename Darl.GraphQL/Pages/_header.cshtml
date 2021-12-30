@@ -2,8 +2,7 @@
     <nav class="navbar navbar-expand-lg navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-4">
         <div class="container">
             <a class="navbar-brand" href="https://darl.ai">
-                <img src="/images/logo.png" alt="">
-                GraphQL API<span style="color: #0026ff"> &beta;</span>
+                <img src="/images/logo.png" alt="DARL"><span style="color: #0026ff">&beta;</span>
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -12,26 +11,29 @@
             <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse" id="navbarSupportedContent">
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="index">Home</a>
+                        <a class="nav-link text-dark" href="index" title="Home"><i class="fas fa-home"></i></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="api">API</a>
+                        <a class="nav-link text-dark" href="api" title="GraphQL API"><img src="~/images/GraphQL_Logo.png"/></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="voyager">API objects</a>
+                        <a class="nav-link text-dark" href="voyager" title="API objects"><i class="fas fa-project-diagram"></i></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="ThinkBaseVR">VR</a>
+                        <a class="nav-link text-dark" href="ThinkBaseVR" title="VR view"><i class="fas fa-vr-cardboard"></i></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="docs">Documentation</a>
+                        <a class="nav-link text-dark" href="docs" title="Documentation"><i class="fa fa-book"></i></a>
                     </li>
                     <li class="nav-item">
-                        <a data-toggle="modal" href="#modalPricing" class="nav-link text-dark">Pricing</a>
+                        <a data-toggle="modal" href="#modalPricing" class="nav-link text-dark" title="Subscribe"><i class="fa fa-shopping-cart"></i></a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="https://discord.gg/4BaqGFukNG">Discord support</a>
+                        <a class="nav-link text-dark" href="https://discord.gg/4BaqGFukNG" title="Discord for support"><i class="fab fa-discord"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="https://github.com/thinkbase-ai/ThinkBase.Client" title="Client source code"><i class="fab fa-github"></i></a>
                     </li>
                     <li class="nav-item">
                         @if (!User.Identity.IsAuthenticated)
@@ -61,7 +63,7 @@
                         </li>            
                     }
                    <li class="nav-item">
-                        <a class="nav-link text-dark" href="rss"><i class="fa fa-rss"></i></a>
+                        <a class="nav-link text-dark" href="rss" title="RSS feed"><i class="fa fa-rss"></i></a>
                     </li>
                 </ul>
             </div>

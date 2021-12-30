@@ -740,16 +740,6 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 var address = context.GetArgument<string>("address");
                 return await context.TryAsyncResolve(async c => await trans.GetConceptCloudData(userId, graphName, address));
             });
-            FieldAsync<StringGraphType>("FireWebPush", "Sends a web push method to all registered endpoints", arguments: new QueryArguments(
-                 new QueryArgument<NonNullGraphType<WebPushPayloadInputType>> { Name = "payload", Description = "The details of the notification." }
-                ),
-                resolve: async context =>
-                {
-                    var payload = context.GetArgument<WebPushPayload>("payload");
-                    return await context.TryAsyncResolve(
-                        async c => await trans.FireWebPush(payload));
-                }
-            ).AuthorizeWith("AdminPolicy");
         }
 
         private string CompositeName(string userId, string graphName)
