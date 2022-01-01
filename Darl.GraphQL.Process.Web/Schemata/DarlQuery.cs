@@ -451,7 +451,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
 
             FieldAsync<ListGraphType<KnowledgeStateType>>(
                  "getKnowledgeStates",
-                 "Get all the knowledge states in this account", arguments: new QueryArguments(
+                 "Get all the knowledge states in this graph", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The name of the associated Knowledge Graph." }
                  ),
                  resolve: async context =>
@@ -462,7 +462,21 @@ namespace Darl.GraphQL.Web.Models.Schemata
                      return await context.TryAsyncResolve(async c => await connectivity.GetKnowledgeStates(userId, name));
                  }
              ).AuthorizeWith("UserPolicy");
+            FieldAsync<ListGraphType<KnowledgeStateType>>(
+                 "getKnowledgeStatesByType",
+                 "Get all the knowledge states in this graph descended from a particular graph object.", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The name of the associated Knowledge Graph." },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "typeObjectId", Description = "The id of the object these are descended from." }
+                 ),
+                 resolve: async context =>
+                 {
 
+                     var userId = trans.GetCurrentUserId(context.UserContext);
+                     var name = context.GetArgument<string>("graphName");
+                     var typeId = context.GetArgument<string>("typeObjectId");
+                     return await context.TryAsyncResolve(async c => await connectivity.GetKnowledgeStatesByType(userId, typeId, name));
+                 }
+             ).AuthorizeWith("UserPolicy");
 
             FieldAsync<BooleanGraphType>(
                 "checkKey",
