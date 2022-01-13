@@ -1,5 +1,4 @@
-﻿using Darl.GraphQL.Process.Middleware;
-using GraphQL.Types;
+﻿using GraphQL.Types;
 using GraphQL.Utilities;
 using System;
 
@@ -13,7 +12,6 @@ namespace Darl.GraphQL.Container.Models.Schemata
             Query = serviceProvider.GetRequiredService<DarlQuery>();
             Mutation = serviceProvider.GetRequiredService<DarlMutation>();
             Subscription = serviceProvider.GetRequiredService<DarlSubscription>();
-            Filter = serviceProvider.GetRequiredService<AdminFilter>();
         }
     }
 }

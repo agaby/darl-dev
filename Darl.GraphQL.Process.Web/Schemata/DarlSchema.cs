@@ -1,6 +1,7 @@
 ﻿using Darl.GraphQL.Process.Middleware;
 using GraphQL.Types;
 using GraphQL.Utilities;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace Darl.GraphQL.Web.Models.Schemata

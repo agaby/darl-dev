@@ -1,5 +1,4 @@
 using GraphQL;
-using GraphQL.Http;
 using GraphQL.Instrumentation;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;

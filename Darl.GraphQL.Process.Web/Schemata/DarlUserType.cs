@@ -1,6 +1,7 @@
 ﻿using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
 using GraphQL.Types;
+using GraphQL;
 
 namespace Darl.GraphQL.Models.Schemata
 {

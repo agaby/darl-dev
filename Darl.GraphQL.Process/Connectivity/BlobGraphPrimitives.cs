@@ -432,7 +432,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         }
 
-        public byte[] SerializeGraph(IGraphModel model)
+        public static byte[] SerializeGraph(IGraphModel model)
         {
             if (model is BlobGraphContent cont)
             {

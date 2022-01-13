@@ -3,6 +3,7 @@ using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Schemata;
 using Darl.Thinkbase;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -25,24 +26,21 @@ namespace Darl.GraphQL.Web.Models.Schemata
             {
                 var name = context.GetArgument<string>("name");
                 var value = context.GetArgument<string>("value");
-                return await context.TryAsyncResolve(
-                    async c => await trans.CreateDefault(name, value));
+                return await trans.CreateDefault(name, value);
             }).AuthorizeWith("AdminPolicy");
             FieldAsync<DefaultType>("updateDefault", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }, new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "value" }),
                 resolve: async context =>
                 {
                     var name = context.GetArgument<string>("name");
                     var value = context.GetArgument<string>("value");
-                    return await context.TryAsyncResolve(
-                        async c => await trans.UpdateDefault(name, value));
+                    return await trans.UpdateDefault(name, value);
                 }).AuthorizeWith("AdminPolicy");
             //  Delete
             FieldAsync<DefaultType>("deleteDefault", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
                 resolve: async context =>
                 {
                     var name = context.GetArgument<string>("name");
-                    return await context.TryAsyncResolve(
-                                    async c => await trans.DeleteDefault(name));
+                    return await trans.DeleteDefault(name);
                 }).AuthorizeWith("AdminPolicy");
 
             FieldAsync<StringGraphType>(
@@ -51,8 +49,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                {
                    var userId = trans.GetCurrentUserId(context.UserContext);
 
-                   return await context.TryAsyncResolve(
-                       async c => await trans.UpdateUserAPIKey(userId));
+                   return await trans.UpdateUserAPIKey(userId);
                }
             );
             FieldAsync<CollateralType>(
@@ -66,8 +63,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     var name = context.GetArgument<string>("name");
                     var value = context.GetArgument<string>("value");
-                    return await context.TryAsyncResolve(
-                        async c => await trans.UpdateCollateral(name, value));
+                    return await trans.UpdateCollateral(name, value);
                 }
             ).AuthorizeWith("AdminPolicy");
             FieldAsync<CollateralType>(
@@ -79,8 +75,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 resolve: async context =>
                 {
                     var name = context.GetArgument<string>("name");
-                    return await context.TryAsyncResolve(
-                        async c => await trans.DeleteCollateral(name));
+                    return await trans.DeleteCollateral(name);
                 }
             ).AuthorizeWith("AdminPolicy");
             FieldAsync<DateTimeGraphType>(
@@ -94,8 +89,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     var from = context.GetArgument<string>("from");
                     var to = context.GetArgument<string>("to");
-                    return await context.TryAsyncResolve(
-                        async c => await trans.SetLastUpdate(from, to));
+                    return await trans.SetLastUpdate(from, to);
                 }
             ).AuthorizeWith("AdminPolicy");
 
@@ -117,8 +111,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var filter = context.GetArgument<String>("filter");
                     var test = context.GetArgument<bool>("test");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await email.Mailshot(userId, collateral, subject, sendfrom, filter, test));
+                    return await email.Mailshot(userId, collateral, subject, sendfrom, filter, test);
                 }
             ).AuthorizeWith("AdminPolicy");
             FieldAsync<StringGraphType>(
@@ -136,8 +129,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var subject = context.GetArgument<String>("subject");
                     var sendfrom = context.GetArgument<String>("sendfrom");
                     var emailAddress = context.GetArgument<String>("emailAddress");
-                    return await context.TryAsyncResolve(
-                        async c => await email.SendEmail(body, subject, sendfrom, emailAddress));
+                    return await email.SendEmail(body, subject, sendfrom, emailAddress);
                 }
             ).AuthorizeWith("AdminPolicy");
             FieldAsync<GraphObjectType>("createGraphObject", "Add a new graph object", arguments: new QueryArguments(
@@ -151,8 +143,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var graphObject = context.GetArgument<GraphObjectInput>("graphObject");
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     var ontology = context.GetArgument<OntologyAction>("ontology");
-                    return await context.TryAsyncResolve(
-                        async c => await graph.CreateGraphObject(CompositeName(userId, graphName), graphObject, ontology));
+                    return await graph.CreateGraphObject(CompositeName(userId, graphName), graphObject, ontology);
                 }
             );
             FieldAsync<GraphConnectionType>("createGraphConnection", "Add a new graph connection", arguments: new QueryArguments(
@@ -166,8 +157,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var graphConnection = context.GetArgument<GraphConnectionInput>("graphConnection");
                     var ontology = context.GetArgument<OntologyAction>("ontology");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.CreateGraphConnection(CompositeName(userId, graphName), graphConnection, ontology));
+                    return await graph.CreateGraphConnection(CompositeName(userId, graphName), graphConnection, ontology);
                 }
             );
             FieldAsync<GraphObjectType>("deleteGraphObject", "Delete a graphObject", arguments: new QueryArguments(
@@ -179,8 +169,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                      var graphName = context.GetArgument<string>("graphName");
                      var id = context.GetArgument<string>("id");
                      var userId = trans.GetCurrentUserId(context.UserContext);
-                     return await context.TryAsyncResolve(
-                         async c => await graph.DeleteGraphObject(CompositeName(userId, graphName), id));
+                     return await graph.DeleteGraphObject(CompositeName(userId, graphName), id);
                  }
              );
             FieldAsync<GraphConnectionType>("deleteGraphConnection", "Delete a graph connection", arguments: new QueryArguments(
@@ -192,8 +181,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var graphName = context.GetArgument<string>("graphName");
                     var id = context.GetArgument<string>("id");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.DeleteGraphConnection(CompositeName(userId, graphName), id));
+                    return await graph.DeleteGraphConnection(CompositeName(userId, graphName), id);
                 }
             );
             FieldAsync<GraphObjectType>("updateGraphObject", "Update a graph object", arguments: new QueryArguments(
@@ -207,8 +195,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                      var graphObject = context.GetArgument<GraphObjectUpdate>("graphObject");
                      var userId = trans.GetCurrentUserId(context.UserContext);
                      var ontology = context.GetArgument<OntologyAction>("ontology");
-                     return await context.TryAsyncResolve(
-                         async c => await graph.UpdateGraphObject(CompositeName(userId, graphName), graphObject, ontology));
+                     return await graph.UpdateGraphObject(CompositeName(userId, graphName), graphObject, ontology);
                  }
              );
             FieldAsync<GraphConnectionType>("updateGraphConnection",
@@ -223,8 +210,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                         var graphConnection = context.GetArgument<GraphConnectionUpdate>("graphConnection");
                         var userId = trans.GetCurrentUserId(context.UserContext);
                         var ontology = context.GetArgument<OntologyAction>("ontology");
-                        return await context.TryAsyncResolve(
-                            async c => await graph.UpdateGraphConnection(CompositeName(userId, graphName), graphConnection, ontology));
+                        return await graph.UpdateGraphConnection(CompositeName(userId, graphName), graphConnection, ontology);
                     }
                 );
 
@@ -240,8 +226,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                         var email = context.GetArgument<string>("email");
                         var endDate = context.GetArgument<DateTime>("endDate");
 
-                        return await context.TryAsyncResolve(
-                            async c => await trans.CreateKey(userId, company, email, endDate));
+                        return await trans.CreateKey(userId, company, email, endDate);
                     }
                 ).AuthorizeWith("AdminPolicy");
             FieldAsync<StringGraphType>("createSoftMatchModel", "Create a SoftMatch model from text/index pairs", arguments: new QueryArguments(
@@ -255,8 +240,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     var data = context.GetArgument<List<StringStringPair>>("data");
 
-                    return await context.TryAsyncResolve(
-                        async c => await cmp.CreateSoftMatchModel(userId, treeName, data));
+                    return await cmp.CreateSoftMatchModel(userId, treeName, data);
                 }
             );
             FieldAsync<StringGraphType>("deleteSoftMatchModel", "delete a SoftMatch model", arguments: new QueryArguments(
@@ -266,8 +250,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     var name = context.GetArgument<string>("name");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await cmp.DeleteSoftMatchModel(userId, name));
+                    return await cmp.DeleteSoftMatchModel(userId, name);
                 }
             );
 
@@ -278,8 +261,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     var name = context.GetArgument<string>("name");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.DeleteGraph(userId, name));
+                    return await graph.DeleteGraph(userId, name);
                 }
             );
 
@@ -287,24 +269,22 @@ namespace Darl.GraphQL.Web.Models.Schemata
             {
                 var name = context.GetArgument<string>("name");
                 var userId = trans.GetCurrentUserId(context.UserContext);
-                return await context.TryAsyncResolve(
-                    async c => await trans.CreateNewGraph(userId, name));
+                return await trans.CreateNewGraph(userId, name);
             });
 
             FieldAsync<StringGraphType>("saveKGraph", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
             {
                 var name = context.GetArgument<string>("name");
                 var userId = trans.GetCurrentUserId(context.UserContext);
-                return await context.TryAsyncResolve(
-                    async c => { await graph.Store(CompositeName(userId, name)); return ""; });
+                await graph.Store(CompositeName(userId, name)); 
+                return ""; 
             });
 
             FieldAsync<StringGraphType>("inviteUser", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }), resolve: async context =>
             {
                 var newUserEmail = context.GetArgument<string>("email");
                 var userId = trans.GetCurrentUserId(context.UserContext);
-                return await context.TryAsyncResolve(
-                    async c => await email.InviteUser(userId, newUserEmail));
+                return await email.InviteUser(userId, newUserEmail);
             }).AuthorizeWith("CorpPolicy");
 
             FieldAsync<StringGraphType>("copyRenamKG", "copy and rename a Knowledge graph", arguments: new QueryArguments(
@@ -316,8 +296,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var name = context.GetArgument<string>("name");
                     var newName = context.GetArgument<string>("newName");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.CopyRenameKG(userId, name, newName));
+                    return await graph.CopyRenameKG(userId, name, newName);
                 }
             );
 
@@ -330,8 +309,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var name = context.GetArgument<string>("name");
                     var obj = context.GetArgument<GraphObjectUpdate>("object");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.UpdateRecognitionObject(CompositeName(userId, name), obj));
+                    return await graph.UpdateRecognitionObject(CompositeName(userId, name), obj);
                 }
             );
 
@@ -344,8 +322,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var name = context.GetArgument<string>("name");
                     var obj = context.GetArgument<GraphObjectInput>("object");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.CreateRecognitionObject(CompositeName(userId, name), obj));
+                    return await graph.CreateRecognitionObject(CompositeName(userId, name), obj);
                 }
             );
 
@@ -358,8 +335,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var name = context.GetArgument<string>("name");
                     var conn = context.GetArgument<GraphConnectionInput>("connection");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.CreateRecognitionConnection(CompositeName(userId, name), conn));
+                    return await graph.CreateRecognitionConnection(CompositeName(userId, name), conn);
                 }
             );
 
@@ -372,8 +348,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var name = context.GetArgument<string>("name");
                     var id = context.GetArgument<string>("id");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.DeleteRecognitionObject(CompositeName(userId, name), id));
+                    return await graph.DeleteRecognitionObject(CompositeName(userId, name), id);
                 }
             );
 
@@ -388,8 +363,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var id = context.GetArgument<string>("id");
                     var att = context.GetArgument<GraphAttributeInput>("att");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.UpdateRecognitionObjectAttribute(CompositeName(userId, name), id, att));
+                    return await graph.UpdateRecognitionObjectAttribute(CompositeName(userId, name), id, att);
                 }
             );
 
@@ -404,8 +378,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var lineage = context.GetArgument<string>("lineage");
                     var att = context.GetArgument<GraphAttributeInput>("att");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.UpdateVirtualObjectAttribute(CompositeName(userId, name), lineage, att));
+                    return await graph.UpdateVirtualObjectAttribute(CompositeName(userId, name), lineage, att);
                 }
             );
             FieldAsync<StringGraphType>("deleteVirtualObjectAttribute", "update or add an attribute of a virtual GraphObject", arguments: new QueryArguments(
@@ -419,8 +392,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var lineage = context.GetArgument<string>("lineage");
                     var attLineage = context.GetArgument<string>("attLineage");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.DeleteVirtualObjectAttribute(CompositeName(userId, name), lineage, attLineage));
+                    return await graph.DeleteVirtualObjectAttribute(CompositeName(userId, name), lineage, attLineage);
                 }
             );
             FieldAsync<StringGraphType>("deleteRecognitionObjectAttribute", "delete an attribute of a recognition GraphObject", arguments: new QueryArguments(
@@ -434,8 +406,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var id = context.GetArgument<string>("id");
                     var attLineage = context.GetArgument<string>("attLineage");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.DeleteRecognitionObjectAttribute(CompositeName(userId, name), id, attLineage));
+                    return await graph.DeleteRecognitionObjectAttribute(CompositeName(userId, name), id, attLineage);
                 }
             );
             FieldAsync<StringGraphType>("deleteGraphObjectAttribute", "delete an attribute of a real GraphObject", arguments: new QueryArguments(
@@ -449,8 +420,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var id = context.GetArgument<string>("id");
                     var attLineage = context.GetArgument<string>("attLineage");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.DeleteGraphObjectAttribute(CompositeName(userId, name), id, attLineage));
+                    return await graph.DeleteGraphObjectAttribute(CompositeName(userId, name), id, attLineage);
                 }
             );
             FieldAsync<StringGraphType>("updateGraphObjectAttribute", "update or add an attribute of a real GraphObject", arguments: new QueryArguments(
@@ -464,8 +434,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var id = context.GetArgument<string>("id");
                     var att = context.GetArgument<GraphAttributeInput>("att");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.UpdateGraphObjectAttribute(CompositeName(userId, name), id, att));
+                    return await graph.UpdateGraphObjectAttribute(CompositeName(userId, name), id, att);
                 }
             );
             FieldAsync<GraphObjectType>("CreateRecognitionRoot", "Create a new root in the recognition trees", arguments: new QueryArguments(
@@ -477,8 +446,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var name = context.GetArgument<string>("name");
                     var lineage = context.GetArgument<string>("lineage");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.CreateRecognitionRoot(CompositeName(userId, name), lineage));
+                    return await graph.CreateRecognitionRoot(CompositeName(userId, name), lineage);
                 }
             );
             FieldAsync<ModelMetaDataType>("UpdateKGraphMetadata", "Update the meta-data of a knowledge graph", arguments: new QueryArguments(
@@ -490,13 +458,13 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var name = context.GetArgument<string>("name");
                     var update = context.GetArgument<ModelMetaData>("update");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.UpdateKGraph(userId, name, update));
+                    return await graph.UpdateKGraph(userId, name, update);
                 }
             );
             FieldAsync<KnowledgeStateType>("createKnowledgeState", "Creates or updates a knowledge state", arguments: new QueryArguments(
                  new QueryArgument<NonNullGraphType<KnowledgeStateInputType>> { Name = "ks", Description = "The new knowledge state" },
-                 new QueryArgument<BooleanGraphType> { Name = "asSystem", Description = "Write to system account", DefaultValue = false, Metadata = new Dictionary<string, object> { { AuthorizationMetadataExtensions.PolicyKey, new List<string> { "AdminPolicy" } } } }
+                 new QueryArgument<BooleanGraphType> { Name = "asSystem", Description = "Write to system account", DefaultValue = false }
+                 //hide if not admin
                 ),
                 resolve: async context =>
                 {
@@ -505,14 +473,12 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     if(asSystem ?? false)
                     {
                         var userId = _config["AppSettings:boaiuserid"];
-                        return await context.TryAsyncResolve(
-                            async c => await graph.CreateKnowledgeState(userId, ks));
+                        return await graph.CreateKnowledgeState(userId, ks);
                     }
                     else
                     {
                         var userId = trans.GetCurrentUserId(context.UserContext);
-                        return await context.TryAsyncResolve(
-                            async c => await graph.CreateKnowledgeState(userId, ks));
+                        return await graph.CreateKnowledgeState(userId, ks);
                     }
 
                 }
@@ -524,8 +490,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     var ksl = context.GetArgument<List<KnowledgeStateInput>>("ks");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await graph.CreateKnowledgeStateList(userId, ksl));
+                    return await graph.CreateKnowledgeStateList(userId, ksl);
                 }
             );
             FieldAsync<KnowledgeStateType>("deleteKnowledgeState", "deletes a knowledge state", arguments: new QueryArguments(
@@ -537,8 +502,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var name = context.GetArgument<string>("name");
                     var subjectId = context.GetArgument<string>("subjectId");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await connectivity.DeleteKnowledgeState(userId, subjectId, name));
+                    return await connectivity.DeleteKnowledgeState(userId, subjectId, name);
                 }
             );
             FieldAsync<ULongGraphType>("deleteAllKnowledgeStates", "deletes all knowledge states for a graph", arguments: new QueryArguments(
@@ -548,8 +512,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     var name = context.GetArgument<string>("name");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await connectivity.DeleteAllKnowledgeStates(userId, name));
+                    return await connectivity.DeleteAllKnowledgeStates(userId, name);
                 }
             );
         }

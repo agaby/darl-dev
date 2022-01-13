@@ -1,6 +1,9 @@
 ﻿using Darl.GraphQL.Models.Middleware;
+using GraphQL;
 using GraphQL.Introspection;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,10 +14,12 @@ namespace Darl.GraphQL.Process.Middleware
     /// </summary>
     public class AdminFilter : ISchemaFilter
     {
-        private readonly IAuthChecker _authChecker;
-        public AdminFilter(IAuthChecker authChecker)
+        private readonly IAuthorizationService _authServ;
+        private readonly IHttpContextAccessor _httpContext;
+        public AdminFilter(IAuthorizationService authServ, IHttpContextAccessor httpContext)
         {
-            _authChecker = authChecker;
+            _authServ = authServ;
+            _httpContext = httpContext;
         }
 
         public Task<bool> AllowArgument(IFieldType field, QueryArgument argument)
@@ -34,12 +39,13 @@ namespace Darl.GraphQL.Process.Middleware
 
         public async Task<bool> AllowField(IGraphType parent, IFieldType field)
         {
-            if (field.Metadata != null && field.Metadata.ContainsKey(AuthorizationMetadataExtensions.PolicyKey))
+            if (field.Metadata != null && field.Metadata.ContainsKey(AuthorizationExtensions.POLICY_KEY))
             {
-                var policies = (List<string>)field.Metadata[AuthorizationMetadataExtensions.PolicyKey];
+                var policies = (List<string>)field.Metadata[AuthorizationExtensions.POLICY_KEY];
                 if (policies.Count == 1 && policies[0] == "AdminPolicy")
                 {
-                    return await _authChecker.AuthorizedAdmin();
+                    var r = await _authServ.AuthorizeAsync(_httpContext.HttpContext.User, "AdminPolicy");
+                    return r.Succeeded;
                 }
             }
             return true;
@@ -48,12 +54,13 @@ namespace Darl.GraphQL.Process.Middleware
         //hide administrator only types 
         public async Task<bool> AllowType(IGraphType type)
         {
-            if (type.Metadata != null && type.Metadata.ContainsKey(AuthorizationMetadataExtensions.PolicyKey))
+            if (type.Metadata != null && type.Metadata.ContainsKey(AuthorizationExtensions.POLICY_KEY))
             {
-                var policies = (List<string>)type.Metadata[AuthorizationMetadataExtensions.PolicyKey];
+                var policies = (List<string>)type.Metadata[AuthorizationExtensions.POLICY_KEY];
                 if (policies.Count == 1 && policies[0] == "AdminPolicy")
                 {
-                    return await _authChecker.AuthorizedAdmin();
+                    var r = await _authServ.AuthorizeAsync(_httpContext.HttpContext.User, "AdminPolicy");
+                    return r.Succeeded;
                 }
             }
             return true;

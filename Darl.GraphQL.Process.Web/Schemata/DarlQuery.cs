@@ -6,6 +6,7 @@ using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
 using DarlCommon;
+using GraphQL;
 using GraphQL.Types;
 using System;
 using System.Collections.Generic;
@@ -25,8 +26,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
               resolve: async context =>
               {
                   var userId = trans.GetCurrentUserId(context.UserContext);
-                  return await context.TryAsyncResolve(
-                      async c => await connectivity.GetKGraphsAsync(userId));
+                  return await connectivity.GetKGraphsAsync(userId);
               }
             );
 
@@ -35,52 +35,48 @@ namespace Darl.GraphQL.Web.Models.Schemata
                "The set of contacts.",
                   resolve: async context =>
                   {
-                      return await context.TryAsyncResolve(
-                                  async c => await trans.GetContacts());
+                      return await  trans.GetContacts();
                   }
             ).AuthorizeWith("AdminPolicy");
             FieldAsync<ListGraphType<ContactType>>(
               "recentContacts",
                   resolve: async context =>
                   {
-                      return await context.TryAsyncResolve(
-                                  async c => await trans.GetRecentContacts());
+                      return await trans.GetRecentContacts();
                   }
             ).AuthorizeWith("AdminPolicy");
             FieldAsync<ListGraphType<DarlUserType>>(
               "recentUsers",
                   resolve: async context =>
                   {
-                      return await context.TryAsyncResolve(
-                                  async c => await trans.GetRecentUsers());
+                      return await trans.GetRecentUsers();
                   }
             ).AuthorizeWith("AdminPolicy");
             FieldAsync<ListGraphType<DarlUserType>>(
               "users",
                   resolve: async context =>
                   {
-                      return await context.TryAsyncResolve(
-                                  async c => await trans.GetUsers());
+                      return await trans.GetUsers();
                   }
             ).AuthorizeWith("AdminPolicy");
 
             FieldAsync<ListGraphType<ContactType>>("contactsByLastName",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lastName" }),
-                resolve: async context => { return await context.TryAsyncResolve(async c => await trans.GetContactsByLastName(c.GetArgument<String>("lastName"))); })
+                resolve: async context => { return await trans.GetContactsByLastName(context.GetArgument<String>("lastName")); })
                 .AuthorizeWith("AdminPolicy");
 
             FieldAsync<ContactType>("contactByEmail",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }),
-                resolve: async context => { return await context.TryAsyncResolve(async c => await trans.GetContactByEmail(c.GetArgument<String>("email"))); })
+                resolve: async context => { return await trans.GetContactByEmail(context.GetArgument<String>("email")); })
                 .AuthorizeWith("AdminPolicy");
 
             FieldAsync<ListGraphType<DefaultType>>("defaults",
-                resolve: async context => { return await context.TryAsyncResolve(async c => await trans.GetDefaults()); })
+                resolve: async context => { return await trans.GetDefaults(); })
                 .AuthorizeWith("AdminPolicy");
 
             FieldAsync<StringGraphType>("defaultValue",
             arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
-            resolve: async context => { return await context.TryAsyncResolve(async c => await trans.GetDefaultValue(c.GetArgument<String>("name"))); })
+            resolve: async context => { return await trans.GetDefaultValue(context.GetArgument<String>("name")); })
                 .AuthorizeWith("AdminPolicy");
 
             FieldAsync<KGraphType>(
@@ -89,9 +85,8 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 resolve: async context =>
                 {
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await connectivity.GetKGModel(userId, c.GetArgument<String>("name"))
-                    );
+                    var name = context.GetArgument<String>("name");
+                    return await connectivity.GetKGModel(userId, name);
                 }
             );
             FieldAsync<ListGraphType<LineageRecordType>>("getLineagesForWord",
@@ -103,8 +98,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     var isoLanguage = context.GetArgument<string>("isoLanguage");
                     var word = context.GetArgument<string>("word");
-                    return await context.TryAsyncResolve(
-                         async c => await trans.GetLineagesForWord(word, isoLanguage));
+                    return await trans.GetLineagesForWord(word, isoLanguage);
                 });
 
             FieldAsync<StringGraphType>("getTypeWordForLineage",
@@ -116,21 +110,20 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     var isoLanguage = context.GetArgument<string>("isoLanguage");
                     var lineage = context.GetArgument<string>("lineage");
-                    return await context.TryAsyncResolve(
-                         async c => await trans.GetTypeWordForLineage(lineage, isoLanguage));
+                    return await trans.GetTypeWordForLineage(lineage, isoLanguage);
                 });
 
             FieldAsync<ListGraphType<DarlUserType>>("usersByEmail",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }),
-                resolve: async context => { return await context.TryAsyncResolve(async c => await trans.GetUsersByEmail(c.GetArgument<String>("email"))); })
+                resolve: async context => { return await trans.GetUsersByEmail(context.GetArgument<String>("email")); })
                 .AuthorizeWith("AdminPolicy");
             FieldAsync<DarlUserType>("userById",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId" }),
-                resolve: async context => { return await context.TryAsyncResolve(async c => await trans.GetUserById(c.GetArgument<String>("userId"))); })
+                resolve: async context => { return await trans.GetUserById(context.GetArgument<String>("userId")); })
                 .AuthorizeWith("AdminPolicy");
             FieldAsync<DarlUserType>("userByStripeId",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "stripeCustomerId" }),
-                resolve: async context => { return await context.TryAsyncResolve(async c => await trans.GetUserByStripeId(c.GetArgument<String>("stripeCustomerId"))); })
+                resolve: async context => { return await trans.GetUserByStripeId(context.GetArgument<String>("stripeCustomerId")); })
                 .AuthorizeWith("AdminPolicy");
 
             FieldAsync<StringGraphType>(
@@ -140,8 +133,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                {
                    var userId = trans.GetCurrentUserId(context.UserContext);
 
-                   return await context.TryAsyncResolve(
-                       async c => (await trans.GetUserById(userId)).APIKey);
+                   return (await trans.GetUserById(userId)).APIKey;
                }
             ).AuthorizeWith("UserPolicy");
             FieldAsync<AccountStateEnum>(
@@ -151,8 +143,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                {
                    var userId = trans.GetCurrentUserId(context.UserContext);
 
-                   return await context.TryAsyncResolve(
-                       async c => (await trans.GetUserById(userId)).accountState);
+                   return (await trans.GetUserById(userId)).accountState;
                }
             ).AuthorizeWith("UserPolicy");
 
@@ -163,8 +154,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 resolve: async context =>
                 {
                     var name = context.GetArgument<string>("name");
-                    return await context.TryAsyncResolve(
-                        async c => await trans.GetCollateral(name));
+                    return await trans.GetCollateral(name);
                 }
             ).AuthorizeWith("AdminPolicy");
             FieldAsync<ListGraphType<CollateralType>>(
@@ -172,8 +162,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 "Get texts used in responses",
                 resolve: async context =>
                 {
-                    return await context.TryAsyncResolve(
-                        async c => await trans.GetCollaterals());
+                    return await trans.GetCollaterals();
                 }
             ).AuthorizeWith("AdminPolicy");
 
@@ -182,8 +171,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 "Get push subscriptions",
                 resolve: async context =>
                 {
-                    return await context.TryAsyncResolve(
-                        async c => await trans.GetPushSubs());
+                    return await trans.GetPushSubs();
                 }
             ).AuthorizeWith("AdminPolicy");
 
@@ -198,8 +186,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     var from = context.GetArgument<string>("from");
                     var to = context.GetArgument<string>("to");
-                    return await context.TryAsyncResolve(
-                        async c => await trans.GetLastUpdate(from, to));
+                    return await trans.GetLastUpdate(from, to);
                 }
             );
             FieldAsync<ListGraphType<UpdateType>>(
@@ -207,8 +194,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 "Get details about most recent updates",
                 resolve: async context =>
                 {
-                    return await context.TryAsyncResolve(
-                        async c => await trans.Updates());
+                    return await trans.Updates();
                 }
             );
             FieldAsync<BooleanGraphType>(
@@ -221,8 +207,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     var email = context.GetArgument<string>("email");
                     var ipaddress = context.GetArgument<string>("ipaddress");
-                    return await context.TryAsyncResolve(
-                        async c => await trans.CheckEmail(email, ipaddress));
+                    return await trans.CheckEmail(email, ipaddress);
                 }
             ).AuthorizeWith("AdminPolicy");
 
@@ -233,8 +218,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 resolve: async context =>
                 {
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await trans.GetContactsCount(userId));
+                    return await trans.GetContactsCount(userId);
                 }
             ).AuthorizeWith("AdminPolicy");
             FieldAsync<IntGraphType>(
@@ -243,8 +227,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 resolve: async context =>
                 {
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await trans.GetContactsMonthCount(userId));
+                    return await trans.GetContactsMonthCount(userId);
                 }
             ).AuthorizeWith("AdminPolicy");
             FieldAsync<IntGraphType>(
@@ -253,8 +236,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 resolve: async context =>
                 {
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await trans.GetContactsDayCount(userId));
+                    return await trans.GetContactsDayCount(userId);
                 }
             ).AuthorizeWith("AdminPolicy");
 
@@ -264,8 +246,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 resolve: async context =>
                 {
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await trans.GetUserCount(userId));
+                    return await trans.GetUserCount(userId);
                 }
             ).AuthorizeWith("AdminPolicy");
 
@@ -295,7 +276,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var name = context.GetArgument<string>("name");
                     var lineage = context.GetArgument<string>("lineage");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjects(CompositeName(userId, graphName), name, lineage));
+                    return await graph.GetGraphObjects(CompositeName(userId, graphName), name, lineage);
                 }
             ).AuthorizeWith("UserPolicy");
             FieldAsync<ListGraphType<GraphObjectType>>(
@@ -311,7 +292,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var name = context.GetArgument<string>("name");
                     var lineage = context.GetArgument<string>("lineage");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectsByLineage(CompositeName(userId, graphName), lineage));
+                    return await graph.GetGraphObjectsByLineage(CompositeName(userId, graphName), lineage);
                 }
             ).AuthorizeWith("UserPolicy");
             FieldAsync<GraphObjectType>(
@@ -327,7 +308,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var graphName = context.GetArgument<string>("graphName");
                     var id = context.GetArgument<string>("id");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectById(CompositeName(userId, graphName), id));
+                    return await graph.GetGraphObjectById(CompositeName(userId, graphName), id);
                 }
             );
             FieldAsync<GraphObjectType>(
@@ -343,7 +324,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                      var graphName = context.GetArgument<string>("graphName");
                      var lineage = context.GetArgument<string>("lineage");
                      var userId = trans.GetCurrentUserId(context.UserContext);
-                     return await context.TryAsyncResolve(async c => await graph.GetVirtualObjectByLineage(CompositeName(userId, graphName), lineage));
+                     return await graph.GetVirtualObjectByLineage(CompositeName(userId, graphName), lineage);
                  }
              );
             FieldAsync<GraphObjectType>(
@@ -359,7 +340,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                      var graphName = context.GetArgument<string>("graphName");
                      var id = context.GetArgument<string>("id");
                      var userId = trans.GetCurrentUserId(context.UserContext);
-                     return await context.TryAsyncResolve(async c => await graph.GetRecognitionObjectById(CompositeName(userId, graphName), id));
+                     return await graph.GetRecognitionObjectById(CompositeName(userId, graphName), id);
                  }
              );
 
@@ -375,7 +356,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var graphName = context.GetArgument<string>("graphName");
                     var id = context.GetArgument<string>("externalId");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectByExternalId(CompositeName(userId, graphName), id));
+                    return await graph.GetGraphObjectByExternalId(CompositeName(userId, graphName), id);
                 }
             );
             FieldAsync<GraphConnectionType>(
@@ -394,7 +375,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var endId = context.GetArgument<string>("endId");
                     var lineage = context.GetArgument<string>("lineage");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetConnectionByIds(CompositeName(userId, graphName), startId, endId, lineage));
+                    return await graph.GetConnectionByIds(CompositeName(userId, graphName), startId, endId, lineage);
                 }
             );
             FieldAsync<GraphConnectionType>(
@@ -409,7 +390,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var graphName = context.GetArgument<string>("graphName");
                     var id = context.GetArgument<string>("id");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetConnectionById(CompositeName(userId, graphName), id));
+                    return await graph.GetConnectionById(CompositeName(userId, graphName), id);
                 }
             );
 
@@ -427,7 +408,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var name = context.GetArgument<string>("graphName");
                     var external = context.GetArgument<bool>("external");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetKnowledgeState(userId, Id, name, external));
+                    return await graph.GetKnowledgeState(userId, Id, name, external);
                 }
             );
 
@@ -445,7 +426,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var name = context.GetArgument<string>("graphName");
                     var externalIds = context.GetArgument<bool>("externalIds");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetKnowledgeStateByExternalId(userId, subjectId, name, externalIds));
+                    return await graph.GetKnowledgeStateByExternalId(userId, subjectId, name, externalIds);
                 }
             ).AuthorizeWith("UserPolicy");
 
@@ -459,7 +440,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
 
                      var userId = trans.GetCurrentUserId(context.UserContext);
                      var name = context.GetArgument<string>("graphName");
-                     return await context.TryAsyncResolve(async c => await connectivity.GetKnowledgeStates(userId, name));
+                     return await connectivity.GetKnowledgeStates(userId, name);
                  }
              ).AuthorizeWith("UserPolicy");
             FieldAsync<ListGraphType<KnowledgeStateType>>(
@@ -474,7 +455,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                      var userId = trans.GetCurrentUserId(context.UserContext);
                      var name = context.GetArgument<string>("graphName");
                      var typeId = context.GetArgument<string>("typeObjectId");
-                     return await context.TryAsyncResolve(async c => await connectivity.GetKnowledgeStatesByType(userId, typeId, name));
+                     return await connectivity.GetKnowledgeStatesByType(userId, typeId, name);
                  }
              ).AuthorizeWith("UserPolicy");
 
@@ -488,7 +469,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     var key = context.GetArgument<string>("key");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await trans.CheckKey(userId, key));
+                    return await trans.CheckKey(userId, key);
                 }
             );
             FieldAsync<ListGraphType<MatchResultType>>(
@@ -503,7 +484,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var treeName = context.GetArgument<string>("modelName");
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     var texts = context.GetArgument<List<string>>("texts");
-                    return await context.TryAsyncResolve(async c => await cmp.InferFromSoftMatchModel(userId, treeName, texts));
+                    return await cmp.InferFromSoftMatchModel(userId, treeName, texts);
                 }
             ).AuthorizeWith("UserPolicy");
             FieldAsync<ListGraphType<StringGraphType>>(
@@ -512,7 +493,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 resolve: async context =>
                 {
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await cmp.ListSoftMatchModels(userId));
+                    return await cmp.ListSoftMatchModels(userId);
                 }
             );
 
@@ -530,7 +511,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var conversationId = context.GetArgument<string>("conversationId");
                     var conversationData = context.GetArgument<DarlVar>("conversationData");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await bot.InteractKGAsync(userId, kgModelName, conversationId, conversationData));
+                    return await bot.InteractKGAsync(userId, kgModelName, conversationId, conversationData);
                 });
 
             FieldAsync<DisplayModelType>(
@@ -545,7 +526,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var graphName = context.GetArgument<string>("graphName");
                     var lineageFilter = context.GetArgument<string>("lineageFilter");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetRealDisplayGraph(CompositeName(userId, graphName), lineageFilter));
+                    return await graph.GetRealDisplayGraph(CompositeName(userId, graphName), lineageFilter);
                 }
             );
 
@@ -561,7 +542,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var graphName = context.GetArgument<string>("graphName");
                     var lineageFilter = context.GetArgument<string>("lineageFilter");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetRealVRDisplayGraph(CompositeName(userId, graphName), lineageFilter));
+                    return await graph.GetRealVRDisplayGraph(CompositeName(userId, graphName), lineageFilter);
                 }
             );
             FieldAsync<StringGraphType>(
@@ -576,7 +557,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var graphName = context.GetArgument<string>("graphName");
                     var id = context.GetArgument<string>("id");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetGraphObjectToString(CompositeName(userId, graphName), id));
+                    return await graph.GetGraphObjectToString(CompositeName(userId, graphName), id);
                 }
             );
 
@@ -590,7 +571,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     var graphName = context.GetArgument<string>("graphName");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetVirtualDisplayGraph(CompositeName(userId, graphName)));
+                    return await graph.GetVirtualDisplayGraph(CompositeName(userId, graphName));
                 }
             );
             FieldAsync<DisplayModelType>(
@@ -603,7 +584,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     var graphName = context.GetArgument<string>("graphName");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetRecognitionDisplayGraph(CompositeName(userId, graphName)));
+                    return await graph.GetRecognitionDisplayGraph(CompositeName(userId, graphName));
                 }
             );
             FieldAsync<GraphAttributeType>(
@@ -622,7 +603,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var lineage = context.GetArgument<string>("lineage");
                     var ksId = context.GetArgument<string>("ksId");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(async c => await graph.GetGraphAttribute(userId, graphName, id, lineage, ksId));
+                    return await graph.GetGraphAttribute(userId, graphName, id, lineage, ksId);
                 }
             );
 
@@ -632,7 +613,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 resolve: async context =>
                 {
                     var darl = context.GetArgument<string>("darl");
-                    return await context.TryAsyncResolve(async c => await trans.LintDarlMeta(darl));
+                    return await trans.LintDarlMeta(darl);
                 });
 
             FieldAsync<ListGraphType<LineageRecordType>>("getLineagesInKG", "Get existing lineages used for this element type in this KG. ",
@@ -645,7 +626,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var graphName = context.GetArgument<string>("graphName");
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     var graphType = context.GetArgument<GraphElementType>("graphType");
-                    return await context.TryAsyncResolve(async c => await graph.GetLineagesInKG(CompositeName(userId, graphName), graphType));
+                    return await graph.GetLineagesInKG(CompositeName(userId, graphName), graphType);
                 });
             Field<BooleanGraphType>("isValidLineage", "Check if this is a valid lineage. ",
                 arguments: new QueryArguments(
@@ -668,7 +649,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 var objectId = context.GetArgument<string>("objectId");
                 var graphName = context.GetArgument<string>("graphName");
                 var userId = trans.GetCurrentUserId(context.UserContext);
-                return await context.TryAsyncResolve(async c => await trans.GetSuggestedRuleSet(userId, graphName, objectId, lineage));
+                return await trans.GetSuggestedRuleSet(userId, graphName, objectId, lineage);
             });
             FieldAsync<StringGraphType>("registerForMarketing", "Receive marketing communications from DARL ",
             arguments: new QueryArguments(
@@ -685,7 +666,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 var ipAddress = context.GetArgument<string>("ipAddress");
                 var longitude = context.GetArgument<string>("longitude");
                 var latitude = context.GetArgument<string>("latitude");
-                return await context.TryAsyncResolve(async c => await trans.RegisterForMarketing(name, email, ipAddress, longitude, latitude));
+                return await trans.RegisterForMarketing(name, email, ipAddress, longitude, latitude);
             });
             FieldAsync<StringGraphType>("registerPushSubscription", "Register a new push subscription", arguments: new QueryArguments(
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "pushEndpoint", Description = "The endpoint for the browser" },
@@ -704,8 +685,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var longitude = context.GetArgument<string>("longitude");
                     var latitude = context.GetArgument<string>("latitude");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await context.TryAsyncResolve(
-                        async c => await trans.CreatePushSubscription(userId, pushEndpoint, pushP256DH, pushAuth, ipAddress, longitude, latitude));
+                    return await trans.CreatePushSubscription(userId, pushEndpoint, pushP256DH, pushAuth, ipAddress, longitude, latitude);
                 }
             );
             FieldAsync<ListGraphType<KnowledgeStateType>>("discover", "Discover possibilities in a graph",
@@ -718,7 +698,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 var graphName = context.GetArgument<string>("graphName");
                 var subjectId = context.GetArgument<string>("subjectId");
                 var userId = trans.GetCurrentUserId(context.UserContext);
-                return await context.TryAsyncResolve(async c => await bot.Discover(userId, graphName, subjectId));
+                return await bot.Discover(userId, graphName, subjectId);
             });
 
             FieldAsync<StringGraphType>("exportNoda", "Export a graph in Noda format",
@@ -729,7 +709,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
             {
                 var graphName = context.GetArgument<string>("graphName");
                 var userId = trans.GetCurrentUserId(context.UserContext);
-                return await context.TryAsyncResolve(async c => await trans.ExportNoda(userId, graphName));
+                return await trans.ExportNoda(userId, graphName);
             });
 
             FieldAsync<StringGraphType>("getExportGraphUrl", "get a link to Export a graph in native format",
@@ -740,7 +720,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
             {
                 var graphName = context.GetArgument<string>("graphName");
                 var userId = trans.GetCurrentUserId(context.UserContext);
-                return await context.TryAsyncResolve(async c => await graph.CreateTimedAccessUrl(userId, graphName));
+                return await graph.CreateTimedAccessUrl(userId, graphName);
             }).AuthorizeWith("UserPolicy");
             FieldAsync<ListGraphType<GraphAttributeType>>("conceptCloud", "Get the data for the concept cloud",
                 arguments: new QueryArguments(
@@ -752,7 +732,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 var graphName = context.GetArgument<string>("graphName");
                 var userId = trans.GetCurrentUserId(context.UserContext);
                 var address = context.GetArgument<string>("address");
-                return await context.TryAsyncResolve(async c => await trans.GetConceptCloudData(userId, graphName, address));
+                return await trans.GetConceptCloudData(userId, graphName, address);
             });
         }
 

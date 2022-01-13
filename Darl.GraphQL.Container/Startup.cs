@@ -10,7 +10,6 @@ using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using DarlLanguage.Processing;
 using GraphQL;
-using GraphQL.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -49,7 +48,6 @@ namespace Darl.GraphQL.Container
             });
 
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
-            services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddSingleton<IBotProcessing, BotProcessing>();
             services.AddSingleton<IGraphProcessing, GraphProcessing>();
             services.AddSingleton<ILicensing, ProductLicensing>();
@@ -80,7 +78,6 @@ namespace Darl.GraphQL.Container
             services.AddSingleton<StringDoublePairType>();
             services.AddSingleton<StringStringPairType>();
             services.AddSingleton<SetDefinitionType>();
-            services.AddSingleton<DefaultType>();
             services.AddSingleton<InputFormatUpdateType>();
             services.AddSingleton<OutputFormatUpdateType>();
             services.AddSingleton<LineageNodeDefinitionType>();
@@ -179,10 +176,7 @@ namespace Darl.GraphQL.Container
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddTransient(typeof(IGraphQLExecuter<>), typeof(DefaultGraphQLExecuter<>));
 
-            services.AddSingleton<IDocumentWriter>(x =>
-            {
-                return new DocumentWriter(Formatting.None, new JsonSerializerSettings());
-            });
+
 
             services.AddRazorPages();
             services.AddHealthChecks();
