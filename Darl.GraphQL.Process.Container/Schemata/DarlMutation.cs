@@ -17,7 +17,6 @@ namespace Darl.GraphQL.Container.Models.Schemata
         {
             Name = "Mutation";
             Description = "Make changes to the contents of your account.";
-            this.AuthorizeWith("UserPolicy");
             // Default
             //  Create
             FieldAsync<GraphObjectType>("createGraphObject", "Add a new graph object", arguments: new QueryArguments(
@@ -352,26 +351,15 @@ namespace Darl.GraphQL.Container.Models.Schemata
                 }
             );
             FieldAsync<KnowledgeStateType>("createKnowledgeState", "Creates or updates a knowledge state", arguments: new QueryArguments(
-                 new QueryArgument<NonNullGraphType<KnowledgeStateInputType>> { Name = "ks", Description = "The new knowledge state" },
-                 new QueryArgument<BooleanGraphType> { Name = "asSystem", Description = "Write to system account", DefaultValue = false, Metadata = new Dictionary<string, object> { { AuthorizationMetadataExtensions.PolicyKey, new List<string> { "AdminPolicy" } } } }
+                 new QueryArgument<NonNullGraphType<KnowledgeStateInputType>> { Name = "ks", Description = "The new knowledge state" }
                 ),
                 resolve: async context =>
                 {
                     KnowledgeStateInput ks = (KnowledgeStateInput)context.GetArgument(typeof(KnowledgeStateInput), "ks");
                     var asSystem = (bool?)context.GetArgument(typeof(bool?), "asSystem");
-                    if(asSystem ?? false)
-                    {
-                        var userId = _config["AppSettings:boaiuserid"];
-                        return await context.TryAsyncResolve(
-                            async c => await graph.CreateKnowledgeState(userId, ks));
-                    }
-                    else
-                    {
-                        var userId = trans.GetCurrentUserId(context.UserContext);
-                        return await context.TryAsyncResolve(
-                            async c => await graph.CreateKnowledgeState(userId, ks));
-                    }
-
+                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    return await context.TryAsyncResolve(
+                        async c => await graph.CreateKnowledgeState(userId, ks));
                 }
             );
             FieldAsync<ListGraphType<KnowledgeStateType>>("createKnowledgeStateList", "Creates or updates a list of knowledge states in order. Maximum count is 50", arguments: new QueryArguments(

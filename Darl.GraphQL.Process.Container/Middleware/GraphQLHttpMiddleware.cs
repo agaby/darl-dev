@@ -1,5 +1,4 @@
 using GraphQL;
-using GraphQL.Http;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -88,15 +87,8 @@ namespace Darl.GraphQL.Models.Middleware
                 }
             }
 
-            IDictionary<string, object> userContext = null;
-            var userContextBuilder = context.RequestServices.GetService<IUserContextBuilder>();
 
-            if (userContextBuilder != null)
-            {
-                userContext = await userContextBuilder.BuildUserContext(context);
-            }
-            else
-                userContext = new Dictionary<string, object>(); // in order to allow resolvers to exchange their state through this object
+            var userContext = new Dictionary<string, object>(); // in order to allow resolvers to exchange their state through this object
 
             var executer = context.RequestServices.GetRequiredService<IGraphQLExecuter<TSchema>>();
 

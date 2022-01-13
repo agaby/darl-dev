@@ -3,9 +3,6 @@ using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Schemata;
 using Darl.GraphQL.Process.Middleware;
-using Darl.GraphQL.Ui.GraphiQL;
-using Darl.GraphQL.Ui.Playground;
-using Darl.GraphQL.Ui.Voyager;
 using Darl.GraphQL.Web.Models.Schemata;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
@@ -13,7 +10,14 @@ using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using DarlLanguage.Processing;
 using GraphQL;
-using GraphQL.Http;
+using GraphQL.Authorization;
+using GraphQL.DataLoader;
+using GraphQL.Execution;
+using GraphQL.Server;
+using GraphQL.Server.Ui.GraphiQL;
+using GraphQL.Server.Ui.Playground;
+using GraphQL.Server.Ui.Voyager;
+using GraphQL.SystemReactive;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
@@ -22,16 +26,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
-using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using GraphQLBuilderExtensions = GraphQL.MicrosoftDI.GraphQLBuilderExtensions;
 
 namespace Darl.GraphQL
 {
@@ -42,16 +46,18 @@ namespace Darl.GraphQL
         static readonly string objectIdClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
         static readonly string firstNameClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname";
         static readonly string secondNameClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname";
+        static readonly string roleClaimText = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
 
-
-        private readonly bool Licensed = true; //default for web site
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
-
+            Environment = environment;
         }
 
         public IConfiguration Configuration { get; }
+
+        public IWebHostEnvironment Environment { get; }
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -100,7 +106,6 @@ namespace Darl.GraphQL
             services.AddSingleton<IKGTranslation, KGTranslation>();
             services.AddSingleton<IBotProcessing, BotProcessing>();
             services.AddSingleton<IEmailProcessing, EmailProcessing>();
-            services.AddSingleton<IAuthChecker, AuthChecker>();
             services.AddSingleton<IGraphProcessing, GraphProcessing>();
             services.AddSingleton<ILicensing, ProductLicensing>();
             services.AddSingleton<ISoftMatchProcessing, SoftMatchProcessing>();
@@ -245,30 +250,36 @@ namespace Darl.GraphQL
             services.AddSingleton<DarlMutation>();
             services.AddSingleton<DarlQuery>();
             services.AddSingleton<DarlSchema>();
+            services.AddSingleton<DarlSubscription>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            services.AddSingleton<IValidationRule, AuthorizationValidationRule>()
-                .AddAuthorization(options =>
+            GraphQLBuilderExtensions.AddGraphQL(services)
+                .AddSubscriptionDocumentExecuter()
+                .AddServer(true)
+                .AddSchema<DarlSchema>()
+                .ConfigureExecution(options =>
                 {
-                    options.AddPolicy("AdminPolicy", policy =>
-                       policy.RequireRole("Admin"));
-                    options.AddPolicy("UserPolicy", policy =>
-                        policy.RequireRole("User"));
-                    options.AddPolicy("CorpPolicy", policy =>
-                       policy.RequireRole("Corp"));
+                    options.EnableMetrics = Environment.IsDevelopment();
+                    var logger = options.RequestServices.GetRequiredService<ILogger<Startup>>();
+                    options.UnhandledExceptionDelegate = ctx => logger.LogError("{Error} occurred", ctx.OriginalException.Message);
+                })
+                .AddSystemTextJson()
+                .Configure<ErrorInfoProviderOptions>(opt => opt.ExposeExceptionStackTrace = Environment.IsDevelopment())
+                .AddWebSockets()
+                .AddDataLoader()
+                .AddUserContextBuilder(context => new GraphQLUserContext { User = context.User })
+                .AddGraphTypes(typeof(DarlSchema).Assembly)
+                .AddGraphTypes(typeof(KGraphType).Assembly)
+                .AddGraphQLAuthorization(options => {
+                    options.AddPolicy("AdminPolicy", p => p.RequireClaim(roleClaimText, "Admin"));
+                    options.AddPolicy("UserPolicy", p => p.RequireClaim(roleClaimText, "User"));
+                    options.AddPolicy("CorpPolicy", p => p.RequireClaim(roleClaimText, "Corp"));
                 });
 
-            services.AddSingleton<IUserContextBuilder>(new UserContextBuilder<GraphQLUserContext>(ctx => new GraphQLUserContext { User = ctx.User }));
 
-            services.TryAddSingleton<IDocumentExecuter, DocumentExecuter>();
-            services.TryAddTransient(typeof(IGraphQLExecuter<>), typeof(DefaultGraphQLExecuter<>));
-            //            services.AddSingleton(p => Options.Create(options(p)));
 
-            services.TryAddSingleton<IDocumentWriter>(x =>
-            {
-                return new DocumentWriter(Formatting.None, new JsonSerializerSettings());
-            });
+
 
             services.AddControllersWithViews()
                 .AddMicrosoftIdentityUI();
@@ -359,24 +370,18 @@ namespace Darl.GraphQL
                 }
                 if (du != null)//found it from one or other
                 {
-                    switch (du.accountState)
+                    roles = du.accountState switch
                     {
-                        case DarlUser.AccountState.admin:
-                            roles = "Admin,Corp,User";
-                            break;
-                        case DarlUser.AccountState.trial:
-                        case DarlUser.AccountState.paying:
-                        case DarlUser.AccountState.delinquent:
-                            roles = "User";
-                            break;
-                        default:
-                            roles = string.Empty;
-                            break;
-                    }
+                        DarlUser.AccountState.admin => "Admin,Corp,User",
+                        DarlUser.AccountState.trial or DarlUser.AccountState.paying or DarlUser.AccountState.delinquent => "User",
+                        _ => string.Empty,
+                    };
                     //overwrite user 
                     var identity = new GenericIdentity(objectId);
                     identity.AddClaims(context.User.Claims);
                     identity.AddClaim(new Claim("apikey", du.APIKey));
+                    foreach(var c in roles.Split(','))
+                        identity.AddClaim(new Claim(roleClaimText, c.ToString()));
                     context.User = new GenericPrincipal(identity, string.IsNullOrEmpty(roles) ? Array.Empty<string>() : roles.Split(','));
                 }
                 await next.Invoke();
@@ -384,21 +389,39 @@ namespace Darl.GraphQL
 
 
 
-            app.UseMiddleware<GraphQLHttpMiddleware<DarlSchema>>(new PathString("/graphql"));
+            app.UseWebSockets();
 
-            app.UseGraphQLPlayground(new GraphQLPlaygroundOptions()
+            app.UseGraphQLWebSockets<DarlSchema>();
+            app.UseGraphQL<DarlSchema, GraphQLHttpMiddlewareWithLogs<DarlSchema>>();
+
+            app.UseGraphQLPlayground(new PlaygroundOptions()
             {
-                Path = "/ui/playground",
+                BetaUpdates = true,
+                RequestCredentials = RequestCredentials.Omit,
+                HideTracingResponse = false,
+
+                EditorCursorShape = EditorCursorShape.Line,
+                EditorTheme = EditorTheme.Light,
+                EditorFontSize = 14,
+                EditorReuseHeaders = true,
+                EditorFontFamily = "Consolas",
+
+                PrettierPrintWidth = 80,
+                PrettierTabWidth = 2,
+                PrettierUseTabs = true,
+
+                SchemaDisableComments = false,
+                SchemaPollingEnabled = true,
+                SchemaPollingEndpointFilter = "*localhost*",
+                SchemaPollingInterval = 5000,
             });
-            app.UseGraphiQLServer(new GraphiQLOptions
+            app.UseGraphQLGraphiQL(new GraphiQLOptions
             {
-                GraphiQLPath = "/ui/graphiql",
                 GraphQLEndPoint = "/graphql"
             });
-            app.UseGraphQLVoyager(new GraphQLVoyagerOptions()
+            app.UseGraphQLVoyager(new VoyagerOptions()
             {
                 GraphQLEndPoint = "/graphql",
-                Path = "/ui/voyager"
             });
 
             app.UseEndpoints(endpoints =>
