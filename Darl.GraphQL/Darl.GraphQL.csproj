@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
+    <PackageReference Include="BundlerMinifier.TagHelpers" Version="3.2.449" />
     <PackageReference Include="GraphQL" Version="4.7.1" />
     <PackageReference Include="GraphQL.Authorization" Version="4.0.0" />
     <PackageReference Include="GraphQL.MicrosoftDI" Version="4.7.1" />
@@ -120,6 +121,7 @@
     <Folder Include="wwwroot\jstree\themes\" />
     <Folder Include="wwwroot\cytoscape-cxtmenu\" />
     <Folder Include="wwwroot\md\videos\" />
+    <Folder Include="wwwroot\bundles\" />
   </ItemGroup>
 
 </Project>

@@ -214,10 +214,6 @@ img {
     overflow-y: auto;
 }
 
-.chat-btn{
-
-}
-
 #loading {
     position: absolute;
     display: block;
@@ -230,9 +226,9 @@ img {
     color: #000;
 }
 
-    #loading.loaded {
-        display: none;
-    }
+#loading.loaded {
+    display: none;
+}
 
 .cxtmenu-disabled {
     opacity: 0.333;

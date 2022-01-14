@@ -152,52 +152,12 @@
 
 @section StyleSheets
 {
-    <link rel="stylesheet" href="/messagebox/messagebox.css" />"
-    <link rel="stylesheet" href="/codemirror/theme/neat.css" />
-    <link rel="stylesheet" href="/codemirror/codemirror.css" />
-    <link rel="stylesheet" href="/codemirror/addon/display/fullscreen.css" />
-    <link rel="stylesheet" href="/codemirror/addon/hint/show-hint.min.css" />
-    <link rel="stylesheet" href="/codemirror/addon/lint/lint.css" />
-    <link rel="stylesheet" href="/codemirror/addon/fold/foldgutter.css" />
-    <link rel="stylesheet" href="/simplemde/src/css/simplemde.css">
-    <link rel="stylesheet" href="/json-viewer/jquery.json-viewer.css" type="text/css">
-    <link rel="stylesheet" href="~/GraphEdit/GraphEdit.css" />
+    <bundle name="wwwroot/bundles/kgraph.min.css" />
 }
 
 @section Scripts
 {
-    <script src="/codemirror/codemirror.js"></script>
-    <script src="/codemirror/mode/javascript/javascript.js"></script>
-    <script src="/codemirror/addon/hint/show-hint.js"></script>
-    <script src="/codemirror/addon/fold/foldcode.min.js"></script>
-    <script src="/codemirror/addon/fold/foldgutter.min.js"></script>
-    <script src="/codemirror/addon/fold/brace-fold.min.js"></script>
-    <script src="/codemirror/addon/lint/lint.js"></script>
-    <script src="/codemirror/addon/lint/json-lint.min.js"></script>
-    <script src="/darl-codemirror/darl-meta-codemirror.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.16.0/cytoscape.min.js"></script>
-    <script src="https://unpkg.com/dagre@0.7.4/dist/dagre.js"></script>
-    <script src="/cytoscape-dagre/cytoscape-dagre.js"></script>
-    <script src="/cytoscape-cxtmenu/cytoscape-cxtmenu.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.js"></script>
-    <script src="/messagebox/messagebox.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.0/showdown.min.js"></script>
-    <script src="/simplemde/dist/simplemde.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.2/velocity.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.2/velocity.ui.min.js"></script>
-    <script src="/cytoscape-edgehandles/cytoscape-edgehandles.js"></script>
-    @if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
-    {
-        <script src="/GraphEdit/ContainerInit.js"></script>
-    }
-    else
-    {
-        <script src="/GraphEdit/WebInit.js"></script>
-    }
-    <script src="/GraphEdit/GraphEdit.js"></script>
-    <script src="/json-viewer/jquery.json-viewer.js"></script>
-
-
+    <bundle name="wwwroot/bundles/kgraph.min.js" />
 }
 @section header{
     <meta name="description" content="Displays and edits a ThinkBase Knowledge Graph." />

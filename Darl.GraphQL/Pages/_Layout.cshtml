@@ -21,8 +21,9 @@
             height: 100vh;
         }
     </style>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/Subscription/subscribe.css" />
+
+    <bundle name="wwwroot/bundles/root.min.css" />
+
     @RenderSection("header", required: false)
 
     @RenderSection("StyleSheets", required: false)
@@ -55,10 +56,7 @@
     }
 
 
-    <script src="~/jquery/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script src="/graphql/graphql.min.js"></script>
+    <bundle name="wwwroot/bundles/root.min.js" />
 
     @RenderSection("Scripts", required: false)
 

@@ -1,0 +1,71 @@
+[
+  {
+    "outputFileName": "wwwroot/bundles/kgraph.min.css",
+    "inputFiles": [
+      "wwwroot/messagebox/messagebox.css",
+      "wwwroot/codemirror/theme/neat.css",
+      "wwwroot/codemirror/codemirror.css",
+      "wwwroot/codemirror/addon/display/fullscreen.css",
+      "wwwroot/codemirror/addon/hint/show-hint.min.css",
+      "wwwroot/codemirror/addon/lint/lint.css",
+      "wwwroot/codemirror/addon/fold/foldgutter.css",
+      "wwwroot/simplemde/src/css/simplemde.css",
+      "wwwroot/json-viewer/jquery.json-viewer.css",
+      "wwwroot/GraphEdit/GraphEdit.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/bundles/kgraph.min.js",
+    "inputFiles": [
+      "wwwroot/codemirror/codemirror.js",
+      "wwwroot/codemirror/mode/javascript/javascript.js",
+      "wwwroot/codemirror/addon/hint/show-hint.js",
+      "wwwroot/codemirror/addon/fold/foldcode.min.js",
+      "wwwroot/codemirror/addon/fold/foldgutter.min.js",
+      "wwwroot/codemirror/addon/fold/brace-fold.min.js",
+      "wwwroot/codemirror/addon/lint/lint.js",
+      "wwwroot/codemirror/addon/lint/json-lint.min.js",
+      "wwwroot/darl-codemirror/darl-meta-codemirror.js",
+      "wwwroot/cytoscape/cytoscape.min.js",
+      "wwwroot/dagre/dagre.js",
+      "wwwroot/cytoscape-dagre/cytoscape-dagre.js",
+      "wwwroot/cytoscape-cxtmenu/cytoscape-cxtmenu.js",
+      "wwwroot/lodash/lodash.js",
+      "wwwroot/messagebox/messagebox.js",
+      "wwwroot/showdown/showdown.min.js",
+      "wwwroot/simplemde/dist/simplemde.min.js",
+      "wwwroot/velocity/velocity.min.js",
+      "wwwroot/velocity/velocity.ui.min.js",
+      "wwwroot/cytoscape-edgehandles/cytoscape-edgehandles.js",
+      "wwwroot/GraphEdit/WebInit.js",
+      "wwwroot/GraphEdit/GraphEdit.js",
+      "wwwroot/json-viewer/jquery.json-viewer.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/bundles/root.min.css",
+    "inputFiles": [
+      "wwwroot/bootstrap/bootstrap.min.css",
+      "wwwroot/Subscription/subscribe.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/bundles/root.min.js",
+    "inputFiles": [
+      "wwwroot/jquery/jquery.min.js",
+      "wwwroot/popper/popper.min.js",
+      "wwwroot/bootstrap/bootstrap.min.js",
+      "wwwroot/graphql/graphql.min.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  }
+]
