@@ -78,7 +78,7 @@ namespace Darl.Thinkbase
         Task<string> GetGraphObjectToString(string compositeName, string id);
         Task<KnowledgeState> GetKnowledgeStateByTypeAndAttribute(string userId, string objectId, string graphName, string attLineage, string attValue);
         Task<List<KnowledgeState>> GetKnowledgeStatesByType(string userId, string objectId, string graphName);
-        Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state);
+        Task<KnowledgeState> CreateKnowledgeState(KnowledgeState state);
         Task<List<KnowledgeState>> GetKnowledgeStatesByTypeAndAttribute(string userId, string objectId, string graphName, string attLineage, string attValue);
         Task<KnowledgeState> DeleteKnowledgeState(string userId, string subjectId, string graphName);
         Task<List<KnowledgeState>> GetKnowledgeStatesByTypeAndAttributeExistence(string userId, string objectId, string graphName, string attLineage);

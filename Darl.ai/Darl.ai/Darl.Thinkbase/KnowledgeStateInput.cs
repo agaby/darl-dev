@@ -17,6 +17,10 @@ namespace Darl.Thinkbase
         /// The individual the state relates to, a Guid
         /// </summary>
         public string subjectId { get; set; }
+        /// <summary>
+        /// if true the Knowledge state is not stored, but does trigger any subscriptions.
+        /// </summary>
+        public bool transient { get; set; } = false;
 
         /// <summary>
         /// The data,

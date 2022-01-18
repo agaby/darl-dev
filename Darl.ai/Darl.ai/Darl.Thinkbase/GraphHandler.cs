@@ -962,6 +962,18 @@ namespace Darl.Thinkbase
             }
         }
 
+        public async Task<KnowledgeState> Seek(KnowledgeState ks, string targetId, List<string> paths, string completionLineage)
+        {
+            var values = new List<DarlVar>();
+            var model = await _graph.GetModel(ks.userId, ks.knowledgeGraphName);
+            var target = await _graph.GetGraphObjectById(model.modelName, targetId);
+            var dependencies = GetExecutionOrder(model, target, paths);
+            if (target != null)
+                dependencies.Insert(0, new KeyValuePair<GraphAbstraction, int>(target, 1));
+            await UpdateNodeStates(ks, model, dependencies, values, completionLineage);
+            return ks;
+        }
+
 
 
 

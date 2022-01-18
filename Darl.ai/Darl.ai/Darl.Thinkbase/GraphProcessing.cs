@@ -6,9 +6,12 @@ using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlLanguage.Processing;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -27,6 +30,8 @@ namespace Darl.Thinkbase
         private readonly IMetaStructureHandler _metaHandler;
 
         private readonly int maxKnowledgeStateUpdates = 50;
+
+        private readonly ISubject<KnowledgeState> _knowledgeStateStream = new ReplaySubject<KnowledgeState>(1);
 
         public Dictionary<string, LineageDefinitionNode> PreloadLineages { get => _metaHandler.PreloadLineages; }
 
@@ -623,7 +628,16 @@ namespace Darl.Thinkbase
 
         public async Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state)
         {
-            return await _primitives.CreateKnowledgeState(userId, state);
+            var kstate = ConvertKS(state, userId);
+            _knowledgeStateStream.OnNext(kstate);
+            if (state.transient)
+                return kstate;
+            return await _primitives.CreateKnowledgeState(kstate);
+        }
+
+        public IObservable<KnowledgeState> ObservableKStates()
+        {
+            return _knowledgeStateStream.AsObservable();
         }
 
         public async Task<List<KnowledgeState>> CreateKnowledgeStateList(string userId, List<KnowledgeStateInput> states)
@@ -983,6 +997,23 @@ namespace Darl.Thinkbase
             items.Add(new datatype { key = nameof(conn.weight), Text = new string[] { conn.weight.ToString() } });
             c.data = items.ToArray();
             return c;
+        }
+
+        private KnowledgeState ConvertKS(KnowledgeStateInput state, string userId)
+        {
+            var kstate = new KnowledgeState { knowledgeGraphName = state.knowledgeGraphName, subjectId = state.subjectId, userId = userId, created = DateTime.UtcNow };
+            foreach (var s in state.data)
+            {
+                if (!kstate.data.ContainsKey(s.name))
+                {
+                    kstate.data.Add(s.name, new List<GraphAttribute>());
+                    foreach (var g in s.value)
+                    {
+                        kstate.data[s.name].Add(new GraphAttribute { confidence = g.confidence ?? 1.0, existence = g.existence, id = Guid.NewGuid().ToString(), inferred = g.inferred ?? false, lineage = g.lineage, name = g.name, value = g.value, type = g.type });
+                    }
+                }
+            }
+            return kstate;
         }
 
 

@@ -1369,9 +1369,6 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
 
-
-
-
         #endregion
     }
 }

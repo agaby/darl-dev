@@ -48,6 +48,7 @@
     <PackageReference Include="Standard.Licensing-5.0" Version="2.0.2" />
     <PackageReference Include="SymSpell" Version="6.7.1" />
     <PackageReference Include="SyrianBallas.Ported.Chronic.Signed" Version="1.1.0" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>

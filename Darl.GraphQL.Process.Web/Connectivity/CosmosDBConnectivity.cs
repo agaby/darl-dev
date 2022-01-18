@@ -86,23 +86,12 @@ namespace Darl.GraphQL.Models.Connectivity
             return res;
         }
 
-        public async Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state)
+        public async Task<KnowledgeState> CreateKnowledgeState(KnowledgeState state)
         {
-            var kstate = new CosmosKnowledgeState { knowledgeGraphName = state.knowledgeGraphName, subjectId = state.subjectId, userId = userId, created = DateTime.UtcNow };
-            foreach (var s in state.data)
-            {
-                if (!kstate.data.ContainsKey(s.name))
-                {
-                    kstate.data.Add(s.name, new List<GraphAttribute>());
-                    foreach (var g in s.value)
-                    {
-                        kstate.data[s.name].Add(new GraphAttribute { confidence = g.confidence ?? 1.0, existence = g.existence, id = Guid.NewGuid().ToString(), inferred = g.inferred ?? false, lineage = g.lineage, name = g.name, value = g.value, type = g.type });
-                    }
-                }
-            }
+            var kstate = new CosmosKnowledgeState { knowledgeGraphName = state.knowledgeGraphName, subjectId = state.subjectId, userId = state.userId, created = DateTime.UtcNow, data = state.data };
             var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
             //ensure user/graphName/subjectId combination is unique
-            await mc.DeleteManyAsync(Builders<CosmosKnowledgeState>.Filter.Eq(r => r.userId, userId) & Builders<CosmosKnowledgeState>.Filter.Eq(r => r.subjectId, state.subjectId) & Builders<CosmosKnowledgeState>.Filter.Eq(r => r.knowledgeGraphName, state.knowledgeGraphName));
+            await mc.DeleteManyAsync(Builders<CosmosKnowledgeState>.Filter.Eq(r => r.userId, state.userId) & Builders<CosmosKnowledgeState>.Filter.Eq(r => r.subjectId, state.subjectId) & Builders<CosmosKnowledgeState>.Filter.Eq(r => r.knowledgeGraphName, state.knowledgeGraphName));
             await mc.InsertOneAsync(kstate);
             return kstate;
         }

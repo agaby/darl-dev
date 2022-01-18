@@ -2,6 +2,7 @@
 using Darl.Lineage.Bot;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -90,5 +91,6 @@ namespace Darl.Thinkbase
         Task<bool> Exists(string userId, string name);
         Task<List<KnowledgeState>> CreateKnowledgeStateList(string userId, List<KnowledgeStateInput> states);
         string? FindCompleteAttribute(IGraphModel model, string id);
+        IObservable<KnowledgeState> ObservableKStates();
     }
 }

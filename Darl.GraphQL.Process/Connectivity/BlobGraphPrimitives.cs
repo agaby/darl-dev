@@ -1635,9 +1635,9 @@ namespace Darl.GraphQL.Models.Connectivity
             return await _conn.GetKnowledgeStatesByType(userId, objectId, graphName);
         }
 
-        public async Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state)
+        public async Task<KnowledgeState> CreateKnowledgeState(KnowledgeState state)
         {
-            return await _conn.CreateKnowledgeState(userId, state);
+            return await _conn.CreateKnowledgeState(state);
         }
 
         public async Task<List<KnowledgeState>> GetKnowledgeStatesByTypeAndAttribute(string userId, string objectId, string graphName, string attLineage, string attValue)
