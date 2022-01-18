@@ -38,7 +38,7 @@ namespace Darl.ai.tests
             res3 = Age(res1, res2);
             Assert.AreEqual(2,res3.values.Count());
             Assert.AreEqual(0.0, res3.values[0]);
-            Assert.AreEqual(2.0, res3.values[1]);
+            Assert.AreEqual(1.0, res3.values[1]); //changed
             res2 = new DarlResult(DataType.temporal, 1.0);
             res2.values.Add(3.0);
             res2.Normalise(false,true);
@@ -63,8 +63,8 @@ namespace Darl.ai.tests
             res3 = Age(res1, res2);
             Assert.AreEqual(3, res3.values.Count());
             Assert.AreEqual(0.0, res3.values[0]);
-            Assert.AreEqual(0.0, res3.values[1]);
-            Assert.AreEqual(0.8, res3.values[2]); 
+            Assert.AreEqual(0.8, res3.values[1]);//changed
+            Assert.AreEqual(1.8, res3.values[2]); //changed
             res1.values.Add(4.0);
             res1.Normalise(false);
             res2.values.Clear();

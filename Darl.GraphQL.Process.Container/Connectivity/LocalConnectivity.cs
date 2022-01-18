@@ -43,20 +43,9 @@ namespace Darl.GraphQL.Models.Connectivity
             return Task.FromResult(model as KGraph);
         }
 
-        public Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state)
+        public Task<KnowledgeState> CreateKnowledgeState(KnowledgeState state)
         {
-            var kstate = new LiteKnowledgeState { knowledgeGraphName = state.knowledgeGraphName, subjectId = state.subjectId, userId = userId, created = DateTime.UtcNow };
-            foreach (var s in state.data)
-            {
-                if (!kstate.data.ContainsKey(s.name))
-                {
-                    kstate.data.Add(s.name, new List<GraphAttribute>());
-                    foreach (var g in s.value)
-                    {
-                        kstate.data[s.name].Add(new GraphAttribute { confidence = g.confidence ?? 1.0, existence = g.existence, id = Guid.NewGuid().ToString(), inferred = g.inferred ?? false, lineage = g.lineage, name = g.name, value = g.value, type = g.type });
-                    }
-                }
-            }
+            var kstate = new LiteKnowledgeState { knowledgeGraphName = state.knowledgeGraphName, subjectId = state.subjectId, userId = state.userId, created = DateTime.UtcNow };
             var mc = db.GetCollection<LiteKnowledgeState>(knowledgestateCollection);
             mc.DeleteMany(x => x.subjectId == state.subjectId && x.knowledgeGraphName == state.knowledgeGraphName);
             mc.Insert(kstate);
@@ -207,5 +196,6 @@ namespace Darl.GraphQL.Models.Connectivity
             mc.Upsert(ks);
             return Task.FromResult(ks as KnowledgeState);
         }
+
     }
 }

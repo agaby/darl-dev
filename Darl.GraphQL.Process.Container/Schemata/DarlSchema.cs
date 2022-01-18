@@ -1,5 +1,6 @@
 ﻿using GraphQL.Types;
 using GraphQL.Utilities;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace Darl.GraphQL.Container.Models.Schemata
