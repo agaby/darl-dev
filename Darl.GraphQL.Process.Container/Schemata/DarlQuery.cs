@@ -314,19 +314,37 @@ namespace Darl.GraphQL.Container.Models.Schemata
                 }
             );
 
+            FieldAsync<DisplayModelType>(
+                "getRealKGDisplayWithState",
+                "Get a display version of the KG with states set",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "subjectId", Description = "The subject Id of the Knowledge State", DefaultValue = "" }
+                ),
+                resolve: async context =>
+                {
+                    var graphName = context.GetArgument<string>("graphName");
+                    var subjectId = context.GetArgument<string>("subjectId");
+                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    return await graph.GetRealDisplayGraphWithState(userId, graphName, subjectId);
+                }
+            );
+
             FieldAsync<VRDisplayModelType>(
                 "getRealVRKGDisplay",
                 "Get a display version of the KG for VR",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
-                    new QueryArgument<StringGraphType> { Name = "lineageFilter", Description = "optional lineage filter", DefaultValue = "" }
+                    new QueryArgument<StringGraphType> { Name = "lineageFilter", Description = "optional lineage filter", DefaultValue = ""},
+                    new QueryArgument<StringGraphType> { Name = "subjectId", Description = "optional identifier for a Knowledge State to use." }
                 ),
                 resolve: async context =>
                 {
                     var graphName = context.GetArgument<string>("graphName");
                     var lineageFilter = context.GetArgument<string>("lineageFilter");
+                    var subjectId = context.GetArgument<string>("subjectId");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await graph.GetRealVRDisplayGraph(CompositeName(userId, graphName), lineageFilter);
+                    return await graph.GetRealVRDisplayGraph(userId, graphName, lineageFilter, subjectId);
                 }
             );
             FieldAsync<StringGraphType>(

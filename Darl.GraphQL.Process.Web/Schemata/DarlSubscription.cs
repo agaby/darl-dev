@@ -10,6 +10,7 @@ using GraphQL.Types;
 using System;
 using System.Threading.Tasks;
 using System.Reactive.Linq;
+using Microsoft.Extensions.Configuration;
 
 namespace Darl.GraphQL.Web.Models.Schemata
 {
@@ -18,12 +19,14 @@ namespace Darl.GraphQL.Web.Models.Schemata
         private IKGTranslation _trans;
         private IBotProcessing _bot;
         private IGraphProcessing _graph;
+        private IConfiguration _config;
 
-        public DarlSubscription(IKGTranslation trans, IBotProcessing bot, IGraphProcessing graph)
+        public DarlSubscription(IKGTranslation trans, IBotProcessing bot, IGraphProcessing graph, IConfiguration config)
         {
             _trans = trans;
             _bot = bot;
             _graph = graph;
+            _config = config;
 
             Name = "Subscription";
             AddField(new EventStreamFieldType()
@@ -31,14 +34,14 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 Name = "graphChanged",
                 Description = "Respond to KG changes of state",
                 Arguments = new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description= "The Knowledge graph to infer from"},
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "target", Description = "The object to seek or discover from" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description= "The Knowledge Graph to infer from"},
+                    new QueryArgument<StringGraphType> { Name = "target", Description = "The object to seek or discover from if not the default defined in the KG" },
                     new QueryArgument<ThinkBaseProcessType> { Name = "process", Description = "Whether to seek the target or discover paths from the target", DefaultValue = GraphProcess.seek }
                 ),
                 Type = typeof(KnowledgeStateType),
                 Resolver = new FuncFieldResolver<KnowledgeState>(ResolveObject),
                 AsyncSubscriber = new AsyncEventStreamResolver<KnowledgeState>(SubscribeGraphChangedAsync)
-            }).AuthorizeWith("CorpPolicy");
+            });
         }
 
  
@@ -49,6 +52,10 @@ namespace Darl.GraphQL.Web.Models.Schemata
             var graphName = arg.GetArgument<string>("graphName");
             var process = arg.GetArgument<GraphProcess>("process");
             var target = arg.GetArgument<string>("target");
+            if(userId == _config["AppSettings:boaiuserid"] )
+            {
+                throw new ExecutionError($"Subscriptions only permitted to registered users.");
+            }
             
             var ks = _graph.ObservableKStates();
             return ks.Where(a => a.userId == userId && a.knowledgeGraphName == graphName).Process( _bot, process, target);

@@ -16,6 +16,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field<StringGraphType>("externalId", resolve: c => c.Source.externalId);
             Field<StringGraphType>("parent", resolve: c => c.Source.parent);
             Field<StringGraphType>("compositelineage", resolve: c => c.Source.compositeLineage);
+            Field<ListGraphType<VRDisplayAttType>>("attributes", resolve: c => c.Source.attributes);
         }
     }
 }

@@ -2,20 +2,7 @@
 @model Darl.GraphQL.Pages.ConceptCloudModel
 @{
     ViewData["Title"] = "Graph Edit";
-    if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
-    {
-        if (!string.IsNullOrEmpty(Model.filepath))
-        {
-            RouteData.Values["kgraph"] = Model.filepath;
-            Layout = "~/Pages/_layoutscrollingContainer.cshtml";
-        }
-        else //empty container
-        {
-            Layout = "~/Pages/_layoutEmptyContainer.cshtml";
-        }
-    }
-    else
-        Layout = "~/Pages/_layoutscrolling.cshtml";
+    Layout = "~/Pages/_layoutscrolling.cshtml";
 }
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">

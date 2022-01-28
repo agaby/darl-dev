@@ -78,6 +78,10 @@ namespace Darl.Thinkbase
         public IGraphModel.InferenceTime? inferenceTime { get; set; }
         [ProtoMember(18)]
         public DarlTime? fixedTime { get; set; }
+        [ProtoMember(19)]
+        public bool transient { get; set; } = false;
+        [ProtoMember(20)]
+        public string? defaultTarget { get; set; }
 
         public static BlobGraphContent? Load(byte[] data)
         {

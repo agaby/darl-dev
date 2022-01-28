@@ -14,6 +14,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.subjectId).Description("The Id of the knowledge state");
             Field(c => c.knowledgeGraphName).Description("The name of the knowledge graph this relates to");
             Field<ListGraphType<StringListGraphAttributePairType>>("data", resolve: c => GetSGAPairsFromDictionary(c.Source.data));
+            Field(c => c.created, true).Description("The time of creation of this KS"); ;
         }
 
         public static List<StringListGraphAttributePair> GetSGAPairsFromDictionary(Dictionary<string, List<GraphAttribute>> dict)

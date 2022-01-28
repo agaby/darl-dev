@@ -535,14 +535,16 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 "Get a display version of the KG for VR",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
-                    new QueryArgument<StringGraphType> { Name = "lineageFilter", Description = "optional lineage filter", DefaultValue = "" }
-                ),
+                    new QueryArgument<StringGraphType> { Name = "lineageFilter", Description = "optional lineage filter", DefaultValue = "" },
+                    new QueryArgument<StringGraphType> { Name = "subjectId", Description = "the optional subject Id of the KS used" }
+            ),
                 resolve: async context =>
                 {
                     var graphName = context.GetArgument<string>("graphName");
                     var lineageFilter = context.GetArgument<string>("lineageFilter");
+                    var subjectId = context.GetArgument<string>("subjectId");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await graph.GetRealVRDisplayGraph(CompositeName(userId, graphName), lineageFilter);
+                    return await graph.GetRealVRDisplayGraph(userId, graphName, lineageFilter, subjectId);
                 }
             );
             FieldAsync<StringGraphType>(

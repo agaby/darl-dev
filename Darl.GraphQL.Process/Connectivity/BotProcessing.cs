@@ -182,7 +182,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         }
 
-        public async Task<KnowledgeState> Seek(KnowledgeState ks, string targetId,  List<string> paths, string completionLineage)
+        public async Task<KnowledgeState> Seek(KnowledgeState ks, string? targetId,  List<string> paths, string completionLineage)
         {
             return await _ghandler.Seek(ks, targetId,  paths, completionLineage);
         }

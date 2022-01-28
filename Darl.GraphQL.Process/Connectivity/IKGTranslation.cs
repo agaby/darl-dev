@@ -41,7 +41,7 @@ namespace Darl.GraphQL.Models.Connectivity
         string GetCurrentUserId(object userContext);
         Task<DarlUser> UpdateUserAsync(string userId, DarlUserUpdate darlUserUpdate);
         Task<string> UpdateUserAPIKey(string userId);
-        Task<DarlUser> GetUserByStripeId(string stripeId);
+        Task<DarlUser?> GetUserByStripeId(string stripeId);
         Task<string> GetUserIdFromAppId(string appId);
         Task<long> GetUserCount(string userId);
         Task<string> CreateKey(string userId, string company, string email, DateTime endDate);

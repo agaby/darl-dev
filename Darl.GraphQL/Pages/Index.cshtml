@@ -1,21 +1,8 @@
-﻿@page "{kgraph?}/{tab?}"
+﻿@page "{kgraph?}/{kstate?}"
 @model Darl.GraphQL.Pages.GraphEditModel
 @{
     ViewData["Title"] = "Graph Edit";
-    if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
-    {
-        if (!string.IsNullOrEmpty(Model.filepath))
-        {
-            RouteData.Values["kgraph"] = Model.filepath;
-            Layout = "~/Pages/_layoutscrollingContainer.cshtml";
-        }
-        else //empty container
-        {
-            Layout = "~/Pages/_layoutEmptyContainer.cshtml";
-        }
-    }
-    else
-        Layout = "~/Pages/_layoutscrolling.cshtml";
+    Layout = "~/Pages/_layoutscrolling.cshtml";
 }
 
 <main role="main" class="pb-3" style="padding: 0px !important">
@@ -29,30 +16,29 @@
                 <button class="btn btn-info" id="settings"><i class="fa fa-gear"></i></button>
             </div>
         </div>
-        @if (!(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true"))
-        {
-            <div class="row" id="fileHandling">
-                <div class="col-md-6 margin-b-40">
-                    <p>Select a Knowledge Graph from your account to edit.</p>
-                    <label>Knowledge Graphs </label>
-                    <select id="kgmodel-dropdown" name="kgmodel-dropdown" class="dropdown"></select>
-                    <button id="kg-save" class="btn btn-info">Save</button>
-                    <button id="kg-copy" class="btn btn-info">Copy</button>
-                    <button id="kg-delete" class="btn btn-warning">Delete</button>
-                </div>
-                <div class="col-md-6 margin-b-40">
-                    <label>Or create a new Knowledge Graph - choose a unique name.</label>
-                    <input id="kg-input" name="kgmodelname" class="form-control">
-                    <button id="kg-create" class="btn btn-info">Create</button>
-                </div>
+
+        <div class="row" id="fileHandling">
+            <div class="col-md-6 margin-b-40">
+                <p>Select a Knowledge Graph from your account to edit.</p>
+                <label>Knowledge Graphs </label>
+                <select id="kgmodel-dropdown" name="kgmodel-dropdown" class="dropdown"></select>
+                <button id="kg-save" class="btn btn-info">Save</button>
+                <button id="kg-copy" class="btn btn-info">Copy</button>
+                <button id="kg-delete" class="btn btn-warning">Delete</button>
             </div>
-            <div class="row d-none" id="demohandling">
-                <div class="col-md-6 margin-b-40">
-                    <label>Demo Knowledge Graphs </label>
-                    <select id="kgdemo-dropdown" name="kgdemo-dropdown" class="dropdown"></select>
-                </div>
+            <div class="col-md-6 margin-b-40">
+                <label>Or create a new Knowledge Graph - choose a unique name.</label>
+                <input id="kg-input" name="kgmodelname" class="form-control">
+                <button id="kg-create" class="btn btn-info">Create</button>
             </div>
-        }
+        </div>
+        <div class="row d-none" id="demohandling">
+            <div class="col-md-6 margin-b-40">
+                <label>Demo Knowledge Graphs </label>
+                <select id="kgdemo-dropdown" name="kgdemo-dropdown" class="dropdown"></select>
+            </div>
+        </div>
+        
         <div class="space-90"><hr /></div>
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item">
@@ -146,7 +132,7 @@
         </div>
         </div>
     <div id='kgurl' data-kgurl="@RouteData.Values["kgraph"]"></div>
-    <div id='taburl' data-taburl="@RouteData.Values["tab"]"></div>
+    <div id='kstate' data-ksurl="@RouteData.Values["kstate"]"></div>
 </main>
 
 

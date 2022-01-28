@@ -16,14 +16,6 @@ namespace Darl.GraphQL.Pages
         {
             products = prod.products;
             _config = config;
-            if (_config["DOTNET_RUNNING_IN_CONTAINER"] == "true")
-            {
-                var fp = _config["BLOBFILEPATH"];
-                if (_conn.Exists(fp).Result)
-                {
-                    filepath = fp;
-                }
-            }
             filepath = string.Empty;
         }
         public void OnGet()

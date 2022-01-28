@@ -153,22 +153,24 @@ namespace Darl.Thinkbase
             return userId + "_" + name.Replace(" ", "_");
         }
 
-        public async Task<GraphConnection> DeleteGraphConnection(string compositeName, string id)
+        public async Task<GraphConnection?> DeleteGraphConnection(string compositeName, string id)
         {
             return await _primitives.DeleteConnection(compositeName, id);
         }
 
-        public async Task<GraphObject> DeleteGraphObject(string compositeName, string id)
+        public async Task<GraphObject?> DeleteGraphObject(string compositeName, string id)
         {
             return await _primitives.DeleteObject(compositeName, id);
         }
 
-        public async Task<GraphObject> GetGraphObjectById(string compositeName, string id)
+        public async Task<GraphObject?> GetGraphObjectById(string compositeName, string? id)
         {
-            return await _primitives.GetGraphObjectById(compositeName, id);
+            if (id == null)
+                throw new RuleException($"GetGraphObjectById: Id cannot be null." );
+            return await _primitives.GetGraphObjectById(compositeName, id ?? "");
         }
 
-        public async Task<List<GraphObject>> GetGraphObjects(string compositeName, string name, string lineage)
+        public async Task<List<GraphObject>?> GetGraphObjects(string compositeName, string name, string lineage)
         {
             return await _primitives.GetGraphObjects(compositeName, name, lineage);
         }
@@ -571,9 +573,9 @@ namespace Darl.Thinkbase
             return await _primitives.GetRealDisplayGraph(compositeName, lineageFilter);
         }
 
-        public async Task<VRDisplayModel> GetRealVRDisplayGraph(string compositeName, string lineageFilter)
+        public async Task<VRDisplayModel> GetRealVRDisplayGraph(string userId, string graphName, string lineageFilter, string? subjectId)
         {
-            return await _primitives.GetRealVRDisplayGraph(compositeName, lineageFilter);
+            return await _primitives.GetRealVRDisplayGraph(userId, graphName, lineageFilter, subjectId);
         }
 
         public async Task<DisplayModel> GetVirtualDisplayGraph(string compositeName)
@@ -628,7 +630,8 @@ namespace Darl.Thinkbase
 
         public async Task<KnowledgeState> CreateKnowledgeState(string userId, KnowledgeStateInput state)
         {
-            var kstate = ConvertKS(state, userId);
+
+            var kstate = await ConvertKS(state, userId);
             _knowledgeStateStream.OnNext(kstate);
             if (state.transient)
                 return kstate;
@@ -798,6 +801,11 @@ namespace Darl.Thinkbase
         public async Task<bool> Exists(string userId, string name)
         {
             return await _primitives.Exists(CreateCompositeName(userId, name));
+        }
+
+        public async Task<DisplayModel?> GetRealDisplayGraphWithState(string userId, string graphName, string subjectId)
+        {
+            return await _primitives.GetRealDisplayGraphWithState(userId, graphName, subjectId);
         }
 
         #region private_methods
@@ -999,8 +1007,15 @@ namespace Darl.Thinkbase
             return c;
         }
 
-        private KnowledgeState ConvertKS(KnowledgeStateInput state, string userId)
+        private async Task<KnowledgeState> ConvertKS(KnowledgeStateInput state, string userId)
         {
+            if (!state.transient) //check if wjole KG is marked transient
+            {
+                var model = await GetModel(userId, state.knowledgeGraphName);
+                if (model == null)
+                    throw new RuleException($"Graph not found: {state.knowledgeGraphName}");
+                state.transient = model.transient;
+            }
             var kstate = new KnowledgeState { knowledgeGraphName = state.knowledgeGraphName, subjectId = state.subjectId, userId = userId, created = DateTime.UtcNow };
             foreach (var s in state.data)
             {
@@ -1137,6 +1152,8 @@ namespace Darl.Thinkbase
                 return lineage;
             return $"{lineage}+{subLineage}";
         }
+
+
 
 
         #endregion

@@ -17,14 +17,14 @@ namespace Darl.Thinkbase
     {
         Dictionary<string, LineageDefinitionNode> PreloadLineages { get; }
 
-        Task<List<GraphObject>> GetGraphObjects(string compositeName, string name, string lineage);
-        Task<GraphObject> GetGraphObjectById(string compositeName, string id);
+        Task<List<GraphObject>?> GetGraphObjects(string compositeName, string name, string lineage);
+        Task<GraphObject?> GetGraphObjectById(string compositeName, string id);
         Task<GraphObject> GetVirtualObjectByLineage(string compositeName, string lineage);
         Task<GraphObject> GetGraphObjectByExternalId(string compositeName, string externalId);
         Task<GraphObject> CreateGraphObject(string compositeName, GraphObjectInput graphObject, OntologyAction ontology = OntologyAction.ignore);
         Task<GraphConnection> CreateGraphConnection(string compositeName, GraphConnectionInput graphConnection, OntologyAction ontology = OntologyAction.ignore);
-        Task<GraphObject> DeleteGraphObject(string compositeName, string id);
-        Task<GraphConnection> DeleteGraphConnection(string compositeName, string id);
+        Task<GraphObject?> DeleteGraphObject(string compositeName, string id);
+        Task<GraphConnection?> DeleteGraphConnection(string compositeName, string id);
         Task<GraphObject> UpdateGraphObject(string compositeName, GraphObjectUpdate graphObject, OntologyAction ontology = OntologyAction.ignore);
         Task<GraphConnection?> UpdateGraphConnection(string compositeName, GraphConnectionUpdate graphConnection, OntologyAction ontology = OntologyAction.ignore);
         Task<bool> CreateNewGraph(string userId, string name);
@@ -71,7 +71,7 @@ namespace Darl.Thinkbase
         Task<KnowledgeState> GetKnowledgeState(string userId, string Id, string graphName, bool external = false);
         bool FindMetaDisplayStructure(IGraphModel model, GraphObject res, ref DarlVar? pending, List<InteractTestResponse> responses);
         string? FindDisplayAttribute(IGraphModel model, string id);
-        Task<VRDisplayModel> GetRealVRDisplayGraph(string compositeName, string lineageFilter);
+        Task<VRDisplayModel> GetRealVRDisplayGraph(string userId, string graphName, string lineageFilter, string? subjectId);
         void HandleCodelessValue(IGraphModel model, GraphObject res, DarlVar? pending, List<DarlVar> values, KnowledgeState ks);
         void HandleCodelessCompletion(IGraphModel model, GraphObject res, KnowledgeState ks);
         Task<GraphAttribute?> GetGraphAttribute(string userId, string graphName, string externalId, string lineage, string? ksUserId = null);
@@ -92,5 +92,6 @@ namespace Darl.Thinkbase
         Task<List<KnowledgeState>> CreateKnowledgeStateList(string userId, List<KnowledgeStateInput> states);
         string? FindCompleteAttribute(IGraphModel model, string id);
         IObservable<KnowledgeState> ObservableKStates();
+        Task<DisplayModel?> GetRealDisplayGraphWithState(string userId, string graphName, string subjectId);
     }
 }

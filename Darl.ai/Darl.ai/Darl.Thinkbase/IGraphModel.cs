@@ -39,6 +39,9 @@ namespace Darl.Thinkbase
         DateDisplay? dateDisplay { get; set; }
         InferenceTime? inferenceTime { get; set; }
         DarlTime? fixedTime { get; set; }
+        bool transient { get; set; }
+        string? defaultTarget { get; set; }
+
 
     }
 }

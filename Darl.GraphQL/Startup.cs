@@ -3,6 +3,7 @@ using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Schemata;
 using Darl.GraphQL.Process.Middleware;
+using Darl.GraphQL.Process.Web.Middleware;
 using Darl.GraphQL.Web.Models.Schemata;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
@@ -14,6 +15,7 @@ using GraphQL.Authorization;
 using GraphQL.DataLoader;
 using GraphQL.Execution;
 using GraphQL.Server;
+using GraphQL.Server.Transports.Subscriptions.Abstractions;
 using GraphQL.Server.Ui.GraphiQL;
 using GraphQL.Server.Ui.Playground;
 using GraphQL.Server.Ui.Voyager;
@@ -241,9 +243,7 @@ namespace Darl.GraphQL
             services.AddSingleton<ModelMetaDataType>();
             services.AddSingleton<ModelMetaDataUpdateType>();
             services.AddSingleton<PushSubType>();
-            services.AddSingleton<WebPushActionInputType>();
-            services.AddSingleton<WebPushPayloadInputType>();
-            services.AddSingleton<WebPushOptionsInputType>();
+
 
 
             //root
@@ -253,6 +253,8 @@ namespace Darl.GraphQL
             services.AddSingleton<DarlSubscription>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IOperationMessageListener, AuthenticationListener>();
+
 
             GraphQLBuilderExtensions.AddGraphQL(services)
                 .AddSubscriptionDocumentExecuter()

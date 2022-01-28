@@ -1289,6 +1289,14 @@ namespace Darl.GraphQL.Models.Connectivity
             return await GetKnowledgeStateByExternalId(userId, subjectId, graphName, external);
         }
 
+        /// <summary>
+        /// Get the KS 
+        /// </summary>
+        /// <param name="userId">The user</param>
+        /// <param name="extId">The subjectId</param>
+        /// <param name="graphName">The KG</param>
+        /// <param name="externalIds">if true replace objectIDs with externalIds to enhance readability</param>
+        /// <returns></returns>
         public async Task<KnowledgeState> GetKnowledgeStateByExternalId(string userId, string extId, string graphName, bool externalIds)
         {
             var ks = await _conn.GetKnowledgeState(userId, extId, graphName);
@@ -1414,19 +1422,34 @@ namespace Darl.GraphQL.Models.Connectivity
             return cont.edges[id];
         }
 
-        public async Task<VRDisplayModel> GetRealVRDisplayGraph(string compositeName, string lineageFilter)
+        /// <summary>
+        /// Get data for VR display, including Attributes if required
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="graphName"></param>
+        /// <param name="lineageFilter">if set show only vertices that descend from filter</param>
+        /// <param name="subjectId">KS to use for attributes </param>
+        /// <returns></returns>
+        /// <exception cref="ExecutionError"></exception>
+        public async Task<VRDisplayModel> GetRealVRDisplayGraph(string userId, string graphName, string lineageFilter, string? subjectId)
         {
+            var compositeName = userId + "_" + graphName;
             if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
+            KnowledgeState ks = null;
+            if(!string.IsNullOrEmpty(subjectId))
+            {
+                ks = await GetKnowledgeState(userId, subjectId, graphName, false);
+            }
             var dmodel = new VRDisplayModel { nodes = new List<VRDisplayNode>(), links = new List<VRDisplayLink>() };
             if (string.IsNullOrEmpty(lineageFilter)) //return everything
             {
-                dmodel.nodes.AddRange(cont.vertices.Values.Select(i => new VRDisplayNode { id = i.id, name = i.name, lineage = ExtractLineage(i.lineage), subLineage = ExtractSubLineage(i.lineage), externalId = i.externalId }));
+                dmodel.nodes.AddRange(cont.vertices.Values.Select(i => new VRDisplayNode { id = i.id, name = i.name, lineage = ExtractLineage(i.lineage), subLineage = ExtractSubLineage(i.lineage), externalId = i.externalId, attributes = i.properties != null && ks != null? i.properties.Select( a => new VRDisplayAtt {name = a.name ?? "", confidence = a.confidence, lineage = a.lineage ?? "", value = ks != null ? ks.GetAttribute(i.id ?? "", a.lineage ?? "")?.value ?? a.value : a.value }).ToList() : new List<VRDisplayAtt>()}));
                 dmodel.links.AddRange(cont.edges.Values.Select(i => new VRDisplayLink { id = i.id, name = i.name, source = i.startId, target = i.endId }));
             }
             else
             {
-                dmodel.nodes.AddRange(cont.vertices.Values.Where(a => a.lineage.StartsWith(lineageFilter)).Select((i => new VRDisplayNode { id = i.id, name = i.name, lineage = i.lineage, externalId = i.externalId })));
+                dmodel.nodes.AddRange(cont.vertices.Values.Where(a => a.lineage.StartsWith(lineageFilter)).Select((i => new VRDisplayNode { id = i.id, name = i.name, lineage = i.lineage, externalId = i.externalId, attributes = i.properties != null ? i.properties.Select(a => new VRDisplayAtt { name = a.name ?? "", confidence = a.confidence, lineage = a.lineage ?? "", value = ks != null ? ks.GetAttribute(i.id ?? "", a.lineage ?? "")?.value ?? a.value : a.value }).ToList() : new List<VRDisplayAtt>() })));
                 dmodel.links.AddRange(cont.vertices.Values.Where(a => a.lineage.StartsWith(lineageFilter)).SelectMany(a => a.In).Intersect(cont.vertices.Values.Where(a => a.lineage.StartsWith(lineageFilter)).SelectMany(a => a.Out)).Select(i => new VRDisplayLink { id = i.id, name = i.name, source = i.startId, target = i.endId }));
             }
             return dmodel;
@@ -1721,6 +1744,18 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
             }
             return res;
+        }
+
+        public async Task<DisplayModel?> GetRealDisplayGraphWithState(string userId, string graphName, string subjectId)
+        {
+            var compositeName = userId + "_" + graphName;
+            if (await Load(compositeName) is not BlobGraphContent cont)
+                throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
+            var ks = await GetKnowledgeState(userId, subjectId, graphName, false);
+            var dmodel = new DisplayModel { nodes = new List<DisplayObject>(), edges = new List<DisplayConnection>() };
+            dmodel.nodes.AddRange(cont.vertices.Values.Select(i => new DisplayObject { id = i.id, name = i.name, lineage = ExtractLineage(i.lineage), subLineage = ExtractSubLineage(i.lineage), externalId = i.externalId }));
+            dmodel.edges.AddRange(cont.edges.Values.Select(i => new DisplayConnection { id = i.id, name = i.name, source = i.startId, target = i.endId }));
+            return dmodel;
         }
     }
 

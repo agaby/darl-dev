@@ -73,7 +73,7 @@ namespace Darl.Thinkbase
         Task<GraphAttribute> DeleteGraphObjectAttribute(string compositeName, string objectId, string graphLineage);
         Task<List<LineageRecord>> GetLineagesInKG(string compositeName, GraphElementType gtype);
         Task<GraphConnection> GetConnectionById(string compositeName, string id);
-        Task<VRDisplayModel> GetRealVRDisplayGraph(string compositeName, string lineageFilter);
+        Task<VRDisplayModel> GetRealVRDisplayGraph(string userId, string graphName, string lineageFilter, string? subjectId);
         Task<int> GetKGraphCountAsync(string userId);
         Task<string> GetGraphObjectToString(string compositeName, string id);
         Task<KnowledgeState> GetKnowledgeStateByTypeAndAttribute(string userId, string objectId, string graphName, string attLineage, string attValue);
@@ -87,5 +87,6 @@ namespace Darl.Thinkbase
         string CreateTimedAccessUrl(string userId, string name);
         Task<ModelMetaData> UpdateKGraph(string userId, string name, ModelMetaData kgupdate);
         Task<List<GraphAbstraction>> GetSetofConnectedObjects(string userId, List<string> ksIds, string graphName);
+        Task<DisplayModel?> GetRealDisplayGraphWithState(string userId, string graphName, string subjectId);
     }
 }

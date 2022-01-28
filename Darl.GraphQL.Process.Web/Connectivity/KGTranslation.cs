@@ -3,12 +3,14 @@ using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Models.Noda;
 using Darl.GraphQL.Process.Models.Noda.Layout;
+using Darl.GraphQL.Process.Web.Middleware;
 using Darl.Lineage;
 using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlCompiler;
 using GraphQL;
+using GraphQL.Server.Transports.Subscriptions.Abstractions;
 using Markdig;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.ServiceModel.Syndication;
 using System.Text;
 using System.Threading.Tasks;
@@ -102,7 +105,7 @@ namespace Darl.GraphQL.Models.Connectivity
             _prods = prods;
             _checkEmail = checkEmail;
             _licensing = licensing;
-            _metaRuntime = metaRuntime; 
+            _metaRuntime = metaRuntime;
             backofficeKG = _config["AppSettings:BackOfficeKG"];
             backofficeUser = _config["AppSettings:boaiuserid"];
             backofficeKGComp = backofficeUser + '_' + backofficeKG;
@@ -454,7 +457,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<long> GetContactsDayCount(string userId)
         {
-            var dayAgo = DateTime.UtcNow - new TimeSpan(10,0,0,0);
+            var dayAgo = DateTime.UtcNow - new TimeSpan(10, 0, 0, 0);
             var kslist = await _graph.GetKnowledgeStatesByType(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG);
             return kslist.Count(a => a.created > dayAgo);
         }
@@ -587,7 +590,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 });
             }
             await _graph.CreateKnowledgeState(_config["AppSettings:boaiuserid"], goi);
-            return contact; 
+            return contact;
         }
 
         public async Task<Contact?> DeleteContactAsync(string email)
@@ -646,7 +649,7 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
 
-        public async Task<DarlUser> GetUserByStripeId(string stripeId)
+        public async Task<DarlUser?> GetUserByStripeId(string stripeId)
         {
             var ks = await _graph.GetKnowledgeStateByTypeAndAttribute(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG, idLineage, stripeId);
             if (ks == null)
@@ -664,9 +667,17 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             if (userContext != null)
             {
-                var ctxt = userContext as GraphQLUserContext;
-                if (ctxt != null)
-                    return ctxt.User.Identity.Name ?? _config["AppSettings:boaiuserid"];
+                if (userContext is GraphQLUserContext) //query or mutation
+                {
+                    var ctxt = userContext as GraphQLUserContext;
+                    return ctxt?.User.Identity?.Name ?? _config["AppSettings:boaiuserid"];
+                }
+                else if(userContext is MessageHandlingContext)//subscription
+                {
+                    var ctxt = userContext as MessageHandlingContext;
+                    var principal = ctxt?.Properties[AuthenticationListener.PRINCIPAL_KEY] as GenericPrincipal;
+                    return principal?.Identity.Name ?? _config["AppSettings:boaiuserid"]; 
+                }
             }
             return _config["AppSettings:boaiuserid"];
         }
@@ -1024,12 +1035,61 @@ namespace Darl.GraphQL.Models.Connectivity
             {//return the type words for the real objects derived from the virtual
                 foreach (var g in graph.virtualVertices.Values.Where(a => a.In.Count == 0)) //All leaf virtual vertices
                 {
-                    list.Add(new GraphAttribute { value = (g.name ?? "").Replace('/', '-'), name = "typeword", type = GraphAttribute.DataType.textual, lineage = g.lineage });
+                    list.Add(new GraphAttribute { value = (g.name ?? "").Replace('/', '~'), name = "typeword", type = GraphAttribute.DataType.textual, lineage = g.lineage });
                 }
             }
             else
             {
                 var parts = address.Split('/');
+                int depth = 0;
+                GraphObject root = null;
+                GraphObject real = null;
+                GraphAttribute att;
+                foreach (var part in parts)
+                {
+                    if (!string.IsNullOrEmpty(part))
+                    {
+                        var name = part.Trim();
+                        name = name.Replace('~', '/');
+                        switch (depth)
+                        {
+                            case 0: //leaf lineages
+                                root = graph.virtualVertices.Values.FirstOrDefault(a => a.name == name);
+                                break;
+                            case 1://real nodes
+                                real = graph.vertices.Values.FirstOrDefault(a => a.externalId == name);
+                                break;
+                            case 2://attributes
+                                att = real.properties.FirstOrDefault(a => a.name == name);
+                                break;
+                        }
+                        depth++;
+                    }
+                }
+                switch (depth)
+                {
+                    case 1: //only a virtual node selected
+                        {
+                            var children = graph.vertices.Values.Where(a => a.lineage == root.lineage);
+                            if(children.Count() > 1)
+                            {
+                                foreach (var g in children) 
+                                {
+                                    list.Add(new GraphAttribute { value = (g.name ?? "").Replace('/', '~'), name = "typeword", type = GraphAttribute.DataType.textual, lineage = g.lineage });
+                                }
+                            }
+                            else
+                            {
+                                real = children.FirstOrDefault();
+                                if(real != null)
+                                    list.AddRange(real.properties);
+                            }
+                        }
+                        break;
+                    case 2:
+                        list.AddRange(real.properties);
+                        break;
+                }
             }
             return list;
         }
@@ -1124,7 +1184,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var companyName = companyObj.GetAttributeValue(companyLineage);
             feed.Copyright = new TextSyndicationContent($"{DateTime.Now.Year} {companyName}");
             var items = new List<SyndicationItem>();
-            var newsItems = await _graph.GetKnowledgeStatesByType(backofficeUser, newsItemObj.id, backofficeKG);            
+            var newsItems = await _graph.GetKnowledgeStatesByType(backofficeUser, newsItemObj.id, backofficeKG);
             foreach (var item in newsItems.OrderBy(a => a.created))
             {
                 var itemTitle = item.GetAttribute(newsItemObj.id, newsItemTitleLineage).value;
@@ -1333,12 +1393,12 @@ namespace Darl.GraphQL.Models.Connectivity
             return new PushSub
             {
                 ipAddress = GetAttributeValue(ks, pushObjectId, addressLineage),
-                pushAuth =  GetAttributeValue(ks, pushObjectId, pushAuthLineage),
+                pushAuth = GetAttributeValue(ks, pushObjectId, pushAuthLineage),
                 pushEndPoint = GetAttributeValue(ks, pushObjectId, pushEndPoinLineage),
                 pushKey = GetAttributeValue(ks, pushObjectId, pushKeyLineage),
                 longitude = GetAttributeValue(ks, pushObjectId, longitudeLineage),
                 latitude = GetAttributeValue(ks, pushObjectId, latitudeLineage),
-                created = GetExistenceStart(ks, pushObjectId)   
+                created = GetExistenceStart(ks, pushObjectId)
             };
         }
 
