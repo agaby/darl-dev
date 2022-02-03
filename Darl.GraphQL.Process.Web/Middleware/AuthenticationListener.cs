@@ -33,7 +33,9 @@ namespace Darl.GraphQL.Process.Web.Middleware
         {
             if (token == null)
                 return null;
-            var key = token.Substring("Basic ".Length).Trim();
+            var key = token;
+            if(token.Contains("Basic"))
+                key = token.Substring("Basic ".Length).Trim();
             var du = await _trans.GetUserByApiKey(key);
             if (du == null)// can indicate user is barred
             {
@@ -61,12 +63,18 @@ namespace Darl.GraphQL.Process.Web.Middleware
             {
                 var payload = context.Message.Payload as JObject;
 
-                if (payload != null && payload.ContainsKey("Authorization"))
+                if (payload != null) 
                 {
-                    var auth = payload.Value<string>("Authorization");
-
-                    // Save the user to the http context
-                    _httpContextAccessor.HttpContext.User = await BuildClaimsPrincipal(auth);
+                    if (payload.ContainsKey("Authorization"))
+                    {
+                        var auth = payload.Value<string>("Authorization");
+                        _httpContextAccessor.HttpContext.User = await BuildClaimsPrincipal(auth);
+                    }
+                    else if (payload.ContainsKey("authorization"))
+                    {
+                        var auth = payload.Value<string>("authorization");
+                        _httpContextAccessor.HttpContext.User = await BuildClaimsPrincipal(auth);
+                    }
                 }
             }
 

@@ -518,6 +518,20 @@ async function loadGraphs() {
                     }
                 },
                 {
+                    content: '<span class="fas fa-id-card-alt fa-2x"></span>',
+                    select: async function (ele) {
+                        console.log('attributes');
+                        if (ele.hasClass("eh-handle")) {
+                            ele = ele.data("mainNode");
+                        }
+                        var id = ele.id();
+                        $.MessageBox({
+                            buttonDone: "Close",
+                            message: "Id: " + id
+                        });
+                    }
+                },
+                {
                     content: '<span class="fa fa-tree fa-2x"></span>',
                     select: async function (ele) {
                         console.log('lineage');

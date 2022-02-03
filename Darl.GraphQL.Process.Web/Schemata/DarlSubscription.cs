@@ -11,6 +11,8 @@ using System;
 using System.Threading.Tasks;
 using System.Reactive.Linq;
 using Microsoft.Extensions.Configuration;
+using System.Reactive.Subjects;
+using System.Collections.Generic;
 
 namespace Darl.GraphQL.Web.Models.Schemata
 {
@@ -20,6 +22,9 @@ namespace Darl.GraphQL.Web.Models.Schemata
         private IBotProcessing _bot;
         private IGraphProcessing _graph;
         private IConfiguration _config;
+
+        private ISubject<KnowledgeState> _knowledgeStateStream = new ReplaySubject<KnowledgeState>(1);
+
 
         public DarlSubscription(IKGTranslation trans, IBotProcessing bot, IGraphProcessing graph, IConfiguration config)
         {
@@ -55,10 +60,9 @@ namespace Darl.GraphQL.Web.Models.Schemata
             if(userId == _config["AppSettings:boaiuserid"] )
             {
                 throw new ExecutionError($"Subscriptions only permitted to registered users.");
-            }
-            
+            }          
             var ks = _graph.ObservableKStates();
-            return ks.Where(a => a.userId == userId && a.knowledgeGraphName == graphName).Process( _bot, process, target);
+            return ks.Where(a => a.userId == userId && a.knowledgeGraphName == graphName).Select( i =>  _bot.Seek(i, target, new List<string>(), "adjective:5500").Result );
         }
 
         private KnowledgeState ResolveObject(IResolveFieldContext arg)

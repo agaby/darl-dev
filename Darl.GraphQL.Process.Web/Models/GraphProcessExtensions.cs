@@ -13,9 +13,8 @@ namespace Darl.GraphQL.Models.Models
     public static  class GraphProcessExtensions
     {
 
-        public static IObservable<KnowledgeState> Process(this IObservable<KnowledgeState> ks, IBotProcessing bot, GraphProcess process, string? target)
+        public static IObservable<KnowledgeState> Process(this IObservable<KnowledgeState> ks, ISubject<KnowledgeState> _knowledgeStateStream, IBotProcessing bot, GraphProcess process, string? target)
         {
-            ISubject<KnowledgeState> _knowledgeStateStream = new ReplaySubject<KnowledgeState>(1);
             ks.Subscribe(async x =>  
             {
                 var kresp = await bot.Seek(x, target, new List<string>(), "adjective:5500");
