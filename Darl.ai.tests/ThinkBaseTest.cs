@@ -1,4 +1,5 @@
 ﻿using Darl.Common;
+using Darl.GraphQL.Models.Connectivity;
 using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
@@ -29,6 +30,7 @@ namespace Darl_standard_core.test
         IMetaStructureHandler _metaStruct;
         IDarlMetaRunTime _metaRunTime;
         IConfiguration _config;
+        IDataLoader _dataLoader;
 
         private static readonly string industryLineage = "noun:01,2,07,10,14,3,1";
         private static readonly string sectorLineage = "noun:01,0,0,15,07,02,04,1,02,1";
@@ -93,12 +95,13 @@ namespace Darl_standard_core.test
             model.Setup(a => a.GetConnectedObjects(It.IsAny<GraphObject>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new List<GraphObject> { new GraphObject { id = id1 }, new GraphObject { id = id2 } });
             _model = model.Object;
             _metaRunTime = new DarlMetaRunTime(_config, new MetaStructureHandler());
+            _dataLoader = new  DataLoader(metaStruct.Object);
         }
 
         [TestMethod]
         public async Task TestGraphMLLoad()
         {
-            var graph = new GraphProcessing(_primitives, _logger, _metaStruct);
+            var graph = new GraphProcessing(_primitives, _logger, _metaStruct, _dataLoader);
             var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.left.graphml");
             await graph.LoadGraphML("", stream, null);
         }
@@ -226,7 +229,8 @@ namespace Darl_standard_core.test
         [TestMethod]
         public async Task TestGraphPass()
         {
-            var graph = new GraphProcessing(_primitives, _logger, _metaStruct);
+            var dataLoader = new DataLoader(_metaStruct);
+            var graph = new GraphProcessing(_primitives, _logger, _metaStruct, dataLoader);
             var gh = new GraphHandler(graph, _ghlogger, new MetaStructureHandler(), _metaRunTime);
             var graphName = "graph1.graph";
             var paths = new List<string> { consistsLineage, followsLineage };
@@ -241,7 +245,8 @@ namespace Darl_standard_core.test
         [TestMethod]
         public async Task TestTextRecognition()
         {
-            var graph = new GraphProcessing(_primitives, _logger, _metaStruct);
+            var dataLoader = new DataLoader(_metaStruct);
+            var graph = new GraphProcessing(_primitives, _logger, _metaStruct, dataLoader);
             //create a simple recognition tree
             var recognitionIds = new Dictionary<string, GraphObject>();
             var defaultRule = "output textual response;\nif anything then response will be \"I don't know the answer to that.\";";
@@ -295,7 +300,7 @@ namespace Darl_standard_core.test
             conn = new GraphConnection { lineage = followsLineage, startId = root.id, endId = subnode7.id };
             root.Out.Add(conn);
             subnode7.In.Add(conn);
-            var gh = new GraphHandler(graph, _ghlogger, new MetaStructureHandler(),_metaRunTime);
+            var gh = new GraphHandler(graph, _ghlogger, new MetaStructureHandler(), _metaRunTime);
             var graphName = "graph1.graph";
             var paths = new List<string> { consistsLineage, followsLineage };
             var subjectId = Guid.NewGuid().ToString();
@@ -673,7 +678,9 @@ namespace Darl_standard_core.test
             primitives.Setup(a => a.GetRecognitionRoot(It.IsAny<IGraphModel>(), It.IsAny<string>())).Returns(Task.FromResult<GraphObject>(model.recognitionRoots["default:"]));
             primitives.Setup(a => a.GetGraphObjectById(It.IsAny<string>(), It.IsAny<string>())).Returns((string compName, string id) => Task.FromResult<GraphObject>(model.vertices.FirstOrDefault(a => a.Value.externalId == id).Value));
             _primitives = primitives.Object;
-            var gp = new GraphProcessing(_primitives, _logger, new MetaStructureHandler());
+            var meta = new MetaStructureHandler();
+            var dataLoader = new DataLoader(meta);
+            var gp = new GraphProcessing(_primitives, _logger, meta, dataLoader);
             var gh = new GraphHandler(gp, _ghlogger, new MetaStructureHandler(), _metaRunTime);
             var res = await gh.InterpretText("user", "discord_bot.graph", "conversation", new DarlVar { dataType = DarlVar.DataType.textual, name = "text", Value = "who is andy" });
             Assert.AreEqual(1, res.Count);
@@ -710,11 +717,15 @@ namespace Darl_standard_core.test
             var ks = new KnowledgeState { subjectId = "person" };
             primitives.Setup(a => a.GetKnowledgeState(It.IsAny<string>(), "person", It.IsAny<string>(), It.IsAny<bool>())).Returns(Task.FromResult(ks));
             _primitives = primitives.Object;
-            var gp = new GraphProcessing(_primitives, _logger, new MetaStructureHandler());
+            var meta = new MetaStructureHandler();
+            var dataLoader = new DataLoader(meta);
+            var gp = new GraphProcessing(_primitives, _logger, meta, dataLoader);
             var gh = new GraphHandler(gp, _ghlogger, new MetaStructureHandler(), _metaRunTime);
             //        var res = await gh.DiscoverForBot("user", "cursus_honorum.graph", "person", new List<string>(), "abcdef");
 
         }
+
+
 
     }
 }

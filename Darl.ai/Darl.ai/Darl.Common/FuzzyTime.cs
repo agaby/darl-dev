@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Darl.Common
 {
@@ -32,7 +29,7 @@ namespace Darl.Common
         public void SetEvent(DarlTime time)
         {
             darlTimes.Clear();
-            darlTimes.Add(time);    
+            darlTimes.Add(time);
         }
 
         public void SetInterval(DarlTime time1, DarlTime time2)

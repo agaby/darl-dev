@@ -136,7 +136,7 @@ namespace Darl.Thinkbase.Meta
         {
             get
             {
-                return "\tif ";
+                return "if ";
             }
         }
 
@@ -157,7 +157,7 @@ namespace Darl.Thinkbase.Meta
                         return "then ";
                     case 1:
                         writeSeq++;
-                        return "will be ";
+                        return " will be ";
                     default:
                         writeSeq++;
                         return "";

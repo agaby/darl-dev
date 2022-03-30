@@ -29,7 +29,7 @@ namespace Darl.Thinkbase
         Task<bool> CreateModel(string compositeName);
         Task<bool> DeleteModel(string compositeName);
         Task<List<string>> ListModels(string userId);
-        Task<IGraphModel> Load(string compositeName);
+        Task<IGraphModel?> Load(string compositeName);
         Task Store(string compositeName);
         Task<List<GraphElement>> ProcessPath(string compositeName, string startExternalID, string endExternalID);
         Task<List<StringStringPair>> GetLinkedCategories(string compositeName, string rootName, string childLineage, string childValueAttribute);
@@ -60,7 +60,7 @@ namespace Darl.Thinkbase
         Task<GraphObject> GetVirtualObjectByLineage(string compositeName, string lineage);
         Task<GraphObject> GetRecognitionObjectById(string compositeName, string id);
         Task CorrectBrokenLinks(string compositeName);
-        Task SaveKSChanges(string userId, string subjectId, KnowledgeState ks);
+        Task<bool> SaveKSChanges(string userId, string subjectId, KnowledgeState ks);
         Task<KnowledgeState> GetKnowledgeState(string userId, string subjectId, string graphName, bool external);
         Task<KnowledgeState> GetKnowledgeStateByExternalId(string userId, string extId, string graphName, bool externalIds);
         Task ClearGraphContent(string compositeName);

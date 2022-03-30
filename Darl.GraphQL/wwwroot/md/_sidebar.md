@@ -18,6 +18,7 @@
   - [Excluded middle](excluded_middle.md)
   - [Handling defaults](handling_defaults.md)
   - [Reporting with DARL](text_replacement.md)
+  - [Machine learning KGs](machine_learn.md)
 - The 2D User interface
   - [The DARL editor](darl_editor.md)
   - [Graphical editing](graphical_editing.md)

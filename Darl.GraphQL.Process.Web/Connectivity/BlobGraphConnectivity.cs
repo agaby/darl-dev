@@ -3,9 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.IO;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -28,7 +28,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<byte[]> Read(string name)
         {
             var b = _container.GetBlobClient(name);
-            using(var m = new MemoryStream())
+            using (var m = new MemoryStream())
             {
                 await b.DownloadToAsync(m);
                 return m.ToArray();
@@ -40,10 +40,10 @@ namespace Darl.GraphQL.Models.Connectivity
             try
             {
                 var b = _container.GetBlobClient(name);
-                using(var m = new MemoryStream(data))
+                using (var m = new MemoryStream(data))
                 {
                     await b.UploadAsync(m, true);
-                }             
+                }
             }
             catch (Exception ex)
             {
@@ -65,7 +65,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public List<string> List(string prefix)
         {
-            var listseg =  _container.GetBlobs(prefix: prefix);
+            var listseg = _container.GetBlobs(prefix: prefix);
             return listseg.Select(a => a.Name.ToString()).ToList();
         }
 

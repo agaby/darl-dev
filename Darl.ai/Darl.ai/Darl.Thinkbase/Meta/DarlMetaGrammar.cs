@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Darl.Thinkbase.Meta
 {
-    [Language("Darl.Meta", "1.0", "Darl Meta language, Copyright(c) Dr Andy's IP Ltd, 2020")]
+    [Language("Darl.Meta", "1.0", "Darl Meta language, Copyright(c) ThinkBase LLC, 2022")]
     public class DarlMetaGrammar : InterpretedLanguageGrammar
     {
 
@@ -140,7 +140,7 @@ namespace Darl.Thinkbase.Meta
             #region NonTerminal Declarations
             // definitions
             var inputdefinition = new NonTerminal("inputdefinition", typeof(InputDefinitionNode));
-            var outputdefinition = new NonTerminal("outputdefinition", typeof(OutputDefinitionNode));
+            var outputdefinition = new NonTerminal("outputdefinition", typeof(OutputAsInputDefinitionNode));
             var constantdefinition = new NonTerminal("constantdefinition", typeof(ConstantDefinitionNode));
             var durationdefinition = new NonTerminal("durationdefinition", typeof(DurationDefinitionNode));
             var stringdefinition = new NonTerminal("stringdefinition", typeof(StringDefinitionNode));
@@ -152,6 +152,7 @@ namespace Darl.Thinkbase.Meta
             var set_option = new NonTerminal("set_option");
             var lineage_option = new NonTerminal("lineage_option");
             var network_source_option = new NonTerminal("network_source_option");
+            var network_components = new NonTerminal("network_components", typeof(NetworkComponentNode));
             var rule = new NonTerminal("rule", typeof(RuleNode));
             var top_logical_op = new NonTerminal("top_logical_op");
             var program_root = new NonTerminal("program_root", typeof(MetaRootNode));
@@ -383,10 +384,10 @@ namespace Darl.Thinkbase.Meta
                             (age + IS + comparitives)
                             );
 
-            inputdefinition.Rule = (INPUT + NUMERIC + numeric_input + set_option) |
-                       (INPUT + CATEGORICAL + categorical_input + category_option) |
-                       (INPUT + TEXTUAL + textual_input) |
-                       (INPUT + TEMPORAL + temporal_input);
+            inputdefinition.Rule = (INPUT + NUMERIC + numeric_input + set_option + network_source_option) |
+                       (INPUT + CATEGORICAL + categorical_input + category_option + network_source_option) |
+                       (INPUT + TEXTUAL + textual_input + network_source_option) |
+                       (INPUT + TEMPORAL + temporal_input + network_source_option);
 
             outputdefinition.Rule = (OUTPUT + NUMERIC + numeric_output + set_option + lineage_option) |
                        (OUTPUT + CATEGORICAL + categorical_output + category_option + lineage_option) |
@@ -416,8 +417,9 @@ namespace Darl.Thinkbase.Meta
 
             lineage_option.Rule = Empty | lineage_choice;
 
-            network_source_option.Rule = Empty | lineage_choice | nodeIdLiteral;
+            network_source_option.Rule = Empty | network_components;
 
+            network_components.Rule = nodeIdLiteral + lineage_choice;
 
             eq.Rule = "=" + arith_expression;
             neq.Rule = "!=" + arith_expression;
@@ -560,7 +562,7 @@ namespace Darl.Thinkbase.Meta
             RegisterOperators(5, "^");
             RegisterOperators(6, ".");
 
-            MarkPunctuation("{", "}", "(", ")", "[", "]", ",", ";", ".", "if", "then", "will", "be", "confidence", "input", "output", "numeric", "categorical", "arity", "presence", "string", "constant", "or", "and", "not", "is", "*", "/", "-", "+", "%", "^", ">", "<", "<=", ">=", "anything", "textual", "maximum", "minimum", "sum", "product", "fuzzytuple", "sigmoid", "normprob", "round", "pattern", "absent", "present", "delay", "sequence", "match", "document", "randomtext", "store", "temporal", "categoryof", "duration", "now", "mintime", "maxtime", "after", "before", "preceding", "overlapping", "during", "finishing", "starting", "all", "any", "count", "seek", "network", "attribute", "attributes", "exists", "durationof", "for", "single", "lineage", "discover","existence","age");
+            MarkPunctuation("{", "}", "(", ")", "[", "]", ",", ";", ".", "if", "then", "will", "be", "confidence", "input", "output", "numeric", "categorical", "arity", "presence", "string", "constant", "or", "and", "not", "is", "*", "/", "-", "+", "%", "^", ">", "<", "<=", ">=", "anything", "textual", "maximum", "minimum", "sum", "product", "fuzzytuple", "sigmoid", "normprob", "round", "pattern", "absent", "present", "delay", "sequence", "match", "document", "randomtext", "store", "temporal", "categoryof", "duration", "now", "mintime", "maxtime", "after", "before", "preceding", "overlapping", "during", "finishing", "starting", "all", "any", "count", "seek", "network", "attribute", "attributes", "exists", "durationof", "for", "single", "lineage", "discover", "existence", "age");
             RegisterBracePair("(", ")");
             RegisterBracePair("{", "}");
             RegisterBracePair("[", "]");
@@ -625,13 +627,25 @@ namespace Darl.Thinkbase.Meta
             astBuilder.BuildAst(parseTree);
         }
 
-        public DarlResult ResultByName(string name)
+        public DarlResult? ResultByName(string name)
         {
             if (results.Any(a => a.name == name))
             {
                 return results.First(a => a.name == name);
             }
             return null;
+        }
+
+        public DarlResult NetWorkResults(string objectId, string lineage)
+        {
+            var res = currentModel.FindDataAttribute(objectId, lineage, state);
+            if(res != null)
+            {
+                var r =  DarlVarExtensions.Convert(res);
+                results.Add(r);
+                return r;
+            }
+            return new DarlResult(0.0, true);
         }
     }
 

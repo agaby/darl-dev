@@ -96,7 +96,8 @@ namespace Darl.GraphQL.Test
             cache.Setup(a => a.GetAsync(It.IsAny<string>(), default)).Returns(Task.FromResult<byte[]>(null));
             var lic = new Mock<ILicensing>();
             _primitives = new BlobGraphPrimitives(blob, cache.Object, conn.Object, bgplogger.Object, lic.Object);
-            _graph = new GraphProcessing(_primitives, glogger.Object, meta.Object);
+            var dataLoader = new DataLoader(meta.Object);
+            _graph = new GraphProcessing(_primitives, glogger.Object, meta.Object, dataLoader);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
         }
 

@@ -12,6 +12,8 @@ namespace Darl.Thinkbase
 
     public enum OntologyAction { build, check, ignore };
     public enum GraphElementType { node, connection, attribute };
+    public enum LoadType { json, xml, csv }
+
 
     public interface IGraphProcessing
     {
@@ -56,7 +58,7 @@ namespace Darl.Thinkbase
         Task<DisplayModel> GetVirtualDisplayGraph(string compositeName);
         Task<DisplayModel> GetRecognitionDisplayGraph(string compositeName);
         Task<GraphObject> GetRecognitionObjectById(string compositeName, string id);
-        Task SaveKSChanges(string userId, string subjectId, KnowledgeState ks);
+        Task<bool> SaveKSChanges(string userId, string subjectId, KnowledgeState ks);
         Task<KnowledgeState> GetKnowledgeStateByExternalId(string userId, string extId, string graphName, bool externalIds);
         Task ClearGraphContent(string compositeName);
         Task<string> CopyRenameKG(string userId, string name, string newName);
@@ -93,5 +95,7 @@ namespace Darl.Thinkbase
         string? FindCompleteAttribute(IGraphModel model, string id);
         IObservable<KnowledgeState> ObservableKStates();
         Task<DisplayModel?> GetRealDisplayGraphWithState(string userId, string graphName, string subjectId);
+        Task<string> LoadExternalData(string userId, string name, string data, string patternPath, List<DataMap> dataMaps, LoadType ltype = LoadType.xml, bool buildGraph = false);
+        List<KnowledgeState> LoadData(string userId, string name, IGraphModel model, string data, string patternPath, List<DataMap> dataMaps, LoadType ltype = LoadType.xml);
     }
 }

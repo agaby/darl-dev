@@ -103,7 +103,8 @@ namespace Darl.GraphQL.Test
             var trans = new Mock<IKGTranslation>();
             var lic = new Mock<ILicensing>();
             _primitives = new BlobGraphPrimitives(blob, cache.Object, _conn, bgplogger.Object, lic.Object);
-            _graph = new GraphProcessing(_primitives, glogger.Object, _meta);
+            var dataLoader = new DataLoader(_meta);
+            _graph = new GraphProcessing(_primitives, glogger.Object, _meta, dataLoader);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
             var form = new Mock<IFormApi>();
             _form = form.Object;
@@ -135,7 +136,7 @@ namespace Darl.GraphQL.Test
             model.recognitionVertices.Clear();
             model.recognitionRoots.Clear();
             model.recognitionEdges.Clear();
-            p.AddDefaultContent(model);
+            model.AddDefaultContent();
             await _graph.Store(compositeName);
         }
 
@@ -186,7 +187,7 @@ namespace Darl.GraphQL.Test
             var model = await _graph.GetModel(_config["userId"], graphName) as BlobGraphContent;
             var compositeName = $"{_config["userId"]}_{graphName}";
             var msh = new MetaStructureHandler();
-            var runtime = new DarlMetaRunTime(_config,msh);
+            var runtime = new DarlMetaRunTime(_config, msh);
             var reverse = new Dictionary<string, string>();
             foreach (var c in msh.CommonLineages)
                 reverse.Add(c.Value, c.Key);

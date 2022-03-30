@@ -117,7 +117,8 @@ namespace Darl.GraphQL.Test
             var trans = new Mock<IKGTranslation>();
             var lic = new Mock<ILicensing>();
             _primitives = new BlobGraphPrimitives(blob, cache.Object, conn.Object, bgplogger.Object, lic.Object);
-            _graph = new GraphProcessing(_primitives, glogger.Object, meta.Object);
+            var dataLoader = new DataLoader(meta.Object);
+            _graph = new GraphProcessing(_primitives, glogger.Object, meta.Object, dataLoader);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
             var form = new Mock<IFormApi>();
             _form = form.Object;

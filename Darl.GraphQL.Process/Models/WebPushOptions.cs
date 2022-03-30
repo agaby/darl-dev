@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Darl.GraphQL.Models.Models
 {
@@ -16,7 +12,7 @@ namespace Darl.GraphQL.Models.Models
         public object? data { get; set; } = null;
 
         public string? dir { get; set; }
-        
+
         public string? icon { get; set; }
         public string? image { get; set; }
 
@@ -25,7 +21,7 @@ namespace Darl.GraphQL.Models.Models
         public bool silent { get; set; } = false;
 
         public string? tag { get; set; }
-        
+
         public int? timeStamp { get; set; }
 
         public List<int>? vibrate { get; set; }

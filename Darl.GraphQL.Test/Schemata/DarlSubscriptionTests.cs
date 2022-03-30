@@ -1,21 +1,17 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Darl.GraphQL.Web.Models.Schemata;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Darl.Thinkbase;
-using Microsoft.Extensions.Configuration;
-using DarlLanguage.Processing;
-using Darl.GraphQL.Models.Connectivity;
-using Darl.Lineage.Bot.Stores;
+﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.Lineage.Bot;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
+using Darl.Lineage.Bot.Stores;
+using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
-using Moq;
+using DarlLanguage.Processing;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using System;
+using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Test
 {
@@ -76,7 +72,8 @@ namespace Darl.GraphQL.Test
             var trans = new Mock<IKGTranslation>();
             var lic = new Mock<ILicensing>();
             _primitives = new BlobGraphPrimitives(blob, cache.Object, _conn, bgplogger.Object, lic.Object);
-            _graph = new GraphProcessing(_primitives, glogger.Object, meta);
+            var dataLoader = new DataLoader(meta);
+            _graph = new GraphProcessing(_primitives, glogger.Object, meta, dataLoader);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
             var form = new Mock<IFormApi>();
             _form = form.Object;

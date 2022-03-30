@@ -14,7 +14,7 @@ namespace Darl.GraphQL.Container.Pages
         {
             _trans = trans;
         }
-        
+
         public async Task<IActionResult> OnGet()
         {
             return File(await _trans.RenderRSS(HttpContext.Request.Scheme), "application/rss+xml; charset=utf-8");

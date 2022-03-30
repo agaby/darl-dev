@@ -206,7 +206,9 @@ namespace Darl.Thinkbase.Meta
                     StringBuilder sb = new StringBuilder();
                     foreach (IntraSetDependency dep in dependencies)
                         sb.Append(dep.ToString() + ", ");
-                    throw new MetaRuleException("Loop found in rules: " + sb.ToString());
+                    context.AddMessage(DarlCompiler.ErrorLevel.Error, treeNode.Token.Location, "Loop found in rules: " + sb.ToString());
+
+                    throw new MetaRuleException();
                 }
                 foreach (IntraSetDependency del in deletions)
                 {
@@ -271,31 +273,31 @@ namespace Darl.Thinkbase.Meta
                 StringBuilder sb = new StringBuilder();
                 foreach (var input in inputs.Values)
                 {
-                    sb.Append("\t" + input.preamble);
+                    sb.Append(input.preamble);
                 }
                 if (inputs.Any())
                     sb.Append("\n");
                 foreach (var output in outputs.Values)
                 {
-                    sb.Append("\t" + output.preamble);
+                    sb.Append(output.preamble);
                 }
                 if (outputs.Any())
                     sb.Append("\n");
                 foreach (var constant in constants.Values)
                 {
-                    sb.Append("\t" + constant.preamble);
+                    sb.Append(constant.preamble);
                 }
                 if (constants.Any())
                     sb.Append("\n");
                 foreach (var sconstant in strings.Values)
                 {
-                    sb.Append("\t" + sconstant.preamble);
+                    sb.Append(sconstant.preamble);
                 }
                 if (strings.Any())
                     sb.Append("\n");
                 foreach (var pconstant in durations.Values)
                 {
-                    sb.Append("\t" + pconstant.preamble);
+                    sb.Append(pconstant.preamble);
                 }
                 if (durations.Any())
                     sb.Append("\n");
@@ -303,7 +305,7 @@ namespace Darl.Thinkbase.Meta
                     sb.Append("\n");
                 foreach (var st in stores.Values)
                 {
-                    sb.Append("\t" + st.preamble);
+                    sb.Append(st.preamble);
                 }
                 if (stores.Any())
                     sb.Append("\n");
@@ -330,8 +332,15 @@ namespace Darl.Thinkbase.Meta
             foreach (InputDefinitionNode input in inputs.Values)
             {
                 string compName = input.name;
-                input.Value = grammar.ResultByName(compName);
-                if (((object)input.Value) != null)
+                if (input.networkNode != null)
+                {
+                    input.Value = grammar.NetWorkResults(input.networkNode.nodeId, input.networkNode.lineage);
+                }
+                else
+                {
+                    input.Value = grammar.ResultByName(compName);
+                }
+                if (((object)input.Value) != null) //DarlResult overides !=
                 {
                     //sanity checks
                     if (input.iType == InputDefinitionNode.InputTypes.arity_input || input.iType == InputDefinitionNode.InputTypes.numeric_input && !input.Value.IsNumeric())
@@ -391,10 +400,11 @@ namespace Darl.Thinkbase.Meta
             //perform the processing
             foreach (IOSequenceDefinitionNode outNode in orderedOutputs)
             {
+
                 if (rules.ContainsKey(outNode.GetName()) && outNode is OutputDefinitionNode)
                 {
                     string compName = outNode.name;
-                    var ty = ConvertOType(((OutputDefinitionNode)outNode).iType);
+                    var ty = ConvertOType(((OutputDefinitionNode)outNode).oType);
                     ((OutputDefinitionNode)outNode).SetLineage(thread);
                     DarlResult result = new DarlResult(compName, ty);
                     DarlResult other = new DarlResult(compName, ty);

@@ -139,7 +139,7 @@ namespace DarlLanguage.Processing
         {
             get
             {
-                return "is ";
+                return " is ";
             }
         }
 

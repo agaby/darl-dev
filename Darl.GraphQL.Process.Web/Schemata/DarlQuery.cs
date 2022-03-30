@@ -1,6 +1,4 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
-using Darl.GraphQL.Models.Middleware;
-using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Schemata;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
@@ -35,7 +33,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                "The set of contacts.",
                   resolve: async context =>
                   {
-                      return await  trans.GetContacts();
+                      return await trans.GetContacts();
                   }
             ).AuthorizeWith("AdminPolicy");
             FieldAsync<ListGraphType<ContactType>>(

@@ -2536,7 +2536,7 @@ async function UpdateAttributeValue(id, newAtt, type) {
                     }
 
                 },
-                message: "Set the attribute's value",
+                message: "<b>Set the attribute's value</b><br/>Lineage: " + newAtt.lineage,
                 buttonDone: "Change",
                 buttonFail: "Cancel",
                 queue: false,
@@ -2581,7 +2581,7 @@ async function UpdateAttributeValue(id, newAtt, type) {
                         defaultValue: !(newAtt.value)
                     }
                 },
-                message: "Choose a category",
+                message: "<b>Choose a category</b><br/>Lineage: " + newAtt.lineage,
                 buttonDone: "Change",
                 buttonFail: "Cancel",
                 queue: false,
@@ -2632,7 +2632,7 @@ async function UpdateAttributeValue(id, newAtt, type) {
                         defaultValue: !(newAtt.value)
                     }
                 },
-                message: "Set the attribute's value",
+                message: "<b>Set the attribute's text value</b><br/>Lineage: " + newAtt.lineage,
                 buttonDone: "Change",
                 buttonFail: "Cancel",
                 queue: false,
@@ -2666,7 +2666,7 @@ async function UpdateAttributeValue(id, newAtt, type) {
                     }
 
                 },
-                message: "Set the attribute's time value",
+                message: "<b>Set the attribute's time value</b><br/>Lineage: " + newAtt.lineage,
                 buttonDone: "Change",
                 buttonFail: "Cancel",
                 queue: false,
@@ -2692,7 +2692,7 @@ async function UpdateAttributeValue(id, newAtt, type) {
                         defaultValue: !(newAtt.value)
                     }
                 },
-                message: "Set the attribute's value",
+                message: "<b>Set the attribute's text value</b><br/>Lineage: " + newAtt.lineage,
                 buttonDone: "Change",
                 buttonFail: "Cancel",
                 queue: false,
@@ -2724,7 +2724,7 @@ async function UpdateAttributeValue(id, newAtt, type) {
                         defaultValue: def
                     }
                 },
-                message: "Set the attribute's DARL code",
+                message: "<b>Set the attribute's DARL code</b><br/>Lineage: " + newAtt.lineage,
                 buttonDone: "Change",
                 buttonFail: "Cancel",
                 queue: false,
@@ -2732,9 +2732,17 @@ async function UpdateAttributeValue(id, newAtt, type) {
                     if (data.val === "") return "Give a value.";
                 }
             }).done(function (valdata) {
-                if (newAtt.value !== valdata[0]) {
-                    newAtt.value = valdata[0];
-                    Upsert(id, newAtt, type);
+                if (Array.isArray(valdata)) {
+                    if (newAtt.value !== valdata[0]) {
+                        newAtt.value = valdata[0];
+                        Upsert(id, newAtt, type);
+                    }
+                }
+                else {
+                    if (newAtt.value !== valdata.val) {
+                        newAtt.value = valdata.val;
+                        Upsert(id, newAtt, type);
+                    }
                 }
             });
     }

@@ -3,6 +3,7 @@ using Darl.GraphQL.Process.Connectivity;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
+using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlCompiler.Interpreter;
 using GraphQL;
@@ -28,6 +29,7 @@ namespace Darl.GraphQL.Models.Connectivity
         readonly IDistributedCache _cache;
 
 
+
         public BotProcessing(IConnectivity conv, ILogger<BotProcessing> logger, IConfiguration config, IGraphProcessing graph, IGraphHandler ghandler, IDistributedCache cache)
         {
             _conv = conv;
@@ -36,6 +38,11 @@ namespace Darl.GraphQL.Models.Connectivity
             _graph = graph;
             _ghandler = ghandler;
             _cache = cache;
+        }
+
+        public async Task<DarlMineReport> Build(string userId, string name, string data, string patternPath, List<DataMap> dataMaps, LoadType ltype = LoadType.xml)
+        {
+            return await _ghandler.Build(userId, name, data, patternPath, dataMaps, ltype);
         }
 
         public async Task<KnowledgeState> Discover(string userId, string KnowledgeGraphName, string subjectId)
@@ -182,9 +189,14 @@ namespace Darl.GraphQL.Models.Connectivity
 
         }
 
-        public async Task<KnowledgeState> Seek(KnowledgeState ks, string? targetId,  List<string> paths, string completionLineage)
+        public async Task<DarlMineReport> Learn(string userId, string graphName, string target, IBotProcessing.LearningForm form, string targetLineage, string valueLineage, int percentTrain, IGraphHandler.SetChoices sets)
         {
-            return await _ghandler.Seek(ks, targetId,  paths, completionLineage);
+            return await _ghandler.Learn(userId, graphName, target, form, targetLineage, valueLineage,percentTrain, sets);
+        }
+
+        public async Task<KnowledgeState> Seek(KnowledgeState ks, string? targetId, List<string> paths, string completionLineage)
+        {
+            return await _ghandler.Seek(ks, targetId, paths, completionLineage);
         }
 
         private async Task<BotState?> GetBotState(string conversationId)
@@ -210,5 +222,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 await _cache.SetAsync(conversationId, ms.ToArray());
             }
         }
+
+
     }
 }

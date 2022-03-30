@@ -48,7 +48,7 @@ namespace Darl.Thinkbase
             LineageLibrary.lineages["verb:534"],//postdates
             LineageLibrary.lineages["verb:533"],//precedes
             LineageLibrary.lineages["verb:393"],//own
-            LineageLibrary.lineages["verb:145"],//require
+            LineageLibrary.lineages["verb:145"],//necessitate
             LineageLibrary.lineages["verb:021"]//have
         };
 
@@ -95,6 +95,11 @@ namespace Darl.Thinkbase
             return lin.StartsWith("verb:");
         }
 
+        public bool IsValidLineage(string lin)
+        {
+            return LineageLibrary.CheckLineage(lin);
+        }
+
         public bool FindMetaDisplayStructure(IGraphModel model, GraphObject res, ref DarlVar pending, List<InteractTestResponse> responses)
         {
             //In the process of evaluation leaf nodes get called first.
@@ -136,16 +141,21 @@ namespace Darl.Thinkbase
                 answer = new GraphAttribute { confidence = 1.0, type = GraphAttribute.DataType.textual, value = null };
             }
             pending.dataType = answer.ConvertDataType();
+            switch(pending.dataType)
+            {
+                case DarlVar.DataType.categorical:
+                    if(answer.properties != null)
+                    {
+                        pending.categories = answer.properties.Where(a => a.name == "category").Select(a => a.value).ToDictionary(x => x, y => 1.0);
+                    }
+                    break;
+            }
             responses.Add(new InteractTestResponse { response = new DarlVar { dataType = pending.dataType, categories = pending.categories, values = pending.values, name = questionIdentifier, Value = questionText }, reference = res.externalId, darl = "Inferred from structure", activeNodes = new List<string> { res.id } });
             return true;
         }
 
 
-        /// <summary>
-        /// Determine if this node can be aggregated, and aggregate if so.
-        /// </summary>
-        /// <param name="ConnectionLineage"></param>
-        /// <returns></returns>
+        
         public (DarlVar, InteractTestResponse) AggregateChildren(GraphObject go, IGraphModel model, string ConnectionLineage)
         {
             string aggregateLineage = "";
@@ -407,6 +417,44 @@ namespace Darl.Thinkbase
             return sb.ToString();
         }
 
+        public string GetBuildInitialRuleSet(IGraphModel model, string objectId, string target)
+        {
+            var outsb = new StringBuilder();
+            var rulesb = new StringBuilder();
+            if (model != null)
+            {
+                if (model.vertices.ContainsKey(objectId))
+                {
+                    outsb.AppendLine("output categorical completed {true, false} complete;");
+                    outsb.AppendLine("output textual reportSource;");
+                    outsb.AppendLine("output textual annotation;");   
+                    var obj = model.vertices[objectId];
+                    var targetAtt = obj.GetAttribute(CommonLineages["answer"]);
+                    if (targetAtt != null)
+                    {
+                        outsb.AppendLine($"output {targetAtt.type} {target} answer;");
+                        rulesb.AppendLine($"if {target} is present then completed will be true;");
+                        rulesb.AppendLine("if anything then reportSource will be attribute(text);");
+                        rulesb.AppendLine($"if {target} is present then annotation will be document(reportSource,{{{target}}});");
+                    }
+                    foreach (var c in obj.Out)
+                    {
+                        var source = model.vertices[c.endId];
+                        var att = source.GetAttribute(CommonLineages["answer"]);
+                        if (att != null)
+                        {
+                            var outname = BuildName(source);
+                            if (outname != null)
+                            {
+                                outsb.AppendLine($"input {att.type} {outname} \"{outname}\" answer;");
+                            }
+                        }
+                    }                    
+                }
+            }
+            return outsb.ToString() + "\n\n" + rulesb.ToString();
+        }
+
         public string GetSuggestedRuleSet(IGraphModel model, string objectId, string lineage)
         {
             if (model != null)
@@ -416,7 +464,6 @@ namespace Darl.Thinkbase
                     var obj = model.vertices[objectId];
                     var outsb = new StringBuilder();
                     var rulesb = new StringBuilder();
-                    //                   outsb.AppendLine("output categorical completed {true, false} complete;");
                     foreach (var c in obj.Out)
                     {
                         var source = model.vertices[c.endId];
@@ -424,8 +471,11 @@ namespace Darl.Thinkbase
                         if (att != null)
                         {
                             var outname = BuildName(source);
-                            outsb.AppendLine($"output {att.type} {outname};");
-                            rulesb.AppendLine($"if anything then {outname} will be single({BuildTypeWordString(source, model)},{GetConnectionTypeWord(c)},answer);");
+                            if (outname != null)
+                            { 
+                                outsb.AppendLine($"output {att.type} {outname};");
+                                rulesb.AppendLine($"if anything then {outname} will be single({BuildTypeWordString(source, model)},{GetConnectionTypeWord(c)},answer);");
+                            }
                         }
                     }
                     return outsb.ToString() + "\n\n" + rulesb.ToString();
@@ -470,13 +520,22 @@ namespace Darl.Thinkbase
         {
             var lins = model.SplitCompositeLineage(obj.lineage);
             if (lins.Item2 == null)
-                return LineageLibrary.lineages[lins.Item1].typeWord;
-            return $"{LineageLibrary.lineages[lins.Item1].typeWord}_{LineageLibrary.lineages[lins.Item2].typeWord}";
+                return GetTypeWord(lins.Item1);
+            return $"{GetTypeWord(lins.Item1)}+{GetTypeWord(lins.Item2)}";
         }
 
         private string GetConnectionTypeWord(GraphConnection c)
         {
-            return LineageLibrary.lineages[c.lineage].typeWord;
+            return GetTypeWord(c.lineage);
+        }
+
+        public string GetTypeWord(string? lineage)
+        {
+            if(lineage != null && LineageLibrary.lineages.TryGetValue(lineage, out LineageRecord rec))
+            {
+                return rec.typeWord;
+            }
+            return "";
         }
 
     }

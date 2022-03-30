@@ -1,6 +1,5 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.Thinkbase;
-using GraphQL.Client.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

@@ -30,7 +30,8 @@ namespace Darl.Thinkbase.Meta
             {
                 case 0:
                 default:
-                    throw new MetaRuleException("Incorrect number of set values");
+                    context.AddMessage(DarlCompiler.ErrorLevel.Error, treeNode.Token.Location, "Incorrect number of set values");
+                    break;
                 case 1:
                     Set = new DarlResult(conv(values[0].Token.Value));
                     break;

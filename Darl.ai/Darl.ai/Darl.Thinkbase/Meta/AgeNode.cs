@@ -1,9 +1,4 @@
-﻿using Darl.Common;
-using DarlCompiler.Interpreter;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using DarlCompiler.Interpreter;
 using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
@@ -26,7 +21,7 @@ namespace Darl.Thinkbase.Meta
                 var now = await nowNode.Evaluate(thread) as DarlResult;
                 thread.CurrentNode = Parent;
                 return DarlResult.Age(res, now);
- 
+
             }
             return new DarlResult(-1.0, true);
         }
@@ -47,6 +42,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
- 
+
     }
 }

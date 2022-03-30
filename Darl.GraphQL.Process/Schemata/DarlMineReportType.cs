@@ -1,9 +1,8 @@
-﻿using DarlLanguage.Processing;
-using GraphQL.Types;
+﻿using GraphQL.Types;
 
 namespace Darl.GraphQL.Models.Schemata
 {
-    public class DarlMineReportType : ObjectGraphType<DarlMineReport>
+    public class DarlMineReportType : ObjectGraphType<Thinkbase.Meta.DarlMineReport>
     {
         public DarlMineReportType()
         {

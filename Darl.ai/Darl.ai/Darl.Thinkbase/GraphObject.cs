@@ -221,10 +221,19 @@ namespace Darl.Thinkbase
             return sb.ToString();
         }
 
-        public override bool ContainsAttribute(string completionLineage)
+        /// <summary>
+        /// Does this object contain an attribute with the given lineage and type?
+        /// </summary>
+        /// <param name="Lineage">The attribute lineage to look for.</param>
+        /// <param name="type">The type to look for. If null any type will do.</param>
+        /// <returns></returns>
+        public override bool ContainsAttribute(string Lineage, GraphAttribute.DataType? type = GraphAttribute.DataType.ruleset)
         {
             if (properties != null)
-                return properties.Any(a => a.lineage == completionLineage && a.confidence > 0.0 && a.type != GraphAttribute.DataType.ruleset);
+                if(type != null)
+                    return properties.Any(a => a.lineage == Lineage && a.confidence > 0.0 && a.type != GraphAttribute.DataType.ruleset);
+                else
+                    return properties.Any(a => a.lineage == Lineage && a.confidence > 0.0);
             return false;
         }
 
@@ -269,7 +278,7 @@ namespace Darl.Thinkbase
 
         public override (GraphObject?, List<GraphConnection>) DeReference(IGraphModel model, List<string>? lineages)
         {
-            return (this,Out);
+            return (this, Out);
         }
 
 

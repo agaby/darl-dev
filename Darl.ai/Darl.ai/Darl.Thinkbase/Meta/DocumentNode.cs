@@ -55,7 +55,7 @@ namespace Darl.Thinkbase.Meta
         {
             get
             {
-                return ", ";
+                return ", {";
             }
         }
 
@@ -63,7 +63,7 @@ namespace Darl.Thinkbase.Meta
         {
             get
             {
-                return " )";
+                return " })";
             }
         }
 

@@ -1,5 +1,4 @@
-﻿using Darl.GraphQL.Models.Middleware;
-using GraphQL;
+﻿using GraphQL;
 using GraphQL.Introspection;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Authorization;

@@ -12,7 +12,6 @@ using DarlCompiler;
 using GraphQL;
 using GraphQL.Server.Transports.Subscriptions.Abstractions;
 using Markdig;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -26,7 +25,6 @@ using System.ServiceModel.Syndication;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using WebPush;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -672,11 +670,11 @@ namespace Darl.GraphQL.Models.Connectivity
                     var ctxt = userContext as GraphQLUserContext;
                     return ctxt?.User.Identity?.Name ?? _config["AppSettings:boaiuserid"];
                 }
-                else if(userContext is MessageHandlingContext)//subscription
+                else if (userContext is MessageHandlingContext)//subscription
                 {
                     var ctxt = userContext as MessageHandlingContext;
                     var principal = ctxt?.Properties[AuthenticationListener.PRINCIPAL_KEY] as GenericPrincipal;
-                    return principal?.Identity.Name ?? _config["AppSettings:boaiuserid"]; 
+                    return principal?.Identity.Name ?? _config["AppSettings:boaiuserid"];
                 }
             }
             return _config["AppSettings:boaiuserid"];
@@ -1071,9 +1069,9 @@ namespace Darl.GraphQL.Models.Connectivity
                     case 1: //only a virtual node selected
                         {
                             var children = graph.vertices.Values.Where(a => a.lineage == root.lineage);
-                            if(children.Count() > 1)
+                            if (children.Count() > 1)
                             {
-                                foreach (var g in children) 
+                                foreach (var g in children)
                                 {
                                     list.Add(new GraphAttribute { value = (g.name ?? "").Replace('/', '~'), name = "typeword", type = GraphAttribute.DataType.textual, lineage = g.lineage });
                                 }
@@ -1081,7 +1079,7 @@ namespace Darl.GraphQL.Models.Connectivity
                             else
                             {
                                 real = children.FirstOrDefault();
-                                if(real != null)
+                                if (real != null)
                                     list.AddRange(real.properties);
                             }
                         }

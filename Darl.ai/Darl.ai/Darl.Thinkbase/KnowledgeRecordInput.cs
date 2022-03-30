@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Darl.Thinkbase
 {
@@ -25,7 +23,7 @@ namespace Darl.Thinkbase
                 {
                     if (l.name == name)
                     {
-                        if (!data.Any(a => a.name == parent.id ))
+                        if (!data.Any(a => a.name == parent.id))
                         {
                             data.Add(new StringListGraphAttributeInputPair { name = parent.id ?? string.Empty, value = new List<GraphAttributeInput>() });
                         }
@@ -77,7 +75,7 @@ namespace Darl.Thinkbase
             {
                 data.Add(new StringListGraphAttributeInputPair { name = (link.id ?? string.Empty), value = new List<GraphAttributeInput>() });
             }
-            data.First(a => a.name == (link.id ?? string.Empty)).value.Add(new GraphAttributeInput { name = (link.name ?? string.Empty), type = GraphAttribute.DataType.connection, confidence = link.weight, lineage = link.lineage ?? string.Empty, inferred = true, value = remoteId, existence = existence});
+            data.First(a => a.name == (link.id ?? string.Empty)).value.Add(new GraphAttributeInput { name = (link.name ?? string.Empty), type = GraphAttribute.DataType.connection, confidence = link.weight, lineage = link.lineage ?? string.Empty, inferred = true, value = remoteId, existence = existence });
         }
     }
 }

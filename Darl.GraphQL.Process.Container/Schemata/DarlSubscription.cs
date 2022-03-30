@@ -9,7 +9,7 @@ namespace Darl.GraphQL.Container.Models.Schemata
         {
             Name = "Subscription";
             Description = "Darl.dev does not use subscriptions";
-            
+
         }
     }
 }

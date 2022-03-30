@@ -1,11 +1,55 @@
 ﻿using DarlCompiler.Parsing;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Darl.Thinkbase.Meta
 {
     public static class DarlMetaParseTreeExtensions
     {
+
+        /// <summary>
+        /// Extension method converting a parse tree back to formatted source code
+        /// </summary>
+        /// <param name="parseTree">The tree to convert</param>
+        /// <returns>The source code</returns>
+        public static string ToDarl(this ParseTree parseTree)
+        {
+            if (parseTree == null || parseTree.Root == null)
+                return string.Empty;
+            return TermToDarl(parseTree.Root.AstNode as DarlMetaNode);
+        }
+
+
+        /// <summary>
+        /// Recursively builds a string from the tree of nodes
+        /// </summary>
+        /// <param name="node">The current parent node</param>
+        /// <returns>A source code string</returns>
+        public static string TermToDarl(this DarlMetaNode node)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (node != null)
+            {
+                sb.Append(node.preamble);
+                int childcount = 0;
+                foreach (var child in node.ChildNodes)
+                {
+                    childcount++;
+                    if (child is DarlMetaNode)
+                    {
+                        sb.Append(TermToDarl(child as DarlMetaNode));
+                        if (childcount < node.ChildNodes.Count)
+                        {
+                            sb.Append(node.midamble);
+                        }
+                    }
+                }
+                sb.Append(node.postamble);
+            }
+            return sb.ToString();
+        }
+
         public static List<InputDefinitionNode> GetInputs(this ParseTree parseTree)
         {
             if (parseTree == null || parseTree.Root == null)

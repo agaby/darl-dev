@@ -13,7 +13,7 @@ namespace Darl.Thinkbase
         KnowledgeRecord? knowledgeRecord { get { return (this is KnowledgeRecord) ? this as KnowledgeRecord : null; } }
         GraphObject? graphObject { get { return (this is GraphObject) ? this as GraphObject : null; } }
 
-        public virtual bool ContainsAttribute(string completionLineage)
+        public virtual bool ContainsAttribute(string completionLineage, GraphAttribute.DataType? type = GraphAttribute.DataType.ruleset)
         {
             throw new NotImplementedException();
         }
@@ -78,7 +78,7 @@ namespace Darl.Thinkbase
             }
             if (otherExistence == null && thisExistence == null)
                 return 1.0;
-            if(thisExistence != null)
+            if (thisExistence != null)
             {
                 thisExistence = Quadrify(thisExistence);
             }
@@ -98,7 +98,7 @@ namespace Darl.Thinkbase
             }
             if (otherExistence == null || thisExistence == null)
                 return 1.0;
-            if(currentTime == null)
+            if (currentTime == null)
             {
                 if (thisExistence[0].raw > otherExistence[3].raw)
                     return 0.0;
@@ -115,7 +115,7 @@ namespace Darl.Thinkbase
             {
                 default:
                     return range;
-                case 1:                    
+                case 1:
                     expandedRange.Add(range[0]);
                     expandedRange.Add(range[0]);
                     expandedRange.Add(range[0]);

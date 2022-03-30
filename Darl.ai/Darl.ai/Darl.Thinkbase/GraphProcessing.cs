@@ -6,6 +6,7 @@ using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlLanguage.Processing;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +14,9 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using System.Xml.Serialization;
+using System.Xml.XPath;
 
 namespace Darl.Thinkbase
 {
@@ -33,13 +36,16 @@ namespace Darl.Thinkbase
 
         private readonly ISubject<KnowledgeState> _knowledgeStateStream = new ReplaySubject<KnowledgeState>(1);
 
+        private readonly IDataLoader _dataLoader;
+
         public Dictionary<string, LineageDefinitionNode> PreloadLineages { get => _metaHandler.PreloadLineages; }
 
-        public GraphProcessing(IGraphPrimitives primitives, ILogger<GraphProcessing> logger, IMetaStructureHandler metaHandler)
+        public GraphProcessing(IGraphPrimitives primitives, ILogger<GraphProcessing> logger, IMetaStructureHandler metaHandler, IDataLoader loader)
         {
             _primitives = primitives;
             _logger = logger;
             _metaHandler = metaHandler;
+            _dataLoader = loader;
         }
         public async Task<GraphConnection> CreateGraphConnection(string compositeName, GraphConnectionInput graphConnection, OntologyAction ontology = OntologyAction.ignore)
         {
@@ -166,7 +172,7 @@ namespace Darl.Thinkbase
         public async Task<GraphObject?> GetGraphObjectById(string compositeName, string? id)
         {
             if (id == null)
-                throw new RuleException($"GetGraphObjectById: Id cannot be null." );
+                throw new RuleException($"GetGraphObjectById: Id cannot be null.");
             return await _primitives.GetGraphObjectById(compositeName, id ?? "");
         }
 
@@ -598,9 +604,9 @@ namespace Darl.Thinkbase
             return await _primitives.GetRecognitionObjectById(compositeName, id);
         }
 
-        public async Task SaveKSChanges(string userId, string subjectId, KnowledgeState ks)
+        public async Task<bool> SaveKSChanges(string userId, string subjectId, KnowledgeState ks)
         {
-            await _primitives.SaveKSChanges(userId, subjectId, ks);
+            return await _primitives.SaveKSChanges(userId, subjectId, ks);
         }
 
         public async Task<KnowledgeState> GetKnowledgeStateByExternalId(string userId, string extId, string graphName, bool externalIds)
@@ -807,6 +813,47 @@ namespace Darl.Thinkbase
         {
             return await _primitives.GetRealDisplayGraphWithState(userId, graphName, subjectId);
         }
+
+        public async Task<string> LoadExternalData(string userId, string name, string data, string patternPath, List<DataMap> dataMaps, LoadType ltype = LoadType.xml, bool buildGraph = false)
+        {
+            var model = await GetModel(userId, name);
+            if (model == null)
+                throw new RuleException($"Graph not found: {name}");
+            var kstates = LoadData(userId, name, model, data, patternPath, dataMaps);
+            if (buildGraph)
+                BuildGraph(model, kstates, dataMaps);
+            foreach (var k in kstates)
+            {
+                await _primitives.CreateKnowledgeState(k);
+            }
+            return $"{kstates.Count} KnowledgeStates created.";
+        }
+
+        public List<KnowledgeState> LoadData(string userId, string name, IGraphModel model, string data, string patternPath, List<DataMap> dataMaps, LoadType ltype = LoadType.xml)
+        {
+            var kstates = new List<KnowledgeState>();
+            switch (ltype)
+            {
+                case LoadType.xml:
+                    kstates = _dataLoader.LoadXMLData(userId, name, model, data, patternPath, dataMaps);
+                    break;
+                case LoadType.json:
+                    kstates = _dataLoader.LoadJsonData(userId, name, model, data, patternPath, dataMaps);
+                    break;
+                case LoadType.csv:
+                    kstates = _dataLoader.LoadCsvData(userId, name, model, data, patternPath, dataMaps);
+                    break;
+            }
+            return kstates;
+        }
+
+        private void BuildGraph(IGraphModel model, List<KnowledgeState> kstates, List<DataMap> dataMaps)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
 
         #region private_methods
 
@@ -1152,6 +1199,7 @@ namespace Darl.Thinkbase
                 return lineage;
             return $"{lineage}+{subLineage}";
         }
+
 
 
 

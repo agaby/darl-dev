@@ -13,7 +13,6 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public int sequence { get; set; }
 
-        public DarlMetaNode lineageNode { get; set; }
 
         public DarlMetaNode CatLineageNode { get; set; }
 

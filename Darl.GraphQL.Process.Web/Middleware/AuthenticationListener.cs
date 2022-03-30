@@ -1,16 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Http;
-
-using GraphQL.Server.Transports.Subscriptions.Abstractions;
-
-using Newtonsoft.Json.Linq;
-using Darl.GraphQL.Models.Connectivity;
+﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
+using GraphQL.Server.Transports.Subscriptions.Abstractions;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Security.Claims;
 using System.Security.Principal;
+using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Process.Web.Middleware
 {
@@ -34,7 +30,7 @@ namespace Darl.GraphQL.Process.Web.Middleware
             if (token == null)
                 return null;
             var key = token;
-            if(token.Contains("Basic"))
+            if (token.Contains("Basic"))
                 key = token.Substring("Basic ".Length).Trim();
             var du = await _trans.GetUserByApiKey(key);
             if (du == null)// can indicate user is barred
@@ -63,7 +59,7 @@ namespace Darl.GraphQL.Process.Web.Middleware
             {
                 var payload = context.Message.Payload as JObject;
 
-                if (payload != null) 
+                if (payload != null)
                 {
                     if (payload.ContainsKey("Authorization"))
                     {

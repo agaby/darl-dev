@@ -335,7 +335,7 @@ namespace Darl.GraphQL.Container.Models.Schemata
                 "Get a display version of the KG for VR",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
-                    new QueryArgument<StringGraphType> { Name = "lineageFilter", Description = "optional lineage filter", DefaultValue = ""},
+                    new QueryArgument<StringGraphType> { Name = "lineageFilter", Description = "optional lineage filter", DefaultValue = "" },
                     new QueryArgument<StringGraphType> { Name = "subjectId", Description = "optional identifier for a Knowledge State to use." }
                 ),
                 resolve: async context =>
@@ -453,7 +453,7 @@ namespace Darl.GraphQL.Container.Models.Schemata
                 var userId = trans.GetCurrentUserId(context.UserContext);
                 return await trans.GetSuggestedRuleSet(userId, graphName, objectId, lineage);
             });
- 
+
             FieldAsync<ListGraphType<KnowledgeStateType>>("discover", "Discover possibilities in a graph",
             arguments: new QueryArguments(
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge graph used" },

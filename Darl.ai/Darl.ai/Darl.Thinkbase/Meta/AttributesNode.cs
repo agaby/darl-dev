@@ -35,7 +35,21 @@ namespace Darl.Thinkbase.Meta
         {
             get
             {
-                return "attributes( ";
+                return "attributes(";
+            }
+        }
+
+        /// <summary>
+        /// Gets the midamble.
+        /// </summary>
+        /// <value>
+        /// The midamble, used to reconstruct the source code.
+        /// </value>
+        public override string midamble
+        {
+            get
+            {
+                return ", ";
             }
         }
 

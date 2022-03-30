@@ -11,7 +11,7 @@ namespace Darl.Thinkbase
         public string externalId { get; set; } = string.Empty;
         public string parent { get; set; } = string.Empty;
 
-        public List<VRDisplayAtt> attributes { get; set; }  = new List<VRDisplayAtt>();
+        public List<VRDisplayAtt> attributes { get; set; } = new List<VRDisplayAtt>();
 
         public string compositeLineage
         {

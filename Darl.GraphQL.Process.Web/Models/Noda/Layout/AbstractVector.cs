@@ -1,8 +1,4 @@
 ﻿using Darl.GraphQL.Models.Models.Noda;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Darl.GraphQL.Process.Models.Noda.Layout
 {
@@ -47,7 +43,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
                 return (a as NodaPosition) + (b as NodaPosition);
             return null;
         }
-        public static NodaPosition operator - (AbstractVector a, AbstractVector b)
+        public static NodaPosition operator -(AbstractVector a, AbstractVector b)
         {
             if (a is NodaPosition && b is NodaPosition)
                 return (a as NodaPosition) - (b as NodaPosition);
@@ -68,7 +64,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
 
         public static NodaPosition operator /(AbstractVector a, double b)
         {
-           if (a is NodaPosition)
+            if (a is NodaPosition)
                 return (a as NodaPosition) / b;
             return null;
         }

@@ -36,13 +36,13 @@ namespace Darl.Thinkbase.Meta
             var durText = nodes[1].Token.Value as string;
             if (TimeSpan.TryParse(durText, out parsedVal))
                 Value = parsedVal;
-            else if(durText.ToUpper().Contains('Y'))
+            else if (durText.ToUpper().Contains('Y'))
             {
                 int ypos = durText.ToUpper().IndexOf("Y");
                 var numPart = durText.Substring(0, ypos);
-                if(int.TryParse(numPart, out int years))
+                if (int.TryParse(numPart, out int years))
                 {
-                    Value = new TimeSpan(years * 365, 0,0,0,0);
+                    Value = new TimeSpan(years * 365, 0, 0, 0, 0);
                 }
                 else
                     context.AddMessage(DarlCompiler.ErrorLevel.Error, this.ErrorAnchor, $"Could not parse period {nodes[1].Token.Value} bad year format.", null);

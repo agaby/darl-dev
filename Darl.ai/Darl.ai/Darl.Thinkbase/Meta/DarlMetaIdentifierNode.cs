@@ -239,7 +239,7 @@ namespace Darl.Thinkbase.Meta
                     case IdentifierType.store_io:
                         return $"{name}[";
                     default:
-                        return $"{name} ";
+                        return $"{name}";
                 }
             }
         }

@@ -130,10 +130,10 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var list = new List<KnowledgeState>();
             var mc = db.GetCollection<LiteKnowledgeState>(knowledgestateCollection);
-            foreach(var k in ksIds)
+            foreach (var k in ksIds)
             {
-                var r  = mc.FindOne(x => x.subjectId == k && x.knowledgeGraphName == graphName) as KnowledgeState;
-                if(r != null)
+                var r = mc.FindOne(x => x.subjectId == k && x.knowledgeGraphName == graphName) as KnowledgeState;
+                if (r != null)
                     list.Add(r);
             }
             return Task.FromResult(list);

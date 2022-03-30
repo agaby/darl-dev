@@ -23,5 +23,8 @@ namespace Darl.Thinkbase
         string CreateCompletionRuleSecondPass(IGraphModel model, GraphObject res, List<(string, string, string)> paths, string op);
         List<(string, string)> CreateCompletionRuleFirstPass(IGraphModel model, GraphObject res);
         string GetSuggestedRuleSet(IGraphModel model, string objectId, string lineage);
+        bool IsValidLineage(string lin);
+        string GetBuildInitialRuleSet(IGraphModel model, string objectId, string target);
+        string GetTypeWord(string? lineage);
     }
 }

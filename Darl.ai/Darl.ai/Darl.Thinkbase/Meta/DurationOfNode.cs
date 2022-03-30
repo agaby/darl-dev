@@ -1,6 +1,4 @@
 ﻿using Darl.Common;
-using DarlCompiler.Ast;
-using DarlCompiler.Parsing;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,14 +40,14 @@ namespace Darl.Thinkbase.Meta
                 var att = grammar.currentModel.FindAttributeExistence(grammar.currentNode.id, res.Value.ToString(), grammar.state);
                 if (att == null)
                 {
-                    if(grammar.currentModel.vertices.ContainsKey(res.Value.ToString()))
+                    if (grammar.currentModel.vertices.ContainsKey(res.Value.ToString()))
                     {
                         return CalculateDuration(grammar.currentModel.vertices[res.Value.ToString()].existence);
                     }
                     else
                     {
                         var nodebyExtId = grammar.currentModel.vertices.Values.FirstOrDefault(a => a.externalId == res.Value.ToString());
-                        if(nodebyExtId != null)
+                        if (nodebyExtId != null)
                         {
                             return CalculateDuration(nodebyExtId.existence);
                         }

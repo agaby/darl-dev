@@ -4,7 +4,6 @@ using Darl.Lineage.Bot;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlCompiler.Parsing;
-using DarlLanguage.Processing;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -12,6 +11,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static Darl.Lineage.Bot.IBotProcessing;
+using static Darl.Thinkbase.IGraphHandler;
 
 namespace Darl.Thinkbase
 {
@@ -29,11 +30,12 @@ namespace Darl.Thinkbase
 
         public static string annotationSignum { get; } = "annotation";
 
+        private static int minimumData = 5;
+
         private readonly IGraphProcessing _graph;
         private readonly ILogger<GraphHandler> _logger;
         private readonly IMetaStructureHandler _metaHandler;
         public IDarlMetaRunTime _runtime;
-
         public GraphHandler(IGraphProcessing graph, ILogger<GraphHandler> logger, IMetaStructureHandler metaHandler, IDarlMetaRunTime runtime)
         {
             _graph = graph;
@@ -112,7 +114,9 @@ namespace Darl.Thinkbase
                 await EvaluateUIRule(model, target, pending, responses, ks, values, paths);
                 pending = null;
             }
-            await _graph.SaveKSChanges(userId, subjectId, ks);
+            _logger.LogInformation($"Updating KnowledgeState. {ks}");
+            if(!(await _graph.SaveKSChanges(userId, subjectId, ks)))
+                _logger.LogInformation($"Knowledge state not found. subjectId: {subjectId}, knowledgeGraphName= {graphName}, userId = {userId}");
             return (responses, pending);
         }
 
@@ -258,7 +262,7 @@ namespace Darl.Thinkbase
             //used to record progress
             log.AppendLine($"Starting discovery from object {subjectId}, Evaluation Time: {currentTime ?? new FuzzyTime(DarlTime.UtcNow)} {DateTime.UtcNow}.");
             var kr = new KnowledgeRecord { subjectId = ks.subjectId, userId = ks.userId, created = ks.created, knowledgeGraphName = ks.knowledgeGraphName, processId = ks.processId, data = ks.data };
-            var res = new KnowledgeState { userId = userId, knowledgeGraphName = knowledgeGraphName, subjectId = Guid.NewGuid().ToString(), created = DateTime.UtcNow};
+            var res = new KnowledgeState { userId = userId, knowledgeGraphName = knowledgeGraphName, subjectId = Guid.NewGuid().ToString(), created = DateTime.UtcNow };
             await RecursiveDiscovery(model, kr, res, subjectId, 1.0, lineages, log, currentTime, 0);
             log.AppendLine($"Completed discovery from object {subjectId}, {DateTime.UtcNow}.");
             return res;
@@ -332,13 +336,520 @@ namespace Darl.Thinkbase
                     return list.OrderByDescending(a => a.response.weight).ToList();
                 }
         */
+
+
+
+        public async Task<KnowledgeState> Seek(KnowledgeState ks, string? targetId, List<string> paths, string completionLineage)
+        {
+            var values = new List<DarlVar>();
+            var model = await _graph.GetModel(ks.userId, ks.knowledgeGraphName);
+            var target = await _graph.GetGraphObjectById(model.modelName, targetId ?? model.defaultTarget);
+            var dependencies = GetExecutionOrder(model, target, paths);
+            if (target != null)
+                dependencies.Insert(0, new KeyValuePair<GraphAbstraction, int>(target, 1));
+            await UpdateNodeStates(ks, model, dependencies, values, completionLineage);
+            return ks;
+        }
+
+        public async Task<Meta.DarlMineReport> Learn(string userId, string graphName, string target, LearningForm form, string targetLineage, string valueLineage, int percentTrain = 100, SetChoices sets = SetChoices.three)
+        {
+            if (form == LearningForm.association || form == LearningForm.unsupervised)
+                throw new NotImplementedException();
+            //get all the KnowledgeStates for this ruleset
+            var model = await _graph.GetModel(userId, graphName);
+            if (model == null)
+                throw new MetaRuleException($"{graphName} doesn't exist in your account");
+            var obj = await _graph.GetGraphObjectById($"{userId}_{graphName}", target);
+            if (obj == null)
+            {
+                obj = await _graph.GetGraphObjectByExternalId($"{userId}_{graphName}", target);
+            }
+            if(obj == null)
+            {
+                throw new MetaRuleException($"{target} doesn't exist in {graphName}");
+            }
+            if(target != obj.id)
+                target = obj.id ?? "";
+            var data = await _graph.GetKnowledgeStatesByType(userId, target, graphName);
+            return await SupervisedCore(data, model, target, targetLineage, valueLineage, percentTrain, sets);
+        }
+
+
+        public async Task<DarlMineReport> Build(string userId, string name, string data, string patternPath, List<DataMap> rawDataMaps, LoadType ltype = LoadType.xml)
+        {
+            var model = await _graph.GetModel(userId, name);
+            if (model == null) //create one
+            {
+                await _graph.CreateNewGraph(userId, name);
+                model = await _graph.GetModel(userId, name);
+            }
+            else
+            {
+                model.Clear();
+                model.AddDefaultContent();
+            }
+            var dataMaps = FixDataMapLineages(rawDataMaps);
+            var target = dataMaps.FirstOrDefault(a => a.target);
+            var compositeName = userId + "_" + name;
+            DarlMineReport bestReport = new DarlMineReport();
+            if (target != null) //supervised
+            {
+                var TargetObj = await CreateNode(target, compositeName);
+                //add value, text and completed
+                var targetText = $"The value of {TargetObj.externalId} is inferred to be %%{TargetObj.externalId}%%.";
+                TargetObj.properties = new List<GraphAttribute>();
+                TargetObj.properties.Add(new GraphAttribute { name = "value", lineage = _metaHandler.CommonLineages["answer"], type = target.dataType, confidence = 1.0, id = Guid.NewGuid().ToString() });
+                TargetObj.properties.Add(new GraphAttribute { name = "text", lineage = _metaHandler.CommonLineages["text"], type = GraphAttribute.DataType.textual, confidence = 1.0, id = Guid.NewGuid().ToString(), value = targetText });
+                var ruleAtt = new GraphAttribute
+                {
+                    name = "display",
+                    lineage = _metaHandler.CommonLineages["display"],
+                    type = GraphAttribute.DataType.ruleset,
+                    confidence = 1.0,
+                    id = Guid.NewGuid().ToString()
+                };
+                TargetObj.properties.Add(ruleAtt);
+                foreach (var map in dataMaps.Where( a => !a.target))//add nodes
+                {
+                    var sourceObject = await CreateNode(map, compositeName);
+                    //add value and text
+                    sourceObject.properties = new List<GraphAttribute>();
+                    sourceObject.properties.Add(new GraphAttribute { name = "value", lineage = _metaHandler.CommonLineages["answer"], type = map.dataType, confidence = 1.0, id = Guid.NewGuid().ToString() });
+                    sourceObject.properties.Add(new GraphAttribute { name = "text", lineage = _metaHandler.CommonLineages["text"], type = GraphAttribute.DataType.textual, confidence = 1.0, id = Guid.NewGuid().ToString(), value = $"What is the value for {sourceObject.externalId}?" });
+                    var link = new GraphConnectionInput { startId = TargetObj.id, endId = sourceObject.id, lineage = _metaHandler.CommonLineages["necessitate"], name = "depends", weight = 1.0 };
+                    await _graph.CreateGraphConnection(compositeName, link, OntologyAction.build);
+                }
+                //now create the initial completion code for the target object.
+                var source = _metaHandler.GetBuildInitialRuleSet(model,TargetObj.id, target.objId);
+                ruleAtt.value = source;
+                var kstates = _graph.LoadData(userId, name, model, data, patternPath, dataMaps, ltype);
+                //train the rules for each set choice
+                var sets = new List<SetChoices> { SetChoices.three, SetChoices.five, SetChoices.seven, SetChoices.nine };
+                var scores = new List<DarlMineReport>();
+                foreach(var s in sets)
+                {
+                    scores.Add(await SupervisedCore(kstates, model,TargetObj.id, _metaHandler.CommonLineages["display"], _metaHandler.CommonLineages["answer"], 90,s));
+                }
+                //choose the best set choice and copy the created rules to the completion attribute
+                switch(target.dataType)
+                {
+                    case GraphAttribute.DataType.numeric:
+                        //look for lowest ave in/outsample score
+                        bestReport = scores.Aggregate((a1, a2) => (a1.trainPerformance + a1.testPerformance) >= (a2.trainPerformance + a2.testPerformance) ? a2 : a1);
+
+                        break;
+                    case GraphAttribute.DataType.categorical:
+                        //look for highest ave in/outsample score
+                        bestReport = scores.Aggregate((a1, a2) => (a1.trainPerformance + a1.testPerformance) >= (a2.trainPerformance + a2.testPerformance) ? a1 : a2);
+                        break;
+                }
+                //remove connections that have little effect on the target
+                //move fuzzy sets and categories out to the source nodes
+                UpdateCategoriesAndSets(bestReport.code, model, TargetObj);
+                //copy ruleset to the target node.
+                ruleAtt.value = bestReport.code;
+                //create the conversation nodes.
+                CreateRecognitionObjects(TargetObj, model);
+                //save the ruleset
+                await _graph.Store(compositeName);
+            }
+            return bestReport;
+
+        }
+
+
         #region private
+
+        private void FindSetBoundaries(int desiredSets, IODefinitionNode inp, List<DarlResult> values)
+        {
+            List<int> keylist = new List<int>(); //this will hold the sorted indexes of the data values
+            bool output = inp is OutputDefinitionNode;
+            for (int n = 0; n < values.Count; n++)
+                keylist.Add(n);
+            keylist.Sort((a, b) =>
+            {
+                if (values[a].Value == null || double.IsNaN((double)values[a].Value))
+                    return 1;
+                if (values[b].Value == null || double.IsNaN((double)values[b].Value))
+                    return -1;
+                return values[a].CompareTo(values[b]);
+            }); //sort the indexes, not the values
+
+            int nValues = values.Count;
+            if (values.Count > 0 && (values[keylist[0]] == null || double.IsNaN((double)values[keylist[0]].Value)))
+                return; //only null data in this input/output
+            // Some of these values may be nulls. The sort algorithm stuffs these at the top end with the value NaN
+            // decrement nValues until the top value is not NaN.
+            while (double.IsNaN((double)values[keylist[nValues - 1]].Value))
+            {
+                nValues--;
+            }
+            //check for too few data values
+            if (nValues < desiredSets * 2 + 1)
+                return; // can't create sets - test for this - shouldn't cause problems.
+
+            //so that we don't need to repeatedly look up sets during learning,
+            //the learning source will be appended with a composite int value.
+            //The result after dividing by 1000 is the positive slope side of the set that contains the value
+            //and the remainder is the degree of truth * 1000.
+            //So 3567 is the positive slope of set three value 0.567. This means that set 2 also fires on
+            //the negative slope 0.433.
+            //this is chosen to be easy to reconstruct in IODefinitionNode.CalculateSetMembership
+            List<int> ranks = new List<int>(keylist);
+            for (int n = 0; n < values.Count; n++)
+            {
+                ranks[keylist[n]] = n;
+            }
+
+            DarlResult res;
+            switch (desiredSets)
+            {
+                case 3:
+                    res = new DarlResult(output ? 2 * (double)values[keylist[0]].Value - (double)values[keylist[(nValues) / 2]].Value : double.NegativeInfinity, (double)values[keylist[0]].Value, (double)values[keylist[nValues / 2]].Value)
+                    {
+                        leftUnbounded = true,
+                        identifier = "small"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], (double)values[keylist[nValues - 1]].Value)
+                    {
+                        identifier = "medium"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], output ? 2 * (double)res.values[2] - (double)res.values[1] : double.PositiveInfinity)
+                    {
+                        rightUnbounded = true,
+                        identifier = "large"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    break;
+                case 5:
+                    res = new DarlResult(output ? 2 * (double)values[keylist[0]].Value - (double)values[keylist[(nValues) / 4]].Value : double.NegativeInfinity, (double)values[keylist[0]].Value, (double)values[keylist[nValues / 4]].Value)
+                    {
+                        leftUnbounded = true,
+                        identifier = "very_small"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], (double)values[keylist[nValues / 2]].Value)
+                    {
+                        identifier = "small"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], (double)values[keylist[3 * nValues / 4]].Value)
+                    {
+                        identifier = "medium"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], (double)values[keylist[nValues - 1]].Value)
+                    {
+                        identifier = "large"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], output ? (2 * (double)res.values[2]) - (double)res.values[1] : double.PositiveInfinity)
+                    {
+                        rightUnbounded = true,
+                        identifier = "very_large"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    break;
+                case 7:
+                    res = new DarlResult(output ? 2 * (double)values[keylist[0]].Value - (double)values[keylist[(nValues) / 6]].Value : double.NegativeInfinity, (double)values[keylist[0]].Value, (double)values[keylist[nValues / 6]].Value)
+                    {
+                        leftUnbounded = true,
+                        identifier = "very_small"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], (double)values[keylist[nValues / 3]].Value)
+                    {
+                        identifier = "small"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], (double)values[keylist[nValues / 2]].Value)
+                    {
+                        identifier = "quite_small"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], (double)values[keylist[2 * nValues / 3]].Value)
+                    {
+                        identifier = "medium"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], (double)values[keylist[(5 * nValues) / 6]].Value)
+                    {
+                        identifier = "quite_large"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], (double)values[keylist[nValues - 1]].Value)
+                    {
+                        identifier = "large"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], output ? 2 * (double)res.values[2] - (double)res.values[1] : double.PositiveInfinity)
+                    {
+                        rightUnbounded = true,
+                        identifier = "very_large"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    break;
+                case 9:
+                    res = new DarlResult(output ? (2 * (double)values[keylist[0]].Value) - (double)values[keylist[(nValues) / 8]].Value : double.NegativeInfinity, (double)values[keylist[0]].Value, (double)values[keylist[(nValues) / 8]].Value)
+                    {
+                        leftUnbounded = true,
+                        identifier = "extremely_small"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], (double)values[keylist[nValues / 4]].Value)
+                    {
+                        identifier = "very_small"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], (double)values[keylist[(3 * nValues) / 8]].Value)
+                    {
+                        identifier = "small"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], (double)values[keylist[nValues / 2]].Value)
+                    {
+                        identifier = "quite_small"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], (double)values[keylist[5 * nValues / 8]].Value)
+                    {
+                        identifier = "medium"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], (double)values[keylist[3 * nValues / 4]].Value)
+                    {
+                        identifier = "quite_large"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], (double)values[keylist[7 * nValues / 8]].Value)
+                    {
+                        identifier = "large"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], (double)values[keylist[nValues - 1]].Value)
+                    {
+                        identifier = "very_large"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    res = new DarlResult((double)res.values[1], (double)res.values[2], output ? 2 * (double)res.values[2] - (double)res.values[1] : double.PositiveInfinity)
+                    {
+                        rightUnbounded = true,
+                        identifier = "extremely_large"
+                    };
+                    inp.sets.Add(res.identifier, res);
+                    inp.categories.Add(res.identifier);
+                    break;
+                default:
+                    throw new MetaRuleException(string.Format("illegal set choice: {0}", desiredSets));
+            }
+
+            for (int n = 0; n < values.Count; n++)
+            {
+                if (ranks[n] < nValues)
+                {
+                    int rampNumber = ranks[n] * (desiredSets - 1) / nValues;
+                    var result = inp.sets[inp.categories[rampNumber]];
+                    int truth = 0;
+                    if ((double)result.values[2] != (double)result.values[1])
+                        truth = Math.Min(999, Convert.ToInt32(((double)values[n].Value - (double)result.values[1]) * 1000 / ((double)result.values[2] - (double)result.values[1])));
+                    inp.learningSource.Add(rampNumber * 1000 + truth);
+                }
+                else
+                    inp.learningSource.Add(-1);
+            }
+        }
+
+
+        private List<DataMap> FixDataMapLineages(List<DataMap> dataMaps)
+        {
+            var list = new List<DataMap>();
+            var names = new HashSet<string>();
+            foreach (var k in dataMaps)
+            {
+                var newMap = new DataMap { dataType = k.dataType, target = k.target, attLineage = k.attLineage, objectLineage = k.objectLineage, objectSubLineage = k.objectSubLineage, objId = k.objId, relPath = k.relPath  };
+                if(names.Contains(k.objId))
+                {
+                    throw new MetaRuleException($"Duplicate objId {k.objId}");
+                }
+                names.Add(k.objId);
+                if (!string.IsNullOrEmpty(k.attLineage) && !_metaHandler.IsValidLineage(k.attLineage))
+                {
+                    if (_metaHandler.CommonLineages.TryGetValue(k.attLineage, out var lineage))
+                    {
+                        newMap.attLineage = lineage;
+                    }
+                    else
+                    {
+                        throw new MetaRuleException($"Attribute lineage {k.attLineage} not found in the model under object {k.objId}.");
+                    }
+                }
+                if (!string.IsNullOrEmpty(k.objectLineage) && !_metaHandler.IsValidLineage(k.objectLineage))
+                {
+                    if (_metaHandler.CommonLineages.TryGetValue(k.objectLineage, out var lineage))
+                    {
+                        newMap.objectLineage = lineage;
+                    }
+                    else
+                    {
+                        throw new MetaRuleException($"Attribute lineage {k.objectLineage} not found in the model under object {k.objId}.");
+                    }
+                }
+                if (!string.IsNullOrEmpty(k.objectSubLineage) && !_metaHandler.IsValidLineage(k.objectSubLineage))
+                {
+                    if (_metaHandler.CommonLineages.TryGetValue(k.objectSubLineage, out var lineage))
+                    {
+                        newMap.objectSubLineage = lineage;
+                    }
+                    else
+                    {
+                        throw new MetaRuleException($"Attribute lineage {k.objectSubLineage} not found in the model under object {k.objId}.");
+                    }
+                }
+                list.Add(newMap);
+            }
+            return list;
+        }
+
+        private void UpdateCategoriesAndSets(string code, IGraphModel model, GraphObject target)
+        {
+            var tree = _runtime.CreateTree(code, target, model);
+            tree.GetInputs().ForEach(x => 
+            { 
+                var matchingNode = model.vertices.Values.FirstOrDefault(a => a.externalId == x.name);
+                if(matchingNode != null)
+                {
+                    var catNode = matchingNode.properties != null ? matchingNode.properties.FirstOrDefault(b => b.lineage == _metaHandler.CommonLineages["answer"]) : null;
+                    if(catNode != null)
+                    {
+                        switch(catNode.type)
+                        {
+                            case GraphAttribute.DataType.categorical:
+                                {
+                                    catNode.properties = new List<GraphAttribute>();
+                                    foreach(var cat in x.categories)
+                                    {
+                                        catNode.properties.Add(new GraphAttribute {value = cat, type = GraphAttribute.DataType.textual, name = "category", lineage = _metaHandler.CommonLineages["category"] });
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                }
+            });
+        }
+
+
+        private async Task<DarlMineReport> SupervisedCore(List<KnowledgeState> data, IGraphModel model, string target, string targetLineage, string valueLineage, int percentTrain, SetChoices sets)
+        {
+            if (data.Count < minimumData)
+                throw new MetaRuleException($"Only {data.Count} training values found. Cannot continue.");
+            var ps = await PrepareDataForLearning(data, model, target, targetLineage, valueLineage, percentTrain, (int)sets);
+            var rep = _runtime.MineSupervised(ps);
+            rep.sets = sets;
+            return rep;
+        }
+
+        private async Task<GraphObject > CreateNode(DataMap map, string compositeName)
+        {
+            var TargetObj = new GraphObjectInput { name = map.objId, lineage = map.objectLineage, subLineage = map.objectSubLineage, externalId = map.objId };
+            TargetObj.properties.Add(new GraphAttributeInput { name = "value", lineage = _metaHandler.CommonLineages["answer"], type = map.dataType });
+            TargetObj.properties.Add(new GraphAttributeInput { name = "text", lineage = _metaHandler.CommonLineages["text"], type = GraphAttribute.DataType.textual, value = $"What is the value of {map.objId}?" });
+            return await _graph.CreateGraphObject(compositeName, TargetObj, OntologyAction.build);            
+        }
+
+        private void CreateRecognitionObjects(GraphObject? target, IGraphModel model)
+        {
+            if (target == null || string.IsNullOrEmpty(target.lineage))
+                return;
+            var code = $"output textual response;\n if anything then response will be \"Please answer the following:\";\n output network completed \"{target.externalId}\" complete;\n if anything then completed will be seek(necessitate); ";
+            if (target.lineage.Contains('+'))
+            {
+                var split = model.SplitCompositeLineage(target.lineage);
+                var typeWordMain = _metaHandler.GetTypeWord(split.Item1);
+                var typeWordSub = _metaHandler.GetTypeWord(split.Item2);
+                var obj1 = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = split.Item1, name = typeWordMain };
+                model.recognitionVertices.Add(obj1.id, obj1);
+                var obj2 = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = split.Item2, name = typeWordSub };
+                model.recognitionVertices.Add(obj2.id, obj2);
+                var obj3 = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = split.Item2, name = typeWordSub };
+                model.recognitionVertices.Add(obj3.id, obj3);
+                var obj4 = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = split.Item1, name = typeWordMain };
+                model.recognitionVertices.Add(obj4.id, obj4);
+                var termObj = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = "terminus:", name = "#", properties = new List<GraphAttribute> { new GraphAttribute { id = Guid.NewGuid().ToString(), type = GraphAttribute.DataType.ruleset, value = code, lineage = "adjective:8953" } } };
+                model.recognitionVertices.Add(termObj.id, termObj);
+                var conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = obj1.id, startId = model.recognitionRoots["default:"].id ?? "", weight = 1.0 };
+                model.recognitionVertices[conn.startId].Out.Add(conn);
+                model.recognitionVertices[conn.endId].In.Add(conn);
+                model.recognitionEdges.Add(conn.id, conn);
+                conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = obj3.id, startId = model.recognitionRoots["default:"].id ?? "", weight = 1.0 };
+                model.recognitionVertices[conn.startId].Out.Add(conn);
+                model.recognitionVertices[conn.endId].In.Add(conn);
+                model.recognitionEdges.Add(conn.id, conn);
+                conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = obj2.id, startId = obj1.id ?? "", weight = 1.0 };
+                model.recognitionVertices[conn.startId].Out.Add(conn);
+                model.recognitionVertices[conn.endId].In.Add(conn);
+                model.recognitionEdges.Add(conn.id, conn);
+                conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = obj4.id, startId = obj3.id ?? "", weight = 1.0 };
+                model.recognitionVertices[conn.startId].Out.Add(conn);
+                model.recognitionVertices[conn.endId].In.Add(conn);
+                model.recognitionEdges.Add(conn.id, conn);
+                conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = termObj.id, startId = obj2.id ?? "", weight = 1.0 };
+                model.recognitionVertices[conn.startId].Out.Add(conn);
+                model.recognitionVertices[conn.endId].In.Add(conn);
+                model.recognitionEdges.Add(conn.id, conn);
+                conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = termObj.id, startId = obj4.id ?? "", weight = 1.0 };
+                model.recognitionVertices[conn.startId].Out.Add(conn);
+                model.recognitionVertices[conn.endId].In.Add(conn);
+                model.recognitionEdges.Add(conn.id, conn);
+                model.defaultTarget = target.externalId;
+                model.initialText = $"What is the {typeWordMain} {typeWordSub}?";
+            }
+            else
+            {
+                var typeWord = _metaHandler.GetTypeWord(target.lineage);
+                var obj = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = target.lineage, name = typeWord, properties = new List<GraphAttribute> { new GraphAttribute { id = Guid.NewGuid().ToString(), type = GraphAttribute.DataType.ruleset, value = code, lineage = "adjective:8953" } } };
+                model.recognitionVertices.Add(obj.id, obj);
+                var conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = obj.id, startId = model.recognitionRoots["default:"].id ?? "", weight = 1.0 };
+                model.recognitionVertices[conn.startId].Out.Add(conn);
+                model.recognitionVertices[conn.endId].In.Add(conn);
+                model.recognitionEdges.Add(conn.id, conn);
+                model.defaultTarget = target.externalId;
+                model.initialText = $"What is the {typeWord}?";
+            }
+        }
 
         private async Task<KnowledgeState> GetKnowledgeState(string userId, string subjectId, string graphName)
         {
             var ks = await _graph.GetKnowledgeState(userId, subjectId, graphName);
             if (ks == null)
-                ks = new KnowledgeState { userId = userId, subjectId = subjectId, knowledgeGraphName = graphName };
+            {
+                ks = await _graph.CreateKnowledgeState(userId, new KnowledgeStateInput { knowledgeGraphName = graphName, data = new List<StringListGraphAttributeInputPair>(), subjectId = subjectId });
+            }
             return ks;
         }
 
@@ -779,14 +1290,14 @@ namespace Darl.Thinkbase
                     throw new MetaRuleException($"No node found in {ks.subjectId}");
                 log.AppendLine($"{DepthIndicator(depth)}Processing Node: {currentNode.externalId}, { DateTime.UtcNow}.");
                 state.data.Add(currentNode.id ?? String.Empty, new List<GraphAttribute> { new GraphAttribute { name = "completed", type = GraphAttribute.DataType.categorical, value = "true", lineage = _metaHandler.CommonLineages["complete"] } });
-                await RecursiveDiscovery(model, state, currentNode, weight, lineages, log, currentTime, depth +1);
+                await RecursiveDiscovery(model, state, currentNode, weight, lineages, log, currentTime, depth + 1);
                 return;
-            } 
+            }
             if (!await CheckCodeCompletion(model, state, currentNode, log, currentTime, depth))
                 return;
             if (ks.subjectId == startSubjectId) //copy attributes from ks into state
             {
-                if(!state.data.ContainsKey(currentNode.id ?? string.Empty))
+                if (!state.data.ContainsKey(currentNode.id ?? string.Empty))
                 {
                     state.data.Add(currentNode.id ?? string.Empty, new List<GraphAttribute>());
                 }
@@ -846,7 +1357,7 @@ namespace Darl.Thinkbase
             foreach (var s in connections.Where(a => a.inferred == false))
             {
                 var endObject = model.vertices[s.endId];
-                if (!CheckForLoop(state,endObject) && Coexists(endObject, ks, model, currentTime))//avoid loops
+                if (!CheckForLoop(state, endObject) && Coexists(endObject, ks, model, currentTime))//avoid loops
                 {
                     state.data.Add(endObject.id ?? String.Empty, new List<GraphAttribute> { new GraphAttribute { name = "completed", type = GraphAttribute.DataType.categorical, value = "true", lineage = _metaHandler.CommonLineages["complete"] } });
                     await RecursiveDiscovery(model, state, endObject, Math.Min(weight, s.weight), lineages, log, currentTime, depth + 1);
@@ -867,7 +1378,7 @@ namespace Darl.Thinkbase
                     var tree = _runtime.CreateTree(code, currentNode, model); //findControlAttribute checks for syntax errors.
                     var list = new List<Meta.DarlResult>();
                     await _runtime.Evaluate(tree, list, ks, currentTime); //add current time for eval
-                                                             //return false if further movement not possible.
+                                                                          //return false if further movement not possible.
                     var complete = list.FirstOrDefault(a => a.name == "completed");
                     if (!complete.Exists() || (complete.Value as string) == "false" || complete.GetWeight() < 0.1)
                     {
@@ -875,7 +1386,7 @@ namespace Darl.Thinkbase
                         return false; //rules prevent further search
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     log.AppendLine($"Error in evaluating code: \n{code}\nmessage: \n{ex.Message}\n { DateTime.UtcNow}.");
                     return false;
@@ -886,7 +1397,7 @@ namespace Darl.Thinkbase
 
         private bool CheckForLoop(KnowledgeState state, GraphObject next)
         {
-            if(!string.IsNullOrEmpty(next.id))
+            if (!string.IsNullOrEmpty(next.id))
             {
                 return state.ContainsRecord(next.id);
             }
@@ -931,7 +1442,7 @@ namespace Darl.Thinkbase
         private string DepthIndicator(int depth)
         {
             var di = string.Empty;
-            for(int n = 0; n < depth; n++)
+            for (int n = 0; n < depth; n++)
             {
                 di += "- ";
             }
@@ -962,18 +1473,236 @@ namespace Darl.Thinkbase
             }
         }
 
-        public async Task<KnowledgeState> Seek(KnowledgeState ks, string? targetId, List<string> paths, string completionLineage)
+
+
+        private async Task<PreparedLearningSet> PrepareDataForLearning(List<KnowledgeState> data, IGraphModel model, string target, string targetLineage, string valueLineage, int percentTrain, int sets)
         {
-            var values = new List<DarlVar>();
-            var model = await _graph.GetModel(ks.userId, ks.knowledgeGraphName);
-            var target = await _graph.GetGraphObjectById(model.modelName, targetId ?? model.defaultTarget);
-            var dependencies = GetExecutionOrder(model, target, paths);
-            if (target != null)
-                dependencies.Insert(0, new KeyValuePair<GraphAbstraction, int>(target, 1));
-            await UpdateNodeStates(ks, model, dependencies, values, completionLineage);
-            return ks;
+            //find the target in the KG.
+            GraphObject? targetObj = null;
+            if (model.vertices.ContainsKey(target))
+            {
+                targetObj = model.vertices[target];
+            }
+            else
+            {
+                targetObj = model.vertices.Values.FirstOrDefault(a => a.externalId == target);
+            }
+            if(targetObj == null)
+            {
+                throw new MetaRuleException($"Target { target } not present in model");
+            }
+            if (!targetObj.ContainsAttribute(targetLineage, null))
+            {
+                throw new MetaRuleException($"Target Attribute { targetLineage} not present in model");
+            }
+            if (!targetObj.ContainsAttribute(valueLineage, null))
+            {
+                throw new MetaRuleException($"Value Attribute { valueLineage} not present in model");
+            }
+            var paths = model.GetLineages(GraphElementType.connection).Select(a => a.lineage).ToList(); //choose all paths
+            //find dependencies of the target.
+            var dependencies = GetExecutionOrder(model, targetObj, paths);
+            if (!dependencies.Any())
+                throw new MetaRuleException($"No source data nodes/attributes have been found.");
+            //Get the ruleset to process
+            var att = targetObj.GetAttribute(targetLineage);
+            if (att == null)
+                throw new MetaRuleException($"Target attribute {targetLineage} not found");
+            if (att.type != GraphAttribute.DataType.ruleset)
+            {
+                throw new MetaRuleException($"Target attribute {targetLineage} is not a ruleset.");
+            }
+            var source = att.value;
+            ParseTree? tree = null;
+            try
+            {
+                tree = _runtime.CreateTree(source, targetObj, model);
+            }
+            catch (Exception ex)
+            {
+                throw new MetaRuleException($"Errors in the target rule source. ", ex);
+            }
+            if (tree == null)
+            {
+                throw new MetaRuleException($"Empty rule source");
+            }
+
+            var ps = new PreparedLearningSet
+            {
+                sets = sets,
+                data = new Dictionary<string, List<DarlResult>>(),
+                rroot = tree.Root.AstNode as MetaRootNode ?? new MetaRootNode(),
+                patternCount = data.Count,
+                ruleset = source,
+                targetNode = targetObj, 
+                model = model,
+                knowledgeStates = data,
+                targetNodeId = target,
+                targetLineage = targetLineage,
+                valueLineage = valueLineage,
+                percentTrain = percentTrain
+            };
+
+            ps.ruleSetContents = ps.rroot.Span;
+
+            //Now perform data analysis
+            //use the Evaluate function to reference all the data items.
+            OutputDefinitionNode? output = null;
+            OutputDefinitionNode? control = null;
+            foreach (var ks in data)
+            {
+                var values = new List<DarlResult>();
+                try
+                {
+                    await _runtime.Evaluate(tree, values, ks);
+                }
+                catch(Exception ex)
+                {
+
+                }
+                foreach (var v in values)
+                {
+                    if (!ps.data.ContainsKey(v.name))
+                        ps.data.Add(v.name, new List<DarlResult> { v });
+                    else
+                        ps.data[v.name].Add(v);
+                }
+                //lineages are only valid after evaluation
+                if (output == null)
+                    output = ps.rroot.outputs.Select(a => a.Value as Meta.OutputDefinitionNode).Where(b => b != null && b.lineage == valueLineage).FirstOrDefault();
+                if (control == null)
+                    control = ps.rroot.outputs.Select(a => a.Value as Meta.OutputDefinitionNode).Where(b => b != null && b.lineage == targetLineage).FirstOrDefault();
+                if (output != null)
+                {
+                    if (!ps.data.ContainsKey(output.name))
+                    {
+                        ps.data.Add(output.name, new List<DarlResult>());
+                    }
+                    ps.data[output.name].Add(ConvertResult(ks.GetAttribute(target, valueLineage)));
+                }
+            }
+            //output lineages not set 'til evaluation
+
+            ps.outp = output;
+            //now process data
+
+            ps.inps = ps.rroot.outputs.Values.Where(i => i != output &&  i != control).Select(a => a as OutputAsInputDefinitionNode ?? new OutputAsInputDefinitionNode()).ToList<IODefinitionNode>();
+            ps.inps.AddRange(ps.rroot.inputs.Values.ToList<IODefinitionNode>());
+
+            var ioDefs = new List<IODefinitionNode>();
+            ioDefs.AddRange(ps.rroot.outputs.Values.Where(i => i != control).ToList());
+            ioDefs.AddRange(ps.rroot.inputs.Values);
+
+            foreach (var o in ioDefs)
+            {
+                if (ps.data.ContainsKey(o.name))
+                {
+                    var values = ps.data[o.name];
+                    switch (values[0].dataType)
+                    {
+                        case DarlResult.DataType.numeric:
+                            FindSetBoundaries(sets, o, values);
+                            break;
+                        case DarlResult.DataType.categorical:
+                            HandleCategories(o, values);
+                            break;
+                    }
+                }
+            }
+
+            //create an ind set for training and testing
+            //Create a random selection of indices to be used when data is loaded
+            if (percentTrain < 100)
+            {
+                Random rand = new Random();
+                for (int n = 0; n < ps.patternCount; n++)
+                {
+                    if (rand.Next(100) < percentTrain)
+                    {
+                        ps.inSamplePatterns.Add(n);
+                    }
+                    else
+                    {
+                        ps.outSamplePatterns.Add(n);
+                    }
+                }
+            }
+            else
+            {
+                for (int n = 0; n < ps.patternCount; n++)
+                {
+                    ps.inSamplePatterns.Add(n);
+                }
+            }
+            return ps;
         }
 
+        private void HandleCategories(IODefinitionNode o, List<DarlResult> values)
+        {
+            o.categories.Clear();
+            o.catsAsIdentifiers.Clear();
+            foreach (DarlResult result in values)
+            {
+                var val = (result.Value as string);
+                if(val == null)
+                {
+                    o.learningSource.Add(-1);
+                    continue;
+                }
+                if (!o.categories.Contains(val))
+                {
+                    o.categories.Add(val);//collect all categories
+                    o.catsAsIdentifiers.Add(val, false);
+                }
+                o.learningSource.Add(o.categories.IndexOf(val));
+            }
+        }
+
+
+        /// <summary>
+        /// Convert a GraphAttribute to a DarlResult
+        /// </summary>
+        /// <param name="graphAttribute"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        private DarlResult ConvertResult(GraphAttribute? graphAttribute)
+        {
+            if (graphAttribute == null)
+                return new DarlResult();
+            switch (graphAttribute.type)
+            {
+                case GraphAttribute.DataType.numeric:
+                    {
+                        var res = new DarlResult(DarlResult.DataType.numeric, graphAttribute.confidence);
+                        try
+                        {
+                            res.Value = Convert.ToDouble(graphAttribute.value);
+                            res.values.Add(res.Value);
+                            res.Normalise(false);
+                        }
+                        catch
+                        {
+                            res = new DarlResult(0.0, true);
+                        }
+                        return res;
+                    }
+                case GraphAttribute.DataType.categorical:
+                    {
+                        var res = new DarlResult(DarlResult.DataType.categorical, graphAttribute.confidence);
+                        res.Value = graphAttribute.value;
+                        if (graphAttribute.properties != null)
+                        {
+                            foreach (var property in graphAttribute.properties)
+                            {
+                                res.categories.Add(property.value, 1.0);
+                            }
+                        }
+                        return res;
+                    }
+                default:
+                    return new DarlResult();
+            }
+        }
 
 
 

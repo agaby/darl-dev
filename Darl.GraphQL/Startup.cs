@@ -11,7 +11,6 @@ using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using DarlLanguage.Processing;
 using GraphQL;
-using GraphQL.Authorization;
 using GraphQL.DataLoader;
 using GraphQL.Execution;
 using GraphQL.Server;
@@ -20,7 +19,6 @@ using GraphQL.Server.Ui.GraphiQL;
 using GraphQL.Server.Ui.Playground;
 using GraphQL.Server.Ui.Voyager;
 using GraphQL.SystemReactive;
-using GraphQL.Validation;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -118,6 +116,7 @@ namespace Darl.GraphQL
             services.AddSingleton<IProducts, Products>();
             services.AddSingleton<ICheckEmail, EmailChecker>();
             services.AddSingleton<IDarlMetaRunTime, DarlMetaRunTime>();
+            services.AddSingleton<Thinkbase.IDataLoader, DataLoader>();
 
             //types
             services.AddSingleton<DictionarySequenceType>();
@@ -243,6 +242,8 @@ namespace Darl.GraphQL
             services.AddSingleton<ModelMetaDataType>();
             services.AddSingleton<ModelMetaDataUpdateType>();
             services.AddSingleton<PushSubType>();
+            services.AddSingleton<DataMapType>();
+            services.AddSingleton<ThinkBaseProcessType>();
 
 
 
@@ -273,7 +274,8 @@ namespace Darl.GraphQL
                 .AddUserContextBuilder(context => new GraphQLUserContext { User = context.User })
                 .AddGraphTypes(typeof(DarlSchema).Assembly)
                 .AddGraphTypes(typeof(KGraphType).Assembly)
-                .AddGraphQLAuthorization(options => {
+                .AddGraphQLAuthorization(options =>
+                {
                     options.AddPolicy("AdminPolicy", p => p.RequireClaim(roleClaimText, "Admin"));
                     options.AddPolicy("UserPolicy", p => p.RequireClaim(roleClaimText, "User"));
                     options.AddPolicy("CorpPolicy", p => p.RequireClaim(roleClaimText, "Corp"));
@@ -354,7 +356,7 @@ namespace Darl.GraphQL
                         }
                     }
                 }
-                else if(_rep != null)
+                else if (_rep != null)
                 {
                     //look for header
                     var authHeader = context.Request.Headers["Authorization"].ToString();
@@ -382,7 +384,7 @@ namespace Darl.GraphQL
                     var identity = new GenericIdentity(objectId);
                     identity.AddClaims(context.User.Claims);
                     identity.AddClaim(new Claim("apikey", du.APIKey));
-                    foreach(var c in roles.Split(','))
+                    foreach (var c in roles.Split(','))
                         identity.AddClaim(new Claim(roleClaimText, c.ToString()));
                     context.User = new GenericPrincipal(identity, string.IsNullOrEmpty(roles) ? Array.Empty<string>() : roles.Split(','));
                 }

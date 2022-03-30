@@ -2,6 +2,7 @@
 using DarlCompiler.Interpreter;
 using DarlCompiler.Parsing;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -9,9 +10,6 @@ namespace Darl.Thinkbase.Meta
 {
     public class OutputDefinitionNode : IOSequenceDefinitionNode
     {
-
-
-
         /// <summary>
         /// Enumerates the possible output types
         /// </summary>
@@ -45,7 +43,7 @@ namespace Darl.Thinkbase.Meta
         /// <value>
         /// The type of the output.
         /// </value>
-        public OutputTypes iType { get; private set; }
+        public OutputTypes oType { get; private set; }
 
 
 
@@ -56,10 +54,6 @@ namespace Darl.Thinkbase.Meta
         {
             result = new DarlResult(0.0, true);
         }
-
-        public string lineage { get; set; }
-
-        public string typeword { get; set; }
 
         public string nodeId { get; set; }
 
@@ -74,30 +68,10 @@ namespace Darl.Thinkbase.Meta
         {
             base.Init(context, treeNode);
             var nodes = treeNode.GetMappedChildNodes();
-            iType = (OutputTypes)Enum.Parse(typeof(OutputTypes), nodes[0].Term.Name, true);
+            oType = (OutputTypes)Enum.Parse(typeof(OutputTypes), nodes[0].Term.Name, true);
             name = (string)nodes[0].Token.Value;
-            var lin = nodes.Last();
-            if (lin.Term.Name == "lineageLiteral")
-            {
-                //get lineage and check it.
-                var linLineage = (string)lin.Token.Value;
-                var validity = Darl.Lineage.LineageLibrary.CheckLineageWithTypeWord(linLineage);
-                if (!validity.Item1)
-                {
-                    context.AddMessage(DarlCompiler.ErrorLevel.Error, lin.Token.Location, $"'{linLineage}' is not a valid lineage.");
-                }
-                else
-                {
-                    typeword = validity.Item2;
-                    lineageNode = lin.AstNode as DarlMetaNode;
-                }
-            }
-            else if (lin.Term.Name == "lineage_constant")
-            {
-                lineageNode = lin.AstNode as DarlMetaNode;
-                //can't check lineage validity
-            }
-            switch (iType)
+            SetLineagesInInit(context, nodes);
+            switch (oType)
             {
                 case OutputTypes.temporal_output:
                 case OutputTypes.numeric_output:
@@ -148,7 +122,7 @@ namespace Darl.Thinkbase.Meta
             get
             {
                 StringBuilder sb = new StringBuilder();
-                switch (iType)
+                switch (oType)
                 {
                     case OutputTypes.categorical_output:
                         if (categories.Count > 0)
@@ -164,16 +138,16 @@ namespace Darl.Thinkbase.Meta
                                     sb.Append(",");
                                 }
                             }
-                            sb.AppendLine("};");
+                            sb.Append("}");
                         }
                         else
                         {
-                            sb.AppendLine("output categorical " + name + ";");
+                            sb.Append("output categorical " + name);
                         }
                         break;
                     case OutputTypes.temporal_output:
                     case OutputTypes.numeric_output:
-                        var t = iType == OutputTypes.numeric_output ? "numeric" : "temporal";
+                        var t = oType == OutputTypes.numeric_output ? "numeric" : "temporal";
                         if (sets.Count > 0)
                         {
 
@@ -186,7 +160,7 @@ namespace Darl.Thinkbase.Meta
                                 foreach (double d in sets[set].values)
                                 {
                                     valCount++;
-                                    sb.Append(d.ToString(System.Globalization.CultureInfo.InvariantCulture) + (valCount == sets[set].values.Count ? "" : ","));
+                                    sb.Append(Math.Round(d,4).ToString(System.Globalization.CultureInfo.InvariantCulture) + (valCount == sets[set].values.Count ? "" : ","));
                                 }
                                 sb.Append("}");
                                 setindex++;
@@ -195,18 +169,23 @@ namespace Darl.Thinkbase.Meta
                                     sb.Append(",");
                                 }
                             }
-                            sb.AppendLine("};");
+                            sb.Append("}");
                         }
                         else
                         {
-                            sb.AppendLine($"output {t} {name};");
+                            sb.Append($"output {t} {name}");
                         }
                         break;
                     case OutputTypes.textual_output:
-                        sb.AppendLine($"output textual {name};");
+                        sb.Append($"output textual {name}");
                         break;
 
                 }
+                if(lineageNode != null)
+                {
+                    sb.Append(" " + lineageNode.TermToDarl());
+                }
+                sb.AppendLine(";");
                 return sb.ToString();
             }
         }
@@ -218,7 +197,7 @@ namespace Darl.Thinkbase.Meta
             if (CatLineageNode != null)
             {
                 var grammar = thread.Runtime.Language.Grammar as DarlMetaGrammar;
-                if (grammar.currentNode == null || grammar.currentNode.properties == null)
+                if (grammar == null || grammar.currentNode == null || grammar.currentNode.properties == null)
                     return;
                 var lin = CatLineageNode is LineageLiteral ? ((LineageLiteral)CatLineageNode).literal : ((DarlResult)CatLineageNode.Evaluate(thread).Result).Value as string;
                 var att = grammar.currentModel.FindDataAttribute(grammar.currentNode.id, lin, grammar.state);
@@ -229,6 +208,90 @@ namespace Darl.Thinkbase.Meta
                 {
                     categories.Add(c.Replace('"', ' ').Trim());
                 }
+            }
+        }
+
+        /// <summary>
+        /// get a table of the partitions found in the list of indices, derived from a decision node
+        /// ignoring minor results. the 2nd element is the confidence.
+        /// </summary>
+        /// <param name="indices">The indices.</param>
+        /// <returns>The table</returns>
+        public Dictionary<object, double> ChoosePartitions(List<int> indices)
+        {
+            // called from a leaf node
+            // find the dominant partition of the data pointed to by the indices array
+            Dictionary<object, double> classMap = new Dictionary<object, double>();
+            double dSumOfScores = 0.0;
+            foreach (int index in indices)
+            {
+                if (learningSource[index] != -1)
+                {
+                    if (oType == OutputTypes.categorical_output)
+                    {
+                        int val = learningSource[index];
+                        if (classMap.ContainsKey(val))
+                        {
+                            double dTemp = (double)classMap[val];
+                            classMap[val] = dTemp + 1.0;
+                        }
+                        else
+                        {
+                            classMap.Add(val, 1.0);
+                        }
+                        dSumOfScores += 1.0;
+                    }
+                    else
+                    {
+                        for (int nSet = 0; nSet < sets.Count; nSet++)
+                        {
+                            double dRes = this.CalculateSetMembership(learningSource[index], nSet);
+                            if (dRes > 0.0)
+                            {
+                                //			string setName = ((Result)sets[nSet]).identifier;
+                                if (classMap.ContainsKey(nSet))
+                                {
+                                    double dTemp = (double)classMap[nSet];
+                                    classMap[nSet] = dTemp + dRes;
+                                }
+                                else
+                                {
+                                    classMap.Add(nSet, dRes);
+                                }
+                                dSumOfScores += dRes;
+                            }
+                        }
+                    }
+                }
+            }
+            Dictionary<object, double> newMap = new Dictionary<object, double>();
+            if (dSumOfScores > 0.0)
+            {
+                foreach (Object temp in classMap.Keys)
+                {
+                    double dTemp = (double)classMap[temp];
+                    newMap.Add(temp, dTemp / dSumOfScores);
+                }
+            }
+            return newMap;
+        }
+
+        /// <summary>
+        /// Calculates the membership.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="set">The set.</param>
+        /// <returns>
+        /// The membership
+        /// </returns>
+        internal override double CalculateMembership(int index, int set)
+        {
+            switch (oType)
+            {
+                case OutputTypes.categorical_output:
+                    return learningSource[index] == set ? 1.0 : 0.0;
+                default:
+                    return CalculateSetMembership(learningSource[index], set);
             }
         }
 

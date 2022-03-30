@@ -116,7 +116,8 @@ namespace Darl.GraphQL.Test
             var trans = new Mock<IKGTranslation>();
             var lic = new Mock<ILicensing>();
             _primitives = new BlobGraphPrimitives(blob, cache.Object, _conn, bgplogger.Object, lic.Object);
-            _graph = new GraphProcessing(_primitives, glogger.Object, meta);
+            var dataLoader = new DataLoader(meta);
+            _graph = new GraphProcessing(_primitives, glogger.Object, meta, dataLoader);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
             var form = new Mock<IFormApi>();
             _form = form.Object;
@@ -127,8 +128,9 @@ namespace Darl.GraphQL.Test
             var bplogger = new Mock<ILogger<BotProcessing>>();
             _bplogger = bplogger.Object;
             _context = context.Object;
-            _runtime = new DarlMetaRunTime(_config,meta);
+            _runtime = new DarlMetaRunTime(_config, meta);
             _graphHandler = new GraphHandler(_graph, ghlogger.Object, meta, _runtime);
+
         }
 
         [TestMethod]
@@ -136,12 +138,13 @@ namespace Darl.GraphQL.Test
         {
             var compositeName = $"{_config["userId"]}_{graphName}";
             await _graph.ClearGraphContent(compositeName);
-            var senator = new GraphAttributeInput 
-            { 
-                name = "senator", 
-                value = "true", lineage = senatorLineage, 
-                type = GraphAttribute.DataType.categorical, 
-                properties = new List<GraphAttributeInput> { 
+            var senator = new GraphAttributeInput
+            {
+                name = "senator",
+                value = "true",
+                lineage = senatorLineage,
+                type = GraphAttribute.DataType.categorical,
+                properties = new List<GraphAttributeInput> {
                     new GraphAttributeInput {name = "category", lineage = meta.CommonLineages["category"], type = GraphAttribute.DataType.textual, value = "true"},
                     new GraphAttributeInput {name = "category", lineage = meta.CommonLineages["category"], type = GraphAttribute.DataType.textual, value = "false"}
                 }
@@ -206,9 +209,9 @@ namespace Darl.GraphQL.Test
             var res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, null);
             var log = sb.ToString();
             sb.Clear();
-            Assert.AreEqual(13,res.data.Count);
+            Assert.AreEqual(13, res.data.Count);
             //Now Add existences to the objects and check for overlap
-            kr.AddExistence(candidate, new List<Common.DarlTime> {new Common.DarlTime(-100, 1), new Common.DarlTime(-44,0) });//life dates of Julius Caesar
+            kr.AddExistence(candidate, new List<Common.DarlTime> { new Common.DarlTime(-100, 1), new Common.DarlTime(-44, 0) });//life dates of Julius Caesar
             await _graph.CreateKnowledgeState(_config["userId"], kr);
             consul.existence = new List<Common.DarlTime> { new Common.DarlTime(-589, 1), new Common.DarlTime(887, 0) };
             censor.existence = new List<Common.DarlTime> { new Common.DarlTime(-443, 1), new Common.DarlTime(-22, 0) };
@@ -225,15 +228,15 @@ namespace Darl.GraphQL.Test
             //add checks for mutual existence.
             res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, null);
             log = sb.ToString();
-            sb.Clear(); 
+            sb.Clear();
             Assert.AreEqual(13, res.data.Count);
             res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.FuzzyTime(Common.DarlTime.UtcNow));
             log = sb.ToString();
-            sb.Clear(); 
+            sb.Clear();
             Assert.AreEqual(1, res.data.Count);
             res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.FuzzyTime(new Common.DarlTime(-50, 0)));
             log = sb.ToString();
-            sb.Clear(); 
+            sb.Clear();
             Assert.AreEqual(13, res.data.Count);
             //add state of candidate as military tribune and the period.
             tpconn.inferred = true;
@@ -250,7 +253,7 @@ namespace Darl.GraphQL.Test
             await _graph.CreateKnowledgeState(_config["userId"], kr);
             res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.FuzzyTime(new Common.DarlTime(-50, 0)));
             log = sb.ToString();
-            sb.Clear(); 
+            sb.Clear();
             //Add conditions to kg based on birth
             //patrician only
             var patricianRule = $"lineage social_class \"{socialClassLineage}\";\noutput categorical completed {{true, false}} complete;\noutput categorical class {{plebian,equites,patrician}} social_class;\nif anything then class will be single(person,have,social_class);\nif class is patrician then completed will be true; ";

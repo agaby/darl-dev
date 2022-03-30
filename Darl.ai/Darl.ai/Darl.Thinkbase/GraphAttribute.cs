@@ -1,6 +1,7 @@
 ﻿using DarlCommon;
 using ProtoBuf;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Darl.Thinkbase
@@ -66,6 +67,29 @@ namespace Darl.Thinkbase
         public DarlVar Convert()
         {
             return new DarlVar { Value = value, name = "attribute", unknown = confidence == 0.0, weight = confidence, dataType = ConvertDataType() };
+        }
+
+        public GraphAttribute()
+        {
+            value = "";
+            confidence = 1.0;
+            type = DataType.numeric;
+        }
+
+        public GraphAttribute(GraphAttribute other)
+        {
+            value = other.value;
+            confidence = other.confidence;
+            type = other.type;
+            lineage = other.lineage;
+            if (other.properties != null)
+            {
+                properties = new List<GraphAttribute>();
+                foreach (var p in other.properties)
+                {
+                    properties.Add(new GraphAttribute(p));
+                }
+            }
         }
 
         public DarlVar.DataType ConvertDataType()

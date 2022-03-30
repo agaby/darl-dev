@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Darl.Thinkbase
 {
@@ -115,7 +116,20 @@ namespace Darl.Thinkbase
 
         public override string ToString()
         {
-            return base.ToString();
+            var sb = new StringBuilder();
+            sb.Append($"knowledgeGraphName: {knowledgeGraphName}, ");
+            sb.Append($"subjectId: {subjectId}, ");
+            sb.AppendLine($"userId: {userId} ");
+            if(data != null)
+            {
+                foreach (var s in data.Keys)
+                {
+                    sb.Append($"Object: {s}, Attributes: ");
+                    foreach(var v in data[s])
+                        sb.AppendLine(v.ToString());
+                }    
+            }
+            return sb.ToString();
         }
     }
 }

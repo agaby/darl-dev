@@ -1,5 +1,8 @@
-﻿using System;
+﻿using DarlCompiler.Ast;
+using DarlCompiler.Parsing;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Darl.Thinkbase.Meta
 {
@@ -16,6 +19,15 @@ namespace Darl.Thinkbase.Meta
         public List<string> categories = new List<string>();
 
         public Dictionary<string, bool> catsAsIdentifiers = new Dictionary<string, bool>();
+
+        public List<double> trainingValues = new List<double>();
+
+        public string lineage { get; set; }
+
+        public string typeword { get; set; }
+
+        public DarlMetaNode lineageNode { get; set; }
+
 
 
         /// <summary>
@@ -107,5 +119,69 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
+        /// <summary>
+        /// Extract the last parameter as a lineage if present
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="nodes"></param>
+        /// <exception cref="MetaRuleException"></exception>
+        protected void SetLineagesInInit(AstContext context, ParseTreeNodeList nodes)
+        {
+            var lin = nodes.Last();
+            if (lin.Term.Name == "lineageLiteral")
+            {
+                //get lineage and check it.
+                var linLineage = (string)lin.Token.Value;
+                var validity = Darl.Lineage.LineageLibrary.CheckLineageWithTypeWord(linLineage);
+                if (!validity.Item1)
+                {
+                    context.AddMessage(DarlCompiler.ErrorLevel.Error, lin.Token.Location, $"'{linLineage}' is not a valid lineage.");
+                }
+                else
+                {
+                    typeword = validity.Item2;
+                    lineageNode = lin.AstNode as DarlMetaNode;
+                }
+            }
+            else if (lin.Term.Name == "lineage_constant")
+            {
+                lineageNode = lin.AstNode as DarlMetaNode;
+                //can only convert here if built in.
+                if (((DarlMetaGrammar)context.Language.Grammar).structure != null)
+                {
+                    var str = ((DarlMetaGrammar)context.Language.Grammar).structure;
+                    if (str.CommonLineages.ContainsKey(lin.Token.Text))
+                    {
+                        typeword = lin.Token.Text;
+                        lineage = str.CommonLineages[lin.Token.Text];
+                    }
+                    else
+                    {
+                        context.AddMessage(DarlCompiler.ErrorLevel.Error, lin.Token.Location, $"lineage {lin.Token.Text} is not amongst pre-defined lineages. Please add a lineage definition such as \"lineage {lin.Token.Text} \"<your lineage>\";\"");
+                    }
+                }
+            }
+
+        }
+
+        public virtual double CalculateInformation(List<int> indices, OutputDefinitionNode output, ref double dSplit)
+        {
+            return 0.0;
+        }
+
+        /// <summary>
+        /// Writes out a single "is" term and asociated input and set/category/vocab
+        /// </summary>
+        /// <param name="middle">Receives text</param>
+        /// <param name="currentInput">Not used</param>
+        /// <param name="currentIndex">Partition for this term.</param>
+        public virtual void WriteTerm(ref string middle, string currentIndex)
+        {
+        }
+
+        public virtual bool IsNumeric()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -22,7 +22,7 @@ namespace Darl.Thinkbase.Meta
         {
             get
             {
-                return "single( ";
+                return "single(";
             }
         }
     }

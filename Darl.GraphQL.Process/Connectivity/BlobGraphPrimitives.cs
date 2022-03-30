@@ -383,7 +383,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        public async Task<IGraphModel> Load(string blobName)
+        public async Task<IGraphModel?> Load(string blobName)
         {
 
             if (buffer.ContainsKey(blobName))
@@ -396,6 +396,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 {
                     var data = await _blob.Read(blobName);
                     var model = DeserializeGraph(data);
+                    model.SanityCheck();
                     buffer.Add(blobName, model);
                     return model;
                 }
@@ -414,6 +415,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     {
                         var data = await _blob.Read(sharedState.Item1);
                         var model = DeserializeGraph(data);
+                        model.SanityCheck();
                         buffer.Add(blobName, model);
                         return model;
                     }
@@ -422,14 +424,14 @@ namespace Darl.GraphQL.Models.Connectivity
                         throw new ExecutionError($"Error loading shared graph {blobName}: {ex.Message}");
                     }
                 }
-                else
+/*                else
                 {
                     var model = new BlobGraphContent();
                     buffer.Add(blobName, model);
                     return model;
-                }
+                }*/
             }
-
+            return null;
         }
 
         public static byte[] SerializeGraph(IGraphModel model)
@@ -468,41 +470,13 @@ namespace Darl.GraphQL.Models.Connectivity
             var divider = compositeName.IndexOf('_');
             var id = compositeName.Substring(0, divider);
             var name = compositeName[(divider + 1)..];
-            var user =
             await _conn.CreateKGraph(id, name);
             var newGraph = new BlobGraphContent();
-            AddDefaultContent(newGraph);
+            newGraph.AddDefaultContent();
             await _blob.Write(compositeName, SerializeGraph(newGraph));
             return true;
         }
 
-        public void AddDefaultContent(BlobGraphContent newGraph)
-        {
-            var defaultroot = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = "default:", name = "root" };
-            newGraph.recognitionVertices.Add(defaultroot.id, defaultroot);
-            newGraph.recognitionRoots.Add("default:", defaultroot);
-            var navigationRoot = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = "navigation:", name = "root" };
-            newGraph.recognitionVertices.Add(navigationRoot.id, navigationRoot);
-            newGraph.recognitionRoots.Add("navigation:", navigationRoot);
-            var obj = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = "default:", name = "default", properties = new List<GraphAttribute> { new GraphAttribute { id = Guid.NewGuid().ToString(), type = GraphAttribute.DataType.ruleset, value = "output textual response;\nif anything then response will be \"I don't know the answer to that\";", lineage = "adjective:8953" } } };
-            newGraph.recognitionVertices.Add(obj.id, obj);
-            var conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = obj.id, startId = defaultroot.id, weight = 1.0 };
-            newGraph.recognitionVertices[conn.startId].Out.Add(conn);
-            newGraph.recognitionVertices[conn.endId].In.Add(conn);
-            newGraph.recognitionEdges.Add(conn.id, conn);
-            obj = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = "verb:397,2", name = "help", properties = new List<GraphAttribute> { new GraphAttribute { id = Guid.NewGuid().ToString(), type = GraphAttribute.DataType.ruleset, value = "output textual response;\nif anything then response will be \"Just select a response for each question. Type \"quit\" if you want to stop.\"; ", lineage = "adjective:8953" } } };
-            newGraph.recognitionVertices.Add(obj.id, obj);
-            conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = obj.id, startId = navigationRoot.id, weight = 1.0 };
-            newGraph.recognitionVertices[conn.startId].Out.Add(conn);
-            newGraph.recognitionVertices[conn.endId].In.Add(conn);
-            newGraph.recognitionEdges.Add(conn.id, conn);
-            obj = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = "verb:060", name = "quit", properties = new List<GraphAttribute> { new GraphAttribute { id = Guid.NewGuid().ToString(), type = GraphAttribute.DataType.ruleset, value = "output categorical terminate {\"true\",\"false\"};\nif anything then terminate will be true; ", lineage = "adjective:8953" } } };
-            newGraph.recognitionVertices.Add(obj.id, obj);
-            conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = obj.id, startId = navigationRoot.id, weight = 1.0 };
-            newGraph.recognitionVertices[conn.startId].Out.Add(conn);
-            newGraph.recognitionVertices[conn.endId].In.Add(conn);
-            newGraph.recognitionEdges.Add(conn.id, conn);
-        }
 
         public async Task<bool> DeleteModel(string compositeName)
         {
@@ -852,7 +826,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 }
                 return (compositeName, record.ReadOnly ?? false);
             }
-            return ("", true); //no matching model
+            return ("", true); //no matching model 
         }
 
         private async Task<KGraph> GetRecord(string compositeName)
@@ -1279,9 +1253,9 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        public async Task SaveKSChanges(string userId, string subjectId, KnowledgeState ks)
+        public async Task<bool> SaveKSChanges(string userId, string subjectId, KnowledgeState ks)
         {
-            await _conn.UpdateKnowledgeState(userId, subjectId, new KnowledgeStateUpdate(ks));
+            return (await _conn.UpdateKnowledgeState(userId, subjectId, new KnowledgeStateUpdate(ks))) != null;
         }
 
         public async Task<KnowledgeState> GetKnowledgeState(string userId, string subjectId, string graphName, bool external)
@@ -1358,6 +1332,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 var data = await _blob.Read(sourceName);
                 source = DeserializeGraph(data);
+                source.SanityCheck();
             }
             if (source != null)
             {
@@ -1437,14 +1412,14 @@ namespace Darl.GraphQL.Models.Connectivity
             if (await Load(compositeName) is not BlobGraphContent cont)
                 throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
             KnowledgeState ks = null;
-            if(!string.IsNullOrEmpty(subjectId))
+            if (!string.IsNullOrEmpty(subjectId))
             {
                 ks = await GetKnowledgeState(userId, subjectId, graphName, false);
             }
             var dmodel = new VRDisplayModel { nodes = new List<VRDisplayNode>(), links = new List<VRDisplayLink>() };
             if (string.IsNullOrEmpty(lineageFilter)) //return everything
             {
-                dmodel.nodes.AddRange(cont.vertices.Values.Select(i => new VRDisplayNode { id = i.id, name = i.name, lineage = ExtractLineage(i.lineage), subLineage = ExtractSubLineage(i.lineage), externalId = i.externalId, attributes = i.properties != null && ks != null? i.properties.Select( a => new VRDisplayAtt {name = a.name ?? "", confidence = a.confidence, lineage = a.lineage ?? "", value = ks != null ? ks.GetAttribute(i.id ?? "", a.lineage ?? "")?.value ?? a.value : a.value }).ToList() : new List<VRDisplayAtt>()}));
+                dmodel.nodes.AddRange(cont.vertices.Values.Select(i => new VRDisplayNode { id = i.id, name = i.name, lineage = ExtractLineage(i.lineage), subLineage = ExtractSubLineage(i.lineage), externalId = i.externalId, attributes = i.properties != null && ks != null ? i.properties.Select(a => new VRDisplayAtt { name = a.name ?? "", confidence = a.confidence, lineage = a.lineage ?? "", value = ks != null ? ks.GetAttribute(i.id ?? "", a.lineage ?? "")?.value ?? a.value : a.value }).ToList() : new List<VRDisplayAtt>() }));
                 dmodel.links.AddRange(cont.edges.Values.Select(i => new VRDisplayLink { id = i.id, name = i.name, source = i.startId, target = i.endId }));
             }
             else
@@ -1525,11 +1500,11 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                     if (graphAtt.properties != null)
                     {
-                        if(att.properties == null)
+                        if (att.properties == null)
                             att.properties = new List<GraphAttribute>();
                         foreach (var prop in graphAtt.properties)
                         {
-                            if(!att.properties.Any(a => a.name == prop.name && a.value == prop.value))
+                            if (!att.properties.Any(a => a.name == prop.name && a.value == prop.value))
                                 att.properties.Add(new GraphAttribute { id = Guid.NewGuid().ToString(), lineage = prop.lineage, name = prop.name, type = prop.type, value = prop.value, confidence = prop.confidence ?? 1.0 });
                         }
                     }
@@ -1541,12 +1516,12 @@ namespace Darl.GraphQL.Models.Connectivity
                 if (obj.properties == null)
                     obj.properties = new List<GraphAttribute>();
                 var att = new GraphAttribute { id = Guid.NewGuid().ToString(), lineage = lineage, confidence = graphAtt.confidence ?? 1.0, existence = graphAtt.existence, name = graphAtt.name, type = graphAtt.type, value = graphAtt.value };
-                if(graphAtt.properties != null)
+                if (graphAtt.properties != null)
                 {
                     att.properties = new List<GraphAttribute>();
                     foreach (var prop in graphAtt.properties)
                     {
-                        att.properties.Add(new GraphAttribute { id = Guid.NewGuid().ToString(), lineage =  prop.lineage, name = prop.name, type = prop.type, value = prop.value, confidence = prop.confidence ?? 1.0});
+                        att.properties.Add(new GraphAttribute { id = Guid.NewGuid().ToString(), lineage = prop.lineage, name = prop.name, type = prop.type, value = prop.value, confidence = prop.confidence ?? 1.0 });
                     }
                 }
                 obj.properties.Add(att);
@@ -1691,8 +1666,8 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<ModelMetaData> UpdateKGraph(string userId, string name, ModelMetaData kgupdate)
         {
             if (await Load(CreateCompositeName(userId, name)) is not BlobGraphContent model)
-                throw new Exception($"{name} could not be found in your account."); 
-            if(kgupdate.description != null)
+                throw new Exception($"{name} could not be found in your account.");
+            if (kgupdate.description != null)
             {
                 model.description = kgupdate.description;
             }
@@ -1732,14 +1707,14 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var notFound = new List<string>();
             var res = await _conn.GetSetofConnectedObjects(userId, ksIds, graphName, notFound);
-            if(notFound.Any())
+            if (notFound.Any())
             {
                 var compositeName = userId + "_" + graphName;
                 if (await Load(compositeName) is not BlobGraphContent cont)
                     throw new ExecutionError($"Graph  '{compositeName}' does not exist.");
                 foreach (var ids in notFound)
                 {
-                    if(cont.vertices.ContainsKey(ids))  
+                    if (cont.vertices.ContainsKey(ids))
                         res.Add(cont.vertices[ids]);
                 }
             }

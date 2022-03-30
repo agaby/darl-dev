@@ -146,7 +146,7 @@ namespace Darl.GraphQL.Container.Models.Schemata
             {
                 var name = context.GetArgument<string>("name");
                 var userId = trans.GetCurrentUserId(context.UserContext);
-                await graph.Store(CompositeName(userId, name)); 
+                await graph.Store(CompositeName(userId, name));
                 return "";
             });
 

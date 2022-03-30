@@ -246,6 +246,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Darl.ai\Darl.ai\Darl.ai.csproj" />
+    <ProjectReference Include="..\Darl.GraphQL.Process\Darl.GraphQL.Process.csproj" />
   </ItemGroup>
 
 </Project>

@@ -37,9 +37,19 @@ namespace Darl.Thinkbase.Meta
             name = nodes[0].Token.Text;
             var validity = LineageLibrary.CheckLineageWithTypeWord(Value);
             if (!validity.Item1)
-                context.AddMessage(DarlCompiler.ErrorLevel.Error, treeNode.Token.Location, $"'{Value}' is not a valid lineage.");
+                context.AddMessage(DarlCompiler.ErrorLevel.Error, treeNode.Span.Location, $"'{Value}' is not a valid lineage.");
             else
+            {
                 typeword = validity.Item2;
+                var str = ((DarlMetaGrammar)context.Language.Grammar).structure;
+                if (str != null)
+                {
+                    if (!str.CommonLineages.ContainsKey(name))
+                    {
+                        str.CommonLineages.Add(name, Value);
+                    }
+                }
+            }
         }
         /// <summary>
         /// Gets the preamble.

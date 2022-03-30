@@ -164,7 +164,7 @@ $(async function () {
     deleterealattribute = graph('mutation dra($name: String! $id: String! $attLin: String!){deleteGraphObjectAttribute(name: $name id: $id attLineage: $attLin)}');
     deleterecognitionattribute = graph('mutation dra($name: String! $id: String! $attLin: String!){deleteRecognitionObjectAttribute(name: $name id: $id attLineage: $attLin)}');
     deletevirtualattribute = graph('mutation dra($name: String! $lineage: String! $attLin: String!){deleteVirtualObjectAttribute(name: $name lineage: $lineage attLineage: $attLin)}');
-    updaterealattribute = graph('mutation uga($name: String! $id: String! $att: graphAttributeInput!){updateGraphObjectAttribute(name: $name id: $id att: $att)}');
+    updaterealattribute = graph('mutation uga($name: String! $id: String! $att: graphAttributeInput!){updateGraphObjectAttribute(name: $name id: $id att: $att){value}}');
     updaterecognitionattribute = graph('mutation uga($name: String! $id: String! $att: graphAttributeInput!){updateRecognitionObjectAttribute(name: $name id: $id att: $att)}');
     updatevirtualattribute = graph('mutation uga($name: String! $lineage: String! $att: graphAttributeInput!){updateVirtualObjectAttribute(name: $name lineage: $lineage att: $att)}');
     createrecognitionroot = graph('mutation crr($name: String! $lineage: String!){createRecognitionRoot(name: $name lineage: $lineage ){id}}');

@@ -1181,7 +1181,7 @@ namespace Darl.Thinkbase.Meta
                             else
                             {
                                 values.Add(dVal);
-                                Value = obj as string;
+                                Value = dVal;
                                 this.Normalise(false);
                             }
                         }
@@ -2554,11 +2554,11 @@ namespace Darl.Thinkbase.Meta
                 return new DarlResult(-1.0, true);
             if (!res1.temporal || !now.temporal)
                 throw new MetaRuleException("passing non temporal parameters to a temporal operator");
-            if((double)(DarlResult.Overlapping(res1,now).values[0]) == 0.0)
+            if ((double)(DarlResult.Overlapping(res1, now).values[0]) == 0.0)
                 return new DarlResult(-1.0, true); //time doesn't overlap with existence
             var duration = new DarlResult("duration", DarlResult.DataType.duration);
             var res3 = DarlResult.Minimum(DarlResult.Maximum(now - res1, new DarlResult(0.0)), Range(res1));
-            res3.Normalise(true,true);
+            res3.Normalise(true, true);
             duration.values.AddRange(res3.values);
             duration.Normalise(false);
             duration.weight = res3.weight;
@@ -2570,15 +2570,15 @@ namespace Darl.Thinkbase.Meta
             if (values.Count != 4)
                 return this;
             var vals = new List<double>();
-            foreach(double p in values)
+            foreach (double p in values)
                 vals.Add(p);
             vals.Sort();
             values.Clear();
-            if(vals[0] == vals[1])
+            if (vals[0] == vals[1])
             {
-                if(vals[1] == vals[2])
+                if (vals[1] == vals[2])
                 {
-                    if(vals[2] == vals[3])
+                    if (vals[2] == vals[3])
                     {
                         values.Add(vals[3]);
                     }
@@ -2592,7 +2592,7 @@ namespace Darl.Thinkbase.Meta
                 {
                     values.Add(vals[1]);
                     values.Add(vals[2]);
-                    if(vals[2] != vals[3])
+                    if (vals[2] != vals[3])
                     {
                         values.Add(vals[3]);
                     }

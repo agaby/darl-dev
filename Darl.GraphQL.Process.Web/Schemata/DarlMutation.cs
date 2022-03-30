@@ -1,13 +1,10 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
-using Darl.GraphQL.Models.Middleware;
-using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Schemata;
 using Darl.Thinkbase;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Darl.GraphQL.Web.Models.Schemata
@@ -276,8 +273,8 @@ namespace Darl.GraphQL.Web.Models.Schemata
             {
                 var name = context.GetArgument<string>("name");
                 var userId = trans.GetCurrentUserId(context.UserContext);
-                await graph.Store(CompositeName(userId, name)); 
-                return ""; 
+                await graph.Store(CompositeName(userId, name));
+                return "";
             });
 
             FieldAsync<StringGraphType>("inviteUser", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }), resolve: async context =>
@@ -423,7 +420,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     return await graph.DeleteGraphObjectAttribute(CompositeName(userId, name), id, attLineage);
                 }
             );
-            FieldAsync<StringGraphType>("updateGraphObjectAttribute", "update or add an attribute of a real GraphObject", arguments: new QueryArguments(
+            FieldAsync<GraphAttributeType>("updateGraphObjectAttribute", "update or add an attribute of a real GraphObject", arguments: new QueryArguments(
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph the object is in" },
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "The id of the parent object" },
                  new QueryArgument<NonNullGraphType<GraphAttributeInputType>> { Name = "att", Description = "The attribute to update" }
@@ -470,7 +467,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     KnowledgeStateInput ks = (KnowledgeStateInput)context.GetArgument(typeof(KnowledgeStateInput), "ks");
                     var asSystem = (bool?)context.GetArgument(typeof(bool?), "asSystem");
-                    if(asSystem ?? false)
+                    if (asSystem ?? false)
                     {
                         var userId = _config["AppSettings:boaiuserid"];
                         return await graph.CreateKnowledgeState(userId, ks);
@@ -513,6 +510,22 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var name = context.GetArgument<string>("name");
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     return await connectivity.DeleteAllKnowledgeStates(userId, name);
+                }
+            );
+            FieldAsync<StringGraphType>("loadExternalData", "Turn Json or XML data into Knowledge States", arguments: new QueryArguments(
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph to create KStates for" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "data", Description = "The XML or Json source" },
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "patternPath", Description = "The XPath or JPath pattern locator" },
+                 new QueryArgument<NonNullGraphType<ListGraphType<DataMapType>>> { Name = "dataMaps", Description = "List of maps for individual data items" }
+                ),
+                resolve: async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var data = context.GetArgument<string>("data");
+                    var patternPath = context.GetArgument<string>("patternPath");
+                    var dataMaps = context.GetArgument<List<Thinkbase.DataMap>>("dataMaps");
+                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    return await graph.LoadExternalData(userId, name, data, patternPath, dataMaps);
                 }
             );
         }

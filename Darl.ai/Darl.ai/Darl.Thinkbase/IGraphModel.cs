@@ -29,6 +29,10 @@ namespace Darl.Thinkbase
         GraphAttribute? FindDataGraphAttribute(string id, string lineage, KnowledgeState ks);
         List<LineageRecord> GetLineages(GraphElementType gtype);
         (string, string) SplitCompositeLineage(string comp);
+        void SanityCheck();
+        void Clear();
+        void AddDefaultContent();
+
         bool licensed { get; }
         string key { get; set; }
         string description { get; set; }

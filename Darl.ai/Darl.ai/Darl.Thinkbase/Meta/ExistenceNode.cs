@@ -1,8 +1,6 @@
 ﻿using Darl.Common;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
@@ -10,7 +8,7 @@ namespace Darl.Thinkbase.Meta
     /// <summary>
     /// Extracts a time value representing the existence of the referenced node or attribute.
     /// </summary>
-    public  class ExistenceNode : UnaryDarlMetaNode
+    public class ExistenceNode : UnaryDarlMetaNode
     {
 
         /// <summary>
@@ -54,12 +52,12 @@ namespace Darl.Thinkbase.Meta
                         var nodebyExtId = grammar.currentModel.vertices.Values.FirstOrDefault(a => a.externalId == res.Value.ToString());
                         if (nodebyExtId != null)
                         {
-                            if(nodebyExtId.existence != null)
+                            if (nodebyExtId.existence != null)
                                 return ConvertTime(nodebyExtId.existence);
-                            if(grammar.state.ContainsRecord(nodebyExtId.id ?? ""))
+                            if (grammar.state.ContainsRecord(nodebyExtId.id ?? ""))
                             {
                                 var exAtt = grammar.state.GetAttribute(nodebyExtId.id ?? "", "noun:01,5,03,3,018"); //life in common lineages replace.
-                                if(exAtt != null && exAtt.existence != null)
+                                if (exAtt != null && exAtt.existence != null)
                                 {
                                     return ConvertTime(exAtt.existence);
                                 }
@@ -99,11 +97,11 @@ namespace Darl.Thinkbase.Meta
 
         private DarlResult ConvertTime(List<DarlTime> darlTimes)
         {
-            var duration = new DarlResult("existence", DarlResult.DataType.temporal,1.0);
-            foreach(var i in darlTimes)
+            var duration = new DarlResult("existence", DarlResult.DataType.temporal, 1.0);
+            foreach (var i in darlTimes)
             {
                 duration.values.Add((i ?? DarlTime.MinValue).raw);
-            }            
+            }
             duration.Normalise(false);
             return duration;
         }

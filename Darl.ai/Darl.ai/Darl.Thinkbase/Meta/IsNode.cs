@@ -137,7 +137,7 @@ namespace Darl.Thinkbase.Meta
         {
             get
             {
-                return "is ";
+                return " is ";
             }
         }
 

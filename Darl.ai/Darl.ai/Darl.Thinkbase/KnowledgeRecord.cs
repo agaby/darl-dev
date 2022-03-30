@@ -46,11 +46,11 @@ namespace Darl.Thinkbase
                     }
                 }
                 //now add any non-inferred parent connections
-                if(currentNode != null)
+                if (currentNode != null)
                 {
-                    foreach(var c in currentNode.Out)
+                    foreach (var c in currentNode.Out)
                     {
-                        if(!c.inferred)
+                        if (!c.inferred)
                         {
                             if (CheckPermittedLineages(c.lineage, lineages))
                             {
@@ -98,9 +98,9 @@ namespace Darl.Thinkbase
             return null;
         }
 
-        public override bool ContainsAttribute(string completionLineage)
+        public override bool ContainsAttribute(string completionLineage, GraphAttribute.DataType? type = GraphAttribute.DataType.ruleset)
         {
-            return base.ContainsAttribute(completionLineage);
+            return base.ContainsAttribute(completionLineage, type);
         }
     }
 }

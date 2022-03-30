@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Models
 {
-    public  class PushSub
+    public class PushSub
     {
         public string ipAddress { get; set; } = string.Empty;
         public string pushAuth { get; set; } = string.Empty;
@@ -14,7 +10,7 @@ namespace Darl.GraphQL.Models.Models
         public string pushKey { get; set; } = string.Empty;
         public string longitude { get; set; } = string.Empty;
         public string latitude { get; set; } = string.Empty;
-        public DateTime?  created { get; set; }
+        public DateTime? created { get; set; }
 
     }
 }
