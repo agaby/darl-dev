@@ -251,7 +251,14 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 }
             );
 
-            FieldAsync<StringGraphType>("deleteKG", "Delete a Knowledge graph", arguments: new QueryArguments(
+            FieldAsync<BooleanGraphType>("createKGraph", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The unique name of the stored model for later reuse " }), resolve: async context =>
+            {
+                var name = context.GetArgument<string>("name");
+                var userId = trans.GetCurrentUserId(context.UserContext);
+                return await trans.CreateNewGraph(userId, name);
+            });
+
+            FieldAsync<BooleanGraphType>("deleteKG", "Delete a Knowledge graph", arguments: new QueryArguments(
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph to delete" }
                 ),
                 resolve: async context =>
@@ -261,13 +268,6 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     return await graph.DeleteGraph(userId, name);
                 }
             );
-
-            FieldAsync<BooleanGraphType>("createKGraph", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The unique name of the stored model for later reuse " }), resolve: async context =>
-            {
-                var name = context.GetArgument<string>("name");
-                var userId = trans.GetCurrentUserId(context.UserContext);
-                return await trans.CreateNewGraph(userId, name);
-            });
 
             FieldAsync<StringGraphType>("saveKGraph", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }), resolve: async context =>
             {

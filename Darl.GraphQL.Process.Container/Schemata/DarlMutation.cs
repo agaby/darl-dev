@@ -124,7 +124,7 @@ namespace Darl.GraphQL.Container.Models.Schemata
                 }
             );
 
-            FieldAsync<StringGraphType>("deleteKG", "Delete a Knowledge graph", arguments: new QueryArguments(
+            FieldAsync<BooleanGraphType>("deleteKG", "Delete a Knowledge graph", arguments: new QueryArguments(
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph to delete" }
                 ),
                 resolve: async context =>
