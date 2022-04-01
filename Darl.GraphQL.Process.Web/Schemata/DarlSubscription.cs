@@ -80,7 +80,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 ),
                 Type = typeof(DarlMineReportType),
                 Resolver = new FuncFieldResolver<Thinkbase.Meta.DarlMineReport>(ResolveDMRObject),
-                AsyncSubscriber = new AsyncEventStreamResolver<Thinkbase.Meta.DarlMineReport>(SubscribeBuildAsync)
+                Subscriber = new EventStreamResolver<Thinkbase.Meta.DarlMineReport>(SubscribeBuildAsync)
             });
         }
 
@@ -151,7 +151,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
             return res;
         }
 
-        private async Task<IObservable<Thinkbase.Meta.DarlMineReport>> SubscribeBuildAsync(IResolveEventStreamContext arg)
+        private IObservable<Thinkbase.Meta.DarlMineReport> SubscribeBuildAsync(IResolveEventStreamContext arg)
         {
             var name = arg.GetArgument<string>("name");
             var data = arg.GetArgument<string>("data");
@@ -163,11 +163,11 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 throw new ExecutionError($"Subscriptions only permitted to registered users.");
             }
             var res = _darlMineBuildStream.AsObservable();
-            _darlMineBuildStream.Subscribe(s =>
+            _darlMineBuildStream.Subscribe(async s =>
             {
                 try
                 {
-                    var dmr = _bot.Build(userId, name, data, patternPath, dataMaps).Result;
+                    var dmr = await _bot.Build(userId, name, data, patternPath, dataMaps);
                     _darlMineBuildStream.OnNext(dmr);
                     _darlMineBuildStream.OnCompleted();
                 }

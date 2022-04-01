@@ -8,8 +8,8 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "DarlMineReport";
             Description = "Code and results of a DARL training run.";
-            Field(c => c.code);
-            Field(c => c.errorText);
+            Field(c => c.code, true);
+            Field(c => c.errorText, true);
             Field(c => c.testPerformance);
             Field(c => c.trainPercent);
             Field(c => c.trainPerformance);

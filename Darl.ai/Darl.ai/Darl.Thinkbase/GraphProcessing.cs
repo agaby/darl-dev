@@ -145,11 +145,12 @@ namespace Darl.Thinkbase
             return await _primitives.ListModels(userId);
         }
 
-        public async Task<IGraphModel> GetModel(string userId, string name)
+        public async Task<IGraphModel?> GetModel(string userId, string name)
         {
             var graphname = CreateCompositeName(userId, name);
             var model = await _primitives.Load(graphname);
-            model.modelName = graphname;
+            if(model != null)
+                model.modelName = graphname;
             return model;
         }
 

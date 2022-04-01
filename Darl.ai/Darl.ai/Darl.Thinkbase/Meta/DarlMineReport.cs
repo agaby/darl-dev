@@ -37,9 +37,9 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public double unknownResponsePercent { get; internal set; }
 
-        public string code { get; set; }
+        public string? code { get; set; }
 
-        public string errorText { get; set; }
+        public string? errorText { get; set; }
 
         public SetChoices sets { get; set; } = SetChoices.three;
     }
