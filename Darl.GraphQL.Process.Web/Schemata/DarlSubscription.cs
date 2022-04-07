@@ -26,6 +26,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
         private IGraphProcessing _graph;
         private IConfiguration _config;
         private ILogger _logger;
+        private string systemId;
 
         private readonly ISubject<Thinkbase.Meta.DarlMineReport> _darlMineReportStream = new ReplaySubject<Thinkbase.Meta.DarlMineReport>(1);
 
@@ -39,6 +40,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
             _graph = graph;
             _config = config;
             _logger = logger;
+            systemId = _config["AppSettings:boaiuserid"];
             Name = "Subscription";
             AddField(new EventStreamFieldType()
             {
@@ -47,8 +49,8 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 Arguments = new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge Graph to infer from" },
                     new QueryArgument<StringGraphType> { Name = "target", Description = "The object to seek or discover from if not the default defined in the KG" },
-                    new QueryArgument<ThinkBaseProcessType> { Name = "process", Description = "Whether to seek the target or discover paths from the target", DefaultValue = GraphProcess.seek }
-                ),
+                    new QueryArgument<ThinkBaseProcessType> { Name = "process", Description = "Whether to seek the target or discover paths from the target", DefaultValue = GraphProcess.seek },
+                    new QueryArgument<BooleanGraphType> { Name = "asSystem", Description = "Write to system account", DefaultValue = false }),
                 Type = typeof(KnowledgeStateType),
                 Resolver = new FuncFieldResolver<KnowledgeState?>(ResolveKSObject),
                 Subscriber = new EventStreamResolver<KnowledgeState>(SubscribeGraphChanged)
@@ -94,11 +96,21 @@ namespace Darl.GraphQL.Web.Models.Schemata
             var graphName = arg.GetArgument<string>("graphName");
             var process = arg.GetArgument<GraphProcess>("process");
             var target = arg.GetArgument<string>("target");
-            if (userId == _config["AppSettings:boaiuserid"])
+            var asSystem = arg.GetArgument<bool>("asSystem");
+            if (userId == systemId)
             {
                 throw new ExecutionError($"Subscriptions only permitted to registered users.");
             }
             var ks = _graph.ObservableKStates();
+            if(asSystem)
+            {
+                var user = _trans.GetUserById(userId).Result;
+                if(user == null || user.accountState != GraphQL.Models.Models.DarlUser.AccountState.admin)
+                {
+                    throw new ExecutionError($"asSystem == true only permitted to Administrators.");
+                }
+                return ks.Where(a => a.userId == systemId && a.knowledgeGraphName == graphName).Select(i => _bot.Seek(i, target, new List<string>(), "adjective:5500").Result);
+            }
             return ks.Where(a => a.userId == userId && a.knowledgeGraphName == graphName).Select(i =>  _bot.Seek(i, target, new List<string>(), "adjective:5500").Result);
         }
 
@@ -132,7 +144,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
             var valueLineage = arg.GetArgument<string>("valueLineage");
             var percentTrain = arg.GetArgument<int>("percentTrain");
             var sets = arg.GetArgument<SetChoices>("sets");
-            if (userId == _config["AppSettings:boaiuserid"])
+            if (userId == systemId)
             {
                 throw new ExecutionError($"Subscriptions only permitted to registered users.");
             }
@@ -163,7 +175,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
             var patternPath = arg.GetArgument<string>("patternPath");
             var dataMaps = arg.GetArgument<List<Thinkbase.DataMap>>("dataMaps");
             var userId = _trans.GetCurrentUserId(arg.UserContext);
-            if (userId == _config["AppSettings:boaiuserid"])
+            if (userId == systemId)
             {
                 throw new ExecutionError($"Subscriptions only permitted to registered users.");
             }

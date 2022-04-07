@@ -6,6 +6,7 @@ using Darl.Thinkbase;
 using DarlCommon;
 using GraphQL;
 using GraphQL.Types;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 
@@ -13,7 +14,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
 {
     public class DarlQuery : ObjectGraphType<object>
     {
-        public DarlQuery(IConnectivity connectivity, IBotProcessing bot, IGraphProcessing graph, ISoftMatchProcessing cmp, IKGTranslation trans)
+        public DarlQuery(IConnectivity connectivity, IBotProcessing bot, IGraphProcessing graph, ISoftMatchProcessing cmp, IKGTranslation trans, IConfiguration config)
         {
             Name = "Query";
             Description = "View the contents of your account.";
@@ -79,11 +80,24 @@ namespace Darl.GraphQL.Web.Models.Schemata
 
             FieldAsync<KGraphType>(
                 "kGraphByName",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
+                arguments: 
+                new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" },
+                    new QueryArgument<BooleanGraphType> { Name = "asSystem", Description = "Write to system account", DefaultValue = false }),
                 resolve: async context =>
                 {
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     var name = context.GetArgument<String>("name");
+                    var asSystem = context.GetArgument<bool>("asSystem");
+                    if(asSystem)
+                    {
+                        var user = trans.GetUserById(userId).Result;
+                        if (user == null || user.accountState != GraphQL.Models.Models.DarlUser.AccountState.admin)
+                        {
+                            throw new ExecutionError($"asSystem == true only permitted to Administrators.");
+                        }
+                        return await connectivity.GetKGModel(config["AppSettings:boaiuserid"], name);
+                    }
                     return await connectivity.GetKGModel(userId, name);
                 }
             );
@@ -171,7 +185,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     return await trans.GetPushSubs();
                 }
-            ).AuthorizeWith("AdminPolicy");
+            );
 
             FieldAsync<DateTimeGraphType>(
                 "getLastUpdate",
@@ -445,7 +459,8 @@ namespace Darl.GraphQL.Web.Models.Schemata
                  "getKnowledgeStatesByType",
                  "Get all the knowledge states in this graph descended from a particular graph object.", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The name of the associated Knowledge Graph." },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "typeObjectId", Description = "The id of the object these are descended from." }
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "typeObjectId", Description = "The id of the object these are descended from." },
+                    new QueryArgument<BooleanGraphType> { Name = "asSystem", Description = "Write to system account", DefaultValue = false }
                  ),
                  resolve: async context =>
                  {
@@ -453,6 +468,16 @@ namespace Darl.GraphQL.Web.Models.Schemata
                      var userId = trans.GetCurrentUserId(context.UserContext);
                      var name = context.GetArgument<string>("graphName");
                      var typeId = context.GetArgument<string>("typeObjectId");
+                     var asSystem = context.GetArgument<bool>("asSystem");
+                     if(asSystem)
+                     {
+                         var user = trans.GetUserById(userId).Result;
+                         if (user == null || user.accountState != GraphQL.Models.Models.DarlUser.AccountState.admin)
+                         {
+                             throw new ExecutionError($"asSystem == true only permitted to Administrators.");
+                         }
+                         return await connectivity.GetKnowledgeStatesByType(config["AppSettings:boaiuserid"], typeId, name);
+                     }
                      return await connectivity.GetKnowledgeStatesByType(userId, typeId, name);
                  }
              ).AuthorizeWith("UserPolicy");
