@@ -41,16 +41,16 @@ namespace Darl.GraphQL.Models.Connectivity
                             priceId = price.Id,
                             image = p.Images.FirstOrDefault(),
                             name = p.Name,
-                            price = price.UnitAmount ?? 0l,
-                            hidden = bool.Parse(p.Metadata["Hidden"]),
-                            kgCount = int.Parse(p.Metadata["KGCount"]),
-                            userCount = int.Parse(p.Metadata["UserCount"])
+                            price = price.UnitAmount ?? 0L,
+                            hidden = !p.Metadata.ContainsKey("Hidden") || bool.Parse(p.Metadata["Hidden"]),
+                            kgCount = p.Metadata.ContainsKey("KGCount") ? int.Parse(p.Metadata["KGCount"]) : 0,
+                            userCount = p.Metadata.ContainsKey("UserCount") ? int.Parse(p.Metadata["UserCount"]) : 0
                         });
                     }
                 }
                 products = products.OrderBy(a => a.price).ToList();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
             }
         }

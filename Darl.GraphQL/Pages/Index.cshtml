@@ -9,16 +9,16 @@
     <div class="space-70"></div>
     <div class="container-fluid" style="padding:20px; min-height:100vh">
         <div class="row">
-            <div class="col-md-11 margin-b-40">
+            <div class="col-md-11">
                 <h3 id="graphTitle">ThinkBase Knowledge Graphs</h3>
             </div>
-            <div class="col-md-1 margin-b-40">
+            <div class="col-md-1">
                 <button class="btn btn-info" id="settings"><i class="fa fa-gear"></i></button>
             </div>
         </div>
 
         <div class="row" id="fileHandling">
-            <div class="col-md-6 margin-b-40">
+            <div class="col-md-6 ">
                 <p>Select a Knowledge Graph from your account to edit.</p>
                 <label>Knowledge Graphs </label>
                 <select id="kgmodel-dropdown" name="kgmodel-dropdown" class="dropdown"></select>
@@ -26,14 +26,14 @@
                 <button id="kg-copy" class="btn btn-info">Copy</button>
                 <button id="kg-delete" class="btn btn-warning">Delete</button>
             </div>
-            <div class="col-md-6 margin-b-40">
+            <div class="col-md-6 ">
                 <label>Or create a new Knowledge Graph - choose a unique name.</label>
                 <input id="kg-input" name="kgmodelname" class="form-control">
                 <button id="kg-create" class="btn btn-info">Create</button>
             </div>
         </div>
         <div class="row d-none" id="demohandling">
-            <div class="col-md-6 margin-b-40">
+            <div class="col-md-6 ">
                 <label>Demo Knowledge Graphs </label>
                 <select id="kgdemo-dropdown" name="kgdemo-dropdown" class="dropdown"></select>
             </div>
@@ -72,7 +72,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12 margin-b-40" id="realgraph" style="width: 800px; height: 800px; display: block;">
+                    <div class="col-md-12 " id="realgraph" style="width: 800px; height: 800px; display: block;">
                     </div>
                     <div id="loading" class="loaded">
                         <span class="fa fa-refresh fa-spin"></span>
@@ -81,7 +81,7 @@
             </div>
             <div class="tab-pane fade" id="virtual" role="tabpanel" aria-labelledby="profile-tab">
                 <div class="row">
-                    <div class="col-md-12 margin-b-40" id="virtualgraph" style="width: 800px; height: 800px; display: block;">
+                    <div class="col-md-12 " id="virtualgraph" style="width: 800px; height: 800px; display: block;">
                         <button id="virtual-fit" class="btn btn-info form-control-sm"><i class="fa fa-square"></i></button>
                         <button id="virtual-settings" class="btn btn-info form-control-sm" title="settings"><i class="fa fa-gear"></i></button>
                     </div>
@@ -89,20 +89,20 @@
             </div>
             <div class="tab-pane fade" id="recognition" role="tabpanel" aria-labelledby="contact-tab">
                 <div class="row">
-                    <div class="col-md-12 margin-b-40">
+                    <div class="col-md-12 ">
                         <button id="rec-fit" class="btn btn-info form-control-sm"><i class="fa fa-square"></i></button>
                         <button id="rec-addroot" class="btn btn-info form-control-sm"><i class="fa fa-project-diagram"></i></button>
                         <button id="rec-settings" class="btn btn-info form-control-sm" title="settings"><i class="fa fa-gear"></i></button>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12 margin-b-40" id="recognitiongraph" style="width: 800px; height: 800px; display: block;">
+                    <div class="col-md-12 " id="recognitiongraph" style="width: 800px; height: 800px; display: block;">
                     </div>
                 </div>
             </div>
             <div class="tab-pane fade" id="conversation" role="tabpanel" aria-labelledby="conversation-tab">
                 <div class="row">
-                    <div class="col-md-6 margin-b-40" id="statelist">
+                    <div class="col-md-6 " id="statelist">
                         <p>Knowledge states</p>
                         <button id="conv-newstate" class="btn btn-info form-control-sm"><i class="fa fa-plus-square"></i></button>
                         <label>local recent states</label>
@@ -111,7 +111,7 @@
                         <p>Data</p>
                         <pre id="kstate"></pre>
                     </div>
-                    <div class="col-md-6 margin-b-40" id="chatcontainer">
+                    <div class="col-md-6 " id="chatcontainer">
                         <p>Conversation</p>
                         <div class="mesgs">
                             <div class="msg_history">
@@ -140,7 +140,7 @@
 {
     <bundle name="wwwroot/bundles/kgraph.min.css" />
     <link rel="stylesheet" href="/GraphEdit/GraphEdit.css" />
-"
+    <link rel="stylesheet" href="/GraphEdit/conversation.css" />
 }
 
 @section Scripts

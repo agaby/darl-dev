@@ -1,0 +1,252 @@
+﻿@page
+@model Darl.GraphQL.Pages.noda2Model
+@{
+    ViewData["Title"] = "Noda interaction";
+    Layout = "~/Pages/_layoutscrolling.cshtml";
+}
+
+@section StyleSheets
+{
+    <bundle name="wwwroot/bundles/kgraph.min.css" />
+    <link rel="stylesheet" href="/GraphEdit/GraphEdit.css" />
+
+}
+
+@section Scripts
+{
+<script src="https://noda.io/api/includes/noda.js"></script>
+
+<script>
+
+    var statusElement;
+    var statusMessageElement;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        statusElement = document.getElementById('status');
+        statusMessageElement = document.getElementById('statusMessage');
+        eventsMessageElement = document.getElementById('eventsMessage');
+
+        window.noda.onNodeEditingStart = function (node) {
+            eventMessage("Node selected with uuid: " + node.uuid);
+            showNodeProps(node);
+        }
+
+        window.noda.onLinkEditingStart = function (link) {
+            eventMessage("Link selected with uuid: " + node.uuid);
+            showLinkProps(link);
+        }
+
+        window.noda.onNodeCreated = function (node) { eventMessage("Node created with uuid: " + node.uuid); }
+        window.noda.onNodeUpdated = function (node) { eventMessage("Node updated with uuid: " + node.uuid); }
+        window.noda.onNodeDeleted = function (node) { eventMessage("Node deleted with uuid: " + node.uuid); }
+
+        window.noda.onLinkCreated = function (link) { eventMessage("Link created with uuid: " + link.uuid); }
+        window.noda.onLinkUpdated = function (link) { eventMessage("Link updated with uuid: " + link.uuid); }
+        window.noda.onLinkDeleted = function (link) { eventMessage("Link deleted with uuid: " + link.uuid); }
+
+    }, false);
+
+    function statusSuccess(message) {
+        statusMessageElement.textContent = message;
+        statusElement.classList.remove('error');
+        statusElement.classList.add('success');
+    }
+
+    function statusError(message) {
+        statusMessageElement.textContent = message;
+        statusElement.classList.add('error');
+        statusElement.classList.remove('success');
+    }
+
+    function eventMessage(message) {
+        eventsMessageElement.innerHTML = message + "<br/>" + eventsMessageElement.innerHTML;
+    }
+
+    async function createNode() {
+        try {
+            var nodeProps = obtainNodeProps();
+
+            const node = await window.noda.createNode(nodeProps);
+
+            //You can supply a Uuid or one will be assigned at creation time
+            document.getElementById('nodeUuid').value = node.uuid;
+
+            statusSuccess("Node created with uuid: " + node.uuid);
+
+        } catch(error) {
+            statusError("Node create error: " + error);
+        }
+    }
+
+    async function updateNode() {
+        try {
+            var nodeProps = obtainNodeProps();
+
+            const node = await window.noda.updateNode(nodeProps);
+
+            statusSuccess("Node updated with uuid: " + node.uuid);
+
+        } catch (error) {
+            statusError("Node update error: " + error);
+        }
+    }
+
+    async function deleteNode() {
+        try {
+            var nodeProps = {};
+
+            nodeProps.uuid = document.getElementById('nodeUuid').value;
+
+            const node = await window.noda.deleteNode(nodeProps);
+
+            statusSuccess("Node deleted with uuid: " + node.uuid);
+
+        } catch (error) {
+            statusError("Node delete error: " + error);
+        }
+    }
+
+    function obtainNodeProps()
+    {
+        var nodeProps = {};
+
+        nodeProps.uuid = document.getElementById('nodeUuid').value;
+        nodeProps.title = document.getElementById('nodeTitle').value;
+        nodeProps.color = document.getElementById('nodeColor').value;
+        nodeProps.opacity = parseFloat(document.getElementById('nodeOpacity').value);
+        nodeProps.shape = document.getElementById('nodeShape').value;
+        nodeProps.imageUrl = document.getElementById('nodeImageUrl').value;
+        nodeProps.notes = document.getElementById('nodeNotes').value;
+        nodeProps.pageUrl = document.getElementById('nodePageUrl').value;
+        nodeProps.size = parseFloat(document.getElementById('nodeSize').value);
+
+        nodeProps.location = {};
+
+        nodeProps.location.x = parseFloat(document.getElementById('nodeX').value);
+        nodeProps.location.y = parseFloat(document.getElementById('nodeY').value);
+        nodeProps.location.z = parseFloat(document.getElementById('nodeZ').value);
+        nodeProps.location.x = nodeProps.location.x != NaN ? nodeProps.location.x : 0;
+        nodeProps.location.y = nodeProps.location.y != NaN ? nodeProps.location.y : 0;
+        nodeProps.location.z = nodeProps.location.z != NaN ? nodeProps.location.z : 0;
+
+        nodeProps.location.relativeTo = document.getElementById('nodeRelativeTo').value;
+
+        nodeProps.selected = document.getElementById('nodeSelected').checked;
+
+        return nodeProps;
+    }
+
+    async function createLink()
+    {
+        try {
+            var linkProps = obtainLinkProps();
+
+            const link = await window.noda.createLink(linkProps);
+
+            //You can supply a Uuid or one will be assigned at creation time
+            document.getElementById('linkUuid').value = link.uuid;
+
+            statusSuccess("Link created with uuid: " + link.uuid);
+
+        } catch (error) {
+            statusError("Link create error: " + error);
+        }
+    }
+
+    async function updateLink() {
+        try {
+            var linkProps = obtainLinkProps();
+
+            const link = await window.noda.updateLink(linkProps);
+
+            statusSuccess("Link updated with uuid: " + link.uuid);
+
+        } catch (error) {
+            statusError("Link update error: " + error);
+        }
+    }
+
+    async function deleteLink() {
+        try {
+            var linkProps = {};
+
+            linkProps.uuid = document.getElementById('linkUuid').value;
+
+            const link = await window.noda.deleteLink(linkProps);
+
+            statusSuccess("Link deleted with uuid: " + link.uuid);
+
+        } catch (error) {
+            statusError("Link delete error: " + error);
+        }
+    }
+
+    function obtainLinkProps() {
+        var linkProps = {};
+
+        linkProps.uuid = document.getElementById('linkUuid').value;
+        linkProps.fromUuid = document.getElementById('linkFromUuid').value;
+        linkProps.toUuid = document.getElementById('linkToUuid').value;
+
+        linkProps.title = document.getElementById('linkTitle').value;
+        linkProps.color = document.getElementById('linkColor').value;
+        linkProps.shape = document.getElementById('linkShape').value;
+        linkProps.size = parseFloat(document.getElementById('linkSize').value);
+
+        linkProps.selected = document.getElementById('linkSelected').checked;
+
+        return linkProps;
+    }
+</script>
+}
+
+<main role="main" class="pb-3" style="padding: 0px !important">
+    
+<h3 class="ml-3">ThinkBase Noda Demo</h3>
+<hr/>
+<div class="container-fluid p-2"style="min-height:100vh">
+    <div class="row">
+        <div class="col-6 ml-3">
+            <div class="row">
+                <h3>Graph selection</h3>
+            </div>
+            <div class="row">
+                Select a Knowledge Graph to view and interact with.
+            </div>
+            <div class="row">
+                <select id="kgmodel-dropdown" name="kgmodel-dropdown" class="dropdown">
+                    <option selected="true" disabled>Choose...</option>
+                    <option value="personality_test.graph">Personality test</option>
+                    <option value="ai_triage.graph">Advice implementing AI</option>
+                </select>
+            </div>
+            <div>&nbsp;</div>
+            <div class="row">
+                <button id="kg-build" class="btn btn-info">Build</button>
+                <button id="kg-clear" class="btn btn-info">Clear</button>
+            </div>
+            <div class="row">
+                <h3>Graph description</h3>
+            </div>
+            <div class="row">
+                <textarea id="kg-description">
+
+                </textarea>
+            </div>
+        </div>
+        <div class="col-6">
+            <h3>Conversation</h3>
+            <div class="mesgs">
+                <div class="msg_history">
+                </div>
+                <div class="type_msg">
+                    <div class="input_msg_write">
+                        <input type="text" id="msg_input" class="write_msg" placeholder="Type a message" />
+                        <button class="msg_send_btn" id="msg_send_btn" type="button"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</main>
