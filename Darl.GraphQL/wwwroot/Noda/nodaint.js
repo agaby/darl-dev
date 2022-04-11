@@ -28,7 +28,7 @@ $(async function () {
     else if (!$('#auth').length) {
         demo = true;
     }
-    interact = graph('query int($name: String! $ksid: String! $text:  String!){interactKnowledgeGraph(kgModelName: $name conversationId: $ksid conversationData: { dataType: textual name: "" value: $text }){ darl reference response{dataType name value categories{name value }}}}');
+    interact = graph('query int($name: String! $ksid: String! $text:  String!){interactKnowledgeGraph(kgModelName: $name conversationId: $ksid conversationData: { dataType: textual name: "" value: $text }){ darl reference activeNodes response{dataType name value categories{name value }}}}');
     nodaSource = graph('query ($name: String!){exportNoda(graphName: $name)}');
 
     $('#kgmodel-dropdown').on('change', async function () {

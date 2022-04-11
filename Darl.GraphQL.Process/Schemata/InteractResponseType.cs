@@ -13,6 +13,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.reference, true);
             Field<DarlVarType>("response", resolve: c => c.Source.response);
             Field<ListGraphType<MatchedAnnotationType>>("matches", resolve: c => c.Source.matches);
+            Field<ListGraphType<StringGraphType>>("activeNodes", resolve: c => c.Source.activeNodes);
         }
     }
 }
