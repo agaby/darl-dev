@@ -1,0 +1,62 @@
+﻿@using Microsoft.AspNetCore.Authentication
+@using Microsoft.Extensions.Options
+@using System.Security.Principal
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>ThinkBase Portal</title>
+    <style>
+
+        body {
+            height: 100%;
+            margin: 0;
+            overflow: auto;
+            width: 100%;
+        }
+    </style>
+
+    <bundle name="wwwroot/bundles/root.min.css" />
+
+    @RenderSection("header", required: false)
+
+    @RenderSection("StyleSheets", required: false)
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117408682-4"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-117408682-4');
+    </script>
+     <script>
+     (function () {
+       var e,i=["https://fastbase.com/fscript.js","U4SjcJZnNl","script"],a=document,s=a.createElement(i[2]);
+       s.async=!0,s.id=i[1],s.src=i[0],(e=a.getElementsByTagName(i[2])[0]).parentNode.insertBefore(s,e)
+     })();
+    </script>
+    <script src="https://kit.fontawesome.com/f45aad6732.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    @Html.AntiForgeryToken()
+    @RenderBody()
+    <partial name="_footer" />
+
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <input name="auth" id="auth" type="hidden" />
+    }
+
+    <bundle name="wwwroot/bundles/vr.min.js" />
+
+
+    @RenderSection("Scripts", required: false)
+
+    <script src="~/GraphEdit/housekeeping.js"></script>
+</body>
+</html>

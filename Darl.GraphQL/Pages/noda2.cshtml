@@ -2,19 +2,20 @@
 @model Darl.GraphQL.Pages.noda2Model
 @{
     ViewData["Title"] = "Noda interaction";
-    Layout = "~/Pages/_layoutscrolling.cshtml";
+    Layout = "~/Pages/_nodaLayout.cshtml";
 }
 
 @section StyleSheets
 {
-    <bundle name="wwwroot/bundles/kgraph.min.css" />
+    <bundle name="wwwroot/bundles/vr.min.css" />
     <link rel="stylesheet" href="/GraphEdit/GraphEdit.css" />
 
 }
 
 @section Scripts
 {
-<script src="https://noda.io/api/includes/noda.js"></script>
+    <script src="https://noda.io/api/includes/noda.js"></script>
+    <script src="~/Noda/nodaint.js"></script>
 
 <script>
 
@@ -229,9 +230,9 @@
                 <h3>Graph description</h3>
             </div>
             <div class="row">
-                <textarea id="kg-description">
+                <div id="kg-description">
 
-                </textarea>
+                </div>
             </div>
         </div>
         <div class="col-6">

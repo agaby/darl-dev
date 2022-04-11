@@ -934,7 +934,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 colourMap.Add(k, colors[index++]);
             }
-            var nodadoc = new NodaDocument { name = graphName };
+            var nodadoc = new NodaDocument { name = graphName, description = model.description, initialText = model.initialText };
             foreach (var k in model.vertices.Keys)
             {
                 var tNode = model.vertices[k];

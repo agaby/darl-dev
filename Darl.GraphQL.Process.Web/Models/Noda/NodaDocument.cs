@@ -8,6 +8,8 @@ namespace Darl.GraphQL.Models.Models.Noda
     {
         public string name { get; set; } = "thinkbase.graph";
         public string format { get; set; } = "v2";
+        public string description { get; set;} = string.Empty;
+        public string initialText { get; set; } = string.Empty;
 
         public List<NodaNode> metaNodes { get; set; } = new List<NodaNode>();
         public List<NodaLink> metaLinks { get; set; } = new List<NodaLink>();

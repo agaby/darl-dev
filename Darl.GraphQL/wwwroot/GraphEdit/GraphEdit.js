@@ -85,7 +85,7 @@ async function loadGraphs() {
             });
         }
         if (initialTexts[mdname]) {
-            $('#msg_input').val(initialTexts[mdname])
+            $('#msg_input').val(initialTexts[mdname]);
         }
         var realdata = await realkgraphdata({ model: mdname });
         //instantiate graphs here
