@@ -737,6 +737,17 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 return await trans.ExportNoda(userId, graphName);
             });
 
+            FieldAsync<StringGraphType>("nodaView", "Obtain the data to display a graph within Noda",
+            arguments: new QueryArguments(
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge graph to display" }
+                ),
+            resolve: async context =>
+            {
+                var graphName = context.GetArgument<string>("graphName");
+                var userId = trans.GetCurrentUserId(context.UserContext);
+                return await trans.NodaView(userId, graphName);
+            });
+
             FieldAsync<StringGraphType>("getExportGraphUrl", "get a link to Export a graph in native format",
             arguments: new QueryArguments(
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge graph to export" }

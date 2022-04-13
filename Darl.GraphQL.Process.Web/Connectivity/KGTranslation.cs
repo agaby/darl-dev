@@ -922,7 +922,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var model = await _graph.GetModel(userId, graphName);
             if (model == null)
                 return String.Empty;
-            var colourMap = GetColourMap(model)
+            var colourMap = GetColourMap(model);
             var nodadoc = new Models.Noda.NodaDocument { name = graphName };
             foreach (var k in model.vertices.Keys)
             {
