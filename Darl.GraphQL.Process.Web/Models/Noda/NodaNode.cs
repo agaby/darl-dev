@@ -1,7 +1,9 @@
-﻿namespace Darl.GraphQL.Models.Models.Noda
+﻿using Darl.GraphQL.Process.Web.Models.Noda;
+
+namespace Darl.GraphQL.Models.Models.Noda
 {
-    public enum NodaNodeShapes { Ball, Box, Hourglass };
-    public class NodaNode : NodaElement
+    public enum NodaNodeShapes { Ball, Box, Tetra, Hourglass, Cylinder, Diamond, Plus, Star };
+    public class NodaNode : NodaElement, ILayoutNode
     {
         public NodaFacing facing { get; set; } = new NodaFacing();
         public NodaPosition position { get; set; } = NodaPosition.Random();

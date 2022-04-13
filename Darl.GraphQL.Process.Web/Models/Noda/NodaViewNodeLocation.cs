@@ -1,0 +1,22 @@
+﻿using Darl.GraphQL.Models.Models.Noda;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+
+namespace Darl.GraphQL.Process.Web.Models.Noda
+{
+    public class NodaViewNodeLocation
+    {
+        public enum RelativeTo { Origin, User, Window };
+        public double x { get { return position.x; } set { position.x = value; } }
+        public double y { get { return position.y; } set { position.y = value; } }
+        public double z { get { return position.z; } set { position.z = value; } }
+        public RelativeTo relativeTo { get; set; }
+
+        [JsonIgnore]
+        public NodaPosition position { get; set; } = new NodaPosition();
+    }
+}

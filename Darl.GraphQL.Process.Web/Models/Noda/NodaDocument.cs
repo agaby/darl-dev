@@ -1,23 +1,20 @@
-﻿using System;
+﻿using Darl.GraphQL.Process.Web.Models.Noda;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Darl.GraphQL.Models.Models.Noda
 {
-    public class NodaDocument
+    public class NodaDocument: ILayoutable
     {
         public string name { get; set; } = "thinkbase.graph";
         public string format { get; set; } = "v2";
-        public string description { get; set;} = string.Empty;
-        public string initialText { get; set; } = string.Empty;
-
         public List<NodaNode> metaNodes { get; set; } = new List<NodaNode>();
         public List<NodaLink> metaLinks { get; set; } = new List<NodaLink>();
         public List<NodaNode> nodes { get; set; } = new List<NodaNode>();
         public List<NodaLink> links { get; set; } = new List<NodaLink>();
 
         private Dictionary<string, NodaNode>? nodeLookup { get; set; }
-
 
         private Dictionary<string, Dictionary<string, NodaLink>> linkLookup { get; set; } = new Dictionary<string, Dictionary<string, NodaLink>>();
 
@@ -37,17 +34,17 @@ namespace Darl.GraphQL.Models.Models.Noda
             }
         }
 
-        internal NodaLink? GetEdge(NodaNodeId fromNode, NodaNodeId toNode)
+        public ILayoutLink? GetEdge(string fromNode, string toNode)
         {
-            if (linkLookup.ContainsKey(fromNode.Uuid))
+            if (linkLookup.ContainsKey(fromNode))
             {
-                if (linkLookup[fromNode.Uuid].ContainsKey(toNode.Uuid))
-                    return linkLookup[fromNode.Uuid][toNode.Uuid];
+                if (linkLookup[fromNode].ContainsKey(toNode))
+                    return linkLookup[fromNode][toNode];
             }
             return null;
         }
 
-        internal NodaNode? GetNode(string uuid)
+        public ILayoutNode? GetNode(string uuid)
         {
             if (nodeLookup != null && nodeLookup.ContainsKey(uuid))
                 return nodeLookup[uuid];
@@ -55,6 +52,16 @@ namespace Darl.GraphQL.Models.Models.Noda
         }
 
         internal void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ILayoutNode> GetNodes()
+        {
+            return (List<ILayoutNode>)nodes.Select(a => a as ILayoutNode);
+        }
+
+        public List<ILayoutLink> GetLinks()
         {
             throw new NotImplementedException();
         }

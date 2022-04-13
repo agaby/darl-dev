@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Models.Models.Noda;
+using Darl.GraphQL.Process.Web.Models.Noda;
 
 namespace Darl.GraphQL.Process.Models.Noda.Layout
 {
@@ -6,7 +7,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
     {
 
         public double mass = 1.0;
-        public Point(NodaPosition iPosition, NodaPosition iVelocity, NodaPosition iAcceleration, NodaNode iNode)
+        public Point(NodaPosition iPosition, NodaPosition iVelocity, NodaPosition iAcceleration, ILayoutNode iNode)
         {
             position = iPosition;
             node = iNode;
@@ -55,7 +56,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
         }
 
         public NodaPosition position { get; set; }
-        public NodaNode node { get; private set; }
+        public ILayoutNode node { get; private set; }
 
         public NodaPosition velocity { get; private set; }
         public NodaPosition acceleration { get; private set; }

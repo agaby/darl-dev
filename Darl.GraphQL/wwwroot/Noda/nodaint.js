@@ -63,6 +63,8 @@ async function Build() {
     var converter = new showdown.Converter();
     var html = converter.makeHtml(root.description);
     $('#kg-description').html(html);
+    //now create the network in noda
+
 }
 
 function findGetParameter(parameterName) {
@@ -103,6 +105,7 @@ function AddIncomingText(text) {
         '</div>' +
         '</div>');
 }
+
 function AddOutGoingText(text) {
     $('.msg_history').append('<div class="outgoing_msg">' +
         '<div class="sent_msg">' +
@@ -150,5 +153,34 @@ function AddInComingMessage(message) {
                 break;
         }
     }
+}
+
+function CreateNodaNode(kgnode) {
+    var nodeProps = {};
+
+    nodeProps.uuid = document.getElementById('nodeUuid').value;
+    nodeProps.title = document.getElementById('nodeTitle').value;
+    nodeProps.color = document.getElementById('nodeColor').value;
+    nodeProps.opacity = parseFloat(document.getElementById('nodeOpacity').value);
+    nodeProps.shape = document.getElementById('nodeShape').value;
+    nodeProps.imageUrl = document.getElementById('nodeImageUrl').value;
+    nodeProps.notes = document.getElementById('nodeNotes').value;
+    nodeProps.pageUrl = document.getElementById('nodePageUrl').value;
+    nodeProps.size = parseFloat(document.getElementById('nodeSize').value);
+
+    nodeProps.location = {};
+
+    nodeProps.location.x = parseFloat(document.getElementById('nodeX').value);
+    nodeProps.location.y = parseFloat(document.getElementById('nodeY').value);
+    nodeProps.location.z = parseFloat(document.getElementById('nodeZ').value);
+    nodeProps.location.x = nodeProps.location.x != NaN ? nodeProps.location.x : 0;
+    nodeProps.location.y = nodeProps.location.y != NaN ? nodeProps.location.y : 0;
+    nodeProps.location.z = nodeProps.location.z != NaN ? nodeProps.location.z : 0;
+
+    nodeProps.location.relativeTo = document.getElementById('nodeRelativeTo').value;
+
+    nodeProps.selected = document.getElementById('nodeSelected').checked;
+
+    return nodeProps;
 }
 

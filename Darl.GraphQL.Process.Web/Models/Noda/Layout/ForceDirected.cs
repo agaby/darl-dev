@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Models.Models.Noda;
+using Darl.GraphQL.Process.Web.Models.Noda;
 using System.Collections.Generic;
 
 namespace Darl.GraphQL.Process.Models.Noda.Layout
@@ -11,7 +12,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
             point = null;
             distance = null;
         }
-        public NodaNode? node;
+        public ILayoutNode? node;
         public Point? point;
         public double? distance;
     }
@@ -66,7 +67,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
         protected Dictionary<string, Point> m_nodePoints;
         protected Dictionary<string, Spring> m_NodaLinkSprings;
 
-        public NodaDocument graph
+        public ILayoutable graph
         {
             get;
             protected set;
@@ -80,7 +81,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
 
         public delegate void EdgeAction(NodaLink edge, Spring spring);
         public delegate void NodeAction(NodaNode edge, Point point);
-        public ForceDirected3D(NodaDocument iGraph, double iStiffness, double iRepulsion, double iDamping)
+        public ForceDirected3D(ILayoutable iGraph, double iStiffness, double iRepulsion, double iDamping)
         {
             graph = iGraph;
             Stiffness = iStiffness;
@@ -91,7 +92,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
             Threshold = 0.01f;
         }
 
-        public Point GetPoint(NodaNode iNodaNode)
+        public Point GetPoint(ILayoutNode iNodaNode)
         {
             if (!(m_nodePoints.ContainsKey(iNodaNode.uuid)))
             {
@@ -108,7 +109,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
             BoundingBox boundingBox = new BoundingBox();
             NodaPosition bottomLeft = NodaPosition.Identity().Multiply(BoundingBox.defaultBB * -1.0f);
             NodaPosition topRight = NodaPosition.Identity().Multiply(BoundingBox.defaultBB);
-            foreach (NodaNode n in graph.nodes)
+            foreach (ILayoutNode n in graph.GetNodes())
             {
                 NodaPosition position = GetPoint(n).position;
                 if (position.x < bottomLeft.x)
@@ -131,14 +132,14 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
 
         }
 
-        public Spring GetSpring(NodaLink iNodaLink)
+        public Spring GetSpring(ILayoutLink iNodaLink)
         {
             if (!(m_NodaLinkSprings.ContainsKey(iNodaLink.uuid)))
             {
                 double length = iNodaLink.length;
                 Spring? existingSpring = null;
 
-                var fromNodaLink = graph.GetEdge(iNodaLink.fromNode, iNodaLink.toNode);
+                var fromNodaLink = graph.GetEdge(iNodaLink.FromNode(), iNodaLink.ToNode());
                 if (fromNodaLink != null)
                 {
                     if (existingSpring == null && m_NodaLinkSprings.ContainsKey(fromNodaLink.uuid))
@@ -151,7 +152,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
                     return new Spring(existingSpring.point1, existingSpring.point2, 0.0, 0.0);
                 }
 
-                var toNodaLink = graph.GetEdge(iNodaLink.toNode, iNodaLink.fromNode);
+                var toNodaLink = graph.GetEdge(iNodaLink.ToNode(), iNodaLink.FromNode());
                 if (toNodaLink != null)
                 {
                     if (existingSpring == null && m_NodaLinkSprings.ContainsKey(toNodaLink.uuid))
@@ -164,18 +165,19 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
                 {
                     return new Spring(existingSpring.point2, existingSpring.point1, 0.0, 0.0);
                 }
-                m_NodaLinkSprings[iNodaLink.uuid] = new Spring(GetPoint(graph.GetNode(iNodaLink.fromNode.Uuid)), GetPoint(graph.GetNode(iNodaLink.toNode.Uuid)), length, Stiffness);
+                m_NodaLinkSprings[iNodaLink.uuid] = new Spring(GetPoint(graph.GetNode(iNodaLink.FromNode())), GetPoint(graph.GetNode(iNodaLink.ToNode())), length, Stiffness);
 
             }
             return m_NodaLinkSprings[iNodaLink.uuid];
         }
 
+        //ONsquared algorithm.
         protected void applyCoulombsLaw()
         {
-            foreach (NodaNode n1 in graph.nodes)
+            foreach (ILayoutNode n1 in graph.GetNodes())
             {
                 Point point1 = GetPoint(n1);
-                foreach (NodaNode n2 in graph.nodes)
+                foreach (ILayoutNode n2 in graph.GetNodes())
                 {
                     Point point2 = GetPoint(n2);
                     if (!point1.Equals(point2))
@@ -192,7 +194,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
 
         protected void applyHookesLaw()
         {
-            foreach (NodaLink e in graph.links)
+            foreach (ILayoutLink e in graph.GetLinks())
             {
                 Spring spring = GetSpring(e);
                 NodaPosition d = spring.point2.position - spring.point1.position;
@@ -206,7 +208,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
 
         protected void attractToCentre()
         {
-            foreach (NodaNode n in graph.nodes)
+            foreach (ILayoutNode n in graph.GetNodes())
             {
                 Point point = GetPoint(n);
                 NodaPosition direction = point.position * -1.0;
@@ -220,7 +222,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
 
         protected void updateVelocity(double iTimeStep)
         {
-            foreach (NodaNode n in graph.nodes)
+            foreach (ILayoutNode n in graph.GetNodes())
             {
                 Point point = GetPoint(n);
                 point.velocity.Add(point.acceleration * iTimeStep);
@@ -231,7 +233,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
 
         protected void updatePosition(double iTimeStep)
         {
-            foreach (NodaNode n in graph.nodes)
+            foreach (ILayoutNode n in graph.GetNodes())
             {
                 Point point = GetPoint(n);
                 point.position.Add(point.velocity * iTimeStep);
@@ -241,7 +243,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
         protected double getTotalEnergy()
         {
             double energy = 0.0;
-            foreach (NodaNode n in graph.nodes)
+            foreach (ILayoutNode n in graph.GetNodes())
             {
                 Point point = GetPoint(n);
                 double speed = point.velocity.Magnitude();
@@ -268,7 +270,7 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
         public NearestPoint Nearest(NodaPosition position)
         {
             NearestPoint min = new NearestPoint();
-            foreach (NodaNode n in graph.nodes)
+            foreach (ILayoutNode n in graph.GetNodes())
             {
                 Point point = GetPoint(n);
                 double distance = (point.position - position).Magnitude();

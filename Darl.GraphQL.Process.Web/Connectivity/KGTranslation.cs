@@ -4,6 +4,7 @@ using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Models.Noda;
 using Darl.GraphQL.Process.Models.Noda.Layout;
 using Darl.GraphQL.Process.Web.Middleware;
+using Darl.GraphQL.Process.Web.Models.Noda;
 using Darl.Lineage;
 using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
@@ -919,6 +920,72 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             //read model and convert to noda format
             var model = await _graph.GetModel(userId, graphName);
+            if (model == null)
+                return String.Empty;
+            var colourMap = GetColourMap(model)
+            var nodadoc = new Models.Noda.NodaDocument { name = graphName };
+            foreach (var k in model.vertices.Keys)
+            {
+                var tNode = model.vertices[k];
+                var n = new NodaNode { title = tNode.name, uuid = k, properties = Convert(tNode.properties ?? new List<GraphAttribute>()), tone = colourMap[tNode.lineage ?? String.Empty], size = 5.0, shape = NodaNodeShapes.Ball };
+                nodadoc.nodes.Add(n);
+            }
+            foreach (var k in model.edges.Keys)
+            {
+                var tLink = model.edges[k];
+                var l = new NodaLink { title = tLink.name, uuid = k, fromNode = new NodaNodeId { Uuid = tLink.startId }, toNode = new NodaNodeId { Uuid = tLink.endId }, properties = Convert(tLink.properties ?? new List<GraphAttribute>()), tone = new NodaTone { r = 0.09019608, g = 0.09019608, b = 0.09019608, a = 1.0 } };
+                nodadoc.links.Add(l);
+            }
+            Layout(nodadoc);
+            return JsonConvert.SerializeObject(nodadoc, new Newtonsoft.Json.Converters.StringEnumConverter());
+        }
+
+        public async Task<string> NodaView(string userId, string graphName)
+        {
+            var model = await _graph.GetModel(userId, graphName);
+            if (model == null)
+                return String.Empty;
+            var colourMap = GetColourMap(model);
+            var nodadoc = new NodaViewDocument { name = graphName, description = model.description, initialText = model.initialText };
+            foreach (var k in model.vertices.Keys)
+            {
+                var tNode = model.vertices[k];
+                var n = new NodaViewNodeProps { title = tNode.name ?? "", uuid = k, notes = ConvertDisplayProperties(tNode), color = colourMap[tNode.lineage ?? String.Empty].ToHex(), size = 5, shape = NodaViewNodeProps.NodaNodeShapes.Ball };
+                nodadoc.nodes.Add(n);
+            }
+            foreach (var k in model.edges.Keys)
+            {
+                var tLink = model.edges[k];
+                var l = new NodaViewLinkProps { title = tLink.name ?? "", uuid = k, fromUuid = tLink.startId, toUuid = tLink.endId, color = "#000000", selected = false, shape = NodaViewLinkProps.NodaViewLinkShape.Solid, size = 1 };
+                nodadoc.links.Add(l);
+            }
+            Layout(nodadoc);
+            return JsonConvert.SerializeObject(nodadoc, new Newtonsoft.Json.Converters.StringEnumConverter());
+        }
+
+        /// <summary>
+        /// Choose which of the properties to display
+        /// </summary>
+        /// <param name="tNode">the object</param>
+        /// <returns>text for notes</returns>
+        /// <remarks>For now, Noda has limited property representation, select what to show</remarks>
+        private string ConvertDisplayProperties(GraphObject? tNode)
+        {
+            if (tNode == null || tNode.properties == null)
+                return string.Empty;
+            var ruleSet = tNode.properties.FirstOrDefault(a => a.type == GraphAttribute.DataType.ruleset);
+            if (ruleSet != null)
+                return ruleSet.value;
+            var sb = new StringBuilder();
+            foreach(var property in tNode.properties)
+            {
+                sb.AppendLine($"Name: {property.name}, data type: {property.type}, value: {property.value}");
+            }
+            return sb.ToString();
+        }
+
+        private Dictionary<string, NodaTone> GetColourMap(IGraphModel model)
+        {
             //for coloring the nodes get the set of lineages.
             var lineageMap = new HashSet<string>();
             foreach (var k in model.vertices.Keys)
@@ -934,19 +1001,11 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 colourMap.Add(k, colors[index++]);
             }
-            var nodadoc = new NodaDocument { name = graphName, description = model.description, initialText = model.initialText };
-            foreach (var k in model.vertices.Keys)
-            {
-                var tNode = model.vertices[k];
-                var n = new NodaNode { title = tNode.name, uuid = k, properties = Convert(tNode.properties ?? new List<GraphAttribute>()), tone = colourMap[tNode.lineage ?? String.Empty], size = 5.0, shape = NodaNodeShapes.Ball };
-                nodadoc.nodes.Add(n);
-            }
-            foreach (var k in model.edges.Keys)
-            {
-                var tLink = model.edges[k];
-                var l = new NodaLink { title = tLink.name, uuid = k, fromNode = new NodaNodeId { Uuid = tLink.startId }, toNode = new NodaNodeId { Uuid = tLink.endId }, properties = Convert(tLink.properties ?? new List<GraphAttribute>()), tone = new NodaTone { r = 0.09019608, g = 0.09019608, b = 0.09019608, a = 1.0 } };
-                nodadoc.links.Add(l);
-            }
+            return colourMap;
+        }
+
+        private void Layout(ILayoutable nodadoc)
+        {
             //create the ancillary dictionaries
             nodadoc.Init();
             //run force layout on graph
@@ -959,12 +1018,11 @@ namespace Darl.GraphQL.Models.Connectivity
                 var diagonal = bb.topRightBack - bb.bottomLeftFront;
                 var length = diagonal.Magnitude();
                 var scale = 2.0 / length; //fit into a 2 unit diagonal bounding box
-                foreach (var n in nodadoc.nodes)
+                foreach (var n in nodadoc.GetNodes())
                 {
-                    n.position = n.position * scale;
+                    n.position *= scale;
                 }
             }
-            return JsonConvert.SerializeObject(nodadoc, new Newtonsoft.Json.Converters.StringEnumConverter());
         }
 
         public Task<string> GetTypeWordForLineage(string lineage, string isoLanguage = "en")
