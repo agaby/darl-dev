@@ -29,7 +29,7 @@ $(async function () {
         demo = true;
     }
     interact = graph('query int($name: String! $ksid: String! $text:  String!){interactKnowledgeGraph(kgModelName: $name conversationId: $ksid conversationData: { dataType: textual name: "" value: $text }){ darl reference activeNodes response{dataType name value categories{name value }}}}');
-    nodaSource = graph('query ($name: String!){exportNoda(graphName: $name)}');
+    nodaSource = graph('query ($name: String!){nodaView(graphName: $name)}');
 
     $('#kgmodel-dropdown').on('change', async function () {
         kgname = this.value;
@@ -58,13 +58,18 @@ $(async function () {
 
 async function Build() {
     var res = await nodaSource({ name: kgname });
-    var root = JSON.parse(res.exportNoda);
+    var root = JSON.parse(res.nodaView);
     $('#msg_input').val(root.initialText)
     var converter = new showdown.Converter();
     var html = converter.makeHtml(root.description);
     $('#kg-description').html(html);
     //now create the network in noda
-
+    root.nodes.forEach(async function (node) {
+        await window.noda.createNode(node);
+    });
+    root.links.forEach(async function (link) {
+        await window.noda.createLink(link);
+    });
 }
 
 function findGetParameter(parameterName) {

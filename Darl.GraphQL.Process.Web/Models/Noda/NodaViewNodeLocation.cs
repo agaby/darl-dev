@@ -1,9 +1,9 @@
 ﻿using Darl.GraphQL.Models.Models.Noda;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Process.Web.Models.Noda
@@ -17,6 +17,6 @@ namespace Darl.GraphQL.Process.Web.Models.Noda
         public RelativeTo relativeTo { get; set; }
 
         [JsonIgnore]
-        public NodaPosition position { get; set; } = new NodaPosition();
+        internal NodaPosition position { get; set; } = NodaPosition.Random();
     }
 }

@@ -31,7 +31,7 @@ namespace Darl.GraphQL.Process.Web.Models.Noda
 
         public List<ILayoutLink> GetLinks()
         {
-            return (List<ILayoutLink>)links.Select(a => a as ILayoutLink);
+            return links.ToList<ILayoutLink>();    
         }
 
         public ILayoutNode? GetNode(string uuid)
@@ -43,7 +43,7 @@ namespace Darl.GraphQL.Process.Web.Models.Noda
 
         public List<ILayoutNode> GetNodes()
         {
-            return (List<ILayoutNode>)nodes.Select(a => a as ILayoutNode);
+            return nodes.ToList<ILayoutNode>();
         }
 
         public void Init()

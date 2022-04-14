@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Process.Web.Models.Noda
@@ -19,16 +19,16 @@ namespace Darl.GraphQL.Process.Web.Models.Noda
         public int size { get; set; } = 1; //1-9
         public bool selected { get; set; } = false;
         [JsonIgnore]
-        public double length { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public double length { get; set; } = 0.0;
 
         public string FromNode()
         {
-            throw new NotImplementedException();
+            return fromUuid;
         }
 
         public string ToNode()
         {
-            throw new NotImplementedException();
+            return toUuid;
         }
     }
 }

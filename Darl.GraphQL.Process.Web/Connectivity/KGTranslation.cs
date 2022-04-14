@@ -960,7 +960,8 @@ namespace Darl.GraphQL.Models.Connectivity
                 nodadoc.links.Add(l);
             }
             Layout(nodadoc);
-            return JsonConvert.SerializeObject(nodadoc, new Newtonsoft.Json.Converters.StringEnumConverter());
+            var res = JsonConvert.SerializeObject(nodadoc, new Newtonsoft.Json.Converters.StringEnumConverter());
+            return res;
         }
 
         /// <summary>

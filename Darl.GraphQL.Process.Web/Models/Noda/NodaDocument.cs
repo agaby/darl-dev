@@ -58,12 +58,12 @@ namespace Darl.GraphQL.Models.Models.Noda
 
         public List<ILayoutNode> GetNodes()
         {
-            return (List<ILayoutNode>)nodes.Select(a => a as ILayoutNode);
+            return  nodes.ToList<ILayoutNode>();          
         }
 
         public List<ILayoutLink> GetLinks()
         {
-            throw new NotImplementedException();
+            return links.ToList<ILayoutLink>();
         }
     }
 }

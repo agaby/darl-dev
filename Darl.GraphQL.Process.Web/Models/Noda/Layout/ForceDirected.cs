@@ -97,8 +97,11 @@ namespace Darl.GraphQL.Process.Models.Noda.Layout
             if (!(m_nodePoints.ContainsKey(iNodaNode.uuid)))
             {
                 NodaPosition iniPosition = iNodaNode.position;
-                if (iniPosition == null)
+                if (iniPosition == null || (iniPosition.x == 0.0 && iniPosition.y == 0.0 && iniPosition.z == 0.0))
+                {
                     iniPosition = NodaPosition.Random();
+                    iNodaNode.position = iniPosition;
+                }
                 m_nodePoints[iNodaNode.uuid] = new Point(iniPosition, NodaPosition.Zero(), NodaPosition.Zero(), iNodaNode);
             }
             return m_nodePoints[iNodaNode.uuid];

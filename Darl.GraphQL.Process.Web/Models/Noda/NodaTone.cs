@@ -9,7 +9,7 @@
 
         public string ToHex()
         {
-            return '#' + (r * 256).ToString("X2") + (g * 256).ToString("X2") + (b * 256).ToString("X2");    
+            return '#' + ((int)(r * 255)).ToString("X2") + ((int)(g * 255)).ToString("X2") + ((int)(b * 255)).ToString("X2");    
         }
     }
 }
