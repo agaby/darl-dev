@@ -94,6 +94,9 @@ namespace Darl.GraphQL.Models.Connectivity
         private static readonly string newsItemContentLineage = "noun:01,4,05,13,09+noun:01,4,05,21,05"; //description
         private static readonly string newsItemCategoryLineage = "noun:01,4,05,13,09+noun:01,0,0,15,07,02,02"; //description
 
+        private static double nodaBoundingBoxDiagonal = 3.0;
+        private static double nodaInitialOpacity = 0.6;
+
 
         public KGTranslation(ILogger<KGTranslation> logger, IConfiguration config, IGraphProcessing graph, IMetaStructureHandler meta, IProducts prods, ICheckEmail checkEmail, ILicensing licensing, IDarlMetaRunTime metaRuntime)
         {
@@ -950,13 +953,13 @@ namespace Darl.GraphQL.Models.Connectivity
             foreach (var k in model.vertices.Keys)
             {
                 var tNode = model.vertices[k];
-                var n = new NodaViewNodeProps { title = tNode.name ?? "", uuid = k, notes = ConvertDisplayProperties(tNode), color = colourMap[tNode.lineage ?? String.Empty].ToHex(), size = 5, shape = NodaViewNodeProps.NodaNodeShapes.Ball };
+                var n = new NodaViewNodeProps { title = tNode.name ?? "", uuid = k, notes = ConvertDisplayProperties(tNode), color = colourMap[tNode.lineage ?? String.Empty].ToHex(), size = 5, shape = NodaViewNodeProps.NodaNodeShapes.Ball, opacity = nodaInitialOpacity };
                 nodadoc.nodes.Add(n);
             }
             foreach (var k in model.edges.Keys)
             {
                 var tLink = model.edges[k];
-                var l = new NodaViewLinkProps { title = tLink.name ?? "", uuid = k, fromUuid = tLink.startId, toUuid = tLink.endId, color = "#000000", selected = false, shape = NodaViewLinkProps.NodaViewLinkShape.Solid, size = 1 };
+                var l = new NodaViewLinkProps { title = tLink.name ?? "", uuid = k, fromUuid = tLink.startId, toUuid = tLink.endId, color = "000000", selected = false, shape = NodaViewLinkProps.NodaViewLinkShape.Solid, size = 1 };
                 nodadoc.links.Add(l);
             }
             Layout(nodadoc);
@@ -1018,7 +1021,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 var diagonal = bb.topRightBack - bb.bottomLeftFront;
                 var length = diagonal.Magnitude();
-                var scale = 2.0 / length; //fit into a 2 unit diagonal bounding box
+                var scale = nodaBoundingBoxDiagonal / length; //fit into a diagonal bounding box
                 foreach (var n in nodadoc.GetNodes())
                 {
                     n.position *= scale;

@@ -4,6 +4,8 @@ var nodasource;
 var interact;
 var kgname;
 var currentStateId;
+var root;
+var nodeLookup = {};
 
 
 $(async function () {
@@ -57,19 +59,35 @@ $(async function () {
 });
 
 async function Build() {
+    Clear();
     var res = await nodaSource({ name: kgname });
-    var root = JSON.parse(res.nodaView);
-    $('#msg_input').val(root.initialText)
+    root = JSON.parse(res.nodaView);
+    $('#msg_input').val(root.initialText);
     var converter = new showdown.Converter();
     var html = converter.makeHtml(root.description);
     $('#kg-description').html(html);
     //now create the network in noda
     root.nodes.forEach(async function (node) {
         await window.noda.createNode(node);
+        nodeLookup[node.uuid] = node;
     });
     root.links.forEach(async function (link) {
         await window.noda.createLink(link);
     });
+}
+async function Clear() {
+    if (root !== null) {
+        root.links.forEach(async function (link) {
+            await window.noda.deleteLink(link);
+        });
+        root.nodes.forEach(async function (node) {
+            await window.noda.deleteNode(node);
+        });
+    }
+    nodeLookup = {};
+    $('#msg_input').val('');
+    $('#kg-description').html('');
+    root = null;
 }
 
 function findGetParameter(parameterName) {
@@ -93,6 +111,12 @@ async function HandleChatText(text) {
         AddInComingMessage(res);
         $(".msg_history").stop().animate({ scrollTop: $(".msg_history")[0].scrollHeight }, 1000);
         //highlight appropriate nodes here.
+        res.interactKnowledgeGraph[0].activeNodes.forEach(async function (uuid) {
+            var n = nodeLookup[uuid];
+            n.opacity = 1.0;
+            n.sected = true;
+            await window.noda.updateNode(nodeProps);
+        });
     }
     catch (err) {
         HandleError(err);
@@ -160,32 +184,4 @@ function AddInComingMessage(message) {
     }
 }
 
-function CreateNodaNode(kgnode) {
-    var nodeProps = {};
-
-    nodeProps.uuid = document.getElementById('nodeUuid').value;
-    nodeProps.title = document.getElementById('nodeTitle').value;
-    nodeProps.color = document.getElementById('nodeColor').value;
-    nodeProps.opacity = parseFloat(document.getElementById('nodeOpacity').value);
-    nodeProps.shape = document.getElementById('nodeShape').value;
-    nodeProps.imageUrl = document.getElementById('nodeImageUrl').value;
-    nodeProps.notes = document.getElementById('nodeNotes').value;
-    nodeProps.pageUrl = document.getElementById('nodePageUrl').value;
-    nodeProps.size = parseFloat(document.getElementById('nodeSize').value);
-
-    nodeProps.location = {};
-
-    nodeProps.location.x = parseFloat(document.getElementById('nodeX').value);
-    nodeProps.location.y = parseFloat(document.getElementById('nodeY').value);
-    nodeProps.location.z = parseFloat(document.getElementById('nodeZ').value);
-    nodeProps.location.x = nodeProps.location.x != NaN ? nodeProps.location.x : 0;
-    nodeProps.location.y = nodeProps.location.y != NaN ? nodeProps.location.y : 0;
-    nodeProps.location.z = nodeProps.location.z != NaN ? nodeProps.location.z : 0;
-
-    nodeProps.location.relativeTo = document.getElementById('nodeRelativeTo').value;
-
-    nodeProps.selected = document.getElementById('nodeSelected').checked;
-
-    return nodeProps;
-}
 
