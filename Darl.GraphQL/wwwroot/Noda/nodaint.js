@@ -6,6 +6,7 @@ var kgname;
 var currentStateId;
 var root;
 var nodeLookup = {};
+var inNoda;
 
 
 $(async function () {
@@ -22,7 +23,8 @@ $(async function () {
     else {
         mdname = findGetParameter("kgraph");
     }
-
+    inNoda = window.vuplex !== undefined;
+    
     if (apiKey !== null)
         graph = graphql(url + "/graphql", { headers: { "Authorization": "Basic " + apiKey } });
     else if (key !== null && key !== "")
@@ -56,6 +58,10 @@ $(async function () {
         if (text !== "")
             await HandleChatText(text);
     });
+
+    if (!inNoda) {
+        alert("This page is intended to be viewed inside the Noda mind-mapping app. Go to https://Noda.io ");
+    }
 });
 
 async function Build() {
@@ -67,16 +73,18 @@ async function Build() {
     var html = converter.makeHtml(root.description);
     $('#kg-description').html(html);
     //now create the network in noda
-    root.nodes.forEach(async function (node) {
-        await window.noda.createNode(node);
-        nodeLookup[node.uuid] = node;
-    });
-    root.links.forEach(async function (link) {
-        await window.noda.createLink(link);
-    });
+    if (inNoda) {
+        root.nodes.forEach(async function (node) {
+            await window.noda.createNode(node);
+            nodeLookup[node.uuid] = node;
+        });
+        root.links.forEach(async function (link) {
+            await window.noda.createLink(link);
+        });
+    }
 }
 async function Clear() {
-    if (root !== null) {
+    if (inNoda && root !== null && root !== undefined) {
         root.links.forEach(async function (link) {
             await window.noda.deleteLink(link);
         });
@@ -111,12 +119,16 @@ async function HandleChatText(text) {
         AddInComingMessage(res);
         $(".msg_history").stop().animate({ scrollTop: $(".msg_history")[0].scrollHeight }, 1000);
         //highlight appropriate nodes here.
-        res.interactKnowledgeGraph[0].activeNodes.forEach(async function (uuid) {
-            var n = nodeLookup[uuid];
-            n.opacity = 1.0;
-            n.sected = true;
-            await window.noda.updateNode(nodeProps);
-        });
+        if (inNoda) {
+            res.interactKnowledgeGraph[0].activeNodes.forEach(async function (uuid) {
+                var n = nodeLookup[uuid];
+                if (n !== undefined) {
+                    n.opacity = 1.0;
+                    n.sected = true;
+                    await window.noda.updateNode(nodeProps);
+                }
+            });
+        }
     }
     catch (err) {
         HandleError(err);
