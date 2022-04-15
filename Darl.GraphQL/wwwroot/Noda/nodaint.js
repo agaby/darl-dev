@@ -53,6 +53,15 @@ $(async function () {
         }
     });
 
+    $('#kg-clear').click(async function () {
+        try {
+            Clear();
+        }
+        catch (err) {
+            HandleError(err);
+        }
+    });
+
     $('.msg_send_btn').click(async function () {
         const text = $('.write_msg').val();
         if (text !== "")
@@ -96,6 +105,8 @@ async function Clear() {
     $('#msg_input').val('');
     $('#kg-description').html('');
     root = null;
+    ClearChatText();
+    currentStateId = uuidv4();
 }
 
 function findGetParameter(parameterName) {
@@ -194,6 +205,10 @@ function AddInComingMessage(message) {
                 break;
         }
     }
+}
+
+function ClearChatText() {
+    $('.msg_history').empty();
 }
 
 
