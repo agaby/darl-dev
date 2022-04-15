@@ -135,7 +135,7 @@ async function HandleChatText(text) {
                 if (uuid in nodeLookup) {
                     var n = nodeLookup[uuid];
                     n.opacity = 1.0;
-                    n.sected = true;
+                    n.shape = "Box";
                     await window.noda.updateNode(n);              
                 }
             });
