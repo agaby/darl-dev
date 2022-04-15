@@ -10,6 +10,7 @@ var inNoda;
 
 
 $(async function () {
+    inNoda = true;
     currentStateId = uuidv4();
     var url = window.location.origin;
     var key = "";
@@ -23,7 +24,6 @@ $(async function () {
     else {
         mdname = findGetParameter("kgraph");
     }
-    inNoda = window.vuplex !== undefined;
     
     if (apiKey !== null)
         graph = graphql(url + "/graphql", { headers: { "Authorization": "Basic " + apiKey } });
