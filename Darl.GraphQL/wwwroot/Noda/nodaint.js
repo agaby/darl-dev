@@ -132,11 +132,11 @@ async function HandleChatText(text) {
         //highlight appropriate nodes here.
         if (inNoda) {
             res.interactKnowledgeGraph[0].activeNodes.forEach(async function (uuid) {
-                var n = nodeLookup[uuid];
-                if (n !== undefined) {
+                if (uuid in nodeLookup) {
+                    var n = nodeLookup[uuid];
                     n.opacity = 1.0;
                     n.sected = true;
-                    await window.noda.updateNode(nodeProps);
+                    await window.noda.updateNode(n);              
                 }
             });
         }
