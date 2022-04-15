@@ -62,6 +62,23 @@ $(async function () {
         }
     });
 
+    $('#kg-reset').click(async function () {
+        try {
+            ClearChatText();
+            currentStateId = uuidv4();
+            if (inNoda && root !== null && root !== undefined) {
+                root.nodes.forEach(async function (node) {
+                    node.shape = ball;
+                    node.opacity = 0.6;
+                    await window.noda.updateNode(node);
+                });
+            }
+        }
+        catch (err) {
+            HandleError(err);
+        }
+    });
+
     $('.msg_send_btn').click(async function () {
         const text = $('.write_msg').val();
         if (text !== "")
@@ -108,6 +125,7 @@ async function Clear() {
     ClearChatText();
     currentStateId = uuidv4();
 }
+
 
 function findGetParameter(parameterName) {
     var result = null,
