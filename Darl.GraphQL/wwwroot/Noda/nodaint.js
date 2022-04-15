@@ -211,4 +211,15 @@ function ClearChatText() {
     $('.msg_history').empty();
 }
 
+var eventsMessageElement;
+
+document.addEventListener('DOMContentLoaded', function () {    
+    eventsMessageElement = document.getElementById('eventsMessage');
+    window.noda.onNodeUpdated = function (node) { eventMessage("Node updated with uuid: " + node.uuid + " opacity: " + node.opacity); }
+}, false);
+
+function eventMessage(message) {
+    eventsMessageElement.innerHTML = message + "<br/>" + eventsMessageElement.innerHTML;
+}
+
 

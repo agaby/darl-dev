@@ -142,3 +142,17 @@
     overflow-y: auto;
     background-color: aliceblue;
 }
+
+.events {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: blanchedalmond;
+    height: 127px;
+    overflow-y: auto;
+}
+
+    .events span {
+        font-family: monospace;
+        font-size: 85%;
+    }
+
