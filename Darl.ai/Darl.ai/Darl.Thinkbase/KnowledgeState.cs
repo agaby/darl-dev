@@ -131,5 +131,27 @@ namespace Darl.Thinkbase
             }
             return sb.ToString();
         }
+
+        public  string ToString(IGraphModel model)
+        {
+            var sb = new StringBuilder();
+            sb.Append($"knowledgeGraphName: {knowledgeGraphName}, ");
+            sb.Append($"subjectId: {subjectId}, ");
+            sb.AppendLine($"userId: {userId} ");
+            if (data != null)
+            {
+                sb.AppendLine($"Object count: {data.Keys.Count}");
+                foreach (var s in data.Keys)
+                {
+                    sb.AppendLine($"Object: {model.vertices?[s].externalId}");
+                    sb.AppendLine("Attributes: ");
+                    foreach (var v in data[s])
+                        sb.AppendLine(v.ToString());
+                }
+            }
+            return sb.ToString();
+        }
     }
+
+
 }

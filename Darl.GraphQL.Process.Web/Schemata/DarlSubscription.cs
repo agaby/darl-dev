@@ -117,14 +117,14 @@ namespace Darl.GraphQL.Web.Models.Schemata
         private KnowledgeState? ResolveKSObject(IResolveFieldContext arg)
         {
             var state = arg.Source as KnowledgeState;
-            _logger.LogInformation($"Returning a Knowledge state: {state}.");
+            _logger.LogDebug($"Returning a Knowledge state: {state}.");
             return state;
         }
 
         private Thinkbase.Meta.DarlMineReport? ResolveDMRObject(IResolveFieldContext arg)
         {
             var state = arg.Source as Thinkbase.Meta.DarlMineReport;
-            _logger.LogInformation($"Returning a Darl Mine Report: {state}.");
+            _logger.LogDebug($"Returning a Darl Mine Report: {state}.");
             return state;
         }
 
@@ -161,7 +161,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     _darlMineReportStream.OnError(ex);
                     _darlMineReportStream.OnCompleted();
-                    _logger.LogError(ex, "Exception reported in SubscribeLearn.");
+                    _logger.LogDebug(ex, "Exception reported in SubscribeLearn.");
                 }
              });
             _darlMineReportStream.OnNext(new Thinkbase.Meta.DarlMineReport());
@@ -192,7 +192,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     _darlMineBuildStream.OnError(ex);
                     _darlMineBuildStream.OnCompleted();
-                    _logger.LogError(ex, "Exception reported in SubscribeBuild.");
+                    _logger.LogDebug(ex, "Exception reported in SubscribeBuild.");
                 }
             });
             _darlMineBuildStream.OnNext(new Thinkbase.Meta.DarlMineReport());

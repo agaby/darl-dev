@@ -366,14 +366,14 @@ namespace Darl.GraphQL.Models.Connectivity
                     }
                     //now convert the inputs to DarlVars
                     var res = await ProcessValues(Lineage.Bot.DarlVarExtensions.Convert(DarlVarInput.Convert(inputs)), tree);
-                    _logger.LogWarning($"{nameof(InferFromDarlDarlVar)}: {userId}");
+                    _logger.LogDebug($"{nameof(InferFromDarlDarlVar)}: {userId}");
 
                     return Lineage.Bot.DarlVarExtensions.Convert(res);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(InferFromDarlDarlVar));
+                _logger.LogDebug(ex, nameof(InferFromDarlDarlVar));
                 var errors = new List<DarlVar>();
                 errors.Add(new DarlVar { name = "error", Value = ex.Message });
                 return errors;

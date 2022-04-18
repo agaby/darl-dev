@@ -108,11 +108,11 @@ namespace Darl.Thinkbase
         {
             var sb = new StringBuilder();
             var truncValue = value == null ? String.Empty : value.Length > 10 ? (value.Substring(0, 10) + "...") : value;
-            sb.AppendLine($"Name = {name},");
-            sb.AppendLine($"lineage = {lineage},");
-            sb.AppendLine($"type = {type},");
-            sb.AppendLine($"confidence = {confidence},");
-            sb.AppendLine($"value = {truncValue},");
+            sb.Append($"Name = {name}, ");
+            sb.Append($"lineage = {lineage}, ");
+            sb.Append($"type = {type}, ");
+            sb.Append($"confidence = {confidence}, ");
+            sb.Append($"value = {truncValue}, ");
             return sb.ToString();
         }
 

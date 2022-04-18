@@ -62,7 +62,7 @@ namespace Darl.Thinkbase
             string validationResponse;
             if (!Validate(pending, values, out validationResponse)) //out of range value
             {
-                _logger.LogInformation($"Validation error = {validationResponse}, KGName= {graphName}, userId = {userId}");
+                _logger.LogDebug($"Validation error = {validationResponse}, KGName= {graphName}, userId = {userId}");
                 return (new List<InteractTestResponse> { new InteractTestResponse { darl = "", response = new DarlVar { name = "response", dataType = DarlVar.DataType.textual, Value = validationResponse }, matches = new List<MatchedElement>() } }, pending);
             }
             var responses = new List<InteractTestResponse>();
@@ -71,7 +71,7 @@ namespace Darl.Thinkbase
             if (!(pending is null))
             {
                 var currentObj = model.vertices[pending.name];
-                _logger.LogInformation($"Evaluating response = {currentObj.externalId ?? currentObj.name}, KGName= {graphName}, userId = {userId}");
+                _logger.LogDebug($"Evaluating response = {currentObj.externalId ?? currentObj.name}, KGName= {graphName}, userId = {userId}");
                 var vals = await EvaluateUIRule(model, currentObj, pending, responses, ks, values, paths, true);
                 if (vals.Item1)
                 {
@@ -109,14 +109,14 @@ namespace Darl.Thinkbase
             }
             else
             {
-                _logger.LogInformation($"Completed seek  to {targetId}, KGName= {graphName}, userId = {userId}");
+                _logger.LogDebug($"Completed seek  to {targetId}, KGName= {graphName}, userId = {userId}");
                 responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.complete, Value = "This process is complete.", name = "response" } });
                 await EvaluateUIRule(model, target, pending, responses, ks, values, paths);
                 pending = null;
             }
-            _logger.LogInformation($"Updating KnowledgeState. {ks}");
+            _logger.LogDebug($"Updating KnowledgeState. {ks?.ToString(model)}");
             if(!(await _graph.SaveKSChanges(userId, subjectId, ks)))
-                _logger.LogInformation($"Knowledge state not found. subjectId: {subjectId}, knowledgeGraphName= {graphName}, userId = {userId}");
+                _logger.LogDebug($"Knowledge state not found. subjectId: {subjectId}, knowledgeGraphName= {graphName}, userId = {userId}");
             return (responses, pending);
         }
 
@@ -1139,23 +1139,24 @@ namespace Darl.Thinkbase
                         _graph.HandleCodelessCompletion(model, key, ks);
                         continue;
                     }
-                    _logger.LogInformation($"evaluating completion rule on object: {key.externalId ?? key.name}, code: {ruleSource}");
+                    _logger.LogDebug($"Evaluating completion rule on object: {key.externalId ?? key.name}");
                     var tree = _runtime.CreateTree(ruleSource, key, model);
                     if (tree.HasErrors())
                     {
-                        _logger.LogInformation($"Errors in completion rule on object: {key.externalId ?? key.name}, code: {ruleSource}");
+                        _logger.LogDebug($"Errors in completion rule on object: {key.externalId ?? key.name}, code: {ruleSource}");
                         continue;
                     }
                     var list = new List<Thinkbase.Meta.DarlResult>();
                     await _runtime.Evaluate(tree, list, ks);
-                    _logger.LogInformation($"Completion rule results: {string.Join("\n", list)}");
+                    _logger.LogDebug($"Completion rule results: {string.Join("; ", list)}");
                 }
             }
         }
 
-        private List<GraphAbstraction> FindNext(IGraphModel model, List<KeyValuePair<GraphAbstraction, int>> ordered, KnowledgeState ks, GraphAbstraction? node, List<string> paths, string completedLineage)
+        private List<GraphAbstraction> FindNext(IGraphModel model, List<KeyValuePair<GraphAbstraction, int>> ordered, KnowledgeState ks, GraphAbstraction? node, List<string> paths, string completedLineage, bool randomiseSaliences = false)
         {
             var list = new List<GraphAbstraction>();
+            var rand = new Random();
             if (ordered == null || ks == null || node == null || paths == null || string.IsNullOrEmpty(completedLineage))
             {
                 _logger.LogError("Bad parameters to FindNext");
@@ -1179,7 +1180,7 @@ namespace Darl.Thinkbase
                         salience += saliences.Any(a => a.gobj == parentNode) ? saliences.First(a => a.gobj == parentNode).salience : 1.0;
                     }
                 }
-                saliences.Add(new SalienceRecord { gobj = o.Key as GraphObject, salience = salience });
+                saliences.Add(new SalienceRecord { gobj = o.Key as GraphObject, salience = salience + (randomiseSaliences ? (rand.NextDouble() - 0.5) * 0.000001 : 0.0) });
             }
             saliences.Sort();
             var currentSalience = 0.0;
@@ -1351,7 +1352,7 @@ namespace Darl.Thinkbase
             }
             else
             {
-                _logger.LogWarning($"Broken link: userId {ks.userId}, graphName {ks.knowledgeGraphName}, subjectId {ks.subjectId}");
+                _logger.LogDebug($"Broken link: userId {ks.userId}, graphName {ks.knowledgeGraphName}, subjectId {ks.subjectId}");
             }
             //handle real top level connections.
             foreach (var s in connections.Where(a => a.inferred == false))

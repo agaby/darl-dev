@@ -341,7 +341,7 @@ namespace Darl.Thinkbase
                         list.Add(obj);
                 }
             }
-            foreach (var i in node.In)
+/*            foreach (var i in node.In)
             {
                 if (!string.IsNullOrEmpty(i.lineage) && i.lineage.StartsWith(connectionLineage))
                 {
@@ -349,7 +349,7 @@ namespace Darl.Thinkbase
                     if (obj.lineage != null && obj.lineage.StartsWith(objectLineage))
                         list.Add(obj);
                 }
-            }
+            }*/
             return list;
         }
 

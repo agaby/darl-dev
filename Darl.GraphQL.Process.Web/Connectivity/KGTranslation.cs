@@ -1039,7 +1039,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Bad lineage lookup for lineage {lineage} message: {ex.Message}");
+                _logger.LogDebug($"Bad lineage lookup for lineage {lineage} message: {ex.Message}");
                 return Task.FromResult(string.Empty);
             }
         }
@@ -1053,7 +1053,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Bad lineage lookup for word {word} message: {ex.Message}");
+                _logger.LogDebug($"Bad lineage lookup for word {word} message: {ex.Message}");
                 return Task.FromResult(new List<LineageRecord>());
             }
         }
