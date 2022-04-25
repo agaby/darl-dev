@@ -93,6 +93,8 @@ namespace Darl.GraphQL.Models.Connectivity
         private static readonly string newsItemTitleLineage = "noun:01,4,05,13,09+noun:01,3,14,01,06,21"; //description
         private static readonly string newsItemContentLineage = "noun:01,4,05,13,09+noun:01,4,05,21,05"; //description
         private static readonly string newsItemCategoryLineage = "noun:01,4,05,13,09+noun:01,0,0,15,07,02,02"; //description
+        private static readonly string newsItemSentLineage = "verb:044,90,00"; //send
+        private static readonly string newsLetterNameLineage = "noun:01,3,14,01,06";
 
         private static double nodaBoundingBoxDiagonal = 3.0;
         private static double nodaInitialOpacity = 0.6;
@@ -1278,6 +1280,34 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
+        public async Task<string?> GetNewsLetter(string newsLetter)
+        {
+            var newsLetterObj = (await _graph.GetGraphObjectsByLineage(backofficeKGComp, newsLetterLineage)).First();
+            if (newsLetterObj == null)
+                return null;
+            var newsletterKS = await _graph.GetKnowledgeStateByTypeAndAttribute(backofficeUser, newsLetterObj.id, backofficeKG, newsLetterNameLineage, newsLetter);
+            if (newsletterKS == null)
+                return null;
+            var title = newsletterKS.GetAttribute(newsLetterObj.id, titleLineage)?.value;
+            var description = newsletterKS.GetAttribute(newsLetterObj.id, descriptionLineage)?.value;
+            return description;
+        }
+
+        public async Task<string> CreateNewsItem(string title, string content)
+        {
+            if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(content))
+                return "Empty fields.";
+            var newsItemObj = (await _graph.GetGraphObjectsByLineage(backofficeKGComp, newsItemLineage)).First();
+            var ksi= new KnowledgeStateInput { knowledgeGraphName = backofficeKG, subjectId = Guid.NewGuid().ToString(), transient = false, data = new List<StringListGraphAttributeInputPair>()};
+            ksi.data.Add(new StringListGraphAttributeInputPair { name = newsItemObj.id ?? "", value = new List<GraphAttributeInput>() });
+            ksi.data[0].value.Add(new GraphAttributeInput { lineage = newsItemCategoryLineage, name = "category", type = GraphAttribute.DataType.categorical, value = "news" });
+            ksi.data[0].value.Add(new GraphAttributeInput { lineage = newsItemTitleLineage, name = "title", type = GraphAttribute.DataType.textual, value = title });
+            ksi.data[0].value.Add(new GraphAttributeInput { lineage = newsItemContentLineage, name = "content", type = GraphAttribute.DataType.textual, value = content });
+            ksi.data[0].value.Add(new GraphAttributeInput { lineage = newsItemSentLineage, name = "sent", type = GraphAttribute.DataType.categorical, value = "false" });
+            await _graph.CreateKnowledgeState(_config["AppSettings:boaiuserid"], ksi);
+            return ksi.subjectId;
+        }
+
 
         #region private
 
@@ -1487,6 +1517,8 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return string.Empty;
         }
+
+
 
 
         #endregion

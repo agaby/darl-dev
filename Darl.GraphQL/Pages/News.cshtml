@@ -1,0 +1,59 @@
+﻿@page "{newsitem?}"
+@model Darl.GraphQL.Pages.NewsModel
+@{
+    ViewData["Title"] = "Create news item";
+    Layout = "~/Pages/_layoutscrolling.cshtml";
+}
+
+<main role="main">
+    <div class="container-fluid" style="min-height:300vh">
+        <div class="row ml-2">
+            <h3>Create or edit a news story</h3>
+        </div>
+        <div class="row ml-2">
+            <label>Title</label>
+            <input id="md-title" class="form-control">
+        </div>
+        <div class = "row ml-2">
+            <textarea id="markdownarea">
+
+            </textarea>
+        </div>
+        <div class="row ml-2">
+            <button id="md-save" class="btn btn-info">Save</button>
+        </div>
+    </div>
+</main>
+
+@section StyleSheets
+{
+        <bundle name="wwwroot/bundles/kgraph.min.css" />
+}
+@section Scripts
+{
+
+    <bundle name="wwwroot/bundles/kgraph.min.js" />
+
+        <script>
+        var simplemde;
+        var createNewsItem;
+
+        $(async function () {
+            simplemde = new SimpleMDE({ element: $("#markdownarea")[0] });
+            createNewsItem = graph('mutation ($title: String! $content: String!){createNewsItem(title: $title content: $content)}');
+
+            $('#md-save').click(async function () {
+                var content = simplemde.value();
+                var title = $('#md-title').val();
+                try
+                {
+                    var res = await createNewsItem({ title: title, content: content });
+                }
+                catch (err) {
+                    HandleError(err);
+                }
+            });
+        });
+
+        </script>
+}

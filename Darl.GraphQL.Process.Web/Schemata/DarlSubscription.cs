@@ -97,10 +97,6 @@ namespace Darl.GraphQL.Web.Models.Schemata
             var process = arg.GetArgument<GraphProcess>("process");
             var target = arg.GetArgument<string>("target");
             var asSystem = arg.GetArgument<bool>("asSystem");
-            if (userId == systemId)
-            {
-                throw new ExecutionError($"Subscriptions only permitted to registered users.");
-            }
             var ks = _graph.ObservableKStates();
             if(asSystem)
             {

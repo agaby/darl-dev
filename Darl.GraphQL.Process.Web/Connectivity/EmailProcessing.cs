@@ -26,7 +26,10 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             _config = config;
             _connectivity = connectivity;
-            queue = new QueueClient(_config["AppSettings:StorageConnectionString"], "support-messages");
+            queue = new QueueClient(_config["AppSettings:StorageConnectionString"], "support-messages", new QueueClientOptions
+            {
+                MessageEncoding = QueueMessageEncoding.Base64
+            });
             queue.CreateIfNotExists();
             _cache = cache;
         }
@@ -48,12 +51,11 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new ExecutionError($"{email} is suspect or invalid");
         }
 
-        public async Task<int> Mailshot(string userId, string collateral, string subject, string sendfrom, string filter, bool test)
+        public async Task<int> Mailshot(string content, string subject, string sendfrom, bool test)
         {
-            var coll = await _connectivity.GetCollateral(collateral);
-            if (string.IsNullOrEmpty(coll))
+             if (string.IsNullOrEmpty(content))
             {
-                throw new ExecutionError($"Collateral {collateral} is not present or empty");
+                throw new ExecutionError($"Collateral is not present or empty");
             }
             var collection = await _connectivity.GetContacts();
             int count = 0;
@@ -62,14 +64,14 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 if (!test)
                 {
-                    var body = tp.Parse(coll, new Dictionary<string, string> { { "InvoiceName", c.FirstName } }); //make the insertion dictionary programmable
+                    var body = tp.Parse(content, new Dictionary<string, string> { { "InvoiceName", c.FirstName } }); //make the insertion dictionary programmable
                     await SendEmail(body, subject, sendfrom, c.Email);
                 }
                 count++;
             }
             if (test) //send one email back with the generated text
             {
-                var body = tp.Parse(coll, new Dictionary<string, string> { { "InvoiceName", "Andy" } }); //make the insertion dictionary programmable
+                var body = tp.Parse(content, new Dictionary<string, string> { { "InvoiceName", "Andy" } }); //make the insertion dictionary programmable
                 await SendEmail(body, subject, sendfrom, sendfrom);
             }
             return count;

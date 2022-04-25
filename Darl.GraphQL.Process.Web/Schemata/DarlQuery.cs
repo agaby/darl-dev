@@ -481,7 +481,36 @@ namespace Darl.GraphQL.Web.Models.Schemata
                      return await connectivity.GetKnowledgeStatesByType(userId, typeId, name);
                  }
              ).AuthorizeWith("UserPolicy");
+            FieldAsync<ListGraphType<KnowledgeStateType>>(
+                 "getKnowledgeStatesByTypeAndAttribute",
+                 "Get all the knowledge states in this graph descended from a particular graph object containing an attribute with a particular value.", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The name of the associated Knowledge Graph." },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "typeObjectId", Description = "The id of the object these are descended from." },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "attLineage", Description = "The lineage of the attribute that must be contained." }, 
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "attValue", Description = "The value required to be present" }, 
+                    new QueryArgument<BooleanGraphType> { Name = "asSystem", Description = "Write to system account", DefaultValue = false }
+                 ),
+                 resolve: async context =>
+                 {
 
+                     var userId = trans.GetCurrentUserId(context.UserContext);
+                     var name = context.GetArgument<string>("graphName");
+                     var typeId = context.GetArgument<string>("typeObjectId");
+                     var attLineage = context.GetArgument<string>("attLineage");
+                     var attValue = context.GetArgument<string>("attValue");
+                     var asSystem = context.GetArgument<bool>("asSystem");
+                     if (asSystem)
+                     {
+                         var user = trans.GetUserById(userId).Result;
+                         if (user == null || user.accountState != GraphQL.Models.Models.DarlUser.AccountState.admin)
+                         {
+                             throw new ExecutionError($"asSystem == true only permitted to Administrators.");
+                         }
+                         return await connectivity.GetKnowledgeStatesByTypeAndAttribute(config["AppSettings:boaiuserid"], typeId, name, attLineage, attValue);
+                     }
+                     return await connectivity.GetKnowledgeStatesByTypeAndAttribute(userId, typeId, name, attLineage, attValue);
+                 }
+             ).AuthorizeWith("UserPolicy");
             FieldAsync<BooleanGraphType>(
                 "checkKey",
                 "Check a license key is valid",

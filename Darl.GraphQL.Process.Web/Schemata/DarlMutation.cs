@@ -75,6 +75,18 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     return await trans.DeleteCollateral(name);
                 }
             ).AuthorizeWith("AdminPolicy");
+            FieldAsync<ContactType>(
+                "deleteContact",
+                "Delete a contact",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email", Description = "The email of the contact" }
+                ),
+                resolve: async context =>
+                {
+                    var email = context.GetArgument<string>("email");
+                    return await trans.DeleteContactAsync(email);
+                }
+            ).AuthorizeWith("AdminPolicy");
             FieldAsync<DateTimeGraphType>(
                 "setLastUpdate",
                 "Set the utc time of a system wide update.",
@@ -97,7 +109,6 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "collateral", Description = "Collateral to use for the body" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "subject", Description = "Email subject" },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "sendfrom", Description = "Source email" },
-                    new QueryArgument<StringGraphType> { Name = "filter", Description = "Filter expression" },
                     new QueryArgument<BooleanGraphType> { Name = "test", DefaultValue = false, Description = "if true no emails are sent" }
                     ),
                 resolve: async context =>
@@ -105,10 +116,8 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var collateral = context.GetArgument<String>("collateral");
                     var subject = context.GetArgument<String>("subject");
                     var sendfrom = context.GetArgument<String>("sendfrom");
-                    var filter = context.GetArgument<String>("filter");
                     var test = context.GetArgument<bool>("test");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await email.Mailshot(userId, collateral, subject, sendfrom, filter, test);
+                    return await email.Mailshot(collateral, subject, sendfrom, test);
                 }
             ).AuthorizeWith("AdminPolicy");
             FieldAsync<StringGraphType>(
@@ -129,6 +138,21 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     return await email.SendEmail(body, subject, sendfrom, emailAddress);
                 }
             ).AuthorizeWith("AdminPolicy");
+            FieldAsync<StringGraphType>(
+                "createNewsItem",
+                "create a news item",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "title", Description = "title of the news item" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "content", Description = "Content of the news item in markdown" }
+                    ),
+                resolve: async context =>
+                {
+                    var title = context.GetArgument<String>("title");
+                    var content = context.GetArgument<String>("content");
+                    return await trans.CreateNewsItem(title,content);
+                }
+            ).AuthorizeWith("AdminPolicy");
+
             FieldAsync<GraphObjectType>("createGraphObject", "Add a new graph object", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
                     new QueryArgument<NonNullGraphType<GraphObjectInputType>> { Name = "graphObject", Description = "The object to add" },

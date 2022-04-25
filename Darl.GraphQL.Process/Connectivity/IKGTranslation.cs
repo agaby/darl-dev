@@ -21,6 +21,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<Update>> Updates();
         Task<string> GetCollateral(string name);
         Task<Collateral> UpdateCollateral(string name, string value);
+        Task<string?> GetNewsLetter(string newsLetter);
         Task<Collateral?> DeleteCollateral(string name);
         Task<List<Collateral>> GetCollaterals();
         Task<List<Contact>> GetRecentContacts();
@@ -66,5 +67,6 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<PushSub>> GetPushSubs();
         Task<byte[]> RenderRSS(string scheme);
         Task<string> NodaView(string userId, string graphName);
+        Task<string> CreateNewsItem(string title, string content);
     }
 }

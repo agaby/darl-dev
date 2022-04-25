@@ -379,5 +379,15 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             throw new NotImplementedException();
         }
+
+        public Task<string> GetNewsLetter(string newsLetter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> CreateNewsItem(string title, string content)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

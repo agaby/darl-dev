@@ -29,6 +29,7 @@
     <PackageReference Include="GraphQL.Authorization" Version="4.0.0" />
     <PackageReference Include="GraphQL.MicrosoftDI" Version="4.7.1" />
     <PackageReference Include="GraphQL.Server.All" Version="5.2.0" />
+    <PackageReference Include="Markdig" Version="0.28.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.2.0" />
@@ -120,6 +121,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\jstree\themes\" />
     <Folder Include="wwwroot\cytoscape-cxtmenu\" />
+    <Folder Include="wwwroot\md\Newsletters\" />
     <Folder Include="wwwroot\md\videos\" />
     <Folder Include="wwwroot\bundles\" />
   </ItemGroup>
