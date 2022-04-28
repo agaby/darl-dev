@@ -103,14 +103,24 @@ $(async function () {
     });
 
     window.noda.OnNodeUpdate = async function (node) {
-        var res = await graphObject({ name: kgname, id: node.uuid });
-        nodeEditor.setValue(res.getGraphObjectById);
+        if (kgname) {
+            var res = await graphObject({ name: kgname, id: node.uuid });
+            nodeEditor.setValue(res.getGraphObjectById);
+        }
     }
     const response = await fetch("Noda/GraphObject_schema.json");
     const schema = await response.json();
     nodeEditor = new JSONEditor($('#nodeEditor')[0], {
         schema: schema,
-        theme: 'bootstrap4'
+        theme: 'bootstrap4',
+        disable_array_add: true,
+        disable_array_delete: true,
+        disable_array_delete_all_rows: true,
+        disable_array_delete_last_row: true,
+        disable_collapse: true,
+        disable_edit_json: true,
+        disable_properties: true,
+        iconlib: "fontawesome5"
     });
 
     if (!inNoda) {
@@ -137,8 +147,8 @@ async function Build() {
         });
     }
     //test
-    var res = await graphObject({ name: kgname, id: "09f1eedd-9a15-44bc-ad9e-973aa850b4c1" });
-    nodeEditor.setValue(res.getGraphObjectById);
+//    var res = await graphObject({ name: kgname, id: "09f1eedd-9a15-44bc-ad9e-973aa850b4c1" });
+//    nodeEditor.setValue(res.getGraphObjectById);
 }
 async function Clear() {
     if (inNoda && root !== null && root !== undefined) {

@@ -1,6 +1,5 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "GraphObject",
   "definitions": {
     "GraphConnection": {
       "allOf": [
@@ -9,7 +8,7 @@
         },
         {
           "type": "object",
-          "additionalProperties": false,
+          "additionalProperties": true,
           "properties": {
             "weight": {
               "type": "number",
@@ -33,7 +32,7 @@
         {
           "type": "object",
           "x-abstract": true,
-          "additionalProperties": false,
+          "additionalProperties": true,
           "properties": {
             "id": {
               "type": [
@@ -79,12 +78,6 @@
               "items": {
                 "$ref": "#/definitions/GraphAttribute"
               }
-            },
-            "dynamicSource": {
-              "type": [
-                "null",
-                "string"
-              ]
             }
           }
         }
@@ -92,7 +85,7 @@
     },
     "DarlTime": {
       "type": "object",
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
         "raw": {
           "type": "number",
@@ -101,22 +94,6 @@
         "precision": {
           "type": "number",
           "format": "double"
-        },
-        "dateTime": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "dateTimeOffset": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "year": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "season": {
-          "type": "integer",
-          "format": "int32"
         }
       }
     },
@@ -127,7 +104,7 @@
         },
         {
           "type": "object",
-          "additionalProperties": false,
+          "additionalProperties": true,
           "properties": {
             "value": {
               "type": "string"
@@ -174,7 +151,7 @@
     "GraphAbstraction": {
       "type": "object",
       "x-abstract": true,
-      "additionalProperties": false
+      "additionalProperties": true
     }
   },
   "allOf": [
@@ -183,22 +160,10 @@
     },
     {
       "type": "object",
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
         "externalId": {
           "type": "string"
-        },
-        "Out": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/GraphConnection"
-          }
-        },
-        "In": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/GraphConnection"
-          }
         }
       }
     }
