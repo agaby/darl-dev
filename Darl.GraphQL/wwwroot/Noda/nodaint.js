@@ -7,6 +7,8 @@ var currentStateId;
 var root;
 var nodeLookup = {};
 var inNoda;
+var nodeEditor;
+var graphObject;
 
 
 $(async function () {
@@ -34,9 +36,24 @@ $(async function () {
     }
     interact = graph('query int($name: String! $ksid: String! $text:  String!){interactKnowledgeGraph(kgModelName: $name conversationId: $ksid conversationData: { dataType: textual name: "" value: $text }){ darl reference activeNodes response{dataType name value categories{name value }}}}');
     nodaSource = graph('query ($name: String!){nodaView(graphName: $name)}');
+    graphObject = graph('query ($name: String! $id: String!){getGraphObjectById(graphName: $name id: $id){existence{raw precision}externalId id	inferred lineage name externalId properties{existence{raw precision}id inferred	lineage	name value confidence type virtual properties{existence{raw	precision}id inferred lineage name value confidence	type virtual}}virtual}}');
 
     $('#kgmodel-dropdown').on('change', async function () {
         kgname = this.value;
+    });
+
+    $('#View-Edit').click(function () {
+        if ($('#View-Edit').text() === "Edit") {
+            $('#ViewContainer').addClass('d-none');
+            $('#EditContainer').removeClass('d-none');
+            $('#View-Edit').text("View");
+        }
+        else {
+            $('#EditContainer').addClass('d-none');
+            $('#ViewContainer').removeClass('d-none');
+            $('#View-Edit').text("Edit");
+
+        }
     });
 
     $('#kg-build').click(async function () {
@@ -85,6 +102,17 @@ $(async function () {
             await HandleChatText(text);
     });
 
+    window.noda.OnNodeUpdate = async function (node) {
+        var res = await graphObject({ name: kgname, id: node.uuid });
+        nodeEditor.setValue(res.getGraphObjectById);
+    }
+    const response = await fetch("Noda/GraphObject_schema.json");
+    const schema = await response.json();
+    nodeEditor = new JSONEditor($('#nodeEditor')[0], {
+        schema: schema,
+        theme: 'bootstrap4'
+    });
+
     if (!inNoda) {
         alert("This page is intended to be viewed inside the Noda mind-mapping app. Go to https://Noda.io ");
     }
@@ -108,6 +136,9 @@ async function Build() {
             await window.noda.createLink(link);
         });
     }
+    //test
+    var res = await graphObject({ name: kgname, id: "09f1eedd-9a15-44bc-ad9e-973aa850b4c1" });
+    nodeEditor.setValue(res.getGraphObjectById);
 }
 async function Clear() {
     if (inNoda && root !== null && root !== undefined) {

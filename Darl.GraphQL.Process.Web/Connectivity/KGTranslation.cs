@@ -1285,7 +1285,7 @@ namespace Darl.GraphQL.Models.Connectivity
             var newsLetterObj = (await _graph.GetGraphObjectsByLineage(backofficeKGComp, newsLetterLineage)).First();
             if (newsLetterObj == null)
                 return null;
-            var newsletterKS = await _graph.GetKnowledgeStateByTypeAndAttribute(backofficeUser, newsLetterObj.id, backofficeKG, newsLetterNameLineage, newsLetter);
+            var newsletterKS = await _graph.GetKnowledgeState(backofficeUser, newsLetter, backofficeKG);
             if (newsletterKS == null)
                 return null;
             var title = newsletterKS.GetAttribute(newsLetterObj.id, titleLineage)?.value;

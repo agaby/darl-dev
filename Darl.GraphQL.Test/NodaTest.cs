@@ -1,9 +1,12 @@
 ﻿using Darl.GraphQL.Models.Models.Noda;
 using Darl.GraphQL.Process.Models.Noda.Layout;
+using Darl.Thinkbase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using NJsonSchema;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Test
 {
@@ -21,6 +24,13 @@ namespace Darl.GraphQL.Test
             var bb = fd.GetBoundingBox();
             var diagonal = bb.topRightBack - bb.bottomLeftFront;
             var length = diagonal.Magnitude();
+        }
+        [TestMethod]
+        public void CreateSchemaTest()
+        {
+            var schema = JsonSchema.FromType<GraphObject>();
+            var schemaJson = schema.ToJson();
+            File.WriteAllText("GraphObject_Schema.json", schemaJson);
         }
     }
 }
