@@ -115,7 +115,6 @@ namespace Darl.GraphQL
             services.AddSingleton<IMetaStructureHandler, MetaStructureHandler>();
             services.AddSingleton<IProducts, Products>();
             services.AddSingleton<ICheckEmail, EmailChecker>();
-            services.AddSingleton<IDarlMetaRunTime, DarlMetaRunTime>();
             services.AddSingleton<Thinkbase.IDataLoader, DataLoader>();
 
             //types

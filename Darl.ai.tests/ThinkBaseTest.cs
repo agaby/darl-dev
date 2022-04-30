@@ -231,7 +231,7 @@ namespace Darl_standard_core.test
         {
             var dataLoader = new DataLoader(_metaStruct);
             var graph = new GraphProcessing(_primitives, _logger, _metaStruct, dataLoader);
-            var gh = new GraphHandler(graph, _ghlogger, new MetaStructureHandler(), _metaRunTime);
+            var gh = new GraphHandler(_config, graph, _ghlogger, new MetaStructureHandler());
             var graphName = "graph1.graph";
             var paths = new List<string> { consistsLineage, followsLineage };
             var subjectId = Guid.NewGuid().ToString();
@@ -300,7 +300,7 @@ namespace Darl_standard_core.test
             conn = new GraphConnection { lineage = followsLineage, startId = root.id, endId = subnode7.id };
             root.Out.Add(conn);
             subnode7.In.Add(conn);
-            var gh = new GraphHandler(graph, _ghlogger, new MetaStructureHandler(), _metaRunTime);
+            var gh = new GraphHandler(_config, graph, _ghlogger, new MetaStructureHandler());
             var graphName = "graph1.graph";
             var paths = new List<string> { consistsLineage, followsLineage };
             var subjectId = Guid.NewGuid().ToString();
@@ -681,7 +681,7 @@ namespace Darl_standard_core.test
             var meta = new MetaStructureHandler();
             var dataLoader = new DataLoader(meta);
             var gp = new GraphProcessing(_primitives, _logger, meta, dataLoader);
-            var gh = new GraphHandler(gp, _ghlogger, new MetaStructureHandler(), _metaRunTime);
+            var gh = new GraphHandler(_config, gp, _ghlogger, new MetaStructureHandler());
             var res = await gh.InterpretText("user", "discord_bot.graph", "conversation", new DarlVar { dataType = DarlVar.DataType.textual, name = "text", Value = "who is andy" });
             Assert.AreEqual(1, res.Count);
             Assert.AreEqual("Dr Andy is the inventor of ThinkBase.", res[0].response.Value);
@@ -720,7 +720,7 @@ namespace Darl_standard_core.test
             var meta = new MetaStructureHandler();
             var dataLoader = new DataLoader(meta);
             var gp = new GraphProcessing(_primitives, _logger, meta, dataLoader);
-            var gh = new GraphHandler(gp, _ghlogger, new MetaStructureHandler(), _metaRunTime);
+            var gh = new GraphHandler(_config, gp, _ghlogger, new MetaStructureHandler());
             //        var res = await gh.DiscoverForBot("user", "cursus_honorum.graph", "person", new List<string>(), "abcdef");
 
         }

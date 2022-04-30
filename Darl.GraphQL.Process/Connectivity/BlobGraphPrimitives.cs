@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using ProtoBuf;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,7 +29,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
 
 
-        private readonly Dictionary<string, BlobGraphContent> buffer = new Dictionary<string, BlobGraphContent>();
+        private readonly ConcurrentDictionary<string, BlobGraphContent> buffer = new ConcurrentDictionary<string, BlobGraphContent>();
+        private readonly ConcurrentDictionary<string, DateTime> bufferLifetimes = new ConcurrentDictionary<string, DateTime>();
 
         private readonly Object lockObject = new object();
 
@@ -385,7 +387,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<IGraphModel?> Load(string blobName)
         {
-
+            ClearBuffer();
             if (buffer.ContainsKey(blobName))
             {
                 return buffer[blobName];
@@ -397,7 +399,8 @@ namespace Darl.GraphQL.Models.Connectivity
                     var data = await _blob.Read(blobName);
                     var model = DeserializeGraph(data);
                     model.SanityCheck();
-                    buffer.Add(blobName, model);
+                    buffer.TryAdd(blobName, model);
+                    bufferLifetimes.TryAdd(blobName, DateTime.UtcNow);
                     return model;
                 }
                 catch (Exception ex)
@@ -416,7 +419,8 @@ namespace Darl.GraphQL.Models.Connectivity
                         var data = await _blob.Read(sharedState.Item1);
                         var model = DeserializeGraph(data);
                         model.SanityCheck();
-                        buffer.Add(blobName, model);
+                        buffer.TryAdd(blobName, model);
+                        bufferLifetimes.TryAdd(blobName, DateTime.UtcNow);
                         return model;
                     }
                     catch (Exception ex)
@@ -432,6 +436,21 @@ namespace Darl.GraphQL.Models.Connectivity
                 }*/
             }
             return null;
+        }
+
+        /// <summary>
+        /// Check for out of date models and remove
+        /// </summary>
+        private void ClearBuffer()
+        {
+            foreach(var item in bufferLifetimes.Keys)
+            {
+                if (bufferLifetimes[item] < DateTime.UtcNow - new TimeSpan(0, 30, 0))
+                {
+                    bufferLifetimes.TryRemove(item, out DateTime t);
+                    buffer.TryRemove(item, out BlobGraphContent c);
+                }
+            }
         }
 
         public static byte[] SerializeGraph(IGraphModel model)
@@ -495,8 +514,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 return true;
             }
-            if (buffer.ContainsKey(compositeName))
-                buffer.Remove(compositeName);
+            buffer.Remove(compositeName, out BlobGraphContent c);
             return await _blob.Delete(compositeName);
         }
 
@@ -763,42 +781,6 @@ namespace Darl.GraphQL.Models.Connectivity
         /// writes out any modified graph models to the blob storage
         /// </summary>
         /// <param name="stateInfo"></param>
-        public void FlushTimerTimeOut(Object stateInfo)
-        {
-            //ModifiedToggle is used to only write out the GraphModels if one timeout has elapsed since the last change.
-            //Intended to prevent disruption to bursts of updates.
-            //Has side effect that one very busy model will stop another quiet model being written out.
-            lock (lockObject)
-            {
-                if (modifiedToggle)
-                {
-                    modifiedToggle = false;
-                    return;
-                }
-            }
-            List<string> changedModels = new List<string>();
-            //copy the modified list and clear it
-            lock (lockObject)
-            {
-                changedModels = modified.ToList();
-                modified.Clear();
-                modifiedToggle = false;
-            }
-            foreach (var s in changedModels)
-            {
-                //get the graphmodel
-                var model = buffer[s];
-                //lock it
-                lock (lockObject)
-                {
-                    //serialize it and release it
-                    //                    data = SerializeGraph(model);
-                }
-                //write out the serialized model
-                //               _blob.Write(s, data);
-
-            }
-        }
 
         public async Task Store(string compositeName)
         {

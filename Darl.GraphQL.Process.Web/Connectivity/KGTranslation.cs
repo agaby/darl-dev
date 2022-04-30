@@ -41,7 +41,6 @@ namespace Darl.GraphQL.Models.Connectivity
         private readonly IProducts _prods;
         private readonly ICheckEmail _checkEmail;
         private readonly ILicensing _licensing;
-        private readonly IDarlMetaRunTime _metaRuntime;
 
 
         //fill in with single call to model at startup
@@ -100,7 +99,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private static double nodaInitialOpacity = 0.6;
 
 
-        public KGTranslation(ILogger<KGTranslation> logger, IConfiguration config, IGraphProcessing graph, IMetaStructureHandler meta, IProducts prods, ICheckEmail checkEmail, ILicensing licensing, IDarlMetaRunTime metaRuntime)
+        public KGTranslation(ILogger<KGTranslation> logger, IConfiguration config, IGraphProcessing graph, IMetaStructureHandler meta, IProducts prods, ICheckEmail checkEmail, ILicensing licensing)
         {
             _config = config;
             _logger = logger;
@@ -109,7 +108,6 @@ namespace Darl.GraphQL.Models.Connectivity
             _prods = prods;
             _checkEmail = checkEmail;
             _licensing = licensing;
-            _metaRuntime = metaRuntime;
             backofficeKG = _config["AppSettings:BackOfficeKG"];
             backofficeUser = _config["AppSettings:boaiuserid"];
             backofficeKGComp = backofficeUser + '_' + backofficeKG;
@@ -1069,7 +1067,8 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 try
                 {
-                    var tree = _metaRuntime.CreateTreeEdit(darl);
+                    var metaRuntime = new DarlMetaRunTime(_config,_meta);
+                    var tree = metaRuntime.CreateTreeEdit(darl);
                     if (tree.HasErrors())
                     {
                         foreach (var pm in tree.ParserMessages)

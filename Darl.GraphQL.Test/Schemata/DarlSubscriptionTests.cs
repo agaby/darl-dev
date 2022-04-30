@@ -85,7 +85,7 @@ namespace Darl.GraphQL.Test
             _bplogger = bplogger.Object;
             _context = context.Object;
             _runtime = new DarlMetaRunTime(_config, meta);
-            _graphHandler = new GraphHandler(_graph, ghlogger.Object, meta, _runtime);
+            _graphHandler = new GraphHandler(_config, _graph, ghlogger.Object,meta);
         }
 
         [TestMethod]

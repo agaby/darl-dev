@@ -4,8 +4,10 @@ using Darl.Lineage.Bot;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlCompiler.Parsing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,16 +34,21 @@ namespace Darl.Thinkbase
 
         private static int minimumData = 5;
 
+        private readonly ConcurrentDictionary<string, DarlMetaRunTime> runtimes = new ConcurrentDictionary<string, DarlMetaRunTime>();
+        private readonly ConcurrentDictionary<string, DateTime> runtimeLifetimes = new ConcurrentDictionary<string, DateTime>();
+
+
         private readonly IGraphProcessing _graph;
         private readonly ILogger<GraphHandler> _logger;
         private readonly IMetaStructureHandler _metaHandler;
-        public IDarlMetaRunTime _runtime;
-        public GraphHandler(IGraphProcessing graph, ILogger<GraphHandler> logger, IMetaStructureHandler metaHandler, IDarlMetaRunTime runtime)
+        private readonly IConfiguration _config;
+
+        public GraphHandler(IConfiguration config, IGraphProcessing graph, ILogger<GraphHandler> logger, IMetaStructureHandler metaHandler)
         {
             _graph = graph;
             _logger = logger;
             _metaHandler = metaHandler;
-            _runtime = runtime;
+            _config = config;
         }
 
         /// <summary>
@@ -58,6 +65,7 @@ namespace Darl.Thinkbase
         /// <returns></returns>
         public async Task<(List<InteractTestResponse>, DarlVar?)> GraphPass(string userId, string graphName, string subjectId, string targetId, List<string> paths, string completionLineage, List<DarlVar> values, DarlVar? pending, GraphProcess graphProcess)
         {
+            var runtime = GetRuntime(subjectId);
             //validate incoming values
             string validationResponse;
             if (!Validate(pending, values, out validationResponse)) //out of range value
@@ -72,7 +80,7 @@ namespace Darl.Thinkbase
             {
                 var currentObj = model.vertices[pending.name];
                 _logger.LogDebug($"Evaluating response = {currentObj.externalId ?? currentObj.name}, KGName= {graphName}, userId = {userId}");
-                var vals = await EvaluateUIRule(model, currentObj, pending, responses, ks, values, paths, true);
+                var vals = await EvaluateUIRule(runtime, model, currentObj, pending, responses, ks, values, paths, true);
                 if (vals.Item1)
                 {
                     return (responses, vals.Item2);
@@ -88,7 +96,7 @@ namespace Darl.Thinkbase
                         var dependencies = GetExecutionOrder(model, target, paths);
                         if (target != null)
                             dependencies.Insert(0, new KeyValuePair<GraphAbstraction, int>(target, 1));
-                        await UpdateNodeStates(ks, model, dependencies, values, completionLineage);
+                        await UpdateNodeStates(runtime, ks, model, dependencies, values, completionLineage);
                         //find next element to present or terminate
                         res = FindNext(model, dependencies, ks, target, paths, completionLineage);
                     }
@@ -104,14 +112,14 @@ namespace Darl.Thinkbase
             if (res != null && res.Count > 0)
             {
                 values.Clear();
-                var vals = await EvaluateUIRule(model, res[0], pending, responses, ks, values, paths);
+                var vals = await EvaluateUIRule(runtime, model, res[0], pending, responses, ks, values, paths);
                 pending = vals.Item2;
             }
             else
             {
                 _logger.LogDebug($"Completed seek  to {targetId}, KGName= {graphName}, userId = {userId}");
                 responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.complete, Value = "This process is complete.", name = "response" } });
-                await EvaluateUIRule(model, target, pending, responses, ks, values, paths);
+                await EvaluateUIRule(runtime, model, target, pending, responses, ks, values, paths);
                 pending = null;
             }
             _logger.LogDebug($"Updating KnowledgeState. {ks?.ToString(model)}");
@@ -157,6 +165,7 @@ namespace Darl.Thinkbase
                     }
                     else
                     {
+                        var _runtime = new DarlMetaRunTime(_config, _metaHandler);
                         var tree = _runtime.CreateTree(last.value, null, model);
                         var vals = Meta.DarlVarExtensions.Convert(values);
                         await _runtime.Evaluate(tree, vals, null);
@@ -341,18 +350,20 @@ namespace Darl.Thinkbase
 
         public async Task<KnowledgeState> Seek(KnowledgeState ks, string? targetId, List<string> paths, string completionLineage)
         {
+            var runtime = new DarlMetaRunTime(_config, _metaHandler);
             var values = new List<DarlVar>();
             var model = await _graph.GetModel(ks.userId, ks.knowledgeGraphName);
             var target = await _graph.GetGraphObjectById(model.modelName, targetId ?? model.defaultTarget);
             var dependencies = GetExecutionOrder(model, target, paths);
             if (target != null)
                 dependencies.Insert(0, new KeyValuePair<GraphAbstraction, int>(target, 1));
-            await UpdateNodeStates(ks, model, dependencies, values, completionLineage);
+            await UpdateNodeStates(runtime, ks, model, dependencies, values, completionLineage);
             return ks;
         }
 
         public async Task<Meta.DarlMineReport> Learn(string userId, string graphName, string target, LearningForm form, string targetLineage, string valueLineage, int percentTrain = 100, SetChoices sets = SetChoices.three)
         {
+            var runtime = new DarlMetaRunTime(_config, _metaHandler);
             if (form == LearningForm.association || form == LearningForm.unsupervised)
                 throw new NotImplementedException();
             //get all the KnowledgeStates for this ruleset
@@ -371,12 +382,13 @@ namespace Darl.Thinkbase
             if(target != obj.id)
                 target = obj.id ?? "";
             var data = await _graph.GetKnowledgeStatesByType(userId, target, graphName);
-            return await SupervisedCore(data, model, target, targetLineage, valueLineage, percentTrain, sets);
+            return await SupervisedCore(data, model, target, targetLineage, valueLineage, percentTrain, sets, runtime);
         }
 
 
         public async Task<DarlMineReport> Build(string userId, string name, string data, string patternPath, List<DataMap> rawDataMaps, LoadType ltype = LoadType.xml)
         {
+            var runtime = new DarlMetaRunTime(_config, _metaHandler);
             var model = await _graph.GetModel(userId, name);
             if (model == null) //create one
             {
@@ -428,7 +440,7 @@ namespace Darl.Thinkbase
                 var scores = new List<DarlMineReport>();
                 foreach(var s in sets)
                 {
-                    scores.Add(await SupervisedCore(kstates, model,TargetObj.id, _metaHandler.CommonLineages["display"], _metaHandler.CommonLineages["answer"], 90,s));
+                    scores.Add(await SupervisedCore(kstates, model,TargetObj.id, _metaHandler.CommonLineages["display"], _metaHandler.CommonLineages["answer"], 90,s,runtime));
                 }
                 //choose the best set choice and copy the created rules to the completion attribute
                 switch(target.dataType)
@@ -445,7 +457,7 @@ namespace Darl.Thinkbase
                 }
                 //remove connections that have little effect on the target
                 //move fuzzy sets and categories out to the source nodes
-                UpdateCategoriesAndSets(bestReport.code, model, TargetObj);
+                UpdateCategoriesAndSets(runtime, bestReport.code, model, TargetObj);
                 //copy ruleset to the target node.
                 ruleAtt.value = bestReport.code;
                 //create the conversation nodes.
@@ -459,6 +471,25 @@ namespace Darl.Thinkbase
 
 
         #region private
+
+        private DarlMetaRunTime GetRuntime(string subjectId)
+        {
+            //first clearout old runtimes
+            foreach (var item in runtimeLifetimes.Keys)
+            {
+                if (runtimeLifetimes[item] < DateTime.UtcNow - new TimeSpan(0, 30, 0))
+                {
+                    runtimeLifetimes.TryRemove(item, out DateTime t);
+                    runtimes.TryRemove(item, out DarlMetaRunTime c);
+                }
+            }
+            if (runtimes.TryGetValue(subjectId, out DarlMetaRunTime runtime))
+                return runtime;
+            runtime = new DarlMetaRunTime(_config, _metaHandler);
+            runtimeLifetimes.TryAdd(subjectId, DateTime.UtcNow);
+            runtimes.TryAdd(subjectId, runtime);
+            return runtime;
+        }
 
         private void FindSetBoundaries(int desiredSets, IODefinitionNode inp, List<DarlResult> values)
         {
@@ -735,9 +766,9 @@ namespace Darl.Thinkbase
             return list;
         }
 
-        private void UpdateCategoriesAndSets(string code, IGraphModel model, GraphObject target)
+        private void UpdateCategoriesAndSets(IDarlMetaRunTime runtime, string code, IGraphModel model, GraphObject target)
         {
-            var tree = _runtime.CreateTree(code, target, model);
+            var tree = runtime.CreateTree(code, target, model);
             tree.GetInputs().ForEach(x => 
             { 
                 var matchingNode = model.vertices.Values.FirstOrDefault(a => a.externalId == x.name);
@@ -764,12 +795,12 @@ namespace Darl.Thinkbase
         }
 
 
-        private async Task<DarlMineReport> SupervisedCore(List<KnowledgeState> data, IGraphModel model, string target, string targetLineage, string valueLineage, int percentTrain, SetChoices sets)
+        private async Task<DarlMineReport> SupervisedCore(List<KnowledgeState> data, IGraphModel model, string target, string targetLineage, string valueLineage, int percentTrain, SetChoices sets, DarlMetaRunTime runtime)
         {
             if (data.Count < minimumData)
                 throw new MetaRuleException($"Only {data.Count} training values found. Cannot continue.");
-            var ps = await PrepareDataForLearning(data, model, target, targetLineage, valueLineage, percentTrain, (int)sets);
-            var rep = _runtime.MineSupervised(ps);
+            var ps = await PrepareDataForLearning(data, model, target, targetLineage, valueLineage, percentTrain, (int)sets,runtime);
+            var rep = runtime.MineSupervised(ps);
             rep.sets = sets;
             return rep;
         }
@@ -1034,7 +1065,7 @@ namespace Darl.Thinkbase
             responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.textual, name = questionIdentifier, Value = text ?? String.Empty }, reference = res.externalId, darl = code, activeNodes = new List<string> { res.id ?? String.Empty } });
         }
 
-        private async Task<(bool, DarlVar?)> EvaluateUIRule(IGraphModel model, GraphAbstraction? res, DarlVar? pending, List<InteractTestResponse> responses, KnowledgeState ks, List<DarlVar> values, List<string> lineages, bool data = false)
+        private async Task<(bool, DarlVar?)> EvaluateUIRule(IDarlMetaRunTime runtime, IGraphModel model, GraphAbstraction? res, DarlVar? pending, List<InteractTestResponse> responses, KnowledgeState ks, List<DarlVar> values, List<string> lineages, bool data = false)
         {
             if (res != null)
             {
@@ -1064,11 +1095,11 @@ namespace Darl.Thinkbase
                     }
                 }
                 //evaluate it
-                var tree = _runtime.CreateTree(code, o, model); //findControlAttribute checks for syntax errors.
+                var tree = runtime.CreateTree(code, o, model); //findControlAttribute checks for syntax errors.
                 var list = Meta.DarlVarExtensions.Convert(values);
-                await _runtime.Evaluate(tree, list, ks);
+                await runtime.Evaluate(tree, list, ks);
                 //calculate saliences if any outstanding turn into a question
-                var c = _runtime.CalculateSaliences(list, tree);
+                var c = runtime.CalculateSaliences(list, tree);
                 if (c.Any())
                 {
                     GenerateQuestionMessage(c, responses, tree, ref pending, o, code, list);
@@ -1096,7 +1127,7 @@ namespace Darl.Thinkbase
             throw new NotImplementedException();
         }
 
-        private async Task UpdateNodeStates(KnowledgeState ks, IGraphModel model, List<KeyValuePair<GraphAbstraction, int>> dependencies, List<DarlVar> values, string completionLineage)
+        private async Task UpdateNodeStates(IDarlMetaRunTime runtime, KnowledgeState ks, IGraphModel model, List<KeyValuePair<GraphAbstraction, int>> dependencies, List<DarlVar> values, string completionLineage)
         {
             if (dependencies == null)
                 return;
@@ -1140,14 +1171,14 @@ namespace Darl.Thinkbase
                         continue;
                     }
                     _logger.LogDebug($"Evaluating completion rule on object: {key.externalId ?? key.name}");
-                    var tree = _runtime.CreateTree(ruleSource, key, model);
+                    var tree = runtime.CreateTree(ruleSource, key, model);
                     if (tree.HasErrors())
                     {
                         _logger.LogDebug($"Errors in completion rule on object: {key.externalId ?? key.name}, code: {ruleSource}");
                         continue;
                     }
                     var list = new List<Thinkbase.Meta.DarlResult>();
-                    await _runtime.Evaluate(tree, list, ks);
+                    await runtime.Evaluate(tree, list, ks);
                     _logger.LogDebug($"Completion rule results: {string.Join("; ", list)}");
                 }
             }
@@ -1376,6 +1407,7 @@ namespace Darl.Thinkbase
                 try
                 {
                     //evaluate it
+                    var _runtime = new DarlMetaRunTime(_config, _metaHandler);
                     var tree = _runtime.CreateTree(code, currentNode, model); //findControlAttribute checks for syntax errors.
                     var list = new List<Meta.DarlResult>();
                     await _runtime.Evaluate(tree, list, ks, currentTime); //add current time for eval
@@ -1476,7 +1508,7 @@ namespace Darl.Thinkbase
 
 
 
-        private async Task<PreparedLearningSet> PrepareDataForLearning(List<KnowledgeState> data, IGraphModel model, string target, string targetLineage, string valueLineage, int percentTrain, int sets)
+        private async Task<PreparedLearningSet> PrepareDataForLearning(List<KnowledgeState> data, IGraphModel model, string target, string targetLineage, string valueLineage, int percentTrain, int sets, IDarlMetaRunTime runtime)
         {
             //find the target in the KG.
             GraphObject? targetObj = null;
@@ -1517,7 +1549,7 @@ namespace Darl.Thinkbase
             ParseTree? tree = null;
             try
             {
-                tree = _runtime.CreateTree(source, targetObj, model);
+                tree = runtime.CreateTree(source, targetObj, model);
             }
             catch (Exception ex)
             {
@@ -1555,7 +1587,7 @@ namespace Darl.Thinkbase
                 var values = new List<DarlResult>();
                 try
                 {
-                    await _runtime.Evaluate(tree, values, ks);
+                    await runtime.Evaluate(tree, values, ks);
                 }
                 catch(Exception ex)
                 {

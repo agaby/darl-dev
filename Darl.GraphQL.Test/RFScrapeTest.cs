@@ -427,7 +427,7 @@ namespace Darl.GraphQL.Test
                 }
             }
             var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
-            var gh = new GraphHandler(_graph, _ghlogger, new MetaStructureHandler(), _runtime);
+            var gh = new GraphHandler(_config, _graph, _ghlogger, new MetaStructureHandler());
             var paths = new List<string> { consistsLineage, followsLineage };
             var subjectId = Guid.NewGuid().ToString();
             var userId = _config["userId"];
@@ -475,7 +475,7 @@ namespace Darl.GraphQL.Test
         public async Task TestGraphPass()
         {
             var compositeName = $"{_config["userId"]}_{graphName}";
-            var gh = new GraphHandler(_graph, _ghlogger, new MetaStructureHandler(), _runtime);
+            var gh = new GraphHandler(_config, _graph, _ghlogger, new MetaStructureHandler());
             var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
             var paths = new List<string> { consistsLineage, followsLineage };
             var subjectId = Guid.NewGuid().ToString();
@@ -520,7 +520,7 @@ namespace Darl.GraphQL.Test
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = defaultAnswer.id, lineage = followsLineage });
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = help.id, lineage = followsLineage });
             await _graph.CreateRecognitionConnection(compositeName, new GraphConnectionInput { startId = root.id, endId = math.id, lineage = followsLineage });
-            var gh = new GraphHandler(_graph, _ghlogger, new MetaStructureHandler(), _runtime);
+            var gh = new GraphHandler(_config, _graph, _ghlogger, new MetaStructureHandler());
             var userId = _config["userId"];
             var subjectId = "default:";
             var results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "hello" });
@@ -579,7 +579,7 @@ namespace Darl.GraphQL.Test
         {
             var compositeName = $"{_config["userId"]}_{graphName}";
             var userId = _config["userId"];
-            var gh = new GraphHandler(_graph, _ghlogger, new MetaStructureHandler(), _runtime);
+            var gh = new GraphHandler(_config, _graph, _ghlogger, new MetaStructureHandler());
             var cache = new Mock<IDistributedCache>();
             var bp = new BotProcessing(_conn, _bplogger, _config, _graph, gh, cache.Object);
             var conversationId = Guid.NewGuid().ToString();
