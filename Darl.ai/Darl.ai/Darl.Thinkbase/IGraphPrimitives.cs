@@ -88,5 +88,6 @@ namespace Darl.Thinkbase
         Task<ModelMetaData> UpdateKGraph(string userId, string name, ModelMetaData kgupdate);
         Task<List<GraphAbstraction>> GetSetofConnectedObjects(string userId, List<string> ksIds, string graphName);
         Task<DisplayModel?> GetRealDisplayGraphWithState(string userId, string graphName, string subjectId);
+        Task<KnowledgeState> ConvertKSIDs(KnowledgeState ks);
     }
 }

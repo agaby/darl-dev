@@ -853,6 +853,10 @@ namespace Darl.Thinkbase
             throw new NotImplementedException();
         }
 
+        public async Task<KnowledgeState> ConvertKSIDs(KnowledgeState ks)
+        {
+            return await _primitives.ConvertKSIDs(ks);
+        }
 
 
 
@@ -1200,6 +1204,7 @@ namespace Darl.Thinkbase
                 return lineage;
             return $"{lineage}+{subLineage}";
         }
+
 
 
 

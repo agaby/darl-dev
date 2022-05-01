@@ -45,29 +45,11 @@ async function updateDropdown() {
 
 }
 
-function updateStateDropdown() {
-    const dropdown = $('#conv-recent-dropdown');
-    var idList = [];
-    //get local set of state ids
-    const storageName = mdname + '_knowledge_states';
-    var existing = window.localStorage.getItem(storageName);
-    if (existing) {
-        idList = JSON.parse(existing);
-    }
-    dropdown.empty();
-    dropdown.append('<option selected="true" disabled>Choose a knowledge state</option>');
-    dropdown.prop('selectedIndex', 0);
-    $.each(idList, function (key, entry) {
-        dropdown.append($('<option class="dropdown-item"></option>').attr('value', entry).text(entry));
-    });
-}
-
 async function loadGraphs() {
     try {
         $('#real-header').removeClass('d-none');
         var loading = document.getElementById('loading');
         loading.classList.remove('loaded');
-        updateStateDropdown();
         if (descriptions[mdname]) {
             var converter = new showdown.Converter();
             var html = converter.makeHtml(descriptions[mdname]);
@@ -1538,30 +1520,14 @@ async function loadGraphs() {
         });
 
         $('#conv-newstate').click(async function () {
-            const storageName = mdname + '_knowledge_states';
             currentStateId = uuidv4();
-            var idList = [];
-            //get local set of state ids
-            var existing = window.localStorage.getItem(storageName);
-            if (existing) {
-                idList = JSON.parse(existing);
-                idList = idList.slice(0, 7);
-            }
-            //add this to top
-            idList.unshift(currentStateId);
-            //save
-            window.localStorage.setItem(storageName, JSON.stringify(idList));
-            //update state id selection
-            updateStateDropdown();
             //clear chat
             ClearChatText();
+            if (initialTexts[mdname]) {
+                $('#msg_input').val(initialTexts[mdname]);
+            }
         });
 
-        $('#conv-recent-dropdown').on('change', async function () {
-            currentState = this.value;
-            //clear chat
-            ClearChatText();
-        });
 
         $('#conv-newstate').click();
 
@@ -2899,8 +2865,8 @@ function ConvertRawToYear(raw) {
 
 async function UpdateKS() {
     try {
-        const resp = await getks({ id: currentStateId, name: mdname });
-        $('#kstate').jsonViewer(resp.getKnowledgeState, { collapsed: true, withQuotes: false, withLinks: true });
+        const resp = await getks({ id: currentStateId });
+        $('#kstate').jsonViewer(resp.getInteractKnowledgeState, { collapsed: true, withQuotes: false, withLinks: true });
     }
     catch (err) {
         HandleError(err);

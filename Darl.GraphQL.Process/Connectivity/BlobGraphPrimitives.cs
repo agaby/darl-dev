@@ -1260,11 +1260,16 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 return ks;
             }
+            return await ConvertKSIDs(ks);
+        }
+
+        public async Task<KnowledgeState> ConvertKSIDs(KnowledgeState ks)
+        {
             if (ks != null && !string.IsNullOrEmpty(ks.knowledgeGraphName))
             {
                 try //several error modes - response is to return original
                 {
-                    var compositeName = CreateCompositeName(userId, ks.knowledgeGraphName);
+                    var compositeName = CreateCompositeName(ks.userId, ks.knowledgeGraphName);
                     var cont = await Load(compositeName) as BlobGraphContent;
                     //replace ids with externalIds. default to overwriting duplicates.
                     var newData = new Dictionary<string, List<GraphAttribute>>();

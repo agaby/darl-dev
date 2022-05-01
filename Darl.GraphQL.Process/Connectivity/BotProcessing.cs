@@ -50,6 +50,16 @@ namespace Darl.GraphQL.Models.Connectivity
             return await _ghandler.Discover(userId, KnowledgeGraphName, subjectId, null, new System.Text.StringBuilder(), null);
         }
 
+        public async Task<KnowledgeState?> GetInteractKnowledgeState(string id, bool external = false)
+        {
+            var bs = await GetBotState(id);
+            if(bs == null)
+                return null;
+            if(!external)
+                return bs.state;
+            return await _graph.ConvertKSIDs(bs.state);
+        }
+
         public async Task<List<InteractTestResponse>> InteractKGAsync(string userId, string KnowledgeGraphName, string conversationId, DarlVar conversationData)
         {
             _logger.LogDebug($"{nameof(InteractKGAsync)}: {userId}, {KnowledgeGraphName}, {conversationId}, {conversationData.Value}");
@@ -58,7 +68,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (bs == null)//first call for this conversation
             {
                 _logger.LogDebug($"new conversation, id= {conversationId}, KGName= {KnowledgeGraphName}, userId = {userId}");
-                bs = new BotState { conversationId = conversationId, userId = userId, userData = new StoredBotData(), conversationData = new StoredBotData(), privateConversationData = new StoredBotData(), values = new List<DarlVar>(), updated = DateTime.UtcNow };
+                bs = new BotState { conversationId = conversationId, userId = userId, userData = new StoredBotData(), conversationData = new StoredBotData(), privateConversationData = new StoredBotData(), values = new List<DarlVar>(), updated = DateTime.UtcNow, state = new KnowledgeState {userId = userId, knowledgeGraphName = KnowledgeGraphName, subjectId = conversationId } };
             }
             if (bs.kGraphData == null) // top level conversation
             {
@@ -82,7 +92,7 @@ namespace Darl.GraphQL.Models.Connectivity
                         }
                         bs.kGraphData = r.response.sequence;
                         bs.pending = null;
-                        var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending, GraphProcess.seek);
+                        var res = await _ghandler.GraphPass(bs.state, userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending, GraphProcess.seek);
                         if (!res.Item1.Any())
                         {
                             //no connection found
@@ -105,7 +115,7 @@ namespace Darl.GraphQL.Models.Connectivity
                         }
                         bs.kGraphData = r.response.sequence;
                         bs.pending = null;
-                        var discoverResp = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending, GraphProcess.discover);
+                        var discoverResp = await _ghandler.GraphPass(bs.state, userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending, GraphProcess.discover);
                         if (discoverResp.Item1.Any())
                         {
                             resp.AddRange(discoverResp.Item1);
@@ -158,7 +168,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     bs.values.Add(request);
                     try
                     {
-                        var res = await _ghandler.GraphPass(userId, KnowledgeGraphName, conversationId, bs.kGraphData[0][0], bs.kGraphData[1], bs.kGraphData[2][0], bs.values, bs.pending, GraphProcess.seek);
+                        var res = await _ghandler.GraphPass(bs.state, userId, KnowledgeGraphName, conversationId, bs.kGraphData[0][0], bs.kGraphData[1], bs.kGraphData[2][0], bs.values, bs.pending, GraphProcess.seek);
                         resp.Add(res.Item1.Last());
                         bs.pending = res.Item2;
                         if (res.Item1.Count > 1)
@@ -219,7 +229,8 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 Serializer.Serialize<BotState>(ms, state);
                 ms.Position = 0;
-                await _cache.SetAsync(conversationId, ms.ToArray());
+                await _cache.SetAsync(conversationId, ms.ToArray(), new DistributedCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(30)));
             }
         }
 

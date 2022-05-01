@@ -1,5 +1,6 @@
 ﻿using Darl.Common;
 using Darl.GraphQL.Process.Connectivity;
+using Darl.Thinkbase;
 using DarlCommon;
 using ProtoBuf;
 using System;
@@ -47,6 +48,9 @@ namespace Darl.GraphQL.Models.Models
                 kGraphData = value.Select(p => p.InnerArray).ToList();
             }
         }
+
+        [ProtoMember(10)]
+        public KnowledgeState? state { get; set; }
 
     }
 }

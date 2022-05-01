@@ -16,7 +16,7 @@ namespace Darl.Thinkbase
         enum SetChoices { three = 3, five = 5, seven = 7, nine = 9 }
 
         Task<KnowledgeState> Discover(string userId, string KnowledgeGraphName, string subjectId, List<string> lineages, StringBuilder log, FuzzyTime? currentTime);
-        Task<(List<InteractTestResponse>, DarlVar?)> GraphPass(string userId, string graphName, string subjectId, string targetId, List<string> paths, string completionLineage, List<DarlVar> values, DarlVar? pending, GraphProcess graphProces);
+        Task<(List<InteractTestResponse>, DarlVar?)> GraphPass(KnowledgeState ks, string userId, string graphName, string subjectId, string targetId, List<string> paths, string completionLineage, List<DarlVar> values, DarlVar? pending, GraphProcess graphProces);
         Task<List<InteractTestResponse>> InterpretText(string userId, string graphName, string subjectId, DarlVar conversationData);
         Task<KnowledgeState> Seek(KnowledgeState ks, string? targetId, List<string> paths, string completionLineage);
         Task<Meta.DarlMineReport> Learn(string userId, string graphName, string target, LearningForm form, string targetLineage, string valueLineage, int percentTrain = 100, SetChoices sets = SetChoices.three);

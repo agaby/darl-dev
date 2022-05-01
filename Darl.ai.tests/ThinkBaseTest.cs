@@ -238,7 +238,8 @@ namespace Darl_standard_core.test
             var userId = Guid.NewGuid().ToString();
             var targetId = Guid.NewGuid().ToString();
             var completionLineage = completeLineage;
-            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, completionLineage, new List<DarlCommon.DarlVar>(), null, GraphProcess.seek);
+            var ks = new KnowledgeState();
+            var next = await gh.GraphPass(ks,userId, graphName, subjectId, targetId, paths, completionLineage, new List<DarlCommon.DarlVar>(), null, GraphProcess.seek);
             Assert.AreEqual(1, next.Item1.Count);
         }
 
@@ -703,7 +704,7 @@ namespace Darl_standard_core.test
             Assert.AreEqual("adjective:5500", res[1].response.sequence[2][0]);
             var ks = new KnowledgeState();
             primitives.Setup(a => a.GetKnowledgeState(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())).Returns(Task.FromResult(ks));
-            var res2 = await gh.GraphPass("user", "discord_bot.graph", "conversation", res[1].response.sequence[0][0], res[1].response.sequence[1], res[1].response.sequence[2][0], new List<DarlVar>(), null, GraphProcess.seek);
+            var res2 = await gh.GraphPass(ks,"user", "discord_bot.graph", "conversation", res[1].response.sequence[0][0], res[1].response.sequence[1], res[1].response.sequence[2][0], new List<DarlVar>(), null, GraphProcess.seek);
         }
 
         [TestMethod]
@@ -725,7 +726,54 @@ namespace Darl_standard_core.test
 
         }
 
-
+        [TestMethod]
+        public void TestKnowledgeStateSerialize()
+        {
+            var ks = new KnowledgeState 
+            {
+                created = DateTime.Now,
+                subjectId = Guid.NewGuid().ToString(),
+                knowledgeGraphName = "test.graph",
+                userId = Guid.NewGuid().ToString(),
+                processId = Guid.NewGuid().ToString(),
+            };
+            ks.data.Add(Guid.NewGuid().ToString(), new List<GraphAttribute> { 
+                new GraphAttribute { 
+                    lineage = abilityLineage,
+                    type = GraphAttribute.DataType.textual,
+                    value = "poops"
+                }, 
+                new GraphAttribute {
+                    lineage = abilityLineage,
+                    type = GraphAttribute.DataType.numeric,
+                    value = "22"
+                } 
+            });
+            byte[] buffer;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                Serializer.Serialize<KnowledgeState>(ms, ks);
+                ms.Position = 0;
+                buffer =  ms.ToArray();
+            }
+            KnowledgeState returnedKS;
+            using (var ms = new MemoryStream(buffer))
+            {
+                ms.Position = 0;
+                returnedKS =  Serializer.Deserialize<KnowledgeState>(ms);
+            }
+            Assert.IsNotNull(returnedKS);
+            Assert.AreEqual(ks.knowledgeGraphName, returnedKS.knowledgeGraphName);
+            Assert.AreEqual(ks.userId, returnedKS.userId);
+            Assert.AreEqual(ks.processId, returnedKS.processId);
+            Assert.AreEqual(ks.subjectId, returnedKS.subjectId);
+            Assert.AreEqual(ks.data.Count, returnedKS.data.Count);
+            var index = ks.data.Keys.First();
+            Assert.AreEqual(ks.data[index].Count, returnedKS.data[index].Count);
+            Assert.AreEqual(ks.data[index][0].lineage, returnedKS.data[index][0].lineage);
+            Assert.AreEqual(ks.data[index][0].type, returnedKS.data[index][0].type);
+            Assert.AreEqual(ks.data[index][0].value, returnedKS.data[index][0].value);
+        }
 
     }
 }

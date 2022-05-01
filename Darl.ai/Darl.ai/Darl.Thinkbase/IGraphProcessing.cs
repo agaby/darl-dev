@@ -97,5 +97,6 @@ namespace Darl.Thinkbase
         Task<DisplayModel?> GetRealDisplayGraphWithState(string userId, string graphName, string subjectId);
         Task<string> LoadExternalData(string userId, string name, string data, string patternPath, List<DataMap> dataMaps, LoadType ltype = LoadType.xml, bool buildGraph = false);
         List<KnowledgeState> LoadData(string userId, string name, IGraphModel model, string data, string patternPath, List<DataMap> dataMaps, LoadType ltype = LoadType.xml);
+        Task<KnowledgeState> ConvertKSIDs(KnowledgeState ks);
     }
 }

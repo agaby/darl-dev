@@ -432,7 +432,8 @@ namespace Darl.GraphQL.Test
             var subjectId = Guid.NewGuid().ToString();
             var userId = _config["userId"];
             var targetId = node.id;
-            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>(), null, GraphProcess.seek);
+            var ks = new KnowledgeState();
+            var next = await gh.GraphPass(ks,userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>(), null, GraphProcess.seek);
             await _graph.Store(compositeName);
             var stream = await _graph.StoreGraphML(compositeName);
             using (var fileStream = File.Create(graphImage))
@@ -482,7 +483,8 @@ namespace Darl.GraphQL.Test
             var userId = _config["userId"];
             var targetId = node.id;
             var complete = false;
-            var next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>(), null, GraphProcess.seek);
+            var ks = new KnowledgeState();
+            var next = await gh.GraphPass(ks,userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>(), null, GraphProcess.seek);
             var count = 0;
             while (!complete)
             {
@@ -494,7 +496,7 @@ namespace Darl.GraphQL.Test
                 {
                     var current = next.Item1.Last();
                     current.response.Value = current.response.categories.Keys.First();
-                    next = await gh.GraphPass(userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar> { current.response }, null, GraphProcess.seek);
+                    next = await gh.GraphPass(ks,userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar> { current.response }, null, GraphProcess.seek);
                 }
                 count++;
             }

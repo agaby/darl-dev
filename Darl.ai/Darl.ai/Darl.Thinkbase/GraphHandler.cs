@@ -63,7 +63,7 @@ namespace Darl.Thinkbase
         /// <param name="values"></param>
         /// <param name="pending"></param>
         /// <returns></returns>
-        public async Task<(List<InteractTestResponse>, DarlVar?)> GraphPass(string userId, string graphName, string subjectId, string targetId, List<string> paths, string completionLineage, List<DarlVar> values, DarlVar? pending, GraphProcess graphProcess)
+        public async Task<(List<InteractTestResponse>, DarlVar?)> GraphPass(KnowledgeState ks, string userId, string graphName, string subjectId, string targetId, List<string> paths, string completionLineage, List<DarlVar> values, DarlVar? pending, GraphProcess graphProcess)
         {
             var runtime = GetRuntime(subjectId);
             //validate incoming values
@@ -75,7 +75,6 @@ namespace Darl.Thinkbase
             }
             var responses = new List<InteractTestResponse>();
             var model = await _graph.GetModel(userId, graphName);
-            var ks = await GetKnowledgeState(userId, subjectId, graphName);
             if (!(pending is null))
             {
                 var currentObj = model.vertices[pending.name];
@@ -122,9 +121,6 @@ namespace Darl.Thinkbase
                 await EvaluateUIRule(runtime, model, target, pending, responses, ks, values, paths);
                 pending = null;
             }
-            _logger.LogDebug($"Updating KnowledgeState. {ks?.ToString(model)}");
-            if(!(await _graph.SaveKSChanges(userId, subjectId, ks)))
-                _logger.LogDebug($"Knowledge state not found. subjectId: {subjectId}, knowledgeGraphName= {graphName}, userId = {userId}");
             return (responses, pending);
         }
 

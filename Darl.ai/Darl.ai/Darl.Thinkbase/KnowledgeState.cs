@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace Darl.Thinkbase
     //Represents the data required to customize a generic Knowledge Graph for an individual's state.
     //Both the attributes of one or more objects can be overwritten, and the presence of a connection can be
     //defined to and from those object and remote KnowledgeStates.
+    [ProtoContract(AsReferenceDefault = true)]
     public class KnowledgeState : GraphAbstraction
     {
         public KnowledgeState()
@@ -20,23 +22,28 @@ namespace Darl.Thinkbase
         /// <summary>
         /// The owner of the data, a Guid
         /// </summary>
+        [ProtoMember(1)] 
         public string userId { get; set; }
 
         /// <summary>
         /// the id of the subject to which this data relates 
         /// </summary>
+        [ProtoMember(2)] 
         public string subjectId { get; set; }
 
         /// <summary>
         /// the KG it applies to
         /// </summary>
+        [ProtoMember(3)] 
         public string knowledgeGraphName { get; set; }
 
+        [ProtoMember(4)] 
         public DateTime? created { get; set; }
 
         /// <summary>
         /// If a processId is present, this data is used only for machine learning and can be deleted when that process terminates.
         /// </summary>
+        [ProtoMember(5)] 
         public string? processId { get; set; }
 
 
@@ -47,6 +54,8 @@ namespace Darl.Thinkbase
         /// Since a parent GraphObject or GraphConnection id can occur only once, the local end is always implied to be
         /// another object in this KnowledgeState
         /// </summary>
+
+        [ProtoMember(6)]
         public Dictionary<string, List<GraphAttribute>> data { get; set; } = new Dictionary<string, List<GraphAttribute>>();
 
         public bool ContainsRecord(string id)
@@ -153,5 +162,13 @@ namespace Darl.Thinkbase
         }
     }
 
+    [ProtoContract(AsReferenceDefault = true)]
+    public class KSData
+    {
+        [ProtoMember(1)] 
+        public string objectId { get; set; }
 
+        [ProtoMember(2)] 
+        public List<GraphAttribute> attributes { get; set; }
+    }
 }
