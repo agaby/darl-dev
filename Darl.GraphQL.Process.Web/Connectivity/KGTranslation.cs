@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Stripe;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -50,6 +51,11 @@ namespace Darl.GraphQL.Models.Connectivity
         private string updateObjectId { get; set; } = string.Empty;
         private string pushObjectId { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Contains users cached by userId or apikey.
+        /// </summary>
+        private readonly ConcurrentDictionary<string, DarlUser> users = new ConcurrentDictionary<string, DarlUser>();
+        private readonly ConcurrentDictionary<string, DateTime> userLifetimes = new ConcurrentDictionary<string, DateTime>();
 
 
         public static string backofficeKGComp = String.Empty;
@@ -610,10 +616,16 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             try
             {
+                ClearUsers();
+                if (users.TryGetValue(apiKey, out var user))
+                    return user;
                 var ks = await _graph.GetKnowledgeStateByTypeAndAttribute(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG, keyLineage, apiKey);
                 if (ks == null)
                     return null;
-                return Convert(ks, personObjectId);
+                user = Convert(ks, personObjectId);
+                users.TryAdd(apiKey, user);
+                userLifetimes.TryAdd(apiKey, DateTime.UtcNow);
+                return user;
             }
             catch (Exception ex)
             {
@@ -623,10 +635,16 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<DarlUser> GetUserById(string id)
         {
+            ClearUsers();
+            if (users.TryGetValue(id, out var user))
+                return user;
             var ks = await _graph.GetKnowledgeState(_config["AppSettings:boaiuserid"], id, backofficeKG);
             if (ks == null)
                 return null;
-            return Convert(ks, personObjectId);
+            user = Convert(ks, personObjectId);
+            users.TryAdd(id, user);
+            userLifetimes.TryAdd(id, DateTime.UtcNow);
+            return user;
         }
 
         public async Task<List<DarlUser>> GetUsers()
@@ -1309,6 +1327,21 @@ namespace Darl.GraphQL.Models.Connectivity
 
 
         #region private
+
+        /// <summary>
+        /// Check for out of date users and remove
+        /// </summary>
+        private void ClearUsers()
+        {
+            foreach (var item in userLifetimes.Keys)
+            {
+                if (userLifetimes[item] < DateTime.UtcNow - new TimeSpan(0, 30, 0))
+                {
+                    userLifetimes.TryRemove(item, out DateTime t);
+                    users.TryRemove(item, out DarlUser c);
+                }
+            }
+        }
 
         private string CompositeName(string userId, string graphName)
         {

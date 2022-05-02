@@ -86,6 +86,18 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 Resolver = new FuncFieldResolver<Thinkbase.Meta.DarlMineReport?>(ResolveDMRObject),
                 Subscriber = new EventStreamResolver<Thinkbase.Meta.DarlMineReport>(SubscribeBuild)
             });
+            AddField(new EventStreamFieldType()
+            {
+                Name = "interactComplete",
+                Description = "Respond to the completion of a conversation",
+                Arguments = new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge Graph to infer from" },
+                    new QueryArgument<StringGraphType> { Name = "target", Description = "The object to predict or categorize if not the default defined in the KG" }
+                ),
+                Type = typeof(KnowledgeStateType),
+                Resolver = new FuncFieldResolver<KnowledgeState?>(ResolveKSObject),
+                Subscriber = new EventStreamResolver<KnowledgeState>(SubscribeInteractCompleted)
+            });
         }
 
 
@@ -108,6 +120,15 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 return ks.Where(a => a.userId == systemId && a.knowledgeGraphName == graphName).Select(i => _bot.Seek(i, target, new List<string>(), "adjective:5500").Result);
             }
             return ks.Where(a => a.userId == userId && a.knowledgeGraphName == graphName).Select(i =>  _bot.Seek(i, target, new List<string>(), "adjective:5500").Result);
+        }
+
+        private IObservable<KnowledgeState> SubscribeInteractCompleted(IResolveEventStreamContext arg)
+        {
+            var userId = _trans.GetCurrentUserId(arg.UserContext);
+            var graphName = arg.GetArgument<string>("graphName");
+            var target = arg.GetArgument<string>("target");
+            var ks = _graph.ObservableKStates();
+            return ks;
         }
 
         private KnowledgeState? ResolveKSObject(IResolveFieldContext arg)
