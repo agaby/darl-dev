@@ -15,6 +15,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Models.Connectivity
@@ -28,6 +30,7 @@ namespace Darl.GraphQL.Models.Connectivity
         readonly IGraphHandler _ghandler;
         readonly IDistributedCache _cache;
 
+        private readonly ISubject<KnowledgeState> _knowledgeStateStream = new ReplaySubject<KnowledgeState>(1);
 
 
         public BotProcessing(IConnectivity conv, ILogger<BotProcessing> logger, IConfiguration config, IGraphProcessing graph, IGraphHandler ghandler, IDistributedCache cache)
@@ -58,6 +61,10 @@ namespace Darl.GraphQL.Models.Connectivity
             if(!external)
                 return bs.state;
             return await _graph.ConvertKSIDs(bs.state);
+        }
+        public IObservable<KnowledgeState> ObservableKStates()
+        {
+            return _knowledgeStateStream.AsObservable();
         }
 
         public async Task<List<InteractTestResponse>> InteractKGAsync(string userId, string KnowledgeGraphName, string conversationId, DarlVar conversationData)
@@ -177,6 +184,7 @@ namespace Darl.GraphQL.Models.Connectivity
                             {
                                 if (r.response.dataType == DarlVar.DataType.complete)
                                 {
+                                    _knowledgeStateStream.OnNext(bs.state);
                                     bs.kGraphData = null;
                                     bs.pending = null;
                                     break;

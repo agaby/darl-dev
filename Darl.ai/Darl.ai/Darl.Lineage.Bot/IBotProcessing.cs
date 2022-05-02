@@ -1,6 +1,7 @@
 ﻿using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static Darl.Thinkbase.IGraphHandler;
@@ -17,5 +18,6 @@ namespace Darl.Lineage.Bot
         Task<DarlMineReport> Learn(string userId, string graphName, string target, LearningForm form, string targetLineage, string valueLineage, int percentTrain, SetChoices sets);
         Task<DarlMineReport> Build(string userId, string name, string data, string patternPath, List<DataMap> dataMaps, LoadType ltype = LoadType.xml);
         Task<KnowledgeState?> GetInteractKnowledgeState(string id, bool external = false);
+        IObservable<KnowledgeState> ObservableKStates();
     }
 }

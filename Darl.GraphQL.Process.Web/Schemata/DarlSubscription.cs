@@ -91,7 +91,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 Name = "interactComplete",
                 Description = "Respond to the completion of a conversation",
                 Arguments = new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge Graph to infer from" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The Knowledge Graph to infer from" },
                     new QueryArgument<StringGraphType> { Name = "target", Description = "The object to predict or categorize if not the default defined in the KG" }
                 ),
                 Type = typeof(KnowledgeStateType),
@@ -125,10 +125,10 @@ namespace Darl.GraphQL.Web.Models.Schemata
         private IObservable<KnowledgeState> SubscribeInteractCompleted(IResolveEventStreamContext arg)
         {
             var userId = _trans.GetCurrentUserId(arg.UserContext);
-            var graphName = arg.GetArgument<string>("graphName");
+            var graphName = arg.GetArgument<string>("name");
             var target = arg.GetArgument<string>("target");
-            var ks = _graph.ObservableKStates();
-            return ks;
+            var ks = _bot.ObservableKStates();
+            return ks.Where(a => a.userId == userId && a.knowledgeGraphName == graphName );
         }
 
         private KnowledgeState? ResolveKSObject(IResolveFieldContext arg)
