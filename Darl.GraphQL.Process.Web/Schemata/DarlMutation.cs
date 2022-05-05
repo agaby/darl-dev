@@ -491,14 +491,19 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     KnowledgeStateInput ks = (KnowledgeStateInput)context.GetArgument(typeof(KnowledgeStateInput), "ks");
                     var asSystem = (bool?)context.GetArgument(typeof(bool?), "asSystem");
+                    var userId = trans.GetCurrentUserId(context.UserContext);
                     if (asSystem ?? false)
                     {
-                        var userId = _config["AppSettings:boaiuserid"];
+                        var user = trans.GetUserById(userId).Result;
+                        if (user == null || user.accountState != GraphQL.Models.Models.DarlUser.AccountState.admin)
+                        {
+                            throw new ExecutionError($"asSystem == true only permitted to Administrators.");
+                        }
+                        userId = _config["AppSettings:boaiuserid"];
                         return await graph.CreateKnowledgeState(userId, ks);
                     }
                     else
                     {
-                        var userId = trans.GetCurrentUserId(context.UserContext);
                         return await graph.CreateKnowledgeState(userId, ks);
                     }
 
@@ -516,14 +521,29 @@ namespace Darl.GraphQL.Web.Models.Schemata
             );
             FieldAsync<KnowledgeStateType>("deleteKnowledgeState", "deletes a knowledge state", arguments: new QueryArguments(
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the graph it belongs to " },
-                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "subjectId", Description = "The subjectId of the KS" }
+                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "subjectId", Description = "The subjectId of the KS" },
+                 new QueryArgument<BooleanGraphType> { Name = "asSystem", Description = "Write to system account", DefaultValue = false }
                 ),
                 resolve: async context =>
                 {
                     var name = context.GetArgument<string>("name");
                     var subjectId = context.GetArgument<string>("subjectId");
                     var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await connectivity.DeleteKnowledgeState(userId, subjectId, name);
+                    var asSystem = (bool?)context.GetArgument(typeof(bool?), "asSystem");
+                    if (asSystem ?? false)
+                    {
+                        var user = trans.GetUserById(userId).Result;
+                        if (user == null || user.accountState != GraphQL.Models.Models.DarlUser.AccountState.admin)
+                        {
+                            throw new ExecutionError($"asSystem == true only permitted to Administrators.");
+                        }
+                        userId = _config["AppSettings:boaiuserid"];
+                        return await connectivity.DeleteKnowledgeState(userId, subjectId, name);
+                    }
+                    else
+                    {
+                        return await connectivity.DeleteKnowledgeState(userId, subjectId, name);
+                    }
                 }
             );
             FieldAsync<ULongGraphType>("deleteAllKnowledgeStates", "deletes all knowledge states for a graph", arguments: new QueryArguments(

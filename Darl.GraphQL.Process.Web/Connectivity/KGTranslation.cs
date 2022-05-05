@@ -599,7 +599,9 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<Contact?> DeleteContactAsync(string email)
         {
-            await _graph.DeleteKnowledgeState(_config["AppSettings:boaiuserid"], email, backofficeKG);
+            var res = await _graph.GetKnowledgeStateByTypeAndAttribute(_config["AppSettings:boaiuserid"], "4abd1be7-f0eb-4bf8-b434-2be3df8a162f", backofficeKG, "noun:01,0,2,00,38,00,06,1", email);
+            if(res != null)
+                await _graph.DeleteKnowledgeState(_config["AppSettings:boaiuserid"], res.subjectId, backofficeKG);
             return null;
         }
 

@@ -57,9 +57,8 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 throw new ExecutionError($"Collateral is not present or empty");
             }
-            var collection = await _connectivity.GetContacts();
-            int count = collection.Count;
             var tp = new TextProcess();
+            int count = 1;
             if (test) //send one email back with the generated text
             {
                 var body = tp.Parse(content, new Dictionary<string, string> { { "InvoiceName", "Andy" } }); //make the insertion dictionary programmable
@@ -67,6 +66,8 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             else
             {
+                var collection = await _connectivity.GetContacts();
+                count = collection.Count;
                 foreach (var c in collection)
                 {
                     var body = tp.Parse(content, new Dictionary<string, string> { { "InvoiceName", c.FirstName } }); //make the insertion dictionary programmable

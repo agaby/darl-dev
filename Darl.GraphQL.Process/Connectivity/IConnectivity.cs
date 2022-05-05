@@ -12,7 +12,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<List<KGraph>> GetKGraphsAsync(string userId);
         Task<KnowledgeState> GetKnowledgeState(string userId, string ksId, string graphName);
         Task<List<KnowledgeState>> GetKnowledgeStates(string userId, string graphName);
-        Task<KnowledgeState> DeleteKnowledgeState(string userId, string ksId, string graphName);
+        Task<KnowledgeState?> DeleteKnowledgeState(string userId, string ksId, string graphName);
         Task<KnowledgeState> UpdateKnowledgeState(string userId, string ksId, KnowledgeStateUpdate state);
         Task<KnowledgeState> CreateKnowledgeState(KnowledgeState state);
         Task<long> DeleteAllKnowledgeStates(string userId, string graphName);

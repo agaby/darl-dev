@@ -315,12 +315,17 @@ namespace Darl.GraphQL.Models.Connectivity
             return updated;
         }
 
-        public async Task<KnowledgeState> DeleteKnowledgeState(string userId, string ksId, string graphName)
+        public async Task<KnowledgeState?> DeleteKnowledgeState(string userId, string ksId, string graphName)
         {
             var mc = db.GetCollection<CosmosKnowledgeState>(knowledgestateCollection);
             var query = mc.AsQueryable().Where(p => p.subjectId == ksId && p.userId == userId && p.knowledgeGraphName == graphName);
             var old = await query.FirstOrDefaultAsync();
-            await mc.DeleteManyAsync(Builders<CosmosKnowledgeState>.Filter.Eq(r => r.userId, userId) & Builders<CosmosKnowledgeState>.Filter.Eq(r => r.subjectId, ksId) & Builders<CosmosKnowledgeState>.Filter.Eq(r => r.knowledgeGraphName, graphName));
+            var res = await mc.DeleteManyAsync(Builders<CosmosKnowledgeState>.Filter.Eq(r => r.userId, userId) & Builders<CosmosKnowledgeState>.Filter.Eq(r => r.subjectId, ksId) & Builders<CosmosKnowledgeState>.Filter.Eq(r => r.knowledgeGraphName, graphName));
+            if(res != null)
+            {
+                if (res.DeletedCount == 0)
+                    return null;
+            }
             return old;
         }
 
