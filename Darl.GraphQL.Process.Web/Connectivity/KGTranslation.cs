@@ -13,6 +13,7 @@ using DarlCompiler;
 using GraphQL;
 using GraphQL.Server.Transports.Subscriptions.Abstractions;
 using Markdig;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -42,6 +43,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private readonly IProducts _prods;
         private readonly ICheckEmail _checkEmail;
         private readonly ILicensing _licensing;
+        private readonly IMemoryCache _localCache;
 
 
         //fill in with single call to model at startup
@@ -50,13 +52,6 @@ namespace Darl.GraphQL.Models.Connectivity
         private string collateralObjectId { get; set; } = string.Empty;
         private string updateObjectId { get; set; } = string.Empty;
         private string pushObjectId { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Contains users cached by userId or apikey.
-        /// </summary>
-        private readonly ConcurrentDictionary<string, DarlUser> users = new ConcurrentDictionary<string, DarlUser>();
-        private readonly ConcurrentDictionary<string, DateTime> userLifetimes = new ConcurrentDictionary<string, DateTime>();
-
 
         public static string backofficeKGComp = String.Empty;
         private static string backofficeKG = String.Empty;
@@ -105,7 +100,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private static double nodaInitialOpacity = 0.6;
 
 
-        public KGTranslation(ILogger<KGTranslation> logger, IConfiguration config, IGraphProcessing graph, IMetaStructureHandler meta, IProducts prods, ICheckEmail checkEmail, ILicensing licensing)
+        public KGTranslation(ILogger<KGTranslation> logger, IConfiguration config, IGraphProcessing graph, IMetaStructureHandler meta, IProducts prods, ICheckEmail checkEmail, ILicensing licensing, IMemoryCache localCache)
         {
             _config = config;
             _logger = logger;
@@ -114,6 +109,7 @@ namespace Darl.GraphQL.Models.Connectivity
             _prods = prods;
             _checkEmail = checkEmail;
             _licensing = licensing;
+            _localCache = localCache;
             backofficeKG = _config["AppSettings:BackOfficeKG"];
             backofficeUser = _config["AppSettings:boaiuserid"];
             backofficeKGComp = backofficeUser + '_' + backofficeKG;
@@ -616,15 +612,13 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             try
             {
-                ClearUsers();
-                if (users.TryGetValue(apiKey, out var user))
+                if(_localCache.TryGetValue(apiKey, out DarlUser user))
                     return user;
                 var ks = await _graph.GetKnowledgeStateByTypeAndAttribute(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG, keyLineage, apiKey);
                 if (ks == null)
                     return null;
                 user = Convert(ks, personObjectId);
-                users.TryAdd(apiKey, user);
-                userLifetimes.TryAdd(apiKey, DateTime.UtcNow);
+                _localCache.Set<DarlUser>(apiKey, user, TimeSpan.FromMinutes(30));
                 return user;
             }
             catch (Exception ex)
@@ -635,15 +629,13 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<DarlUser> GetUserById(string id)
         {
-            ClearUsers();
-            if (users.TryGetValue(id, out var user))
+            if (_localCache.TryGetValue(id, out DarlUser user))
                 return user;
             var ks = await _graph.GetKnowledgeState(_config["AppSettings:boaiuserid"], id, backofficeKG);
             if (ks == null)
                 return null;
             user = Convert(ks, personObjectId);
-            users.TryAdd(id, user);
-            userLifetimes.TryAdd(id, DateTime.UtcNow);
+            _localCache.Set<DarlUser>(id, user, TimeSpan.FromMinutes(30));
             return user;
         }
 
@@ -963,6 +955,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<string> NodaView(string userId, string graphName)
         {
+            if (_localCache.TryGetValue($"{userId}_{graphName}", out string view))
+                return view;
             var model = await _graph.GetModel(userId, graphName);
             if (model == null)
                 return String.Empty;
@@ -982,6 +976,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             Layout(nodadoc);
             var res = JsonConvert.SerializeObject(nodadoc, new Newtonsoft.Json.Converters.StringEnumConverter());
+            _localCache.Set<string>($"{ userId}_{ graphName}", res, TimeSpan.FromMinutes(30));
             return res;
         }
 
@@ -1327,21 +1322,6 @@ namespace Darl.GraphQL.Models.Connectivity
 
 
         #region private
-
-        /// <summary>
-        /// Check for out of date users and remove
-        /// </summary>
-        private void ClearUsers()
-        {
-            foreach (var item in userLifetimes.Keys)
-            {
-                if (userLifetimes[item] < DateTime.UtcNow - new TimeSpan(0, 30, 0))
-                {
-                    userLifetimes.TryRemove(item, out DateTime t);
-                    users.TryRemove(item, out DarlUser c);
-                }
-            }
-        }
 
         private string CompositeName(string userId, string graphName)
         {

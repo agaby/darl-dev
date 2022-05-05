@@ -11,6 +11,7 @@ using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using DarlLanguage.Processing;
 using GraphQL;
+using GraphQL.Caching;
 using GraphQL.DataLoader;
 using GraphQL.Execution;
 using GraphQL.Server;
@@ -19,6 +20,8 @@ using GraphQL.Server.Ui.GraphiQL;
 using GraphQL.Server.Ui.Playground;
 using GraphQL.Server.Ui.Voyager;
 using GraphQL.SystemReactive;
+using GraphQL.Validation;
+using GraphQL.Validation.Complexity;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -83,7 +86,7 @@ namespace Darl.GraphQL
                 options.MaxAge = TimeSpan.FromDays(60);
             });
 
-
+            services.AddMemoryCache();
 #if DEBUG
             services.AddDistributedMemoryCache();
 #else
@@ -279,10 +282,6 @@ namespace Darl.GraphQL
                     options.AddPolicy("UserPolicy", p => p.RequireClaim(roleClaimText, "User"));
                     options.AddPolicy("CorpPolicy", p => p.RequireClaim(roleClaimText, "Corp"));
                 });
-
-
-
-
 
             services.AddControllersWithViews()
                 .AddMicrosoftIdentityUI();

@@ -53,26 +53,25 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<int> Mailshot(string content, string subject, string sendfrom, bool test)
         {
-             if (string.IsNullOrEmpty(content))
+            if (string.IsNullOrEmpty(content))
             {
                 throw new ExecutionError($"Collateral is not present or empty");
             }
             var collection = await _connectivity.GetContacts();
-            int count = 0;
+            int count = collection.Count;
             var tp = new TextProcess();
-            foreach (var c in collection)
-            {
-                if (!test)
-                {
-                    var body = tp.Parse(content, new Dictionary<string, string> { { "InvoiceName", c.FirstName } }); //make the insertion dictionary programmable
-                    await SendEmail(body, subject, sendfrom, c.Email);
-                }
-                count++;
-            }
             if (test) //send one email back with the generated text
             {
                 var body = tp.Parse(content, new Dictionary<string, string> { { "InvoiceName", "Andy" } }); //make the insertion dictionary programmable
                 await SendEmail(body, subject, sendfrom, sendfrom);
+            }
+            else
+            {
+                foreach (var c in collection)
+                {
+                    var body = tp.Parse(content, new Dictionary<string, string> { { "InvoiceName", c.FirstName } }); //make the insertion dictionary programmable
+                    await SendEmail(body, subject, sendfrom, c.Email);
+                }
             }
             return count;
         }
