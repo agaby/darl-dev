@@ -40,7 +40,7 @@ These are characters that delineate different sections of DARL. they are:
 ## Keywords
 These are pieces of text that have specific meaning in the DARL language. they are:
             
-"{", "}", "(", ")", ",", ";", ".", "if", "then", "will", "be", "confidence", "input", "output", "numeric", "categorical","arity","presence","string","constant", "or", "and","not","is","*","/","-","+","%","^",";" ">","<",">=","<=","anything","textual", "maximum","minimum","sum","product","fuzzytuple","sigmoid","normprob","round","ruleset","wire","mapinput","mapoutput","pattern"
+"{", "}", "(", ")", ",", ";", ".", "if", "then", "will", "be", "confidence", "input", "output", "numeric", "categorical", "arity", "presence", "string", "constant", "or", "and", "not", "is", "*", "/", "-", "+", "%", "^", ">", "<", "<=", ">=", "anything", "textual", "maximum", "minimum", "sum", "product", "fuzzytuple", "sigmoid", "normprob", "round", "pattern", "absent", "present", "delay", "sequence", "match", "document", "randomtext", "store", "temporal", "categoryof", "duration", "now", "mintime", "maxtime", "after", "before", "preceding", "overlapping", "during", "finishing", "starting", "all", "any", "count", "seek", "network", "attribute", "attributes", "exists", "durationof", "for", "single", "lineage", "discover", "existence", "age"
 
 Keywords are always lower case.
 

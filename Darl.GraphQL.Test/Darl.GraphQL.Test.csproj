@@ -31,6 +31,7 @@
     <None Remove="musicbusinessworldwide.json" />
     <None Remove="nodaExample.json" />
     <None Remove="numeric_test_display_rule.darl" />
+    <None Remove="quora_duplicate_questions.tsv" />
     <None Remove="WM_MusicIndustry.json" />
   </ItemGroup>
 
@@ -51,6 +52,7 @@
     <EmbeddedResource Include="musicbusinessworldwide.json" />
     <EmbeddedResource Include="nodaExample.json" />
     <EmbeddedResource Include="numeric_test_display_rule.darl" />
+    <EmbeddedResource Include="quora_duplicate_questions.tsv" />
     <EmbeddedResource Include="WM_MusicIndustry.json" />
   </ItemGroup>
 

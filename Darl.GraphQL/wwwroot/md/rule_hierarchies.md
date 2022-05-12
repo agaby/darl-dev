@@ -15,6 +15,6 @@ It doesn't stop there. If a rule set is not found, ThinkBase will search up the 
 So for instance, if you have a customer object in the real tab with no rule set for the required value, the customer lineage object in the virtual tab will be searched, and then up the tree.
 If  a "person lineage" node further up the tree contains a rule set of the right type that will be used.
 
-This permits multiple layers of reasoning to be used.
+This permits multiple layers of reasoning to be used.You can think of the reasoning in the Virtual world as being “common sense” reasoning since it reasons generically about the kinds of objects, not their specific characteristics.
  
 

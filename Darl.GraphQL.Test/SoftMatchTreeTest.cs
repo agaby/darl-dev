@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.SoftMatch;
 using Darl.Thinkbase;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -19,6 +20,8 @@ namespace Darl.GraphQL.Test
     {
         ISoftMatchProcessing cmp;
         IConfiguration _config;
+        ISoftMatch softmatch;
+
 
         [TestInitialize()]
         public void Initialize()
@@ -218,6 +221,35 @@ namespace Darl.GraphQL.Test
             }
         }
 
+        [TestMethod]
+        public async Task TestQuoraLoad()
+        {
+            var docsource = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.quora_duplicate_questions.tsv"));
+            var doc = docsource.ReadToEnd();
+            var lines = doc.Split('\n').ToList();
+            var softMatch = new MatchList();
+            lines.RemoveAt(0); //get rid of header
+            //load records 100 at a a time, resetting the tree on the first pass
+            int offset = 0;
+            int blockSize = 100;
+            var equivalents = new Dictionary<string, string>();
+            while (offset < lines.Count)
+            {
+                var dict = new List<KeyValuePair<string, string>>();
+                foreach (var line in lines.Skip(offset).Take(blockSize))
+                {
+                    var elements = line.Split('\t');
+                    if (elements.Count() != 6)
+                    {
+                        continue;
+                    }
+                    dict.Add(KeyValuePair.Create<string,string>(elements[1], elements[3]));
+                    dict.Add(KeyValuePair.Create<string, string>(elements[2], elements[4]));
+                }
+                offset += blockSize;
+                softMatch.CreateTree(dict);
+            }
+        }
     }
 
     public class Record

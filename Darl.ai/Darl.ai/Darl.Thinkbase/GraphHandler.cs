@@ -382,7 +382,7 @@ namespace Darl.Thinkbase
         }
 
 
-        public async Task<DarlMineReport> Build(string userId, string name, string data, string patternPath, List<DataMap> rawDataMaps, LoadType ltype = LoadType.xml)
+        public async Task<DarlMineReport> Build(string userId, string name, string data, string patternPath, List<DataMap> rawDataMaps, LoadType ltype = LoadType.xml, LearningForm form = LearningForm.supervised)
         {
             var runtime = new DarlMetaRunTime(_config, _metaHandler);
             var model = await _graph.GetModel(userId, name);
@@ -400,7 +400,7 @@ namespace Darl.Thinkbase
             var target = dataMaps.FirstOrDefault(a => a.target);
             var compositeName = userId + "_" + name;
             DarlMineReport bestReport = new DarlMineReport();
-            if (target != null) //supervised
+            if (target != null && form == LearningForm.supervised ) //supervised
             {
                 var TargetObj = await CreateNode(target, compositeName);
                 //add value, text and completed
@@ -460,6 +460,10 @@ namespace Darl.Thinkbase
                 CreateRecognitionObjects(TargetObj, model);
                 //save the ruleset
                 await _graph.Store(compositeName);
+            }
+            else if(form == LearningForm.unsupervised) //
+            {
+
             }
             return bestReport;
 

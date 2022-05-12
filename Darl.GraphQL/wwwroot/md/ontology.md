@@ -19,7 +19,7 @@ ThinkBase uses an annotated, expanded and expandable version of [Princeton's Wor
 
 Collectively we will call all the nodes in these hierarchies _concepts_ although WordNet calls them "cognitive synonyms".
 
-Our ontology also contains NLP information that enables us to map words to concepts, and goves a part of speech for each concept.
+Our ontology also contains NLP information that enables us to map words to concepts, and gives a part of speech for each concept.
 
 
 ## Lineages

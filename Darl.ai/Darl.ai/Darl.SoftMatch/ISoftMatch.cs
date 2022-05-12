@@ -2,7 +2,7 @@
 
 namespace Darl.SoftMatch
 {
-    interface ISoftMatch
+    public interface ISoftMatch
     {
         Dictionary<string, List<string>> properNouns { get; set; }
 

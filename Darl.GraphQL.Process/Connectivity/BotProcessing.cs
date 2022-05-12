@@ -18,6 +18,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
+using static Darl.Lineage.Bot.IBotProcessing;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
@@ -43,7 +44,7 @@ namespace Darl.GraphQL.Models.Connectivity
             _cache = cache;
         }
 
-        public async Task<DarlMineReport> Build(string userId, string name, string data, string patternPath, List<DataMap> dataMaps, LoadType ltype = LoadType.xml)
+        public async Task<DarlMineReport> Build(string userId, string name, string data, string patternPath, List<DataMap> dataMaps, LoadType ltype = LoadType.xml, LearningForm form = LearningForm.supervised)
         {
             return await _ghandler.Build(userId, name, data, patternPath, dataMaps, ltype);
         }

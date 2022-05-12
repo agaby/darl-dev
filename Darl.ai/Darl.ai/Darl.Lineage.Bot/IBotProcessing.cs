@@ -10,13 +10,13 @@ namespace Darl.Lineage.Bot
 {
     public interface IBotProcessing
     {
-        public enum LearningForm { supervised, unsupervised, association }
+        public enum LearningForm { supervised, unsupervised, association, unsupervised_cluster }
 
         Task<List<InteractTestResponse>> InteractKGAsync(string userId, string KnowledgeGraphName, string conversationId, DarlVar conversationData);
         Task<KnowledgeState> Discover(string userId, string KnowledgeGraphName, string subjectId);
         Task<KnowledgeState> Seek(KnowledgeState ks, string? targetId, List<string> paths, string completionLineage);
         Task<DarlMineReport> Learn(string userId, string graphName, string target, LearningForm form, string targetLineage, string valueLineage, int percentTrain, SetChoices sets);
-        Task<DarlMineReport> Build(string userId, string name, string data, string patternPath, List<DataMap> dataMaps, LoadType ltype = LoadType.xml);
+        Task<DarlMineReport> Build(string userId, string name, string data, string patternPath, List<DataMap> dataMaps, LoadType ltype = LoadType.xml, LearningForm form = LearningForm.supervised);
         Task<KnowledgeState?> GetInteractKnowledgeState(string id, bool external = false);
         IObservable<KnowledgeState> ObservableKStates();
     }

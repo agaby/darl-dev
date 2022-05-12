@@ -11,6 +11,7 @@
   - [ThinkBase architecture](thinkbase_architecture.md)
   - [Ontologies and lineages](ontology.md)
   - [Fuzzy logic and sets](fuzzy_sets.md)
+  - [Rule Hierarchies](rule_hierarchies.md)
   - [Uncertainty](uncertainty.md)
   - [Knowledge and ignorance](knowledge_ignorance.md)
   - [Time Representation](time_representation.md)
@@ -19,6 +20,7 @@
   - [Handling defaults](handling_defaults.md)
   - [Reporting with DARL](text_replacement.md)
   - [Machine learning KGs](machine_learn.md)
+  - [DarlVar, universal data](DarlVar.md)
 - The 2D User interface
   - [The DARL editor](darl_editor.md)
   - [Graphical editing](graphical_editing.md)
@@ -26,5 +28,5 @@
   - [Finding your API Key](Finding_your_API_key.md)
   - [The APi user interfaces](darl_dev.md)
   - [Accessing the GraphQL API](GraphQL.md)
-  - [DarlVar, universal data](DarlVar.md)
+  - [All the GraphQL Commands](schema.md)
   
