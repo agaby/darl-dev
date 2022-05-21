@@ -4,6 +4,8 @@
     <TargetFramework>net5.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <UserSecretsId>0b6672d2-74e3-4271-ab38-1bd9e394492c</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +19,7 @@
   <ItemGroup>
     <None Remove="Activity_display_rule.darl" />
     <None Remove="AppSettings.json" />
+    <None Remove="Cocomo II.rule" />
     <None Remove="CourseUnitsJson.json" />
     <None Remove="datafieldnames.json" />
     <None Remove="grateful-dead.xml" />
@@ -38,6 +41,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Activity_display_rule.darl" />
     <EmbeddedResource Include="AppSettings.json" />
+    <EmbeddedResource Include="Cocomo II.rule" />
     <EmbeddedResource Include="CourseUnitsJson.json" />
     <EmbeddedResource Include="datafieldnames.json" />
     <EmbeddedResource Include="grateful-dead.xml" />
@@ -60,12 +64,14 @@
     <PackageReference Include="CsvHelper" Version="27.2.1" />
     <PackageReference Include="GraphQL.Client" Version="4.0.2" />
     <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="4.0.2" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.40" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-    <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.2.8" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
-    <PackageReference Include="NJsonSchema" Version="10.6.10" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.42" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.15.1" />
+    <PackageReference Include="Moq" Version="4.18.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
+    <PackageReference Include="NJsonSchema" Version="10.7.0" />
     <PackageReference Include="QuickGraph.NETStandard" Version="3.8.0" />
   </ItemGroup>
 

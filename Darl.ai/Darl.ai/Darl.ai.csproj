@@ -39,14 +39,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GemBox.Document" Version="33.0.1317" />
+    <PackageReference Include="GemBox.Document" Version="35.0.1000" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.14" />
     <PackageReference Include="protobuf-net" Version="2.4.6" />
     <PackageReference Include="Standard.Licensing-5.0" Version="2.0.2" />
-    <PackageReference Include="SymSpell" Version="6.7.1" />
+    <PackageReference Include="SymSpell" Version="6.7.2" />
     <PackageReference Include="SyrianBallas.Ported.Chronic.Signed" Version="1.1.0" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>

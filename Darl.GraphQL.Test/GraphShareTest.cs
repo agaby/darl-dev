@@ -7,6 +7,7 @@ using Darl.Thinkbase.Meta;
 using DarlLanguage.Processing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -102,7 +103,8 @@ namespace Darl.GraphQL.Test
             _conn = new CosmosDBConnectivity(_config, clogger.Object);
             var trans = new Mock<IKGTranslation>();
             var lic = new Mock<ILicensing>();
-            _primitives = new BlobGraphPrimitives(blob, cache.Object, _conn, bgplogger.Object, lic.Object);
+            var lcache = new Mock<IMemoryCache>();
+            _primitives = new BlobGraphPrimitives(blob, cache.Object, _conn, bgplogger.Object, lic.Object, lcache.Object);
             var dataLoader = new DataLoader(_meta);
             _graph = new GraphProcessing(_primitives, glogger.Object, _meta, dataLoader);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);

@@ -207,19 +207,19 @@ $(async function () {
             await loadGraphs();
         });
 
-        $('#kgdemo-dropdown').on('change', async function () {
-            mdname = this.value;
-            //getGraphData
-            await loadGraphs();
-        });
     }
 
     $('#kg-create').click(async function () {
         mdname = $('#kg-input').val();
         try {
             var res = await createKG({ name: mdname });
-            await updateDropdown();
-            alert(mdname + " created");
+            if (res.createKGraph == false) {
+                alert("Couldn't create " + mdname + ". Do you need to uprade your account?");
+            }
+            else {
+                await updateDropdown();
+                alert(mdname + " created");
+            }
         }
         catch (err) {
             HandleError(err);

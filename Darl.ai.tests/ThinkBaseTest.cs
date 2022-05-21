@@ -4,10 +4,14 @@ using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlLanguage;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using ProtoBuf;
 using System;
 using System.Collections.Generic;
@@ -66,7 +70,8 @@ namespace Darl_standard_core.test
         private static readonly string completeLineage = "adjective:5500";
         private static readonly string answerLineage = "noun:01,4,05,21,19";
         private static readonly string rangeLineage = "noun:01,7,03";
-
+        private static readonly string appraisalLineage = "noun:01,0,2,00,26,4,0";
+        private static readonly string textLineage = "noun:01,4,04,02,07,01";
         private string id1;
         private string id2;
         private string id3;
@@ -774,6 +779,8 @@ namespace Darl_standard_core.test
             Assert.AreEqual(ks.data[index][0].type, returnedKS.data[index][0].type);
             Assert.AreEqual(ks.data[index][0].value, returnedKS.data[index][0].value);
         }
+
+
 
     }
 }

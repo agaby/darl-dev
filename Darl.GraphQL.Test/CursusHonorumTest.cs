@@ -3,14 +3,21 @@ using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
+using DarlCommon;
 using DarlLanguage.Processing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 
 
@@ -83,22 +90,9 @@ namespace Darl.GraphQL.Test
         [TestInitialize()]
         public void Initialize()
         {
-            var configuration = new Mock<IConfiguration>();
-
-            //            configuration.Setup(a => a[It.Is<string>(s => s == "darlDevAPiKey")]).Returns("7ecb39be-fb44-4c13-92df-68ec152a4edb");
-            configuration.Setup(a => a[It.Is<string>(s => s == "darlDevAPiKey")]).Returns("2495b08b-93c3-4498-85b7-f4bdd36b6f01");
-            //            configuration.Setup(a => a[It.Is<string>(s => s == "darlDevAPiKey")]).Returns("e438440e-9d90-46e8-87ed-080e19c43aed");
-            //configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("33db770b-29e9-46ae-8a19-c1947bd775d8");
-            //            configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("5ee43551-c05c-4cff-8582-c08f23f84c14");
-            configuration.Setup(a => a[It.Is<string>(s => s == "userId")]).Returns("a26560b3-7778-410b-a54b-b65da6a9649a");//andy@darl.ai account
-            //            configuration.Setup(a => a[It.Is<string>(s => s == "gremlinLocation")]).Returns("local");
-            configuration.Setup(a => a[It.Is<string>(s => s == "darlDevUrl")]).Returns("https://darl.dev/graphql/");
-            configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:BlobContainer")]).Returns("darldevgraphs");
-            configuration.Setup(a => a[It.Is<string>(s => s == "LOCALDATABASEPATH")]).Returns("localdb");
-            configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:GraphContainer")]).Returns("darldevgraphs");
-            configuration.Setup(a => a[It.Is<string>(s => s == "AppSettings:StorageConnectionString")]).Returns("DefaultEndpointsProtocol=https;AccountName=darlai;AccountKey=errnwefiVeXcDr0aKbHDxXjblOQhwFwHkeG4qR4caChkABnzp9MNeBBX0FP1jc4DnXPGztI67pbEBXDqA1dPCw==");
-            configuration.Setup(a => a[It.Is<string>(s => s == "licensing:darlMetaLicense")]).Returns("RwEAAB+LCAAAAAAAAApVkEtPwzAQhO+V+h984xCEyauUyrVoHqKOkjQlUVRxc4mhLnk6sUr49UQWCDh+s7Mzq0Uhf2F1z/B8BgDKxpbhdKB1QUWBoEI18D9aLujAmxpnJ3kNdBMEsgbGrWEB3VhZ9sq4B49RhuAfp9p0ZT80FROKJo5pxbAnwKYuxqsekASEw1Sl5G+LX1Fe4l62bSOGh+mU8obyKVnJKhT+S0Upf6vpIAXDkb93iR/LT+891+y83bsmLM6tvnBOZ/J6l5Ry8WQcD2PwrBVenmsb7ljEHHfJznMO22WXdHpXenlIuN4E8SKNDMs+biNikiVrLus1gr9d8xmCP9/7AhubQj1HAQAA");
-
+            _config = new ConfigurationBuilder()
+                .AddUserSecrets<CursusHonorumTest>()
+                .Build();
             var logger = new Mock<ILogger<GraphLocalStore>>();
             var blogger = new Mock<ILogger<BlobGraphConnectivity>>();
             var bgplogger = new Mock<ILogger<BlobGraphPrimitives>>();
@@ -106,7 +100,6 @@ namespace Darl.GraphQL.Test
             var ghlogger = new Mock<ILogger<GraphHandler>>();
             var lclogger = new Mock<ILogger<LocalConnectivity>>();
             var context = new Mock<IHttpContextAccessor>();
-            _config = configuration.Object;
             context.Setup(a => a.HttpContext.User.Identity.Name).Returns(_config["userId"]);
             var blob = new BlobGraphConnectivity(_config, blogger.Object);
             var cache = new Mock<IDistributedCache>();
@@ -115,7 +108,8 @@ namespace Darl.GraphQL.Test
             cache.Setup(a => a.GetAsync(It.IsAny<string>(), default)).Returns(Task.FromResult<byte[]>(null));
             var trans = new Mock<IKGTranslation>();
             var lic = new Mock<ILicensing>();
-            _primitives = new BlobGraphPrimitives(blob, cache.Object, _conn, bgplogger.Object, lic.Object);
+            var lcache = new Mock<IMemoryCache>();
+            _primitives = new BlobGraphPrimitives(blob, cache.Object, _conn, bgplogger.Object, lic.Object, lcache.Object);
             var dataLoader = new DataLoader(meta);
             _graph = new GraphProcessing(_primitives, glogger.Object, meta, dataLoader);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
@@ -308,6 +302,74 @@ namespace Darl.GraphQL.Test
             res = await _graphHandler.Discover(_config["userId"], graphName, subjectId, new List<string> { meta.CommonLineages["have"], followsLineage }, sb, new Common.FuzzyTime(new Common.DarlTime(-60, 0)));
             log = sb.ToString();            //Add conditions based on length of service
 
+        }
+        [TestMethod]
+        public async Task TestRuleFormConvert()
+        {
+            var glogger = new Mock<ILogger<GraphProcessing>>();
+            var blogger = new Mock<ILogger<BlobGraphConnectivity>>();
+            var bgplogger = new Mock<ILogger<BlobGraphPrimitives>>();
+            string answerLineage = "noun:01,4,05,21,19";
+            string appraisalLineage = "noun:01,0,2,00,26,4,0";
+            string textLineage = "noun:01,4,04,02,07,01";
+            var blob = new BlobGraphConnectivity(_config, blogger.Object);
+            var cache = new Mock<IDistributedCache>();
+            var lic = new Mock<ILicensing>();
+            var _metastruct = new MetaStructureHandler();
+            var connLogger = new Mock<ILogger<CosmosDBConnectivity>>();
+            var conv = new CosmosDBConnectivity(_config, connLogger.Object);
+            var lcache = new Mock<IMemoryCache>();
+            var _prim = new BlobGraphPrimitives(blob, cache.Object, conv, bgplogger.Object, lic.Object, lcache.Object);
+            var dataLoader = new DataLoader(_metastruct);
+            var graph = new GraphProcessing(_prim, glogger.Object, _metastruct, dataLoader);
+            var graphName = "Cocomo-II.graph";
+            var model = await graph.CreateNewGraph(_config["userId"], graphName);
+            var composite_name = _config["userId"] + "_" + graphName;
+            var jss = new JsonSerializerSettings { ContractResolver = new DefaultContractResolver(), Converters = new List<JsonConverter>() { new StringEnumConverter() } };
+            var source = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.GraphQL.Test.Cocomo II.rule"));
+            RuleForm rf = JsonConvert.DeserializeObject<RuleForm>(source.ReadToEnd(), jss);
+            var objs = new Dictionary<string, GraphObject>();
+            var inferredObjs = new Dictionary<string, GraphObject>();
+            foreach (var c in rf.format.InputFormatList)
+            {
+                var obj = await graph.CreateGraphObject(composite_name, new GraphObjectInput { name = c.Name, lineage = appraisalLineage }, OntologyAction.build);
+                objs.Add(c.Name, obj);
+                obj.properties = new List<GraphAttribute>();
+                obj.properties.Add(new GraphAttribute { type = ConvertFormType(c.InType), confidence = 1.0, name = "answer", lineage = answerLineage });
+                //add categories and numeric range stuff
+            }
+            foreach (var t in rf.language.LanguageList)
+            {
+                if (objs.ContainsKey(t.Name))
+                {
+                    var obj = objs[t.Name];
+                    obj.properties.Add(new GraphAttribute { type = GraphAttribute.DataType.textual, confidence = 1.0, name = "text", lineage = textLineage, value = t.Text });
+                }
+            }
+            foreach (var o in rf.format.OutputFormatList)
+            {
+                var obj = await graph.CreateGraphObject(composite_name, new GraphObjectInput { name = o.Name, lineage = appraisalLineage }, OntologyAction.build);
+                obj.properties = new List<GraphAttribute>();
+                inferredObjs.Add(o.Name, obj);
+                obj.properties.Add(new GraphAttribute { type = GraphAttribute.DataType.ruleset, confidence = 1.0, name = "completed", lineage = completeLineage });
+            }
+
+        }
+
+        private GraphAttribute.DataType ConvertFormType(InputFormat.InputType intype)
+        {
+            switch (intype)
+            {
+                case InputFormat.InputType.numeric:
+                    return GraphAttribute.DataType.numeric;
+                case InputFormat.InputType.textual:
+                    return GraphAttribute.DataType.textual;
+                case InputFormat.InputType.categorical:
+                    return GraphAttribute.DataType.categorical;
+                case InputFormat.InputType.temporal:
+                    return GraphAttribute.DataType.temporal;
+            }
+            return GraphAttribute.DataType.numeric;
         }
     }
 

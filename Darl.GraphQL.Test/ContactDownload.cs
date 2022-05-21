@@ -45,12 +45,12 @@ namespace Darl.GraphQL.Test
             _config = configuration.Object;
             var logger = new Mock<ILogger<GraphLocalStore>>();
             var botLogger = new Mock<ILogger<BotProcessing>>();
-            var connLogger = new Mock<ILogger<CosmosDBConnectivity>>();
             var blobLogger = new Mock<ILogger<BlobGraphConnectivity>>();
             var context = new Mock<IHttpContextAccessor>();
             var cache = new Mock<IDistributedCache>();
             context.Setup(a => a.HttpContext.User.Identity.Name).Returns(_config["userId"]);
             var licensing = new Mock<ILicensing>();
+            var connLogger = new Mock<ILogger<CosmosDBConnectivity>>();
             _conv = new CosmosDBConnectivity(_config, connLogger.Object);
 
         }

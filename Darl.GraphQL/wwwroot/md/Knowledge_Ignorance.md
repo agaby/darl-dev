@@ -5,8 +5,8 @@ Using Possibility theory, DARL can represent fuzzy numbers, fuzzy categorical va
 
 The GraphAttribute class and the internal class DarlVar are set up to handle varying degrees of unknowing->knowing
 
-|Type|
-|----|----|----|
+|Type|||
+|---|---|---|
 |1  |Datatype set|All that is known is the datatype|
 |2	|Categories enumerated; numeric ranges/sets defined	|We know the values the input may hold but not the actual values|
 |3	|More than one category set or a fuzzy numeric value	|The value is known within a range possibly with a density function|

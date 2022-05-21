@@ -98,6 +98,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         private static double nodaBoundingBoxDiagonal = 3.0;
         private static double nodaInitialOpacity = 0.6;
+        private int userCacheMinutes = 30;
 
 
         public KGTranslation(ILogger<KGTranslation> logger, IConfiguration config, IGraphProcessing graph, IMetaStructureHandler meta, IProducts prods, ICheckEmail checkEmail, ILicensing licensing, IMemoryCache localCache)
@@ -112,6 +113,7 @@ namespace Darl.GraphQL.Models.Connectivity
             _localCache = localCache;
             backofficeKG = _config["AppSettings:BackOfficeKG"];
             backofficeUser = _config["AppSettings:boaiuserid"];
+            userCacheMinutes = _config.GetValue<int>("AppSettings:userCacheMinutes",30);
             backofficeKGComp = backofficeUser + '_' + backofficeKG;
             GetObjectIds().Wait();
         }
@@ -620,7 +622,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 if (ks == null)
                     return null;
                 user = Convert(ks, personObjectId);
-                _localCache.Set<DarlUser>(apiKey, user, TimeSpan.FromMinutes(30));
+                _localCache.Set<DarlUser>(apiKey, user, TimeSpan.FromMinutes(userCacheMinutes));
                 return user;
             }
             catch (Exception ex)
@@ -637,7 +639,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (ks == null)
                 return null;
             user = Convert(ks, personObjectId);
-            _localCache.Set<DarlUser>(id, user, TimeSpan.FromMinutes(30));
+            _localCache.Set<DarlUser>(id, user, TimeSpan.FromMinutes(userCacheMinutes));
             return user;
         }
 
@@ -843,7 +845,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return await CreateUserAsync(new DarlUser { userId = user.userId, InvoiceName = user.InvoiceName, InvoiceEmail = user.InvoiceEmail, Created = DateTime.UtcNow, StripeCustomerId = customerId, APIKey = Guid.NewGuid().ToString(), accountState = DarlUser.AccountState.trial, productId = product == null ? string.Empty : product.id });
         }
 
-
         #endregion
 
         #region Licensing
@@ -978,7 +979,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             Layout(nodadoc);
             var res = JsonConvert.SerializeObject(nodadoc, new Newtonsoft.Json.Converters.StringEnumConverter());
-            _localCache.Set<string>($"{ userId}_{ graphName}", res, TimeSpan.FromMinutes(30));
+            _localCache.Set<string>($"{ userId}_{ graphName}", res, TimeSpan.FromMinutes(userCacheMinutes));
             return res;
         }
 
@@ -1531,6 +1532,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return string.Empty;
         }
+
 
 
 

@@ -5,6 +5,7 @@ using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -95,7 +96,8 @@ namespace Darl.GraphQL.Test
             var trans = new Mock<IKGTranslation>();
             cache.Setup(a => a.GetAsync(It.IsAny<string>(), default)).Returns(Task.FromResult<byte[]>(null));
             var lic = new Mock<ILicensing>();
-            _primitives = new BlobGraphPrimitives(blob, cache.Object, conn.Object, bgplogger.Object, lic.Object);
+            var lcache = new Mock<IMemoryCache>();
+            _primitives = new BlobGraphPrimitives(blob, cache.Object, conn.Object, bgplogger.Object, lic.Object, lcache.Object);
             var dataLoader = new DataLoader(meta.Object);
             _graph = new GraphProcessing(_primitives, glogger.Object, meta.Object, dataLoader);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);

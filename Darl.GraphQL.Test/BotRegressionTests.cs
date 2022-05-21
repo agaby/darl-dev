@@ -5,6 +5,7 @@ using Darl.Thinkbase;
 using DarlLanguage.Processing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -85,7 +86,8 @@ namespace Darl.GraphQL.Test
             var meta = new Mock<IMetaStructureHandler>();
             var trans = new Mock<IKGTranslation>();
             var lic = new Mock<ILicensing>();
-            var blob = new BlobGraphPrimitives(bc, cache.Object, conn.Object, bgplogger.Object, lic.Object);
+            var lcache = new Mock<IMemoryCache>();
+            var blob = new BlobGraphPrimitives(bc, cache.Object, conn.Object, bgplogger.Object, lic.Object, lcache.Object);
             var dataLoader = new DataLoader(meta.Object);
             _graph = new GraphProcessing(blob, glogger.Object, meta.Object, dataLoader);
             _graphStore = new GraphLocalStore(configuration.Object, logger.Object, context.Object, _graph);

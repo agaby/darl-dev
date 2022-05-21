@@ -4,6 +4,7 @@ using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using GraphQL;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using ProtoBuf;
 using System;
@@ -24,13 +25,13 @@ namespace Darl.GraphQL.Models.Connectivity
         private readonly IConnectivity _conn;
         private readonly ILogger _logger;
         private readonly ILicensing _license;
+        private readonly IMemoryCache _localCache;
 
         private readonly int modelLicenseDays = 1000;
+        private int kgCacheMinutes = 30;
 
 
 
-        private readonly ConcurrentDictionary<string, BlobGraphContent> buffer = new ConcurrentDictionary<string, BlobGraphContent>();
-        private readonly ConcurrentDictionary<string, DateTime> bufferLifetimes = new ConcurrentDictionary<string, DateTime>();
 
         private readonly Object lockObject = new object();
 
@@ -41,13 +42,15 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public static int maxDepth = 0;
 
-        public BlobGraphPrimitives(IBlobConnectivity blob, IDistributedCache cache, IConnectivity conn, ILogger<BlobGraphPrimitives> logger, ILicensing license)
+        public BlobGraphPrimitives(IBlobConnectivity blob, IDistributedCache cache, IConnectivity conn, ILogger<BlobGraphPrimitives> logger, ILicensing license, IMemoryCache localCache)
         {
             _blob = blob;
             _cache = cache;
             _conn = conn;
             _logger = logger;
             _license = license;
+            _localCache = localCache;
+            
         }
 
 
@@ -74,7 +77,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             if (await Load(compositeName) is BlobGraphContent cont)
             {
-                var go = new GraphObject { existence = graphObject.existence, externalId = graphObject.externalId, id = Guid.NewGuid().ToString(), inferred = false, lineage = graphObject.lineage, name = graphObject.name, _virtual = false, properties = ConvertAttributeInputList(graphObject.properties) };
+                var go = new GraphObject { existence = graphObject.existence, externalId = graphObject.externalId, id = Guid.NewGuid().ToString(), inferred = false, lineage = graphObject.lineage, name = graphObject.name, _virtual = false, properties = graphObject.properties != null ? ConvertAttributeInputList(graphObject.properties) : null };
                 cont.vertices.Add(go.id, go);
                 FlagChanges(compositeName);
                 return go;
@@ -387,20 +390,18 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<IGraphModel?> Load(string blobName)
         {
-            ClearBuffer();
-            if (buffer.ContainsKey(blobName))
+            if (_localCache.TryGetValue(blobName, out IGraphModel model))
             {
-                return buffer[blobName];
+                return model;
             }
             if (await _blob.Exists(blobName))
             {
                 try
                 {
                     var data = await _blob.Read(blobName);
-                    var model = DeserializeGraph(data);
+                    model = DeserializeGraph(data);
                     model.SanityCheck();
-                    buffer.TryAdd(blobName, model);
-                    bufferLifetimes.TryAdd(blobName, DateTime.UtcNow);
+                    _localCache.Set(blobName, model, TimeSpan.FromMinutes(kgCacheMinutes));
                     return model;
                 }
                 catch (Exception ex)
@@ -417,10 +418,9 @@ namespace Darl.GraphQL.Models.Connectivity
                     try
                     {
                         var data = await _blob.Read(sharedState.Item1);
-                        var model = DeserializeGraph(data);
+                        model = DeserializeGraph(data);
                         model.SanityCheck();
-                        buffer.TryAdd(blobName, model);
-                        bufferLifetimes.TryAdd(blobName, DateTime.UtcNow);
+                        _localCache.Set(blobName, model, TimeSpan.FromMinutes(kgCacheMinutes));
                         return model;
                     }
                     catch (Exception ex)
@@ -436,21 +436,6 @@ namespace Darl.GraphQL.Models.Connectivity
                 }*/
             }
             return null;
-        }
-
-        /// <summary>
-        /// Check for out of date models and remove
-        /// </summary>
-        private void ClearBuffer()
-        {
-            foreach(var item in bufferLifetimes.Keys)
-            {
-                if (bufferLifetimes[item] < DateTime.UtcNow - new TimeSpan(0, 30, 0))
-                {
-                    bufferLifetimes.TryRemove(item, out DateTime t);
-                    buffer.TryRemove(item, out BlobGraphContent c);
-                }
-            }
         }
 
         public static byte[] SerializeGraph(IGraphModel model)
@@ -514,7 +499,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 return true;
             }
-            buffer.Remove(compositeName, out BlobGraphContent c);
+            _localCache.Remove(compositeName);
             return await _blob.Delete(compositeName);
         }
 
@@ -790,10 +775,16 @@ namespace Darl.GraphQL.Models.Connectivity
             if (!String.IsNullOrEmpty(sharedState.Item1))
             {
                 modified.Remove(sharedState.Item1);
-                var model = buffer[compositeName];
-                byte[] data;
-                data = SerializeGraph(model);
-                await _blob.Write(sharedState.Item1, data);
+                if(_localCache.TryGetValue(compositeName, out IGraphModel model))
+                {
+                    byte[] data;
+                    data = SerializeGraph(model);
+                    await _blob.Write(sharedState.Item1, data);
+                }
+                else
+                {
+                    throw new ExecutionError("This KG was not found in the cache.");
+                }
             }
         }
 
@@ -1310,12 +1301,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             var sourceName = CreateCompositeName(userId, name);
             var destName = CreateCompositeName(userId, newName);
-            BlobGraphContent? source = null;
-            if (buffer.ContainsKey(sourceName))
-            {
-                source = buffer[sourceName];
-            }
-            else if (await _blob.Exists(sourceName))
+            if (!_localCache.TryGetValue(sourceName, out IGraphModel source) && await _blob.Exists(sourceName))
             {
                 var data = await _blob.Read(sourceName);
                 source = DeserializeGraph(data);
