@@ -875,7 +875,9 @@ namespace Darl.GraphQL.Models.Connectivity
                 return false;
             var prod = _prods.products.FirstOrDefault(a => a.id == user.productId);
             if (prod == null)
-                return false;
+            {
+                throw new ExecutionError($"You haven't subscribed yet.");
+            }
             var count = await _graph.GetKGraphCountAsync(userId);
             if (count >= prod.kgCount)
             {
