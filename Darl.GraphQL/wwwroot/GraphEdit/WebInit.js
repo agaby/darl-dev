@@ -207,6 +207,12 @@ $(async function () {
             await loadGraphs();
         });
 
+        $('#kgdemo-dropdown').on('change', async function () {
+            mdname = this.value;
+            //getGraphData
+            await loadGraphs();
+        });
+
     }
 
     $('#kg-create').click(async function () {
