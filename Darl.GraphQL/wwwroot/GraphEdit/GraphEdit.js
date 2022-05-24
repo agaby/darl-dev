@@ -622,7 +622,7 @@ async function loadGraphs() {
                             buttonDone: "Yes",
                             buttonFail: "No",
                             queue: false,
-                            message: "Are you sure you want to delete this node?"
+                            message: "Are you sure you want to delete this connection?"
                         }).done(async function (data) {
                             try {
                                 console.log(data);
@@ -1529,7 +1529,7 @@ async function loadGraphs() {
         });
 
 
-        $('#conv-newstate').click();
+        //$('#conv-newstate').click();
 
         //add message handlers
         $('.msg_send_btn').click(async function () {
@@ -2497,12 +2497,12 @@ async function UpdateAttributeValue(id, newAtt, type) {
                     },
                     empty: {
                         type: "checkbox",
-                        label: "Leave empty",
+                        label: "Leave unknown",
                         defaultValue: !(newAtt.value)
                     }
 
                 },
-                message: "<b>Set the attribute's value</b><br/>Lineage: " + newAtt.lineage,
+                message: "<b>Set the attribute's value</b><br/>Lineage: " + newAtt.lineage + "<br/>Data type: " + newAtt.type,
                 buttonDone: "Change",
                 buttonFail: "Cancel",
                 queue: false,
@@ -2543,11 +2543,11 @@ async function UpdateAttributeValue(id, newAtt, type) {
 
                     empty: {
                         type: "checkbox",
-                        label: "Leave empty",
+                        label: "Leave unknown",
                         defaultValue: !(newAtt.value)
                     }
                 },
-                message: "<b>Choose a category</b><br/>Lineage: " + newAtt.lineage,
+                message: "<b>Choose a category</b><br/>Lineage: " + newAtt.lineage + "<br/>Data type: " + newAtt.type,
                 buttonDone: "Change",
                 buttonFail: "Cancel",
                 queue: false,
@@ -2594,11 +2594,11 @@ async function UpdateAttributeValue(id, newAtt, type) {
                     },
                     empty: {
                         type: "checkbox",
-                        label: "Leave empty",
+                        label: "Leave unknown",
                         defaultValue: !(newAtt.value)
                     }
                 },
-                message: "<b>Set the attribute's text value</b><br/>Lineage: " + newAtt.lineage,
+                message: "<b>Set the attribute's text value</b><br/>Lineage: " + newAtt.lineage + "<br/>Data type: " + newAtt.type,
                 buttonDone: "Change",
                 buttonFail: "Cancel",
                 queue: false,
@@ -2627,12 +2627,12 @@ async function UpdateAttributeValue(id, newAtt, type) {
                     },
                     empty: {
                         type: "checkbox",
-                        label: "Leave empty",
+                        label: "Leave unknown",
                         defaultValue: !(newAtt.value)
                     }
 
                 },
-                message: "<b>Set the attribute's time value</b><br/>Lineage: " + newAtt.lineage,
+                message: "<b>Set the attribute's time value</b><br/>Lineage: " + newAtt.lineage + "<br/>Data type: " + newAtt.type,
                 buttonDone: "Change",
                 buttonFail: "Cancel",
                 queue: false,
@@ -2654,11 +2654,11 @@ async function UpdateAttributeValue(id, newAtt, type) {
                     },
                     empty: {
                         type: "checkbox",
-                        label: "Leave empty",
+                        label: "Leave unknown",
                         defaultValue: !(newAtt.value)
                     }
                 },
-                message: "<b>Set the attribute's text value</b><br/>Lineage: " + newAtt.lineage,
+                message: "<b>Set the attribute's text value</b><br/>Lineage: " + newAtt.lineage + "<br/>Data type: " + newAtt.type,
                 buttonDone: "Change",
                 buttonFail: "Cancel",
                 queue: false,
@@ -2690,7 +2690,7 @@ async function UpdateAttributeValue(id, newAtt, type) {
                         defaultValue: def
                     }
                 },
-                message: "<b>Set the attribute's DARL code</b><br/>Lineage: " + newAtt.lineage,
+                message: "<b>Set the attribute's DARL code</b><br/>Lineage: " + newAtt.lineage + "<br/>Data type: " + newAtt.type,
                 buttonDone: "Change",
                 buttonFail: "Cancel",
                 queue: false,

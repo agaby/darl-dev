@@ -304,7 +304,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 node.existence = go.existence;
                 changed = true;
             }
-            if (go.lineage != null) //allow change of lineage?
+            if (!string.IsNullOrEmpty(go.lineage)) //allow change of lineage?
             {
                 if (node.lineage != go.lineage)
                 {
@@ -312,7 +312,7 @@ namespace Darl.GraphQL.Models.Connectivity
                     changed = true;
                 }
             }
-            if (go.name != null)
+            if (!string.IsNullOrEmpty(go.name))
             {
                 if (node.name != go.name)
                 {
@@ -324,16 +324,22 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 foreach (var a in go.properties)
                 {
-                    if (node.properties != null)
+                    if (node.properties == null)
                     {
-                        var found = node.properties.Where(b => b.lineage == a.lineage).FirstOrDefault();
-                        if (found != null)
-                        {
-                            node.properties.Remove(found);
-                        }
-                        node.properties.Add(ConvertAttributeInput(a));
+                        node.properties = new List<GraphAttribute>();
                     }
+                    var found = node.properties.Where(b => b.lineage == a.lineage).FirstOrDefault();
+                    if (found != null)
+                    {
+                        node.properties.Remove(found);
+                    }
+                    node.properties.Add(ConvertAttributeInput(a));
                 }
+            }
+            else if (go.properties != null && !go.properties.Any() )
+            {
+                if(node.properties != null)
+                    node.properties.Clear();
             }
             if (changed)
             {
@@ -1580,7 +1586,16 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public static GraphAttribute ConvertAttributeInput(GraphAttributeInput a)
         {
-            return new GraphAttribute { id = Guid.NewGuid().ToString(), confidence = a.confidence ?? 1.0, inferred = a.inferred ?? false, value = a.value, existence = a.existence, name = a.name, type = a.type, lineage = a.lineage };
+            List<GraphAttribute>? properties = null;
+            if (a.properties != null)
+            {
+                properties = new List<GraphAttribute>();
+                foreach (var property in a.properties) 
+                {
+                    properties.Add(ConvertAttributeInput(property));
+                }
+            }
+            return new GraphAttribute { id = Guid.NewGuid().ToString(), confidence = a.confidence ?? 1.0, inferred = a.inferred ?? false, value = a.value, existence = a.existence, name = a.name, type = a.type, lineage = a.lineage, properties = properties };
         }
 
         public static List<GraphAttributeInput> ConvertAttributeInputList(List<GraphAttribute> list)

@@ -275,6 +275,9 @@ $(async function () {
         }).done(async function () {
             try {
                 await deletekg({ name: mdname });
+                realcy.destroy();
+                virtualcy.destroy();
+                recognitioncy.destroy();
                 await updateDropdown();
             }
             catch (err) {
