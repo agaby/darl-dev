@@ -98,6 +98,8 @@ namespace Darl.GraphQL.Models.Connectivity
 
         private static double nodaBoundingBoxDiagonal = 3.0;
         private static double nodaInitialOpacity = 0.6;
+        private static NodaPosition nodaOffset = new NodaPosition(-1.6, 0.0, 0.0);
+        private int nodaCacheMinutes = 30;
         private int userCacheMinutes = 30;
 
 
@@ -114,6 +116,7 @@ namespace Darl.GraphQL.Models.Connectivity
             backofficeKG = _config["AppSettings:BackOfficeKG"];
             backofficeUser = _config["AppSettings:boaiuserid"];
             userCacheMinutes = _config.GetValue<int>("AppSettings:userCacheMinutes",30);
+            nodaCacheMinutes = _config.GetValue<int>("AppSettings:nodaCacheMinutes", 30);
             backofficeKGComp = backofficeUser + '_' + backofficeKG;
             GetObjectIds().Wait();
         }
@@ -960,7 +963,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<string> NodaView(string userId, string graphName)
         {
-            if (_localCache.TryGetValue($"{userId}_{graphName}", out string view))
+            if (_localCache.TryGetValue($"{userId}_{graphName}_noda_view", out string view))
                 return view;
             var model = await _graph.GetModel(userId, graphName);
             if (model == null)
@@ -981,7 +984,7 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             Layout(nodadoc);
             var res = JsonConvert.SerializeObject(nodadoc, new Newtonsoft.Json.Converters.StringEnumConverter());
-            _localCache.Set<string>($"{ userId}_{ graphName}", res, TimeSpan.FromMinutes(userCacheMinutes));
+            _localCache.Set<string>($"{ userId}_{ graphName}_noda_view", res, TimeSpan.FromMinutes(nodaCacheMinutes));
             return res;
         }
 
@@ -1043,6 +1046,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 foreach (var n in nodadoc.GetNodes())
                 {
                     n.position *= scale;
+                    n.position += nodaOffset;
                 }
             }
         }
