@@ -98,7 +98,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         private static double nodaBoundingBoxDiagonal = 3.0;
         private static double nodaInitialOpacity = 0.6;
-        private static NodaPosition nodaOffset = new NodaPosition(-1.6, 0.0, 0.0);
+        private static NodaPosition nodaOffset = new NodaPosition(-1.6, 0.0, 0.1);
         private int nodaCacheMinutes = 30;
         private int userCacheMinutes = 30;
 

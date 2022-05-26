@@ -47,6 +47,7 @@ async function updateDropdown() {
 
 async function loadGraphs() {
     try {
+        currentStateId = uuidv4();
         $('#real-header').removeClass('d-none');
         var loading = document.getElementById('loading');
         loading.classList.remove('loaded');
