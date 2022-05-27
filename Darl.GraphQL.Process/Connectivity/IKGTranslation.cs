@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Models.Models;
+using Darl.GraphQL.Models.Models.Noda;
 using Darl.Lineage;
 using Darl.Thinkbase;
 using DarlCommon;
@@ -66,7 +67,7 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<string> CreatePushSubscription(string userId, string pushEndpoint, string pushP256DH, string pushAuth, string? ipAddress, string? longitude, string? latitude);
         Task<List<PushSub>> GetPushSubs();
         Task<byte[]> RenderRSS(string scheme);
-        Task<string> NodaView(string userId, string graphName);
+        Task<string> NodaView(string userId, string graphName, NodaPosition graphOffset, double nodaBoundingBoxDiagonal = 3.0);
         Task<string> CreateNewsItem(string title, string content);
     }
 }

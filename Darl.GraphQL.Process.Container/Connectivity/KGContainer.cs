@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Models.Models;
+using Darl.GraphQL.Models.Models.Noda;
 using Darl.Lineage;
 using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
@@ -386,6 +387,11 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
         public Task<string> CreateNewsItem(string title, string content)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> NodaView(string userId, string graphName, NodaPosition graphOffset, double nodaBoundingBoxDiagonal = 3)
         {
             throw new NotImplementedException();
         }

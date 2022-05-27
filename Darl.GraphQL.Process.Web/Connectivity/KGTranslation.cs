@@ -96,9 +96,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private static readonly string newsItemSentLineage = "verb:044,90,00"; //send
         private static readonly string newsLetterNameLineage = "noun:01,3,14,01,06";
 
-        private static double nodaBoundingBoxDiagonal = 3.0;
         private static double nodaInitialOpacity = 0.6;
-        private static NodaPosition nodaOffset = new NodaPosition(-1.6, 0.0, 0.1);
         private int nodaCacheMinutes = 30;
         private int userCacheMinutes = 30;
 
@@ -957,11 +955,11 @@ namespace Darl.GraphQL.Models.Connectivity
                 var l = new NodaLink { title = tLink.name, uuid = k, fromNode = new NodaNodeId { Uuid = tLink.startId }, toNode = new NodaNodeId { Uuid = tLink.endId }, properties = Convert(tLink.properties ?? new List<GraphAttribute>()), tone = new NodaTone { r = 0.09019608, g = 0.09019608, b = 0.09019608, a = 1.0 } };
                 nodadoc.links.Add(l);
             }
-            Layout(nodadoc);
+            Layout(nodadoc, 3, new NodaPosition());
             return JsonConvert.SerializeObject(nodadoc, new Newtonsoft.Json.Converters.StringEnumConverter());
         }
 
-        public async Task<string> NodaView(string userId, string graphName)
+        public async Task<string> NodaView(string userId, string graphName,  NodaPosition? graphOffset, double nodaBoundingBoxDiagonal = 3.0)
         {
             if (_localCache.TryGetValue($"{userId}_{graphName}_noda_view", out string view))
                 return view;
@@ -982,7 +980,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 var l = new NodaViewLinkProps { title = tLink.name ?? "", uuid = k, fromUuid = tLink.startId, toUuid = tLink.endId, color = "000000", selected = false, shape = NodaViewLinkProps.NodaViewLinkShape.Solid, size = 1 };
                 nodadoc.links.Add(l);
             }
-            Layout(nodadoc);
+            Layout(nodadoc, nodaBoundingBoxDiagonal, graphOffset ?? new NodaPosition(-1.3,0.0,0.1));
             var res = JsonConvert.SerializeObject(nodadoc, new Newtonsoft.Json.Converters.StringEnumConverter());
             _localCache.Set<string>($"{ userId}_{ graphName}_noda_view", res, TimeSpan.FromMinutes(nodaCacheMinutes));
             return res;
@@ -1029,7 +1027,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return colourMap;
         }
 
-        private void Layout(ILayoutable nodadoc)
+        private void Layout(ILayoutable nodadoc, double nodaBoundingBoxDiagonal, NodaPosition nodaOffset)
         {
             //create the ancillary dictionaries
             nodadoc.Init();

@@ -1,5 +1,7 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.GraphQL.Models.Models.Noda;
 using Darl.GraphQL.Models.Schemata;
+using Darl.GraphQL.Models.Schemata.Noda;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
@@ -783,13 +785,17 @@ namespace Darl.GraphQL.Web.Models.Schemata
 
             FieldAsync<StringGraphType>("nodaView", "Obtain the data to display a graph within Noda",
             arguments: new QueryArguments(
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge graph to display" }
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge graph to display" },
+                new QueryArgument<FloatGraphType> { Name = "boundingDiagonal", Description = "The size in display units of the laid-out network" },
+                new QueryArgument<NodaPositionType> { Name = "offset", Description = "The offset of the centre of the network relative to the window" }
                 ),
             resolve: async context =>
             {
                 var graphName = context.GetArgument<string>("graphName");
+                var boundingDiagonal = context.GetArgument<double>("boundingDiagonal");
+                var offset = context.GetArgument<NodaPosition>("offset");
                 var userId = trans.GetCurrentUserId(context.UserContext);
-                return await trans.NodaView(userId, graphName);
+                return await trans.NodaView(userId, graphName, offset, boundingDiagonal);
             });
 
             FieldAsync<StringGraphType>("getExportGraphUrl", "get a link to Export a graph in native format",
