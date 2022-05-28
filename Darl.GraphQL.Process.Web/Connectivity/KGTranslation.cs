@@ -1041,6 +1041,8 @@ namespace Darl.GraphQL.Models.Connectivity
                 var diagonal = bb.topRightBack - bb.bottomLeftFront;
                 var length = diagonal.Magnitude();
                 var scale = nodaBoundingBoxDiagonal / length; //fit into a diagonal bounding box
+                var lowest = bb.bottomLeftFront.z * scale;
+                nodaOffset.z += lowest; // network raised to be positive Z values.
                 foreach (var n in nodadoc.GetNodes())
                 {
                     n.position *= scale;
