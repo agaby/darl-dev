@@ -1042,7 +1042,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 var length = diagonal.Magnitude();
                 var scale = nodaBoundingBoxDiagonal / length; //fit into a diagonal bounding box
                 var lowest = bb.bottomLeftFront.y * scale;
-                nodaOffset.y += lowest; // network raised to be positive Y values. Unity has Y axis as up/down! Fuckers.
+                nodaOffset.y -= lowest; // network raised to be positive Y values. Unity has Y axis as up/down! Fuckers.
                 foreach (var n in nodadoc.GetNodes())
                 {
                     n.position *= scale;
