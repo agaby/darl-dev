@@ -786,7 +786,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
             FieldAsync<StringGraphType>("nodaView", "Obtain the data to display a graph within Noda",
             arguments: new QueryArguments(
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge graph to display" },
-                new QueryArgument<FloatGraphType> { Name = "boundingDiagonal", Description = "The size in display units of the laid-out network" },
+                new QueryArgument<FloatGraphType> { Name = "boundingDiagonal", Description = "The diagonal size in display units of the laid-out network", DefaultValue = 3.0 },
                 new QueryArgument<NodaPositionInputType> { Name = "offset", Description = "The offset of the centre of the network relative to the window" }
                 ),
             resolve: async context =>

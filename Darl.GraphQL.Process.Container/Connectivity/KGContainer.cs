@@ -391,7 +391,7 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public Task<string> NodaView(string userId, string graphName, NodaPosition graphOffset, double nodaBoundingBoxDiagonal = 3)
+        public Task<string> NodaView(string userId, string graphName, NodaPosition? graphOffset, double? nodaBoundingBoxDiagonal = 3)
         {
             throw new NotImplementedException();
         }

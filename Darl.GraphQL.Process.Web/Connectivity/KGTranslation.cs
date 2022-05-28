@@ -959,7 +959,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return JsonConvert.SerializeObject(nodadoc, new Newtonsoft.Json.Converters.StringEnumConverter());
         }
 
-        public async Task<string> NodaView(string userId, string graphName,  NodaPosition? graphOffset, double nodaBoundingBoxDiagonal = 3.0)
+        public async Task<string> NodaView(string userId, string graphName,  NodaPosition? graphOffset, double? nodaBoundingBoxDiagonal = 3.0)
         {
             if (_localCache.TryGetValue($"{userId}_{graphName}_noda_view", out string view))
                 return view;
@@ -980,7 +980,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 var l = new NodaViewLinkProps { title = tLink.name ?? "", uuid = k, fromUuid = tLink.startId, toUuid = tLink.endId, color = "000000", selected = false, shape = NodaViewLinkProps.NodaViewLinkShape.Solid, size = 1 };
                 nodadoc.links.Add(l);
             }
-            Layout(nodadoc, nodaBoundingBoxDiagonal, graphOffset ?? new NodaPosition(-1.3,0.0,0.1));
+            Layout(nodadoc, nodaBoundingBoxDiagonal ?? 3.0, graphOffset ?? new NodaPosition(-1.3,0.0,0.1));
             var res = JsonConvert.SerializeObject(nodadoc, new Newtonsoft.Json.Converters.StringEnumConverter());
             _localCache.Set<string>($"{ userId}_{ graphName}_noda_view", res, TimeSpan.FromMinutes(nodaCacheMinutes));
             return res;
