@@ -787,7 +787,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
             arguments: new QueryArguments(
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge graph to display" },
                 new QueryArgument<FloatGraphType> { Name = "boundingDiagonal", Description = "The size in display units of the laid-out network" },
-                new QueryArgument<NodaPositionType> { Name = "offset", Description = "The offset of the centre of the network relative to the window" }
+                new QueryArgument<NodaPositionInputType> { Name = "offset", Description = "The offset of the centre of the network relative to the window" }
                 ),
             resolve: async context =>
             {
