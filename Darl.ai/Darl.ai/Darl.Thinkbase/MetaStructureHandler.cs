@@ -4,6 +4,7 @@ using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlLanguage.Processing;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -52,7 +53,7 @@ namespace Darl.Thinkbase
             LineageLibrary.lineages["verb:021"]//have
         };
 
-        public Dictionary<string, string> CommonLineages { get; } = new Dictionary<string, string>();
+        public ConcurrentDictionary<string, string> CommonLineages { get; } = new ConcurrentDictionary<string, string>();
 
         /// <summary>
         /// preload DarlMetaRuntime with these lineages to include the root set.
@@ -64,15 +65,15 @@ namespace Darl.Thinkbase
             //assumes typewords don't clash
             foreach (var d in defaultNodeLineages)
             {
-                CommonLineages.Add(d.typeWord, d.lineage);
+                CommonLineages.TryAdd(d.typeWord, d.lineage);
             }
             foreach (var d in defaultAttLineages)
             {
-                CommonLineages.Add(d.typeWord, d.lineage);
+                CommonLineages.TryAdd(d.typeWord, d.lineage);
             }
             foreach (var d in defaultConnLineages)
             {
-                CommonLineages.Add(d.typeWord, d.lineage);
+                CommonLineages.TryAdd(d.typeWord, d.lineage);
             }
             foreach (var c in CommonLineages.Keys)
             {

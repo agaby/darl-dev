@@ -46,7 +46,7 @@ namespace Darl.Thinkbase.Meta
                 {
                     if (!str.CommonLineages.ContainsKey(name))
                     {
-                        str.CommonLineages.Add(name, Value);
+                        str.CommonLineages.TryAdd(name, Value);
                     }
                 }
             }

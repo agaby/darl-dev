@@ -2,6 +2,7 @@
 using Darl.Lineage.Bot;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Darl.Thinkbase
@@ -11,7 +12,7 @@ namespace Darl.Thinkbase
         List<LineageRecord> DefaultNodeLineages { get; }
         List<LineageRecord> DefaultAttLineages { get; }
         List<LineageRecord> DefaultConnLineages { get; }
-        Dictionary<string, string> CommonLineages { get; }
+        ConcurrentDictionary<string, string> CommonLineages { get; }
         Dictionary<string, LineageDefinitionNode> PreloadLineages { get; }
 
         (DarlVar, InteractTestResponse) AggregateChildren(GraphObject go, IGraphModel model, string ConnectionLineage);
