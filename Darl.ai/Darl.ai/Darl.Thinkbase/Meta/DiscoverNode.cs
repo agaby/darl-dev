@@ -31,7 +31,7 @@ namespace Darl.Thinkbase.Meta
             return Task.FromResult<object>(res);
         }
 
-        public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlMetaNode currentOutput, ConstantContext context, IGraphModel model, GraphObject currentNode)
+        public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlMetaNode? currentOutput, ConstantContext context, IGraphModel model, GraphObject currentNode)
         {
             foreach (var l in lineages)
             {

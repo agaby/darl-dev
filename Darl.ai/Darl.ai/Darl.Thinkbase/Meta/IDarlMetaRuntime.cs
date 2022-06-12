@@ -9,7 +9,7 @@ namespace Darl.Thinkbase.Meta
     {
         bool licensed { get; }
 
-        SalienceRecord CalculateKGSaliences(List<SalienceRecord> saliences, KnowledgeState ks, ParseTree tree);
+        HashSet<SalienceRecord> CalculateKGSaliences(HashSet<SalienceRecord> saliences, KnowledgeState ks, ParseTree tree);
         Dictionary<string, double> CalculateSaliences(List<DarlResult> currentState, ParseTree tree);
         ParseTree CreateTree(string source, GraphObject node, IGraphModel model);
         ParseTree CreateTreeEdit(string source);

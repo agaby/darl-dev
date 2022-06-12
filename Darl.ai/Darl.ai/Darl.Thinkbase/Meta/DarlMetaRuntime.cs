@@ -112,9 +112,9 @@ namespace Darl.Thinkbase.Meta
             return (tree.Root.AstNode as MetaRootNode).CalculateSaliences(currentState);
         }
 
-        public SalienceRecord CalculateKGSaliences(List<SalienceRecord> saliences, KnowledgeState ks, ParseTree tree)
+        public HashSet<SalienceRecord> CalculateKGSaliences(HashSet<SalienceRecord> saliences, KnowledgeState ks, ParseTree tree)
         {
-            return (tree.Root.AstNode as MetaRootNode).CalculateKGSaliences(saliences, ks);
+            return (tree.Root.AstNode as MetaRootNode).CalculateKGSaliences(grammar, saliences, ks, grammar.currentNode);
         }
 
 

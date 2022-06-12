@@ -47,6 +47,15 @@ namespace Darl.Thinkbase
             return string.Empty;
         }
 
+        public string Name(IGraphModel model)
+        {
+            if (this is GraphObject)
+                return (this as GraphObject).name;
+            if (this is KnowledgeRecord)
+                return (this as KnowledgeRecord).DeReference(model, null).Item1.name;
+            return string.Empty;
+        }
+
         /// <summary>
         /// 
         /// </summary>

@@ -610,6 +610,17 @@ async function loadGraphs() {
                             HandleError(err);
                         }
                     }
+                },
+                {
+                    content: '<span class="fa fa-code fa-2x"></span>',
+                    select: async function (ele) {
+                        console.log('code');
+                        if (ele.hasClass("eh-handle")) {
+                            ele = ele.data("mainNode");
+                        }
+                        var id = ele.id();
+                        await EditRealCode(id);
+                    }
                 }
             ]
         });
@@ -1112,7 +1123,7 @@ async function loadGraphs() {
                     const virt = virtualcy.$(ref);
                     virt.select();
                 }
-                else {
+                else if (node.data('lineage')) {
                     const ref = '#' + node.data('lineage').replace(/,/g, '-').replace(/:/g, '-');
                     const virt = virtualcy.$(ref);
                     virt.select();
@@ -1425,6 +1436,9 @@ async function loadGraphs() {
         });
 
         $('#rec-settings').click(function () {
+            var initText = "";
+            if (initialTexts[mdname])
+                initText = initialTexts[mdname];
             $.MessageBox({
                 input: {
 
@@ -1434,12 +1448,23 @@ async function loadGraphs() {
                         options: ["lineage", "label"],
                         defaultValue: recLabels
                     },
+                    initialText: {
+                        type: "text",
+                        label: "Set the initial text shown in the conversation",
+                        defaultValue: initText
+                    }
                 },
                 message: "Settings",
                 queue: false,
                 buttonDone: "Save",
                 buttonFail: "Cancel",
             }).done(async function (data) {
+                try {
+                    await updatekg({ name: mdname, update: { initialText: data.initialText } });
+                }
+                catch (err) {
+                    HandleError(err);
+                }
                 window.localStorage.setItem(recognitionStorageName, JSON.stringify(data));
                 if (recLabels !== data.recLabels) {
                     //redraw recognition graph.
@@ -1659,6 +1684,17 @@ async function LoadVirtualGraph() {
                             HandleError(err);
                         }
                     }
+                },
+                {
+                    content: '<span class="fa fa-code fa-2x"></span>',
+                    select: async function (ele) {
+                        console.log('code');
+                        if (ele.hasClass("eh-handle")) {
+                            ele = ele.data("mainNode");
+                        }
+                        var id = ele.id();
+                        await EditVirtualCode(id);
+                    }
                 }
             ]
         });
@@ -1809,7 +1845,7 @@ async function LoadRecGraph() {
                     }
                 },
                 {
-                    content: '<span class="fa fa-tasks fa-2x"></span>',
+                    content: '<span class="fa fa-code fa-2x"></span>',
                     select: async function (ele) {
                         if (ele.hasClass("eh-handle")) {
                             ele = ele.data("mainNode");
@@ -2061,7 +2097,6 @@ async function CreateNewAttribute(id, type) {
                     "TEMPORAL": "temporal",
                     "DURATION": "duration",
                     "MARKDOWN": "markdown",
-                    "RULESET": "ruleset"
                 }
             },
             sep_caption: {
@@ -2233,10 +2268,12 @@ async function EditRealAttributes(id) {
                 var values = {};
                 var atts = {};
                 $.each(obj.getGraphObjectById.properties, function (i, item) {
-                    att[item.lineage] = item.name;
-                    types[item.lineage] = item.type;
-                    values[item.lineage] = item.value;
-                    atts[item.lineage] = item;
+                    if (item.name !== "display" && item.name !== "completed"  && item.name !== "complete") {
+                        att[item.lineage] = item.name;
+                        types[item.lineage] = item.type;
+                        values[item.lineage] = item.value;
+                        atts[item.lineage] = item;
+                    }
                 });
                 //select existing or add message box
                 //make list of properties by name
@@ -2293,6 +2330,121 @@ async function EditRealAttributes(id) {
     }
 }
 
+async function EditRealCode(id) {
+    try {
+        var obj = await realobjectdata({ model: mdname, id: id });
+    }
+    catch (err) {
+        HandleError(err);
+        return;
+    }
+    if (obj) {
+        var def;
+        var newAtt = { value: "", lineage: completedLineage, type: "RULESET", name: "completed" };
+        if (obj.getGraphObjectById.properties && obj.getGraphObjectById.properties.some(e => e.name === "display" || e.name === "completed" || e.name === "complete")) {
+            //look for "display"or "completed" attributes. If present open
+            var newAtt = obj.getGraphObjectById.properties.find(e => e.name === "display" || e.name === "completed" || e.name === "complete");
+            def = newAtt.value;
+        }
+        else {
+            try {
+                var alt = await defaultRule({ name: mdname, id: id, lineage: newAtt.lineage });
+                def = alt.getSuggestedRuleset;
+            }
+            catch (err) {
+                HandleError(err);
+                return;
+            }
+        }
+        $.MessageBox({
+            input: {
+                val: {
+                    type: "ruleset",
+                    defaultValue: def
+                }
+            },
+            message: "<b>Set the node's DARL code</b><br/>Lineage: " + newAtt.lineage + "<br/>Data type: " + newAtt.type,
+            buttonDone: "Change",
+            buttonFail: "Cancel",
+            queue: false,
+            filterDone: function (data) {
+                if (data.val === "") return "Give a value.";
+            }
+        }).done(function (valdata) {
+            if (Array.isArray(valdata)) {
+                if (newAtt.value !== valdata[0]) {
+                    newAtt.value = valdata[0];
+                    Upsert(id, newAtt, "real");
+                }
+            }
+            else {
+                if (newAtt.value !== valdata.val) {
+                    newAtt.value = valdata.val;
+                    Upsert(id, newAtt, "real");
+                }
+            }
+        });
+    }
+    
+}
+
+
+async function EditVirtualCode(id) {
+    try {
+        var obj = await virtualobjectdata({ model: mdname, lineage: ConvertVirtualID(id) });
+        if (obj) {
+            var def;
+            var newAtt = { value: "", lineage: completedLineage, type: "RULESET", name: "completed" };
+            if (obj.getVirtualObjectByLineage.properties && obj.getVirtualObjectByLineage.properties.some(e => e.name === "display" || e.name === "completed" || e.name === "complete")) {
+                //look for "display"or "completed" attributes. If present open
+                var newAtt = obj.getVirtualObjectByLineage.properties.find(e => e.name === "display" || e.name === "completed" || e.name === "complete");
+                def = newAtt.value;
+            }
+            else {
+                try {
+                    var alt = await defaultRule({ name: mdname, id: id, lineage: newAtt.lineage });
+                    def = alt.getSuggestedRuleset;
+                }
+                catch (err) {
+                    HandleError(err);
+                    return;
+                }
+            }
+            $.MessageBox({
+                input: {
+                    val: {
+                        type: "ruleset",
+                        defaultValue: def
+                    }
+                },
+                message: "<b>Set the node's DARL code</b><br/>Lineage: " + newAtt.lineage + "<br/>Data type: " + newAtt.type,
+                buttonDone: "Change",
+                buttonFail: "Cancel",
+                queue: false,
+                filterDone: function (data) {
+                    if (data.val === "") return "Give a value.";
+                }
+            }).done(function (valdata) {
+                if (Array.isArray(valdata)) {
+                    if (newAtt.value !== valdata[0]) {
+                        newAtt.value = valdata[0];
+                        Upsert(id, newAtt, "virtual");
+                    }
+                }
+                else {
+                    if (newAtt.value !== valdata.val) {
+                        newAtt.value = valdata.val;
+                        Upsert(id, newAtt, "virtual");
+                    }
+                }
+            });
+        }
+    }
+    catch (err) {
+        HandleError(err);
+    }
+}
+
 async function EditRecognitionAttributes(id) {
     try {
         var obj = await recognitionobjectdata({ model: mdname, id: id });
@@ -2301,22 +2453,53 @@ async function EditRecognitionAttributes(id) {
                 const rule = obj.getRecognitionObjectById.properties.find(e => e.lineage === recognizedLineage);
                 if (rule) {
                     rule.type = "RULESET";
-                    await UpdateAttributeValue(id, rule, "recognition");
+                    await EditRecognitionCode(id, rule);
                 }
                 else {
                     const newAtt = { value: "", lineage: recognizedLineage, type: "RULESET" };
-                    await UpdateAttributeValue(id, newAtt, "recognition");
+                    await EditRecognitionCode(id, newAtt);
                 }
             }
             else {
                 const newAtt = { value: "", lineage: recognizedLineage, type: "RULESET" };
-                await UpdateAttributeValue(id, newAtt, "recognition");
+                await EditRecognitionCode(id, newAtt);
             }
         }
     }
     catch (err) {
         HandleError(err);
     }
+}
+
+async function EditRecognitionCode(id, newAtt) {
+    $.MessageBox({
+        input: {
+            val: {
+                type: "ruleset",
+                defaultValue: newAtt.value
+            }
+        },
+        message: "<b>Set the node's DARL code</b><br/>Lineage: " + newAtt.lineage + "<br/>Data type: " + newAtt.type,
+        buttonDone: "Change",
+        buttonFail: "Cancel",
+        queue: false,
+        filterDone: function (data) {
+            if (data.val === "") return "Give a value.";
+        }
+    }).done(function (valdata) {
+        if (Array.isArray(valdata)) {
+            if (newAtt.value !== valdata[0]) {
+                newAtt.value = valdata[0];
+                Upsert(id, newAtt, "recognition");
+            }
+        }
+        else {
+            if (newAtt.value !== valdata.val) {
+                newAtt.value = valdata.val;
+                Upsert(id, newAtt, "recognition");
+            }
+        }
+    });
 }
 
 async function EditRecognitionMarkDown(id) {
@@ -2346,16 +2529,18 @@ async function EditRecognitionMarkDown(id) {
 
 async function EditVirtualAttributes(id) {
     try {
-        var obj = await virtualobjectdata({ model: mdname, lineage: id });
+        var obj = await virtualobjectdata({ model: mdname, lineage: ConvertVirtualID(id) });
         if (obj) {
             if (obj.getVirtualObjectByLineage.properties) {
                 var att = {};
                 var types = {};
                 var values = {};
                 $.each(obj.getVirtualObjectByLineage.properties, function (i, item) {
-                    att[item.lineage] = item.name;
-                    types[item.lineage] = item.type;
-                    values[item.lineage] = item.value;
+                    if (item.name !== "display" && item.name !== "completed" && item.name !== "complete") {
+                        att[item.lineage] = item.name;
+                        types[item.lineage] = item.type;
+                        values[item.lineage] = item.value;
+                    }
                 });
                 //select existing or add message box
                 //make list of properties by name
@@ -2667,38 +2852,6 @@ async function UpdateAttributeValue(id, newAtt, type) {
                     if (data.val === "") return "Give a value.";
                 }
             }).done(function (valdata) {
-                let content = valdata.empty ? "" : valdata.val;
-                if (newAtt.value !== content || valdata.empty) {
-                    newAtt.value = content;
-                    Upsert(id, newAtt, type);
-                }
-            });
-            break;
-        case "RULESET":
-            var def;
-            try {
-                var alt = await defaultRule({ name: mdname, id: id, lineage: newAtt.lineage });
-                def = newAtt.value !== "" ? newAtt.value : alt.getSuggestedRuleset;
-            }
-            catch (err) {
-                HandleError(err);
-                return;
-            }
-            $.MessageBox({
-                input: {
-                    val: {
-                        type: "ruleset",
-                        defaultValue: def
-                    }
-                },
-                message: "<b>Set the attribute's DARL code</b><br/>Lineage: " + newAtt.lineage + "<br/>Data type: " + newAtt.type,
-                buttonDone: "Change",
-                buttonFail: "Cancel",
-                queue: false,
-                filterDone: function (data) {
-                    if (data.val === "") return "Give a value.";
-                }
-            }).done(function (valdata) {
                 if (Array.isArray(valdata)) {
                     if (newAtt.value !== valdata[0]) {
                         newAtt.value = valdata[0];
@@ -2712,6 +2865,7 @@ async function UpdateAttributeValue(id, newAtt, type) {
                     }
                 }
             });
+            break;
     }
 }
 
@@ -2901,4 +3055,22 @@ async function EditKGDescription() {
             }
         }
     });
+}
+
+function ConvertVirtualID(id) {
+    var res = id.replace('-', ':');
+    var compPos = res.indexOf('+');
+    if (compPos > -1) //it's composite
+    {
+        for (let i = compPos; i < res.length; i++) {
+            if (res.charAt(i) === '-') {
+                let a = res.split("");
+                a[i] = ':';
+                res = a.join("");
+                break;
+            }
+        }
+    }
+    res = res.replace(/-/g, ",");
+    return res;
 }

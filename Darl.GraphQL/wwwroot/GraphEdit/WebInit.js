@@ -54,6 +54,7 @@ var kgraph;
 var edited = false;
 var recognizedLineage = "adjective:8953";
 var textLineage = "noun:01,4,04,02,07,01";
+var completedLineage = "adjective:5500";
 var currentStateId;
 var settingsStorageName = 'thinkbase-settings';
 var realStorageName = 'thinkbase-real';

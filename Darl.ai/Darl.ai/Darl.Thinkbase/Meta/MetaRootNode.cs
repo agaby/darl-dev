@@ -56,12 +56,12 @@ namespace Darl.Thinkbase.Meta
 
         public HashSet<GraphObject> dependentGraphObjects = new HashSet<GraphObject>();
 
-        public string ruleset { get; set; }
+        public string ruleset { get; set; } = string.Empty;
 
         /// <summary>
         /// The ordered outputs in execution order
         /// </summary>
-        List<IOSequenceDefinitionNode> orderedOutputs;
+        List<IOSequenceDefinitionNode> orderedOutputs = new List<IOSequenceDefinitionNode>();
 
         /// <summary>
         /// Initializes the specified context.
@@ -153,10 +153,10 @@ namespace Darl.Thinkbase.Meta
                 {
                     i.LineageNode.WalkDependencies(dependencies, null, ccontext, ((DarlMetaGrammar)context.Language.Grammar).currentModel, ((DarlMetaGrammar)context.Language.Grammar).currentNode);
                     var grammar = context.Language.Grammar as DarlMetaGrammar;
-                    if (grammar.currentNode == null || grammar.currentNode.properties == null)
+                    if (grammar?.currentNode == null || grammar.currentNode.properties == null)
                         break;
                     var lineage = i.LineageNode is LineageLiteral ? ((LineageLiteral)i.LineageNode).literal : ccontext.lineages[i.LineageNode.GetName()].Value;
-                    var att = grammar.currentModel.FindDataAttribute(grammar.currentNode.id, lineage, grammar.state);
+                    var att = grammar.currentModel.FindDataAttribute(grammar.currentNode.id ?? "", lineage, grammar.state);
                     if (att == null) //assume content is a comma delimited list of strings.
                         break;
                     var cats = att.Value.Split(new string[] { "\",\"" }, StringSplitOptions.RemoveEmptyEntries);
@@ -221,10 +221,69 @@ namespace Darl.Thinkbase.Meta
             orderedOutputs.Sort();
         }
 
-        public SalienceRecord? CalculateKGSaliences(List<SalienceRecord> saliences, KnowledgeState ks)
+        public HashSet<SalienceRecord>? CalculateKGSaliences(DarlMetaGrammar grammar, HashSet<SalienceRecord> saliences, KnowledgeState ks, GraphObject obj)
         {
-            //if(saliences.Any(a => a.gobj == ))
-            return null;
+            foreach (InputDefinitionNode input in inputs.Values) //clear saliences
+                input.Salience = 0.0;   //initialise from saliences
+            foreach (string outName in outputs.Keys)
+            {
+                if (IsUnfilled(ks, obj.id, outName)) //output is unknown
+                {
+                    if (rules.ContainsKey(outName)) //can be unused output
+                    {
+                        if (outputs[outName].result.IsUnknown() || outputs[outName].result.GetWeight() < 1.0)
+                        {
+                            var unsatisfiedRules = rules[outName].Where(a => a.IsUnknown || a.confidenceNode != null && a.confidenceNode.weight < 1.0).ToList();
+                            if (unsatisfiedRules.Count > 0)
+                            {
+                                //look up passed-in Salience
+                                double childSaliency = 0.0;
+                                if (!saliences.Any()) //root of the search
+                                {
+                                    childSaliency = 1.0 / unsatisfiedRules.Count;
+                                }
+                                else
+                                {
+                                    var attLineage = outputs[outName].lineage;
+                                    if(string.IsNullOrEmpty(attLineage))
+                                    {
+                                        continue;
+                                        //throw new StructureException($"Output {outName} in the rules for {obj.externalId} does not contain an attribute Lineage. All externally referenced outputs must have one");
+                                    }
+                                    var upstream = saliences.FirstOrDefault( a => a.gobj == obj /*&& a.att.lineage.StartsWith(attLineage )*/);
+                                    if(upstream != null)
+                                    {
+                                        childSaliency = upstream.salience / unsatisfiedRules.Count;
+                                    }
+                                }                                 
+                                foreach (DarlMetaNode r in unsatisfiedRules)
+                                {
+                                    r.WalkSaliences(childSaliency, this);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            foreach (InputDefinitionNode input in inputs.Values.Where(a => a.Salience > 0.0 && IsUnfilled(ks, obj.id, a.name)))
+            {
+                //remote object and attribute needed. Place to check connection exists and ties up.
+                if (input.networkNode == null) //leaf node?
+                {
+                    saliences.Add(new SalienceRecord { gobj = grammar.currentNode, att = null, salience = input.Salience });
+                    continue;
+                    //throw new StructureException($"Input {input.name} in the rules for {obj.externalId} is not preset and has no network connection set.");
+                }
+                var trace = grammar.TraceNetworkConnection(input.networkNode.nodeId, input.networkNode.lineage, null);
+                if(!trace.Item1)
+                {
+                    continue; //
+                    //throw new StructureException($"Input {input.name} in the rules for {obj.externalId} connected object/attribute doesn't exist, or no connection exists.");
+                }
+                saliences.Add(new SalienceRecord {gobj = trace.Item2, salience = input.Salience , att = trace.Item3 });
+            }
+            //process attribute-bound pseudo-inputs here.
+            return saliences;
         }
 
         public Dictionary<string, double> CalculateSaliences(List<DarlResult> currentState)
@@ -318,20 +377,22 @@ namespace Darl.Thinkbase.Meta
             return !currentState.Any(a => a.name == name) || currentState.Any(a => a.name == name) && (currentState.First(a => a.name == name).IsUnknown() || currentState.First(a => a.name == name).GetWeight() < 1.0);
         }
 
-        /// <summary>
-        /// Does the evaluation.
-        /// </summary>
-        /// <param name="thread">The thread.</param>
-        /// <returns>
-        /// The result of the evaluation
-        /// </returns>
+        private static bool IsUnfilled(KnowledgeState currentState, string objectId, string name)
+        {
+            if (!currentState.data.ContainsKey(objectId) || !currentState.data[objectId].Any(a => a.name == name))
+                return true;
+            //other possibility attribute exists but has 0 confidence
+            return currentState.data[objectId].First(a => a.name == name).confidence == 0.0;
+        }
+
+
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
             thread.CurrentNode = this;  //standard prologue
-            DarlMetaGrammar grammar = thread.Runtime.Language.Grammar as DarlMetaGrammar;
+            DarlMetaGrammar grammar = thread.Runtime.Language.Grammar as DarlMetaGrammar ?? new DarlMetaGrammar();
             foreach (InputDefinitionNode input in inputs.Values)
             {
-                string compName = input.name;
+                string compName = input.name ?? "";
                 if (input.networkNode != null)
                 {
                     input.Value = grammar.NetWorkResults(input.networkNode.nodeId, input.networkNode.lineage);

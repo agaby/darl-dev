@@ -193,12 +193,19 @@ namespace Darl.GraphQL.Models.Connectivity
                             }
                         }
                     }
+                    catch(StructureException ex)
+                    {
+                        _logger.LogInformation(ex, "Structure exception in GraphPass");
+                        resp.Add(new InteractTestResponse { darl = "", response = new DarlVar { dataType = DarlVar.DataType.textual, Value = ex.Message } });
+                    }
                     catch (ScriptException ex)
                     {
+                        _logger.LogInformation(ex, "Script exception in GraphPass");
                         resp.Add(new InteractTestResponse { darl = "", response = new DarlVar { dataType = DarlVar.DataType.textual, Value = $"_Rule error: {ex.Message} location: {ex.Location}._ " } });
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogCritical(ex, "Internal exception in GraphPass");
                         throw new ExecutionError($"Internal Error in GraphPass", ex);
                     }
                 }

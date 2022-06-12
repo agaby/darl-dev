@@ -32,6 +32,8 @@ namespace Darl.Thinkbase
 
         public static string annotationSignum { get; } = "annotation";
 
+        
+
         private static int minimumData = 5;
 
         private readonly ConcurrentDictionary<string, DarlMetaRunTime> runtimes = new ConcurrentDictionary<string, DarlMetaRunTime>();
@@ -113,6 +115,12 @@ namespace Darl.Thinkbase
                 values.Clear();
                 var vals = await EvaluateUIRule(runtime, model, res[0], pending, responses, ks, values, paths);
                 pending = vals.Item2;
+                if(!responses.Any())
+                {
+                    _logger.LogError($"No responses generated for {res[0].Name(model)}.");
+                }
+                _logger.LogDebug($"{pending?.name} selected as next question node.");
+
             }
             else
             {
@@ -1001,11 +1009,11 @@ namespace Darl.Thinkbase
         }
 
 
-        private void GenerateQuestionMessage(Dictionary<string, double> c, List<InteractTestResponse> responses, ParseTree tree, ref DarlVar pending, GraphObject res, string code, List<Meta.DarlResult> list)
+        private void GenerateQuestionMessage(List<SalienceRecord> c, List<InteractTestResponse> responses, ParseTree tree, ref DarlVar pending, GraphObject res, string code, List<Meta.DarlResult> list)
         {
             //add the annotation by reading the annotation result
             var annot = list.Where(a => a.name == annotationSignum).FirstOrDefault();
-            var next = (from entry in c orderby entry.Value descending select entry.Key).FirstOrDefault(); //find most salient
+            var next = (from entry in c orderby entry.salience descending select ((GraphObject)entry.gobj).externalId).FirstOrDefault(); //find most salient
             var text = string.Empty;
             if (annot is null || annot.IsUnknown())
             {
@@ -1018,6 +1026,8 @@ namespace Darl.Thinkbase
             //now choose how to present this based on the type of the data-item;
             //look up the input using introspection into the tree.
             var nextRes = tree.GetInputs().Where(a => a.name == next).FirstOrDefault();
+            if (nextRes == null)
+                nextRes = tree.GetInputs().Where(a => a.name == "response").FirstOrDefault();
             if (!(nextRes is null))
             {
                 switch (nextRes.iType)
@@ -1099,10 +1109,11 @@ namespace Darl.Thinkbase
                 var list = Meta.DarlVarExtensions.Convert(values);
                 await runtime.Evaluate(tree, list, ks);
                 //calculate saliences if any outstanding turn into a question
-                var c = runtime.CalculateSaliences(list, tree);
+                var saliences = new HashSet<SalienceRecord>();
+                var c = runtime.CalculateKGSaliences(saliences, ks, tree);
                 if (c.Any())
                 {
-                    GenerateQuestionMessage(c, responses, tree, ref pending, o, code, list);
+                    GenerateQuestionMessage(c.ToList(), responses, tree, ref pending, o, code, list);
                     return (true, pending);
                 }
                 if (!data)
@@ -1196,32 +1207,31 @@ namespace Darl.Thinkbase
             //if target is completed even though other dependencies remain return an empty list
             if (ks.ContainsAttribute(node.Id(model), completedLineage))
                 return list;
-            //first build dependency list of nodes reachable from the start node
-            var saliences = new List<SalienceRecord>();
+            //first build dependency list of nodes reachable from the target node
+            var saliences = new HashSet<SalienceRecord>();
             //in descending order calculate salience
             //            saliences.Add(node, 1.0);
+            var _runtime = new DarlMetaRunTime(_config, _metaHandler);
             foreach (var o in ordered)
             {
-                double salience = 0.0;
-                foreach (var c in ((GraphObject)o.Key).In)
+                var go = o.Key as GraphObject;
+                var code = _graph.FindCompleteAttribute(model, go?.id ?? "") ?? _graph.FindDisplayAttribute(model, go?.id ?? "");
+                if(!string.IsNullOrEmpty(code))
                 {
-                    if (c.lineage != null && paths.Contains(c.lineage))
-                    {
-                        var parentNode = model.vertices[c.startId];
-                        salience += saliences.Any(a => a.gobj == parentNode) ? saliences.First(a => a.gobj == parentNode).salience : 1.0;
-                    }
+                    var tree = _runtime.CreateTree(code, go, model);
+                    _runtime.CalculateKGSaliences(saliences, ks, tree);
+                    // add randomise saliences
                 }
-                saliences.Add(new SalienceRecord { gobj = o.Key as GraphObject, salience = salience + (randomiseSaliences ? (rand.NextDouble() - 0.5) * 0.000001 : 0.0) });
             }
-            saliences.Sort();
+            var salienceList  = saliences.OrderByDescending(a => a.salience).ToList();
             var currentSalience = 0.0;
-            foreach (var o in saliences)
+            foreach (var o in salienceList)
             {
                 var obj = o.gobj;
                 currentSalience = Math.Max(currentSalience, o.salience);
                 if (currentSalience != o.salience && list.Count > 0)
                     break;
-                if (obj.Out(model).Count > 0) // not leaf
+                if (obj.Out(model).Count > 0 && !IsCodeLess(obj,model))// not leaf
                     continue;
                 if (ks.ContainsAttribute(obj.Id(model), completedLineage) || obj.ContainsAttribute(completedLineage))
                     continue;
@@ -1229,6 +1239,30 @@ namespace Darl.Thinkbase
             }
             //list is leaf nodes with highest salience
             return list;
+        }
+
+        private bool IsCodeLess(GraphAbstraction obj, IGraphModel model)
+        {
+            //An early implementation allows a leaf node to have subnodes representing categories or sets. 
+            //This enables alternate text for categories
+            //Support this by recognizing such nodes.
+            foreach(var c in obj.Out(model))
+            {
+                var src = model.vertices[c.endId];
+                if (src.lineage != _metaHandler.CommonLineages["category"])
+                    return false;
+                if (src.Out.Count > 0)
+                    return false;
+                if(src.properties != null)
+                {
+                    foreach(var a in src.properties)
+                    {
+                        if (a.type == GraphAttribute.DataType.ruleset)
+                            return false;
+                    }
+                }
+            }
+            return true;
         }
 
         /// <summary>

@@ -13,6 +13,8 @@ namespace Darl.Thinkbase.Meta
         protected string objLineage;
         protected string attLineage;
 
+        protected List<IntraSetDependency> setDependencyList = new List<IntraSetDependency> { };
+
 
         public override void Init(AstContext context, ParseTreeNode treeNode)
         {
@@ -31,7 +33,7 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlMetaNode currentOutput, ConstantContext context, IGraphModel model, GraphObject currentNode)
+        public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlMetaNode? currentOutput, ConstantContext context, IGraphModel model, GraphObject currentNode)
         {
             if (lineages.Any())
             {
@@ -42,9 +44,19 @@ namespace Darl.Thinkbase.Meta
                     attLineage = lineages[2] is LineageLiteral ? ((LineageLiteral)lineages[2]).literal : context.lineages[lineages[2].GetName()].Value;
                     foreach (var l in model.GetConnectedObjects(currentNode, connLineage, objLineage))
                     {
-                        dependencies.Add(new IntraSetDependency { dependentObject = l, output = currentOutput.GetName(), attributeLineage = attLineage });
+                        var isd = new IntraSetDependency { dependentObject = l, output = currentOutput.GetName(), attributeLineage = attLineage };
+                        dependencies.Add(isd);
+                        setDependencyList.Add(isd); //keep a local record
                     }
                 }
+            }
+        }
+
+        public override void WalkSaliences(double saliency, MetaRootNode root)
+        {
+            foreach(var isd in setDependencyList)
+            {
+                root.inputs.TryAdd(isd.dependentObject.externalId, new InputDefinitionNode {Salience = saliency, lineage = isd.attributeLineage, name = isd.dependentObject.externalId, networkNode = new NetworkComponentNode { lineage = isd.attributeLineage, nodeId = isd.dependentObject.id } });
             }
         }
     }

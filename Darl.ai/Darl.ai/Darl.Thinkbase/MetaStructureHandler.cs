@@ -107,12 +107,16 @@ namespace Darl.Thinkbase
             //If this is a leaf node of one of the possible types i.e. categorical, numeric, textual, etc.
             //look to the parent to find possible patterns.
             if (res.Out.Any() || !res.In.Any()) //not a leaf or a root
-            {
-                if (pending != null) //if true, this is a response to a codeless evaluation
+            { 
+                var child = model.vertices[res.Out[0].endId];
+                if(!string.IsNullOrEmpty(child.GetAttributeValue(CommonLineages["answer"])))
                 {
-                    return true;
+                    res = child;
                 }
-                return false;
+                else
+                {
+                    return pending != null;
+                }
             }
             //check if this is a constant node - i.e. one with a preset or remote value.
             if (!string.IsNullOrEmpty(res.GetAttributeValue(CommonLineages["answer"])))

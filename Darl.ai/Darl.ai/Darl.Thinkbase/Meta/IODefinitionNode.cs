@@ -33,7 +33,7 @@ namespace Darl.Thinkbase.Meta
         /// <summary>
         /// Name of the I/O
         /// </summary>
-        public string name { get; protected set; }
+        public string name { get; set; }
 
         /// <summary>
         /// Contains the crisp ind of each sample as categorized

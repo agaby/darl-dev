@@ -39,7 +39,7 @@ namespace Darl.Thinkbase.Meta
         /// <param name="dependencies">list of dependencies discovered</param>
         /// <param name="currentOutput">output for the rule being walked</param>
         /// <param name="context">The context.</param>
-        public virtual void WalkDependencies(List<IntraSetDependency> dependencies, DarlMetaNode currentOutput, ConstantContext context, IGraphModel model, GraphObject currentNode)
+        public virtual void WalkDependencies(List<IntraSetDependency> dependencies, DarlMetaNode? currentOutput, ConstantContext context, IGraphModel model, GraphObject currentNode)
         {
 
         }

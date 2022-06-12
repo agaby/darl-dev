@@ -32,6 +32,7 @@ namespace Darl.Thinkbase
         void SanityCheck();
         void Clear();
         void AddDefaultContent();
+        void FollowHypernymy(GraphObject g, List<GraphObject> list);
 
         bool licensed { get; }
         string key { get; set; }

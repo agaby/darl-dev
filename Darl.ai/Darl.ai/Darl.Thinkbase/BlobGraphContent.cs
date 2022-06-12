@@ -353,7 +353,7 @@ namespace Darl.Thinkbase
             return list;
         }
 
-        private void FollowHypernymy(GraphObject g, List<GraphObject> list)
+        public void FollowHypernymy(GraphObject g, List<GraphObject> list)
         {
             foreach (var l in g.Out.Where(a => a.name == "kind_of"))
             {

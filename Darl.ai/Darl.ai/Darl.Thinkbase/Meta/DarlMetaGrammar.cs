@@ -647,6 +647,78 @@ namespace Darl.Thinkbase.Meta
             }
             return new DarlResult(0.0, true);
         }
+
+        /// <summary>
+        /// Ensure the object id and lineage reference an existing attribute within an existing object, linked to with the given connection lineage
+        /// </summary>
+        /// <param name="id">id or externalId</param>
+        /// <param name="lineage">Attribute lineage</param>
+        /// <param name="connectionLineage">Lineage of the connection, or any if null</param>
+        /// <returns>true,the object and the att if a valid connection exists and false otherwise.</returns>
+        public (bool, GraphObject?, GraphAttribute?) TraceNetworkConnection(string id, string lineage, string? connectionLineage)
+        {
+            var answerLineage = "noun:01,4,05,21,19";
+            GraphObject? obj = null;
+            if (!currentModel.vertices.ContainsKey(id))
+            {
+                obj = currentModel.vertices.Values.FirstOrDefault(a => a.externalId == id);
+                if (obj == null)
+                    return (false,null,null);
+                id = obj.id ?? "";
+            }
+            else
+            {
+                obj = currentModel.vertices[id];
+            }
+            //check link exists between currentNode and found node
+            if(!currentNode.In.Any(a => a.startId == id && a.endId == currentNode.id) && !currentNode.Out.Any(a => a.startId == currentNode.id && a.endId == id))
+                return (false,obj,null);
+            if (obj.properties != null)
+            {
+                var oatt = obj.properties.Where(a => a.lineage != null && a.lineage.StartsWith(lineage)).FirstOrDefault();
+                if (oatt != null)
+                    return (true,obj,oatt);
+                //what if the attribute is up in the virtual world? 
+                //consider implicit setup where sub nodes determine the structure. 
+                if(/*lineage == answerLineage &&*/ obj.Out.Any())
+                    return (true,obj,null);
+            }
+            //finally in the virtual realm - generic values
+            if (obj.lineage == null)
+                return (false, null, null);
+            var virtNode = currentModel.virtualVertices[obj.lineage];
+            var list1 = new List<GraphObject> { virtNode };
+            currentModel.FollowHypernymy(virtNode, list1);
+            GraphAttribute? data = null;
+            bool found = false;
+            foreach (var l in list1)
+            {
+                if (l.properties != null)
+                {
+                    foreach (var p in l.properties)
+                    {
+                        if (p.lineage != null && p.lineage.StartsWith(lineage))
+                        {
+                            data = p;
+                            found = true;
+                            break;
+                        }
+                    }
+                    foreach (var p in l.properties) //if no match look for rules - could be there
+                    {
+                        if (p.type == GraphAttribute.DataType.ruleset )
+                        {
+                            data = p;
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (found)
+                    break;
+            }
+            return found ? (true,obj,data) : (false,obj,null);
+        }
     }
 
 }

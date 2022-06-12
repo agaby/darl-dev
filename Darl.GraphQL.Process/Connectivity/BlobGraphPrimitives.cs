@@ -786,6 +786,8 @@ namespace Darl.GraphQL.Models.Connectivity
                     byte[] data;
                     data = SerializeGraph(model);
                     await _blob.Write(sharedState.Item1, data);
+                    _localCache.Set(compositeName, model, TimeSpan.FromMinutes(kgCacheMinutes));
+
                 }
                 else
                 {

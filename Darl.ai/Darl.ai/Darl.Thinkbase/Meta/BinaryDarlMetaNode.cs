@@ -25,7 +25,7 @@ namespace Darl.Thinkbase.Meta
             Right = (DarlMetaNode)AddChild("-", nodes[1]);
         }
 
-        public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlMetaNode currentOutput, ConstantContext context, IGraphModel model, GraphObject currentNode)
+        public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlMetaNode? currentOutput, ConstantContext context, IGraphModel model, GraphObject currentNode)
         {
             Left.WalkDependencies(dependencies, currentOutput, context, model, currentNode);
             Right.WalkDependencies(dependencies, currentOutput, context, model, currentNode);

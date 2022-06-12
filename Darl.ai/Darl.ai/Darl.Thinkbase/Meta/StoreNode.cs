@@ -37,7 +37,7 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlMetaNode currentOutput, ConstantContext context, IGraphModel model, GraphObject currentNode)
+        public override void WalkDependencies(List<IntraSetDependency> dependencies, DarlMetaNode? currentOutput, ConstantContext context, IGraphModel model, GraphObject currentNode)
         {
             if (context.stores.ContainsKey(Left.name))
             {

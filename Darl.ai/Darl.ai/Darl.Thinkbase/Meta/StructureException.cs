@@ -1,0 +1,27 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Darl.Thinkbase.Meta
+{
+    /// <summary>
+    /// Indicates a design fault discovered in the knowledge graph
+    /// </summary>
+    public class StructureException : Exception
+    {
+        public StructureException(string message) : base(message)
+        {
+        }
+
+        public StructureException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        protected StructureException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+    }
+}
