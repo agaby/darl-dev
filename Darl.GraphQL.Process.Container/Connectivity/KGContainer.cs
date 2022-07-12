@@ -5,6 +5,7 @@ using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlCompiler;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -392,6 +393,21 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
         public Task<string> NodaView(string userId, string graphName, NodaPosition? graphOffset, double? nodaBoundingBoxDiagonal = 3)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> CreateTempKG(string userId, string graphName, IFormFile file)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> TempKGExists(string userId, string graphName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<byte[]> KGContents(string userId, string graphName)
         {
             throw new NotImplementedException();
         }

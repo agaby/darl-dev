@@ -3,9 +3,11 @@ using Darl.GraphQL.Models.Schemata;
 using Darl.Thinkbase;
 using GraphQL;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using GraphQL.Upload.AspNetCore;
 
 namespace Darl.GraphQL.Web.Models.Schemata
 {
@@ -572,6 +574,20 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     return await graph.LoadExternalData(userId, name, data, patternPath, dataMaps);
                 }
             );
+
+            FieldAsync<StringGraphType>(
+              "uploadGraph",
+              arguments: new QueryArguments(
+                  new QueryArgument<NonNullGraphType<UploadGraphType>> { Name = "file" },
+                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName" }
+                  ),
+              resolve: async context =>
+              {
+                  var file = context.GetArgument<IFormFile>("file");
+                  var graphName = context.GetArgument<string>("graphName");
+                  var userId = trans.GetCurrentUserId(context.UserContext);
+                  return await trans.CreateTempKG(userId,graphName,file);
+              });
         }
 
         private string CompositeName(string userId, string graphName)

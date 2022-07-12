@@ -291,6 +291,8 @@ namespace Darl.GraphQL
                     options.AddPolicy("CorpPolicy", p => p.RequireClaim(roleClaimText, "Corp"));
                 });
 
+            services.AddGraphQLUpload();
+
             services.AddControllersWithViews()
                 .AddMicrosoftIdentityUI();
 
@@ -402,6 +404,7 @@ namespace Darl.GraphQL
             app.UseWebSockets();
 
             app.UseGraphQLWebSockets<DarlSchema>();
+            app.UseGraphQLUpload<DarlSchema>();
             app.UseGraphQL<DarlSchema, GraphQLHttpMiddlewareWithLogs<DarlSchema>>();
 
             app.UseGraphQLPlayground(new PlaygroundOptions()

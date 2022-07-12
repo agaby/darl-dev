@@ -820,6 +820,27 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 var address = context.GetArgument<string>("address");
                 return await trans.GetConceptCloudData(userId, graphName, address);
             });
+
+            FieldAsync<BooleanGraphType>("tempKGExists", "See if a temp KG exists",
+                arguments: new QueryArguments(
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge graph to check for" }
+                ),
+            resolve: async context =>
+            {
+                var graphName = context.GetArgument<string>("graphName");
+                var userId = trans.GetCurrentUserId(context.UserContext);
+                return await trans.TempKGExists(userId,graphName);
+            });
+            FieldAsync<ByteGraphType>("KGContents", "Get a KG's contents binary encoded",
+                arguments: new QueryArguments(
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge graph to download" }
+                ),
+            resolve: async context =>
+            {
+                var graphName = context.GetArgument<string>("graphName");
+                var userId = trans.GetCurrentUserId(context.UserContext);
+                return await trans.KGContents(userId, graphName);
+            });
         }
 
         private string CompositeName(string userId, string graphName)

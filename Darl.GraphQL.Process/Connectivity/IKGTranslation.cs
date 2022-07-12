@@ -3,6 +3,7 @@ using Darl.GraphQL.Models.Models.Noda;
 using Darl.Lineage;
 using Darl.Thinkbase;
 using DarlCommon;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,5 +70,8 @@ namespace Darl.GraphQL.Models.Connectivity
         Task<byte[]> RenderRSS(string scheme);
         Task<string> NodaView(string userId, string graphName, NodaPosition? graphOffset, double? nodaBoundingBoxDiagonal = 3.0);
         Task<string> CreateNewsItem(string title, string content);
+        Task<string> CreateTempKG(string userId, string graphName, IFormFile file);
+        Task<bool> TempKGExists(string userId, string graphName);
+        Task<byte[]> KGContents(string userId, string graphName);
     }
 }

@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -9,6 +9,7 @@
     <PackageReference Include="Azure.Storage.Blobs" Version="12.12.0" />
     <PackageReference Include="Azure.Storage.Queues" Version="12.10.0" />
     <PackageReference Include="GraphQL.Server.Transports.Subscriptions.Abstractions" Version="5.2.0" />
+    <PackageReference Include="GraphQL.Upload.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Markdig" Version="0.28.1" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.27.0" />
     <PackageReference Include="Microsoft.Bot.Builder" Version="4.16.1" />

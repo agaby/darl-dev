@@ -89,5 +89,8 @@ namespace Darl.Thinkbase
         Task<List<GraphAbstraction>> GetSetofConnectedObjects(string userId, List<string> ksIds, string graphName);
         Task<DisplayModel?> GetRealDisplayGraphWithState(string userId, string graphName, string subjectId);
         Task<KnowledgeState> ConvertKSIDs(KnowledgeState ks);
+        Task<bool> ExistsInCache(string userId, string graphName);
+        Task<byte[]> KGContents(string userId, string graphName);
+        Task<string> CreateTempKG(string userId, string graphName, byte[] bytes);
     }
 }

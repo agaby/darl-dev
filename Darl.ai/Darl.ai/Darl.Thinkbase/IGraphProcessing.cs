@@ -98,5 +98,8 @@ namespace Darl.Thinkbase
         Task<string> LoadExternalData(string userId, string name, string data, string patternPath, List<DataMap> dataMaps, LoadType ltype = LoadType.xml, bool buildGraph = false);
         List<KnowledgeState> LoadData(string userId, string name, IGraphModel model, string data, string patternPath, List<DataMap> dataMaps, LoadType ltype = LoadType.xml);
         Task<KnowledgeState> ConvertKSIDs(KnowledgeState ks);
+        Task<bool> ExistsInCache(string userId, string graphName);
+        Task<byte[]> KGContents(string userId, string graphName);
+        Task<string> CreateTempKG(string userId, string graphName, byte[] bytes);
     }
 }

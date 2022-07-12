@@ -858,6 +858,21 @@ namespace Darl.Thinkbase
             return await _primitives.ConvertKSIDs(ks);
         }
 
+        public async Task<bool> ExistsInCache(string userId, string graphName)
+        {
+            return await _primitives.ExistsInCache(userId, graphName);
+        }
+        public async Task<byte[]> KGContents(string userId, string graphName)
+        {
+            return await _primitives.KGContents(userId, graphName);
+        }
+
+        public async Task<string> CreateTempKG(string userId, string graphName, byte[] bytes)
+        {
+            return await _primitives.CreateTempKG(userId, graphName, bytes);
+        }
+
+
 
 
         #region private_methods
@@ -1204,11 +1219,6 @@ namespace Darl.Thinkbase
                 return lineage;
             return $"{lineage}+{subLineage}";
         }
-
-
-
-
-
 
         #endregion
     }

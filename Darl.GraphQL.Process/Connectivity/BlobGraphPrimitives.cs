@@ -1722,6 +1722,33 @@ namespace Darl.GraphQL.Models.Connectivity
             dmodel.edges.AddRange(cont.edges.Values.Select(i => new DisplayConnection { id = i.id, name = i.name, source = i.startId, target = i.endId }));
             return dmodel;
         }
+
+        public Task<bool> ExistsInCache(string userId, string graphName)
+        {
+            return Task.FromResult(_localCache.TryGetValue(userId + "_" + graphName, out IGraphModel model));
+        }
+
+        public Task<byte[]> KGContents(string userId, string graphName)
+        {
+            var blobName = userId + "_" + graphName;
+            if (_localCache.TryGetValue(blobName, out IGraphModel model))
+            {
+                if (model is BlobGraphContent cont)
+                {
+                    cont.key = _license.CreateKey(DateTime.UtcNow + new TimeSpan(modelLicenseDays, 0, 0, 0), blobName, "");
+                    return Task.FromResult(SerializeGraph(cont));
+                }
+            }
+            return Task.FromResult(new byte[0]);
+        }
+
+        public Task<string> CreateTempKG(string userId, string graphName, byte[] bytes)
+        {
+            var compositeName = userId + "_" + graphName;
+            var model = DeserializeGraph(bytes);
+            _localCache.Set(compositeName, model, TimeSpan.FromMinutes(kgCacheMinutes));
+            return Task.FromResult(compositeName);
+        }
     }
 
     public class Dependency

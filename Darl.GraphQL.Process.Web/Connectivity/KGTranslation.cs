@@ -13,6 +13,7 @@ using DarlCompiler;
 using GraphQL;
 using GraphQL.Server.Transports.Subscriptions.Abstractions;
 using Markdig;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -1329,6 +1330,28 @@ namespace Darl.GraphQL.Models.Connectivity
             return ksi.subjectId;
         }
 
+        public async Task<string> CreateTempKG(string userId, string graphName, IFormFile file)
+        {
+            using (var fs = file.OpenReadStream())
+            using (var ws = new MemoryStream())
+            {
+                await fs.CopyToAsync(ws);
+                ws.Position = 0;
+                return await _graph.CreateTempKG(userId, graphName, ws.ToArray());
+            }
+        }
+
+        public async Task<bool> TempKGExists(string userId, string graphName)
+        {
+            return await _graph.ExistsInCache(userId,graphName);
+        }
+
+        public async Task<byte[]> KGContents(string userId, string graphName)
+        {
+            return await _graph.KGContents(userId, graphName);
+        }
+
+
 
         #region private
 
@@ -1538,10 +1561,6 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return string.Empty;
         }
-
-
-
-
 
         #endregion
     }

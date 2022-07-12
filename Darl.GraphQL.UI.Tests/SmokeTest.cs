@@ -16,7 +16,7 @@ namespace Darl.GraphQL.UI.Tests
         {
             driver = new OpenQA.Selenium.Chrome.ChromeDriver
             {
-                Url = "https://darl.dev/"
+                Url = "https://darlgraphql-stagng.azurewebsites.net/" //"https://darl.dev/"
             };
         }
 
@@ -62,6 +62,14 @@ namespace Darl.GraphQL.UI.Tests
             msgSend.Click();
             await Task.Delay(1000);
             msgInput.Clear();
+            msgInput.SendKeys("Yes");
+            msgSend.Click();
+            await Task.Delay(1000);
+            msgInput.Clear();
+            msgInput.SendKeys("Yes");
+            msgSend.Click();
+            await Task.Delay(1000);
+            msgInput.Clear();
             msgInput.SendKeys("vectors of numbers");
             msgSend.Click();
             await Task.Delay(1000);
@@ -77,15 +85,7 @@ namespace Darl.GraphQL.UI.Tests
             msgInput.SendKeys("Yes");
             msgSend.Click();
             await Task.Delay(1000);
-            msgInput.Clear();
-            msgInput.SendKeys("Yes");
-            msgSend.Click();
-            await Task.Delay(1000);
-            msgInput.Clear();
-            msgInput.SendKeys("No");
-            msgSend.Click();
-            await Task.Delay(1000);
-            driver.FindElement(By.XPath(@"//*[contains(text(),'The problem you have described seems to be amenable to')]"));
+            driver.FindElement(By.XPath(@"//*[contains(text(),'The problem you have described may be amenable to soft')]"));
         }
 
         /// <summary>
