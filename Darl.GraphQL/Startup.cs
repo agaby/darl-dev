@@ -404,8 +404,8 @@ namespace Darl.GraphQL
             app.UseWebSockets();
 
             app.UseGraphQLWebSockets<DarlSchema>();
-            app.UseGraphQLUpload<DarlSchema>();
             app.UseGraphQL<DarlSchema, GraphQLHttpMiddlewareWithLogs<DarlSchema>>();
+            app.UseGraphQLUpload<DarlSchema>();
 
             app.UseGraphQLPlayground(new PlaygroundOptions()
             {

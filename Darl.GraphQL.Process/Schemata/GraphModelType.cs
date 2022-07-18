@@ -26,6 +26,8 @@ namespace Darl.GraphQL.Models.Schemata
             Field<InferenceTimeEnum>("inferenceTime", resolve: c => c.Source.inferenceTime);
             Field(c => c.initialText, true);
             Field(c => c.licenseUrl, true);
+            Field(c => c.defaultTarget, true);
+            Field(c => c.transient, true);
         }
 
         public static List<StringGraphObjectPair> GetSGOPairsFromDictionary(Dictionary<string, GraphObject> dict)

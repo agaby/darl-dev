@@ -11,6 +11,7 @@ using GraphQL.Types;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Darl.GraphQL.Web.Models.Schemata
 {
@@ -831,7 +832,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 var userId = trans.GetCurrentUserId(context.UserContext);
                 return await trans.TempKGExists(userId,graphName);
             });
-            FieldAsync<ByteGraphType>("KGContents", "Get a KG's contents binary encoded",
+            FieldAsync<ListGraphType<ByteGraphType>>("kGContents", "Get a KG's contents binary encoded",
                 arguments: new QueryArguments(
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge graph to download" }
                 ),
@@ -839,7 +840,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
             {
                 var graphName = context.GetArgument<string>("graphName");
                 var userId = trans.GetCurrentUserId(context.UserContext);
-                return await trans.KGContents(userId, graphName);
+                return (await trans.KGContents(userId, graphName)).ToList();
             });
         }
 

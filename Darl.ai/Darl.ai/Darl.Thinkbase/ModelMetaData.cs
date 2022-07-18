@@ -12,5 +12,6 @@ namespace Darl.Thinkbase
         public IGraphModel.DateDisplay? dateDisplay { get; set; }
         public IGraphModel.InferenceTime? inferenceTime { get; set; }
         public DarlTime? fixedTime { get; set; }
+        public string? defaultTarget { get; set; }
     }
 }

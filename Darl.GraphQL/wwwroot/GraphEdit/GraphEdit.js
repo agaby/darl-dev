@@ -510,7 +510,15 @@ async function loadGraphs() {
                         var id = ele.id();
                         $.MessageBox({
                             buttonDone: "Close",
+                            buttonFail: "Set as default target",
                             message: "Id: " + id
+                        }).fail(async function (data) {
+                            try {
+                                await updatekg({ name: mdname, update: { defaultTarget: id } });
+                            }
+                            catch (err) {
+                                HandleError(err);
+                            }
                         });
                     }
                 },

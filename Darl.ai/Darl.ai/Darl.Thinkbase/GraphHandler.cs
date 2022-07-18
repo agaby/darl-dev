@@ -865,7 +865,7 @@ namespace Darl.Thinkbase
                 model.recognitionVertices[conn.startId].Out.Add(conn);
                 model.recognitionVertices[conn.endId].In.Add(conn);
                 model.recognitionEdges.Add(conn.id, conn);
-                model.defaultTarget = target.externalId;
+                model.defaultTarget = target.id;
                 model.initialText = $"What is the {typeWordMain} {typeWordSub}?";
             }
             else
@@ -877,7 +877,7 @@ namespace Darl.Thinkbase
                 model.recognitionVertices[conn.startId].Out.Add(conn);
                 model.recognitionVertices[conn.endId].In.Add(conn);
                 model.recognitionEdges.Add(conn.id, conn);
-                model.defaultTarget = target.externalId;
+                model.defaultTarget = target.id;
                 model.initialText = $"What is the {typeWord}?";
             }
         }
