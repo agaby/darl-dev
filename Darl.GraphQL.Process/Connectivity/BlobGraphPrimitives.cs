@@ -5,6 +5,7 @@ using Darl.Thinkbase.Meta;
 using GraphQL;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ProtoBuf;
 using System;
@@ -26,6 +27,7 @@ namespace Darl.GraphQL.Models.Connectivity
         private readonly ILogger _logger;
         private readonly ILicensing _license;
         private readonly IMemoryCache _localCache;
+        private readonly IConfiguration _config;
 
         private readonly int modelLicenseDays = 1000;
         private int kgCacheMinutes = 30;
@@ -42,7 +44,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public static int maxDepth = 0;
 
-        public BlobGraphPrimitives(IBlobConnectivity blob, IDistributedCache cache, IConnectivity conn, ILogger<BlobGraphPrimitives> logger, ILicensing license, IMemoryCache localCache)
+        public BlobGraphPrimitives(IBlobConnectivity blob, IDistributedCache cache, IConnectivity conn, ILogger<BlobGraphPrimitives> logger, ILicensing license, IMemoryCache localCache, IConfiguration config)
         {
             _blob = blob;
             _cache = cache;
@@ -50,9 +52,23 @@ namespace Darl.GraphQL.Models.Connectivity
             _logger = logger;
             _license = license;
             _localCache = localCache;
-            
+            _config = config;
+            //add BackOfficeKG as permanently loaded model
+            LoadBackOfficeKG().Wait();
         }
 
+        private async Task LoadBackOfficeKG()
+        {
+            var blobName = _config["AppSettings:boaiuserid"] + "_" + _config["AppSettings:BackOfficeKG"];
+            var sharedState = await HandleSharedNames(blobName);
+            if (!String.IsNullOrEmpty(sharedState.Item1))
+            {
+                var data = await _blob.Read(sharedState.Item1);
+                var model = DeserializeGraph(data);
+                model.SanityCheck();
+                _localCache.Set(blobName, model);
+            }
+        }
 
         public async Task<GraphConnection> CreateConnection(string compositeName, GraphConnectionInput conn)
         {

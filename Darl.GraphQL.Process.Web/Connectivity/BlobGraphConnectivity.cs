@@ -53,8 +53,15 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<bool> Exists(string name)
         {
-            var b = _container.GetBlobClient(name);
-            return await b.ExistsAsync();
+            try
+            {
+                var b = _container.GetBlobClient(name);
+                return await b.ExistsAsync();
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<bool> Delete(string name)
