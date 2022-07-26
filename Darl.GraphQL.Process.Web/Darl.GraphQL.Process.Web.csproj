@@ -6,19 +6,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.12.0" />
-    <PackageReference Include="Azure.Storage.Queues" Version="12.10.0" />
-    <PackageReference Include="GraphQL.Server.Transports.Subscriptions.Abstractions" Version="5.2.0" />
-    <PackageReference Include="GraphQL.Upload.AspNetCore" Version="2.0.0" />
-    <PackageReference Include="Markdig" Version="0.28.1" />
-    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.27.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.13.0" />
+    <PackageReference Include="Azure.Storage.Queues" Version="12.11.0" />
+    <PackageReference Include="GraphQL.Server.Transports.Subscriptions.Abstractions" Version="6.1.1" />
+    <PackageReference Include="GraphQL.Upload.AspNetCore" Version="3.0.0" />
+    <PackageReference Include="Markdig" Version="0.30.2" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.29.0" />
     <PackageReference Include="Microsoft.Bot.Builder" Version="4.16.1" />
-    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.16.0" />
+    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.16.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-    <PackageReference Include="MongoDB.Driver" Version="2.15.1" />
+    <PackageReference Include="MongoDB.Driver" Version="2.17.0" />
     <PackageReference Include="SendGrid" Version="9.28.0" />
-    <PackageReference Include="Stripe.net" Version="39.112.0" />
+    <PackageReference Include="Stripe.net" Version="39.124.0" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
     <PackageReference Include="System.ServiceModel.Syndication" Version="6.0.0" />
     <PackageReference Include="WebPush" Version="1.0.12" />

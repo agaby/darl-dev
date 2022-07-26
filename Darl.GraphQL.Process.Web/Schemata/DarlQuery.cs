@@ -39,47 +39,47 @@ namespace Darl.GraphQL.Web.Models.Schemata
                   {
                       return await trans.GetContacts();
                   }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
             FieldAsync<ListGraphType<ContactType>>(
               "recentContacts",
                   resolve: async context =>
                   {
                       return await trans.GetRecentContacts();
                   }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
             FieldAsync<ListGraphType<DarlUserType>>(
               "recentUsers",
                   resolve: async context =>
                   {
                       return await trans.GetRecentUsers();
                   }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
             FieldAsync<ListGraphType<DarlUserType>>(
               "users",
                   resolve: async context =>
                   {
                       return await trans.GetUsers();
                   }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
 
             FieldAsync<ListGraphType<ContactType>>("contactsByLastName",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lastName" }),
                 resolve: async context => { return await trans.GetContactsByLastName(context.GetArgument<String>("lastName")); })
-                .AuthorizeWith("AdminPolicy");
+                .AuthorizeWithPolicy("AdminPolicy");
 
             FieldAsync<ContactType>("contactByEmail",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }),
                 resolve: async context => { return await trans.GetContactByEmail(context.GetArgument<String>("email")); })
-                .AuthorizeWith("AdminPolicy");
+                .AuthorizeWithPolicy("AdminPolicy");
 
             FieldAsync<ListGraphType<DefaultType>>("defaults",
                 resolve: async context => { return await trans.GetDefaults(); })
-                .AuthorizeWith("AdminPolicy");
+                .AuthorizeWithPolicy("AdminPolicy");
 
             FieldAsync<StringGraphType>("defaultValue",
             arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
             resolve: async context => { return await trans.GetDefaultValue(context.GetArgument<String>("name")); })
-                .AuthorizeWith("AdminPolicy");
+                .AuthorizeWithPolicy("AdminPolicy");
 
             FieldAsync<KGraphType>(
                 "kGraphByName",
@@ -131,15 +131,15 @@ namespace Darl.GraphQL.Web.Models.Schemata
             FieldAsync<ListGraphType<DarlUserType>>("usersByEmail",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "email" }),
                 resolve: async context => { return await trans.GetUsersByEmail(context.GetArgument<String>("email")); })
-                .AuthorizeWith("AdminPolicy");
+                .AuthorizeWithPolicy("AdminPolicy");
             FieldAsync<DarlUserType>("userById",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "userId" }),
                 resolve: async context => { return await trans.GetUserById(context.GetArgument<String>("userId")); })
-                .AuthorizeWith("AdminPolicy");
+                .AuthorizeWithPolicy("AdminPolicy");
             FieldAsync<DarlUserType>("userByStripeId",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "stripeCustomerId" }),
                 resolve: async context => { return await trans.GetUserByStripeId(context.GetArgument<String>("stripeCustomerId")); })
-                .AuthorizeWith("AdminPolicy");
+                .AuthorizeWithPolicy("AdminPolicy");
 
             FieldAsync<StringGraphType>(
                "getApiKey",
@@ -150,7 +150,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
 
                    return (await trans.GetUserById(userId)).APIKey;
                }
-            ).AuthorizeWith("UserPolicy");
+            ).AuthorizeWithPolicy("UserPolicy");
             FieldAsync<AccountStateEnum>(
                "getAccountState",
                "Gets the account status for this account. Only accessible to logged in users.",
@@ -160,7 +160,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
 
                    return (await trans.GetUserById(userId)).accountState;
                }
-            ).AuthorizeWith("UserPolicy");
+            ).AuthorizeWithPolicy("UserPolicy");
 
             FieldAsync<StringGraphType>(
                 "getCollateral",
@@ -171,7 +171,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var name = context.GetArgument<string>("name");
                     return await trans.GetCollateral(name);
                 }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
             FieldAsync<ListGraphType<CollateralType>>(
                 "collateral",
                 "Get texts used in responses",
@@ -179,7 +179,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     return await trans.GetCollaterals();
                 }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
 
             FieldAsync<ListGraphType<PushSubType>>(
                 "pushSubs",
@@ -224,7 +224,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var ipaddress = context.GetArgument<string>("ipaddress");
                     return await trans.CheckEmail(email, ipaddress);
                 }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
 
 
             FieldAsync<IntGraphType>(
@@ -235,7 +235,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     return await trans.GetContactsCount(userId);
                 }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
             FieldAsync<IntGraphType>(
                 "contactCount30Days",
                 "Get the count of contacts added in the last 30 days",
@@ -244,7 +244,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     return await trans.GetContactsMonthCount(userId);
                 }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
             FieldAsync<IntGraphType>(
                 "contactCountDay",
                 "Get the count of contacts added in the last 24 hours",
@@ -253,7 +253,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     return await trans.GetContactsDayCount(userId);
                 }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
 
             FieldAsync<IntGraphType>(
                 "userCount",
@@ -263,7 +263,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     return await trans.GetUserCount(userId);
                 }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
 
 
             Field<ListGraphType<StringGraphType>>(
@@ -293,7 +293,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     return await graph.GetGraphObjects(CompositeName(userId, graphName), name, lineage);
                 }
-            ).AuthorizeWith("UserPolicy");
+            ).AuthorizeWithPolicy("UserPolicy");
             FieldAsync<ListGraphType<GraphObjectType>>(
                 "getGraphObjectsByLineage",
                 "Get graph objects based on lineage",
@@ -309,7 +309,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     return await graph.GetGraphObjectsByLineage(CompositeName(userId, graphName), lineage);
                 }
-            ).AuthorizeWith("UserPolicy");
+            ).AuthorizeWithPolicy("UserPolicy");
             FieldAsync<GraphObjectType>(
                 "getGraphObjectById",
                 "Get a graph object based on id",
@@ -458,7 +458,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     return await graph.GetKnowledgeStateByExternalId(userId, subjectId, name, externalIds);
                 }
-            ).AuthorizeWith("UserPolicy");
+            ).AuthorizeWithPolicy("UserPolicy");
 
             FieldAsync<ListGraphType<KnowledgeStateType>>(
                  "getKnowledgeStates",
@@ -472,7 +472,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                      var name = context.GetArgument<string>("graphName");
                      return await connectivity.GetKnowledgeStates(userId, name);
                  }
-             ).AuthorizeWith("UserPolicy");
+             ).AuthorizeWithPolicy("UserPolicy");
             FieldAsync<ListGraphType<KnowledgeStateType>>(
                  "getKnowledgeStatesByType",
                  "Get all the knowledge states in this graph descended from a particular graph object.", arguments: new QueryArguments(
@@ -498,7 +498,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                      }
                      return await connectivity.GetKnowledgeStatesByType(userId, typeId, name);
                  }
-             ).AuthorizeWith("UserPolicy");
+             ).AuthorizeWithPolicy("UserPolicy");
             FieldAsync<ListGraphType<KnowledgeStateType>>(
                  "getKnowledgeStatesByTypeAndAttribute",
                  "Get all the knowledge states in this graph descended from a particular graph object containing an attribute with a particular value.", arguments: new QueryArguments(
@@ -528,7 +528,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                      }
                      return await connectivity.GetKnowledgeStatesByTypeAndAttribute(userId, typeId, name, attLineage, attValue);
                  }
-             ).AuthorizeWith("UserPolicy");
+             ).AuthorizeWithPolicy("UserPolicy");
             FieldAsync<BooleanGraphType>(
                 "checkKey",
                 "Check a license key is valid",
@@ -556,7 +556,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var texts = context.GetArgument<List<string>>("texts");
                     return await cmp.InferFromSoftMatchModel(userId, treeName, texts);
                 }
-            ).AuthorizeWith("UserPolicy");
+            ).AuthorizeWithPolicy("UserPolicy");
             FieldAsync<ListGraphType<StringGraphType>>(
                 "softMatchModels",
                 "Get the names of the SoftMatch models in your account",
@@ -808,7 +808,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 var graphName = context.GetArgument<string>("graphName");
                 var userId = trans.GetCurrentUserId(context.UserContext);
                 return await graph.CreateTimedAccessUrl(userId, graphName);
-            }).AuthorizeWith("UserPolicy");
+            }).AuthorizeWithPolicy("UserPolicy");
             FieldAsync<ListGraphType<GraphAttributeType>>("conceptCloud", "Get the data for the concept cloud",
                 arguments: new QueryArguments(
                 new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge graph to view" },

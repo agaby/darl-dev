@@ -11,7 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
             Name = "kGraph";
             Description = "A Knowledge Graph and its status.";
             Field(c => c.Name).Description("The unique name of the knowledge graph");
-            Field<GraphModelType>("model", resolve: context => graph.GetModel(context.Source.userId, context.Source.Name));
+            FieldAsync<GraphModelType>("model", resolve: async context => await graph.GetModel(context.Source.userId, context.Source.Name));
         }
     }
 }

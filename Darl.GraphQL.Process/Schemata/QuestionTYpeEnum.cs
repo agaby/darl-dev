@@ -8,10 +8,10 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "QuestionType";
             Description = "The data type sought.";
-            AddValue("numeric", "a number", 0);
-            AddValue("categorical", "text from a range of texts", 1);
-            AddValue("textual", "Free form text", 2);
-            AddValue("temporal", "Free form text", 3);
+            Add("numeric", 0, "a number");
+            Add("categorical", 1, "text from a range of texts");
+            Add("textual", 2, "Free form text");
+            Add("temporal", 3, "Free form text");
         }
     }
 }

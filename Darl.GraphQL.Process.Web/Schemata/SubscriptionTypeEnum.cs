@@ -7,10 +7,10 @@ namespace Darl.GraphQL.Models.Schemata
         public SubscriptionTypeEnum()
         {
             Name = "SubscriptionType";
-            AddValue("individual", "A single user", 0);
-            AddValue("corporate", "A corporate user", 1);
-            AddValue("embedded", "A license to embed DARL nugets or docker instances", 2);
-            AddValue("inhouse", "A license for DARL associates", 3);
+            Add("individual", 0, "A single user");
+            Add("corporate", 1, "A corporate user");
+            Add("embedded", 2, "A license to embed DARL nugets or docker instances");
+            Add("inhouse", 3, "A license for DARL associates");
         }
     }
 }

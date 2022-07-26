@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Process.Web.Middleware
@@ -57,18 +58,18 @@ namespace Darl.GraphQL.Process.Web.Middleware
         {
             if (context.Message.Type == MessageType.GQL_CONNECTION_INIT)
             {
-                var payload = context.Message.Payload as JObject;
+                var payload = context.Message.Payload as JsonElement?;
 
                 if (payload != null)
                 {
-                    if (payload.ContainsKey("Authorization"))
+                    if (payload.Value.TryGetProperty("authorization", out JsonElement keyElement))
                     {
-                        var auth = payload.Value<string>("Authorization");
+                        var auth = keyElement.GetString();
                         _httpContextAccessor.HttpContext.User = await BuildClaimsPrincipal(auth);
                     }
-                    else if (payload.ContainsKey("authorization"))
+                    else if (payload.Value.TryGetProperty("Authorization", out JsonElement keyElement2))
                     {
-                        var auth = payload.Value<string>("authorization");
+                        var auth = keyElement2.GetString();
                         _httpContextAccessor.HttpContext.User = await BuildClaimsPrincipal(auth);
                     }
                 }

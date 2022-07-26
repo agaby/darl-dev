@@ -1766,8 +1766,18 @@ namespace Darl.GraphQL.Models.Connectivity
         public Task<string> CreateTempKG(string userId, string graphName, byte[] bytes)
         {
             var compositeName = userId + "_" + graphName;
-            var model = DeserializeGraph(bytes);
-            _localCache.Set(compositeName, model, TimeSpan.FromMinutes(kgCacheMinutes));
+            try
+            {
+                var model = DeserializeGraph(bytes);
+                if (model != null)
+                    _localCache.Set(compositeName, model, TimeSpan.FromMinutes(kgCacheMinutes));
+                else
+                    throw new Exception("Couldn't deserialize model.");
+            }
+            catch(Exception ex)
+            {
+                throw new ExecutionError($"Invalid or empty graph data for {graphName}", ex);
+            }
             return Task.FromResult(compositeName);
         }
     }

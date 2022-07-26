@@ -8,23 +8,23 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "darlVarDataTypes";
             Description = "The different types of data represented by a darlVar";
-            AddValue("numeric", "numeric data", 0);
-            AddValue("categorical", "categorical data", 1);
-            AddValue("textual", "textual data", 2);
-            AddValue("sequence", "sequence data", 3);
-            AddValue("date", "date data", 4);
-            AddValue("time", "time data", 5);
-            AddValue("duration", "duration data", 6);
-            AddValue("location", "location data", 7);
-            AddValue("link", "link data", 8);
-            AddValue("image", "image data", 9);
-            AddValue("video", "numeric data", 10);
-            AddValue("credentials", "credentials data", 11);
-            AddValue("name", "name data", 12);
-            AddValue("organization", "organization data", 13);
-            AddValue("payment", "payment data", 14);
-            AddValue("ruleset", "ruleset data", 15);
-            AddValue("complete", "completion data", 16);
+            Add("numeric", 0, "numeric data");
+            Add("categorical", 1, "categorical data");
+            Add("textual", 2, "textual data");
+            Add("sequence", 3, "sequence data");
+            Add("date", 4, "date data");
+            Add("time", 5, "time data");
+            Add("duration", 6, "duration data");
+            Add("location", 7, "location data");
+            Add("link", 8, "link data");
+            Add("image", 9, "image data");
+            Add("video", 10, "numeric data");
+            Add("credentials", 11, "credentials data");
+            Add("name", 12, "name data");
+            Add("organization", 13,  "organization data");
+            Add("payment", 14, "payment data");
+            Add("ruleset", 15, "ruleset data");
+            Add("complete", 16, "completion data");
         }
     }
 }

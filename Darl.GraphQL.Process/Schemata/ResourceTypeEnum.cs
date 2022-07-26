@@ -8,12 +8,12 @@ namespace Darl.GraphQL.Models.Schemata
         public ResourceTypeEnum()
         {
             Name = "resourceTypes";
-            AddValue("ruleset", "A ruleset model", 0);
-            AddValue("mlmodel", "A machine learning model", 1);
-            AddValue("botmodel", "A chatbot model", 2);
-            AddValue("document", "A document", 3);
-            AddValue("collateral", "A piece of collateral", 4);
-            AddValue("simulation", "A simulation model", 5);
+            Add("ruleset", 0, "A ruleset model");
+            Add("mlmodel", 1, "A machine learning model");
+            Add("botmodel", 2, "A chatbot model");
+            Add("document", 3, "A document");
+            Add("collateral", 4, "A piece of collateral");
+            Add("simulation", 5, "A simulation model");
         }
     }
 }

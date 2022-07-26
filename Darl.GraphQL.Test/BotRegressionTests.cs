@@ -87,7 +87,7 @@ namespace Darl.GraphQL.Test
             var trans = new Mock<IKGTranslation>();
             var lic = new Mock<ILicensing>();
             var lcache = new Mock<IMemoryCache>();
-            var blob = new BlobGraphPrimitives(bc, cache.Object, conn.Object, bgplogger.Object, lic.Object, lcache.Object);
+            var blob = new BlobGraphPrimitives(bc, cache.Object, conn.Object, bgplogger.Object, lic.Object, lcache.Object, _config);
             var dataLoader = new DataLoader(meta.Object);
             _graph = new GraphProcessing(blob, glogger.Object, meta.Object, dataLoader);
             _graphStore = new GraphLocalStore(configuration.Object, logger.Object, context.Object, _graph);

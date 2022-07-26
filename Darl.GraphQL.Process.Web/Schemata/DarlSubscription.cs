@@ -5,7 +5,6 @@ using Darl.Thinkbase;
 using DarlLanguage.Processing;
 using GraphQL;
 using GraphQL.Resolvers;
-using GraphQL.Subscription;
 using GraphQL.Types;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -42,7 +41,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
             _logger = logger;
             systemId = _config["AppSettings:boaiuserid"];
             Name = "Subscription";
-            AddField(new EventStreamFieldType()
+            AddField(new FieldType()
             {
                 Name = "graphChanged",
                 Description = "Respond to KG changes of state",
@@ -53,9 +52,9 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     new QueryArgument<BooleanGraphType> { Name = "asSystem", Description = "Write to system account", DefaultValue = false }),
                 Type = typeof(KnowledgeStateType),
                 Resolver = new FuncFieldResolver<KnowledgeState?>(ResolveKSObject),
-                Subscriber = new EventStreamResolver<KnowledgeState>(SubscribeGraphChanged)
+                StreamResolver = new SourceStreamResolver<KnowledgeState>(SubscribeGraphChanged)
             });
-            AddField(new EventStreamFieldType()
+            AddField(new FieldType()
             {
                 Name = "learn",
                 Description = "Learn relationships in an existing Knowledge Graph and respond when complete.",
@@ -70,9 +69,9 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 ),
                 Type = typeof(DarlMineReportType),
                 Resolver = new FuncFieldResolver<Thinkbase.Meta.DarlMineReport?>(ResolveDMRObject),
-                Subscriber = new EventStreamResolver<Thinkbase.Meta.DarlMineReport>(SubscribeLearn)
+                StreamResolver = new SourceStreamResolver<Thinkbase.Meta.DarlMineReport>(SubscribeLearn)
             });
-            AddField(new EventStreamFieldType()
+            AddField(new FieldType()
             {
                 Name = "build",
                 Description = "Load training data, build a knowledge graph and learn the relationships in the data.",
@@ -84,9 +83,9 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 ),
                 Type = typeof(DarlMineReportType),
                 Resolver = new FuncFieldResolver<Thinkbase.Meta.DarlMineReport?>(ResolveDMRObject),
-                Subscriber = new EventStreamResolver<Thinkbase.Meta.DarlMineReport>(SubscribeBuild)
+                StreamResolver = new SourceStreamResolver<Thinkbase.Meta.DarlMineReport>(SubscribeBuild)
             });
-            AddField(new EventStreamFieldType()
+            AddField(new FieldType()
             {
                 Name = "interactComplete",
                 Description = "Respond to the completion of a conversation",
@@ -96,12 +95,12 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 ),
                 Type = typeof(KnowledgeStateType),
                 Resolver = new FuncFieldResolver<KnowledgeState?>(ResolveKSObject),
-                Subscriber = new EventStreamResolver<KnowledgeState>(SubscribeInteractCompleted)
+                StreamResolver = new SourceStreamResolver<KnowledgeState>(SubscribeInteractCompleted)
             });
         }
 
 
-        private IObservable<KnowledgeState> SubscribeGraphChanged(IResolveEventStreamContext arg)
+        private IObservable<KnowledgeState> SubscribeGraphChanged(IResolveFieldContext arg)
         {
 
             var userId = _trans.GetCurrentUserId(arg.UserContext);
@@ -122,7 +121,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
             return ks.Where(a => a.userId == userId && a.knowledgeGraphName == graphName).Select(i =>  _bot.Seek(i, target, new List<string>(), "adjective:5500").Result);
         }
 
-        private IObservable<KnowledgeState> SubscribeInteractCompleted(IResolveEventStreamContext arg)
+        private IObservable<KnowledgeState> SubscribeInteractCompleted(IResolveFieldContext arg)
         {
             var userId = _trans.GetCurrentUserId(arg.UserContext);
             var graphName = arg.GetArgument<string>("name");
@@ -151,7 +150,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
         /// <param name="arg">The arguments</param>
         /// <returns>The report</returns>
         /// <exception cref="ExecutionError"></exception>
-        private IObservable<Thinkbase.Meta.DarlMineReport> SubscribeLearn(IResolveEventStreamContext arg)
+        private IObservable<Thinkbase.Meta.DarlMineReport> SubscribeLearn(IResolveFieldContext arg)
         {
             var userId = _trans.GetCurrentUserId(arg.UserContext);
             var graphName = arg.GetArgument<string>("graphName");
@@ -185,7 +184,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
             return res;
         }
 
-        private IObservable<Thinkbase.Meta.DarlMineReport> SubscribeBuild(IResolveEventStreamContext arg)
+        private IObservable<Thinkbase.Meta.DarlMineReport> SubscribeBuild(IResolveFieldContext arg)
         {
             var name = arg.GetArgument<string>("name");
             var data = arg.GetArgument<string>("data");

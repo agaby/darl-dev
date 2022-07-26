@@ -9,33 +9,27 @@ using Darl.GraphQL.Web.Models.Schemata;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
-using Darl.Thinkbase.Meta;
 using DarlLanguage.Processing;
 using GraphQL;
 using GraphQL.Caching;
-using GraphQL.DataLoader;
-using GraphQL.Execution;
+using GraphQL.MicrosoftDI;
 using GraphQL.Server;
 using GraphQL.Server.Transports.Subscriptions.Abstractions;
 using GraphQL.Server.Ui.GraphiQL;
 using GraphQL.Server.Ui.Playground;
 using GraphQL.Server.Ui.Voyager;
-using GraphQL.SystemReactive;
-using GraphQL.Validation;
-using GraphQL.Validation.Complexity;
+using GraphQL.SystemTextJson;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using System;
@@ -43,7 +37,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using GraphQLBuilderExtensions = GraphQL.MicrosoftDI.GraphQLBuilderExtensions;
 
 namespace Darl.GraphQL
 {
@@ -126,161 +119,18 @@ namespace Darl.GraphQL
             services.AddSingleton<Thinkbase.IDataLoader, DataLoader>();
             services.AddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
-            services.AddTransient<IBot, DarlBot>();
-
-            //types
-            services.AddSingleton<DictionarySequenceType>();
-            services.AddSingleton<DisplayTypeEnum>();
-            services.AddSingleton<FormFormatType>();
-            services.AddSingleton<InputFormatType>();
-            services.AddSingleton<InputTypeEnum>();
-            services.AddSingleton<LineageAnnotationNodeType>();
-            services.AddSingleton<LineageElementType>();
-            services.AddSingleton<LineageMatchNodePairType>();
-            services.AddSingleton<LineageMatchNodeType>();
-            services.AddSingleton<LineageMatchTreeType>();
-            services.AddSingleton<LineageTypeEnum>();
-            services.AddSingleton<MLSpecType>();
-            services.AddSingleton<OutputFormatType>();
-            services.AddSingleton<OutputTypeEnum>();
-            services.AddSingleton<PostTypeEnum>();
-            services.AddSingleton<SourceTypeEnum>();
-            services.AddSingleton<StringDoublePairType>();
-            services.AddSingleton<StringStringPairType>();
-            services.AddSingleton<SetDefinitionType>();
-            services.AddSingleton<ContactType>();
-            services.AddSingleton<DefaultType>();
-            services.AddSingleton<ContactInputType>();
-            services.AddSingleton<ContactUpdateType>();
-            services.AddSingleton<InputFormatUpdateType>();
-            services.AddSingleton<OutputFormatUpdateType>();
-            services.AddSingleton<LineageNodeDefinitionType>();
-            services.AddSingleton<LineageRecordType>();
-            services.AddSingleton<LineageNodeAttributeUpdateType>();
-            services.AddSingleton<LineageNodeAttributeType>();
-            services.AddSingleton<DarlVarType>();
-            services.AddSingleton<DarlVarDataTypeEnum>();
-            services.AddSingleton<StringStringPairInputType>();
-            services.AddSingleton<DarlVarInputType>();
-            services.AddSingleton<MLResultType>();
-            services.AddSingleton<LineageAssociationType>();
-            services.AddSingleton<LineageElementUnionType>();
-            services.AddSingleton<DarlUserType>();
-            services.AddSingleton<AccountStateEnum>();
-            services.AddSingleton<DarlUserInputType>();
-            services.AddSingleton<DarlUserUpdateType>();
-            services.AddSingleton<MLSpecUpdateType>();
-            services.AddSingleton<SetGraphType>();
-            services.AddSingleton<PercentGraphType>();
-            services.AddSingleton<QuestionDataType>();
-            services.AddSingleton<QuestionTypeEnum>();
-            services.AddSingleton<ResponseDataType>();
-            services.AddSingleton<ResponseTypeEnum>();
-            services.AddSingleton<QuestionSetInputType>();
-            services.AddSingleton<QuestionInputType>();
-            services.AddSingleton<DarlLintErrorType>();
-            services.AddSingleton<StringDarlVarPairType>();
-            services.AddSingleton<InteractResponseType>();
-            services.AddSingleton<MatchedAnnotationType>();
-            services.AddSingleton<LineageNodeAttributeResourceType>();
-            services.AddSingleton<CollateralType>();
-            services.AddSingleton<UpdateType>();
-            services.AddSingleton<DQTypeEnum>();
-            services.AddSingleton<ResourceTypeEnum>();
-            services.AddSingleton<PurchaseType>();
-            services.AddSingleton<DaslSetType>();
-            services.AddSingleton<DaslStateType>();
-            services.AddSingleton<SampleTypeEnum>();
             services.AddSingleton<AdminFilter>();
-            services.AddSingleton<DaslSetInputType>();
-            services.AddSingleton<DaslStateInputType>();
-            services.AddSingleton<DarlSubscription>();
-            services.AddSingleton<StringDoublePairInputType>();
-            services.AddSingleton<ModelTypeEnum>();
-            services.AddSingleton<GraphQLCredentialsType>();
-            services.AddSingleton<InteractionModelType>();
-            services.AddSingleton<LanguageModelType>();
-            services.AddSingleton<IntentType>();
-            services.AddSingleton<SlotType>();
-            services.AddSingleton<AlexaTypeType>();
-            services.AddSingleton<StoreStateType>();
-            services.AddSingleton<BotTestViewType>();
-            services.AddSingleton<GraphObjectType>();
-            services.AddSingleton<GraphConnectionType>();
-            services.AddSingleton<GraphObjectInputType>();
-            services.AddSingleton<GraphConnectionInputType>();
-            services.AddSingleton<GraphObjectUpdateType>();
-            services.AddSingleton<GraphConnectionUpdateType>();
-            services.AddSingleton<SubscriptionTypeEnum>();
-            services.AddSingleton<DarlLicenseType>();
-            services.AddSingleton<MatchResultType>();
-            services.AddSingleton<InferenceRecordType>();
-            services.AddSingleton<OntologyActionEnum>();
-            services.AddSingleton<KGTrainingSpecType>();
-            services.AddSingleton<KGTrainingValueType>();
-            services.AddSingleton<GraphAttributeType>();
-            services.AddSingleton<GraphAttributeInputType>();
-            services.AddSingleton<GraphConnectionInputType>();
-            services.AddSingleton<GraphConnectionType>();
-            services.AddSingleton<GraphConnectionUpdateType>();
-            services.AddSingleton<GraphObjectInputType>();
-            services.AddSingleton<GraphObjectType>();
-            services.AddSingleton<GraphObjectUpdateType>();
-            services.AddSingleton<GraphAttributeDataTypeEnum>();
-            services.AddSingleton<KnowledgeStateType>();
-            services.AddSingleton<StringListGraphAttributePairType>();
-            services.AddSingleton<KGraphType>();
-            services.AddSingleton<GraphModelType>();
-            services.AddSingleton<StringGraphObjectPairType>();
-            services.AddSingleton<StringGraphConnectionPairType>();
-            services.AddSingleton<DisplayConnectionInnerType>();
-            services.AddSingleton<DisplayConnectionOuterType>();
-            services.AddSingleton<DisplayModelType>();
-            services.AddSingleton<DisplayObjectInnerType>();
-            services.AddSingleton<DisplayObjectOuterType>();
-            services.AddSingleton<GraphTypeEnum>();
-            services.AddSingleton<DarlTimeType>();
-            services.AddSingleton<DarlTimeInputType>();
-            services.AddSingleton<DarlSeasonEnum>();
-            services.AddSingleton<InferenceTimeEnum>();
-            services.AddSingleton<DateDisplayEnum>();
-            services.AddSingleton<VRDisplayModelType>();
-            services.AddSingleton<VRDisplayNodeType>();
-            services.AddSingleton<VRDisplayLinkType>();
-            services.AddSingleton<KnowledgeStateInputType>();
-            services.AddSingleton<StringListGraphAttributeInputPairInputType>();
-            services.AddSingleton<ModelMetaDataType>();
-            services.AddSingleton<ModelMetaDataUpdateType>();
-            services.AddSingleton<PushSubType>();
-            services.AddSingleton<DataMapType>();
-            services.AddSingleton<ThinkBaseProcessType>();
-
-
-
-            //root
-            services.AddSingleton<DarlMutation>();
-            services.AddSingleton<DarlQuery>();
-            services.AddSingleton<DarlSchema>();
-            services.AddSingleton<DarlSubscription>();
-
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IBot, DarlBot>();
+            services.AddHttpContextAccessor();
             services.AddTransient<IOperationMessageListener, AuthenticationListener>();
 
 
-            GraphQLBuilderExtensions.AddGraphQL(services)
-                .AddSubscriptionDocumentExecuter()
-                .AddServer(true)
-                .AddSchema<DarlSchema>()
-                .ConfigureExecution(options =>
-                {
-                    options.EnableMetrics = Environment.IsDevelopment();
-                    var logger = options.RequestServices.GetRequiredService<ILogger<Startup>>();
-                    options.UnhandledExceptionDelegate = ctx => logger.LogError("{Error} occurred", ctx.OriginalException.Message);
-                })
+            services.AddGraphQL(builder => builder
                 .AddSystemTextJson()
-                .Configure<ErrorInfoProviderOptions>(opt => opt.ExposeExceptionStackTrace = Environment.IsDevelopment())
+                .AddHttpMiddleware<DarlSchema>()
+                .AddWebSocketsHttpMiddleware<DarlSchema>()
+                .AddSchema<DarlSchema>()
                 .AddWebSockets()
-                .AddDataLoader()
                 .AddUserContextBuilder(context => new GraphQLUserContext { User = context.User })
                 .AddGraphTypes(typeof(DarlSchema).Assembly)
                 .AddGraphTypes(typeof(KGraphType).Assembly)
@@ -289,9 +139,9 @@ namespace Darl.GraphQL
                     options.AddPolicy("AdminPolicy", p => p.RequireClaim(roleClaimText, "Admin"));
                     options.AddPolicy("UserPolicy", p => p.RequireClaim(roleClaimText, "User"));
                     options.AddPolicy("CorpPolicy", p => p.RequireClaim(roleClaimText, "Corp"));
-                });
+                })
+            ); 
 
-            services.AddGraphQLUpload();
 
             services.AddControllersWithViews()
                 .AddMicrosoftIdentityUI();
@@ -311,8 +161,6 @@ namespace Darl.GraphQL
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-
-
 
             if (env.IsDevelopment())
             {
@@ -404,8 +252,7 @@ namespace Darl.GraphQL
             app.UseWebSockets();
 
             app.UseGraphQLWebSockets<DarlSchema>();
-            app.UseGraphQL<DarlSchema, GraphQLHttpMiddlewareWithLogs<DarlSchema>>();
-            app.UseGraphQLUpload<DarlSchema>();
+            app.UseGraphQL<DarlSchema>();
 
             app.UseGraphQLPlayground(new PlaygroundOptions()
             {

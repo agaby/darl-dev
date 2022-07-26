@@ -7,12 +7,12 @@ namespace Darl.GraphQL.Models.Schemata
         public LineageTypeEnum()
         {
             Name = "lineageTypes";
-            AddValue("CONCEPT", "A concept", 0);
-            AddValue("REFERENCE", "A reference", 1);
-            AddValue("VALUE", "A value", 2);
-            AddValue("LITERAL", "A literal", 3);
-            AddValue("DEFAULT", "A default", 4);
-            AddValue("COMPOSITE", "A composite type", 5);
+            Add("CONCEPT", 0, "A concept");
+            Add("REFERENCE", 1, "A reference");
+            Add("VALUE", 2, "A value");
+            Add("LITERAL", 3, "A literal");
+            Add("DEFAULT", 4, "A default");
+            Add("COMPOSITE", 5, "A composite type");
         }
     }
 }

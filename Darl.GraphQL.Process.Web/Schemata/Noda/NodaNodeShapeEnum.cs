@@ -7,8 +7,8 @@ namespace Darl.GraphQL.Models.Schemata.Noda
         public NodaNodeShapeEnum()
         {
             Name = "NodaNodeShape";
-            AddValue("Ball", "Ball", 0);
-            AddValue("Box", "Box", 1);
+            Add("Ball", 0, "Ball");
+            Add("Box", 1, "Box");
         }
     }
 }

@@ -7,8 +7,8 @@ namespace Darl.GraphQL.Models.Schemata.Noda
         public NodaLinkShapeEnum()
         {
             Name = "NodaLinkShape";
-            AddValue("Solid", "Solid", 0);
-            AddValue("Dash", "Dash", 1);
+            Add("Solid", 0, "Solid");
+            Add("Dash", 1, "Dash");
         }
     }
 }

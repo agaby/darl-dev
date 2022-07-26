@@ -7,10 +7,10 @@ namespace Darl.GraphQL.Models.Schemata
         public OutputTypeEnum()
         {
             Name = "outputTypes";
-            AddValue("NUMERIC", "Output is numeric", 0);
-            AddValue("CATEGORICAL", "Output is categorical", 1);
-            AddValue("TEXTUAL", "Output is textual", 2);
-            AddValue("TEMPORAL", "Output is temporal", 3);
+            Add("NUMERIC", 0, "Output is numeric");
+            Add("CATEGORICAL", 1, "Output is categorical");
+            Add("TEXTUAL", 2, "Output is textual");
+            Add("TEMPORAL", 3, "Output is temporal");
         }
     }
 }

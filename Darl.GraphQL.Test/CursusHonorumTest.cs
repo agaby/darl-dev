@@ -109,7 +109,7 @@ namespace Darl.GraphQL.Test
             var trans = new Mock<IKGTranslation>();
             var lic = new Mock<ILicensing>();
             var lcache = new Mock<IMemoryCache>();
-            _primitives = new BlobGraphPrimitives(blob, cache.Object, _conn, bgplogger.Object, lic.Object, lcache.Object);
+            _primitives = new BlobGraphPrimitives(blob, cache.Object, _conn, bgplogger.Object, lic.Object, lcache.Object, _config);
             var dataLoader = new DataLoader(meta);
             _graph = new GraphProcessing(_primitives, glogger.Object, meta, dataLoader);
             _graphStore = new GraphLocalStore(_config, logger.Object, context.Object, _graph);
@@ -319,7 +319,7 @@ namespace Darl.GraphQL.Test
             var connLogger = new Mock<ILogger<CosmosDBConnectivity>>();
             var conv = new CosmosDBConnectivity(_config, connLogger.Object);
             var lcache = new Mock<IMemoryCache>();
-            var _prim = new BlobGraphPrimitives(blob, cache.Object, conv, bgplogger.Object, lic.Object, lcache.Object);
+            var _prim = new BlobGraphPrimitives(blob, cache.Object, conv, bgplogger.Object, lic.Object, lcache.Object, _config);
             var dataLoader = new DataLoader(_metastruct);
             var graph = new GraphProcessing(_prim, glogger.Object, _metastruct, dataLoader);
             var graphName = "Cocomo-II.graph";

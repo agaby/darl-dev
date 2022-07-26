@@ -1,5 +1,6 @@
-﻿using GraphQL.Language.AST;
+﻿
 using GraphQL.Types;
+using GraphQLParser.AST;
 
 namespace Darl.GraphQL.Models.Schemata
 {
@@ -24,16 +25,15 @@ namespace Darl.GraphQL.Models.Schemata
             }
             return null;
         }
-
-        public override object ParseLiteral(IValue value)
+/*        public override object ParseLiteral(GraphQLValue value)
         {
-            if (value is IntValue intValue)
+            if (value is GraphQLIntValue intValue)
             {
                 if (intValue.Value >= 0 && intValue.Value <= 100)
                     return intValue.Value;
             }
             return null;
-        }
+        }*/
 
     }
 }

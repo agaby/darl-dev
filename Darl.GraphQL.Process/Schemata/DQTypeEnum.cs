@@ -9,8 +9,8 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "DynamicQType";
             Description = "The type of the dynamic questionnaire to run";
-            AddValue("rule_edit", "edit the supporting values of a rule set", 0);
-            AddValue("bot_edit", "edit the contents of a bot model", 1);
+            Add("rule_edit", 0, "edit the supporting values of a rule set");
+            Add("bot_edit", 1, "edit the contents of a bot model");
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Darl.GraphQL.Process.Middleware
             return Task.FromResult(true);
         }
 
-        public Task<bool> AllowDirective(DirectiveGraphType directive)
+        public Task<bool> AllowDirective(Directive directive)
         {
             return Task.FromResult(true);
         }

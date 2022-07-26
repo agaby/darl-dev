@@ -9,10 +9,10 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "inputTypes";
             Description = "The data types of inputs";
-            AddValue("NUMERIC", "input is numeric", 0);
-            AddValue("CATEGORICAL", "input is categorical", 1);
-            AddValue("TEXTUAL", "input is textual", 2);
-            AddValue("TEMPORAL", "input is temporal", 3);
+            Add("NUMERIC", 0, "input is numeric");
+            Add("CATEGORICAL", 1, "input is categorical");
+            Add("TEXTUAL", 2, "input is textual");
+            Add("TEMPORAL", 3, "input is temporal");
 
         }
     }

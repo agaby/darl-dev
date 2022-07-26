@@ -244,7 +244,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="NJsonSchema" Version="10.7.1" />
+    <PackageReference Include="NJsonSchema" Version="10.7.2" />
   </ItemGroup>
 
   <ItemGroup>

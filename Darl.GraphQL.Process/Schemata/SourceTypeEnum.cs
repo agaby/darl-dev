@@ -7,8 +7,8 @@ namespace Darl.GraphQL.Models.Schemata
         public SourceTypeEnum()
         {
             Name = "sourceTypes";
-            AddValue("RESULTS", "Get the value from a result in the ruleset output", 0);
-            AddValue("FIXEDVALUE", "The values is determined at design time", 1);
+            Add("RESULTS", 0, "Get the value from a result in the ruleset output");
+            Add("FIXEDVALUE", 1, "The values is determined at design time");
         }
     }
 }

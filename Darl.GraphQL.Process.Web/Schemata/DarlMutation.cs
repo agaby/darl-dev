@@ -17,7 +17,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
         {
             Name = "Mutation";
             Description = "Make changes to the contents of your account.";
-            this.AuthorizeWith("UserPolicy");
+            this.AuthorizeWithPolicy("UserPolicy");
             // Default
             //  Create
             FieldAsync<DefaultType>("createDefault", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }, new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "value" }),
@@ -26,21 +26,21 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 var name = context.GetArgument<string>("name");
                 var value = context.GetArgument<string>("value");
                 return await trans.CreateDefault(name, value);
-            }).AuthorizeWith("AdminPolicy");
+            }).AuthorizeWithPolicy("AdminPolicy");
             FieldAsync<DefaultType>("updateDefault", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }, new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "value" }),
                 resolve: async context =>
                 {
                     var name = context.GetArgument<string>("name");
                     var value = context.GetArgument<string>("value");
                     return await trans.UpdateDefault(name, value);
-                }).AuthorizeWith("AdminPolicy");
+                }).AuthorizeWithPolicy("AdminPolicy");
             //  Delete
             FieldAsync<DefaultType>("deleteDefault", arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
                 resolve: async context =>
                 {
                     var name = context.GetArgument<string>("name");
                     return await trans.DeleteDefault(name);
-                }).AuthorizeWith("AdminPolicy");
+                }).AuthorizeWithPolicy("AdminPolicy");
 
             FieldAsync<StringGraphType>(
                "resetApiKey", "Regenerate your API key",
@@ -64,7 +64,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var value = context.GetArgument<string>("value");
                     return await trans.UpdateCollateral(name, value);
                 }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
             FieldAsync<CollateralType>(
                 "deleteCollateral",
                 "Delete text used in responses",
@@ -76,7 +76,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var name = context.GetArgument<string>("name");
                     return await trans.DeleteCollateral(name);
                 }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
             FieldAsync<ContactType>(
                 "deleteContact",
                 "Delete a contact",
@@ -88,7 +88,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var email = context.GetArgument<string>("email");
                     return await trans.DeleteContactAsync(email);
                 }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
             FieldAsync<DateTimeGraphType>(
                 "setLastUpdate",
                 "Set the utc time of a system wide update.",
@@ -102,7 +102,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var to = context.GetArgument<string>("to");
                     return await trans.SetLastUpdate(from, to);
                 }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
 
             FieldAsync<IntGraphType>(
                 "mailshot",
@@ -121,7 +121,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var test = context.GetArgument<bool>("test");
                     return await email.Mailshot(collateral, subject, sendfrom, test);
                 }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
             FieldAsync<StringGraphType>(
                 "email",
                 "send an email",
@@ -139,7 +139,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var emailAddress = context.GetArgument<String>("emailAddress");
                     return await email.SendEmail(body, subject, sendfrom, emailAddress);
                 }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
             FieldAsync<StringGraphType>(
                 "createNewsItem",
                 "create a news item",
@@ -153,7 +153,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var content = context.GetArgument<String>("content");
                     return await trans.CreateNewsItem(title,content);
                 }
-            ).AuthorizeWith("AdminPolicy");
+            ).AuthorizeWithPolicy("AdminPolicy");
 
             FieldAsync<GraphObjectType>("createGraphObject", "Add a new graph object", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
@@ -251,7 +251,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
 
                         return await trans.CreateKey(userId, company, email, endDate);
                     }
-                ).AuthorizeWith("AdminPolicy");
+                ).AuthorizeWithPolicy("AdminPolicy");
             FieldAsync<StringGraphType>("createSoftMatchModel", "Create a SoftMatch model from text/index pairs", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "modelName", Description = "The unique name of the stored model for later reuse " },
                     new QueryArgument<NonNullGraphType<ListGraphType<StringStringPairInputType>>> { Name = "data", Description = "The text/index data to add to the SoftMatch model" },
@@ -308,7 +308,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 var newUserEmail = context.GetArgument<string>("email");
                 var userId = trans.GetCurrentUserId(context.UserContext);
                 return await email.InviteUser(userId, newUserEmail);
-            }).AuthorizeWith("CorpPolicy");
+            }).AuthorizeWithPolicy("CorpPolicy");
 
             FieldAsync<StringGraphType>("copyRenamKG", "copy and rename a Knowledge graph", arguments: new QueryArguments(
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph to copy" },
@@ -574,20 +574,6 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     return await graph.LoadExternalData(userId, name, data, patternPath, dataMaps);
                 }
             );
-
-            FieldAsync<StringGraphType>(
-              "uploadGraph",
-              arguments: new QueryArguments(
-                  new QueryArgument<NonNullGraphType<UploadGraphType>> { Name = "file" },
-                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName" }
-                  ),
-              resolve: async context =>
-              {
-                  var file = context.GetArgument<IFormFile>("file");
-                  var graphName = context.GetArgument<string>("graphName");
-                  var userId = trans.GetCurrentUserId(context.UserContext);
-                  return await trans.CreateTempKG(userId,graphName,file);
-              });
         }
 
         private string CompositeName(string userId, string graphName)
