@@ -555,7 +555,7 @@ namespace Darl_standard_core.test
                 new DarlResult("flightLength", 5000),
                 new DarlResult("flightNumber", "lkjlkajslkjl", DarlResult.DataType.textual) ,
                 new DarlResult("bookingRef", "uyiyiy", DarlResult.DataType.textual) ,
-                new DarlResult("dateOfFlight",  new DateTime(2016,6,1), DarlResult.DataType.temporal) ,
+                new DarlResult("dateOfFlight",  (DateTime.Now - TimeSpan.FromDays(1825)), DarlResult.DataType.temporal), //five years ago
                 new DarlResult("timeOfFlight", "08:00", DarlResult.DataType.textual) ,
                 new DarlResult("fullName", "andy edmonds", DarlResult.DataType.textual) ,
                 new DarlResult("docText", "", DarlResult.DataType.textual) ,
@@ -563,6 +563,7 @@ namespace Darl_standard_core.test
             };
             var res = await runtime.Evaluate(tree, results);
             Assert.AreEqual("true", res[32].Value);
+            var dof = (DateTime.Now - TimeSpan.FromDays(1810)).ToString("yyyy-MM-dd");
             results = new List<DarlResult>
             {
                 new DarlResult("endsInEU", "both") ,
@@ -571,7 +572,7 @@ namespace Darl_standard_core.test
                 new DarlResult("flightLength", 5000),
                 new DarlResult("flightNumber", "lkjlkajslkjl", DarlResult.DataType.textual) ,
                 new DarlResult("bookingRef", "uyiyiy", DarlResult.DataType.textual) ,
-                new DarlResult("dateOfFlight",  "2016-08-07", DarlResult.DataType.temporal) ,
+                new DarlResult("dateOfFlight",  dof, DarlResult.DataType.temporal) ,
                 new DarlResult("timeOfFlight", "08:00", DarlResult.DataType.textual) ,
                 new DarlResult("fullName", "andy edmonds", DarlResult.DataType.textual) ,
                 new DarlResult("docText", "", DarlResult.DataType.textual) ,
