@@ -1,4 +1,5 @@
-﻿using GraphQL.Server.Transports.AspNetCore;
+﻿using GraphQL;
+using GraphQL.Server.Transports.AspNetCore;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -17,8 +18,8 @@ namespace Darl.GraphQL
         public GraphQLHttpMiddlewareWithLogs(
             ILogger<GraphQLHttpMiddleware<TSchema>> logger,
             RequestDelegate next,
-            IGraphQLRequestDeserializer requestDeserializer)
-            : base(next, requestDeserializer)
+            IGraphQLTextSerializer requestDeserializer)
+        : base(requestDeserializer)
         {
             _logger = logger;
         }

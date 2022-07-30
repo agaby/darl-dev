@@ -1,3 +1,4 @@
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -11,11 +12,8 @@ namespace Darl.GraphQL
         public static int Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                .Enrich.FromLogContext()
-                .WriteTo.Console()
-                .CreateLogger();
+               .WriteTo.Console()
+               .CreateBootstrapLogger();
 
             try
             {
@@ -37,12 +35,9 @@ namespace Darl.GraphQL
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder
-                        .UseSerilog()
-                        .UseStartup<Startup>();
-                });
+               .UseSerilog((context, services, loggerConfiguration) => loggerConfiguration
+                .WriteTo.ApplicationInsights((TelemetryConfiguration)services.GetService(typeof(TelemetryConfiguration)),TelemetryConverter.Traces))
+                .ConfigureWebHostDefaults(webBuilder => {webBuilder.UseStartup<Startup>();});
         }
     }
 }
