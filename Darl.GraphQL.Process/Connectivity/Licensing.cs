@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Standard.Licensing;
 using Standard.Licensing.Validation;
 using System;
@@ -13,12 +14,14 @@ namespace Darl.GraphQL.Models.Connectivity
     public class ProductLicensing : ILicensing
     {
 
+        private readonly ILogger _logger;
 
-        public ProductLicensing(IConfiguration config)
+        public ProductLicensing(IConfiguration config, ILogger<ProductLicensing> logger)
         {
             publicKey = config["Licensing:publicLicenseGeneratorKey"];
             privateKey = config["Licensing:privateLicenseGeneratorKey"];
             passPhrase = config["Licensing:privateLicensePassPhrase"];
+            _logger = logger;
         }
 
         private readonly string publicKey;
@@ -27,13 +30,26 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public string CreateKey(DateTime endDate, string company, string email)
         {
-            var license = License.New()
-                .As(LicenseType.Standard)
-                .ExpiresAt(endDate)
-                .LicensedTo(company, email)
-                .CreateAndSignWithPrivateKey(privateKey, passPhrase);
-            var licenseText = license.ToString();
-            return Compress(licenseText);
+            if (privateKey == null || passPhrase == null)
+            {
+                _logger.LogError("Licensing configuration not set.");
+                return String.Empty;
+            }
+            try
+            {
+                var license = License.New()
+                    .As(LicenseType.Standard)
+                    .ExpiresAt(endDate)
+                    .LicensedTo(company, email)
+                    .CreateAndSignWithPrivateKey(privateKey, passPhrase);
+                var licenseText = license.ToString();
+                return Compress(licenseText);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Exception in creating license.");
+                return String.Empty;
+            }
         }
 
 
@@ -85,8 +101,9 @@ namespace Darl.GraphQL.Models.Connectivity
                                     .Signature(publicKey)
                                     .AssertValidLicense().ToList();
             }
-            catch
+            catch(Exception ex)
             {
+                _logger.LogError(ex, "Exception in checking license.");
                 return false;
             }
             if (validationFailures.Any())
