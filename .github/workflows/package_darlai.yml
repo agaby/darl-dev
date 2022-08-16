@@ -1,0 +1,37 @@
+name: Create darl.ai nuget package
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+    
+env:
+  WORKING_DIRECTORY: "Darl.ai/Darl.ai"
+  
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore "${{env.WORKING_DIRECTORY}}/darl.ai.csproj" --ignore-failed-sources
+    - name: Build
+      run: dotnet build "${{env.WORKING_DIRECTORY}}/darl.ai.csproj" --configuration Release --no-restore
+    - name: pack
+      run: dotnet pack "${{env.WORKING_DIRECTORY}}/darl.ai.csproj"  --no-restore --no-build --configuration Release --include-symbols --output ${{github.workspace}}\output
+    - name: push package
+      run: dotnet nuget push ${{github.workspace}}\output\*.nupkg  -k ${{secrets.PAT}} -s "https://nuget.pkg.github.com/thinkbase-ai/index.json"
+    - name: Write info to news Item
+      id: hello
+      uses: thinkbase-ai/newsitem_action@v1.14
+      with:
+        apiKey: ${{secrets.DARL_API_KEY}}
