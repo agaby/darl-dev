@@ -5,10 +5,14 @@
     <Copyright>(c) Dr Andy's IP</Copyright>
     <Description>Knowledge graph processing code</Description>
     <Authors>Dr Andy Edmonds</Authors>
-    <RepositoryUrl>https://conceptforms.visualstudio.com/_git/Darl.GraphQL?path=%2FDarl.GraphQL.Process</RepositoryUrl>
+    <RepositoryUrl>https://github.com/thinkbase-ai/Darl.dev</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Company>Dr Andy's IP</Company>
     <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/thinkbase-ai/Darl.dev</PackageProjectUrl>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
