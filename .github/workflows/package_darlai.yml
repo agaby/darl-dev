@@ -29,7 +29,7 @@ jobs:
     - name: pack
       run: dotnet pack "${{env.WORKING_DIRECTORY}}/darl.ai.csproj"  --no-restore --no-build --configuration Release --include-symbols
     - name: push package
-      run: dotnet nuget push "${{env.WORKING_DIRECTORY}}/*.nupkg"  --api-key ${{secrets.PAT}} --source "github" --no-restore --no-build
+      run: dotnet nuget push "${{env.WORKING_DIRECTORY}}/*.nupkg"  --api-key ${{secrets.PAT}} --source "https://nuget.pkg.github.com/thinkbase-ai/index.json" --no-restore --no-build
     - name: Write info to news Item
       id: hello
       uses: thinkbase-ai/newsitem_action@v1.14
