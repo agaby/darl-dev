@@ -7,8 +7,8 @@ on:
     branches: [ master ]
     
 env:
-  WORKING_DIRECTORY: Darl.GraphQL/Darl.ai
-  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\output
+  WORKING_DIRECTORY: "Darl.GraphQL/Darl.ai"
+  POD: "${{ github.workspace }}/output"
 
 jobs:
   build:
@@ -28,9 +28,9 @@ jobs:
     - name: Build
       run: dotnet build "${{env.WORKING_DIRECTORY}}" --configuration Release --no-restore
     - name: pack
-      run: dotnet pack "${{env.WORKING_DIRECTORY}}"  ==no-restore --no-build --configuration Release --include-symbols --output "${{PACKAGE_OUTPUT_DIRECTORY}}"
+      run: dotnet pack "${{env.WORKING_DIRECTORY}}"  ==no-restore --no-build --configuration Release --include-symbols --output "${{POD}}"
     - name: push package
-      run: dotnet nuget push "${{PACKAGE_OUTPUT_DIRECTORY}}/*.nupkg"  --api-key ${{secrets.PAT}} --source "github" --no-restore --no-build
+      run: dotnet nuget push "${{POD}}/*.nupkg"  --api-key ${{secrets.PAT}} --source "github" --no-restore --no-build
     - name: Write info to news Item
       id: hello
       uses: thinkbase-ai/newsitem_action@v1.14
