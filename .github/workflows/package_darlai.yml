@@ -23,9 +23,9 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore "${{env.WORKING_DIRECTORY}}" --ignore-failed-sources
+      run: dotnet restore "${{env.WORKING_DIRECTORY}}/darl.ai.csproj" --ignore-failed-sources
     - name: Build
-      run: dotnet build "${{env.WORKING_DIRECTORY}}" --configuration Release --no-restore
+      run: dotnet build "${{env.WORKING_DIRECTORY}}/darl.ai.csproj" --configuration Release --no-restore
     - name: pack
       run: dotnet pack "${{env.WORKING_DIRECTORY}}/darl.ai.csproj"  ==no-restore --no-build --configuration Release --include-symbols
     - name: push package
