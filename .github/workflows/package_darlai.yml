@@ -7,7 +7,7 @@ on:
     branches: [ master ]
     
 env:
-  WORKING_DIRECTORY: "Darl.GraphQL/Darl.ai/Darl.ai"
+  WORKING_DIRECTORY: "Darl.ai/Darl.ai"
   
 jobs:
   build:
