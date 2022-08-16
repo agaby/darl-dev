@@ -23,11 +23,11 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: dotnet restore "${{env.WORKING_DIRECTORY}}" --ignore-failed-sources
+      run: dotnet restore "${{env.WORKING_DIRECTORY}}/Darl.ai.csproj" --ignore-failed-sources
     - name: Build
-      run: dotnet build "${{env.WORKING_DIRECTORY}}" --configuration Release --no-restore
+      run: dotnet build "${{env.WORKING_DIRECTORY}}/Darl.ai.csproj" --configuration Release --no-restore
     - name: pack
-      run: dotnet pack "${{env.WORKING_DIRECTORY}}"  ==no-restore --no-build --configuration Release --include-symbols
+      run: dotnet pack "${{env.WORKING_DIRECTORY}}/Darl.ai.csproj"  ==no-restore --no-build --configuration Release --include-symbols
     - name: push package
       run: dotnet nuget push "${{env.WORKING_DIRECTORY}}/*.nupkg"  --api-key ${{secrets.PAT}} --source "github" --no-restore --no-build
     - name: Write info to news Item
