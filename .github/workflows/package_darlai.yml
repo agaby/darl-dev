@@ -22,7 +22,9 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore --ignore-failed-sources
     - name: Build
-      run: dotnet build /home/runner/work/Darl.GraphQL/Darl.ai/Darl.ai.csproj --configuration Release --no-restore
+      run: dotnet build Darl.GraphQL/Darl.ai/Darl.ai.csproj --configuration Release --no-restore
+    - name: push package
+      run: dotnet nuget push "bin/Release/*.nupkg"  --api-key ${{secrets.PAT}} --source "github"
     - name: Write info to news Item
       id: hello
       uses: thinkbase-ai/newsitem_action@v1.14
