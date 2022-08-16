@@ -41,7 +41,7 @@ jobs:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
     - name: Push generated package to GitHub registry
-      run: dotnet nuget push ./package/*.nupkg  --source https://nuget.pkg.github.com/thinkbase-ai/Darl.dev/index.json   --api-key ${{ github.token }}    
+      run: dotnet nuget push ./package/*.nupkg  --source https://nuget.pkg.github.com/thinkbase-ai/index.json   --api-key ${{ github.token }}    
     - name: Write info to news Item
       id: newsItem
       uses: thinkbase-ai/newsitem_action@v1.14
