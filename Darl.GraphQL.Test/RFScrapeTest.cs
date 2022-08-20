@@ -410,40 +410,6 @@ namespace Darl.GraphQL.Test
             await _graph.Store(compositeName);
         }
 
-        [TestMethod]
-        [Ignore]
-        public async Task UpdatelineageTypes()
-        {
-            //sub-activity and subtest have been given lineages of activity and test, thus rules fire when they shouldn't. replace
-            var compositeName = $"{_config["userId"]}_{graphName}";
-            var model = await _primitives.Load(compositeName) as BlobGraphContent;
-            foreach (var s in model.vertices.Values)
-            {
-                if (s.externalId.StartsWith("SUBACTIVITY"))
-                {
-                    await _graph.UpdateGraphObject(compositeName, new GraphObjectUpdate { id = s.id, lineage = subactivityLineage }, OntologyAction.build);
-                }
-                if (s.externalId.StartsWith("SUBTEST"))
-                {
-                    await _graph.UpdateGraphObject(compositeName, new GraphObjectUpdate { id = s.id, lineage = questionLineage }, OntologyAction.build);
-                }
-            }
-            var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
-            var gh = new GraphHandler(_config, _graph, _ghlogger, new MetaStructureHandler());
-            var paths = new List<string> { consistsLineage, followsLineage };
-            var subjectId = Guid.NewGuid().ToString();
-            var userId = _config["userId"];
-            var targetId = node.id;
-            var ks = new KnowledgeState();
-            var next = await gh.GraphPass(ks,userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>(), null, GraphProcess.seek);
-            await _graph.Store(compositeName);
-            var stream = await _graph.StoreGraphML(compositeName);
-            using (var fileStream = File.Create(graphImage))
-            {
-                stream.Seek(0, SeekOrigin.Begin);
-                stream.CopyTo(fileStream);
-            }
-        }
 
 
         [TestMethod]
@@ -479,7 +445,7 @@ namespace Darl.GraphQL.Test
         {
             var compositeName = $"{_config["userId"]}_{graphName}";
             var gh = new GraphHandler(_config, _graph, _ghlogger, new MetaStructureHandler());
-            var node = await _primitives.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
+            var node = await _graph.GetGraphObjectById(compositeName, "1b35bb45-930a-4331-8421-d1c95f7a0bf7");
             var paths = new List<string> { consistsLineage, followsLineage };
             var subjectId = Guid.NewGuid().ToString();
             var userId = _config["userId"];
@@ -676,58 +642,6 @@ namespace Darl.GraphQL.Test
             await _graph.Store(compositeName);
         }
 
-        [TestMethod]
-        [Ignore]
-        public async Task MoveAnnotations()
-        {
-            var compositeName = $"{_config["userId"]}_{graphName}";
-            var activities = await _graph.GetGraphObjectsByLineage(compositeName, subactivityLineage);
-            foreach (var o in activities)
-            {
-                var att = o.properties.Where(a => a.name == "display").First();
-                o.properties.Remove(att);
-                att.name = "text";
-                att.lineage = textLineage;
-                var obj = await _graph.UpdateGraphObject(compositeName, new GraphObjectUpdate { id = o.id, lineage = o.lineage, properties = new List<GraphAttributeInput> { BlobGraphPrimitives.ConvertAttributeInput(att) } }, OntologyAction.build);
-            }
-            var tests = await _graph.GetGraphObjectsByLineage(compositeName, questionLineage);
-            foreach (var o in tests)
-            {
-                var att = o.properties.Where(a => a.name == "display").First();
-                foreach (var p in o.properties.Where(a => a.name == "display").ToList())
-                    o.properties.Remove(p);
-                att.name = "text";
-                att.lineage = textLineage;
-                var obj = await _graph.UpdateGraphObject(compositeName, new GraphObjectUpdate { id = o.id, lineage = o.lineage, properties = new List<GraphAttributeInput> { BlobGraphPrimitives.ConvertAttributeInput(att) } }, OntologyAction.build);
-            }
-            await _graph.Store(compositeName);
-        }
-
-        [TestMethod]
-        [Ignore]
-        public async Task Deletions()
-        {
-            var compositeName = $"{_config["userId"]}_{graphName}";
-            var obj1 = await _graph.GetGraphObjectByExternalId(compositeName, "TEST1");
-            await _graph.DeleteGraphObject(compositeName, obj1.id);
-            var obj2 = await _graph.GetGraphObjectByExternalId(compositeName, "TEST6");
-            await _graph.DeleteGraphObject(compositeName, obj2.id);
-            var obj3 = await _graph.GetGraphObjectByExternalId(compositeName, "SUBACTIVITY3");
-            await _graph.DeleteGraphObject(compositeName, obj3.id);
-            var obj4 = await _graph.GetGraphObjectByExternalId(compositeName, "SUBACTIVITY6");
-            await _graph.DeleteGraphObject(compositeName, obj4.id);
-            await _graph.Store(compositeName);
-        }
-
-        [TestMethod]
-        [Ignore]
-        public async Task CleanKG()
-        {
-            var compositeName = $"{_config["userId"]}_{graphName}";
-            var prim = _primitives as BlobGraphPrimitives;
-            await prim.CorrectBrokenLinks(compositeName);
-            await _graph.Store(compositeName);
-        }
 
         [TestMethod]
         public async Task CorrectAttributeTypes()
@@ -780,7 +694,7 @@ namespace Darl.GraphQL.Test
                                }
                            }
                        }*/
-            foreach (var obj in await prim.GetAllRecognitionObjects(compositeName))
+            foreach (var obj in await _graph.GetAllRecognitionObjects(compositeName))
             {
                 if (obj.properties != null)
                 {

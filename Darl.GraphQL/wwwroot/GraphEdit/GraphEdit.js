@@ -1837,7 +1837,7 @@ async function LoadRecGraph() {
                             try {
                                 console.log(data);
                                 await deleterecognitionobject({ name: mdname, id: ele.id() });
-                                realcy.remove(ele);
+                                recognitioncy.remove(ele);
                                 edited = true;
                             }
                             catch (err) {

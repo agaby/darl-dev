@@ -21,8 +21,8 @@ namespace Darl.Thinkbase
 
         Task<List<GraphObject>?> GetGraphObjects(string compositeName, string name, string lineage);
         Task<GraphObject?> GetGraphObjectById(string compositeName, string id);
-        Task<GraphObject> GetVirtualObjectByLineage(string compositeName, string lineage);
-        Task<GraphObject> GetGraphObjectByExternalId(string compositeName, string externalId);
+        Task<GraphObject?> GetVirtualObjectByLineage(string compositeName, string lineage);
+        Task<GraphObject?> GetGraphObjectByExternalId(string compositeName, string externalId);
         Task<GraphObject> CreateGraphObject(string compositeName, GraphObjectInput graphObject, OntologyAction ontology = OntologyAction.ignore);
         Task<GraphConnection> CreateGraphConnection(string compositeName, GraphConnectionInput graphConnection, OntologyAction ontology = OntologyAction.ignore);
         Task<GraphObject?> DeleteGraphObject(string compositeName, string id);
@@ -31,7 +31,7 @@ namespace Darl.Thinkbase
         Task<GraphConnection?> UpdateGraphConnection(string compositeName, GraphConnectionUpdate graphConnection, OntologyAction ontology = OntologyAction.ignore);
         Task<bool> CreateNewGraph(string userId, string name);
         Task<string> GetGraphObjectProperty(string compositeName, string id, string property);
-        Task<GraphConnection> GetConnectionByIds(string compositeName, string startId, string endId, string lineage);
+        Task<GraphConnection?> GetConnectionByIds(string compositeName, string startId, string endId, string lineage);
         Task<List<GraphElement>> ProcessPath(string compositeName, string startExternalID, string endExternalID);
         Task<string> ProcessAttribute(string compositeName, string externalID, string propertyName);
         Task<List<StringStringPair>> ProcessCategories(string compositeName, string rootName, string childLineage, string childValueAttribute);
@@ -57,7 +57,7 @@ namespace Darl.Thinkbase
         Task<DisplayModel> GetRealDisplayGraph(string compositeName, string lineageFilter);
         Task<DisplayModel> GetVirtualDisplayGraph(string compositeName);
         Task<DisplayModel> GetRecognitionDisplayGraph(string compositeName);
-        Task<GraphObject> GetRecognitionObjectById(string compositeName, string id);
+        Task<GraphObject?> GetRecognitionObjectById(string compositeName, string id);
         Task<bool> SaveKSChanges(string userId, string subjectId, KnowledgeState ks);
         Task<KnowledgeState> GetKnowledgeStateByExternalId(string userId, string extId, string graphName, bool externalIds);
         Task ClearGraphContent(string compositeName);
@@ -69,7 +69,7 @@ namespace Darl.Thinkbase
         Task<GraphAttribute> UpdateGraphObjectAttribute(string compositeName, string objectId, GraphAttributeInput graphAtt);
         Task<GraphAttribute> DeleteGraphObjectAttribute(string compositeName, string objectId, string graphLineage);
         Task<List<LineageRecord>> GetLineagesInKG(string compositeName, GraphElementType gtype);
-        Task<GraphConnection> GetConnectionById(string compositeName, string id);
+        Task<GraphConnection?> GetConnectionById(string compositeName, string id);
         Task<KnowledgeState> GetKnowledgeState(string userId, string Id, string graphName, bool external = false);
         bool FindMetaDisplayStructure(IGraphModel model, GraphObject res, ref DarlVar? pending, List<InteractTestResponse> responses);
         string? FindDisplayAttribute(IGraphModel model, string id);
@@ -101,5 +101,8 @@ namespace Darl.Thinkbase
         Task<bool> ExistsInCache(string userId, string graphName);
         Task<byte[]> KGContents(string userId, string graphName);
         Task<string> CreateTempKG(string userId, string graphName, byte[] bytes);
+        Task<IEnumerable<GraphObject>> GetAllRecognitionObjects(string compositeName);
+        List<GraphAttribute> ConvertAttributeInputList(List<GraphAttributeInput> list);
+        List<GraphAttributeInput> ConvertAttributeInputList(List<GraphAttribute> list);
     }
 }

@@ -11,6 +11,7 @@
     <PackageProjectUrl>https://github.com/thinkbase-ai/Darl.dev</PackageProjectUrl>
     <RepositoryUrl>https://github.com/thinkbase-ai/Darl.dev</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
