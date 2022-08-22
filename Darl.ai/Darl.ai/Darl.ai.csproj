@@ -11,7 +11,7 @@
     <PackageProjectUrl>https://github.com/thinkbase-ai/Darl.dev</PackageProjectUrl>
     <RepositoryUrl>https://github.com/thinkbase-ai/Darl.dev</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -48,6 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="28.0.1" />
     <PackageReference Include="GemBox.Document" Version="35.0.1000" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
