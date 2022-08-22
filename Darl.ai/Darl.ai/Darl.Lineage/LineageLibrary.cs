@@ -14,10 +14,10 @@ namespace Darl.Lineage
 {
     public static class LineageLibrary
     {
-        private static readonly string source1 = "Darl.ai.Darl.Lineage.definitions.csv";
-        private static readonly string source2 = "Darl.ai.Darl.Lineage.words.csv";
-        private static readonly string source3 = "Darl.ai.Darl.Lineage.filteredAssociations.csv";
-        private static readonly string source4 = "Darl.ai.Darl.Lineage.frequency_dictionary_en_82_765.txt";
+        private static readonly string source1 = ".Darl.Lineage.definitions.csv";
+        private static readonly string source2 = ".Darl.Lineage.words.csv";
+        private static readonly string source3 = ".Darl.Lineage.filteredAssociations.csv";
+        private static readonly string source4 = ".Darl.Lineage.frequency_dictionary_en_82_765.txt";
 
         public static Dictionary<string, LineageRecord> lineages { get; } = new Dictionary<string, LineageRecord>();
         public static Dictionary<string, List<LineageRecord>> words { get; } = new Dictionary<string, List<LineageRecord>>();
@@ -93,8 +93,9 @@ namespace Darl.Lineage
         /// </summary>
         static LineageLibrary()
         {
+            var assemblyName = Assembly.GetExecutingAssembly().FullName!.Split(',').First();
             List<string> columns = new List<string>();
-            var stream1 = Assembly.GetExecutingAssembly().GetManifestResourceStream(source1);
+            var stream1 = Assembly.GetExecutingAssembly().GetManifestResourceStream(assemblyName + source1);
             if (stream1 == null)
                 throw new Exception($"Cannot find {source1} in the manifest of {Assembly.GetExecutingAssembly().FullName}");
             using (var reader = new CsvFileReader(stream1))
@@ -110,7 +111,7 @@ namespace Darl.Lineage
                     index++;
                 }
             }
-            var stream2 = Assembly.GetExecutingAssembly().GetManifestResourceStream(source2);
+            var stream2 = Assembly.GetExecutingAssembly().GetManifestResourceStream(assemblyName + source2);
             if (stream2 == null)
                 throw new Exception($"Cannot find {source2} in the manifest of {Assembly.GetExecutingAssembly().FullName}");
             using (var reader = new CsvFileReader(stream2))
@@ -134,7 +135,7 @@ namespace Darl.Lineage
                     index++;
                 }
             }
-            var stream3 = Assembly.GetExecutingAssembly().GetManifestResourceStream(source3);
+            var stream3 = Assembly.GetExecutingAssembly().GetManifestResourceStream(assemblyName + source3);
             if (stream3 == null)
                 throw new Exception($"Cannot find {source3} in the manifest of {Assembly.GetExecutingAssembly().FullName}");
             using (var reader = new CsvFileReader(stream3))
@@ -176,7 +177,7 @@ namespace Darl.Lineage
             lineages.Add(ValuePlaceholders[11], new LineageRecord { lineage = ValuePlaceholders[11], description = "a default response placeholder", type = LineageType.Default, typeWord = "default response" });
             lineages.Add(ValuePlaceholders[12], new LineageRecord { lineage = ValuePlaceholders[12], description = "a text placeholder", type = LineageType.value, typeWord = "text value" });
 
-            var stream4 = Assembly.GetExecutingAssembly().GetManifestResourceStream(source4);
+            var stream4 = Assembly.GetExecutingAssembly().GetManifestResourceStream(assemblyName + source4);
             if (stream4 == null)
                 throw new Exception($"Cannot find {source4} in the manifest of {Assembly.GetExecutingAssembly().FullName}");
             symSpell.LoadDictionary(stream4, 0, 1);
