@@ -14,6 +14,11 @@ namespace Darl.Lineage
 {
     public static class LineageLibrary
     {
+        private static readonly string source1 = "Darl.ai.Darl.Lineage.definitions.csv";
+        private static readonly string source2 = "Darl.ai.Darl.Lineage.words.csv";
+        private static readonly string source3 = "Darl.ai.Darl.Lineage.filteredAssociations.csv";
+        private static readonly string source4 = "Darl.ai.Darl.Lineage.frequency_dictionary_en_82_765.txt";
+
         public static Dictionary<string, LineageRecord> lineages { get; } = new Dictionary<string, LineageRecord>();
         public static Dictionary<string, List<LineageRecord>> words { get; } = new Dictionary<string, List<LineageRecord>>();
         /// <summary>
@@ -89,7 +94,10 @@ namespace Darl.Lineage
         static LineageLibrary()
         {
             List<string> columns = new List<string>();
-            using (var reader = new CsvFileReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.Darl.Lineage.definitions.csv")))
+            var stream1 = Assembly.GetExecutingAssembly().GetManifestResourceStream(source1);
+            if (stream1 == null)
+                throw new Exception($"Cannot find {source1} in the manifest of {Assembly.GetExecutingAssembly().FullName}");
+            using (var reader = new CsvFileReader(stream1))
             {
                 int index = 0;
                 while (reader.ReadRow(columns))
@@ -102,7 +110,10 @@ namespace Darl.Lineage
                     index++;
                 }
             }
-            using (var reader = new CsvFileReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.Darl.Lineage.words.csv")))
+            var stream2 = Assembly.GetExecutingAssembly().GetManifestResourceStream(source2);
+            if (stream2 == null)
+                throw new Exception($"Cannot find {source2} in the manifest of {Assembly.GetExecutingAssembly().FullName}");
+            using (var reader = new CsvFileReader(stream2))
             {
                 int index = 0;
                 while (reader.ReadRow(columns))
@@ -110,7 +121,7 @@ namespace Darl.Lineage
                     if (index > 0)
                     {
                         var linList = new List<LineageRecord>();
-                        foreach (var s in JsonConvert.DeserializeObject<List<string>>(columns[3]))
+                        foreach (var s in JsonConvert.DeserializeObject<List<string>>(columns[3])!)
                         {
                             var p = RemoveTraillingComma(s);
                             if (lineages.ContainsKey(p))
@@ -123,7 +134,10 @@ namespace Darl.Lineage
                     index++;
                 }
             }
-            using (var reader = new CsvFileReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.Darl.Lineage.filteredAssociations.csv")))
+            var stream3 = Assembly.GetExecutingAssembly().GetManifestResourceStream(source3);
+            if (stream3 == null)
+                throw new Exception($"Cannot find {source3} in the manifest of {Assembly.GetExecutingAssembly().FullName}");
+            using (var reader = new CsvFileReader(stream3))
             {
                 int index = 0;
                 while (reader.ReadRow(columns))
@@ -162,7 +176,10 @@ namespace Darl.Lineage
             lineages.Add(ValuePlaceholders[11], new LineageRecord { lineage = ValuePlaceholders[11], description = "a default response placeholder", type = LineageType.Default, typeWord = "default response" });
             lineages.Add(ValuePlaceholders[12], new LineageRecord { lineage = ValuePlaceholders[12], description = "a text placeholder", type = LineageType.value, typeWord = "text value" });
 
-            symSpell.LoadDictionary(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.Darl.Lineage.frequency_dictionary_en_82_765.txt"), 0, 1);
+            var stream4 = Assembly.GetExecutingAssembly().GetManifestResourceStream(source4);
+            if (stream4 == null)
+                throw new Exception($"Cannot find {source4} in the manifest of {Assembly.GetExecutingAssembly().FullName}");
+            symSpell.LoadDictionary(stream4, 0, 1);
         }
 
         private static string RemoveTraillingComma(string source)
@@ -184,7 +201,7 @@ namespace Darl.Lineage
             var word = text.Trim().ToLower();
             var index = 0;
             var concepts = WordRecognizer(new List<string> { word }, ref index, true);
-            if (conceptFrequency != null)
+            if (conceptFrequency != null && concepts != null)
             {
                 foreach (var c in concepts)
                 {
@@ -196,11 +213,14 @@ namespace Darl.Lineage
             }
             foreach (var lin in lineageArray)
             {
-                foreach (var child in concepts)
+                if (concepts != null)
                 {
-                    if (child.lineage.StartsWith(lin))
+                    foreach (var child in concepts)
                     {
-                        return true;
+                        if (child.lineage.StartsWith(lin))
+                        {
+                            return true;
+                        }
                     }
                 }
             }
@@ -225,9 +245,9 @@ namespace Darl.Lineage
             return false;
         }
 
-        private static bool RecursiveMatch(List<string> wordList, int wordIndex, List<List<string>> lineageArraySequence, int sequenceIndex, List<DarlVar> values, List<LineageRecord> currentConcepts)
+        private static bool RecursiveMatch(List<string> wordList, int wordIndex, List<List<string>> lineageArraySequence, int sequenceIndex, List<DarlVar> values, List<LineageRecord>? currentConcepts)
         {
-            LineageRecord matchedConcept = null;
+            LineageRecord? matchedConcept = null;
             if (sequenceIndex >= lineageArraySequence.Count)
             {
                 //disambiguate here on the way back up the tree
@@ -323,7 +343,7 @@ namespace Darl.Lineage
                 case "value:date":
                     {
                         // chronic parser returns non-null only when the complete phrase can be converted without extraneous words.
-                        Span res = null;
+                        Span? res = null;
                         int endIndex = wordIndex;
                         for (int n = wordIndex; n < wordList.Count; n++) //iterate through longer and longer phrases until parser returns null and select the longest.//was wordindex - 1
                         {
@@ -341,7 +361,7 @@ namespace Darl.Lineage
                         if (res != null)
                         {
                             Trace.WriteLine($"Match with time value {res.Start.ToString()}");
-                            return new DarlVar { dataType = DarlVar.DataType.date, times = new List<DarlTime> { new DarlTime(res.Start ?? DateTime.MinValue), new DarlTime(res.End ?? DateTime.MaxValue) }, Value = res.Start.ToString(), unknown = false, weight = 1.0, name = name };
+                            return new DarlVar { dataType = DarlVar.DataType.date, times = new List<DarlTime> { new DarlTime(res.Start ?? DateTime.MinValue), new DarlTime(res.End ?? DateTime.MaxValue) }, Value = res.Start.ToString()!, unknown = false, weight = 1.0, name = name };
                         }
                     }
                     break;
@@ -382,7 +402,7 @@ namespace Darl.Lineage
             return new DarlVar() { unknown = true };
         }
 
-        private static DarlVar ConvertDuration(List<string> wordList, ref int wordIndex, List<LineageRecord> currentConcepts)
+        private static DarlVar ConvertDuration(List<string> wordList, ref int wordIndex, List<LineageRecord>? currentConcepts)
         {
             //format is <integer> <period> [and <integer> <period>]
             // or a(n) <period>  i.e a day, a month...
@@ -408,7 +428,7 @@ namespace Darl.Lineage
                         numberFound = true;
                         found = true;
                     }
-                    else
+                    else if(concepts != null)
                     {
                         foreach (var c in concepts) // check it's not an indefinite article, i.e. a week.
                         {
@@ -457,7 +477,7 @@ namespace Darl.Lineage
                     }
 
                 }
-                else //process a period
+                else if(concepts != null)//process a period
                 {
                     foreach (var c in concepts)
                     {
@@ -475,7 +495,7 @@ namespace Darl.Lineage
 
                     }
                 }
-                if (!found) //might be a separator i.e. five days {and} three hours
+                if (!found && concepts != null) //might be a separator i.e. five days {and} three hours
                 {
                     foreach (var c in concepts)
                     {
@@ -607,11 +627,11 @@ namespace Darl.Lineage
         /// <param name="wordList"></param>
         /// <param name="wordIndex"></param>
         /// <returns></returns>
-        public static List<LineageRecord> WordRecognizer(List<string> wordList, ref int wordIndex, bool single = false)
+        public static List<LineageRecord>? WordRecognizer(List<string> wordList, ref int wordIndex, bool single = false)
         {
             if (wordIndex >= wordList.Count)
                 return null;
-            HashSet<LineageRecord> list = null;
+            HashSet<LineageRecord>? list = null;
             var t = wordList[wordIndex];
             if (t.Length == 1) //handle punctuation
             {
@@ -698,30 +718,30 @@ namespace Darl.Lineage
                 wordIndex++;
             }
 
-            return list.ToList();
+            return list!.ToList();
         }
 
-        public static List<LineageRecord> LookupWord(string word)
+        public static List<LineageRecord>? LookupWord(string word)
         {
             if (!words.ContainsKey(word))
                 return null;
             return words[word];
         }
 
-        private static DarlVar ConvertTextNumbers(List<string> wordList, ref int wordIndex, List<LineageRecord> currentConcepts)
+        private static DarlVar ConvertTextNumbers(List<string> wordList, ref int wordIndex, List<LineageRecord>? currentConcepts)
         {
             var res = new DarlVar { unknown = true, dataType = DarlVar.DataType.numeric, Value = "", name = "number in text", values = new List<double> { 0.0 }, weight = 0.0 };
             bool complete = false;
             int sum = 0;
             int subsum = 0;
             var concepts = currentConcepts;
-            List<LineageRecord> oldConcepts = null;
+            List<LineageRecord>? oldConcepts = null;
             int oldWordIndex = 0; ;
             while (!complete)
             {
 
                 bool found = false;
-                foreach (var c in concepts)
+                foreach (var c in concepts ?? new List<LineageRecord>())
                 {
                     if (cardinals.ContainsKey(c.lineage))
                     {

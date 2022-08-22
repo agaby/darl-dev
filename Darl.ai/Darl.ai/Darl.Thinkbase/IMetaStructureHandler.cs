@@ -15,7 +15,7 @@ namespace Darl.Thinkbase
         ConcurrentDictionary<string, string> CommonLineages { get; }
         Dictionary<string, LineageDefinitionNode> PreloadLineages { get; }
 
-        (DarlVar, InteractTestResponse) AggregateChildren(GraphObject go, IGraphModel model, string ConnectionLineage);
+        (DarlVar, InteractTestResponse?) AggregateChildren(GraphObject go, IGraphModel model, string ConnectionLineage);
         bool FindMetaDisplayStructure(IGraphModel model, GraphObject res, ref DarlVar pending, List<InteractTestResponse> responses);
         bool IsConnectionLineage(string lin);
         bool IsObjectLineage(string lin);

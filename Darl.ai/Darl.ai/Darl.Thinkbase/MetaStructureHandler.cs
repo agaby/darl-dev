@@ -132,7 +132,7 @@ namespace Darl.Thinkbase
             }
             //this is a simple leaf node. Ensure it contains text and answer attributes (answer must be empty)
             pending = new DarlVar();//will be the pending value, so needs info to tie up once response is obtained.
-            pending.name = res.id;
+            pending.name = res.id!;
             pending.sequence = new List<List<string>> { new List<string> { res.externalId } };
             var questionText = GetProperty(res, CommonLineages["text"]);
             if (string.IsNullOrEmpty(questionText))
@@ -143,7 +143,7 @@ namespace Darl.Thinkbase
             if (answer == null)
             {
                 questionText += $"\n\n_You have not set an answer attribute on the {res.externalId} node, so I can't infer the data type.\nPlease add one with an empty value_";
-                answer = new GraphAttribute { confidence = 1.0, type = GraphAttribute.DataType.textual, value = null };
+                answer = new GraphAttribute { confidence = 1.0, type = GraphAttribute.DataType.textual, value = string.Empty };
             }
             pending.dataType = answer.ConvertDataType();
             switch(pending.dataType)
@@ -155,27 +155,27 @@ namespace Darl.Thinkbase
                     }
                     break;
             }
-            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = pending.dataType, categories = pending.categories, values = pending.values, name = questionIdentifier, Value = questionText }, reference = res.externalId, darl = "Inferred from structure", activeNodes = new List<string> { res.id } });
+            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = pending.dataType, categories = pending.categories, values = pending.values, name = questionIdentifier, Value = questionText }, reference = res.externalId, darl = "Inferred from structure", activeNodes = new List<string> { res.id! } });
             return true;
         }
 
 
         
-        public (DarlVar, InteractTestResponse) AggregateChildren(GraphObject go, IGraphModel model, string ConnectionLineage)
+        public (DarlVar, InteractTestResponse?) AggregateChildren(GraphObject go, IGraphModel model, string ConnectionLineage)
         {
             string aggregateLineage = "";
-            var nodes = new List<string> { go.id };
+            var nodes = new List<string> { go.id! };
             DarlVar pending = new DarlVar();//will be the pending value, so needs info to tie up once response is obtained.
-            pending.name = go.id;
+            pending.name = go.id!;
             pending.sequence = new List<List<string>> { new List<string> { go.externalId } };
             var questionText = GetProperty(go, CommonLineages["text"]);
-            foreach (var o in go.Out.Where(a => a.lineage.StartsWith(ConnectionLineage)))
+            foreach (var o in go.Out.Where(a => a.lineage!.StartsWith(ConnectionLineage)))
             {
                 var child = model.vertices[o.endId];
-                nodes.Add(child.id);
+                nodes.Add(child.id!);
                 if (string.IsNullOrEmpty(aggregateLineage))
                 {
-                    aggregateLineage = child.lineage;
+                    aggregateLineage = child.lineage!;
                     if (aggregateLineage.StartsWith(CommonLineages["category"]))
                     {
                         pending.dataType = DarlVar.DataType.categorical;
@@ -200,12 +200,12 @@ namespace Darl.Thinkbase
                 }
                 else
                 {
-                    if (aggregateLineage.StartsWith(child.lineage))
+                    if (aggregateLineage.StartsWith(child.lineage!))
                     {
-                        aggregateLineage = child.lineage;
+                        aggregateLineage = child.lineage!;
                         AggregateValue(pending, child);
                     }
-                    else if (child.lineage.StartsWith(aggregateLineage))
+                    else if (child.lineage!.StartsWith(aggregateLineage))
                     {
                         AggregateValue(pending, child);
                     }
@@ -215,7 +215,7 @@ namespace Darl.Thinkbase
                     }
                 }
             }
-            var resp = new InteractTestResponse { response = new DarlVar { dataType = pending.dataType, categories = pending.categories, values = pending.values, name = questionIdentifier, Value = questionText }, reference = go.externalId, darl = "Inferred from structure", activeNodes = nodes };
+            var resp = new InteractTestResponse { response = new DarlVar { dataType = pending.dataType, categories = pending.categories, values = pending.values, name = questionIdentifier, Value = questionText! }, reference = go.externalId, darl = "Inferred from structure", activeNodes = nodes };
             return (pending, resp);
         }
 
@@ -243,7 +243,7 @@ namespace Darl.Thinkbase
                     }
                     else
                     {
-                        pending.categories.Add(child.name, 1.0);
+                        pending.categories.Add(child.name!, 1.0);
                     }
                     break;
                 case DarlVar.DataType.numeric:
@@ -267,11 +267,11 @@ namespace Darl.Thinkbase
             }
         }
 
-        private string GetProperty(GraphObject child, string lineage)
+        private string? GetProperty(GraphObject child, string lineage)
         {
             if (child.properties == null)
                 return null;
-            var p = child.properties.Where(a => a.lineage.StartsWith(lineage)).FirstOrDefault();
+            var p = child.properties.Where(a => a.lineage!.StartsWith(lineage)).FirstOrDefault();
             if (p == null)
                 return null;
             return p.value;
@@ -313,20 +313,20 @@ namespace Darl.Thinkbase
                         }
                     }
                     //set answer att with value in ks
-                    ks.AddAttribute(res.id, new GraphAttribute { id = Guid.NewGuid().ToString(), confidence = 1.0, lineage = CommonLineages["answer"], value = cat, name = "answer", type = GraphAttribute.DataType.categorical });
+                    ks.AddAttribute(res.id!, new GraphAttribute { id = Guid.NewGuid().ToString(), confidence = 1.0, lineage = CommonLineages["answer"], value = cat, name = "answer", type = GraphAttribute.DataType.categorical });
                     //mark children as completed
                     break;
                 case DarlVar.DataType.numeric:
                     //check values is a valid number
                     //set answer att with value in ks
-                    ks.AddAttribute(res.id, new GraphAttribute { id = Guid.NewGuid().ToString(), confidence = 1.0, lineage = CommonLineages["answer"], value = response.Value, name = "answer", type = GraphAttribute.DataType.numeric });
+                    ks.AddAttribute(res.id!, new GraphAttribute { id = Guid.NewGuid().ToString(), confidence = 1.0, lineage = CommonLineages["answer"], value = response.Value, name = "answer", type = GraphAttribute.DataType.numeric });
                     break;
             }
             foreach (var i in res.Out)
             {
                 var o = model.vertices[i.endId];
                 var att = new GraphAttribute { id = Guid.NewGuid().ToString(), lineage = CommonLineages["complete"], name = "completed", type = GraphAttribute.DataType.categorical, value = "true", confidence = 1.0 };
-                ks.AddAttribute(o.id, att);
+                ks.AddAttribute(o.id!, att);
             }
         }
 
@@ -342,7 +342,7 @@ namespace Darl.Thinkbase
             foreach (var i in res.Out)
             {
                 var o = model.vertices[i.endId];
-                if (!ks.ContainsAttribute(o.id, CommonLineages["complete"]))
+                if (!ks.ContainsAttribute(o.id!, CommonLineages["complete"]))
                 {
                     completed = false;
                     break;
@@ -351,30 +351,30 @@ namespace Darl.Thinkbase
             if (completed)
             {
                 var att = new GraphAttribute { id = Guid.NewGuid().ToString(), lineage = CommonLineages["complete"], name = "completed", type = GraphAttribute.DataType.categorical, value = "true", confidence = 1.0 };
-                ks.AddAttribute(res.id, att);
+                ks.AddAttribute(res.id!, att);
             }
         }
 
         public List<(string, string)> CreateCompletionRuleFirstPass(IGraphModel model, GraphObject res)
         {
             var set = new HashSet<(string, string)>();
-            if (model.vertices.ContainsKey(res.id))
+            if (model.vertices.ContainsKey(res.id!))
             {
                 foreach (var c in res.Out)
                 {
                     var child = model.vertices[c.endId];
-                    set.Add((c.lineage, child.lineage));
+                    set.Add((c.lineage!, child.lineage!));
                 }
             }
-            else if (model.virtualVertices.ContainsKey(res.lineage))
+            else if (model.virtualVertices.ContainsKey(res.lineage!))
             {
                 //Find all objects of this type 
-                foreach (var o in model.vertices.Where(a => a.Value.lineage.StartsWith(res.lineage)))
+                foreach (var o in model.vertices.Where(a => a.Value.lineage!.StartsWith(res.lineage!)))
                 {
                     foreach (var c in o.Value.Out)
                     {
                         var child = model.vertices[c.endId];
-                        set.Add((c.lineage, child.lineage));
+                        set.Add((c.lineage!, child.lineage!));
                     }
                 }
             }
@@ -523,7 +523,7 @@ namespace Darl.Thinkbase
 
         private string BuildTypeWordString(GraphObject obj, IGraphModel model)
         {
-            var lins = model.SplitCompositeLineage(obj.lineage);
+            var lins = model.SplitCompositeLineage(obj.lineage!);
             if (lins.Item2 == null)
                 return GetTypeWord(lins.Item1);
             return $"{GetTypeWord(lins.Item1)}+{GetTypeWord(lins.Item2)}";
@@ -536,7 +536,7 @@ namespace Darl.Thinkbase
 
         public string GetTypeWord(string? lineage)
         {
-            if(lineage != null && LineageLibrary.lineages.TryGetValue(lineage, out LineageRecord rec))
+            if(lineage != null && LineageLibrary.lineages.TryGetValue(lineage, out LineageRecord? rec))
             {
                 return rec.typeWord;
             }
