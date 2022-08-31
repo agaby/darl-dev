@@ -92,8 +92,8 @@ namespace Darl.GraphQL.Test
             _graph = new GraphProcessing(blob, glogger.Object, meta.Object, dataLoader);
             _graphStore = new GraphLocalStore(configuration.Object, logger.Object, context.Object, _graph);
             var ghandler = new Mock<IGraphHandler>();
-            var dg = new Mock<IDistributedCache>();
-            _bot = new BotProcessing(_conv, botLogger.Object, _config, _graph, ghandler.Object, dg.Object);
+            var dg = new Mock<IBotStateStorage>();
+            _bot = new BotProcessing(botLogger.Object, _config, _graph, ghandler.Object, dg.Object);
         }
 
 

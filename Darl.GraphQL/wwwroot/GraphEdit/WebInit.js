@@ -108,7 +108,7 @@ $(async function () {
     virtualLabels = (virtual ? (virtual.virtualLabels ? virtual.virtualLabels : "label") : "label");
 
     var recset = window.localStorage.getItem(virtualStorageName);
-    recLabels = (recset ? (recset.recLabels ? recset.recLabels : "label") : "label");;
+    recLabels = (recset ? (recset.recLabels ? recset.recLabels : "label") : "label");
 
 
     graph = graphql(url + "/graphql");

@@ -1,13 +1,9 @@
-﻿using Darl.GraphQL.Models.Models;
-using Darl.GraphQL.Process.Connectivity;
-using Darl.Lineage;
+﻿using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlCompiler.Interpreter;
-using GraphQL;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ProtoBuf;
@@ -24,24 +20,22 @@ namespace Darl.GraphQL.Models.Connectivity
 {
     public class BotProcessing : IBotProcessing
     {
-        readonly IConnectivity _conv;
         private readonly ILogger<BotProcessing> _logger;
         private readonly IConfiguration _config;
         readonly IGraphProcessing _graph;
         readonly IGraphHandler _ghandler;
-        readonly IDistributedCache _cache;
+        IBotStateStorage _stateStorage;
 
         private readonly ISubject<KnowledgeState> _knowledgeStateStream = new ReplaySubject<KnowledgeState>(1);
 
 
-        public BotProcessing(IConnectivity conv, ILogger<BotProcessing> logger, IConfiguration config, IGraphProcessing graph, IGraphHandler ghandler, IDistributedCache cache)
+        public BotProcessing(ILogger<BotProcessing> logger, IConfiguration config, IGraphProcessing graph, IGraphHandler ghandler, IBotStateStorage stateStorage)
         {
-            _conv = conv;
             _logger = logger;
             _config = config;
             _graph = graph;
             _ghandler = ghandler;
-            _cache = cache;
+            _stateStorage = stateStorage;
         }
 
         public async Task<DarlMineReport> Build(string userId, string name, string data, string patternPath, List<DataMap> dataMaps, LoadType ltype = LoadType.xml, LearningForm form = LearningForm.supervised)
@@ -56,7 +50,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<KnowledgeState?> GetInteractKnowledgeState(string id, bool external = false)
         {
-            var bs = await GetBotState(id);
+            var bs = await _stateStorage.GetBotState(id);
             if(bs == null)
                 return null;
             if(!external)
@@ -72,7 +66,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             _logger.LogDebug($"{nameof(InteractKGAsync)}: {userId}, {KnowledgeGraphName}, {conversationId}, {conversationData.Value}");
             var resp = new List<InteractTestResponse>();
-            var bs = await GetBotState(conversationId);
+            var bs = await _stateStorage.GetBotState(conversationId);
             if (bs == null)//first call for this conversation
             {
                 _logger.LogDebug($"new conversation, id= {conversationId}, KGName= {KnowledgeGraphName}, userId = {userId}");
@@ -206,11 +200,11 @@ namespace Darl.GraphQL.Models.Connectivity
                     catch (Exception ex)
                     {
                         _logger.LogCritical(ex, "Internal exception in GraphPass");
-                        throw new ExecutionError($"Internal Error in GraphPass", ex);
+                        throw new Exception($"Internal Error in GraphPass", ex);
                     }
                 }
             }
-            await SetBotState(conversationId, bs);
+            await _stateStorage.SetBotState(conversationId, bs);
             return resp;
 
         }
@@ -224,32 +218,6 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             return await _ghandler.Seek(ks, targetId, paths, completionLineage);
         }
-
-        private async Task<BotState?> GetBotState(string conversationId)
-        {
-            var blob = await _cache.GetAsync(conversationId);
-            if (blob != null)
-            {
-                using (var ms = new MemoryStream(blob))
-                {
-                    ms.Position = 0;
-                    return Serializer.Deserialize<BotState>(ms);
-                }
-            }
-            return null;
-        }
-
-        private async Task SetBotState(string conversationId, BotState state)
-        {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                Serializer.Serialize<BotState>(ms, state);
-                ms.Position = 0;
-                await _cache.SetAsync(conversationId, ms.ToArray(), new DistributedCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(30)));
-            }
-        }
-
 
     }
 }

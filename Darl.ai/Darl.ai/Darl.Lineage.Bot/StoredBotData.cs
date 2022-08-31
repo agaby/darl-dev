@@ -3,7 +3,7 @@ using ProtoBuf;
 using System;
 using System.Collections.Generic;
 
-namespace Darl.GraphQL.Process.Connectivity
+namespace Darl.Lineage.Bot
 {
     [ProtoContract]
     public class StoredBotData : IBotDataInterface

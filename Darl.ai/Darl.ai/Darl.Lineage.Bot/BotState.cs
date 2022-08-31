@@ -1,5 +1,4 @@
 ﻿using Darl.Common;
-using Darl.GraphQL.Process.Connectivity;
 using Darl.Thinkbase;
 using DarlCommon;
 using ProtoBuf;
@@ -7,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Darl.GraphQL.Models.Models
+namespace Darl.Lineage.Bot
 {
     [ProtoContract]
     public class BotState

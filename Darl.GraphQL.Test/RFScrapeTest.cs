@@ -550,8 +550,8 @@ namespace Darl.GraphQL.Test
             var compositeName = $"{_config["userId"]}_{graphName}";
             var userId = _config["userId"];
             var gh = new GraphHandler(_config, _graph, _ghlogger, new MetaStructureHandler());
-            var cache = new Mock<IDistributedCache>();
-            var bp = new BotProcessing(_conn, _bplogger, _config, _graph, gh, cache.Object);
+            var cache = new Mock<IBotStateStorage>();
+            var bp = new BotProcessing(_bplogger, _config, _graph, gh, cache.Object);
             var conversationId = Guid.NewGuid().ToString();
             var res = await bp.InteractKGAsync(userId, graphName, conversationId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "hello" });
             Assert.AreEqual(1, res.Count);

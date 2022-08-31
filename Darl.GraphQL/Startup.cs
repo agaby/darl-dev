@@ -2,6 +2,7 @@ using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Middleware;
 using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Schemata;
+using Darl.GraphQL.Process.Connectivity;
 using Darl.GraphQL.Process.Middleware;
 using Darl.GraphQL.Process.Web.Bot;
 using Darl.GraphQL.Process.Web.Middleware;
@@ -119,6 +120,7 @@ namespace Darl.GraphQL
             services.AddSingleton<Thinkbase.IDataLoader, DataLoader>();
             services.AddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
+            services.AddSingleton<IBotStateStorage, BotStateStorage>();
             services.AddSingleton<AdminFilter>();
             services.AddTransient<IBot, DarlBot>();
             services.AddHttpContextAccessor();

@@ -2020,7 +2020,6 @@ async function LoadRecGraph() {
         });
 
         recognitioncy.on('ehcomplete', async function (event, sourceNode, targetNode, addedEles) {
-            var res = await createrecognitionconnection({ name: mdname, conn: { startId: sourceNode.id(), endId: targetNode.id(), lineage: "", name: "" } })
             if (!res.createRecognitionConnection) { //failed, delete connection
                 recognitioncy.remove(addedEles);
             }
