@@ -16,7 +16,7 @@ using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using static Darl.Lineage.Bot.IBotProcessing;
 
-namespace Darl.GraphQL.Models.Connectivity
+namespace Darl.Lineage.Bot
 {
     public class BotProcessing : IBotProcessing
     {
