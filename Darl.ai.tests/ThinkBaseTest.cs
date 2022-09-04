@@ -249,7 +249,8 @@ namespace Darl_standard_core.test
             var targetId = Guid.NewGuid().ToString();
             var completionLineage = completeLineage;
             var ks = new KnowledgeState();
-            var next = await gh.GraphPass(ks,userId, graphName, subjectId, targetId, paths, completionLineage, new List<DarlCommon.DarlVar>(), null, GraphProcess.seek);
+            var model = await graph.GetModel(userId, graphName);
+            var next = await gh.GraphPass(ks,model, subjectId, targetId, paths, completionLineage, new List<DarlCommon.DarlVar>(), null, GraphProcess.seek);
             Assert.AreEqual(1, next.Item1.Count);
         }
 
@@ -320,22 +321,22 @@ namespace Darl_standard_core.test
             var completionLineage = completeLineage;
             _model.recognitionRoots.Add(subjectId, root);
             model.SetupGet(a => a.recognitionVertices).Returns(recognitionIds);
-            var results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "who is doctor andy" });
+            var results = await gh.InterpretText(_model, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "who is doctor andy" });
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(foundRule, results[0].darl);
             Assert.AreEqual("A complete prick.", results[0].response.Value);
-            results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "who is doctor poops" });
+            results = await gh.InterpretText(_model, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "who is doctor poops" });
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual("I don't know the answer to that.", results[0].response.Value);
-            results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "who is doc andy" });
+            results = await gh.InterpretText(_model, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "who is doc andy" });
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(foundRule, results[0].darl);
             Assert.AreEqual("A complete prick.", results[0].response.Value);
-            results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "For fuck's sake, who is dr andy" });
+            results = await gh.InterpretText(_model, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "For fuck's sake, who is dr andy" });
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(foundRule, results[0].darl);
             Assert.AreEqual("A complete prick.", results[0].response.Value);
-            results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "hello" });
+            results = await gh.InterpretText(_model, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "hello" });
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(helloRule, results[0].darl);
             //Now test the seek operator
@@ -343,7 +344,7 @@ namespace Darl_standard_core.test
             var mathRule = $"output network completed \"{nodeId}\" \"{completeLineage}\";\n if anything then completed will be seek(\"{followsLineage}\", \"{consistsLineage}\");";
             //put in place of the hello rule
             subnode7.properties = new List<GraphAttribute> { new GraphAttribute { lineage = GraphObject.recognizedLineage, value = mathRule } };
-            results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "hello" });
+            results = await gh.InterpretText(_model, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "hello" });
 
         }
 
@@ -692,19 +693,19 @@ namespace Darl_standard_core.test
             var dataLoader = new DataLoader(meta);
             var gp = new GraphProcessing(_primitives, _logger, meta, dataLoader);
             var gh = new GraphHandler(_config, gp, _ghlogger, new MetaStructureHandler());
-            var res = await gh.InterpretText("user", "discord_bot.graph", "conversation", new DarlVar { dataType = DarlVar.DataType.textual, name = "text", Value = "who is andy" });
+            var res = await gh.InterpretText(model, "conversation", new DarlVar { dataType = DarlVar.DataType.textual, name = "text", Value = "who is andy" });
             Assert.AreEqual(1, res.Count);
             Assert.AreEqual("Dr Andy is the inventor of ThinkBase.", res[0].response.Value);
-            res = await gh.InterpretText("user", "discord_bot.graph", "conversation", new DarlVar { dataType = DarlVar.DataType.textual, name = "text", Value = "who is dr andy" });
+            res = await gh.InterpretText(model, "conversation", new DarlVar { dataType = DarlVar.DataType.textual, name = "text", Value = "who is dr andy" });
             Assert.AreEqual(1, res.Count);
             Assert.AreEqual("Dr Andy is the inventor of ThinkBase.", res[0].response.Value);
-            res = await gh.InterpretText("user", "discord_bot.graph", "conversation", new DarlVar { dataType = DarlVar.DataType.textual, name = "text", Value = "who is that fucking idiot dr andy" });
+            res = await gh.InterpretText(model, "conversation", new DarlVar { dataType = DarlVar.DataType.textual, name = "text", Value = "who is that fucking idiot dr andy" });
             Assert.AreEqual(1, res.Count);
             Assert.AreEqual("Dr Andy is the inventor of ThinkBase.", res[0].response.Value);
-            res = await gh.InterpretText("user", "discord_bot.graph", "conversation", new DarlVar { dataType = DarlVar.DataType.textual, name = "text", Value = "I don't know who that fucking turd  is called  dr andy" });
+            res = await gh.InterpretText(model, "conversation", new DarlVar { dataType = DarlVar.DataType.textual, name = "text", Value = "I don't know who that fucking turd  is called  dr andy" });
             Assert.AreEqual(1, res.Count);
             Assert.AreEqual("Dr Andy is the inventor of ThinkBase.", res[0].response.Value);
-            res = await gh.InterpretText("user", "discord_bot.graph", "conversation", new DarlVar { dataType = DarlVar.DataType.textual, name = "text", Value = "quote" });
+            res = await gh.InterpretText(model, "conversation", new DarlVar { dataType = DarlVar.DataType.textual, name = "text", Value = "quote" });
             Assert.AreEqual(2, res.Count);
             Assert.AreEqual("We'd like to build a chatbot for you. Answer the following to get an initial cost estimate.", res[0].response.Value);
             Assert.AreEqual(3, res[1].response.sequence.Count);
@@ -713,7 +714,7 @@ namespace Darl_standard_core.test
             Assert.AreEqual("adjective:5500", res[1].response.sequence[2][0]);
             var ks = new KnowledgeState();
             primitives.Setup(a => a.GetKnowledgeState(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())).Returns(Task.FromResult(ks));
-            var res2 = await gh.GraphPass(ks,"user", "discord_bot.graph", "conversation", res[1].response.sequence[0][0], res[1].response.sequence[1], res[1].response.sequence[2][0], new List<DarlVar>(), null, GraphProcess.seek);
+            var res2 = await gh.GraphPass(ks, model, "conversation", res[1].response.sequence[0][0], res[1].response.sequence[1], res[1].response.sequence[2][0], new List<DarlVar>(), null, GraphProcess.seek);
         }
 
         [TestMethod]

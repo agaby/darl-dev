@@ -646,10 +646,9 @@ namespace Darl.Thinkbase
         }
 
 
-        public async Task<List<MatchedElement>> Match(string compositeName, string subjectId, List<string> tokens)
+        public async Task<List<MatchedElement>> Match(IGraphModel model, string subjectId, List<string> tokens)
         {
             bool fuzzy = false;
-            var model = await _primitives.Load(compositeName);
             GraphObject root = GetRecognitionRoot(model, subjectId);
             var matches = new List<MatchedGraphAttribute>();
             var defaultMatches = new List<DefaultMatchGraphAttribute>();

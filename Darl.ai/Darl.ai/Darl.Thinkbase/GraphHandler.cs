@@ -65,22 +65,21 @@ namespace Darl.Thinkbase
         /// <param name="values"></param>
         /// <param name="pending"></param>
         /// <returns></returns>
-        public async Task<(List<InteractTestResponse>, DarlVar?)> GraphPass(KnowledgeState ks, string userId, string graphName, string subjectId, string targetId, List<string> paths, string completionLineage, List<DarlVar> values, DarlVar? pending, GraphProcess graphProcess)
+        public async Task<(List<InteractTestResponse>, DarlVar?)> GraphPass(KnowledgeState ks, IGraphModel model, string subjectId, string targetId, List<string> paths, string completionLineage, List<DarlVar> values, DarlVar? pending, GraphProcess graphProcess)
         {
             var runtime = GetRuntime(subjectId);
             //validate incoming values
             string validationResponse;
             if (!Validate(pending, values, out validationResponse)) //out of range value
             {
-                _logger.LogDebug($"Validation error = {validationResponse}, KGName= {graphName}, userId = {userId}");
+                _logger.LogDebug($"Validation error = {validationResponse}, KGName= {model.modelName}");
                 return (new List<InteractTestResponse> { new InteractTestResponse { darl = "", response = new DarlVar { name = "response", dataType = DarlVar.DataType.textual, Value = validationResponse }, matches = new List<MatchedElement>() } }, pending);
             }
             var responses = new List<InteractTestResponse>();
-            var model = await _graph.GetModel(userId, graphName);
             if (!(pending is null))
             {
                 var currentObj = model.vertices[pending.name];
-                _logger.LogDebug($"Evaluating response = {currentObj.externalId ?? currentObj.name}, KGName= {graphName}, userId = {userId}");
+                _logger.LogDebug($"Evaluating response = {currentObj.externalId ?? currentObj.name}, KGName= {model.modelName}");
                 var vals = await EvaluateUIRule(runtime, model, currentObj, pending, responses, ks, values, paths, true);
                 if (vals.Item1)
                 {
@@ -124,7 +123,7 @@ namespace Darl.Thinkbase
             }
             else
             {
-                _logger.LogDebug($"Completed seek  to {targetId}, KGName= {graphName}, userId = {userId}");
+                _logger.LogDebug($"Completed seek  to {targetId}, KGName= {model.modelName}");
                 responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.complete, Value = "This process is complete.", name = "response" } });
                 await EvaluateUIRule(runtime, model, target, pending, responses, ks, values, paths);
                 pending = null;
@@ -143,17 +142,16 @@ namespace Darl.Thinkbase
         /// </summary>
         /// <param name="conversationData"></param>
         /// <returns></returns>
-        public async Task<List<InteractTestResponse>> InterpretText(string userId, string graphName, string subjectId, DarlVar conversationData)
+        public async Task<List<InteractTestResponse>> InterpretText(IGraphModel model, string subjectId, DarlVar conversationData)
         {
             var tokens = LineageLibrary.SimpleTokenizer(conversationData.Value);
-            DarlVar response = new DarlVar { dataType = DarlVar.DataType.textual, Value = "No response generated...", unknown = true };
-            DarlVar link = new DarlVar { dataType = DarlVar.DataType.link, unknown = true, Value = "" };
-            DarlVar callResponse = new DarlVar { dataType = DarlVar.DataType.ruleset, unknown = true, Value = "" };
-            DarlVar graphResponse = new DarlVar { dataType = DarlVar.DataType.seek, unknown = true, Value = "" };
-
+            var response = new DarlVar { dataType = DarlVar.DataType.textual, Value = "No response generated...", unknown = true };
+            var link = new DarlVar { dataType = DarlVar.DataType.link, unknown = true, Value = "" };
+            var callResponse = new DarlVar { dataType = DarlVar.DataType.ruleset, unknown = true, Value = "" };
+            var graphResponse = new DarlVar { dataType = DarlVar.DataType.seek, unknown = true, Value = "" };
             var outList = new List<InteractTestResponse>();
-            List<MatchedElement> list = await _graph.Match($"{userId}_{graphName}", subjectId, tokens);
-            while (list.Count > 0 && (response.unknown || response.weight < 1.0))
+            List<MatchedElement> list = await _graph.Match(model!, subjectId, tokens);
+            while (list.Any() && (response.unknown || response.weight < 1.0))
             {
                 var lastMatch = list.Last();
                 if (lastMatch == null) //no response
@@ -162,7 +160,6 @@ namespace Darl.Thinkbase
                 var values = lastMatch.values;
                 try
                 {
-                    var model = await _graph.GetModel(userId, graphName);
                     if (last.type == GraphAttribute.DataType.markdown) //just return the text
                     {
                         response = new DarlVar { dataType = DarlVar.DataType.textual, Value = last.value, name = "response" };
@@ -230,9 +227,11 @@ namespace Darl.Thinkbase
                         }
                     }
                 }
-                catch //probably missing IO or access denied
+                catch(Exception ex) //probably missing IO or access denied
                 {
-                    continue;
+                    _logger.LogWarning(ex, $"GraphHandler InterpretText failure.");
+                    if(list.Count > 1)
+                        continue;
                 }
                 response.weight = Math.Min(response.weight, lastMatch.confidence); //pass through the match confidence
                 if (response.unknown && !string.IsNullOrEmpty(response.Value))

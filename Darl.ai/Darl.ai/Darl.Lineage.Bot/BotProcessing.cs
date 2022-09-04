@@ -72,9 +72,15 @@ namespace Darl.Lineage.Bot
                 _logger.LogDebug($"new conversation, id= {conversationId}, KGName= {KnowledgeGraphName}, userId = {userId}");
                 bs = new BotState { conversationId = conversationId, userId = userId, userData = new StoredBotData(), conversationData = new StoredBotData(), privateConversationData = new StoredBotData(), values = new List<DarlVar>(), updated = DateTime.UtcNow, state = new KnowledgeState {userId = userId, knowledgeGraphName = KnowledgeGraphName, subjectId = conversationId } };
             }
+            var model = await _graph.GetModel(userId, KnowledgeGraphName);
+            if(model == null)
+            {
+                resp.Add(new InteractTestResponse { response = new DarlVar { Value = $"{KnowledgeGraphName} not found for user", dataType = DarlVar.DataType.textual, name = "response" } });
+                return resp;
+            }
             if (bs.kGraphData == null) // top level conversation
             {
-                var responses = await _ghandler.InterpretText(userId, KnowledgeGraphName, "default:", conversationData);
+                var responses = await _ghandler.InterpretText(model, "default:", conversationData);
                 _logger.LogDebug($"top level conversation, text = {conversationData.Value}, KGName= {KnowledgeGraphName}, userId = {userId}");
                 if (responses.Any())
                 {
@@ -94,7 +100,7 @@ namespace Darl.Lineage.Bot
                         }
                         bs.kGraphData = r.response.sequence;
                         bs.pending = null;
-                        var res = await _ghandler.GraphPass(bs.state, userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending, GraphProcess.seek);
+                        var res = await _ghandler.GraphPass(bs.state, model, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending, GraphProcess.seek);
                         if (!res.Item1.Any())
                         {
                             //no connection found
@@ -117,7 +123,7 @@ namespace Darl.Lineage.Bot
                         }
                         bs.kGraphData = r.response.sequence;
                         bs.pending = null;
-                        var discoverResp = await _ghandler.GraphPass(bs.state, userId, KnowledgeGraphName, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending, GraphProcess.discover);
+                        var discoverResp = await _ghandler.GraphPass(bs.state, model, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending, GraphProcess.discover);
                         if (discoverResp.Item1.Any())
                         {
                             resp.AddRange(discoverResp.Item1);
@@ -146,7 +152,7 @@ namespace Darl.Lineage.Bot
             else
             {
                 //pass text through the navigation recognition tree checking for help, quit etc.
-                var responses = await _ghandler.InterpretText(userId, KnowledgeGraphName, "navigation:", conversationData);
+                var responses = await _ghandler.InterpretText(model, "navigation:", conversationData);
                 if (responses.Any())
                 {
                     var r = responses.Last();
@@ -170,7 +176,7 @@ namespace Darl.Lineage.Bot
                     bs.values.Add(request);
                     try
                     {
-                        var res = await _ghandler.GraphPass(bs.state, userId, KnowledgeGraphName, conversationId, bs.kGraphData[0][0], bs.kGraphData[1], bs.kGraphData[2][0], bs.values, bs.pending, GraphProcess.seek);
+                        var res = await _ghandler.GraphPass(bs.state, model, conversationId, bs.kGraphData[0][0], bs.kGraphData[1], bs.kGraphData[2][0], bs.values, bs.pending, GraphProcess.seek);
                         resp.Add(res.Item1.Last());
                         bs.pending = res.Item2;
                         if (res.Item1.Count > 1)

@@ -44,7 +44,7 @@ namespace Darl.Thinkbase
         Task<Stream> StoreGraphML(string compositeName);
         Task CreateVirtualAttribute(string compositeName, string lineage, GraphAttributeInput att);
         Task<IGraphModel?> GetModel(string userId, string name);
-        Task<List<MatchedElement>> Match(string v, string subjectId, List<string> tokens);
+        Task<List<MatchedElement>> Match(IGraphModel model, string subjectId, List<string> tokens);
         Task<GraphObject> CreateRecognitionRoot(string compositeName, string rootLineage);
         Task<GraphConnection> CreateRecognitionConnection(string compositeName, GraphConnectionInput graphConnection);
         Task<GraphObject> CreateRecognitionObject(string compositeName, GraphObjectInput graphObject);

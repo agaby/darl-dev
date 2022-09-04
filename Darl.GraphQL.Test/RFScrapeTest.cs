@@ -452,7 +452,8 @@ namespace Darl.GraphQL.Test
             var targetId = node.id;
             var complete = false;
             var ks = new KnowledgeState();
-            var next = await gh.GraphPass(ks,userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>(), null, GraphProcess.seek);
+            var model = await _graph.GetModel(userId, graphName);
+            var next = await gh.GraphPass(ks, model, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar>(), null, GraphProcess.seek);
             var count = 0;
             while (!complete)
             {
@@ -464,7 +465,7 @@ namespace Darl.GraphQL.Test
                 {
                     var current = next.Item1.Last();
                     current.response.Value = current.response.categories.Keys.First();
-                    next = await gh.GraphPass(ks,userId, graphName, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar> { current.response }, null, GraphProcess.seek);
+                    next = await gh.GraphPass(ks,model, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar> { current.response }, null, GraphProcess.seek);
                 }
                 count++;
             }
@@ -493,25 +494,26 @@ namespace Darl.GraphQL.Test
             var gh = new GraphHandler(_config, _graph, _ghlogger, new MetaStructureHandler());
             var userId = _config["userId"];
             var subjectId = "default:";
-            var results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "hello" });
+            var model = await _graph.GetModel(userId, graphName);
+            var results = await gh.InterpretText(model, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "hello" });
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(helloRule, results[0].darl);
-            results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "help" });
+            results = await gh.InterpretText(model, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "help" });
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(helpRule, results[0].darl);
             Assert.AreEqual("This is a simple initial demonstration of maths teaching functionality. Try typing 'maths'", results[0].response.Value);
-            results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "froopies" });
+            results = await gh.InterpretText(model, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "froopies" });
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(defaultRule, results[0].darl);
             Assert.AreEqual("I don't know the answer to that.", results[0].response.Value);
-            results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "arithmetic" });
+            results = await gh.InterpretText(model, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "arithmetic" });
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(mathRule, results[0].darl);
             Assert.AreEqual("Maths functionality goes here", results[0].response.Value);
             var nodeId = "1b35bb45-930a-4331-8421-d1c95f7a0bf7";
             mathRule = $"output network completed \"{nodeId}\" \"{completeLineage}\";\n if anything then completed will be seek(\"{followsLineage}\", \"{consistsLineage}\");";
             await _graph.UpdateRecognitionObject(compositeName, new GraphObjectUpdate { id = math.id, properties = new List<GraphAttributeInput> { new GraphAttributeInput { lineage = GraphObject.recognizedLineage, value = mathRule } } });
-            results = await gh.InterpretText(userId, graphName, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "arithmetic" });
+            results = await gh.InterpretText(model, subjectId, new DarlCommon.DarlVar { dataType = DarlCommon.DarlVar.DataType.textual, Value = "arithmetic" });
 
         }
 
