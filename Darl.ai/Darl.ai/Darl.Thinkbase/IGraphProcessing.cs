@@ -12,6 +12,7 @@ namespace Darl.Thinkbase
 
     public enum OntologyAction { build, check, ignore };
     public enum GraphElementType { node, connection, attribute };
+    public enum GraphSourceType { real, @virtual, recognition };
     public enum LoadType { json, xml, csv }
 
 
