@@ -1,5 +1,6 @@
 ﻿using ProtoBuf;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Darl.Lineage
 {
@@ -13,8 +14,10 @@ namespace Darl.Lineage
         }
 
         [ProtoMember(1)]
+        [JsonIgnore]
         public List<LineageAssociation> follows { get; set; }
         [ProtoMember(2)]
+        [JsonIgnore]
         public List<LineageAssociation> precedes { get; set; }
         [ProtoMember(3)]
         public string typeWord { get; set; }
