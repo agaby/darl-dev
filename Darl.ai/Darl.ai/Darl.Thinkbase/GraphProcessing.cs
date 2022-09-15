@@ -1028,34 +1028,42 @@ namespace Darl.Thinkbase
             return UpdateOrCreateAttribute(obj, graphAtt);
         }
 
-        public async Task<GraphAttribute> UpdateVirtualObjectAttribute(string compositeName, string lineage, GraphAttributeInput graphAtt)
+        public async Task<GraphAttribute?> UpdateVirtualObjectAttribute(string compositeName, string lineage, GraphAttributeInput graphAtt)
         {
             var obj = await GetVirtualObjectByLineage(compositeName, lineage);
-            return UpdateOrCreateAttribute(obj, graphAtt);
+            if(obj != null)
+                return UpdateOrCreateAttribute(obj, graphAtt);
+            return null;
         }
 
-        public async Task<GraphAttribute> DeleteRecognitionObjectAttribute(string compositeName, string objectId, string graphLineage)
+        public async Task<GraphAttribute?> DeleteRecognitionObjectAttribute(string compositeName, string objectId, string graphLineage)
         {
             var obj = await GetRecognitionObjectById(compositeName, objectId);
-            return DeleteAttribute(obj, graphLineage);
+            if(obj != null)
+                return DeleteAttribute(obj, graphLineage);
+            return null;
         }
 
-        public async Task<GraphAttribute> DeleteVirtualObjectAttribute(string compositeName, string objectLineage, string graphLineage)
+        public async Task<GraphAttribute?> DeleteVirtualObjectAttribute(string compositeName, string objectLineage, string graphLineage)
         {
             var obj = await GetVirtualObjectByLineage(compositeName, objectLineage);
-            return DeleteAttribute(obj, graphLineage);
+            if(obj != null)
+                return DeleteAttribute(obj, graphLineage);
+            return null;
         }
 
-        public async Task<GraphAttribute> UpdateGraphObjectAttribute(string compositeName, string objectId, GraphAttributeInput graphAtt)
+        public async Task<GraphAttribute?> UpdateGraphObjectAttribute(string compositeName, string objectId, GraphAttributeInput graphAtt)
         {
             var obj = await GetGraphObjectById(compositeName, objectId);
             return UpdateOrCreateAttribute(obj!, graphAtt);
         }
 
-        public async Task<GraphAttribute> DeleteGraphObjectAttribute(string compositeName, string objectId, string graphLineage)
+        public async Task<GraphAttribute?> DeleteGraphObjectAttribute(string compositeName, string objectId, string graphLineage)
         {
             var obj = await GetGraphObjectById(compositeName, objectId);
-            return DeleteAttribute(obj, graphLineage);
+            if(obj != null)
+                return DeleteAttribute(obj, graphLineage);
+            return null;
         }
 
         public async Task<List<LineageRecord>> GetLineagesInKG(string compositeName, GraphElementType gtype)
@@ -1075,7 +1083,7 @@ namespace Darl.Thinkbase
                     lins.AddRange(_metaHandler.DefaultConnLineages);
                     break;
             }
-            return lins.OrderBy(a => a.typeWord).ToList();
+            return lins.Distinct().OrderBy(a => a.typeWord).ToList();
         }
 
 

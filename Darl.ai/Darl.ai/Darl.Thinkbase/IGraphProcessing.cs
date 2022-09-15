@@ -64,11 +64,11 @@ namespace Darl.Thinkbase
         Task ClearGraphContent(string compositeName);
         Task<string> CopyRenameKG(string userId, string name, string newName);
         Task<GraphAttribute> UpdateRecognitionObjectAttribute(string compositeName, string objectId, GraphAttributeInput graphAtt);
-        Task<GraphAttribute> UpdateVirtualObjectAttribute(string compositeName, string objlineage, GraphAttributeInput graphAtt);
-        Task<GraphAttribute> DeleteRecognitionObjectAttribute(string compositeName, string objectId, string graphLineage);
-        Task<GraphAttribute> DeleteVirtualObjectAttribute(string compositeName, string objLineage, string graphLineage);
-        Task<GraphAttribute> UpdateGraphObjectAttribute(string compositeName, string objectId, GraphAttributeInput graphAtt);
-        Task<GraphAttribute> DeleteGraphObjectAttribute(string compositeName, string objectId, string graphLineage);
+        Task<GraphAttribute?> UpdateVirtualObjectAttribute(string compositeName, string objlineage, GraphAttributeInput graphAtt);
+        Task<GraphAttribute?> DeleteRecognitionObjectAttribute(string compositeName, string objectId, string graphLineage);
+        Task<GraphAttribute?> DeleteVirtualObjectAttribute(string compositeName, string objLineage, string graphLineage);
+        Task<GraphAttribute?> UpdateGraphObjectAttribute(string compositeName, string objectId, GraphAttributeInput graphAtt);
+        Task<GraphAttribute?> DeleteGraphObjectAttribute(string compositeName, string objectId, string graphLineage);
         Task<List<LineageRecord>> GetLineagesInKG(string compositeName, GraphElementType gtype);
         Task<GraphConnection?> GetConnectionById(string compositeName, string id);
         Task<KnowledgeState> GetKnowledgeState(string userId, string Id, string graphName, bool external = false);
