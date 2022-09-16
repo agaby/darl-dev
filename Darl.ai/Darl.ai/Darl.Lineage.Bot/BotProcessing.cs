@@ -206,7 +206,7 @@ namespace Darl.Lineage.Bot
                     catch (Exception ex)
                     {
                         _logger.LogCritical(ex, "Internal exception in GraphPass");
-                        throw new Exception($"Internal Error in GraphPass", ex);
+                        throw new Exception($"Internal Error in GraphPass: {ex.Message}", ex);
                     }
                 }
             }
