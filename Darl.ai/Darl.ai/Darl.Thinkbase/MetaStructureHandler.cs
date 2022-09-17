@@ -296,7 +296,7 @@ namespace Darl.Thinkbase
                     //check values is a valid category
                     if (!pending.categories.ContainsKey(response.Value))
                     {
-                        throw new RuleException($"Category {response.Value} of {res.name} not a valid category");
+                        throw new RuleException($"Category {response.Value} of {res.name} not a valid category of {string.Join(',', pending.categories.Keys)}");
                     }
                     //translate category values here.
                     var cat = response.Value;

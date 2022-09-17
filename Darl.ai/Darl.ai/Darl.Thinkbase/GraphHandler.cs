@@ -229,7 +229,7 @@ namespace Darl.Thinkbase
                 }
                 catch(Exception ex) //probably missing IO or access denied
                 {
-                    _logger.LogWarning(ex, $"GraphHandler InterpretText failure.");
+                    _logger.LogError(ex, $"GraphHandler InterpretText failure.");
                     if(list.Count > 1)
                         continue;
                 }
