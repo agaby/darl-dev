@@ -552,6 +552,11 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return Task.FromResult(compositeName);
         }
+
+        public Task<bool> IsDemo(string compositeName)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class Dependency

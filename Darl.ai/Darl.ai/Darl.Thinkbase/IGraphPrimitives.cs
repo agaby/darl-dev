@@ -10,6 +10,8 @@ namespace Darl.Thinkbase
     /// </summary>
     public interface IGraphPrimitives
     {
+        Task<bool> IsDemo(string compositeName);
+
         Task<bool> Exists(string compositeName);
         Task<bool> CreateModel(string compositeName);
         Task<bool> DeleteModel(string compositeName);
