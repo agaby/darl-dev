@@ -445,7 +445,7 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
 
-        internal static string CreateCompositeName(string userId, string name)
+        public string CreateCompositeName(string userId, string name)
         {
             return userId + "_" + name.Replace(" ", "_");
         }

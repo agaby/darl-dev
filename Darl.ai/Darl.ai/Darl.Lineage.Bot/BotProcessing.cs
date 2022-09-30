@@ -75,7 +75,7 @@ namespace Darl.Lineage.Bot
             var model = await _graph.GetModel(userId, KnowledgeGraphName);
             if(model == null)
             {
-                resp.Add(new InteractTestResponse { response = new DarlVar { Value = $"{KnowledgeGraphName} not found for user", dataType = DarlVar.DataType.textual, name = "response" } });
+                resp.Add(new InteractTestResponse { response = new DarlVar { Value = $"{KnowledgeGraphName} not found for user {userId}", dataType = DarlVar.DataType.textual, name = "response" } });
                 return resp;
             }
             if (bs.kGraphData == null) // top level conversation

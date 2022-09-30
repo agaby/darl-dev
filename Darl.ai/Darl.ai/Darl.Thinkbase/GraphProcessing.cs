@@ -159,9 +159,9 @@ namespace Darl.Thinkbase
         }
 
 
-        internal static string CreateCompositeName(string userId, string name)
+        internal string CreateCompositeName(string userId, string name)
         {
-            return userId + "_" + name.Replace(" ", "_");
+            return _primitives.CreateCompositeName(userId, name);
         }
 
         public async Task<GraphConnection?> DeleteGraphConnection(string compositeName, string id)

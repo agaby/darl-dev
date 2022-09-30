@@ -95,7 +95,7 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        public static string CreateCompositeName(string userId, string filename)
+        public string CreateCompositeName(string userId, string filename)
         {
             return $"{userId}_{filename}";
         }

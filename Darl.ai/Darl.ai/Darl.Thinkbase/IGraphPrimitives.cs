@@ -38,5 +38,6 @@ namespace Darl.Thinkbase
         Task<byte[]> KGContents(string userId, string graphName);
         Task<string> CreateTempKG(string userId, string graphName, byte[] bytes);
         Task Store(string blobName, IGraphModel model);
+        string CreateCompositeName(string userId, string name);
     }
 }
