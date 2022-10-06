@@ -1088,7 +1088,7 @@ namespace Darl.Thinkbase
                     o = res as GraphObject;
                 }
                 //find display rule
-                var code = _graph.FindDisplayAttribute(model, o.id);
+                var code = _graph.FindDisplayAttribute(model, o!.id!) ?? _graph.FindCompleteAttribute(model, o!.id!);
                 if (string.IsNullOrEmpty(code))
                 {
                     if (data)//pending != null, no code and first pass = codeless
