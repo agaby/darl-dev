@@ -50,7 +50,7 @@ namespace Darl.Lineage.Bot
 
         public async Task<KnowledgeState?> GetInteractKnowledgeState(string id, bool external = false)
         {
-            var bs = await _stateStorage.GetBotState(id);
+            var bs = await _stateStorage.GetBotState("", id);
             if(bs == null)
                 return null;
             if(!external)
@@ -66,7 +66,7 @@ namespace Darl.Lineage.Bot
         {
             _logger.LogDebug($"{nameof(InteractKGAsync)}: {userId}, {KnowledgeGraphName}, {conversationId}, {conversationData.Value}");
             var resp = new List<InteractTestResponse>();
-            var bs = await _stateStorage.GetBotState(conversationId);
+            var bs = await _stateStorage.GetBotState(userId, conversationId);
             if (bs == null)//first call for this conversation
             {
                 _logger.LogDebug($"new conversation, id= {conversationId}, KGName= {KnowledgeGraphName}, userId = {userId}");
@@ -210,7 +210,7 @@ namespace Darl.Lineage.Bot
                     }
                 }
             }
-            await _stateStorage.SetBotState(conversationId, bs);
+            await _stateStorage.SetBotState(userId, conversationId, bs);
             return resp;
 
         }

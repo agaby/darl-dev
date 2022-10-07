@@ -20,7 +20,7 @@ namespace Darl.GraphQL.Process.Connectivity
             _cache = cache;
         }
 
-        public async Task<BotState?> GetBotState(string conversationId)
+        public async Task<BotState?> GetBotState(string userId, string conversationId)
         {
             var blob = await _cache.GetAsync(conversationId);
             if (blob != null)
@@ -34,7 +34,7 @@ namespace Darl.GraphQL.Process.Connectivity
             return null;
         }
 
-        public async Task SetBotState(string conversationId, BotState state)
+        public async Task SetBotState(string userId, string conversationId, BotState state)
         {
             using (MemoryStream ms = new MemoryStream())
             {

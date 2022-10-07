@@ -8,8 +8,8 @@ namespace Darl.Lineage.Bot
 {
     public interface IBotStateStorage
     {
-        Task<BotState?> GetBotState(string conversationId);
+        Task<BotState?> GetBotState(string userId, string conversationId);
 
-        Task SetBotState(string conversationId, BotState state);
+        Task SetBotState(string userId, string conversationId, BotState state);
     }
 }
