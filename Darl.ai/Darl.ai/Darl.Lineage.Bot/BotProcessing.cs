@@ -62,7 +62,10 @@ namespace Darl.Lineage.Bot
             {
                 _logger.LogDebug($"new conversation, id= {conversationId}, KGName= {KnowledgeGraphName}, userId = {userId}");
                 bs = new BotState { conversationId = conversationId, userId = userId, values = new List<DarlVar>(), updated = DateTime.UtcNow };
-                bs.states.Add(KnowledgeGraphName,new KnowledgeState { userId = userId, knowledgeGraphName = KnowledgeGraphName, subjectId = conversationId });
+            }
+            if(!bs.states.ContainsKey(KnowledgeGraphName))
+            {
+                bs.states.Add(KnowledgeGraphName, new KnowledgeState { userId = userId, knowledgeGraphName = KnowledgeGraphName, subjectId = conversationId });
             }
             var model = await _graph.GetModel(userId, KnowledgeGraphName);
             if(model == null)
