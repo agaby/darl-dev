@@ -428,21 +428,6 @@ namespace Darl.GraphQL.Web.Models.Schemata
             );
 
             FieldAsync<KnowledgeStateType>(
-                "getInteractKnowledgeState",
-                "Get a knowledge state created during an interaction by its conversationId",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "Id", Description = "The conversation id" },
-                    new QueryArgument<BooleanGraphType> { Name = "external", Description = "ids are ExternalIds", DefaultValue = false }
-                ),
-                resolve: async context =>
-                {
-                    var Id = context.GetArgument<string>("Id");
-                    var external = context.GetArgument<bool>("external");
-                    return await bot.GetInteractKnowledgeState(Id, external);
-                }
-            );
-
-            FieldAsync<KnowledgeStateType>(
                 "getKnowledgeStateByExternalId",
                 "Get a knowledge state by its external Id",
                 arguments: new QueryArguments(

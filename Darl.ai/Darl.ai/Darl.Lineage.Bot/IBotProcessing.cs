@@ -17,7 +17,6 @@ namespace Darl.Lineage.Bot
         Task<KnowledgeState> Seek(KnowledgeState ks, string? targetId, List<string> paths, string completionLineage);
         Task<DarlMineReport> Learn(string userId, string graphName, string target, LearningForm form, string targetLineage, string valueLineage, int percentTrain, SetChoices sets);
         Task<DarlMineReport> Build(string userId, string name, string data, string patternPath, List<DataMap> dataMaps, LoadType ltype = LoadType.xml, LearningForm form = LearningForm.supervised);
-        Task<KnowledgeState?> GetInteractKnowledgeState(string id, bool external = false);
         IObservable<KnowledgeState> ObservableKStates();
     }
 }
