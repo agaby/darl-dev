@@ -3027,7 +3027,7 @@ function ConvertRawToYear(raw) {
 
 async function UpdateKS() {
     try {
-        const resp = await getks({ id: currentStateId });
+        const resp = await getks({ id: currentStateId, name: mdname });
         $('#kstate').jsonViewer(resp.getInteractKnowledgeState, { collapsed: true, withQuotes: false, withLinks: true });
     }
     catch (err) {

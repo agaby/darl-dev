@@ -221,5 +221,16 @@ namespace Darl.Lineage.Bot
             return await _ghandler.Seek(ks, targetId, paths, completionLineage);
         }
 
+        public async Task<KnowledgeState?> GetInteractKnowledgeState(string id, string userId, string graphName, bool external = false)
+        {
+            var bs = await _stateStorage.GetBotState(userId, id);
+            if (bs == null)
+                return null;
+            if (!bs.states.ContainsKey(graphName))
+                return null;
+            if (!external)
+                return bs.states[graphName];
+            return await _graph.ConvertKSIDs(bs.states[graphName]);
+        }
     }
 }

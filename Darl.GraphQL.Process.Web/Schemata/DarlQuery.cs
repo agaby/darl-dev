@@ -827,6 +827,24 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 var userId = trans.GetCurrentUserId(context.UserContext);
                 return (await trans.KGContents(userId, graphName)).ToList();
             });
+
+            FieldAsync<KnowledgeStateType>(
+                "getInteractKnowledgeState",
+                "Get a knowledge state created during an interaction by its conversationId",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "Id", Description = "The conversation id" },
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The Knowledge graph involved" },
+                    new QueryArgument<BooleanGraphType> { Name = "external", Description = "ids are ExternalIds", DefaultValue = false }
+                ),
+                resolve: async context =>
+                {
+                    var Id = context.GetArgument<string>("Id");
+                    var external = context.GetArgument<bool>("external");
+                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var graphName = context.GetArgument<string>("graphName");
+                    return await bot.GetInteractKnowledgeState(Id,userId, graphName, external);
+                }
+            );
         }
 
         private string CompositeName(string userId, string graphName)
