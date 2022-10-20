@@ -1200,7 +1200,7 @@ namespace Darl.Thinkbase
             var rand = new Random();
             if (ordered == null || ks == null || node == null || paths == null || string.IsNullOrEmpty(completedLineage))
             {
-                _logger.LogError("Bad parameters to FindNext");
+                _logger.LogError($"Bad parameters to FindNext: ordered: {ordered is null}, ks: {ks is null}, node: {node is null}, paths: {paths is null}, completedLineage: {string.IsNullOrEmpty(completedLineage}");
                 return list;
             }
             //if target is completed even though other dependencies remain return an empty list
