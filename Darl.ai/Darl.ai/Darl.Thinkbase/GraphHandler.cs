@@ -96,6 +96,10 @@ namespace Darl.Thinkbase
                         var dependencies = GetExecutionOrder(model, target, paths);
                         if (target != null)
                             dependencies.Insert(0, new KeyValuePair<GraphAbstraction, int>(target, 1));
+                        else
+                        {
+                            _logger.LogError($"Target not found in Bot GraphPass for Seek; id: {targetId}, graphName: {model.modelName}.");
+                        }
                         await UpdateNodeStates(runtime, ks, model, dependencies, values, completionLineage);
                         //find next element to present or terminate
                         res = FindNext(model, dependencies, ks, target, paths, completionLineage);
