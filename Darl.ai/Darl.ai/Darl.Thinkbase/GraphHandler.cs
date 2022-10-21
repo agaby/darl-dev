@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -87,7 +88,7 @@ namespace Darl.Thinkbase
                 }
             }
             //Use inference to update state based on new information
-            var target = await _graph.GetGraphObjectById(model.modelName, targetId);
+            var target = model.vertices.ContainsKey(targetId) ? model.vertices[targetId] : model.vertices.Values.Where(a => a.externalId == targetId).FirstOrDefault();
             List<GraphAbstraction>? res = null;
             switch (graphProcess)
             {

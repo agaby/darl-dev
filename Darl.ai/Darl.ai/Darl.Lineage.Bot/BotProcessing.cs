@@ -157,9 +157,7 @@ namespace Darl.Lineage.Bot
                     }
                     else if (r.response.name == "terminate")
                     {
-                        bs.kGraphData = null;
-                        bs.pending = null;
-                        bs.states.Remove(KnowledgeGraphName, out KnowledgeState? deleted); 
+                        bs.ClearBotState(KnowledgeGraphName);
                         resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Quitting...", dataType = DarlVar.DataType.textual, name = "response" } });
                     }
                 }
