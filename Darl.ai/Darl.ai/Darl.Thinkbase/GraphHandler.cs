@@ -125,8 +125,10 @@ namespace Darl.Thinkbase
                 {
                     _logger.LogError($"No responses generated for {res[0].Name(model)}.");
                 }
-                _logger.LogInformation($"{pending?.name} selected as next question node.");
-
+                if(pending != null )
+                    _logger.LogInformation($"{pending.name } selected as next question node. datatype: {pending.dataType}, weight: {pending.weight}, unknown: {pending.unknown} for model.modelName: {model.modelName}");
+                else
+                    _logger.LogInformation("Next question node is null.");
             }
             else
             {
