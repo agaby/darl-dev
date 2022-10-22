@@ -436,7 +436,7 @@ namespace Darl.Thinkbase
             var navigationRoot = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = "navigation:", name = "root" };
             recognitionVertices.Add(navigationRoot.id, navigationRoot);
             recognitionRoots.Add("navigation:", navigationRoot);
-            var obj = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = "default:", name = "default", properties = new List<GraphAttribute> { new GraphAttribute { id = Guid.NewGuid().ToString(), type = GraphAttribute.DataType.ruleset, value = "output textual response;\nif anything then response will be \"I don't know the answer to that\";", lineage = "adjective:8953" } } };
+            var obj = new GraphObject { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, lineage = "default:", name = "default", properties = new List<GraphAttribute> { new GraphAttribute { id = Guid.NewGuid().ToString(), type = GraphAttribute.DataType.ruleset, value = "output textual response;\nif anything then response will be \"I don't know the answer to that. Please type 'help' to get instructions to use this knowledge graph.\";", lineage = "adjective:8953" } } };
             recognitionVertices.Add(obj.id, obj);
             var conn = new GraphConnection { id = Guid.NewGuid().ToString(), _virtual = true, inferred = false, endId = obj.id, startId = defaultroot.id, weight = 1.0 };
             recognitionVertices[conn.startId].Out.Add(conn);

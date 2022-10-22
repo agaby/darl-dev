@@ -55,12 +55,12 @@ namespace Darl.Lineage.Bot
 
         public async Task<List<InteractTestResponse>> InteractKGAsync(string userId, string KnowledgeGraphName, string conversationId, DarlVar conversationData)
         {
-            _logger.LogDebug($"{nameof(InteractKGAsync)}: {userId}, {KnowledgeGraphName}, {conversationId}, {conversationData.Value}");
+            _logger.LogInformation($"{nameof(InteractKGAsync)}: {userId}, {KnowledgeGraphName}, {conversationId}, {conversationData.Value}");
             var resp = new List<InteractTestResponse>();
             var bs = await _stateStorage.GetBotState(userId, conversationId);
             if (bs == null)//first call for this conversation
             {
-                _logger.LogDebug($"new conversation, id= {conversationId}, KGName= {KnowledgeGraphName}, userId = {userId}");
+                _logger.LogInformation($"new conversation, id= {conversationId}, KGName= {KnowledgeGraphName}, userId = {userId}");
                 bs = new BotState { conversationId = conversationId, userId = userId, values = new List<DarlVar>(), updated = DateTime.UtcNow };
             }
             if(!bs.states.ContainsKey(KnowledgeGraphName))
@@ -76,7 +76,7 @@ namespace Darl.Lineage.Bot
             if (bs.kGraphData == null) // top level conversation
             {
                 var responses = await _ghandler.InterpretText(model, "default:", conversationData);
-                _logger.LogDebug($"top level conversation, text = {conversationData.Value}, KGName= {KnowledgeGraphName}, userId = {userId}");
+                _logger.LogInformation($"top level conversation, text = {conversationData.Value}, KGName= {KnowledgeGraphName}, userId = {userId}");
                 if (responses.Any())
                 {
                     var r = responses.Last();
@@ -89,7 +89,7 @@ namespace Darl.Lineage.Bot
                                 break;
                             if (c.response.dataType != DarlVar.DataType.seek)
                             {
-                                _logger.LogDebug($"Emitting text before seek: {c.response.Value}, id= {conversationId}, KGName= {KnowledgeGraphName}, userId = {userId}");
+                                _logger.LogInformation($"Emitting text before seek: {c.response.Value}, id= {conversationId}, KGName= {KnowledgeGraphName}, userId = {userId}");
                                 resp.Add(c);
                             }
                         }
@@ -112,7 +112,7 @@ namespace Darl.Lineage.Bot
                                 break;
                             if (c.response.dataType != DarlVar.DataType.discover)
                             {
-                                _logger.LogDebug($"Emitting text before discover: {c.response.Value}, id= {conversationId}, KGName= {KnowledgeGraphName}, userId = {userId}");
+                                _logger.LogInformation($"Emitting text before discover: {c.response.Value}, id= {conversationId}, KGName= {KnowledgeGraphName}, userId = {userId}");
                                 resp.Add(c);
                             }
                         }
@@ -130,17 +130,17 @@ namespace Darl.Lineage.Bot
                     }
                     else
                     {
-                        _logger.LogDebug($"top level response, text = {r.response.Value}, KGName= {KnowledgeGraphName}, userId = {userId}");
+                        _logger.LogInformation($"top level response, text = {r.response.Value}, KGName= {KnowledgeGraphName}, userId = {userId}");
                         resp.Add(r);
                     }
                     if (r.response.approximate)
                     {
-                        _logger.LogDebug($"top level default response, text = {r.response.Value}, KGName= {KnowledgeGraphName}, userId = {userId}");
+                        _logger.LogInformation($"top level default response, text = {r.response.Value}, KGName= {KnowledgeGraphName}, userId = {userId}");
                     }
                 }
                 else
                 {
-                    _logger.LogDebug($"No response found, text = {conversationData.Value}, KGName= {KnowledgeGraphName}, userId = {userId}");
+                    _logger.LogInformation($"No response found, text = {conversationData.Value}, KGName= {KnowledgeGraphName}, userId = {userId}");
                     resp.Add(new InteractTestResponse { response = new DarlVar { Value = "Internal error", dataType = DarlVar.DataType.textual, name = "response" } });
                 }
             }

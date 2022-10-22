@@ -675,7 +675,7 @@ namespace Darl.Thinkbase
             var compMatches = new List<MatchedElement>();
             compMatches.Add(lan);
             compMatches.AddRange(matches);
-            _logger.LogDebug($"Match: found {compMatches.Count} matches.");
+            _logger.LogInformation($"Match: found {compMatches.Count} matches.");
             return compMatches;
         }
 

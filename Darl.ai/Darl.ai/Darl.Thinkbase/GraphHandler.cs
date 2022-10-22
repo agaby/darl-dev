@@ -73,14 +73,14 @@ namespace Darl.Thinkbase
             string validationResponse;
             if (!Validate(pending, values, out validationResponse)) //out of range value
             {
-                _logger.LogDebug($"Validation error = {validationResponse}, KGName= {model.modelName}");
+                _logger.LogInformation($"Validation error = {validationResponse}, KGName= {model.modelName}");
                 return (new List<InteractTestResponse> { new InteractTestResponse { darl = "", response = new DarlVar { name = "response", dataType = DarlVar.DataType.textual, Value = validationResponse }, matches = new List<MatchedElement>() } }, pending);
             }
             var responses = new List<InteractTestResponse>();
             if (!(pending is null))
             {
                 var currentObj = model.vertices[pending.name];
-                _logger.LogDebug($"Evaluating response = {currentObj.externalId ?? currentObj.name}, KGName= {model.modelName}");
+                _logger.LogInformation($"Evaluating response = {currentObj.externalId ?? currentObj.name}, KGName= {model.modelName}");
                 var vals = await EvaluateUIRule(runtime, model, currentObj, pending, responses, ks, values, paths, true);
                 if (vals.Item1)
                 {
@@ -94,6 +94,7 @@ namespace Darl.Thinkbase
             {
                 case GraphProcess.seek:
                     {
+                        _logger.LogInformation($"Seeking target {target}");
                         var dependencies = GetExecutionOrder(model, target, paths);
                         if (target != null)
                             dependencies.Insert(0, new KeyValuePair<GraphAbstraction, int>(target, 1));
@@ -108,6 +109,7 @@ namespace Darl.Thinkbase
                     break;
                 case GraphProcess.discover:
                     {
+                        _logger.LogInformation($"Discovering target {target}");
                         //do a breadth-first search out from this node, stopping whenever a ruleset is encountered dependent on an unknown data item
                         var visited = new List<GraphAbstraction>();
                         res = DiscoveryProcess(model, target, paths, visited);
@@ -123,12 +125,12 @@ namespace Darl.Thinkbase
                 {
                     _logger.LogError($"No responses generated for {res[0].Name(model)}.");
                 }
-                _logger.LogDebug($"{pending?.name} selected as next question node.");
+                _logger.LogInformation($"{pending?.name} selected as next question node.");
 
             }
             else
             {
-                _logger.LogDebug($"Completed seek  to {targetId}, KGName= {model.modelName}");
+                _logger.LogInformation($"Completed seek  to {targetId}, KGName= {model.modelName}");
                 responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.complete, Value = "This process is complete.", name = "response" } });
                 await EvaluateUIRule(runtime, model, target, pending, responses, ks, values, paths);
                 pending = null;
@@ -1185,16 +1187,16 @@ namespace Darl.Thinkbase
                         _graph.HandleCodelessCompletion(model, key, ks);
                         continue;
                     }
-                    _logger.LogDebug($"Evaluating completion rule on object: {key.externalId ?? key.name}");
+                    _logger.LogInformation($"Evaluating completion rule on object: {key.externalId ?? key.name}");
                     var tree = runtime.CreateTree(ruleSource, key, model);
                     if (tree.HasErrors())
                     {
-                        _logger.LogDebug($"Errors in completion rule on object: {key.externalId ?? key.name}, code: {ruleSource}");
+                        _logger.LogInformation($"Errors in completion rule on object: {key.externalId ?? key.name}, code: {ruleSource}");
                         continue;
                     }
                     var list = new List<Thinkbase.Meta.DarlResult>();
                     await runtime.Evaluate(tree, list, ks);
-                    _logger.LogDebug($"Completion rule results: {string.Join("; ", list)}");
+                    _logger.LogInformation($"Completion rule results: {string.Join("; ", list)}");
                 }
             }
         }
@@ -1421,7 +1423,7 @@ namespace Darl.Thinkbase
             }
             else
             {
-                _logger.LogDebug($"Broken link: userId {ks.userId}, graphName {ks.knowledgeGraphName}, subjectId {ks.subjectId}");
+                _logger.LogInformation($"Broken link: userId {ks.userId}, graphName {ks.knowledgeGraphName}, subjectId {ks.subjectId}");
             }
             //handle real top level connections.
             foreach (var s in connections.Where(a => a.inferred == false))
