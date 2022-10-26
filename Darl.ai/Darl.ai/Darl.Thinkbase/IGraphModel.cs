@@ -22,7 +22,7 @@ namespace Darl.Thinkbase
 
         List<GraphObject> GetConnectedObjects(GraphObject node, string connectionLineage, string objectLineage);
 
-        string? FindControlAttribute(string id, string lineage);
+        string? FindControlAttribute(string id);
 
         DarlVar? FindDataAttribute(string id, string lineage, KnowledgeState ks);
         List<DarlTime?>? FindAttributeExistence(string id, string lineage, KnowledgeState ks);

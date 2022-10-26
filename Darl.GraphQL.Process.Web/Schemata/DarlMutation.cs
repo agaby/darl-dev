@@ -404,7 +404,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     return await graph.UpdateVirtualObjectAttribute(CompositeName(userId, name), lineage, att);
                 }
             );
-            FieldAsync<StringGraphType>("deleteVirtualObjectAttribute", "update or add an attribute of a virtual GraphObject", arguments: new QueryArguments(
+            FieldAsync<StringGraphType>("deleteVirtualObjectAttribute", "Delete an attribute of a virtual GraphObject", arguments: new QueryArguments(
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "The name of the Knowledge graph the object is in" },
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "The lineage of the parent object" },
                  new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "attLineage", Description = "The lineage of the attribute to delete" }

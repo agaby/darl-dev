@@ -191,15 +191,15 @@ namespace Darl.Thinkbase
         /// <param name="id"></param>
         /// <param name="lineage"></param>
         /// <returns></returns>
-        public string? FindControlAttribute(string id, string lineage)
+        public string? FindControlAttribute(string id)
         {
             if (!vertices.ContainsKey(id))
                 return null;
             var obj = vertices[id];
             if (obj.properties != null)
             {
-                var att = obj.properties.Where(a => a.lineage != null && a.lineage.StartsWith(lineage)).FirstOrDefault(); //check name or lineage?
-                if (att != null && att.type == GraphAttribute.DataType.ruleset)
+                var att = obj.properties.Where(a => a.type == GraphAttribute.DataType.ruleset).FirstOrDefault(); //check name or lineage?
+                if (att != null)
                 {
                     return att.value;
                 }
@@ -220,7 +220,7 @@ namespace Darl.Thinkbase
                 {
                     foreach (var p in l.properties)
                     {
-                        if (p.lineage != null && p.lineage.StartsWith(lineage) && p.type == GraphAttribute.DataType.ruleset)
+                        if (p.lineage != null /* && p.lineage.StartsWith(lineage)*/ && p.type == GraphAttribute.DataType.ruleset)
                         {
                             ruleSource = p.value;
                             found = true;

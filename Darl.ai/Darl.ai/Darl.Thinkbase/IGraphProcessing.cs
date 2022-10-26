@@ -73,7 +73,6 @@ namespace Darl.Thinkbase
         Task<GraphConnection?> GetConnectionById(string compositeName, string id);
         Task<KnowledgeState> GetKnowledgeState(string userId, string Id, string graphName, bool external = false);
         bool FindMetaDisplayStructure(IGraphModel model, GraphObject res, ref DarlVar? pending, List<InteractTestResponse> responses);
-        string? FindDisplayAttribute(IGraphModel model, string id);
         Task<VRDisplayModel> GetRealVRDisplayGraph(string userId, string graphName, string lineageFilter, string? subjectId);
         void HandleCodelessValue(IGraphModel model, GraphObject res, DarlVar? pending, List<DarlVar> values, KnowledgeState ks);
         void HandleCodelessCompletion(IGraphModel model, GraphObject res, KnowledgeState ks);
@@ -93,7 +92,6 @@ namespace Darl.Thinkbase
         Task<ModelMetaData> UpdateKGraph(string userId, string name, ModelMetaData kgupdate);
         Task<bool> Exists(string userId, string name);
         Task<List<KnowledgeState>> CreateKnowledgeStateList(string userId, List<KnowledgeStateInput> states);
-        string? FindCompleteAttribute(IGraphModel model, string id);
         IObservable<KnowledgeState> ObservableKStates();
         Task<DisplayModel?> GetRealDisplayGraphWithState(string userId, string graphName, string subjectId);
         Task<string> LoadExternalData(string userId, string name, string data, string patternPath, List<DataMap> dataMaps, LoadType ltype = LoadType.xml, bool buildGraph = false);
@@ -105,5 +103,6 @@ namespace Darl.Thinkbase
         Task<IEnumerable<GraphObject>> GetAllRecognitionObjects(string compositeName);
         List<GraphAttribute> ConvertAttributeInputList(List<GraphAttributeInput> list);
         List<GraphAttributeInput> ConvertAttributeInputList(List<GraphAttribute> list);
+        string? FindControlAttribute(IGraphModel model, string id);
     }
 }

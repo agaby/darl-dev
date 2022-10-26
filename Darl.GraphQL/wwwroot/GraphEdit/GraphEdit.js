@@ -2425,24 +2425,29 @@ async function EditVirtualCode(id) {
                     }
                 },
                 message: "<b>Set the node's DARL code</b><br/>Lineage: " + newAtt.lineage + "<br/>Data type: " + newAtt.type,
-                buttonDone: "Change",
+                buttonDone: { change: "Change", delete: "Delete" },
                 buttonFail: "Cancel",
                 queue: false,
                 filterDone: function (data) {
                     if (data.val === "") return "Give a value.";
                 }
-            }).done(function (valdata) {
-                if (Array.isArray(valdata)) {
-                    if (newAtt.value !== valdata[0]) {
-                        newAtt.value = valdata[0];
-                        Upsert(id, newAtt, "virtual");
+            }).done(async function (valdata, button) {
+                if (button === "change") {
+                    if (Array.isArray(valdata)) {
+                        if (newAtt.value !== valdata[0]) {
+                            newAtt.value = valdata[0];
+                            await Upsert(id, newAtt, "virtual");
+                        }
+                    }
+                    else {
+                        if (newAtt.value !== valdata.val) {
+                            newAtt.value = valdata.val;
+                            await Upsert(id, newAtt, "virtual");
+                        }
                     }
                 }
-                else {
-                    if (newAtt.value !== valdata.val) {
-                        newAtt.value = valdata.val;
-                        Upsert(id, newAtt, "virtual");
-                    }
+                if (button === "delete") {
+                    await deletevirtualattribute({ name: mdname, lineage: ConvertVirtualID(id), attLin: newAtt.lineage });
                 }
             });
         }
@@ -2883,7 +2888,7 @@ async function Upsert(id, newAtt, type) {
         else if (type === "recognition")
             await updaterecognitionattribute({ name: mdname, id: id, att: newAtt });
         else if (type === "virtual")
-            await updatevirtualattribute({ name: mdname, lineage: id, att: newAtt });
+            await updatevirtualattribute({ name: mdname, lineage: ConvertVirtualID(id), att: newAtt });
         edited = true;
     }
     catch (err) {

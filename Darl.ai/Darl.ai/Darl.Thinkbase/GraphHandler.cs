@@ -119,11 +119,11 @@ namespace Darl.Thinkbase
             if (res != null && res.Count > 0)
             {
                 values.Clear();
-                var vals = await EvaluateUIRule(runtime, model, res[0], pending, responses, ks, values, paths);
+                var vals = await EvaluateUIRule(runtime, model, res.First(), pending, responses, ks, values, paths);
                 pending = vals.Item2;
                 if(!responses.Any())
                 {
-                    _logger.LogError($"No responses generated for {res[0].Name(model)}.");
+                    _logger.LogError($"No responses generated for {res.First().Name(model)}.");
                 }
                 if(pending != null )
                     _logger.LogInformation($"{pending.name } selected as next question node. datatype: {pending.dataType}, weight: {pending.weight}, unknown: {pending.unknown} for model.modelName: {model.modelName}");
@@ -1097,7 +1097,7 @@ namespace Darl.Thinkbase
                     o = res as GraphObject;
                 }
                 //find display rule
-                var code = _graph.FindDisplayAttribute(model, o!.id!) ?? _graph.FindCompleteAttribute(model, o!.id!);
+                var code = _graph.FindControlAttribute(model, o!.id!);
                 if (string.IsNullOrEmpty(code))
                 {
                     if (data)//pending != null, no code and first pass = codeless
@@ -1183,7 +1183,7 @@ namespace Darl.Thinkbase
                         }
                     }
                     //if we get here the required target is not complete - get the rules.
-                    var ruleSource = model.FindControlAttribute(key.id, completionLineage);
+                    var ruleSource = model.FindControlAttribute(key.id);
                     if (string.IsNullOrEmpty(ruleSource))
                     {
                         _graph.HandleCodelessCompletion(model, key, ks);
@@ -1223,7 +1223,7 @@ namespace Darl.Thinkbase
             foreach (var o in ordered)
             {
                 var go = o.Key as GraphObject;
-                var code = _graph.FindCompleteAttribute(model, go?.id ?? "") ?? _graph.FindDisplayAttribute(model, go?.id ?? "");
+                var code = _graph.FindControlAttribute(model, go?.id ?? "");
                 if(!string.IsNullOrEmpty(code))
                 {
                     var tree = _runtime.CreateTree(code, go, model);
@@ -1231,7 +1231,7 @@ namespace Darl.Thinkbase
                     // add randomise saliences
                 }
             }
-            var salienceList  = saliences.OrderByDescending(a => a.salience).ToList();
+            var salienceList  = saliences.Distinct().OrderByDescending(a => a.salience).ToList();
             var currentSalience = 0.0;
             foreach (var o in salienceList)
             {
@@ -1443,7 +1443,7 @@ namespace Darl.Thinkbase
 
         private async Task<bool> CheckCodeCompletion(IGraphModel model, KnowledgeState ks, GraphObject currentNode, StringBuilder log, FuzzyTime? currentTime, int depth)
         {
-            var code = _graph.FindCompleteAttribute(model, currentNode.id ?? String.Empty);
+            var code = _graph.FindControlAttribute(model, currentNode.id ?? String.Empty);
             if (!string.IsNullOrEmpty(code)) //no code implies discovery can continue.
             {
                 try
