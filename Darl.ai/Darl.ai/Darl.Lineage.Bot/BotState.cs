@@ -48,8 +48,7 @@ namespace Darl.Lineage.Bot
         public void ClearBotState(string graphname)
         {
             values.Clear();
-            if(kGraphData != null)
-                kGraphData.Clear();
+            kGraphData = null;
             pending = null;
             if(states.ContainsKey(graphname))
                 states.Remove(graphname);
