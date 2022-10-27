@@ -133,8 +133,10 @@ namespace Darl.Thinkbase
             else
             {
                 _logger.LogInformation($"Completed seek  to {targetId}, KGName= {model.modelName}");
-                responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.complete, Value = "This process is complete.", name = "response" } });
+                responses.Clear();
                 await EvaluateUIRule(runtime, model, target, pending, responses, ks, values, paths);
+                if(!responses.Any())
+                    responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.complete, Value = "This process is complete.", name = "response" } });
                 pending = null;
             }
             return (responses, pending);
