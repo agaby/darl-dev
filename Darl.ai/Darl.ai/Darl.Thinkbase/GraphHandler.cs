@@ -177,11 +177,13 @@ namespace Darl.Thinkbase
                     }
                     else
                     {
+                        _logger.LogInformation($"Processing Match: {values.Count} incoming values: {string.Join(',',values)}");
                         var _runtime = new DarlMetaRunTime(_config, _metaHandler);
                         var tree = _runtime.CreateTree(last.value, null, model);
                         var vals = Meta.DarlVarExtensions.Convert(values);
                         await _runtime.Evaluate(tree, vals, null);
                         values = Meta.DarlVarExtensions.Convert(vals);
+                        _logger.LogInformation($"Processing Match: {values.Count} outgoing values: {string.Join(',', values)}");
                         foreach (var r in vals)
                         {
                             if (r.name == nameof(response))
