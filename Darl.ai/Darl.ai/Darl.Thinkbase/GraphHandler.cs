@@ -177,7 +177,10 @@ namespace Darl.Thinkbase
                     }
                     else
                     {
-                        _logger.LogInformation($"Processing Match: {values.Count} incoming values: {string.Join(',',values)}");
+                        if(values != null)
+                            _logger.LogInformation($"Processing Match: {values.Count} incoming values: {string.Join(',',values)}");
+                        else
+                            _logger.LogInformation($"Processing Match");
                         var _runtime = new DarlMetaRunTime(_config, _metaHandler);
                         var tree = _runtime.CreateTree(last.value, null, model);
                         var vals = Meta.DarlVarExtensions.Convert(values);
