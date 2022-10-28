@@ -11,5 +11,7 @@ namespace Darl.Lineage.Bot
         Task<BotState?> GetBotState(string userId, string conversationId);
 
         Task SetBotState(string userId, string conversationId, BotState state);
+
+        Task ClearBotStates(string userId);
     }
 }

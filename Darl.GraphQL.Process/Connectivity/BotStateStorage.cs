@@ -20,6 +20,11 @@ namespace Darl.GraphQL.Process.Connectivity
             _cache = cache;
         }
 
+        public Task ClearBotStates(string userId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<BotState?> GetBotState(string userId, string conversationId)
         {
             var blob = await _cache.GetAsync(conversationId);

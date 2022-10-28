@@ -45,6 +45,9 @@ namespace Darl.Lineage.Bot
         [ProtoMember(10)]
         public Dictionary<string, KnowledgeState> states { get; set; } = new Dictionary<string, KnowledgeState>();
 
+        [ProtoMember(11)]
+        public string? currentKG { get; set; }
+
         public void ClearBotState(string graphname)
         {
             values.Clear();
