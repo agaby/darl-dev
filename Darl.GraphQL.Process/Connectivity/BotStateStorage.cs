@@ -20,7 +20,7 @@ namespace Darl.GraphQL.Process.Connectivity
             _cache = cache;
         }
 
-        public Task ClearBotStates(string userId)
+        public Task ClearBotStates(string userId, string graphName)
         {
             throw new NotImplementedException();
         }
