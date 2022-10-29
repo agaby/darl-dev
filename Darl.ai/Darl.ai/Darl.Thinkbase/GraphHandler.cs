@@ -102,6 +102,7 @@ namespace Darl.Thinkbase
                         {
                             _logger.LogError($"Target not found in Bot GraphPass for Seek; id: {targetId}, graphName: {model.modelName}.");
                         }
+                        _logger.LogInformation($"{dependencies.Count} dependencies found.");
                         await UpdateNodeStates(runtime, ks, model, dependencies, values, completionLineage);
                         //find next element to present or terminate
                         res = FindNext(model, dependencies, ks, target, paths, completionLineage);
@@ -125,10 +126,18 @@ namespace Darl.Thinkbase
                 {
                     _logger.LogError($"No responses generated for {res.First().Name(model)}.");
                 }
+                else
+                {
+                    var r = responses.Last();
+                    var text = r.response.Value;
+                    var darl = r.darl; 
+                    var refer = r.reference;
+                    _logger.LogInformation($"Returned text: {text}, darl source: {darl}, reference = {refer}");
+                }
                 if(pending != null )
                     _logger.LogInformation($"{pending.name } selected as next question node. datatype: {pending.dataType}, weight: {pending.weight}, unknown: {pending.unknown} for model.modelName: {model.modelName}");
                 else
-                    _logger.LogInformation("Next question node is null.");
+                    _logger.LogInformation("Next question node is null.");               
             }
             else
             {
