@@ -1,21 +1,37 @@
 ﻿using Darl.Licensing;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using System;
 
-namespace Darl_standard_core.test
+namespace Darl.ai.tests
 {
     [TestClass]
     public class LicenseTest
     {
-        readonly string testLicense = "YwEAAB+LCAAAAAAAAApVkNFOgzAUhu+X7B36AGYwzMhiukaoZNMADotL9K6DhnVSytqig6cXG3WanJs/5//ynRwY84I1mqHpBACY9y1DxNCmpKqEjo12EZ1brqjhskF5x67A3AMJ7YHnei5w3Rs7YJ3k0PnTtCTutJGCKZvGnFLBUFC3Byp4UwIi6+6rrEFsRqPdfjcjQXmNlKzHc2a65UzpWwsmI/jLzQopRqvtWqHzzwgJrxpqOsVQEmX4PlL7RX16KPfDM/ZfB5ZWFZZZdNA99fMAb4bHJ58Id/FGjwEPEy8Ot8NOvJzINuyDI45zI8l6Fyzfe3m9ufPwR5Fmy3NmqtUKOhfXdAKdn89+Ao5T0p5jAQAA";
-        [TestMethod]
-        [Ignore]
-        public void TestLicense()
+        private IConfiguration _config;
+
+
+        [TestInitialize()]
+        public void Initialize()
         {
-            Assert.IsFalse(DarlLicense.licensed);
-            DarlLicense.license = testLicense;
-            Assert.IsTrue(DarlLicense.licensed);
-            DarlLicense.license = "waggawaggabagga";
-            Assert.IsFalse(DarlLicense.licensed);
+            _config = new ConfigurationBuilder()
+                .AddUserSecrets<LicenseTest>()
+                .Build();
+        }
+
+        [TestMethod]
+        public void TestLicenseCreation()
+        {
+            //This needs dummy public and private keys
+            var logger = new Mock<ILogger<ProductLicensing>>();
+            var licensing = new ProductLicensing(_config, logger.Object);
+            var license = licensing.CreateKey(DateTime.Now + new TimeSpan(1000, 0, 0, 0), "Dr Andy's IP Ltd", "support@darl.ai");
+            Assert.IsTrue(licensing.CheckKey(license));
+            license = licensing.CreateKey(DateTime.Now - new TimeSpan(30, 0, 0, 0), "farts ltd", "poop@farts.com");
+            Assert.IsFalse(licensing.CheckKey(license));
+            Assert.IsFalse(licensing.CheckKey("uggawuggabugga"));
         }
     }
 }

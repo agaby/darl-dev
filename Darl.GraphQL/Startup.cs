@@ -7,6 +7,7 @@ using Darl.GraphQL.Process.Middleware;
 using Darl.GraphQL.Process.Web.Bot;
 using Darl.GraphQL.Process.Web.Middleware;
 using Darl.GraphQL.Web.Models.Schemata;
+using Darl.Licensing;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
@@ -142,7 +143,7 @@ namespace Darl.GraphQL
                     options.AddPolicy("UserPolicy", p => p.RequireClaim(roleClaimText, "User"));
                     options.AddPolicy("CorpPolicy", p => p.RequireClaim(roleClaimText, "Corp"));
                 })
-            ); 
+            );
 
 
             services.AddControllersWithViews()

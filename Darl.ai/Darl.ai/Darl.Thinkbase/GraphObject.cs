@@ -230,7 +230,7 @@ namespace Darl.Thinkbase
         public override bool ContainsAttribute(string Lineage, GraphAttribute.DataType? type = GraphAttribute.DataType.ruleset)
         {
             if (properties != null)
-                if(type != null)
+                if (type != null)
                     return properties.Any(a => a.lineage == Lineage && a.confidence > 0.0 && a.type != GraphAttribute.DataType.ruleset);
                 else
                     return properties.Any(a => a.lineage == Lineage && a.confidence > 0.0);

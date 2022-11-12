@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using NJsonSchema;
 using System.IO;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Test
 {

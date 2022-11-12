@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.Licensing;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using Darl.Thinkbase;
@@ -87,7 +88,7 @@ namespace Darl.GraphQL.Test
             _bplogger = bplogger.Object;
             _context = context.Object;
             _runtime = new DarlMetaRunTime(_config, meta);
-            _graphHandler = new GraphHandler(_config, _graph, ghlogger.Object,meta);
+            _graphHandler = new GraphHandler(_config, _graph, ghlogger.Object, meta);
         }
 
         [TestMethod]

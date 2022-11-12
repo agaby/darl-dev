@@ -5,6 +5,7 @@ using Darl.GraphQL.Models.Models.Noda;
 using Darl.GraphQL.Process.Models.Noda.Layout;
 using Darl.GraphQL.Process.Web.Middleware;
 using Darl.GraphQL.Process.Web.Models.Noda;
+using Darl.Licensing;
 using Darl.Lineage;
 using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
@@ -20,7 +21,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Stripe;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -114,7 +114,7 @@ namespace Darl.GraphQL.Models.Connectivity
             _localCache = localCache;
             backofficeKG = _config["AppSettings:BackOfficeKG"];
             backofficeUser = _config["AppSettings:boaiuserid"];
-            userCacheMinutes = _config.GetValue<int>("AppSettings:userCacheMinutes",30);
+            userCacheMinutes = _config.GetValue<int>("AppSettings:userCacheMinutes", 30);
             nodaCacheMinutes = _config.GetValue<int>("AppSettings:nodaCacheMinutes", 30);
             backofficeKGComp = backofficeUser + '_' + backofficeKG;
             GetObjectIds().Wait();
@@ -604,7 +604,7 @@ namespace Darl.GraphQL.Models.Connectivity
         public async Task<Contact?> DeleteContactAsync(string email)
         {
             var res = await _graph.GetKnowledgeStateByTypeAndAttribute(_config["AppSettings:boaiuserid"], "4abd1be7-f0eb-4bf8-b434-2be3df8a162f", backofficeKG, "noun:01,0,2,00,38,00,06,1", email);
-            if(res != null)
+            if (res != null)
                 await _graph.DeleteKnowledgeState(_config["AppSettings:boaiuserid"], res.subjectId, backofficeKG);
             return null;
         }
@@ -618,7 +618,7 @@ namespace Darl.GraphQL.Models.Connectivity
         {
             try
             {
-                if(_localCache.TryGetValue(apiKey, out DarlUser user))
+                if (_localCache.TryGetValue(apiKey, out DarlUser user))
                     return user;
                 var ks = await _graph.GetKnowledgeStateByTypeAndAttribute(_config["AppSettings:boaiuserid"], personObjectId, backofficeKG, keyLineage, apiKey);
                 if (ks == null)
@@ -960,7 +960,7 @@ namespace Darl.GraphQL.Models.Connectivity
             return JsonConvert.SerializeObject(nodadoc, new Newtonsoft.Json.Converters.StringEnumConverter());
         }
 
-        public async Task<string> NodaView(string userId, string graphName,  NodaPosition? graphOffset, double? nodaBoundingBoxDiagonal = 3.0)
+        public async Task<string> NodaView(string userId, string graphName, NodaPosition? graphOffset, double? nodaBoundingBoxDiagonal = 3.0)
         {
             if (_localCache.TryGetValue($"{userId}_{graphName}_noda_view", out string view))
                 return view;
@@ -981,9 +981,9 @@ namespace Darl.GraphQL.Models.Connectivity
                 var l = new NodaViewLinkProps { title = tLink.name ?? "", uuid = k, fromUuid = tLink.startId, toUuid = tLink.endId, color = "000000", selected = false, shape = NodaViewLinkProps.NodaViewLinkShape.Solid, size = 1 };
                 nodadoc.links.Add(l);
             }
-            Layout(nodadoc, nodaBoundingBoxDiagonal ?? 3.0, graphOffset ?? new NodaPosition(-1.3,0.0,0.1));
+            Layout(nodadoc, nodaBoundingBoxDiagonal ?? 3.0, graphOffset ?? new NodaPosition(-1.3, 0.0, 0.1));
             var res = JsonConvert.SerializeObject(nodadoc, new Newtonsoft.Json.Converters.StringEnumConverter());
-            _localCache.Set<string>($"{ userId}_{ graphName}_noda_view", res, TimeSpan.FromMinutes(nodaCacheMinutes));
+            _localCache.Set<string>($"{userId}_{graphName}_noda_view", res, TimeSpan.FromMinutes(nodaCacheMinutes));
             return res;
         }
 
@@ -1001,7 +1001,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (ruleSet != null)
                 return ruleSet.value;
             var sb = new StringBuilder();
-            foreach(var property in tNode.properties)
+            foreach (var property in tNode.properties)
             {
                 sb.AppendLine($"Name: {property.name}, data type: {property.type}, value: {property.value}");
             }
@@ -1090,7 +1090,7 @@ namespace Darl.GraphQL.Models.Connectivity
             {
                 try
                 {
-                    var metaRuntime = new DarlMetaRunTime(_config,_meta);
+                    var metaRuntime = new DarlMetaRunTime(_config, _meta);
                     var tree = metaRuntime.CreateTreeEdit(darl);
                     if (tree.HasErrors())
                     {
@@ -1320,7 +1320,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(content))
                 return "Empty fields.";
             var newsItemObj = (await _graph.GetGraphObjectsByLineage(backofficeKGComp, newsItemLineage)).First();
-            var ksi= new KnowledgeStateInput { knowledgeGraphName = backofficeKG, subjectId = Guid.NewGuid().ToString(), transient = false, data = new List<StringListGraphAttributeInputPair>()};
+            var ksi = new KnowledgeStateInput { knowledgeGraphName = backofficeKG, subjectId = Guid.NewGuid().ToString(), transient = false, data = new List<StringListGraphAttributeInputPair>() };
             ksi.data.Add(new StringListGraphAttributeInputPair { name = newsItemObj.id ?? "", value = new List<GraphAttributeInput>() });
             ksi.data[0].value.Add(new GraphAttributeInput { lineage = newsItemCategoryLineage, name = "category", type = GraphAttribute.DataType.categorical, value = "news" });
             ksi.data[0].value.Add(new GraphAttributeInput { lineage = newsItemTitleLineage, name = "title", type = GraphAttribute.DataType.textual, value = title });
@@ -1343,7 +1343,7 @@ namespace Darl.GraphQL.Models.Connectivity
 
         public async Task<bool> TempKGExists(string userId, string graphName)
         {
-            return await _graph.ExistsInCache(userId,graphName);
+            return await _graph.ExistsInCache(userId, graphName);
         }
 
         public async Task<byte[]> KGContents(string userId, string graphName)

@@ -639,9 +639,9 @@ namespace Darl.Thinkbase.Meta
         public DarlResult NetWorkResults(string objectId, string lineage)
         {
             var res = currentModel.FindDataAttribute(objectId, lineage, state);
-            if(res != null)
+            if (res != null)
             {
-                var r =  DarlVarExtensions.Convert(res);
+                var r = DarlVarExtensions.Convert(res);
                 results.Add(r);
                 return r;
             }
@@ -663,7 +663,7 @@ namespace Darl.Thinkbase.Meta
             {
                 obj = currentModel.vertices.Values.FirstOrDefault(a => a.externalId == id);
                 if (obj == null)
-                    return (false,null,null);
+                    return (false, null, null);
                 id = obj.id ?? "";
             }
             else
@@ -671,17 +671,17 @@ namespace Darl.Thinkbase.Meta
                 obj = currentModel.vertices[id];
             }
             //check link exists between currentNode and found node
-            if(!currentNode.In.Any(a => a.startId == id && a.endId == currentNode.id) && !currentNode.Out.Any(a => a.startId == currentNode.id && a.endId == id))
-                return (false,obj,null);
+            if (!currentNode.In.Any(a => a.startId == id && a.endId == currentNode.id) && !currentNode.Out.Any(a => a.startId == currentNode.id && a.endId == id))
+                return (false, obj, null);
             if (obj.properties != null)
             {
                 var oatt = obj.properties.Where(a => a.lineage != null && a.lineage.StartsWith(lineage)).FirstOrDefault();
                 if (oatt != null)
-                    return (true,obj,oatt);
+                    return (true, obj, oatt);
                 //what if the attribute is up in the virtual world? 
                 //consider implicit setup where sub nodes determine the structure. 
-                if(/*lineage == answerLineage &&*/ obj.Out.Any())
-                    return (true,obj,null);
+                if (/*lineage == answerLineage &&*/ obj.Out.Any())
+                    return (true, obj, null);
             }
             //finally in the virtual realm - generic values
             if (obj.lineage == null)
@@ -706,7 +706,7 @@ namespace Darl.Thinkbase.Meta
                     }
                     foreach (var p in l.properties) //if no match look for rules - could be there
                     {
-                        if (p.type == GraphAttribute.DataType.ruleset )
+                        if (p.type == GraphAttribute.DataType.ruleset)
                         {
                             data = p;
                             found = true;
@@ -717,7 +717,7 @@ namespace Darl.Thinkbase.Meta
                 if (found)
                     break;
             }
-            return found ? (true,obj,data) : (false,obj,null);
+            return found ? (true, obj, data) : (false, obj, null);
         }
     }
 

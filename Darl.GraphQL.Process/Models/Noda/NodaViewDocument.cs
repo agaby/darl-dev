@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Process.Web.Models.Noda
 {
@@ -31,7 +28,7 @@ namespace Darl.GraphQL.Process.Web.Models.Noda
 
         public List<ILayoutLink> GetLinks()
         {
-            return links.ToList<ILayoutLink>();    
+            return links.ToList<ILayoutLink>();
         }
 
         public ILayoutNode? GetNode(string uuid)
@@ -59,7 +56,7 @@ namespace Darl.GraphQL.Process.Web.Models.Noda
                 {
                     linkLookup[l.fromUuid].Add(l.toUuid, l);
                 }
-            }        
+            }
         }
     }
 }

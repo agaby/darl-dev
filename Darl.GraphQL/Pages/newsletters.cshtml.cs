@@ -28,7 +28,7 @@ namespace Darl.GraphQL.Pages
         {
             //fetch newletter text
             var md = await _conn.GetNewsLetter(newsletter);
-            if(md == null)
+            if (md == null)
             {
                 //return 404
                 return NotFound();

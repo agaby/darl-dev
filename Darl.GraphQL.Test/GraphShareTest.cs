@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.Licensing;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;

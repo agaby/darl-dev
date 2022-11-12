@@ -103,6 +103,6 @@ namespace Darl.Thinkbase
         Task<IEnumerable<GraphObject>> GetAllRecognitionObjects(string compositeName);
         List<GraphAttribute> ConvertAttributeInputList(List<GraphAttributeInput> list);
         List<GraphAttributeInput> ConvertAttributeInputList(List<GraphAttribute> list);
-        string? FindControlAttribute(IGraphModel model, string id);
+        (string?,string?) FindControlAttribute(IGraphModel model, string id);
     }
 }

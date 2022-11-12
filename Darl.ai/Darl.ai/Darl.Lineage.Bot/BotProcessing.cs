@@ -1,15 +1,11 @@
-﻿using Darl.Lineage;
-using Darl.Lineage.Bot;
-using Darl.Thinkbase;
+﻿using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlCompiler.Interpreter;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using ProtoBuf;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -68,7 +64,7 @@ namespace Darl.Lineage.Bot
                 bs.states.Add(KnowledgeGraphName, new KnowledgeState { userId = userId, knowledgeGraphName = KnowledgeGraphName, subjectId = conversationId });
             }
             var model = await _graph.GetModel(userId, KnowledgeGraphName);
-            if(model == null)
+            if (model == null)
             {
                 resp.Add(new InteractTestResponse { response = new DarlVar { Value = $"{KnowledgeGraphName} not found for user {userId}", dataType = DarlVar.DataType.textual, name = "response" } });
                 return resp;
@@ -187,7 +183,7 @@ namespace Darl.Lineage.Bot
                             }
                         }
                     }
-                    catch(StructureException ex)
+                    catch (StructureException ex)
                     {
                         _logger.LogInformation(ex, "Structure exception in GraphPass");
                         resp.Add(new InteractTestResponse { darl = "", response = new DarlVar { dataType = DarlVar.DataType.textual, Value = ex.Message } });
@@ -211,7 +207,7 @@ namespace Darl.Lineage.Bot
 
         public async Task<DarlMineReport> Learn(string userId, string graphName, string target, IBotProcessing.LearningForm form, string targetLineage, string valueLineage, int percentTrain, IGraphHandler.SetChoices sets)
         {
-            return await _ghandler.Learn(userId, graphName, target, form, targetLineage, valueLineage,percentTrain, sets);
+            return await _ghandler.Learn(userId, graphName, target, form, targetLineage, valueLineage, percentTrain, sets);
         }
 
         public async Task<KnowledgeState> Seek(KnowledgeState ks, string? targetId, List<string> paths, string completionLineage)

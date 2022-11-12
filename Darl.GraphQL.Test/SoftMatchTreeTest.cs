@@ -243,7 +243,7 @@ namespace Darl.GraphQL.Test
                     {
                         continue;
                     }
-                    dict.Add(KeyValuePair.Create<string,string>(elements[1], elements[3]));
+                    dict.Add(KeyValuePair.Create<string, string>(elements[1], elements[3]));
                     dict.Add(KeyValuePair.Create<string, string>(elements[2], elements[4]));
                 }
                 offset += blockSize;

@@ -1,5 +1,4 @@
 ﻿using CsvHelper;
-using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using Newtonsoft.Json.Linq;
 using System;
@@ -7,8 +6,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
@@ -54,7 +51,7 @@ namespace Darl.Thinkbase
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new MetaRuleException($"Cannot parse CSV.", ex);
             }
@@ -95,7 +92,7 @@ namespace Darl.Thinkbase
             return kstates;
         }
 
-        public  List<KnowledgeState> LoadJsonData(string userId, string name, IGraphModel model, string data, string patternPath, List<DataMap> dataMaps)
+        public List<KnowledgeState> LoadJsonData(string userId, string name, IGraphModel model, string data, string patternPath, List<DataMap> dataMaps)
         {
             var kstates = new List<KnowledgeState>();
             FixDataMaps(dataMaps, model);
@@ -124,14 +121,14 @@ namespace Darl.Thinkbase
                     kstates.Add(ks);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new MetaRuleException($"Cannot parse Json.", ex);
             }
             return kstates;
         }
 
- 
+
         private void FixDataMaps(List<DataMap> dataMaps, IGraphModel model)
         {
             foreach (var k in dataMaps)

@@ -2,7 +2,6 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Serilog.Events;
 using System;
 
 namespace Darl.GraphQL
@@ -36,8 +35,8 @@ namespace Darl.GraphQL
         {
             return Host.CreateDefaultBuilder(args)
                .UseSerilog((context, services, loggerConfiguration) => loggerConfiguration
-                .WriteTo.ApplicationInsights((TelemetryConfiguration)services.GetService(typeof(TelemetryConfiguration)),TelemetryConverter.Traces))
-                .ConfigureWebHostDefaults(webBuilder => {webBuilder.UseStartup<Startup>();});
+                .WriteTo.ApplicationInsights((TelemetryConfiguration)services.GetService(typeof(TelemetryConfiguration)), TelemetryConverter.Traces))
+                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
         }
     }
 }

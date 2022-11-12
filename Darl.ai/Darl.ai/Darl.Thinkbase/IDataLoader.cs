@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Darl.Thinkbase
 {
-    public  interface IDataLoader
+    public interface IDataLoader
     {
         List<KnowledgeState> LoadCsvData(string userId, string name, IGraphModel model, string data, string patternPath, List<DataMap> dataMaps);
 

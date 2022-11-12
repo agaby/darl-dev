@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.Licensing;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
 using Microsoft.Extensions.Caching.Distributed;

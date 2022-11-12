@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
 {
-    public  class NetworkComponentNode : DarlMetaNode
+    public class NetworkComponentNode : DarlMetaNode
     {
         public DarlMetaNode lineageNode { get; set; }
         public string lineage { get; set; }

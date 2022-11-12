@@ -3,11 +3,9 @@ using Darl.GraphQL.Models.Schemata;
 using Darl.Thinkbase;
 using GraphQL;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using GraphQL.Upload.AspNetCore;
 
 namespace Darl.GraphQL.Web.Models.Schemata
 {
@@ -151,7 +149,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                 {
                     var title = context.GetArgument<String>("title");
                     var content = context.GetArgument<String>("content");
-                    return await trans.CreateNewsItem(title,content);
+                    return await trans.CreateNewsItem(title, content);
                 }
             ).AuthorizeWithPolicy("AdminPolicy");
 

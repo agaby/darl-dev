@@ -5,7 +5,7 @@ namespace Darl.Thinkbase.Meta
 {
     public class PreparedLearningSet
     {
-        public string targetNodeId { get; set; } 
+        public string targetNodeId { get; set; }
 
         public Dictionary<string, string> inputs { get; set; } = new Dictionary<string, string>();
 
@@ -33,7 +33,7 @@ namespace Darl.Thinkbase.Meta
         public List<int> outSamplePatterns { get; set; } = new List<int>();
         public Dictionary<string, List<DarlResult>> data { get; set; }
 
-        public List<KnowledgeState> knowledgeStates { get; set; } 
+        public List<KnowledgeState> knowledgeStates { get; set; }
 
         public GraphObject targetNode { get; set; }
 

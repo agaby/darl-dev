@@ -6,18 +6,14 @@ using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlLanguage.Processing;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using System.Xml.Serialization;
-using System.Xml.XPath;
 
 namespace Darl.Thinkbase
 {
@@ -90,7 +86,7 @@ namespace Darl.Thinkbase
                     }
                 }
             }
-            return  CreateConnection(model, graphConnection);
+            return CreateConnection(model, graphConnection);
 
         }
 
@@ -153,7 +149,7 @@ namespace Darl.Thinkbase
         {
             var graphname = CreateCompositeName(userId, name);
             var model = await _primitives.Load(graphname);
-            if(model != null)
+            if (model != null)
                 model.modelName = graphname;
             return model;
         }
@@ -392,52 +388,52 @@ namespace Darl.Thinkbase
         /// <returns></returns>
         public async Task<List<StringStringPair>> ProcessCategories(string compositeName, string rootExternalID, string childLineage, string childValueAttribute)
         {
-                var list = new List<StringStringPair>();
-                if (string.IsNullOrEmpty(rootExternalID))
+            var list = new List<StringStringPair>();
+            if (string.IsNullOrEmpty(rootExternalID))
+            {
+                var objects = await GetGraphObjectsByLineage(compositeName, childLineage);
+                foreach (var o in objects)
                 {
-                    var objects = await GetGraphObjectsByLineage(compositeName, childLineage);
-                    foreach (var o in objects)
-                    {
-                        var externalId = GetAttibuteGivenObject(o, nameof(GraphObject.externalId));
-                        var value = GetAttibuteGivenObject(o, childValueAttribute);
-                        list.Add(new StringStringPair(externalId, value));
-                    }
+                    var externalId = GetAttibuteGivenObject(o, nameof(GraphObject.externalId));
+                    var value = GetAttibuteGivenObject(o, childValueAttribute);
+                    list.Add(new StringStringPair(externalId, value));
                 }
-                else
+            }
+            else
+            {
+                var obj = await GetGraphObjectByExternalId(compositeName, rootExternalID);
+                if (obj != null)
                 {
-                    var obj = await GetGraphObjectByExternalId(compositeName, rootExternalID);
-                    if (obj != null)
+                    foreach (var c in obj.Out)
                     {
-                        foreach (var c in obj.Out)
+                        var other = await GetGraphObjectById(compositeName, c.endId);
+                        if (other != null)
                         {
-                            var other = await GetGraphObjectById(compositeName, c.endId);
-                            if (other != null)
+                            if ((other.lineage ?? String.Empty).StartsWith(childLineage))
                             {
-                                if ((other.lineage ?? String.Empty).StartsWith(childLineage))
-                                {
-                                    var externalId = GetAttibuteGivenObject(other, nameof(GraphObject.externalId));
-                                    var value = GetAttibuteGivenObject(other, childValueAttribute);
-                                    list.Add(new StringStringPair(externalId, value));
-                                }
-                            }
-                        }
-                        foreach (var c in obj.In)
-                        {
-                            var other = await GetGraphObjectById(compositeName, c.startId);
-                            if (other != null)
-                            {
-                                if ((other.lineage ?? String.Empty).StartsWith(childLineage))
-                                {
-                                    var externalId = GetAttibuteGivenObject(other, nameof(GraphObject.externalId));
-                                    var value = GetAttibuteGivenObject(other, childValueAttribute);
-                                    list.Add(new StringStringPair(externalId, value));
-                                }
+                                var externalId = GetAttibuteGivenObject(other, nameof(GraphObject.externalId));
+                                var value = GetAttibuteGivenObject(other, childValueAttribute);
+                                list.Add(new StringStringPair(externalId, value));
                             }
                         }
                     }
+                    foreach (var c in obj.In)
+                    {
+                        var other = await GetGraphObjectById(compositeName, c.startId);
+                        if (other != null)
+                        {
+                            if ((other.lineage ?? String.Empty).StartsWith(childLineage))
+                            {
+                                var externalId = GetAttibuteGivenObject(other, nameof(GraphObject.externalId));
+                                var value = GetAttibuteGivenObject(other, childValueAttribute);
+                                list.Add(new StringStringPair(externalId, value));
+                            }
+                        }
+                    }
                 }
-                return list;
-            
+            }
+            return list;
+
         }
 
         /// <summary>
@@ -797,41 +793,41 @@ namespace Darl.Thinkbase
 
         public async Task<GraphObject> UpdateVirtualObject(string compositeName, GraphObjectUpdate go, bool merge = false)
         {
-                if (await _primitives.Load(compositeName) is not IGraphModel cont)
-                    throw new Exception($"Graph  '{compositeName}' does not exist.");
-                if (!cont.virtualVertices.ContainsKey(go.lineage))
-                    return null;
-                var node = cont.virtualVertices[go.lineage];
-                //update nun-null elements in go
-                if (go.name != null)
+            if (await _primitives.Load(compositeName) is not IGraphModel cont)
+                throw new Exception($"Graph  '{compositeName}' does not exist.");
+            if (!cont.virtualVertices.ContainsKey(go.lineage))
+                return null;
+            var node = cont.virtualVertices[go.lineage];
+            //update nun-null elements in go
+            if (go.name != null)
+            {
+                if (node.name != go.name)
                 {
-                    if (node.name != go.name)
-                    {
-                        node.name = go.name;
-                    }
+                    node.name = go.name;
                 }
-                if (go.properties != null && go.properties.Any())
+            }
+            if (go.properties != null && go.properties.Any())
+            {
+                if (merge)
                 {
-                    if (merge)
+                    //merge properties
+                    foreach (var a in go.properties)
                     {
-                        //merge properties
-                        foreach (var a in go.properties)
+                        var found = node.properties.Where(b => b.lineage == a.lineage).FirstOrDefault();
+                        if (found != null)
                         {
-                            var found = node.properties.Where(b => b.lineage == a.lineage).FirstOrDefault();
-                            if (found != null)
-                            {
-                                node.properties.Remove(found);
-                            }
-                            node.properties.Add(ConvertAttributeInput(a));
+                            node.properties.Remove(found);
                         }
-                    }
-                    else
-                    {
-                        node.properties = ConvertAttributeInputList(go.properties);
+                        node.properties.Add(ConvertAttributeInput(a));
                     }
                 }
-                return node;
-            
+                else
+                {
+                    node.properties = ConvertAttributeInputList(go.properties);
+                }
+            }
+            return node;
+
 
         }
 
@@ -1031,7 +1027,7 @@ namespace Darl.Thinkbase
         public async Task<GraphAttribute?> UpdateVirtualObjectAttribute(string compositeName, string lineage, GraphAttributeInput graphAtt)
         {
             var obj = await GetVirtualObjectByLineage(compositeName, lineage);
-            if(obj != null)
+            if (obj != null)
                 return UpdateOrCreateAttribute(obj, graphAtt);
             return null;
         }
@@ -1039,7 +1035,7 @@ namespace Darl.Thinkbase
         public async Task<GraphAttribute?> DeleteRecognitionObjectAttribute(string compositeName, string objectId, string graphLineage)
         {
             var obj = await GetRecognitionObjectById(compositeName, objectId);
-            if(obj != null)
+            if (obj != null)
                 return DeleteAttribute(obj, graphLineage);
             return null;
         }
@@ -1047,7 +1043,7 @@ namespace Darl.Thinkbase
         public async Task<GraphAttribute?> DeleteVirtualObjectAttribute(string compositeName, string objectLineage, string graphLineage)
         {
             var obj = await GetVirtualObjectByLineage(compositeName, objectLineage);
-            if(obj != null)
+            if (obj != null)
                 return DeleteAttribute(obj, graphLineage);
             return null;
         }
@@ -1061,7 +1057,7 @@ namespace Darl.Thinkbase
         public async Task<GraphAttribute?> DeleteGraphObjectAttribute(string compositeName, string objectId, string graphLineage)
         {
             var obj = await GetGraphObjectById(compositeName, objectId);
-            if(obj != null)
+            if (obj != null)
                 return DeleteAttribute(obj, graphLineage);
             return null;
         }
@@ -1097,7 +1093,7 @@ namespace Darl.Thinkbase
             return _metaHandler.FindMetaDisplayStructure(model, res, ref pending, responses);
         }
 
-        public string? FindControlAttribute(IGraphModel model, string id)
+        public (string?,string?) FindControlAttribute(IGraphModel model, string id)
         {
             return model.FindControlAttribute(id);
         }

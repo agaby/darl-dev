@@ -54,9 +54,9 @@ namespace Darl.Thinkbase.Meta
 
         public override void WalkSaliences(double saliency, MetaRootNode root)
         {
-            foreach(var isd in setDependencyList)
+            foreach (var isd in setDependencyList)
             {
-                root.inputs.TryAdd(isd.dependentObject.externalId, new InputDefinitionNode {Salience = saliency, lineage = isd.attributeLineage, name = isd.dependentObject.externalId, networkNode = new NetworkComponentNode { lineage = isd.attributeLineage, nodeId = isd.dependentObject.id } });
+                root.inputs.TryAdd(isd.dependentObject.externalId, new InputDefinitionNode { Salience = saliency, lineage = isd.attributeLineage, name = isd.dependentObject.externalId, networkNode = new NetworkComponentNode { lineage = isd.attributeLineage, nodeId = isd.dependentObject.id } });
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.Licensing;
 using Darl.Lineage.Bot;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;

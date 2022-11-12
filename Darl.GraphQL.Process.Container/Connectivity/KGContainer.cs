@@ -1,5 +1,6 @@
 ﻿using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Models.Noda;
+using Darl.Licensing;
 using Darl.Lineage;
 using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;

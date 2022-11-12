@@ -160,7 +160,7 @@ namespace Darl.Thinkbase.Meta
                                 foreach (double d in sets[set].values)
                                 {
                                     valCount++;
-                                    sb.Append(Math.Round(d,4).ToString(System.Globalization.CultureInfo.InvariantCulture) + (valCount == sets[set].values.Count ? "" : ","));
+                                    sb.Append(Math.Round(d, 4).ToString(System.Globalization.CultureInfo.InvariantCulture) + (valCount == sets[set].values.Count ? "" : ","));
                                 }
                                 sb.Append("}");
                                 setindex++;
@@ -181,7 +181,7 @@ namespace Darl.Thinkbase.Meta
                         break;
 
                 }
-                if(lineageNode != null)
+                if (lineageNode != null)
                 {
                     sb.Append(" " + lineageNode.TermToDarl());
                 }

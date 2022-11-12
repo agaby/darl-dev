@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.Licensing;
 using Darl.Thinkbase;
 using DarlLanguage.Processing;
 using GraphQL.Client.Http;

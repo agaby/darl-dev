@@ -217,7 +217,7 @@ namespace Darl.Thinkbase.Meta
             //now the single output
             ruleString += ps.outp.TermToDarl() + "\n";
             //insert any constants
-            foreach(var c in ps.rroot.constants.Values)
+            foreach (var c in ps.rroot.constants.Values)
             {
                 ruleString += c.TermToDarl();
             }
@@ -227,7 +227,7 @@ namespace Darl.Thinkbase.Meta
             }
             foreach (var c in ps.rroot.lineages.Values)
             {
-                if(!grammar.structure.CommonLineages.ContainsKey(c.name))
+                if (!grammar.structure.CommonLineages.ContainsKey(c.name))
                     ruleString += c.TermToDarl();
             }
             foreach (var c in ps.rroot.strings.Values)
@@ -237,7 +237,7 @@ namespace Darl.Thinkbase.Meta
             //insert any existing rules
             foreach (var rules in ps.rroot.rules.Values)
             {
-                foreach(var r in rules)
+                foreach (var r in rules)
                     ruleString += r.TermToDarl();
             }
             rootDecisioNode.GenerateRules(ref ruleString, "", 0);
@@ -310,9 +310,9 @@ namespace Darl.Thinkbase.Meta
                 var results = new List<DarlResult>();
                 Evaluate(newTree, results, ks).Wait();
                 var predicted = ks.GetAttribute(ps.targetNodeId, ps.valueLineage);
-                if(predicted != null && predicted.type == GraphAttribute.DataType.categorical)
+                if (predicted != null && predicted.type == GraphAttribute.DataType.categorical)
                 {
-                    if(predicted.confidence > 0.1)
+                    if (predicted.confidence > 0.1)
                     {
                         score = predicted.value == existing ? 1.0 : 0.0;
                     }
@@ -321,7 +321,7 @@ namespace Darl.Thinkbase.Meta
                         unknowns++;
                     }
                 }
-                else if(predicted != null && predicted.type == GraphAttribute.DataType.numeric)
+                else if (predicted != null && predicted.type == GraphAttribute.DataType.numeric)
                 {
                     if (predicted.confidence > 0.1)
                     {

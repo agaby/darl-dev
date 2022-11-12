@@ -4,6 +4,8 @@
     <TargetFramework>net6.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <UserSecretsId>c40fc942-ae2e-4d51-8070-56f26d898955</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -236,6 +238,7 @@
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="28.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
     <PackageReference Include="Moq" Version="4.18.2" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />

@@ -1,5 +1,5 @@
 ﻿using Darl.GraphQL.Models.Models;
-using Darl.Lineage;
+using Darl.Licensing;
 using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using GraphQL;
@@ -9,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ProtoBuf;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -76,7 +75,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <param name="go"></param>
         /// <returns>The modified object</returns>
         /// <remarks>Merges rather than overwriting properties</remarks>
- 
+
 
         public async Task Store(string blobName, IGraphModel model)
         {
@@ -127,12 +126,12 @@ namespace Darl.GraphQL.Models.Connectivity
                         throw new ExecutionError($"Error loading shared graph {blobName}: {ex.Message}");
                     }
                 }
-/*                else
-                {
-                    var model = new BlobGraphContent();
-                    buffer.Add(blobName, model);
-                    return model;
-                }*/
+                /*                else
+                                {
+                                    var model = new BlobGraphContent();
+                                    buffer.Add(blobName, model);
+                                    return model;
+                                }*/
             }
             return null;
         }
@@ -220,7 +219,7 @@ namespace Darl.GraphQL.Models.Connectivity
             if (!String.IsNullOrEmpty(sharedState.Item1))
             {
                 modified.Remove(sharedState.Item1);
-                if(_localCache.TryGetValue(compositeName, out IGraphModel model))
+                if (_localCache.TryGetValue(compositeName, out IGraphModel model))
                 {
                     byte[] data;
                     data = SerializeGraph(model);
@@ -432,7 +431,7 @@ namespace Darl.GraphQL.Models.Connectivity
         /// <param name="subjectId">KS to use for attributes </param>
         /// <returns></returns>
         /// <exception cref="ExecutionError"></exception>
- 
+
 
         public async Task<int> GetKGraphCountAsync(string userId)
         {
@@ -546,7 +545,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 else
                     throw new Exception("Couldn't deserialize model.");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new ExecutionError($"Invalid or empty graph data for {graphName}", ex);
             }

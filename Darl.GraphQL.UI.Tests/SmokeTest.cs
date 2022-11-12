@@ -1,7 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
-using System;
 using System.Threading.Tasks;
 
 namespace Darl.GraphQL.UI.Tests
@@ -12,7 +11,7 @@ namespace Darl.GraphQL.UI.Tests
         static OpenQA.Selenium.Chrome.ChromeDriver driver;
 
         [TestInitialize()]
-        public void SmokeTestInitialize() 
+        public void SmokeTestInitialize()
         {
             driver = new OpenQA.Selenium.Chrome.ChromeDriver
             {
@@ -21,7 +20,7 @@ namespace Darl.GraphQL.UI.Tests
         }
 
         [TestCleanup()]
-        public void SmokeTestCleanup() 
+        public void SmokeTestCleanup()
         {
             driver.Dispose();
         }
@@ -43,7 +42,7 @@ namespace Darl.GraphQL.UI.Tests
             select.SelectByText("ai_triage.graph");
             await Task.Delay(1000);
             var popups = driver.FindElements(By.ClassName("messagebox_button_done"));
-            foreach(var p in popups)
+            foreach (var p in popups)
             {
                 p.Click();
             }

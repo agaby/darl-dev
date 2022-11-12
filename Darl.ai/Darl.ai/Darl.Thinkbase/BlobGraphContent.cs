@@ -115,9 +115,9 @@ namespace Darl.Thinkbase
         public void SanityCheck()
         {
             var orphanRealConnections = new List<GraphConnection>();
-            foreach(var c in edges.Values)
+            foreach (var c in edges.Values)
             {
-                if(!vertices.ContainsKey(c.startId) || !vertices.ContainsKey(c.endId))
+                if (!vertices.ContainsKey(c.startId) || !vertices.ContainsKey(c.endId))
                 {
                     //remove from the end still connected, if any
                     if (vertices.ContainsKey(c.startId))
@@ -129,12 +129,12 @@ namespace Darl.Thinkbase
             }
             foreach (var c in orphanRealConnections)
                 edges.Remove(c.id);
-            foreach(var v in vertices.Values)
+            foreach (var v in vertices.Values)
             {
                 var orphanOutEdges = new List<GraphConnection>();
-                foreach(var e in v.Out)
+                foreach (var e in v.Out)
                 {
-                    if(!edges.ContainsKey(e.id))
+                    if (!edges.ContainsKey(e.id))
                     {
                         orphanOutEdges.Add(e);
                     }
@@ -191,29 +191,29 @@ namespace Darl.Thinkbase
         /// <param name="id"></param>
         /// <param name="lineage"></param>
         /// <returns></returns>
-        public string? FindControlAttribute(string id)
+        public (string?,string?) FindControlAttribute(string id)
         {
             if (!vertices.ContainsKey(id))
-                return null;
+                return (null,null);
             var obj = vertices[id];
             if (obj.properties != null)
             {
                 var att = obj.properties.Where(a => a.type == GraphAttribute.DataType.ruleset).FirstOrDefault(); //check name or lineage?
                 if (att != null)
                 {
-                    return att.value;
+                    return (att.value,id);
                 }
             }
             //no local value, try virtual
             if (obj.lineage == null || !virtualVertices.ContainsKey(obj.lineage))
             {
-                return null;
+                return (null,null);
             }
             var virtNode = virtualVertices[obj.lineage];
             var list1 = new List<GraphObject> { virtNode };
             FollowHypernymy(virtNode, list1);
             string ruleSource = string.Empty;
-            bool found = false;
+            string? found = null;
             foreach (var l in list1)
             {
                 if (l.properties != null)
@@ -223,26 +223,26 @@ namespace Darl.Thinkbase
                         if (p.lineage != null /* && p.lineage.StartsWith(lineage)*/ && p.type == GraphAttribute.DataType.ruleset)
                         {
                             ruleSource = p.value;
-                            found = true;
+                            found = l.id;
                             break;
                         }
                     }
                 }
-                if (found)
+                if (found != null)
                     break;
             }
             if (ruleSource == string.Empty)
-                return null;
-            return ruleSource;
+                return (null,null);
+            return (ruleSource,found);
         }
 
         public DarlVar? FindDataAttribute(string id, string lineage, KnowledgeState ks)
         {
             var att = FindDataGraphAttribute(id, lineage, ks);
-            if(att != null)
+            if (att != null)
             {
                 var obj = vertices.ContainsKey(id) ? vertices[id] : vertices.Values.FirstOrDefault(a => a.externalId == id);
-                if(obj != null)
+                if (obj != null)
                 {
                     var r = att.Convert();
                     r.name = obj.externalId;
@@ -259,7 +259,7 @@ namespace Darl.Thinkbase
             if (!vertices.ContainsKey(id))
             {
                 obj = vertices.Values.FirstOrDefault(a => a.externalId == id);
-                if(obj == null)
+                if (obj == null)
                     return null;
                 id = obj.id ?? "";
             }
@@ -341,15 +341,15 @@ namespace Darl.Thinkbase
                         list.Add(obj);
                 }
             }
-/*            foreach (var i in node.In)
-            {
-                if (!string.IsNullOrEmpty(i.lineage) && i.lineage.StartsWith(connectionLineage))
-                {
-                    var obj = vertices[i.startId];
-                    if (obj.lineage != null && obj.lineage.StartsWith(objectLineage))
-                        list.Add(obj);
-                }
-            }*/
+            /*            foreach (var i in node.In)
+                        {
+                            if (!string.IsNullOrEmpty(i.lineage) && i.lineage.StartsWith(connectionLineage))
+                            {
+                                var obj = vertices[i.startId];
+                                if (obj.lineage != null && obj.lineage.StartsWith(objectLineage))
+                                    list.Add(obj);
+                            }
+                        }*/
             return list;
         }
 
@@ -420,7 +420,7 @@ namespace Darl.Thinkbase
         {
             vertices.Clear();
             edges.Clear();
-            recognitionEdges.Clear();   
+            recognitionEdges.Clear();
             recognitionVertices.Clear();
             recognitionRoots.Clear();
             virtualEdges.Clear();

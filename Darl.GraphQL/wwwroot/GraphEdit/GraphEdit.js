@@ -1261,11 +1261,14 @@ async function loadGraphs() {
                 message: labels + " to search for:",
                 buttonDone: "Find",
                 buttonFail: "Cancel",
-                queue: false
+                queue: false,
+                filterDone: function (data) {
+                    if (data === "") return "You must give a value!";
+                }
             }).done(function (data) {
                 if ($.trim(data)) {
                     var nodes = realcy.nodes().filter(function (element, i) {
-                        return element.data(labels) === $.trim(data);
+                        return element.data(labels)?.toUpperCase() === $.trim(data)?.toUpperCase();
                     });
                     realcy.fit(nodes, 300);
                     nodes.emit('tap');

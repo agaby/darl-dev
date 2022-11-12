@@ -50,10 +50,10 @@ namespace Darl.Lineage.Bot
 
         public void ClearBotState(string graphname)
         {
-            values.Clear();
+            values = new List<DarlVar>();
             kGraphData = null;
             pending = null;
-            if(states.ContainsKey(graphname))
+            if (states.ContainsKey(graphname))
                 states.Remove(graphname);
         }
 

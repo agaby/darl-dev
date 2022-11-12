@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Darl.GraphQL.Models.Connectivity
+namespace Darl.Licensing
 {
     public interface ILicensing
     {

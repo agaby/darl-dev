@@ -262,7 +262,7 @@ namespace Darl.Thinkbase.Meta
         {
             if (identType == IdentifierType.categorical_input || identType == IdentifierType.numeric_input || identType == IdentifierType.textual_input || identType == IdentifierType.temporal_input || identType == IdentifierType.dynamic_categorical_input)
             {
-                if(root.inputs.ContainsKey(name))
+                if (root.inputs.ContainsKey(name))
                     root.inputs[name].WalkSaliences(saliency, root);
             }
         }

@@ -21,7 +21,7 @@ namespace Darl.GraphQL.Models.Schemata
             Add("video", 10, "numeric data");
             Add("credentials", 11, "credentials data");
             Add("name", 12, "name data");
-            Add("organization", 13,  "organization data");
+            Add("organization", 13, "organization data");
             Add("payment", 14, "payment data");
             Add("ruleset", 15, "ruleset data");
             Add("complete", 16, "completion data");

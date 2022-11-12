@@ -107,9 +107,9 @@ namespace Darl.Thinkbase
             //If this is a leaf node of one of the possible types i.e. categorical, numeric, textual, etc.
             //look to the parent to find possible patterns.
             if (res.Out.Any() || !res.In.Any()) //not a leaf or a root
-            { 
+            {
                 var child = model.vertices[res.Out[0].endId];
-                if(!string.IsNullOrEmpty(child.GetAttributeValue(CommonLineages["answer"])))
+                if (!string.IsNullOrEmpty(child.GetAttributeValue(CommonLineages["answer"])))
                 {
                     res = child;
                 }
@@ -146,10 +146,10 @@ namespace Darl.Thinkbase
                 answer = new GraphAttribute { confidence = 1.0, type = GraphAttribute.DataType.textual, value = string.Empty };
             }
             pending.dataType = answer.ConvertDataType();
-            switch(pending.dataType)
+            switch (pending.dataType)
             {
                 case DarlVar.DataType.categorical:
-                    if(answer.properties != null)
+                    if (answer.properties != null)
                     {
                         pending.categories = answer.properties.Where(a => a.name == "category").Select(a => a.value).ToDictionary(x => x, y => 1.0);
                     }
@@ -160,7 +160,7 @@ namespace Darl.Thinkbase
         }
 
 
-        
+
         public (DarlVar, InteractTestResponse?) AggregateChildren(GraphObject go, IGraphModel model, string ConnectionLineage)
         {
             string aggregateLineage = "";
@@ -432,7 +432,7 @@ namespace Darl.Thinkbase
                 {
                     outsb.AppendLine("output categorical completed {true, false} complete;");
                     outsb.AppendLine("output textual reportSource;");
-                    outsb.AppendLine("output textual annotation;");   
+                    outsb.AppendLine("output textual annotation;");
                     var obj = model.vertices[objectId];
                     var targetAtt = obj.GetAttribute(CommonLineages["answer"]);
                     if (targetAtt != null)
@@ -454,7 +454,7 @@ namespace Darl.Thinkbase
                                 outsb.AppendLine($"input {att.type} {outname} \"{outname}\" answer;");
                             }
                         }
-                    }                    
+                    }
                 }
             }
             return outsb.ToString() + "\n\n" + rulesb.ToString();
@@ -477,7 +477,7 @@ namespace Darl.Thinkbase
                         {
                             var outname = BuildName(source);
                             if (outname != null)
-                            { 
+                            {
                                 outsb.AppendLine($"output {att.type} {outname};");
                                 rulesb.AppendLine($"if anything then {outname} will be single({BuildTypeWordString(source, model)},{GetConnectionTypeWord(c)},answer);");
                             }
@@ -536,7 +536,7 @@ namespace Darl.Thinkbase
 
         public string GetTypeWord(string? lineage)
         {
-            if(lineage != null && LineageLibrary.lineages.TryGetValue(lineage, out LineageRecord? rec))
+            if (lineage != null && LineageLibrary.lineages.TryGetValue(lineage, out LineageRecord? rec))
             {
                 return rec.typeWord;
             }

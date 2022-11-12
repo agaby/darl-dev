@@ -15,7 +15,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field(c => c.target, true).Description("Flags that this field is the supervised learning target, i.e. the thing to learn.");
             Field(c => c.objectLineage, true).Description("The lineage to be given to a created node for this field.");
             Field(c => c.objectSubLineage, true).Description("The sub-lineage to be given to a created node for this field.");
-            Field<GraphAttributeDataTypeEnum>("dataType","The data type of the field", resolve: c => c.Source.dataType);
+            Field<GraphAttributeDataTypeEnum>("dataType", "The data type of the field", resolve: c => c.Source.dataType);
         }
 
     }

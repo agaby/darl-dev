@@ -94,7 +94,7 @@ namespace Darl.Thinkbase
         /// <param name="currentIndex">The index of this nodes partition</param>
         /// <param name="depth">The depth.</param>
         /// <exception cref="RuleException">Insufficient information in the data set to learn anything.</exception>
-        internal void GenerateNodes(IODefinitionNode? currentInput, OutputDefinitionNode currentOutput,  List<IODefinitionNode> currentInputs, List<int> currentIndices, int currentIndex, int depth)
+        internal void GenerateNodes(IODefinitionNode? currentInput, OutputDefinitionNode currentOutput, List<IODefinitionNode> currentInputs, List<int> currentIndices, int currentIndex, int depth)
         {
             input = currentInput;
             output = currentOutput;
@@ -184,7 +184,7 @@ namespace Darl.Thinkbase
                 if (merged)
                 {
                     string orTerms = " or ";
-                    input.WriteTerm(ref orTerms,  input.categories[index]);
+                    input.WriteTerm(ref orTerms, input.categories[index]);
                     int nCount = mergedIndexes.Count;
                     foreach (int candidate in mergedIndexes)
                     {
@@ -216,7 +216,7 @@ namespace Darl.Thinkbase
             }
             return count;
         }
- 
+
         /// <summary>
         /// Consider if this and the node parameter can be merged, if not return false.
         /// </summary>
@@ -318,9 +318,9 @@ namespace Darl.Thinkbase
                     start += string.Format("{0} will be ", output.name);
                     start += this.output.oType == OutputDefinitionNode.OutputTypes.numeric_output ? partitionText : string.Format("\"{0}\"", partitionText);
                     double dConf = outputPartitions[partition];
-                    if(dConf < 1.0)
+                    if (dConf < 1.0)
                     {
-                       start += string.Format(" confidence {0};", Math.Round(dConf,4).ToString());
+                        start += string.Format(" confidence {0};", Math.Round(dConf, 4).ToString());
                     }
                     else
                     {

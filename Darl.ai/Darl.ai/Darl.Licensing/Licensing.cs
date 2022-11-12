@@ -9,7 +9,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 
-namespace Darl.GraphQL.Models.Connectivity
+namespace Darl.Licensing
 {
     public class ProductLicensing : ILicensing
     {
@@ -45,7 +45,7 @@ namespace Darl.GraphQL.Models.Connectivity
                 var licenseText = license.ToString();
                 return Compress(licenseText);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Exception in creating license.");
                 return String.Empty;
@@ -101,7 +101,7 @@ namespace Darl.GraphQL.Models.Connectivity
                                     .Signature(publicKey)
                                     .AssertValidLicense().ToList();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Exception in checking license.");
                 return false;

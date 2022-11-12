@@ -67,7 +67,7 @@ namespace Darl.Thinkbase.Meta
         public static DarlResult GetInputRange(this ParseTree parseTree, string name)
         {
             var input = GetInputs(parseTree).Where(a => a.name == name).FirstOrDefault();
-            if(input == null)
+            if (input == null)
                 input = GetInputs(parseTree).Where(a => a.name == "response").FirstOrDefault();
             DarlResult res = new DarlResult(0.0, true);
             if (!(res is null))

@@ -429,7 +429,7 @@ namespace Darl.Lineage
                         numberFound = true;
                         found = true;
                     }
-                    else if(concepts != null)
+                    else if (concepts != null)
                     {
                         foreach (var c in concepts) // check it's not an indefinite article, i.e. a week.
                         {
@@ -478,7 +478,7 @@ namespace Darl.Lineage
                     }
 
                 }
-                else if(concepts != null)//process a period
+                else if (concepts != null)//process a period
                 {
                     foreach (var c in concepts)
                     {

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Darl.GraphQL.Models.Models.Noda
 {
-    public class NodaDocument: ILayoutable
+    public class NodaDocument : ILayoutable
     {
         public string name { get; set; } = "thinkbase.graph";
         public string format { get; set; } = "v2";
@@ -58,7 +58,7 @@ namespace Darl.GraphQL.Models.Models.Noda
 
         public List<ILayoutNode> GetNodes()
         {
-            return  nodes.ToList<ILayoutNode>();          
+            return nodes.ToList<ILayoutNode>();
         }
 
         public List<ILayoutLink> GetLinks()

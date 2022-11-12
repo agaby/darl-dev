@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.Licensing;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using Darl.Thinkbase;
@@ -11,12 +12,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using QuickGraph;
-using QuickGraph.Serialization;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace Darl.GraphQL.Test

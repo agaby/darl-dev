@@ -2,7 +2,6 @@
 using Darl.GraphQL.Models.Models;
 using GraphQL.Server.Transports.Subscriptions.Abstractions;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Security.Claims;
 using System.Security.Principal;

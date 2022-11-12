@@ -92,7 +92,7 @@ namespace DarlCompiler.Interpreter
             astBuilder.BuildAst(parseTree);
         }
 
-        
+
     }
 
 }

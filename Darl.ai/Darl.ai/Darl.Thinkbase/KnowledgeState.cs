@@ -22,28 +22,28 @@ namespace Darl.Thinkbase
         /// <summary>
         /// The owner of the data, a Guid
         /// </summary>
-        [ProtoMember(1)] 
+        [ProtoMember(1)]
         public string userId { get; set; }
 
         /// <summary>
         /// the id of the subject to which this data relates 
         /// </summary>
-        [ProtoMember(2)] 
+        [ProtoMember(2)]
         public string subjectId { get; set; }
 
         /// <summary>
         /// the KG it applies to
         /// </summary>
-        [ProtoMember(3)] 
+        [ProtoMember(3)]
         public string knowledgeGraphName { get; set; }
 
-        [ProtoMember(4)] 
+        [ProtoMember(4)]
         public DateTime? created { get; set; }
 
         /// <summary>
         /// If a processId is present, this data is used only for machine learning and can be deleted when that process terminates.
         /// </summary>
-        [ProtoMember(5)] 
+        [ProtoMember(5)]
         public string? processId { get; set; }
 
 
@@ -129,19 +129,19 @@ namespace Darl.Thinkbase
             sb.Append($"knowledgeGraphName: {knowledgeGraphName}, ");
             sb.Append($"subjectId: {subjectId}, ");
             sb.AppendLine($"userId: {userId} ");
-            if(data != null)
+            if (data != null)
             {
                 foreach (var s in data.Keys)
                 {
                     sb.Append($"Object: {s}, Attributes: ");
-                    foreach(var v in data[s])
+                    foreach (var v in data[s])
                         sb.AppendLine(v.ToString());
-                }    
+                }
             }
             return sb.ToString();
         }
 
-        public  string ToString(IGraphModel model)
+        public string ToString(IGraphModel model)
         {
             var sb = new StringBuilder();
             sb.Append($"knowledgeGraphName: {knowledgeGraphName}, ");
@@ -165,10 +165,10 @@ namespace Darl.Thinkbase
     [ProtoContract(AsReferenceDefault = true)]
     public class KSData
     {
-        [ProtoMember(1)] 
+        [ProtoMember(1)]
         public string objectId { get; set; }
 
-        [ProtoMember(2)] 
+        [ProtoMember(2)]
         public List<GraphAttribute> attributes { get; set; }
     }
 }

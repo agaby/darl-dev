@@ -1,17 +1,12 @@
 ﻿using Darl.Common;
-using Darl.GraphQL.Models.Connectivity;
 using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlLanguage;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using ProtoBuf;
 using System;
 using System.Collections.Generic;
@@ -104,7 +99,7 @@ namespace Darl_standard_core.test
             model.Setup(a => a.GetConnectedObjects(It.IsAny<GraphObject>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new List<GraphObject> { new GraphObject { id = id1 }, new GraphObject { id = id2 } });
             _model = model.Object;
             _metaRunTime = new DarlMetaRunTime(_config, new MetaStructureHandler());
-            _dataLoader = new  DataLoader(metaStruct.Object);
+            _dataLoader = new DataLoader(metaStruct.Object);
         }
 
         [TestMethod]
@@ -250,7 +245,7 @@ namespace Darl_standard_core.test
             var completionLineage = completeLineage;
             var ks = new KnowledgeState();
             var model = await graph.GetModel(userId, graphName);
-            var next = await gh.GraphPass(ks,model, subjectId, targetId, paths, completionLineage, new List<DarlCommon.DarlVar>(), null, GraphProcess.seek);
+            var next = await gh.GraphPass(ks, model, subjectId, targetId, paths, completionLineage, new List<DarlCommon.DarlVar>(), null, GraphProcess.seek);
             Assert.AreEqual(1, next.Item1.Count);
         }
 
@@ -723,8 +718,8 @@ namespace Darl_standard_core.test
             var model = Serializer.Deserialize<BlobGraphContent>(Assembly.GetExecutingAssembly().GetManifestResourceStream("Darl.ai.tests.cursus_honorum.graph"));
             primitives = new Mock<IGraphPrimitives>();
             primitives.Setup(a => a.Load(It.IsAny<string>())).Returns(Task.FromResult<IGraphModel>(model));
-//            primitives.Setup(a => a.GetRecognitionRoot(It.IsAny<IGraphModel>(), It.IsAny<string>())).Returns(Task.FromResult<GraphObject>(model.recognitionRoots["default:"]));
-//            primitives.Setup(a => a.GetGraphObjectById(It.IsAny<string>(), It.IsAny<string>())).Returns((string compName, string id) => Task.FromResult<GraphObject>(model.vertices.FirstOrDefault(a => a.Value.externalId == id).Value));
+            //            primitives.Setup(a => a.GetRecognitionRoot(It.IsAny<IGraphModel>(), It.IsAny<string>())).Returns(Task.FromResult<GraphObject>(model.recognitionRoots["default:"]));
+            //            primitives.Setup(a => a.GetGraphObjectById(It.IsAny<string>(), It.IsAny<string>())).Returns((string compName, string id) => Task.FromResult<GraphObject>(model.vertices.FirstOrDefault(a => a.Value.externalId == id).Value));
             var ks = new KnowledgeState { subjectId = "person" };
             primitives.Setup(a => a.GetKnowledgeState(It.IsAny<string>(), "person", It.IsAny<string>(), It.IsAny<bool>())).Returns(Task.FromResult(ks));
             _primitives = primitives.Object;
@@ -739,7 +734,7 @@ namespace Darl_standard_core.test
         [TestMethod]
         public void TestKnowledgeStateSerialize()
         {
-            var ks = new KnowledgeState 
+            var ks = new KnowledgeState
             {
                 created = DateTime.Now,
                 subjectId = Guid.NewGuid().ToString(),
@@ -747,30 +742,30 @@ namespace Darl_standard_core.test
                 userId = Guid.NewGuid().ToString(),
                 processId = Guid.NewGuid().ToString(),
             };
-            ks.data.Add(Guid.NewGuid().ToString(), new List<GraphAttribute> { 
-                new GraphAttribute { 
+            ks.data.Add(Guid.NewGuid().ToString(), new List<GraphAttribute> {
+                new GraphAttribute {
                     lineage = abilityLineage,
                     type = GraphAttribute.DataType.textual,
                     value = "poops"
-                }, 
+                },
                 new GraphAttribute {
                     lineage = abilityLineage,
                     type = GraphAttribute.DataType.numeric,
                     value = "22"
-                } 
+                }
             });
             byte[] buffer;
             using (MemoryStream ms = new MemoryStream())
             {
                 Serializer.Serialize<KnowledgeState>(ms, ks);
                 ms.Position = 0;
-                buffer =  ms.ToArray();
+                buffer = ms.ToArray();
             }
             KnowledgeState returnedKS;
             using (var ms = new MemoryStream(buffer))
             {
                 ms.Position = 0;
-                returnedKS =  Serializer.Deserialize<KnowledgeState>(ms);
+                returnedKS = Serializer.Deserialize<KnowledgeState>(ms);
             }
             Assert.IsNotNull(returnedKS);
             Assert.AreEqual(ks.knowledgeGraphName, returnedKS.knowledgeGraphName);

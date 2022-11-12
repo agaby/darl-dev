@@ -2,7 +2,6 @@
 using Darl.GraphQL.Models.Schemata;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
-using DarlLanguage.Processing;
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -12,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading.Tasks;
 using static Darl.Lineage.Bot.IBotProcessing;
 using static Darl.Thinkbase.IGraphHandler;
 
@@ -109,16 +107,16 @@ namespace Darl.GraphQL.Web.Models.Schemata
             var target = arg.GetArgument<string>("target");
             var asSystem = arg.GetArgument<bool>("asSystem");
             var ks = _graph.ObservableKStates();
-            if(asSystem)
+            if (asSystem)
             {
                 var user = _trans.GetUserById(userId).Result;
-                if(user == null || user.accountState != GraphQL.Models.Models.DarlUser.AccountState.admin)
+                if (user == null || user.accountState != GraphQL.Models.Models.DarlUser.AccountState.admin)
                 {
                     throw new ExecutionError($"asSystem == true only permitted to Administrators.");
                 }
                 return ks.Where(a => a.userId == systemId && a.knowledgeGraphName == graphName).Select(i => _bot.Seek(i, target, new List<string>(), "adjective:5500").Result);
             }
-            return ks.Where(a => a.userId == userId && a.knowledgeGraphName == graphName).Select(i =>  _bot.Seek(i, target, new List<string>(), "adjective:5500").Result);
+            return ks.Where(a => a.userId == userId && a.knowledgeGraphName == graphName).Select(i => _bot.Seek(i, target, new List<string>(), "adjective:5500").Result);
         }
 
         private IObservable<KnowledgeState> SubscribeInteractCompleted(IResolveFieldContext arg)
@@ -127,7 +125,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
             var graphName = arg.GetArgument<string>("name");
             var target = arg.GetArgument<string>("target");
             var ks = _bot.ObservableKStates();
-            return ks.Where(a => a.userId == userId && a.knowledgeGraphName == graphName );
+            return ks.Where(a => a.userId == userId && a.knowledgeGraphName == graphName);
         }
 
         private KnowledgeState? ResolveKSObject(IResolveFieldContext arg)
@@ -179,7 +177,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     _darlMineReportStream.OnCompleted();
                     _logger.LogDebug(ex, "Exception reported in SubscribeLearn.");
                 }
-             });
+            });
             _darlMineReportStream.OnNext(new Thinkbase.Meta.DarlMineReport());
             return res;
         }

@@ -83,7 +83,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
 
             FieldAsync<KGraphType>(
                 "kGraphByName",
-                arguments: 
+                arguments:
                 new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" },
                     new QueryArgument<BooleanGraphType> { Name = "asSystem", Description = "Write to system account", DefaultValue = false }),
@@ -92,7 +92,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     var name = context.GetArgument<String>("name");
                     var asSystem = context.GetArgument<bool>("asSystem");
-                    if(asSystem)
+                    if (asSystem)
                     {
                         var user = trans.GetUserById(userId).Result;
                         if (user == null || user.accountState != GraphQL.Models.Models.DarlUser.AccountState.admin)
@@ -472,7 +472,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                      var name = context.GetArgument<string>("graphName");
                      var typeId = context.GetArgument<string>("typeObjectId");
                      var asSystem = context.GetArgument<bool>("asSystem");
-                     if(asSystem)
+                     if (asSystem)
                      {
                          var user = trans.GetUserById(userId).Result;
                          if (user == null || user.accountState != GraphQL.Models.Models.DarlUser.AccountState.admin)
@@ -489,8 +489,8 @@ namespace Darl.GraphQL.Web.Models.Schemata
                  "Get all the knowledge states in this graph descended from a particular graph object containing an attribute with a particular value.", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "The name of the associated Knowledge Graph." },
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "typeObjectId", Description = "The id of the object these are descended from." },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "attLineage", Description = "The lineage of the attribute that must be contained." }, 
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "attValue", Description = "The value required to be present" }, 
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "attLineage", Description = "The lineage of the attribute that must be contained." },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "attValue", Description = "The value required to be present" },
                     new QueryArgument<BooleanGraphType> { Name = "asSystem", Description = "Write to system account", DefaultValue = false }
                  ),
                  resolve: async context =>
@@ -815,7 +815,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
             {
                 var graphName = context.GetArgument<string>("graphName");
                 var userId = trans.GetCurrentUserId(context.UserContext);
-                return await trans.TempKGExists(userId,graphName);
+                return await trans.TempKGExists(userId, graphName);
             });
             FieldAsync<ListGraphType<ByteGraphType>>("kGContents", "Get a KG's contents binary encoded",
                 arguments: new QueryArguments(
@@ -842,7 +842,7 @@ namespace Darl.GraphQL.Web.Models.Schemata
                     var external = context.GetArgument<bool>("external");
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     var graphName = context.GetArgument<string>("graphName");
-                    return await bot.GetInteractKnowledgeState(Id,userId, graphName, external);
+                    return await bot.GetInteractKnowledgeState(Id, userId, graphName, external);
                 }
             );
         }

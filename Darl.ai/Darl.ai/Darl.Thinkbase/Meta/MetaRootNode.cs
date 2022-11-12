@@ -245,17 +245,17 @@ namespace Darl.Thinkbase.Meta
                                 else
                                 {
                                     var attLineage = outputs[outName].lineage;
-                                    if(string.IsNullOrEmpty(attLineage))
+                                    if (string.IsNullOrEmpty(attLineage))
                                     {
                                         continue;
                                         //throw new StructureException($"Output {outName} in the rules for {obj.externalId} does not contain an attribute Lineage. All externally referenced outputs must have one");
                                     }
-                                    var upstream = saliences.FirstOrDefault( a => a.gobj == obj /*&& a.att.lineage.StartsWith(attLineage )*/);
-                                    if(upstream != null)
+                                    var upstream = saliences.FirstOrDefault(a => a.gobj == obj /*&& a.att.lineage.StartsWith(attLineage )*/);
+                                    if (upstream != null)
                                     {
                                         childSaliency = upstream.salience / unsatisfiedRules.Count;
                                     }
-                                }                                 
+                                }
                                 foreach (DarlMetaNode r in unsatisfiedRules)
                                 {
                                     r.WalkSaliences(childSaliency, this);
@@ -275,12 +275,12 @@ namespace Darl.Thinkbase.Meta
                     //throw new StructureException($"Input {input.name} in the rules for {obj.externalId} is not preset and has no network connection set.");
                 }
                 var trace = grammar.TraceNetworkConnection(input.networkNode.nodeId, input.networkNode.lineage, null);
-                if(!trace.Item1)
+                if (!trace.Item1)
                 {
                     continue; //
                     //throw new StructureException($"Input {input.name} in the rules for {obj.externalId} connected object/attribute doesn't exist, or no connection exists.");
                 }
-                saliences.Add(new SalienceRecord {gobj = trace.Item2, salience = input.Salience , att = trace.Item3 });
+                saliences.Add(new SalienceRecord { gobj = trace.Item2, salience = input.Salience, att = trace.Item3 });
             }
             //process attribute-bound pseudo-inputs here.
             return saliences;

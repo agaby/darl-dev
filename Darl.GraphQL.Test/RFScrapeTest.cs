@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
+using Darl.Licensing;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;
 using Darl.Thinkbase;
@@ -465,7 +466,7 @@ namespace Darl.GraphQL.Test
                 {
                     var current = next.Item1.Last();
                     current.response.Value = current.response.categories.Keys.First();
-                    next = await gh.GraphPass(ks,model, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar> { current.response }, null, GraphProcess.seek);
+                    next = await gh.GraphPass(ks, model, subjectId, targetId, paths, compositeName, new List<DarlCommon.DarlVar> { current.response }, null, GraphProcess.seek);
                 }
                 count++;
             }

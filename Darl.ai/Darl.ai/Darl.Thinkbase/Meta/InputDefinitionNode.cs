@@ -132,7 +132,7 @@ namespace Darl.Thinkbase.Meta
                     }
                     break;
             }
-            if(nodes.Last().AstNode is NetworkComponentNode)
+            if (nodes.Last().AstNode is NetworkComponentNode)
             {
                 networkNode = (NetworkComponentNode)nodes.Last().AstNode;
             }
@@ -328,7 +328,7 @@ namespace Darl.Thinkbase.Meta
                         break;
 
                 }
-                if(networkNode != null)
+                if (networkNode != null)
                 {
                     sb.Append(" " + networkNode.TermToDarl());
                 }
