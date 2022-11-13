@@ -8,5 +8,6 @@
         public string subLineage { get; set; }
         public string externalId { get; set; }
         public string parent { get; set; }
+        public bool hasCode { get; set; } = false;
     }
 }

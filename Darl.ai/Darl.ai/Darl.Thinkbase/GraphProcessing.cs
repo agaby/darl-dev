@@ -865,7 +865,7 @@ namespace Darl.Thinkbase
             var dmodel = new DisplayModel { nodes = new List<DisplayObject>(), edges = new List<DisplayConnection>() };
             if (string.IsNullOrEmpty(lineageFilter)) //return everything
             {
-                dmodel.nodes.AddRange(cont.vertices.Values.Select(i => new DisplayObject { id = i.id, name = i.name, lineage = ExtractLineage(i.lineage), subLineage = ExtractSubLineage(i.lineage), externalId = i.externalId }));
+                dmodel.nodes.AddRange(cont.vertices.Values.Select(i => new DisplayObject { id = i.id, name = i.name, lineage = ExtractLineage(i.lineage), subLineage = ExtractSubLineage(i.lineage), externalId = i.externalId, hasCode =  HasCode(i.properties)}));
                 dmodel.edges.AddRange(cont.edges.Values.Select(i => new DisplayConnection { id = i.id, name = i.name, source = i.startId, target = i.endId }));
             }
             else
@@ -905,7 +905,7 @@ namespace Darl.Thinkbase
             if (await _primitives.Load(compositeName) is not IGraphModel cont)
                 throw new Exception($"Graph  '{compositeName}' does not exist.");
             var dmodel = new DisplayModel { nodes = new List<DisplayObject>(), edges = new List<DisplayConnection>() };
-            dmodel.nodes.AddRange(cont.virtualVertices.Values.Select(i => new DisplayObject { id = i.lineage.Replace(',', '-').Replace(':', '-'), name = i.name, lineage = i.lineage }));
+            dmodel.nodes.AddRange(cont.virtualVertices.Values.Select(i => new DisplayObject { id = i.lineage.Replace(',', '-').Replace(':', '-'), name = i.name, lineage = i.lineage, hasCode = HasCode(i.properties) }));
             dmodel.edges.AddRange(cont.virtualEdges.Values.Select(i => new DisplayConnection { id = i.id, name = i.name, source = i.startId.Replace(',', '-').Replace(':', '-'), target = i.endId.Replace(',', '-').Replace(':', '-') }));
             return dmodel;
         }
@@ -1400,9 +1400,18 @@ namespace Darl.Thinkbase
             return lineage.Substring(pos + 1);
         }
 
+        private bool HasCode(List<GraphAttribute>? properties)
+        {
+            if(properties != null)
+            {
+                return properties.Any(a => a.type == GraphAttribute.DataType.ruleset);
+            }
+            return false;
+        }
+
         private void RecursivelyAddElements(GraphObject robj, DisplayModel dmodel, IGraphModel cont)
         {
-            dmodel.nodes.Add(new DisplayObject { id = robj.id ?? String.Empty, name = robj.name ?? String.Empty, lineage = robj.lineage ?? String.Empty });
+            dmodel.nodes.Add(new DisplayObject { id = robj.id ?? String.Empty, name = robj.name ?? String.Empty, lineage = robj.lineage ?? String.Empty, hasCode = HasCode(robj.properties) });
             GraphConnection? orphan = null;
             foreach (var c in robj.Out)
             {

@@ -1,6 +1,7 @@
 ﻿using DarlCompiler.Ast;
 using DarlCompiler.Interpreter.Ast;
 using DarlCompiler.Parsing;
+using DarlLanguage.Processing;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -203,6 +204,7 @@ namespace Darl.Thinkbase.Meta
             result.Normalise(true);
             if (result.IsUnknown())
                 return new DarlResult(-1.0, true); // if result part unknown don't continue.
+            confidenceNode ??= new ConfidenceNode();
             DarlResult confidence = (DarlResult)await confidenceNode.Evaluate(thread);
             thread.CurrentNode = Parent; //standard epilogue
             var r = new DarlResult(condition, result, confidence);
