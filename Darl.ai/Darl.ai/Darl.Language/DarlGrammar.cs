@@ -742,7 +742,8 @@ namespace DarlLanguage
         public override async Task<string> RunSample(RunSampleArgs args)
         {
             rulesetFilter = args.Sample;
-            return await base.RunSample(args);
+            var res =  await base.RunSample(args);
+            return res.ToString();
         }
 
         public DarlResult ResultByName(string name)

@@ -13,11 +13,12 @@ namespace Darl.Thinkbase.Meta
         /// </returns>
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            thread.CurrentNode = this;  //standard prologue
+            Prologue(thread);
             DarlResult res1 = (DarlResult)await Left.Evaluate(thread);
             DarlResult res2 = (DarlResult)await Right.Evaluate(thread);
-            thread.CurrentNode = Parent;
-            return DarlResult.Round(res1, res2);
+            var res = DarlResult.Round(res1, res2);
+            Epilogue(thread,res); 
+            return res;
         }
     }
 }

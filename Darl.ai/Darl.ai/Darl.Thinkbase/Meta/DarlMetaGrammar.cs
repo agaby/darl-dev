@@ -9,7 +9,7 @@ using System.Linq;
 namespace Darl.Thinkbase.Meta
 {
     [Language("Darl.Meta", "1.0", "Darl Meta language, Copyright(c) ThinkBase LLC, 2022")]
-    public class DarlMetaGrammar : InterpretedLanguageGrammar
+    public class DarlMetaGrammar : InterpretedMetaLanguageGrammar
     {
 
         public List<DarlResult> results { get; set; }

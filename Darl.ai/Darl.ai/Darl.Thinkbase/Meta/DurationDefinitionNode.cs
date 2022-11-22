@@ -36,7 +36,7 @@ namespace Darl.Thinkbase.Meta
             var durText = nodes[1].Token.Value as string;
             if (TimeSpan.TryParse(durText, out parsedVal))
                 Value = parsedVal;
-            else if (durText.ToUpper().Contains('Y'))
+            else if (durText!.ToUpper().Contains('Y'))
             {
                 int ypos = durText.ToUpper().IndexOf("Y");
                 var numPart = durText.Substring(0, ypos);

@@ -38,13 +38,14 @@ namespace Darl_standard.Darl.Thinkbase.Meta
         /// </returns>
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            thread.CurrentNode = this;  //standard prologue
-            DarlResult res = Argument != null ? (DarlResult)await Argument.Evaluate(thread) : null;
+            Prologue(thread);
+            DarlResult? res = Argument != null ? (DarlResult)await Argument.Evaluate(thread) : null;
             var grammar = thread.Runtime.Language.Grammar as DarlMetaGrammar;
-            if (grammar.currentNode == null)
+            if (grammar!.currentNode == null)
             {
-                thread.CurrentNode = Parent;
-                return new DarlResult(0, true);
+                var res2 = new DarlResult(0, true);
+                Epilogue(thread, res2);
+                return res2;
             }
             if (res is null) //operate on object existence
             {
@@ -54,8 +55,9 @@ namespace Darl_standard.Darl.Thinkbase.Meta
                 var existence = new DarlResult("Existence", grammar.currentNode.existence, DarlResult.DataType.temporal);
                 var nowNode = new NowNode();
                 var now = await nowNode.Evaluate(thread) as DarlResult;
-                thread.CurrentNode = Parent;
-                return DarlResult.During(now, existence);
+                var res2 = DarlResult.During(now, existence);
+                Epilogue(thread, res2);
+                return res2;
             }
             else //existence of an attribute
             {
@@ -64,14 +66,17 @@ namespace Darl_standard.Darl.Thinkbase.Meta
                 var att = grammar.currentModel.FindAttributeExistence(grammar.currentNode.id, res.Value.ToString(), grammar.state);
                 if (att == null)
                 {
-                    thread.CurrentNode = Parent;
-                    return new DarlResult(0, true);
+                    var res2 = new DarlResult(0, true);
+                    Epilogue(thread, res2);
+                    return res2;
                 }
                 var existence = new DarlResult("Existence", att, DarlResult.DataType.temporal);
                 var nowNode = new NowNode();
                 var now = await nowNode.Evaluate(thread) as DarlResult;
                 thread.CurrentNode = Parent;
-                return DarlResult.During(now, existence);
+                var res3 =  DarlResult.During(now!, existence);
+                Epilogue(thread, res3);
+                return res3;
             }
         }
 

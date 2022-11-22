@@ -11,9 +11,13 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using Darl.Thinkbase.Meta;
 using DarlCompiler.Interpreter.Ast;
 using DarlCompiler.Parsing;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Text;
 
 namespace DarlCompiler.Interpreter
 {
@@ -50,6 +54,9 @@ namespace DarlCompiler.Interpreter
         /// </summary>
         public object[] TailArgs;
 
+        public Stack<(DarlMetaNode, double)> ExecutionStack = new();
+        public int currentExecutionStackDepth { get; set; } = 0;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ScriptThread"/> class.
         /// </summary>
@@ -60,6 +67,8 @@ namespace DarlCompiler.Interpreter
             Runtime = App.Runtime;
             CurrentScope = app.MainScope;
         }
+
+
 
         /// <summary>
         /// Pushes the scope.
@@ -105,6 +114,24 @@ namespace DarlCompiler.Interpreter
             if (binding == null)
                 ThrowScriptError("Unknown symbol '{0}'.", symbol);
             return binding;
+        }
+
+        public void CheckpointExecution()
+        {
+            currentExecutionStackDepth = ExecutionStack.Count;
+        }
+
+        public void RecordExecution(DarlResult res, DarlMetaNode node)
+        {
+            if(!res.IsUnknown())
+            {
+                ExecutionStack.Push((node, res.GetWeight()));
+            }
+            else
+            {
+                while(ExecutionStack.Count > currentExecutionStackDepth)
+                    ExecutionStack.Pop();
+            }
         }
 
         #region Exception handling
@@ -172,5 +199,8 @@ namespace DarlCompiler.Interpreter
         }
 
         #endregion
+
+        
+
     }
 }

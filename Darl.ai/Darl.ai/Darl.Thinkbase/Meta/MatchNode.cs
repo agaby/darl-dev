@@ -13,10 +13,13 @@ namespace Darl.Thinkbase.Meta
         /// </returns>
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
+            Prologue(thread);
             DarlResult r1 = (DarlResult)await Argument.Evaluate(thread);
             var inp = ((DarlResult)thread.CurrentScope.Parameters[0]);
             //Use implicit comparison. Result does the work internally
-            return new DarlResult(r1 == inp ? 1.0 : 0.0, false);
+            var res = new DarlResult(r1 == inp ? 1.0 : 0.0, false);
+            Epilogue(thread, res);
+            return res;
         }
 
         /// <summary>
@@ -29,7 +32,21 @@ namespace Darl.Thinkbase.Meta
         {
             get
             {
-                return "match ";
+                return "all( ";
+            }
+        }
+        public override string midamble
+        {
+            get
+            {
+                return ", ";
+            }
+        }
+        public override string postamble
+        {
+            get
+            {
+                return ")";
             }
         }
     }

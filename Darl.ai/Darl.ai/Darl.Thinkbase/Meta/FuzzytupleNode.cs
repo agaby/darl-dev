@@ -13,9 +13,12 @@ namespace Darl.Thinkbase.Meta
         /// </returns>
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
+            Prologue(thread);
             if (arguments[0] == null)
             {
-                return new DarlResult(0.0f, true);
+                var res = new DarlResult(0.0f, true);
+                Epilogue(thread,res);
+                return res;
             }
             DarlResult res2 = new DarlResult(true, 1.0);
             foreach (DarlMetaNode child in arguments)
@@ -24,7 +27,11 @@ namespace Darl.Thinkbase.Meta
                 {
                     DarlResult res1 = (DarlResult)await child.Evaluate(thread);
                     if (res1.IsUnknown())//if any children unknown, whole thing unknown.
-                        return new DarlResult(0.0f, true);
+                    {
+                        var res = new DarlResult(0.0f, true);
+                        Epilogue(thread, res);
+                        return res;
+                    }
                     //if the constituents of a fuzzytuple are themselves fuzzy we're into
                     //type 2 fuzzy sets, but since we don't support those yet we'll summarize them
                     //with CofG
@@ -35,6 +42,7 @@ namespace Darl.Thinkbase.Meta
             }
             res2.values.Sort();
             res2.Normalise(false);
+            Epilogue(thread, res2);
             return res2;
         }
 

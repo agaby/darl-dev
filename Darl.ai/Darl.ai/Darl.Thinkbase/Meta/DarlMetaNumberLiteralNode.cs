@@ -43,13 +43,15 @@ namespace Darl.Thinkbase.Meta
         /// <returns>The result</returns>
         protected override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
+            Prologue(thread);
+            Epilogue(thread, FixedResult);
             return Task.FromResult<object>(FixedResult);
         }
 
         public override string GetName()
         {
             if (!FixedResult.IsUnknown())
-                return FixedResult.Value.ToString();
+                return FixedResult.Value.ToString()!;
             return base.GetName();
         }
 

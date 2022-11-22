@@ -13,9 +13,23 @@ namespace Darl.Thinkbase.Meta
         protected override Task<object> DoEvaluate(ScriptThread thread)
         {
             var grammar = thread.Runtime.Language.Grammar as DarlMetaGrammar;
-            if (grammar.now == null || !grammar.now.Any())
-                return Task.FromResult<object>(new DarlResult("Now", DarlTime.UtcNow, DarlResult.DataType.temporal));
-            return Task.FromResult<object>(new DarlResult("Now", grammar.now, DarlResult.DataType.temporal));
+            if (grammar!.now == null || !grammar.now.Any())
+            {
+                var res1 = new DarlResult("Now", DarlTime.UtcNow, DarlResult.DataType.temporal);
+                Epilogue(thread, res1);
+                return Task.FromResult<object>(res1);
+            }
+            var res = new DarlResult("Now", grammar.now, DarlResult.DataType.temporal);
+            Epilogue(thread, res);
+            return Task.FromResult<object>(res);
+        }
+
+        public override string preamble
+        {
+            get
+            {
+                return "now";
+            }
         }
     }
 }

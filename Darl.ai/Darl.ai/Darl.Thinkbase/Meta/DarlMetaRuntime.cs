@@ -160,19 +160,21 @@ namespace Darl.Thinkbase.Meta
             return sb.ToString();
         }
 
+
+
         /// <summary>
         /// Evaluate an existing tree on a given node updating the knowledge state
         /// </summary>
         /// <param name="parseTree">The tree to evaluate</param>
         /// <param name="inputs">a set of input values</param>
         /// <param name="ks">The knowledge state to use and modify</param>
-        public virtual async Task Evaluate(ParseTree parseTree, List<DarlResult> inputs, KnowledgeState ks, FuzzyTime? evalTime = null)
+        public virtual async Task<DarlMetaActivity?> Evaluate(ParseTree parseTree, List<DarlResult> inputs, KnowledgeState ks, FuzzyTime? evalTime = null)
         {
             LicenseCheck();
             grammar.results = inputs;
             grammar.state = ks;
             grammar.now = evalTime == null ? null : evalTime.darlTimes; // not reentrant - fix. 
-            await grammar.RunSample(new RunSampleArgs(language, string.Empty, parseTree));
+            return await grammar.RunSample(new RunSampleArgs(language, string.Empty, parseTree));
         }
 
         private void LicenseCheck()

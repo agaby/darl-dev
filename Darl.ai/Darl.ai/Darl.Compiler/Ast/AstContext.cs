@@ -72,7 +72,7 @@ namespace DarlCompiler.Ast
         /// <param name="location">The location.</param>
         /// <param name="message">The message.</param>
         /// <param name="args">The arguments.</param>
-        public void AddMessage(ErrorLevel level, SourceLocation location, string message, params object[] args)
+        public void AddMessage(ErrorLevel level, SourceLocation location, string message, params object[]? args)
         {
             if (args != null && args.Length > 0)
                 message = string.Format(message, args);

@@ -1032,7 +1032,7 @@ namespace Darl.Thinkbase
         }
 
 
-        private void GenerateQuestionMessage(List<SalienceRecord> c, List<InteractTestResponse> responses, ParseTree tree, ref DarlVar pending, GraphObject res, (string?,string?) code, List<Meta.DarlResult> list)
+        private void GenerateQuestionMessage(List<SalienceRecord> c, List<InteractTestResponse> responses, ParseTree tree, ref DarlVar pending, GraphObject res, (string?,string?) code, List<Meta.DarlResult> list, DarlMetaActivity? dma)
         {
             //add the annotation by reading the annotation result
             var annot = list.Where(a => a.name == annotationSignum).FirstOrDefault();
@@ -1063,7 +1063,7 @@ namespace Darl.Thinkbase
                             var cats = new Dictionary<string, double>();
                             foreach (var i in nextRes.categories) cats.Add(i, 1.0);
                             pending = new DarlVar { dataType = DarlVar.DataType.categorical, categories = cats, name = res.id, sequence = new List<List<string>> { new List<string> { nextRes.name } } };
-                            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.categorical, categories = cats, name = questionIdentifier, Value = text }, reference = res.externalId, darl = code.Item1!, activeNodes = activeNodes });
+                            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.categorical, categories = cats, name = questionIdentifier, Value = text }, reference = res.externalId, darl = code.Item1!, activeNodes = activeNodes, codeActivity = dma });
                         }
                         break;
                     case Meta.InputDefinitionNode.InputTypes.numeric_input:
@@ -1076,13 +1076,13 @@ namespace Darl.Thinkbase
                                 drange[1] = (double)range.values.Last();
                             }
                             pending = new DarlVar { dataType = DarlVar.DataType.numeric, name = res.id, values = drange, sequence = new List<List<string>> { new List<string> { nextRes.name } } };
-                            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.numeric, name = questionIdentifier, Value = text, values = drange }, reference = res.externalId, darl = code.Item1!, activeNodes = activeNodes });
+                            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.numeric, name = questionIdentifier, Value = text, values = drange }, reference = res.externalId, darl = code.Item1!, activeNodes = activeNodes, codeActivity = dma });
                         }
                         break;
                     default:
                         {
                             pending = new DarlVar { dataType = DarlVar.DataType.textual, name = res.id, sequence = new List<List<string>> { new List<string> { nextRes.name } } };
-                            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.textual, name = questionIdentifier, Value = text }, reference = res.externalId, darl = code.Item1!, activeNodes = activeNodes });
+                            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.textual, name = questionIdentifier, Value = text }, reference = res.externalId, darl = code.Item1!, activeNodes = activeNodes, codeActivity = dma });
                         }
                         break;
                 }
@@ -1136,13 +1136,13 @@ namespace Darl.Thinkbase
                 //evaluate it
                 var tree = runtime.CreateTree(code.Item1, o, model); //findControlAttribute checks for syntax errors.
                 var list = Meta.DarlVarExtensions.Convert(values);
-                await runtime.Evaluate(tree, list, ks);
+                var dma = await runtime.Evaluate(tree, list, ks);
                 //calculate saliences if any outstanding turn into a question
                 var saliences = new HashSet<SalienceRecord>();
                 var c = runtime.CalculateKGSaliences(saliences, ks, tree);
                 if (c.Any())
                 {
-                    GenerateQuestionMessage(c.ToList(), responses, tree, ref pending, o, code, list);
+                    GenerateQuestionMessage(c.ToList(), responses, tree, ref pending, o, code, list, dma);
                     if(responses.Any())
                         return (true, pending);
                 }

@@ -8,7 +8,7 @@ namespace Darl.Thinkbase.Meta
     {
         protected override async Task<object> DoEvaluate(ScriptThread thread)
         {
-            thread.CurrentNode = this;  //standard prologue
+            Prologue(thread);
             if (arguments.Count == 0)
             {
                 thread.CurrentNode = Parent;
@@ -26,8 +26,9 @@ namespace Darl.Thinkbase.Meta
                 DarlResult res = (DarlResult)await arguments[choice].Evaluate(thread);
                 if (res.dataType == DarlResult.DataType.textual)
                 {
-                    thread.CurrentNode = Parent;
-                    return new DarlResult("", res.stringConstant, DarlResult.DataType.textual);
+                    var res2 = new DarlResult("", res.stringConstant, DarlResult.DataType.textual);
+                    Epilogue(thread, res2);
+                    return res2;
                 }
                 else
                 {

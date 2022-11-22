@@ -25,10 +25,28 @@ namespace Darl.Thinkbase.Meta
         }
         protected override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
+            Prologue(thread);
             var res = new DarlResult("seek", DarlResult.DataType.seek);
             res.sequence = new List<List<string>> { new List<string> { objLineage } };
             res.SetWeight(1.0);
+            Epilogue(thread, res);
             return Task.FromResult<object>(res);
+        }
+
+        public override string preamble
+        {
+            get
+            {
+                return "discover( ";
+            }
+        }
+
+        public override string postamble
+        {
+            get
+            {
+                return ")";
+            }
         }
     }
 }

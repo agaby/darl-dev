@@ -7,9 +7,12 @@ namespace Darl.Thinkbase.Meta
     {
         protected override async Task<object> DoEvaluate(ScriptThread thread)
         {//simple behavior 
+            Prologue(thread);
             DarlResult res2 = (DarlResult)await Argument.Evaluate(thread);
             res2.Normalise(true);
-            return DarlResult.After((DarlResult)thread.CurrentScope.Parameters[0], res2);
+            var res = DarlResult.After((DarlResult)thread.CurrentScope.Parameters[0], res2);
+            Epilogue(thread, res);
+            return res;
         }
 
         public override string midamble => "after ";

@@ -1,29 +1,18 @@
-﻿// ***********************************************************************
-// Assembly         : DarlCompiler.Interpreter
-// Author           : Andrew
-// Created          : 08-25-2015
-//
-// Last Modified By : Andrew
-// Last Modified On : 08-25-2015
-// ***********************************************************************
-// <copyright file="InterpretedLanguageGrammar.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
-// </copyright>
-// <summary></summary>
-// ***********************************************************************
+﻿using Darl.Thinkbase.Meta;
 using DarlCompiler.Ast;
 using DarlCompiler.Interpreter.Ast;
+using DarlCompiler.Interpreter;
 using DarlCompiler.Parsing;
 using DarlLanguage.Processing;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DarlCompiler.Interpreter
 {
-    /// <summary>
-    /// Base class for languages that use Darl Interpreter to execute scripts.
-    /// </summary>
-    public abstract class InterpretedLanguageGrammar : Grammar, ICanRunSample
+    public class InterpretedLanguageGrammar : Grammar, ICanRunSample
     {
         // making the class abstract so it won't load into Grammar Explorer
         /// <summary>
@@ -46,11 +35,11 @@ namespace DarlCompiler.Interpreter
         /// <summary>
         /// The _app
         /// </summary>
-        private ScriptApp _app;
+        protected ScriptApp _app;
         /// <summary>
         /// The _prev sample
         /// </summary>
-        private ParseTree _prevSample;
+        protected ParseTree _prevSample;
 
         /// <summary>
         /// Runs the sample.
@@ -62,10 +51,8 @@ namespace DarlCompiler.Interpreter
             if (_app == null || args.ParsedSample != _prevSample)
                 _app = new ScriptApp(args.Language);
             _prevSample = args.ParsedSample;
-
-            //for (int i = 0; i < 1000; i++)  //for perf measurements, to execute 1000 times
-            await _app.Evaluate(args.ParsedSample);
-            return _app.OutputBuffer.ToString();
+            var res =  await _app.Evaluate(args.ParsedSample);
+            return res == null ? "" : res.ToString();
         }
 
         /// <summary>
@@ -92,7 +79,9 @@ namespace DarlCompiler.Interpreter
             astBuilder.BuildAst(parseTree);
         }
 
-
+        Task<string> ICanRunSample.RunSample(RunSampleArgs args)
+        {
+            throw new System.NotImplementedException();
+        }
     }
-
 }

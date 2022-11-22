@@ -11,10 +11,12 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using Darl.Thinkbase.Meta;
 using DarlCompiler.Interpreter.Ast;
 using DarlCompiler.Parsing;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Security;
 using System.Text;
@@ -216,45 +218,6 @@ namespace DarlCompiler.Interpreter
         }
 
         #region Evaluation
-        /// <summary>
-        /// Evaluates the specified script.
-        /// </summary>
-        /// <param name="script">The script.</param>
-        /// <returns>System.Object.</returns>
-        /// <exception cref="DarlCompiler.Interpreter.ScriptException">Syntax errors found.</exception>
-        public async Task<object> Evaluate(string script)
-        {
-            try
-            {
-                var parsedScript = Parser.Parse(script, null);
-                if (parsedScript.HasErrors())
-                {
-                    Status = AppStatus.SyntaxError;
-                    if (RethrowExceptions)
-                        throw new ScriptException("Syntax errors found.");
-                    return null;
-                }
-
-                if (ParserMode == ParseMode.CommandLine && Parser.Context.Status == ParserStatus.AcceptedPartial)
-                {
-                    Status = AppStatus.WaitingMoreInput;
-                    return null;
-                }
-                LastScript = parsedScript;
-                var result = await EvaluateParsedScript();
-                return result;
-            }
-            catch (ScriptException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                this.LastException = ex;
-                this.Status = AppStatus.Crash;
-                return null;
-            }
-        }
 
         // Darl interpreter requires that once a script is executed in a ScriptApp, it is bound to AppDataMap object, 
         // and all later script executions should be performed only in the context of the same app (or at least by an App with the same DataMap).
@@ -265,7 +228,7 @@ namespace DarlCompiler.Interpreter
         /// </summary>
         /// <param name="parsedScript">The parsed script.</param>
         /// <returns>System.Object.</returns>
-        public async Task<object> Evaluate(ParseTree parsedScript)
+        public async Task<DarlMetaActivity?> Evaluate(ParseTree parsedScript)
         {
             Util.Check(parsedScript.Root.AstNode != null, "Root AST node is null, cannot evaluate script. Create AST tree first.");
             var root = parsedScript.Root.AstNode as AstNode;
@@ -277,22 +240,13 @@ namespace DarlCompiler.Interpreter
             return await EvaluateParsedScript();
         }
 
-        /// <summary>
-        /// Evaluates this instance.
-        /// </summary>
-        /// <returns>System.Object.</returns>
-        public async Task<object> Evaluate()
-        {
-            Util.Check(LastScript != null, "No previously parsed/evaluated script.");
-            return await EvaluateParsedScript();
-        }
 
         //Actual implementation
         /// <summary>
         /// Evaluates the parsed script.
         /// </summary>
         /// <returns>System.Object.</returns>
-        private async Task<object> EvaluateParsedScript()
+        private async Task<DarlMetaActivity?> EvaluateParsedScript()
         {
             LastScript.Tag = DataMap;
             var root = LastScript.Root.AstNode as AstNode;
@@ -303,16 +257,20 @@ namespace DarlCompiler.Interpreter
             try
             {
                 thread = new ScriptThread(this);
-                var result = await root.Evaluate(thread);
-                if (result != null)
-                    thread.App.WriteLine(result.ToString());
+                await root.Evaluate(thread);
                 Status = AppStatus.Ready;
-                return result;
+                var dma = new DarlMetaActivity();
+                while(thread.ExecutionStack.Any())
+                {
+                    var top = thread.ExecutionStack.Pop();
+                    dma.activeNodes.Add(new DarlMetaActiveNode { name = top.Item1.GetType().ToString(), weight = top.Item2, location = top.Item1.Span });
+                }
+                return dma;
             }
             catch (ScriptException se)
             {
                 Status = AppStatus.RuntimeError;
-                se.Location = thread.CurrentNode.Location;
+                se.Location = thread!.CurrentNode.Location;
                 se.ScriptStackTrace = thread.GetStackTrace();
                 LastException = se;
                 if (RethrowExceptions)

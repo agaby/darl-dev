@@ -104,13 +104,13 @@ namespace Darl.Thinkbase.Meta
                 }
             }
             conditions.WalkDependencies(dependencies, currentOutput, context, model, currentNode);
-            context.controllingIO = currentOutput.GetName();
+            context.controllingIO = currentOutput!.GetName();
             rhs.WalkDependencies(dependencies, currentOutput, context, model, currentNode);
             if (currentOutput is StoreNode)
             {
                 if (!context.storeOutputs.ContainsKey(currentOutput.GetName()))
                 {
-                    context.storeOutputs.Add(currentOutput.GetName(), currentOutput as StoreNode);
+                    context.storeOutputs.Add(currentOutput.GetName(), (currentOutput as StoreNode)!);
                 }
             }
         }
@@ -183,18 +183,20 @@ namespace Darl.Thinkbase.Meta
 
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            thread.CurrentNode = this;  //standard prologue
+            Prologue(thread);
             DarlResult condition = (DarlResult)await conditions.Evaluate(thread);
             if (condition.IsUnknown())
             {
-                thread.CurrentNode = Parent; //standard epilogue
+                Epilogue(thread, condition);
                 return condition; // if condition part unknown don't continue.
             }
             if ((double)condition.values[0] == 0.0)
             {
                 thread.CurrentNode = Parent; //standard epilogue
                 IsUnknown = false;
-                return new DarlResult(-1.0, true); // if condition part unknown don't continue.
+                var res = new DarlResult(-1.0, true); // if condition part unknown don't continue.
+                Epilogue(thread, res);
+                return res;
             }
             if (ruleOutput is StoreNode)
             {
@@ -203,12 +205,17 @@ namespace Darl.Thinkbase.Meta
             DarlResult result = (DarlResult)await rhs.Evaluate(thread);
             result.Normalise(true);
             if (result.IsUnknown())
-                return new DarlResult(-1.0, true); // if result part unknown don't continue.
+            {
+                var res = new DarlResult(-1.0, true); // if result part unknown don't continue.
+                Epilogue(thread, res);
+                return res;
+            }
             confidenceNode ??= new ConfidenceNode();
             DarlResult confidence = (DarlResult)await confidenceNode.Evaluate(thread);
             thread.CurrentNode = Parent; //standard epilogue
             var r = new DarlResult(condition, result, confidence);
             IsUnknown = false;
+            Epilogue(thread, r);
             return r;
         }
 

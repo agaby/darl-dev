@@ -1,4 +1,5 @@
-﻿using DarlCommon;
+﻿using Darl.Thinkbase.Meta;
+using DarlCommon;
 using System.Collections.Generic;
 
 namespace Darl.Lineage.Bot
@@ -14,5 +15,7 @@ namespace Darl.Lineage.Bot
         public string reference { get; set; }
 
         public List<string> activeNodes { get; set; }
+
+        public DarlMetaActivity? codeActivity { get; set; }
     }
 }

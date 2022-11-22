@@ -17,46 +17,59 @@ namespace Darl.Thinkbase.Meta
         /// </returns>
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            thread.CurrentNode = this;  //standard prologue
-            DarlResult res = Argument != null ? (DarlResult)await Argument.Evaluate(thread) : null;
+            Prologue(thread);
+            DarlResult? res = Argument != null ? (DarlResult)await Argument.Evaluate(thread) : null;
             var grammar = thread.Runtime.Language.Grammar as DarlMetaGrammar;
-            if (grammar.currentNode == null)
+            if (grammar!.currentNode == null)
             {
-                thread.CurrentNode = Parent;
-                return new DarlResult(0, true);
+                var res2 = new DarlResult(0, true);
+                Epilogue(thread, res2);
+                return res2;
             }
             if (res is null) //operate on object existence
             {
                 if (grammar.currentNode.existence == null || !grammar.currentNode.existence.Any())
                     return new DarlResult(0, true);
                 //return the truth of the statement: now and the objects existence overlap in time.
-                thread.CurrentNode = Parent;
-                return CalculateDuration(grammar.currentNode.existence);
+                var res2 = CalculateDuration(grammar!.currentNode.existence);
+                Epilogue(thread,res2);
+                return res2;
             }
             else //existence of an attribute or external node
             {
-                if (grammar.currentNode.properties == null)
-                    return new DarlResult(0, true);
-                var att = grammar.currentModel.FindAttributeExistence(grammar.currentNode.id, res.Value.ToString(), grammar.state);
+                if (grammar!.currentNode!.properties == null)
+                {
+                    var res2 = new DarlResult(0, true);
+                    Epilogue(thread, res2);
+                    return res2;
+                }
+                var att = grammar.currentModel.FindAttributeExistence(grammar!.currentNode.id!, res.Value.ToString()!, grammar.state);
                 if (att == null)
                 {
-                    if (grammar.currentModel.vertices.ContainsKey(res.Value.ToString()))
+                    if (grammar.currentModel.vertices.ContainsKey(res.Value.ToString()!))
                     {
-                        return CalculateDuration(grammar.currentModel.vertices[res.Value.ToString()].existence);
+                        var res4 =  CalculateDuration(grammar!.currentModel.vertices[res.Value.ToString()].existence);
+                        Epilogue(thread, res4);
+                        return res4;
                     }
                     else
                     {
                         var nodebyExtId = grammar.currentModel.vertices.Values.FirstOrDefault(a => a.externalId == res.Value.ToString());
                         if (nodebyExtId != null)
                         {
-                            return CalculateDuration(nodebyExtId.existence);
+                            var res4 =  CalculateDuration(nodebyExtId.existence);
+                            Epilogue(thread, res4);
+                            return res4;
                         }
                     }
-                    thread.CurrentNode = Parent;
-                    return new DarlResult(0, true);
+                    var res2 = new DarlResult(0, true);
+                    Epilogue(thread, res2);
+                    return res2;
                 }
                 thread.CurrentNode = Parent;
-                return CalculateDuration(att);
+                var res3 = CalculateDuration(att);
+                Epilogue(thread, res3);
+                return res3;
             }
         }
 

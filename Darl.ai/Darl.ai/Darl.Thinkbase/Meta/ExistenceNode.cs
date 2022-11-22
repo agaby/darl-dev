@@ -20,32 +20,44 @@ namespace Darl.Thinkbase.Meta
         /// </returns>
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            thread.CurrentNode = this;  //standard prologue
-            DarlResult res = Argument != null ? (DarlResult)await Argument.Evaluate(thread) : null;
+            Prologue(thread);
+            DarlResult? res = Argument != null ? (DarlResult)await Argument.Evaluate(thread) : null;
             var grammar = thread.Runtime.Language.Grammar as DarlMetaGrammar;
-            if (grammar.currentNode == null)
+            if (grammar!.currentNode == null)
             {
-                thread.CurrentNode = Parent;
-                return new DarlResult(0, true);
+                var res2 = new DarlResult(0, true);
+                Epilogue(thread, res2);
+                return res2;
             }
             if (res is null) //operate on object existence
             {
                 if (grammar.currentNode.existence == null || !grammar.currentNode.existence.Any())
-                    return new DarlResult(0, true);
+                {
+                    var res3 = new DarlResult(0, true);
+                    Epilogue(thread, res3);
+                    return res3;
+                }
                 //return the truth of the statement: now and the objects existence overlap in time.
-                thread.CurrentNode = Parent;
-                return ConvertTime(grammar.currentNode.existence); //convert to DarlResult
+                var res2 = ConvertTime(grammar.currentNode.existence); //convert to DarlResult
+                Epilogue(thread, res2);
+                return res2;
             }
             else //existence of an attribute or external node
             {
                 if (grammar.currentNode.properties == null)
-                    return new DarlResult(0, true);
-                var att = grammar.currentModel.FindAttributeExistence(grammar.currentNode.id, res.Value.ToString(), grammar.state);
+                {
+                    var res3 = new DarlResult(0, true);
+                    Epilogue(thread, res3);
+                    return res3;
+                }
+                var att = grammar.currentModel.FindAttributeExistence(grammar!.currentNode.id!, res.Value.ToString(), grammar.state);
                 if (att == null)
                 {
-                    if (grammar.currentModel.vertices.ContainsKey(res.Value.ToString()))
+                    if (grammar.currentModel.vertices.ContainsKey(res.Value.ToString()!))
                     {
-                        return ConvertTime(grammar.currentModel.vertices[res.Value.ToString()].existence);
+                        var res4 = ConvertTime(grammar.currentModel.vertices[res.Value.ToString()].existence);
+                        Epilogue(thread, res4);
+                        return res4;
                     }
                     else
                     {
@@ -53,23 +65,30 @@ namespace Darl.Thinkbase.Meta
                         if (nodebyExtId != null)
                         {
                             if (nodebyExtId.existence != null)
-                                return ConvertTime(nodebyExtId.existence);
+                            {
+                                var res4 = ConvertTime(nodebyExtId.existence);
+                                Epilogue(thread, res4);
+                                return res4;
+                            }
                             if (grammar.state.ContainsRecord(nodebyExtId.id ?? ""))
                             {
                                 var exAtt = grammar.state.GetAttribute(nodebyExtId.id ?? "", "noun:01,5,03,3,018"); //life in common lineages replace.
                                 if (exAtt != null && exAtt.existence != null)
                                 {
-                                    return ConvertTime(exAtt.existence);
+                                    var res4 = ConvertTime(exAtt.existence);
+                                    Epilogue(thread, res4);
+                                    return res4;
                                 }
-
                             }
                         }
                     }
-                    thread.CurrentNode = Parent;
-                    return new DarlResult(0, true);
+                    var res2 = new DarlResult(0, true);
+                    Epilogue(thread, res2);
+                    return res2;
                 }
-                thread.CurrentNode = Parent;
-                return att;
+                var res5 = ConvertTime(att);
+                Epilogue(thread, res5);
+                return res5;
             }
         }
 

@@ -8,14 +8,22 @@ namespace Darl.Thinkbase.Meta
     {
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            thread.CurrentNode = this;  //standard prologue
+            Prologue(thread);
             DarlResult res1 = (DarlResult)await Argument.Evaluate(thread);
             var grammar = thread.Runtime.Language.Grammar as DarlMetaGrammar;
-            if (grammar.currentNode == null || grammar.currentNode.properties == null)
-                return new DarlResult(0, true);
-            var att = grammar.currentModel.FindDataAttribute(grammar.currentNode.id, res1.Value.ToString(), grammar.state);
+            if (grammar!.currentNode == null || grammar.currentNode.properties == null)
+            {
+                var res = new DarlResult(0, true);
+                Epilogue(thread, res);
+                return res;
+            }
+            var att = grammar.currentModel.FindDataAttribute(grammar!.currentNode.id, res1.Value.ToString(), grammar.state);
             if (att == null)
-                return new DarlResult(0, true);
+            {
+                var res = new DarlResult(0, true);
+                Epilogue(thread, res);
+                return res;
+            }
             var datatype = FindMatchingDataType();
             res1 = new DarlResult(datatype, res1.GetWeight());
             switch (datatype)
@@ -55,7 +63,7 @@ namespace Darl.Thinkbase.Meta
                     }
                     break;
             }
-            thread.CurrentNode = Parent;
+            Epilogue(thread, res1);
             return res1;
         }
 

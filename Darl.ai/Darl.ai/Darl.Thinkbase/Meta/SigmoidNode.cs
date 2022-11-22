@@ -13,10 +13,11 @@ namespace Darl.Thinkbase.Meta
         /// </returns>
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            thread.CurrentNode = this;  //standard prologue
+            Prologue(thread);
             DarlResult res = (DarlResult)await Argument.Evaluate(thread);
-            thread.CurrentNode = Parent;
-            return res.Sigmoid();
+            var res2 =  res.Sigmoid();
+            Epilogue(thread, res2);
+            return res2;
         }
 
         public override string preamble

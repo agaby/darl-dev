@@ -399,7 +399,7 @@ namespace Darl.Thinkbase.Meta
                 }
                 else
                 {
-                    input.Value = grammar.ResultByName(compName);
+                    input.Value = grammar.ResultByName(compName)!;
                 }
                 if (((object)input.Value) != null) //DarlResult overides !=
                 {
@@ -447,9 +447,9 @@ namespace Darl.Thinkbase.Meta
                 }
                 else
                 {
-                    input.Value = new DarlResult(input.name, 0.0, true);
+                    input.Value = new DarlResult(input.name!, 0.0, true);
                 }
-                var binding = thread.Bind(input.name, DarlCompiler.Interpreter.BindingRequestFlags.Write | DarlCompiler.Interpreter.BindingRequestFlags.ExistingOrNew);
+                var binding = thread.Bind(input.name!, DarlCompiler.Interpreter.BindingRequestFlags.Write | DarlCompiler.Interpreter.BindingRequestFlags.ExistingOrNew);
                 await binding.SetValueRef(thread, input.Value);
             }
 
@@ -464,6 +464,7 @@ namespace Darl.Thinkbase.Meta
 
                 if (rules.ContainsKey(outNode.GetName()) && outNode is OutputDefinitionNode)
                 {
+                    outNode.Prologue(thread);
                     string compName = outNode.name;
                     var ty = ConvertOType(((OutputDefinitionNode)outNode).oType);
                     ((OutputDefinitionNode)outNode).SetLineage(thread);
@@ -481,6 +482,8 @@ namespace Darl.Thinkbase.Meta
                     grammar.results.RemoveAll(a => a.name == compName);
                     grammar.results.Add(result);
                     outNode.result = result;
+                    outNode.Epilogue(thread, result);
+                    thread.CurrentNode = this;  //standard prologue
                     var binding = thread.Bind(compName, DarlCompiler.Interpreter.BindingRequestFlags.Write | DarlCompiler.Interpreter.BindingRequestFlags.ExistingOrNew);
                     await binding.SetValueRef(thread, outNode.result);
                     //add output value to knowledgeState if lineage set.
@@ -488,7 +491,7 @@ namespace Darl.Thinkbase.Meta
                     {
                         var lineage = ((OutputDefinitionNode)outNode).lineage;
                         var att = new GraphAttribute { lineage = lineage, confidence = outNode.confidence, name = outNode.name, inferred = true, _virtual = false, id = Guid.NewGuid().ToString(), type = (GraphAttribute.DataType)Enum.Parse(typeof(GraphAttribute.DataType), outNode.result.dataType.ToString()), value = outNode.Value is null ? "" : outNode.Value.ToString() };
-                        grammar.state.AddAttribute(grammar.currentNode.id, att);
+                        grammar.state.AddAttribute(grammar.currentNode.id!, att);
                     }
                 }
             }

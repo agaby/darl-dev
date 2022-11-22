@@ -8,7 +8,18 @@ namespace Darl.Thinkbase.Meta
     {
         protected override Task<object> DoEvaluate(ScriptThread thread)
         {
-            return Task.FromResult<object>(new DarlResult("", DateTime.MinValue, DarlResult.DataType.temporal));
+            Prologue(thread);
+            var res = new DarlResult("", DateTime.MinValue, DarlResult.DataType.temporal);
+            Epilogue(thread, res);
+            return Task.FromResult<object>(res);
+        }
+
+        public override string preamble
+        {
+            get
+            {
+                return "mintime";
+            }
         }
     }
 }

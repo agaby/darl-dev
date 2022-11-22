@@ -26,7 +26,10 @@ namespace Darl.Thinkbase.Meta
         /// <returns>The category as a Result</returns>
         protected override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            return Task.FromResult<object>(new DarlResult("", category));
+            Prologue(thread);
+            var res = new DarlResult("", category); ;
+            Epilogue(thread, res);
+            return Task.FromResult<object>(res);
         }
     }
 }

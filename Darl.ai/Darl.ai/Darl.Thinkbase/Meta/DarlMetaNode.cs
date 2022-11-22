@@ -1,6 +1,8 @@
-﻿using DarlCompiler.Interpreter.Ast;
+﻿using DarlCompiler.Interpreter;
+using DarlCompiler.Interpreter.Ast;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Darl.Thinkbase.Meta
 {
@@ -52,6 +54,18 @@ namespace Darl.Thinkbase.Meta
         /// <param name="currentOutput">The current output.</param>
         public virtual void WalkSaliences(double saliency, MetaRootNode root)
         {
+        }
+
+        public void Prologue(ScriptThread thread)
+        {
+            thread.CurrentNode = this;  //standard prologue
+            thread.CheckpointExecution();
+        }
+
+        public void Epilogue(ScriptThread thread, DarlResult res)
+        {
+            thread.RecordExecution(res, this);
+            thread.CurrentNode = Parent;
         }
     }
 }

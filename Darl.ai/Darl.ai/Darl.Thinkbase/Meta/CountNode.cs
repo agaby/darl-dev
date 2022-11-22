@@ -6,10 +6,10 @@ namespace Darl.Thinkbase.Meta
     {
         protected override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            thread.CurrentNode = this;  //standard prologue
+            Prologue(thread);
             var grammar = thread.Runtime.Language.Grammar as DarlMetaGrammar;
             int count = 0;
-            foreach (var o in grammar.currentModel.GetConnectedObjects(grammar.currentNode, connLineage, objLineage))
+            foreach (var o in grammar!.currentModel.GetConnectedObjects(grammar.currentNode, connLineage, objLineage))
             {
                 if (grammar.state.ContainsRecord(o.id))
                 {
@@ -19,8 +19,31 @@ namespace Darl.Thinkbase.Meta
                     }
                 }
             }
-            thread.CurrentNode = Parent;
-            return Task.FromResult<object>(new DarlResult(count));
+            var res = new DarlResult(count);
+            Epilogue(thread, res);
+            return Task.FromResult<object>(res);
+        }
+
+        public override string preamble
+        {
+            get
+            {
+                return "count( ";
+            }
+        }
+        public override string midamble
+        {
+            get
+            {
+                return ", ";
+            }
+        }
+        public override string postamble
+        {
+            get
+            {
+                return ")";
+            }
         }
     }
 }

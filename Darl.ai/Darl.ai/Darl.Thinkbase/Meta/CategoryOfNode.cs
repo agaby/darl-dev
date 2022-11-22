@@ -20,9 +20,9 @@ namespace Darl.Thinkbase.Meta
 
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            thread.CurrentNode = this;  //standard prologue
+            Prologue(thread);
             DarlResult res = (DarlResult)await Argument.Evaluate(thread);
-            thread.CurrentNode = Parent;
+            Epilogue(thread, res);
             return res;
         }
 

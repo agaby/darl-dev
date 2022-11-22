@@ -8,14 +8,22 @@ namespace Darl.Thinkbase.Meta
     {
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            thread.CurrentNode = this;  //standard prologue
-            var res = await base.DoEvaluate(thread) as DarlResult;
-            thread.CurrentNode = Parent;
+            Prologue(thread);
+            var res = (await base.DoEvaluate(thread) as DarlResult)!;
             if (res.IsUnknown())
+            {
+                Epilogue(thread, res);
                 return res;
+            }
             if (!res.values.Any())
-                return new DarlResult(0.0, true);
-            return res.values.First();
+            {
+                var res2 =  new DarlResult(0.0, true);
+                Epilogue(thread, res2);
+                return res2;
+            }
+            var res3 = (res.values.First() as DarlResult)!;
+            Epilogue(thread, res3);
+            return res3;
         }
 
         public override string preamble

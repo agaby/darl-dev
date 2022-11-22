@@ -10,6 +10,7 @@ namespace Darl.Thinkbase.Meta
         public ConfidenceNode confidence;
 
         public LifetimeNode lifetime;
+
         public override void Init(AstContext context, ParseTreeNode treeNode)
         {
             base.Init(context, treeNode);

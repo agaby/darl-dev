@@ -11,10 +11,10 @@ namespace Darl.Thinkbase.Meta
             base.Init(context, treeNode);
             ChildNodes.Clear(); //get rid of parents child node parsing attempts
             var nodes = treeNode.GetMappedChildNodes();
-            conditions = AddChild("-", nodes[1]) as DarlMetaNode;
-            ruleOutput = AddChild("-", nodes[2]) as DarlMetaIdentifierNode;
-            rhs = AddChild("-", nodes[3]) as DarlMetaNode;
-            confidenceNode = nodes.Count > 4 ? AddChild("-", nodes[4]) as ConfidenceNode : new ConfidenceNode();
+            conditions = (AddChild("-", nodes[1]) as DarlMetaNode)! ;
+            ruleOutput = (AddChild("-", nodes[2]) as DarlMetaIdentifierNode)!;
+            rhs = (AddChild("-", nodes[3]) as DarlMetaNode)!;
+            confidenceNode = nodes.Count > 4 ? (AddChild("-", nodes[4]) as ConfidenceNode)! : new ConfidenceNode();
             AsString = "Otherwise";
             ChildNodes[ChildNodes.Count - 1].Flags |= AstNodeFlags.IsTail;
             IsUnknown = true;

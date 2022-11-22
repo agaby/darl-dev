@@ -25,7 +25,10 @@ namespace Darl.Thinkbase.Meta
         /// </returns>
         protected override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            return Task.FromResult<object>(new DarlResult(1.0, false));
+            Prologue(thread);
+            var res = new DarlResult(1.0, false);
+            Epilogue(thread, res);
+            return Task.FromResult<object>(res);
         }
 
         /// <summary>

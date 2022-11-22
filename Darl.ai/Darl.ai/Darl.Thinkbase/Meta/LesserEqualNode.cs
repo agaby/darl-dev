@@ -13,9 +13,12 @@ namespace Darl.Thinkbase.Meta
         /// </returns>
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
+            Prologue(thread);
             DarlResult res2 = (DarlResult)await Argument.Evaluate(thread);
             res2.Normalise(true);
-            return ((DarlResult)thread.CurrentScope.Parameters[0]) <= res2;
+            var res = ((DarlResult)thread.CurrentScope.Parameters[0]) <= res2;
+            Epilogue(thread, res);
+            return res;
         }
 
         /// <summary>

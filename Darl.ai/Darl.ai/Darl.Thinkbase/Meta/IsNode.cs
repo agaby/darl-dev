@@ -52,24 +52,35 @@ namespace Darl.Thinkbase.Meta
         /// </returns>
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            thread.CurrentNode = this;  //standard prologue
+            Prologue(thread);
             var res1 = (DarlResult)await Left.Evaluate(thread);
             //handle certainty based responses
             if (res1.IsUnknown())
             {
                 if (Right is AbsentNode)
-                    return new DarlResult(1.0, false);
-                if (Right is PresentNode)
-                    return new DarlResult(0.0, true); //changed 05/05/2015, was false but prevented salience calcs
-                return new DarlResult(0.0, true);
+                {
+                    var res = new DarlResult(1.0, false);
+                    Epilogue(thread, res);
+                    return res;
+                }
+                else
+                {
+                    var res = new DarlResult(0.0, true); //changed 05/05/2015, was false but prevented salience calcs
+                    Epilogue(thread, res);
+                    return res;
+                }
             }
             else if (Right is AbsentNode)
             {
-                return new DarlResult(1.0 - res1.GetWeight(), false);
+                var res = new DarlResult(1.0 - res1.GetWeight(), false);
+                Epilogue(thread, res);
+                return res;
             }
             else if (Right is PresentNode)
             {
-                return new DarlResult(res1.GetWeight(), false);
+                var res =  new DarlResult(res1.GetWeight(), false);
+                Epilogue(thread, res);
+                return res;
             }
             DarlResult result = new DarlResult(0.0, true);
             if (Left is DarlMetaIdentifierNode)
@@ -86,13 +97,17 @@ namespace Darl.Thinkbase.Meta
                         {
                             DarlResult res2 = (DarlResult)await Right.Evaluate(thread);
                             DarlResult res3 = res2.Equal(res1);
-                            return new DarlResult((double)res3.values[0], false);
+                            var res = new DarlResult((double)res3.values[0], false);
+                            Epilogue(thread, res);
+                            return res;
                         }
                         else // must be comparative
                         {
                             thread.CurrentScope.Parameters = new object[1];
                             thread.CurrentScope.SetParameter(0, res1);
-                            return (DarlResult)await Right.Evaluate(thread);
+                            var res = (DarlResult)await Right.Evaluate(thread);
+                            Epilogue(thread, res);
+                            return res;
                         }
 
                     case DarlMetaIdentifierNode.IdentifierType.categorical_input:
@@ -102,8 +117,11 @@ namespace Darl.Thinkbase.Meta
                             var res3 = res2.Equal(res1);
                             if (res3.values.Count == 0)
                             {
-                                return new DarlResult(res3.GetWeight(), false);
+                                var res =  new DarlResult(res3.GetWeight(), false);
+                                Epilogue(thread, res);
+                                return res;
                             }
+                            Epilogue(thread, res3);
                             return res3;
                         }
                     case DarlMetaIdentifierNode.IdentifierType.presence_input:
@@ -113,7 +131,9 @@ namespace Darl.Thinkbase.Meta
                         {
                             thread.CurrentScope.Parameters = new object[1];
                             thread.CurrentScope.SetParameter(0, res1);
-                            return await Right.Evaluate(thread);
+                            DarlResult res = (DarlResult)await Right.Evaluate(thread);
+                            Epilogue(thread, res);
+                            return res;
                         }
                 }
             }
@@ -121,10 +141,11 @@ namespace Darl.Thinkbase.Meta
             {
                 thread.CurrentScope.Parameters = new object[1];
                 thread.CurrentScope.SetParameter(0, res1);
-                return await Right.Evaluate(thread);
+                var res = (DarlResult)await Right.Evaluate(thread);
+                Epilogue(thread, res);
+                return res;
             }
-
-            thread.CurrentNode = Parent; //standard epilogue
+            Epilogue(thread, result);
             return result;
         }
         /// <summary>

@@ -21,12 +21,12 @@ namespace Darl.Thinkbase.Meta
 
         protected override async Task<object> DoEvaluate(ScriptThread thread)
         {
-            thread.CurrentNode = this;  //standard prologue
+            Prologue(thread);
             var nowNode = new NowNode();
             var now = await nowNode.Evaluate(thread) as DarlResult;
             var duration = await Argument.Evaluate(thread) as DarlResult;
-            lifetime = now + duration;
-            thread.CurrentNode = Parent; //standard epilogue
+            lifetime = now! + duration!;
+            Epilogue(thread, lifetime);
             return lifetime;
         }
 

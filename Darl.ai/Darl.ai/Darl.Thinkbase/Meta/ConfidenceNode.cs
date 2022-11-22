@@ -23,9 +23,11 @@ namespace Darl.Thinkbase.Meta
         }
         protected override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
+            Prologue(thread);
             DarlResult conf = new DarlResult();
             //get value if constant node set.
             conf.SetWeight(weight);
+            Epilogue(thread, conf);
             return Task.FromResult<object>(conf);
         }
 

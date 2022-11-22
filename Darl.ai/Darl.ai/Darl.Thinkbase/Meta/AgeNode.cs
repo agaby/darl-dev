@@ -12,18 +12,21 @@ namespace Darl.Thinkbase.Meta
 
         protected override async Task<object> DoEvaluate(ScriptThread thread)
         {
-            thread.CurrentNode = this;  //standard prologue
+            Prologue(thread);
             DarlResult? res = Argument != null ? (DarlResult)await Argument.Evaluate(thread) : null;
             var grammar = thread.Runtime.Language.Grammar as DarlMetaGrammar;
-            if (res.Exists())
+            if (res != null && res.Exists())
             {
                 var nowNode = new NowNode();
                 var now = await nowNode.Evaluate(thread) as DarlResult;
                 thread.CurrentNode = Parent;
-                return DarlResult.Age(res, now);
-
+                var res2 =  DarlResult.Age(res, now);
+                Epilogue(thread,res2);
+                return res2;
             }
-            return new DarlResult(-1.0, true);
+            var res3 = new DarlResult(-1.0, true);
+            Epilogue(thread,res3);
+            return res3;
         }
 
         public override string preamble

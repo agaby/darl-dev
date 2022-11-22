@@ -8,9 +8,11 @@ namespace Darl.Thinkbase.Meta
     {
         protected override async Task<object> DoEvaluate(ScriptThread thread)
         {
+            Prologue(thread);
             if (arguments[0] == null)
             {
-                return new DarlResult(0.0f, true);
+                var res =  new DarlResult(0.0f, true);
+                Epilogue(thread,res);
             }
             DarlResult res2 = new DarlResult("", DateTime.Now, DarlResult.DataType.temporal);
             res2.values.Clear();
@@ -20,7 +22,11 @@ namespace Darl.Thinkbase.Meta
                 {
                     DarlResult res1 = (DarlResult)await child.Evaluate(thread);
                     if (res1.IsUnknown())//if any children unknown, whole thing unknown.
-                        return new DarlResult(0.0f, true);
+                    {
+                        var res = new DarlResult(0.0f, true);
+                        Epilogue(thread,res);
+                        return res;
+                    }
                     if (res1.dataType != DarlResult.DataType.temporal)
                         throw new MetaRuleException($"TimeRange: {child.GetName()} not a temporal type.");
                     //if the constituents of a fuzzytuple are themselves fuzzy we're into
@@ -33,6 +39,7 @@ namespace Darl.Thinkbase.Meta
             }
             res2.values.Sort();
             res2.Normalise(false);
+            Epilogue(thread,res2);
             return res2;
         }
 

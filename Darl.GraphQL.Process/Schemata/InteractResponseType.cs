@@ -1,4 +1,5 @@
 ﻿using Darl.Lineage.Bot;
+using Darl.Thinkbase.Meta;
 using GraphQL.Types;
 
 namespace Darl.GraphQL.Models.Schemata
@@ -14,6 +15,7 @@ namespace Darl.GraphQL.Models.Schemata
             Field<DarlVarType>("response", resolve: c => c.Source.response);
             Field<ListGraphType<MatchedAnnotationType>>("matches", resolve: c => c.Source.matches);
             Field<ListGraphType<StringGraphType>>("activeNodes", resolve: c => c.Source.activeNodes);
+            Field<DarlMetaActivityType>("codeActivity", resolve: c => c.Source.codeActivity);
         }
     }
 }

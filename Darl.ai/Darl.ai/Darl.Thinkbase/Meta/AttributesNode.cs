@@ -8,19 +8,19 @@ namespace Darl.Thinkbase.Meta
 
         protected override Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            thread.CurrentNode = this;  //standard prologue
+            Prologue(thread);
             var grammar = thread.Runtime.Language.Grammar as DarlMetaGrammar;
             var datatype = FindMatchingDataType();
             var res = new DarlResult("", datatype);
-            foreach (var o in grammar.currentModel.GetConnectedObjects(grammar.currentNode, connLineage, objLineage))
+            foreach (var o in grammar!.currentModel.GetConnectedObjects(grammar.currentNode, connLineage, objLineage))
             {
-                var att = grammar.currentModel.FindDataAttribute(o.id, attLineage, grammar.state);
+                var att = grammar.currentModel.FindDataAttribute(o.id!, attLineage, grammar.state);
                 if (att != null)
                     res.FuzzyAggregate(DarlVarExtensions.Convert(att));
             }
             if (!res.values.Any())
                 res = new DarlResult(true, 0.0);
-            thread.CurrentNode = Parent;
+            Epilogue(thread, res);
             return Task.FromResult<object>(res);
         }
 

@@ -18,7 +18,7 @@ namespace Darl.Thinkbase.Meta
         /// </returns>
         protected override async Task<object> DoEvaluate(ScriptThread thread)
         {
-            thread.CurrentNode = this;  //standard prologue
+            Prologue(thread);
             DarlResult res = (DarlResult)await Left.Evaluate(thread);
             var pars = await Right.Evaluate(thread) as Dictionary<string, string>;
             string s = String.Empty;
@@ -26,15 +26,16 @@ namespace Darl.Thinkbase.Meta
             {
                 var doc = res.stringConstant;
                 var t = new TextProcess();
-                s = t.Parse(doc, pars) as string;
+                s = (t.Parse(doc!, pars!) as string)!;
                 s = s.Trim();
             }
             else
             {
                 throw new ScriptException($"{Left.Term.Name} is not a textual input");
             }
-            thread.CurrentNode = Parent;
-            return new DarlResult("", s, DarlResult.DataType.textual);
+            var res2 = new DarlResult("", s, DarlResult.DataType.textual);
+            Epilogue(thread, res2);
+            return res2;
         }
 
         public override string preamble

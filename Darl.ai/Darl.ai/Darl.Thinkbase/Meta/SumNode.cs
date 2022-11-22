@@ -13,7 +13,7 @@ namespace Darl.Thinkbase.Meta
         /// </returns>
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
-            thread.CurrentNode = this;  //standard prologue
+            Prologue(thread);
             int nIndex = 0;
             DarlResult res2 = new DarlResult(0.0, true);
             if (arguments.Count == 1 && arguments[0] is AttributesNode)
@@ -44,8 +44,7 @@ namespace Darl.Thinkbase.Meta
                     else break;
                 }
             }
-
-            thread.CurrentNode = Parent;
+            Epilogue(thread, res2);
             return res2;
         }
 

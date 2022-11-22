@@ -246,15 +246,16 @@ namespace Darl.Thinkbase.Meta
 
         protected override async Task<object> DoEvaluate(DarlCompiler.Interpreter.ScriptThread thread)
         {
+            Prologue(thread);
             if (IsConstant())
             {
+                Epilogue(thread, fixedResult);
                 return fixedResult;
             }
-            thread.CurrentNode = this;  //standard prologue
             _accessor = thread.Bind(name, BindingRequestFlags.Read);
             this.Evaluate = _accessor.GetValueRef; // Optimization - directly set method ref to accessor's method. EvaluateReader;
-            var result = await this.Evaluate(thread);
-            thread.CurrentNode = Parent; //standard epilogue
+            var result = (DarlResult) await this.Evaluate(thread);
+            Epilogue(thread, result);
             return result;
         }
 
