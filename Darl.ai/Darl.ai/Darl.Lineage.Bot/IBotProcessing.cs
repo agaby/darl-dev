@@ -12,7 +12,7 @@ namespace Darl.Lineage.Bot
     {
         public enum LearningForm { supervised, unsupervised, association, unsupervised_cluster }
 
-        Task<List<InteractTestResponse>> InteractKGAsync(string userId, string KnowledgeGraphName, string conversationId, DarlVar conversationData);
+        Task<List<InteractTestResponse>> InteractKGAsync(string userId, string KnowledgeGraphName, string conversationId, DarlVar conversationData, bool debug = false);
         Task<KnowledgeState> Discover(string userId, string KnowledgeGraphName, string subjectId);
         Task<KnowledgeState> Seek(KnowledgeState ks, string? targetId, List<string> paths, string completionLineage);
         Task<DarlMineReport> Learn(string userId, string graphName, string target, LearningForm form, string targetLineage, string valueLineage, int percentTrain, SetChoices sets);

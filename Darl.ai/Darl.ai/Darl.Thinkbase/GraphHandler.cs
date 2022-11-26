@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -65,7 +66,7 @@ namespace Darl.Thinkbase
         /// <param name="values"></param>
         /// <param name="pending"></param>
         /// <returns></returns>
-        public async Task<(List<InteractTestResponse>, DarlVar?)> GraphPass(KnowledgeState ks, IGraphModel model, string subjectId, string targetId, List<string> paths, string completionLineage, List<DarlVar> values, DarlVar? pending, GraphProcess graphProcess)
+        public async Task<(List<InteractTestResponse>, DarlVar?)> GraphPass(KnowledgeState ks, IGraphModel model, string subjectId, string targetId, List<string> paths, string completionLineage, List<DarlVar> values, DarlVar? pending, GraphProcess graphProcess, bool debug = false)
         {
             var runtime = GetRuntime(subjectId);
             //validate incoming values
@@ -80,7 +81,7 @@ namespace Darl.Thinkbase
             {
                 var currentObj = model.vertices[pending.name];
                 _logger.LogInformation($"Evaluating response = {currentObj.externalId ?? currentObj.name}, KGName= {model.modelName}");
-                var vals = await EvaluateUIRule(runtime, model, currentObj, pending, responses, ks, values, paths, true);
+                var vals = await EvaluateUIRule(runtime, model, currentObj, pending, responses, ks, values, paths, true, debug);
                 if (vals.Item1)
                 {
                     return (responses, vals.Item2);
@@ -119,7 +120,7 @@ namespace Darl.Thinkbase
             if (res != null && res.Count > 0)
             {
                 values.Clear();
-                var vals = await EvaluateUIRule(runtime, model, res.First(), pending, responses, ks, values, paths);
+                var vals = await EvaluateUIRule(runtime, model, res.First(), pending, responses, ks, values, paths, false,debug);
                 pending = vals.Item2;
                 if (!responses.Any())
                 {
@@ -142,7 +143,7 @@ namespace Darl.Thinkbase
             {
                 _logger.LogInformation($"Completed seek  to {targetId}, KGName= {model.modelName}");
                 responses.Clear();
-                await EvaluateUIRule(runtime, model, target, pending, responses, ks, values, paths);
+                await EvaluateUIRule(runtime, model, target, pending, responses, ks, values, paths,false,debug);
                 if (!responses.Any())
                     responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.complete, Value = "This process is complete.", name = "response" } });
                 pending = null;
@@ -1032,7 +1033,7 @@ namespace Darl.Thinkbase
         }
 
 
-        private void GenerateQuestionMessage(List<SalienceRecord> c, List<InteractTestResponse> responses, ParseTree tree, ref DarlVar pending, GraphObject res, (string?,string?) code, List<Meta.DarlResult> list, DarlMetaActivity? dma)
+        private void GenerateQuestionMessage(List<SalienceRecord> c, List<InteractTestResponse> responses, ParseTree tree, ref DarlVar pending, GraphObject res, (string?,string?) code, List<Meta.DarlResult> list, DarlMetaActivity? dma, bool debug = false)
         {
             //add the annotation by reading the annotation result
             var annot = list.Where(a => a.name == annotationSignum).FirstOrDefault();
@@ -1063,7 +1064,7 @@ namespace Darl.Thinkbase
                             var cats = new Dictionary<string, double>();
                             foreach (var i in nextRes.categories) cats.Add(i, 1.0);
                             pending = new DarlVar { dataType = DarlVar.DataType.categorical, categories = cats, name = res.id, sequence = new List<List<string>> { new List<string> { nextRes.name } } };
-                            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.categorical, categories = cats, name = questionIdentifier, Value = text }, reference = res.externalId, darl = code.Item1!, activeNodes = activeNodes, codeActivity = dma });
+                            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.categorical, categories = cats, name = questionIdentifier, Value = text }, reference = res.externalId, darl = debug ? code.Item1! : "", activeNodes = debug ? activeNodes : new List<string>(), codeActivity = debug ? dma : null });
                         }
                         break;
                     case Meta.InputDefinitionNode.InputTypes.numeric_input:
@@ -1076,13 +1077,13 @@ namespace Darl.Thinkbase
                                 drange[1] = (double)range.values.Last();
                             }
                             pending = new DarlVar { dataType = DarlVar.DataType.numeric, name = res.id, values = drange, sequence = new List<List<string>> { new List<string> { nextRes.name } } };
-                            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.numeric, name = questionIdentifier, Value = text, values = drange }, reference = res.externalId, darl = code.Item1!, activeNodes = activeNodes, codeActivity = dma });
+                            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.numeric, name = questionIdentifier, Value = text, values = drange }, reference = res.externalId, darl = debug ? code.Item1! : "", activeNodes = debug ? activeNodes : new List<string>(), codeActivity = debug ? dma : null });
                         }
                         break;
                     default:
                         {
                             pending = new DarlVar { dataType = DarlVar.DataType.textual, name = res.id, sequence = new List<List<string>> { new List<string> { nextRes.name } } };
-                            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.textual, name = questionIdentifier, Value = text }, reference = res.externalId, darl = code.Item1!, activeNodes = activeNodes, codeActivity = dma });
+                            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.textual, name = questionIdentifier, Value = text }, reference = res.externalId, darl = debug ? code.Item1! : "", activeNodes = debug ? activeNodes : new List<string>(), codeActivity = debug ? dma : null });
                         }
                         break;
                 }
@@ -1090,7 +1091,7 @@ namespace Darl.Thinkbase
         }
 
 
-        private void GenerateInfoMessage(List<InteractTestResponse> responses, List<Meta.DarlResult> list, (string?, string?) code, GraphObject res)
+        private void GenerateInfoMessage(List<InteractTestResponse> responses, List<Meta.DarlResult> list, (string?, string?) code, GraphObject res, DarlMetaActivity? dma, bool debug = false)
         {
             var annot = list.Where(a => a.name == annotationSignum).FirstOrDefault();
             var text = "Thanks for that information.";
@@ -1101,10 +1102,10 @@ namespace Darl.Thinkbase
             var activeNodes = new List<string> { res.id! };
             if (code.Item2 != res.id)
                 activeNodes.Add(code.Item2!);
-            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.textual, name = questionIdentifier, Value = text ?? String.Empty }, reference = res.externalId, darl = code.Item1!, activeNodes = activeNodes });
+            responses.Add(new InteractTestResponse { response = new DarlVar { dataType = DarlVar.DataType.textual, name = questionIdentifier, Value = text ?? String.Empty }, reference = res.externalId, darl = debug ? code.Item1! : "", activeNodes = debug ? activeNodes : new List<string>(), codeActivity = debug ? dma : null });
         }
 
-        private async Task<(bool, DarlVar?)> EvaluateUIRule(IDarlMetaRunTime runtime, IGraphModel model, GraphAbstraction? res, DarlVar? pending, List<InteractTestResponse> responses, KnowledgeState ks, List<DarlVar> values, List<string> lineages, bool data = false)
+        private async Task<(bool, DarlVar?)> EvaluateUIRule(IDarlMetaRunTime runtime, IGraphModel model, GraphAbstraction? res, DarlVar? pending, List<InteractTestResponse> responses, KnowledgeState ks, List<DarlVar> values, List<string> lineages, bool data = false, bool debug = false)
         {
             if (res != null)
             {
@@ -1142,12 +1143,12 @@ namespace Darl.Thinkbase
                 var c = runtime.CalculateKGSaliences(saliences, ks, tree);
                 if (c.Any())
                 {
-                    GenerateQuestionMessage(c.ToList(), responses, tree, ref pending, o, code, list, dma);
+                    GenerateQuestionMessage(c.ToList(), responses, tree, ref pending, o, code, list, dma, debug);
                     if(responses.Any())
                         return (true, pending);
                 }
                 if (!data)
-                    GenerateInfoMessage(responses, list, code, o);
+                    GenerateInfoMessage(responses, list, code, o, dma, debug);
             }
             return (false, pending);
         }

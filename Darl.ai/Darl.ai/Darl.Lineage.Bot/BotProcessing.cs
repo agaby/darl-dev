@@ -49,7 +49,7 @@ namespace Darl.Lineage.Bot
             return _knowledgeStateStream.AsObservable();
         }
 
-        public async Task<List<InteractTestResponse>> InteractKGAsync(string userId, string KnowledgeGraphName, string conversationId, DarlVar conversationData)
+        public async Task<List<InteractTestResponse>> InteractKGAsync(string userId, string KnowledgeGraphName, string conversationId, DarlVar conversationData, bool debug = false)
         {
             _logger.LogInformation($"{nameof(InteractKGAsync)}: {userId}, {KnowledgeGraphName}, {conversationId}, {conversationData.Value}");
             var resp = new List<InteractTestResponse>();
@@ -91,7 +91,7 @@ namespace Darl.Lineage.Bot
                         }
                         bs.kGraphData = r.response.sequence;
                         bs.pending = null;
-                        var res = await _ghandler.GraphPass(bs.states[KnowledgeGraphName], model, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending, GraphProcess.seek);
+                        var res = await _ghandler.GraphPass(bs.states[KnowledgeGraphName], model, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending, GraphProcess.seek,debug);
                         if (!res.Item1.Any())
                         {
                             //no connection found
@@ -114,7 +114,7 @@ namespace Darl.Lineage.Bot
                         }
                         bs.kGraphData = r.response.sequence;
                         bs.pending = null;
-                        var discoverResp = await _ghandler.GraphPass(bs.states[KnowledgeGraphName], model, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending, GraphProcess.discover);
+                        var discoverResp = await _ghandler.GraphPass(bs.states[KnowledgeGraphName], model, conversationId, r.response.sequence[0][0], r.response.sequence[1], r.response.sequence[2][0], bs.values, bs.pending, GraphProcess.discover,debug);
                         if (discoverResp.Item1.Any())
                         {
                             resp.AddRange(discoverResp.Item1);
@@ -166,7 +166,7 @@ namespace Darl.Lineage.Bot
                     bs.values.Add(request);
                     try
                     {
-                        var res = await _ghandler.GraphPass(bs.states[KnowledgeGraphName], model, conversationId, bs.kGraphData[0][0], bs.kGraphData[1], bs.kGraphData[2][0], bs.values, bs.pending, GraphProcess.seek);
+                        var res = await _ghandler.GraphPass(bs.states[KnowledgeGraphName], model, conversationId, bs.kGraphData[0][0], bs.kGraphData[1], bs.kGraphData[2][0], bs.values, bs.pending, GraphProcess.seek,debug);
                         resp.Add(res.Item1.Last());
                         bs.pending = res.Item2;
                         if (res.Item1.Count > 1)

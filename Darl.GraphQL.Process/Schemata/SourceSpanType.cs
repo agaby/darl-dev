@@ -17,7 +17,7 @@ namespace Darl.GraphQL.Models.Schemata
             Name = "sourceSpan";
             Description = "The location and length of a section of darl code";
             Field(c => c.Length);
-            Field<SourceLocationType>("intents", resolve: c => c.Source.Location);
+            Field<SourceLocationType>("location", resolve: c => c.Source.Location);
 
         }
     }

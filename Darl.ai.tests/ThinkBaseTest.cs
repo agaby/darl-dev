@@ -1,4 +1,5 @@
 ﻿using Darl.Common;
+using Darl.Lineage.Bot;
 using Darl.Thinkbase;
 using Darl.Thinkbase.Meta;
 using DarlCommon;
@@ -444,6 +445,25 @@ namespace Darl_standard_core.test
             await _metaRunTime.Evaluate(tree, list, ks);
             Assert.AreEqual("true", list[0].Value);
         }
+
+        [TestMethod]
+        public async Task TestDarlHighlighting()
+        {
+            var source = "output categorical x {true,false};if exists() then x will be true; if not exists() then x will be false;";
+            var list = new List<DarlResult>();
+            var ks = new KnowledgeState();
+            var tree = _metaRunTime.CreateTree(source, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString(), existence = new List<DarlTime?> { DarlTime.MinValue, DarlTime.MaxValue } }, _model);
+            var hl = await _metaRunTime.Evaluate(tree, list, ks);
+            var itr = new InteractTestResponse { codeActivity = hl, darl = source };
+            var hc = itr.FormatDarl();
+            source = "output categorical x {true,false}; duration lifetime 1900 ; if durationof() is < lifetime  then x will be true; if durationof() is > lifetime then x will be false;";
+            tree = _metaRunTime.CreateTree(source, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString(), existence = new List<DarlTime?> { new DarlTime(2030, 1, 1), new DarlTime(2037, 1, 1) } }, _model);
+            hl = await _metaRunTime.Evaluate(tree, list, ks);
+            itr = new InteractTestResponse { codeActivity = hl, darl = source };
+            hc = itr.FormatDarl();
+            Assert.AreEqual("__output categorical x {true,false}__; duration lifetime 1900 ; if __durationof()__ is < lifetime  then x will be true; __if durationof() is > lifetime then x will be false__;", hc);
+        }
+
         [TestMethod]
         public async Task TestAggregations()
         {
