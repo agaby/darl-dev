@@ -456,12 +456,13 @@ namespace Darl_standard_core.test
             var hl = await _metaRunTime.Evaluate(tree, list, ks);
             var itr = new InteractTestResponse { codeActivity = hl, darl = source };
             var hc = itr.FormatDarl();
+            Assert.AreEqual("", hc);
             source = "output categorical x {true,false}; duration lifetime 1900 ; if durationof() is < lifetime  then x will be true; if durationof() is > lifetime then x will be false;";
             tree = _metaRunTime.CreateTree(source, new GraphObject { lineage = mathsLineage, In = new List<GraphConnection>(), id = Guid.NewGuid().ToString(), existence = new List<DarlTime?> { new DarlTime(2030, 1, 1), new DarlTime(2037, 1, 1) } }, _model);
             hl = await _metaRunTime.Evaluate(tree, list, ks);
             itr = new InteractTestResponse { codeActivity = hl, darl = source };
             hc = itr.FormatDarl();
-            Assert.AreEqual("__output categorical x {true,false}__; duration lifetime 1900 ; if __durationof()__ is < lifetime  then x will be true; __if durationof() is > lifetime then x will be false__;", hc);
+            Assert.AreEqual("", hc);
         }
 
         [TestMethod]

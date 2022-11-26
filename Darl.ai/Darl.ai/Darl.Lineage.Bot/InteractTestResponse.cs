@@ -48,7 +48,7 @@ namespace Darl.Lineage.Bot
                     {
                         if (highlighted != highLightMap[i])
                         {
-                            sb.Append("__");
+                            sb.Append("**");
                             highlighted = highLightMap[i];
                         }
                         sb.Append(darl[i]);
