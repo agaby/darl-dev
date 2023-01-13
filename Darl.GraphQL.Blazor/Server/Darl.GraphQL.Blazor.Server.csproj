@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>Darl.GraphQL.Blazor.Server-e3ed1ee8-bd5e-4144-8b7e-6e393c082c3a</UserSecretsId>
+    <WebProject_DirectoryAccessLevelKey>0</WebProject_DirectoryAccessLevelKey>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GraphQL" Version="7.2.2" />
+    <PackageReference Include="GraphQL.MemoryCache" Version="7.2.1" />
+    <PackageReference Include="GraphQL.MicrosoftDI" Version="7.2.1" />
+    <PackageReference Include="GraphQL.Server.All" Version="7.2.0" />
+    <PackageReference Include="GraphQL.Server.Authorization.AspNetCore" Version="7.2.0" />
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="7.2.0" />
+    <PackageReference Include="GraphQL.Server.Ui.GraphiQL" Version="7.2.0" />
+    <PackageReference Include="GraphQL.Server.Ui.Playground" Version="7.2.0" />
+    <PackageReference Include="GraphQL.Server.Ui.Voyager" Version="7.2.0" />
+    <PackageReference Include="GraphQL.SystemTextJson" Version="7.2.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.1" />
+    <PackageReference Include="ThinkBase.Teams.Connectivity" Version="1.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Darl.GraphQL.Process.Blazor\Darl.GraphQL.Process.Blazor.csproj" />
+    <ProjectReference Include="..\..\Darl.GraphQL.Process.Web\Darl.GraphQL.Process.Web.csproj" />
+    <ProjectReference Include="..\..\Darl.GraphQL.Process\Darl.GraphQL.Process.csproj" />
+    <ProjectReference Include="..\Client\Darl.GraphQL.Blazor.Client.csproj" />
+    <ProjectReference Include="..\Shared\Darl.GraphQL.Blazor.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.1" NoWarn="NU1605" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.1" NoWarn="NU1605" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="1.25.10" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.25.10" />
+  </ItemGroup>
+
+</Project>

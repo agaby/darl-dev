@@ -1,0 +1,16 @@
+﻿using GraphQL.Types;
+
+namespace Darl.GraphQL.Process.Blazor.Schemata
+{
+    public enum DQType { rule_edit, bot_edit };
+    public class DQTypeEnum : EnumerationGraphType
+    {
+        public DQTypeEnum()
+        {
+            Name = "DynamicQType";
+            Description = "The type of the dynamic questionnaire to run";
+            Add("rule_edit", 0, "edit the supporting values of a rule set");
+            Add("bot_edit", 1, "edit the contents of a bot model");
+        }
+    }
+}

@@ -1,9 +1,0 @@
-﻿ruleset job
-{
-	input categorical skill_achieved  {true, false} "noun:01,0,0,04";
-	input categorical job_achieved  {true, false} "noun:01,0,2,00,23,19";
-
-	output categorical job_inferred  {true, false} "noun:01,0,2,00,23,19";
-
-	if any(job_achieved) and all(skill_achieved) then job_inferred will be true;	
-}

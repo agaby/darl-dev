@@ -12,7 +12,7 @@ using Darl.Thinkbase.Meta;
 using DarlCommon;
 using DarlCompiler;
 using GraphQL;
-using GraphQL.Server.Transports.Subscriptions.Abstractions;
+//using GraphQL.Server.Transports.Subscriptions.Abstractions;
 using Markdig;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
@@ -690,12 +690,12 @@ namespace Darl.GraphQL.Models.Connectivity
                     var ctxt = userContext as GraphQLUserContext;
                     return ctxt?.User.Identity?.Name ?? _config["AppSettings:boaiuserid"];
                 }
-                else if (userContext is MessageHandlingContext)//subscription
+/*                else if (userContext is MessageHandlingContext)//subscription
                 {
                     var ctxt = userContext as MessageHandlingContext;
                     var principal = ctxt?.Properties[AuthenticationListener.PRINCIPAL_KEY] as GenericPrincipal;
                     return principal?.Identity.Name ?? _config["AppSettings:boaiuserid"];
-                }
+                }*/
             }
             return _config["AppSettings:boaiuserid"];
         }

@@ -1,5 +1,0 @@
-﻿input categorical response {finished};
-output categorical completed {true,false} "adjective:5500";
-output textual annotation;
-if response is finished then completed will be true;
-if anything then annotation will be attribute("noun:00,1,00,3,10,09,06");

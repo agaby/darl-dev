@@ -26,10 +26,10 @@
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
     <PackageReference Include="BundlerMinifier.TagHelpers" Version="3.2.449" />
-    <PackageReference Include="GraphQL" Version="5.3.3" />
+    <PackageReference Include="GraphQL" Version="7.2.1" />
     <PackageReference Include="GraphQL.Authorization" Version="5.0.0" />
-    <PackageReference Include="GraphQL.MicrosoftDI" Version="5.3.3" />
-    <PackageReference Include="GraphQL.Server.All" Version="6.1.1" />
+    <PackageReference Include="GraphQL.MicrosoftDI" Version="7.2.1" />
+    <PackageReference Include="GraphQL.Server.All" Version="7.2.0" />
     <PackageReference Include="Markdig" Version="0.30.2" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.AspNet.WebHelpers" Version="3.2.9" />

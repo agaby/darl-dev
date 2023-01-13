@@ -43,12 +43,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GraphQL" Version="5.3.3" />
+    <PackageReference Include="GraphQL" Version="7.2.1" />
     <PackageReference Include="GraphQL.Authorization" Version="5.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="6.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="7.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>

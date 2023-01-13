@@ -9,7 +9,7 @@ namespace Darl.GraphQL.Models.Schemata
         public ContactType()
         {
             Name = "Contact";
-            this.AuthorizeWith("AdminPolicy");
+            this.AuthorizeWithPolicy("AdminPolicy");
 
             Description = "A contact that has requested to be informed about DARL.ai";
             Field(c => c.Company, true);

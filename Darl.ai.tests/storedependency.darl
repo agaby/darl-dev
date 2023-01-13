@@ -1,9 +1,0 @@
-﻿ruleset storedependancy
-{
-	output textual val;
-	store word;
-	output textual response;
-	if anything then val will be "fred";
-	if anything then response will be word[val];
-
-}

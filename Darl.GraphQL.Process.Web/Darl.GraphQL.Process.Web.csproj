@@ -6,16 +6,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="C:\Users\Test\.nuget\packages\microsoft.azure.cosmos\3.29.0\contentFiles\any\netstandard2.0\ThirdPartyNotice.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.13.0" />
     <PackageReference Include="Azure.Storage.Queues" Version="12.11.0" />
-    <PackageReference Include="GraphQL.Server.Transports.Subscriptions.Abstractions" Version="6.1.1" />
     <PackageReference Include="GraphQL.Upload.AspNetCore" Version="3.0.0" />
     <PackageReference Include="Markdig" Version="0.30.2" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.29.0" />
     <PackageReference Include="Microsoft.Bot.Builder" Version="4.16.1" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.16.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.17.0" />
     <PackageReference Include="SendGrid" Version="9.28.0" />
     <PackageReference Include="Stripe.net" Version="39.124.0" />

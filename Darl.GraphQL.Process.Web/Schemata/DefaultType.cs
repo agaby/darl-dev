@@ -9,7 +9,7 @@ namespace Darl.GraphQL.Models.Schemata
         public DefaultType()
         {
             Name = "Default";
-            this.AuthorizeWith("AdminPolicy");
+            this.AuthorizeWithPolicy("AdminPolicy");
 
             Description = "Name value pairs used to configure the system";
             Field(c => c.Name);

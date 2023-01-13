@@ -1,6 +1,0 @@
-﻿ruleset bot_choice
-{
-	store Call;
-	input categorical rule_choice {"Cocomo II.rule","EU delayed flight claim.rule", "Parking appeal UK.rule", "Personality test.rule", "UK Tax and NI.rule", "modern slavery act statement.rule" };
-	if rule_choice is present then Call[""] will be rule_choice;
-}

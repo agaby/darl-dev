@@ -1,0 +1,14 @@
+﻿namespace Darl.GraphQL.Process.Blazor.Connectivity
+{
+    public interface IBlobConnectivity
+    {
+        Task<bool> Delete(string name);
+        Task<bool> Exists(string name);
+        List<string> List(string prefix);
+        Task<byte[]> Read(string name);
+        Task Write(string name, byte[] data);
+        string CreateTimedAccessUrl(string name);
+
+        string implementation { get; }
+    }
+}

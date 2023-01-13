@@ -1,6 +1,5 @@
 ﻿using Darl.GraphQL.Models.Connectivity;
 using Darl.GraphQL.Models.Models;
-using GraphQL.Server.Transports.Subscriptions.Abstractions;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Security.Claims;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Process.Web.Middleware
 {
-    public class AuthenticationListener : IOperationMessageListener
+ /*   public class AuthenticationListener : IOperationMessageListener
     {
         public static readonly string PRINCIPAL_KEY = "User";
         static readonly string roleClaimText = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
@@ -82,5 +81,5 @@ namespace Darl.GraphQL.Process.Web.Middleware
 
         public Task HandleAsync(MessageHandlingContext context) => Task.CompletedTask;
         public Task AfterHandleAsync(MessageHandlingContext context) => Task.CompletedTask;
-    }
+    }*/
 }

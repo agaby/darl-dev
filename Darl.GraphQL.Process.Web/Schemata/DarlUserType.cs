@@ -11,7 +11,7 @@ namespace Darl.GraphQL.Models.Schemata
         {
             Name = "darlUser";
             Description = "A user of the system - admin only";
-            this.AuthorizeWith("AdminPolicy");
+            this.AuthorizeWithPolicy("AdminPolicy");
             Field<AccountStateEnum>("accountState", resolve: c => c.Source.accountState);
             Field(c => c.Created);
             Field(c => c.current_period_end);
