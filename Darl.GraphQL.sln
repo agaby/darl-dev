@@ -3,27 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31825.309
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL", "Darl.GraphQL\Darl.GraphQL.csproj", "{88E5A55B-7ADD-4DB2-AFEB-D332C0E6285F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Test", "Darl.GraphQL.Test\Darl.GraphQL.Test.csproj", "{13DF51B0-9234-43F9-9DAC-75BD8CCB0C85}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Process", "Darl.GraphQL.Process\Darl.GraphQL.Process.csproj", "{2C5E0900-B138-401D-BABA-89B265AAF6FC}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5157C27D-CA32-4014-AF9C-CA09C7BA1733}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.filenesting.json = .filenesting.json
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.ai", "Darl.ai\Darl.ai\Darl.ai.csproj", "{09E472E0-1B1D-406C-8EAB-84ED75E90B08}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.ai.tests", "Darl.ai.tests\Darl.ai.tests.csproj", "{A64AA246-CC2B-4051-A1F7-C3A0B1B369D4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Container", "Darl.GraphQL.Container\Darl.GraphQL.Container.csproj", "{9B012A06-F135-4E26-AAB6-586D30024571}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Process.Web", "Darl.GraphQL.Process.Web\Darl.GraphQL.Process.Web.csproj", "{356F72EA-CF09-4731-9687-E4A6AA793F23}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Process.Container", "Darl.GraphQL.Process.Container\Darl.GraphQL.Process.Container.csproj", "{C89BEBFB-6DE9-43C4-84AE-ACA01AB50AB0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.UI.Tests", "Darl.GraphQL.UI.Tests\Darl.GraphQL.UI.Tests.csproj", "{2E100D86-9F92-4C76-A773-B89F871214B8}"
 EndProject
@@ -33,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Blazor.Client"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Blazor.Shared", "Darl.GraphQL.Blazor\Shared\Darl.GraphQL.Blazor.Shared.csproj", "{E8CA01C1-5A20-4E65-90CA-310F7D742F0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Darl.GraphQL.Process.Blazor", "Darl.GraphQL.Process.Blazor\Darl.GraphQL.Process.Blazor.csproj", "{3636ECF1-8F5E-45CF-851F-531AD7050F1F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darl.GraphQL.Process.Blazor", "Darl.GraphQL.Process.Blazor\Darl.GraphQL.Process.Blazor.csproj", "{3636ECF1-8F5E-45CF-851F-531AD7050F1F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,38 +25,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{88E5A55B-7ADD-4DB2-AFEB-D332C0E6285F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{88E5A55B-7ADD-4DB2-AFEB-D332C0E6285F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{88E5A55B-7ADD-4DB2-AFEB-D332C0E6285F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{88E5A55B-7ADD-4DB2-AFEB-D332C0E6285F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{13DF51B0-9234-43F9-9DAC-75BD8CCB0C85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{13DF51B0-9234-43F9-9DAC-75BD8CCB0C85}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{13DF51B0-9234-43F9-9DAC-75BD8CCB0C85}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{13DF51B0-9234-43F9-9DAC-75BD8CCB0C85}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2C5E0900-B138-401D-BABA-89B265AAF6FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2C5E0900-B138-401D-BABA-89B265AAF6FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2C5E0900-B138-401D-BABA-89B265AAF6FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2C5E0900-B138-401D-BABA-89B265AAF6FC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{09E472E0-1B1D-406C-8EAB-84ED75E90B08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09E472E0-1B1D-406C-8EAB-84ED75E90B08}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09E472E0-1B1D-406C-8EAB-84ED75E90B08}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09E472E0-1B1D-406C-8EAB-84ED75E90B08}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A64AA246-CC2B-4051-A1F7-C3A0B1B369D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A64AA246-CC2B-4051-A1F7-C3A0B1B369D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A64AA246-CC2B-4051-A1F7-C3A0B1B369D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A64AA246-CC2B-4051-A1F7-C3A0B1B369D4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9B012A06-F135-4E26-AAB6-586D30024571}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9B012A06-F135-4E26-AAB6-586D30024571}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9B012A06-F135-4E26-AAB6-586D30024571}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9B012A06-F135-4E26-AAB6-586D30024571}.Release|Any CPU.Build.0 = Release|Any CPU
-		{356F72EA-CF09-4731-9687-E4A6AA793F23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{356F72EA-CF09-4731-9687-E4A6AA793F23}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{356F72EA-CF09-4731-9687-E4A6AA793F23}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{356F72EA-CF09-4731-9687-E4A6AA793F23}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C89BEBFB-6DE9-43C4-84AE-ACA01AB50AB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C89BEBFB-6DE9-43C4-84AE-ACA01AB50AB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C89BEBFB-6DE9-43C4-84AE-ACA01AB50AB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C89BEBFB-6DE9-43C4-84AE-ACA01AB50AB0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2E100D86-9F92-4C76-A773-B89F871214B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2E100D86-9F92-4C76-A773-B89F871214B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E100D86-9F92-4C76-A773-B89F871214B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
