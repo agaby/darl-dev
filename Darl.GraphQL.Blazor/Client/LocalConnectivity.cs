@@ -1,13 +1,45 @@
-﻿using ThinkBase.ComponentLibrary.Interfaces;
+﻿using Darl.GraphQL.Blazor.Client.Models;
+using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.Newtonsoft;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System;
+using System.IO;
+using System.Xml.Linq;
+using ThinkBase.ComponentLibrary.Interfaces;
 using ThinkBase.ComponentLibrary.Models;
 
 namespace Darl.GraphQL.Blazor.Client
 {
     public class LocalConnectivity : IClientConnectivity
     {
-        public Task<string> AddRealNode(string graphName, string name, string externalId, string lin, string sublin)
+        private GraphQLHttpClient client;
+        private string path = "";
+        private ITraceWriter traceWriter = new MemoryTraceWriter();
+        private string authCode = "";
+
+        public LocalConnectivity()
         {
-            throw new NotImplementedException();
+            client = new GraphQLHttpClient(path, new NewtonsoftJsonSerializer(new JsonSerializerSettings
+            {
+                TraceWriter = traceWriter,
+                ContractResolver = new CamelCasePropertyNamesContractResolver { IgnoreIsSpecifiedMembers = true },
+                MissingMemberHandling = MissingMemberHandling.Ignore,
+                Converters = { new ConstantCaseEnumConverter() }
+            }));
+            client.HttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authCode);
+        }
+        public async Task<string> AddRealNode(string graphName, string name, string externalId, string lin, string sublin)
+        {
+            var req = new GraphQLHttpRequest()
+            {
+                Variables = new { name = graphName, graphObject = new GraphObjectInput {  name = name, externalId = externalId, lineage = lin, subLineage = sublin} },
+                Query = @"mutation ($name: String! $graphObject: graphObjectInput!){createGraphObject(graphName: $name graphObject: $graphObject ontology: BUILD){id}}"
+            };
+            var resp = await client.SendQueryAsync<GraphObjectResponse>(req);
+            if (resp.Errors != null && resp.Errors.Count() > 0)
+                throw new Exception(resp.Errors[0].Message);
+            return resp.Data.createGraphObject?.id ?? "";
         }
 
         public Task<Subscription?> AddSubscription(string sub)
@@ -15,34 +47,81 @@ namespace Darl.GraphQL.Blazor.Client
             throw new NotImplementedException();
         }
 
-        public Task<bool> CreateKGraph(string name)
+        public async Task<bool> CreateKGraph(string graphName)
         {
-            throw new NotImplementedException();
+            var req = new GraphQLHttpRequest()
+            {
+                Variables = new { name = graphName },
+                Query = @"mutation ($name: String!){createKGraph(name: $name)}"
+            };
+            var resp = await client.SendQueryAsync<object>(req);
+            if (resp.Errors != null && resp.Errors.Count() > 0)
+                return false;
+            return true;
         }
 
-        public Task<string?> CreateRealConnection(string graphName, string name, string lin, string startId, string endId, string id)
+        public async Task<string?> CreateRealConnection(string graphName, string name, string lin, string startId, string endId, string id)
         {
-            throw new NotImplementedException();
+            var req = new GraphQLHttpRequest()
+            {
+                Variables = new { name = graphName, graphConnection = new GraphConnectionInput{ lineage = lin, name = name, endId = endId,startId = startId } },
+                Query = @"mutation ($name: String! $graphConnection: graphConnectionInput!){createGraphConnection(graphName: $name graphConnection: $graphConnection ontology: BUILD){id}}"
+            };
+            var resp = await client.SendQueryAsync<GraphConnectionResponse>(req);
+            if (resp.Errors != null && resp.Errors.Count() > 0)
+                throw new Exception(resp.Errors[0].Message);
+            return resp.Data.createGraphConnection?.id ?? "";
         }
 
-        public Task<bool> CreateRecognitionConnection(string graphName, string startId, string endId)
+        public async Task<bool> CreateRecognitionConnection(string graphName, string startId, string endId)
         {
-            throw new NotImplementedException();
+            var req = new GraphQLHttpRequest()
+            {
+                Variables = new { name = graphName, graphConnection = new GraphConnectionInput { lineage = "", name = "precedes", endId = endId, startId = startId } },
+                Query = @"mutation ($name: String! $graphConnection: graphConnectionInput!){createRecognitionConnection(graphName: $name graphConnection: $graphConnection ontology: BUILD){id}}"
+            };
+            var resp = await client.SendQueryAsync<GraphConnectionResponse>(req);
+            if (resp.Errors != null && resp.Errors.Count() > 0)
+                return false;
+            return true;
         }
 
-        public Task<string> CreateRecognitionNode(string graphName, string lineage, string name)
+        public async Task<string> CreateRecognitionNode(string graphName, string lineage, string name)
         {
-            throw new NotImplementedException();
+            var req = new GraphQLHttpRequest()
+            {
+                Variables = new { name = graphName, graphObject = new GraphObjectInput { name = name, externalId = "", lineage = lineage, subLineage = "" } },
+                Query = @"mutation ($name: String! $graphObject: graphObjectInput!){createRecognitionObject(graphName: $name graphObject: $graphObject ontology: BUILD){id}}"
+            };
+            var resp = await client.SendQueryAsync<GraphObjectResponse>(req);
+            if (resp.Errors != null && resp.Errors.Count() > 0)
+                throw new Exception(resp.Errors[0].Message);
+            return resp.Data.createGraphObject?.id ?? "";
         }
 
-        public Task<bool> DeleteKGraph(string name)
+        public async Task<bool> DeleteKGraph(string graphName)
         {
-            throw new NotImplementedException();
+            var req = new GraphQLHttpRequest()
+            {
+                Variables = new { name = graphName },
+                Query = @"mutation ($name: String!){deleteKG(name: $name)}"
+            };
+            var resp = await client.SendQueryAsync<object>(req);
+            if (resp.Errors != null && resp.Errors.Count() > 0)
+                return false;
+            return true;
         }
 
-        public Task DeleteRealAttribute(string graphName, string id, string aLin)
+        public async Task DeleteRealAttribute(string graphName, string id, string aLin)
         {
-            throw new NotImplementedException();
+            var req = new GraphQLHttpRequest()
+            {
+                Variables = new { name = graphName, id = id, attLineage = aLin },
+                Query = @"mutation ($name: String! $id: String! $attLineage: String!){deleteGraphObjectAttribute(name: $name id: $id attLineage: $attLineage){id}}"
+            };
+            var resp = await client.SendQueryAsync<object>(req);
+            if (resp.Errors != null && resp.Errors.Count() > 0)
+                throw new Exception(resp.Errors[0].Message);
         }
 
         public Task<bool> DeleteRealConnection(string graphName, string id)
@@ -244,5 +323,97 @@ namespace Darl.GraphQL.Blazor.Client
         {
             throw new NotImplementedException();
         }
+
+        #region private
+        private GraphObjectInput Convert(GraphObject go)
+        {
+            var lineage = go.lineage;
+            var subLineage = string.Empty;
+            if (go.lineage.Contains('+'))
+            {
+                lineage = go.lineage.Substring(0, go.lineage.IndexOf('+'));
+                subLineage = go.lineage.Substring(go.lineage.IndexOf('+'));
+            }
+            List<GraphAttributeInput>? properties = null;
+            if (go.properties != null)
+            {
+                properties = new List<GraphAttributeInput>();
+                foreach (var p in go.properties)
+                {
+                    properties.Add(ConvertAttributeInput(p));
+                }
+            }
+            List<DarlTimeInput>? existence = null;
+            if (go.existence != null)
+            {
+                existence = new List<DarlTimeInput>();
+                foreach (var e in go.existence)
+                {
+                    existence.Add(Convert(e));
+                }
+            }
+            return new GraphObjectInput { name = go.name, lineage = lineage, externalId = go.externalId, subLineage = subLineage, properties = properties, existence = existence };
+        }
+
+        private GraphObjectUpdate ConvertU(GraphObject go)
+        {
+            var lineage = go.lineage;
+            var subLineage = string.Empty;
+            if (go.lineage.Contains('+'))
+            {
+                lineage = go.lineage.Substring(0, go.lineage.IndexOf('+'));
+                subLineage = go.lineage.Substring(go.lineage.IndexOf('+'));
+            }
+            List<GraphAttributeInput>? properties = null;
+            if (go.properties != null)
+            {
+                properties = new List<GraphAttributeInput>();
+                foreach (var p in go.properties)
+                {
+                    properties.Add(ConvertAttributeInput(p));
+                }
+            }
+            List<DarlTimeInput>? existence = null;
+            if (go.existence != null)
+            {
+                existence = new List<DarlTimeInput>();
+                foreach (var e in go.existence)
+                {
+                    existence.Add(Convert(e));
+                }
+            }
+            return new GraphObjectUpdate { name = go.name, lineage = lineage, externalId = go.externalId, subLineage = subLineage, properties = properties, existence = existence, id = go.id };
+        }
+
+        private DarlTimeInput Convert(DarlTime e)
+        {
+            return new DarlTimeInput { raw = e.raw, precision = e.precision };
+        }
+
+        private GraphConnectionInput Convert(GraphConnection gc)
+        {
+            List<DarlTimeInput>? existence = null;
+            if (gc.existence != null)
+            {
+                existence = new List<DarlTimeInput>();
+                foreach (var e in gc.existence)
+                {
+                    existence.Add(Convert(e));
+                }
+            }
+            return new GraphConnectionInput { existence = existence, name = gc.name, lineage = gc.lineage, startId = gc.startId, endId = gc.endId };
+        }
+
+        public static GraphAttributeInput ConvertAttributeInput(GraphAttribute a)
+        {
+            List<GraphAttributeInput>? properties = null;
+            if (a.properties != null)
+            {
+                properties = new List<GraphAttributeInput>();
+                foreach (var b in a.properties) { properties.Add(ConvertAttributeInput(b)); }
+            }
+            return new GraphAttributeInput { confidence = a.confidence, inferred = a.inferred, value = a.value ?? "", existence = a.existence, name = a.name, type = a.type, lineage = a.lineage, properties = properties };
+        }
+        #endregion
     }
 }
