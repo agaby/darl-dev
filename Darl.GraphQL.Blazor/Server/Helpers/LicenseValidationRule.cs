@@ -13,49 +13,54 @@ namespace Darl.GraphQL.Blazor.Server.Helpers
 {
     public class LicenseValidationRule : IValidationRule
     {
-        static readonly string objectIdClaimText = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
+        static readonly string objectIdClaimText = @"http://schemas.microsoft.com/identity/claims/objectidentifier";
+        static readonly string tenantIdClaimText = @"http://schemas.microsoft.com/identity/claims/tenantid";
 
         private readonly ILicenseConnectivity _license;
         private readonly IConfiguration _config;
         private readonly IMemoryCache _mem;
         private readonly int cacheDurationMinutes = 30;
+        private readonly bool allowAnonymous = false;
 
         public LicenseValidationRule(ILicenseConnectivity license, IMemoryCache memoryCache, IConfiguration config)
         {
             _license= license;
             _mem = memoryCache;
             _config = config;
+            allowAnonymous = _config.GetValue<bool?>("allowAnonymous") ?? false;
         }
 
         public async ValueTask<INodeVisitor> ValidateAsync(ValidationContext context)
         {
             return  new MatchingNodeVisitor<GraphQLOperationDefinition>(async (op, context) =>  
             {
-                var userContext = (context.UserContext["ident"]) as ClaimsIdentity;
-                if(!userContext!.IsAuthenticated)
+                if (!allowAnonymous)
                 {
-                    context.ReportError(new ValidationError("Not authenticated. Please log in. "));
-                }
-                else
-                {
-                    var objectId = userContext!.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
-                    var tenantId = userContext!.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
-                    var permitted = _mem.Get<bool?>(objectId);
-                    var error = false;
-                    if (permitted != null && permitted == false)
+                    if (!context!.User!.Identity!.IsAuthenticated)
                     {
-                        error = true;
+                        context.ReportError(new ValidationError("Not authenticated. Please log in. "));
                     }
-                    else if(permitted == null)
+                    else
                     {
-                        //cache avoids repeated calls here.
-                        permitted = await _license.IsLicensed(objectId, tenantId, _config["planId"]!);
-                        _mem.Set(objectId, permitted, TimeSpan.FromMinutes(cacheDurationMinutes));
+                        var objectId = context!.User!.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
+                        var tenantId = context!.User!.Claims.Where(ai => ai.Type == tenantIdClaimText).Single().Value;
+                        var permitted = _mem.Get<bool?>(objectId);
+                        var error = false;
+                        if (permitted != null && permitted == false)
+                        {
+                            error = true;
+                        }
+                        else if (permitted == null)
+                        {
+                            //cache avoids repeated calls here.
+                            permitted = await _license.IsLicensed(objectId, tenantId, ILicenseConnectivity.Application.saas);
+                            _mem.Set(objectId, permitted, TimeSpan.FromMinutes(cacheDurationMinutes));
+                        }
+                        if (error || !(permitted ?? false))
+                        {
+                            context.ReportError(new ValidationError("Not Licensed. Please ask your administrator for a license to use this service. "));
+                        }
                     }
-                    if(error || !(permitted ?? false) )
-                    {
-                         context.ReportError(new ValidationError("Not Licensed. Please ask your administrator for a license to use this service. "));
-                    }                
                 }
             });
         }

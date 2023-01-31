@@ -1,9 +1,40 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+@using System.Security.Claims;
+@using ThinkBase.ComponentLibrary.Interfaces;
+@using ThinkBase.ComponentLibrary.KGSelection
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+<AuthorizeView>
+    <Authorized>
+        <GraphSelection userId="@userId" />
+    </Authorized>
+</AuthorizeView>
+    
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+    private string userId { get; set; } = "";
+    private string tenantId { get; set; } = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await GetClaimsPrincipalData();
+        await base.OnParametersSetAsync();
+    }
+
+
+    private async Task GetClaimsPrincipalData()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity!.IsAuthenticated)
+        {
+            userId = user.FindFirst(c => c.Type == "oid")?.Value ?? "";
+            tenantId = user.FindFirst(c => c.Type == "tid")?.Value ?? "";
+        }
+    }
+}

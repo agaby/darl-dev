@@ -1,0 +1,65 @@
+﻿@using Microsoft.JSInterop
+@inject IJSRuntime _jsRuntime
+@implements IAsyncDisposable
+
+
+<div id="root" @ref="_dedit">
+    <style>
+      body {
+        background-color: rgb(23,42,58);
+        font-family: Open Sans,sans-serif;
+        height: 90vh;
+      }
+
+      #root {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .loading {
+        font-size: 32px;
+        font-weight: 200;
+        color: rgba(255,255,255,.6);
+        margin-left: 20px;
+      }
+
+      img {
+        width: 78px;
+        height: 78px;
+      }
+
+      .title {
+        font-weight: 400;
+      }
+    </style>
+    <img src='//cdn.jsdelivr.net/npm/graphql-playground-react/build/logo.png' alt=''>
+    <div class="loading">
+      Loading <span class="title">GraphQL Playground</span>
+    </div>
+  </div>
+
+@code {
+    private ElementReference _dedit;
+    private IJSObjectReference? _deditModule;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _deditModule = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", "./Shared/Playground.razor.js");
+            await _deditModule.InvokeVoidAsync("initialize", _dedit);
+            await base.OnInitializedAsync();
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (_deditModule is not null)
+        {
+            await _deditModule.DisposeAsync();
+        }
+    }
+}

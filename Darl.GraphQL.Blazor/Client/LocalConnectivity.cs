@@ -21,24 +21,21 @@ namespace Darl.GraphQL.Blazor.Client
     public class LocalConnectivity : IClientConnectivity
     {
         private GraphQLHttpClient client;
-        private string path = "";
         private ITraceWriter traceWriter = new MemoryTraceWriter();
-        private string authCode = "";
         private readonly string completedLineage = "adjective:5500";
         private readonly string textLineage = "noun:01,4,04,02,07,01";
         JsonSerializerOptions options = new JsonSerializerOptions { Converters = { new JsonStringEnumConverter() } };
 
 
-        public LocalConnectivity()
+        public LocalConnectivity(HttpClient Http)
         {
-            client = new GraphQLHttpClient(path, new NewtonsoftJsonSerializer(new JsonSerializerSettings
+            client = new GraphQLHttpClient(new GraphQLHttpClientOptions { EndPoint = new Uri(Http.BaseAddress!,"graphql")  }, new NewtonsoftJsonSerializer(new JsonSerializerSettings
             {
                 TraceWriter = traceWriter,
                 ContractResolver = new CamelCasePropertyNamesContractResolver { IgnoreIsSpecifiedMembers = true },
                 MissingMemberHandling = MissingMemberHandling.Ignore,
                 Converters = { new ConstantCaseEnumConverter() }
-            }));
-            client.HttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authCode);
+            }), Http);
         }
         public async Task<string> AddRealNode(string graphName, string name, string externalId, string lin, string sublin)
         {
@@ -208,12 +205,21 @@ namespace Darl.GraphQL.Blazor.Client
 
         public async Task<List<string>> GetKGraphs(string userId)
         {
-            var modelReq = new GraphQLHttpRequest
+            try
             {
-                Query = "query {kgraphs{name}}"
-            };
-            var list = await client.SendQueryAsync<KGraphsResponse>(modelReq);
-            return list.Data.kgraphs!.Select(a => a.Name).ToList();
+                var modelReq = new GraphQLHttpRequest
+                {
+                    Query = "query {kgraphs{name}}"
+                };
+                var list = await client.SendQueryAsync<KGraphsResponse>(modelReq);
+                if (list.Errors != null && list.Errors.Count() > 0)
+                    throw new Exception(list.Errors[0].Message);
+                return list.Data.kgraphs!.Select(a => a.Name).ToList();
+            }
+            catch(Exception ex)
+            {
+                return new List<string>();
+            }
         }
 
         public async Task<string> GetLineagesForWord(string word, string wordType = "")
@@ -853,6 +859,16 @@ namespace Darl.GraphQL.Blazor.Client
                 om.edges.Add(new CytoDataEdgeElement { data = e });
             }
             return om;
+        }
+
+        public Task<bool> ShowInteract()
+        {
+            return Task.FromResult(false);
+        }
+
+        public Task<string> GraphEditPath()
+        {
+            return Task.FromResult("graphedit");
         }
         #endregion
     }

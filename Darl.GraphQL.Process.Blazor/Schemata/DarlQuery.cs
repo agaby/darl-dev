@@ -16,39 +16,31 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
             Name = "Query";
             Description = "View the contents of your account.";
 
-            FieldAsync<ListGraphType<KGraphType>>(
-              "kgraphs",
-              "The set of Knowledge Graphs for this account.",
-              resolve: async context =>
-              {
-                  var userId = trans.GetCurrentUserId(context.UserContext);
-                  return await connectivity.GetKGraphsAsync(userId);
-              }
+            Field<ListGraphType<KGraphType>>("kgraphs").Description("The set of Knowledge Graphs for this account.")
+                .ResolveAsync( async context =>
+                {
+                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    return await connectivity.GetKGraphsAsync(userId);
+                }
             );
 
-            FieldAsync<KGraphType>(
-                "kGraphByName",
-                arguments:
-                new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }),
-                resolve: async context =>
+            Field<KGraphType>("kGraphByName").Description("Get a single KGraph")
+               .Argument<NonNullGraphType<StringGraphType>>("name","Name of the KGraph")
+               .ResolveAsync(async context =>
                 {
                     var userId = trans.GetCurrentUserId(context.UserContext);
                     var name = context.GetArgument<string>("name");
-
                     return await connectivity.GetKGModel(userId, name);
                 }
             );
-            FieldAsync<ListGraphType<LineageRecordType>>("getLineagesForWord",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "word", Description = "The word to look up" },
-                    new QueryArgument<StringGraphType> { Name = "isoLanguage", DefaultValue = "en", Description = "language for lookup (Only en currently supported)" }
-                    ),
-                resolve: async context =>
+
+            Field<ListGraphType<LineageRecordType>>("getLineagesForWord")
+                .Description("Get the lineages associated with a word")
+                .Argument<NonNullGraphType<StringGraphType>> ( "word", "The word to look up" )
+                .ResolveAsync(async context =>
                 {
-                    var isoLanguage = context.GetArgument<string>("isoLanguage");
                     var word = context.GetArgument<string>("word");
-                    return await trans.GetLineagesForWord(word, isoLanguage);
+                    return await trans.GetLineagesForWord(word, "en");
                 });
 
             FieldAsync<StringGraphType>("getTypeWordForLineage",

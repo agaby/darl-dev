@@ -42,7 +42,6 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                     return await graph.CreateGraphConnection(CompositeName(userId, graphName), graphConnection, ontology);
                 });
 
-
             Field<GraphObjectType>("deleteGraphObject")
                 .Description("Delete a graphObject")
                 .Argument<NonNullGraphType<StringGraphType>>("graphName", "Name of the graph containing the object")
@@ -55,12 +54,11 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                     return await graph.DeleteGraphObject(CompositeName(userId, graphName), id);
                 });
 
-
-            FieldAsync<GraphConnectionType>("deleteGraphConnection", "Delete a graph connection", arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph to modify" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "The id of the connection to delete" }
-               ),
-                resolve: async context =>
+            Field<GraphConnectionType>("deleteGraphConnection")
+            .Description("Delete a graph connection")
+            .Argument<NonNullGraphType<StringGraphType>>("graphName", "Name of the graph to modify" )
+            .Argument<NonNullGraphType<StringGraphType>>("id", "The id of the connection to delete" )
+            .ResolveAsync(async context =>
                 {
                     var graphName = context.GetArgument<string>("graphName");
                     var id = context.GetArgument<string>("id");
@@ -68,12 +66,13 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                     return await graph.DeleteGraphConnection(CompositeName(userId, graphName), id);
                 }
             );
-            FieldAsync<GraphObjectType>("updateGraphObject", "Update a graph object", arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph to modify" },
-                    new QueryArgument<NonNullGraphType<GraphObjectUpdateType>> { Name = "graphObject", Description = "The object to update" },
-                    new QueryArgument<OntologyActionEnum> { Name = "ontology", Description = "builds, checks against or ignores ontology" }
-                ),
-                 resolve: async context =>
+
+            Field<GraphObjectType>("updateGraphObject")
+                .Description("Update a graph object")
+                .Argument<NonNullGraphType<StringGraphType>>("graphName", "Name of the graph to modify" )
+                .Argument<NonNullGraphType<GraphObjectUpdateType>>("graphObject","The object to update" )
+                .Argument<OntologyActionEnum>("ontology","builds, checks against or ignores ontology")
+                .ResolveAsync( async context =>
                  {
                      var graphName = context.GetArgument<string>("graphName");
                      var graphObject = context.GetArgument<GraphObjectUpdate>("graphObject");
@@ -82,6 +81,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                      return await graph.UpdateGraphObject(CompositeName(userId, graphName), graphObject, ontology);
                  }
              );
+
             FieldAsync<GraphConnectionType>("updateGraphConnection",
                     "Update a graph connection", arguments: new QueryArguments(
                         new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph to modify" },
@@ -310,10 +310,10 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                     return await graph.UpdateKGraph(userId, name, update);
                 }
             );
-            FieldAsync<KnowledgeStateType>("createKnowledgeState", "Creates or updates a knowledge state", arguments: new QueryArguments(
-                 new QueryArgument<NonNullGraphType<KnowledgeStateInputType>> { Name = "ks", Description = "The new knowledge state" }
-                ),
-                resolve: async context =>
+            Field<KnowledgeStateType>("createKnowledgeState")
+                .Description("Creates or updates a knowledge state")
+                .Argument<NonNullGraphType<KnowledgeStateInputType>>("ks", "The new knowledge state" )
+                .ResolveAsync(async context =>
                 {
                     KnowledgeStateInput ks = (KnowledgeStateInput)context.GetArgument(typeof(KnowledgeStateInput), "ks");
                     var asSystem = (bool?)context.GetArgument(typeof(bool?), "asSystem");

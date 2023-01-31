@@ -25,6 +25,8 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
         private readonly IMetaStructureHandler _meta;
         private readonly IMemoryCache _localCache;
         private static readonly string existenceLineage = "noun:01,5,03,3,018";//life
+        static readonly string objectIdClaimText = @"http://schemas.microsoft.com/identity/claims/objectidentifier";
+
 
 
 
@@ -309,7 +311,10 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
 
         public string GetCurrentUserId(object userContext)
         {
-            throw new NotImplementedException();
+            if (userContext!.User!.Identity!.IsAuthenticated)
+            {
+                return = userContext!.User!.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
+            }
         }
 
 
