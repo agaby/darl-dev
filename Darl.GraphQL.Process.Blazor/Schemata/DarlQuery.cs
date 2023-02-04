@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Process.Blazor.Connectivity;
+using Darl.GraphQL.Process.Blazor.Models;
 using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
@@ -19,8 +20,8 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
             Field<ListGraphType<KGraphType>>("kgraphs").Description("The set of Knowledge Graphs for this account.")
                 .ResolveAsync( async context =>
                 {
-                    var userId = trans.GetCurrentUserId(context.UserContext);
-                    return await connectivity.GetKGraphsAsync(userId);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
+                    return await graph.GetGraphs(userId);
                 }
             );
 
@@ -28,9 +29,9 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                .Argument<NonNullGraphType<StringGraphType>>("name","Name of the KGraph")
                .ResolveAsync(async context =>
                 {
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     var name = context.GetArgument<string>("name");
-                    return await connectivity.GetKGModel(userId, name);
+                    return await graph.GetModel(userId, name);
                 }
             );
 
@@ -43,64 +44,53 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                     return await trans.GetLineagesForWord(word, "en");
                 });
 
-            FieldAsync<StringGraphType>("getTypeWordForLineage",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "The lineage to look up" },
-                    new QueryArgument<StringGraphType> { Name = "isoLanguage", DefaultValue = "en", Description = "language for lookup (Only en currently supported)" }
-                    ),
-                resolve: async context =>
+            Field<StringGraphType>("getTypeWordForLineage")
+                .Argument<NonNullGraphType<StringGraphType>>( "lineage", "The lineage to look up" )
+                .ResolveAsync(async context =>
                 {
-                    var isoLanguage = context.GetArgument<string>("isoLanguage");
                     var lineage = context.GetArgument<string>("lineage");
-                    return await trans.GetTypeWordForLineage(lineage, isoLanguage);
+                    return await trans.GetTypeWordForLineage(lineage, "en");
                 });
 
 
 
-            Field<ListGraphType<StringGraphType>>(
-                "tokenize",
-                "Tokenize a string using the standard en tokenizer",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "text", Description = "Text to tokenize" }),
-                resolve: context =>
-               {
+            Field<ListGraphType<StringGraphType>>("tokenize")
+                .Description("Tokenize a string using the standard en tokenizer")
+                .Argument<NonNullGraphType<StringGraphType>>("text","Text to tokenize")
+                .Resolve(context =>
+                {
                    var text = context.GetArgument<string>("text");
                    return LineageLibrary.SimpleTokenizer(text);
-               }
-            );
+                });
 
-            FieldAsync<ListGraphType<GraphObjectType>>(
-                "getGraphObjects",
-                "Get graph objects based on name and lineage",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name", Description = "Name of the object" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "The parent lineage" }
-                ),
-                resolve: async context =>
+            Field<ListGraphType<GraphObjectType>>("getGraphObjects")
+                .Description("Get graph objects based on name and lineage")
+                .Argument<NonNullGraphType<StringGraphType>>("graphName", "Name of the graph containing the object")
+                .Argument<NonNullGraphType<StringGraphType>>("name", "Name of the object")
+                .Argument<NonNullGraphType<StringGraphType>>("lineage", "The parent lineage")
+                .ResolveAsync(async context =>
                 {
                     var graphName = context.GetArgument<string>("graphName");
                     var name = context.GetArgument<string>("name");
                     var lineage = context.GetArgument<string>("lineage");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     return await graph.GetGraphObjects(CompositeName(userId, graphName), name, lineage);
-                }
-            ).AuthorizeWithPolicy("UserPolicy");
-            FieldAsync<ListGraphType<GraphObjectType>>(
-                "getGraphObjectsByLineage",
-                "Get graph objects based on lineage",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "graphName", Description = "Name of the graph containing the object" },
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "lineage", Description = "The parent lineage" }
-                ),
-                resolve: async context =>
+                });
+
+
+            Field<ListGraphType<GraphObjectType>>("getGraphObjectsByLineage")
+                .Description("Get graph objects based on lineage")
+                .Argument<NonNullGraphType<StringGraphType>>("graphName","Name of the graph containing the object")
+                .Argument<NonNullGraphType<StringGraphType>>("lineage","The parent lineage" )
+                .ResolveAsync(async context =>
                 {
                     var graphName = context.GetArgument<string>("graphName");
                     var name = context.GetArgument<string>("name");
                     var lineage = context.GetArgument<string>("lineage");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     return await graph.GetGraphObjectsByLineage(CompositeName(userId, graphName), lineage);
-                }
-            ).AuthorizeWithPolicy("UserPolicy");
+                });
+
             FieldAsync<GraphObjectType>(
                 "getGraphObjectById",
                 "Get a graph object based on id",
@@ -113,7 +103,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                 {
                     var graphName = context.GetArgument<string>("graphName");
                     var id = context.GetArgument<string>("id");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     return await graph.GetGraphObjectById(CompositeName(userId, graphName), id);
                 }
             );
@@ -129,7 +119,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                  {
                      var graphName = context.GetArgument<string>("graphName");
                      var lineage = context.GetArgument<string>("lineage");
-                     var userId = trans.GetCurrentUserId(context.UserContext);
+                     var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                      return await graph.GetVirtualObjectByLineage(CompositeName(userId, graphName), lineage);
                  }
              );
@@ -145,7 +135,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                  {
                      var graphName = context.GetArgument<string>("graphName");
                      var id = context.GetArgument<string>("id");
-                     var userId = trans.GetCurrentUserId(context.UserContext);
+                     var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                      return await graph.GetRecognitionObjectById(CompositeName(userId, graphName), id);
                  }
              );
@@ -161,7 +151,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                 {
                     var graphName = context.GetArgument<string>("graphName");
                     var id = context.GetArgument<string>("externalId");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     return await graph.GetGraphObjectByExternalId(CompositeName(userId, graphName), id);
                 }
             );
@@ -180,7 +170,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                     var startId = context.GetArgument<string>("startId");
                     var endId = context.GetArgument<string>("endId");
                     var lineage = context.GetArgument<string>("lineage");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     return await graph.GetConnectionByIds(CompositeName(userId, graphName), startId, endId, lineage);
                 }
             );
@@ -195,7 +185,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                 {
                     var graphName = context.GetArgument<string>("graphName");
                     var id = context.GetArgument<string>("id");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     return await graph.GetConnectionById(CompositeName(userId, graphName), id);
                 }
             );
@@ -213,7 +203,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                     var Id = context.GetArgument<string>("Id");
                     var name = context.GetArgument<string>("graphName");
                     var external = context.GetArgument<bool>("external");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     return await graph.GetKnowledgeState(userId, Id, name, external);
                 }
             );
@@ -231,7 +221,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                     var subjectId = context.GetArgument<string>("subjectId");
                     var name = context.GetArgument<string>("graphName");
                     var externalIds = context.GetArgument<bool>("externalIds");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     return await graph.GetKnowledgeStateByExternalId(userId, subjectId, name, externalIds);
                 }
             ).AuthorizeWithPolicy("UserPolicy");
@@ -244,7 +234,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                  resolve: async context =>
                  {
 
-                     var userId = trans.GetCurrentUserId(context.UserContext);
+                     var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                      var name = context.GetArgument<string>("graphName");
                      return await connectivity.GetKnowledgeStates(userId, name);
                  }
@@ -258,7 +248,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                  resolve: async context =>
                  {
 
-                     var userId = trans.GetCurrentUserId(context.UserContext);
+                     var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                      var name = context.GetArgument<string>("graphName");
                      var typeId = context.GetArgument<string>("typeObjectId");
                      return await connectivity.GetKnowledgeStatesByType(userId, typeId, name);
@@ -276,7 +266,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                  resolve: async context =>
                  {
 
-                     var userId = trans.GetCurrentUserId(context.UserContext);
+                     var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                      var name = context.GetArgument<string>("graphName");
                      var typeId = context.GetArgument<string>("typeObjectId");
                      var attLineage = context.GetArgument<string>("attLineage");
@@ -295,7 +285,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                 resolve: async context =>
                 {
                     var treeName = context.GetArgument<string>("modelName");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     var texts = context.GetArgument<List<string>>("texts");
                     return await cmp.InferFromSoftMatchModel(userId, treeName, texts);
                 }
@@ -305,7 +295,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                 "Get the names of the SoftMatch models in your account",
                 resolve: async context =>
                 {
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     return await cmp.ListSoftMatchModels(userId);
                 }
             );
@@ -323,7 +313,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                     var kgModelName = context.GetArgument<string>("kgModelName");
                     var conversationId = context.GetArgument<string>("conversationId");
                     var conversationData = context.GetArgument<DarlVar>("conversationData");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     return await bot.InteractKGAsync(userId, kgModelName, conversationId, conversationData);
                 });
 
@@ -338,7 +328,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                 {
                     var graphName = context.GetArgument<string>("graphName");
                     var lineageFilter = context.GetArgument<string>("lineageFilter");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     return await graph.GetRealDisplayGraph(CompositeName(userId, graphName), lineageFilter);
                 }
             );
@@ -356,7 +346,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                     var graphName = context.GetArgument<string>("graphName");
                     var lineageFilter = context.GetArgument<string>("lineageFilter");
                     var subjectId = context.GetArgument<string>("subjectId");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     return await graph.GetRealVRDisplayGraph(userId, graphName, lineageFilter, subjectId);
                 }
             );
@@ -371,7 +361,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                 {
                     var graphName = context.GetArgument<string>("graphName");
                     var id = context.GetArgument<string>("id");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     return await graph.GetGraphObjectToString(CompositeName(userId, graphName), id);
                 }
             );
@@ -385,7 +375,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                 resolve: async context =>
                 {
                     var graphName = context.GetArgument<string>("graphName");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     return await graph.GetVirtualDisplayGraph(CompositeName(userId, graphName));
                 }
             );
@@ -398,7 +388,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                 resolve: async context =>
                 {
                     var graphName = context.GetArgument<string>("graphName");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     return await graph.GetRecognitionDisplayGraph(CompositeName(userId, graphName));
                 }
             );
@@ -417,7 +407,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                     var id = context.GetArgument<string>("id");
                     var lineage = context.GetArgument<string>("lineage");
                     var ksId = context.GetArgument<string>("ksId");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     return await graph.GetGraphAttribute(userId, graphName, id, lineage, ksId);
                 }
             );
@@ -439,7 +429,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                 resolve: async context =>
                 {
                     var graphName = context.GetArgument<string>("graphName");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     var graphType = context.GetArgument<GraphElementType>("graphType");
                     return await graph.GetLineagesInKG(CompositeName(userId, graphName), graphType);
                 });
@@ -463,7 +453,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                 var lineage = context.GetArgument<string>("lineage");
                 var objectId = context.GetArgument<string>("objectId");
                 var graphName = context.GetArgument<string>("graphName");
-                var userId = trans.GetCurrentUserId(context.UserContext);
+                var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                 return await trans.GetSuggestedRuleSet(userId, graphName, objectId, lineage);
             });
 
@@ -476,7 +466,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
             {
                 var graphName = context.GetArgument<string>("graphName");
                 var subjectId = context.GetArgument<string>("subjectId");
-                var userId = trans.GetCurrentUserId(context.UserContext);
+                var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                 return await bot.Discover(userId, graphName, subjectId);
             });
             FieldAsync<StringGraphType>("getExportGraphUrl", "get a link to Export a graph in native format",
@@ -486,7 +476,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
             resolve: async context =>
             {
                 var graphName = context.GetArgument<string>("graphName");
-                var userId = trans.GetCurrentUserId(context.UserContext);
+                var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                 return await graph.CreateTimedAccessUrl(userId, graphName);
             }).AuthorizeWithPolicy("UserPolicy");
             FieldAsync<ListGraphType<GraphAttributeType>>("conceptCloud", "Get the data for the concept cloud",
@@ -497,7 +487,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
             resolve: async context =>
             {
                 var graphName = context.GetArgument<string>("graphName");
-                var userId = trans.GetCurrentUserId(context.UserContext);
+                var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                 var address = context.GetArgument<string>("address");
                 return await trans.GetConceptCloudData(userId, graphName, address);
             });
@@ -509,7 +499,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
             resolve: async context =>
             {
                 var graphName = context.GetArgument<string>("graphName");
-                var userId = trans.GetCurrentUserId(context.UserContext);
+                var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                 return await trans.TempKGExists(userId, graphName);
             });
             FieldAsync<ListGraphType<ByteGraphType>>("kGContents", "Get a KG's contents binary encoded",
@@ -519,7 +509,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
             resolve: async context =>
             {
                 var graphName = context.GetArgument<string>("graphName");
-                var userId = trans.GetCurrentUserId(context.UserContext);
+                var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                 return (await trans.KGContents(userId, graphName)).ToList();
             });
 
@@ -535,7 +525,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                 {
                     var Id = context.GetArgument<string>("Id");
                     var external = context.GetArgument<bool>("external");
-                    var userId = trans.GetCurrentUserId(context.UserContext);
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
                     var graphName = context.GetArgument<string>("graphName");
                     return await bot.GetInteractKnowledgeState(Id, userId, graphName, external);
                 }

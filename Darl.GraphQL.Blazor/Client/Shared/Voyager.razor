@@ -1,18 +1,10 @@
 ﻿@using Microsoft.JSInterop
 @inject IJSRuntime _jsRuntime
 @implements IAsyncDisposable
-@inject HttpClient Http
 
-
-<div id="root" @ref="_dedit">
-    <img src='//cdn.jsdelivr.net/npm/graphql-playground-react/build/logo.png' alt=''>
-    <div class="loading">
-      Loading <span class="title">GraphQL Playground</span>
-    </div>
-</div>
+<div id="voyager" @ref="_dedit">Loading...</div>
 
 @code {
-    [Parameter] public string token { get; set; } = "";
     private ElementReference _dedit;
     private IJSObjectReference? _deditModule;
 
@@ -20,7 +12,7 @@
     {
         if (firstRender)
         {
-            _deditModule = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", "./Shared/Playground.razor.js");
+            _deditModule = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", "./Shared/Voyager.razor.js");
             await _deditModule.InvokeVoidAsync("initialize", _dedit);
             await base.OnInitializedAsync();
         }

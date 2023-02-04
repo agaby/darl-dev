@@ -1,9 +1,9 @@
 ﻿export function initialize(hostElement) {
-    window.renderReactApp = function () {
-        ReactDOM.render(<App />, hostElement);
-    }
+//    window.renderReactApp = function () {
+//        ReactDOM.render('<App />', hostElement);
+//    }
 
-    window.addEventListener('load', function (event) {
+
         GraphQLPlayground.init(hostElement,
             {
                 setTitle: true,
@@ -13,7 +13,6 @@
                 settings: "",
                 headers: ""
             });
-    })
 }
 
 

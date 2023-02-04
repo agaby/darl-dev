@@ -45,23 +45,7 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
             _license = license;
             _localCache = localCache;
             _config = config;
-            //add BackOfficeKG as permanently loaded model
-            LoadBackOfficeKG().Wait();
         }
-
-        private async Task LoadBackOfficeKG()
-        {
-            var blobName = _config["AppSettings:boaiuserid"] + "_" + _config["AppSettings:BackOfficeKG"];
-            var sharedState = await HandleSharedNames(blobName);
-            if (!string.IsNullOrEmpty(sharedState.Item1))
-            {
-                var data = await _blob.Read(sharedState.Item1);
-                var model = DeserializeGraph(data);
-                model.SanityCheck();
-                _localCache.Set(blobName, model);
-            }
-        }
-
 
         /// <summary>
         /// Updates a real object
@@ -83,7 +67,7 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
 
         public async Task<IGraphModel?> Load(string blobName)
         {
-            if (_localCache.TryGetValue(blobName, out IGraphModel model))
+            if (_localCache.TryGetValue(blobName, out IGraphModel? model))
             {
                 return model;
             }
@@ -167,7 +151,6 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
             var divider = compositeName.IndexOf('_');
             var id = compositeName.Substring(0, divider);
             var name = compositeName[(divider + 1)..];
-            await _conn.CreateKGraph(id, name);
             var newGraph = new BlobGraphContent();
             newGraph.AddDefaultContent();
             await _blob.Write(compositeName, SerializeGraph(newGraph));
@@ -187,24 +170,15 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
             {
                 throw new ExecutionError("The owner of this KG has not permitted deletion.");
             }
-            await _conn.DeleteKGraph(record.userId, record.Name);
-            if (record.Shared)
-            {
-                return true;
-            }
             _localCache.Remove(compositeName);
             return await _blob.Delete(compositeName);
         }
 
-        public async Task<List<string>> ListModels(string userId)
+        public Task<List<string>> ListModels(string userId)
         {
-            return _blob.List(userId);
+            return Task.FromResult(_blob.List(userId));
         }
 
-        /// <summary>
-        /// writes out any modified graph models to the blob storage
-        /// </summary>
-        /// <param name="stateInfo"></param>
 
         public async Task Store(string compositeName)
         {
@@ -214,10 +188,10 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
             if (!string.IsNullOrEmpty(sharedState.Item1))
             {
                 modified.Remove(sharedState.Item1);
-                if (_localCache.TryGetValue(compositeName, out IGraphModel model))
+                if (_localCache.TryGetValue(compositeName, out IGraphModel? model))
                 {
                     byte[] data;
-                    data = SerializeGraph(model);
+                    data = SerializeGraph(model!);
                     await _blob.Write(sharedState.Item1, data);
                     _localCache.Set(compositeName, model, TimeSpan.FromMinutes(kgCacheMinutes));
 
@@ -266,10 +240,10 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
             dependencies.Add(new Dependency { dependencyLineage = linkLineage, dependent = currentNode, parent = currentParent });
             foreach (var c in currentNode.Out)
             {
-                if (paths.Contains(c.lineage))
+                if (paths.Contains(c.lineage!))
                 {
-                    var childNode = cont.vertices[c.endId];
-                    AddDependency(model, dependencies, currentNode, childNode, c.lineage, paths);
+                    var childNode = cont!.vertices[c.endId];
+                    AddDependency(model, dependencies, currentNode, childNode, c.lineage!, paths);
                 }
             }
         }
@@ -303,10 +277,10 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
                 var deletions = new List<Dependency>();
                 foreach (var dep in dependencies)
                 {
-                    if (!sequences.ContainsKey(dep.dependent))
-                        sequences.Add(dep.dependent, currentSequence);
+                    if (!sequences.ContainsKey(dep.dependent!))
+                        sequences.Add(dep.dependent!, currentSequence);
                     else
-                        sequences[dep.dependent] = currentSequence;
+                        sequences[dep.dependent!] = currentSequence;
                     //if dependent does not match any parents
                     //remove that link
                     bool match = false;
@@ -376,7 +350,7 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
                     var newData = new Dictionary<string, List<GraphAttribute>>();
                     foreach (var c in ks.data.Keys)
                     {
-                        var newKey = cont.vertices[c].externalId;
+                        var newKey = cont!.vertices[c].externalId;
                         if (!newData.ContainsKey(newKey))
                         {
                             newData.Add(newKey, ks.data[c]);
@@ -398,7 +372,7 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
         {
             var sourceName = CreateCompositeName(userId, name);
             var destName = CreateCompositeName(userId, newName);
-            if (!_localCache.TryGetValue(sourceName, out IGraphModel source) && await _blob.Exists(sourceName))
+            if (!_localCache.TryGetValue(sourceName, out IGraphModel? source) && await _blob.Exists(sourceName))
             {
                 var data = await _blob.Read(sourceName);
                 source = DeserializeGraph(data);
@@ -511,7 +485,7 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
 
         public Task<bool> ExistsInCache(string userId, string graphName)
         {
-            return Task.FromResult(_localCache.TryGetValue(userId + "_" + graphName, out IGraphModel model));
+            return Task.FromResult(_localCache.TryGetValue(userId + "_" + graphName, out IGraphModel? model));
         }
 
         public async Task<byte[]> KGContents(string userId, string graphName)

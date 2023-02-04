@@ -1,4 +1,5 @@
 ﻿using Darl.GraphQL.Process.Blazor.Connectivity;
+using Darl.GraphQL.Process.Blazor.Models;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
 using GraphQL;
@@ -98,7 +99,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
         private IObservable<KnowledgeState> SubscribeGraphChanged(IResolveFieldContext arg)
         {
 
-            var userId = _trans.GetCurrentUserId(arg.UserContext);
+            var userId = _trans.GetCurrentUserId(arg.UserContext as GraphQLUserContext);
             var graphName = arg.GetArgument<string>("graphName");
             var process = arg.GetArgument<GraphProcess>("process");
             var target = arg.GetArgument<string>("target");
@@ -108,7 +109,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
 
         private IObservable<KnowledgeState> SubscribeInteractCompleted(IResolveFieldContext arg)
         {
-            var userId = _trans.GetCurrentUserId(arg.UserContext);
+            var userId = _trans.GetCurrentUserId(arg.UserContext as GraphQLUserContext);
             var graphName = arg.GetArgument<string>("name");
             var target = arg.GetArgument<string>("target");
             var ks = _bot.ObservableKStates();
@@ -137,7 +138,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
         /// <exception cref="ExecutionError"></exception>
         private IObservable<Thinkbase.Meta.DarlMineReport> SubscribeLearn(IResolveFieldContext arg)
         {
-            var userId = _trans.GetCurrentUserId(arg.UserContext);
+            var userId = _trans.GetCurrentUserId(arg.UserContext as GraphQLUserContext);
             var graphName = arg.GetArgument<string>("graphName");
             var target = arg.GetArgument<string>("target");
             var form = arg.GetArgument<LearningForm>("learningForm");
@@ -175,7 +176,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
             var data = arg.GetArgument<string>("data");
             var patternPath = arg.GetArgument<string>("patternPath");
             var dataMaps = arg.GetArgument<List<Thinkbase.DataMap>>("dataMaps");
-            var userId = _trans.GetCurrentUserId(arg.UserContext);
+            var userId = _trans.GetCurrentUserId(arg.UserContext as GraphQLUserContext);
             if (userId == systemId)
             {
                 throw new ExecutionError($"Subscriptions only permitted to registered users.");

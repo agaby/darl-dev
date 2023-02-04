@@ -1,10 +1,19 @@
 ﻿@page "/viewer"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@attribute [Authorize]
+@inject HttpClient Http
 
-<Playground/>
+<AuthorizeView>
+    <Authorized>
+        <Playground />
+    </Authorized>
+ </AuthorizeView>
 
 @code {
+    protected override void OnParametersSet()
+    {
+        var headers = Http.DefaultRequestHeaders;
+        base.OnParametersSet();
+    }
 
 }

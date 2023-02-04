@@ -1,3 +1,4 @@
+
 using GraphQL;
 using GraphQL.Caching;
 using GraphQL.MicrosoftDI;
@@ -18,6 +19,7 @@ using GraphQL.Server;
 using Darl.GraphQL.Process.Blazor.Connectivity;
 using Darl.GraphQL.Process.Blazor.Schemata;
 using ThinkBase.Teams.Connectivity;
+using Darl.GraphQL.Process.Blazor.Models;
 
 namespace Darl.GraphQL.Blazor
 {
@@ -44,6 +46,7 @@ namespace Darl.GraphQL.Blazor
                 .AddGraphTypes(typeof(KGraphType).Assembly)
                 .AddSystemTextJson()
                 .AddValidationRule<LicenseValidationRule>()
+                .AddUserContextBuilder(httpContext => new GraphQLUserContext(httpContext.User))
                 ); 
 
             builder.Services.Configure<GraphQLSettings>(builder.Configuration.GetSection("GraphQLSettings"));
@@ -98,13 +101,7 @@ namespace Darl.GraphQL.Blazor
             app.UseAuthorization();
 
             app.MapControllers();
-            app.UseGraphQLPlayground(
-                "/playground",
-                new PlaygroundOptions
-                {
-                    GraphQLEndPoint = "/graphql",
-                    SubscriptionsEndPoint = "/graphql",
-                });
+
             app.UseGraphQLGraphiQL("/graphiql", new GraphiQLOptions { GraphQLEndPoint = "/graphql" });
 
             app.MapRazorPages();

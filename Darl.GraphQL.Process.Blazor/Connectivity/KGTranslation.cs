@@ -1,4 +1,5 @@
 ﻿using Darl.Common;
+using Darl.GraphQL.Process.Blazor.Models;
 using Darl.Licensing;
 using Darl.Lineage;
 using Darl.Thinkbase;
@@ -309,12 +310,13 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
             }
         }
 
-        public string GetCurrentUserId(object userContext)
+        public string GetCurrentUserId(GraphQLUserContext? userContext)
         {
             if (userContext!.User!.Identity!.IsAuthenticated)
             {
-                return = userContext!.User!.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
+                return userContext!.User!.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
             }
+            return string.Empty;
         }
 
 

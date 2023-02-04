@@ -1,4 +1,5 @@
-﻿using Darl.Lineage;
+﻿using Darl.GraphQL.Process.Blazor.Models;
+using Darl.Lineage;
 using Darl.Thinkbase;
 using DarlCommon;
 using Microsoft.AspNetCore.Http;
@@ -7,7 +8,7 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
 {
     public interface IKGTranslation
     {
-        string GetCurrentUserId(object userContext);
+        string GetCurrentUserId(GraphQLUserContext? userContext);
         Task<bool> CreateNewGraph(string userId, string modelName);
         Task<string> GetSuggestedRuleSet(string userId, string modelName, string objectId, string lineage);
         Task<string> GetTypeWordForLineage(string lineage, string isoLanguage = "en");

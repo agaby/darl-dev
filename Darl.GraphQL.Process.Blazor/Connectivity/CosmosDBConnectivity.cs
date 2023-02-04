@@ -23,7 +23,6 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
         private readonly MongoClient mongoClient;
         private readonly DarlRunTime runtime = new DarlRunTime();
         private readonly ILogger _logger;
-        private readonly string backgroundUserId;
 
         public static readonly string knowledgestateCollection = "kstate";
         public static readonly string kgraphcollection = "kgraph";
@@ -34,15 +33,14 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
             _config = config;
             _logger = logger;
 
-            string connectionString = _config["AppSettings:MongoConnectionString"];
-            backgroundUserId = _config["AppSettings:boaiuserid"];
+            string connectionString = _config["ThinkBaseTeamsConnectionString"];
             MongoClientSettings settings = MongoClientSettings.FromUrl(
               new MongoUrl(connectionString)
             );
             settings.SslSettings =
               new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
             mongoClient = new MongoClient(settings);
-            db = mongoClient.GetDatabase(_config["AppSettings:MongoDatabase"]);
+            db = mongoClient.GetDatabase(_config["MongoDatabase"]);
             BsonClassMap.RegisterClassMap<DarlVar>(cm =>
             {
                 cm.AutoMap();
