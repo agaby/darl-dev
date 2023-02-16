@@ -15,6 +15,10 @@ using ThinkBase.ComponentLibrary.Interfaces;
 using ThinkBase.ComponentLibrary.Models;
 using static Darl.GraphQL.Blazor.Client.Models.LineageRecordResponse;
 using static System.Net.Mime.MediaTypeNames;
+using Microsoft.AspNetCore.Components.Forms;
+using System.Net.Http.Headers;
+using System.Reflection.Metadata;
+using static System.Net.WebRequestMethods;
 
 namespace Darl.GraphQL.Blazor.Client
 {
@@ -22,20 +26,23 @@ namespace Darl.GraphQL.Blazor.Client
     {
         private GraphQLHttpClient client;
         private ITraceWriter traceWriter = new MemoryTraceWriter();
+        private IHttpClientFactory _clientFactory;
         private readonly string completedLineage = "adjective:5500";
         private readonly string textLineage = "noun:01,4,04,02,07,01";
         JsonSerializerOptions options = new JsonSerializerOptions { Converters = { new JsonStringEnumConverter() } };
 
 
-        public LocalConnectivity(HttpClient Http)
+        public LocalConnectivity(IHttpClientFactory clientFactory)
         {
-            client = new GraphQLHttpClient(new GraphQLHttpClientOptions { EndPoint = new Uri(Http.BaseAddress!,"graphql")  }, new NewtonsoftJsonSerializer(new JsonSerializerSettings
+            _clientFactory = clientFactory;
+            var httpClient = _clientFactory.CreateClient("Darl.GraphQL.Blazor.ServerAPI");
+            client = new GraphQLHttpClient(new GraphQLHttpClientOptions { EndPoint = new Uri(httpClient.BaseAddress!,"graphql")  }, new NewtonsoftJsonSerializer(new JsonSerializerSettings
             {
                 TraceWriter = traceWriter,
                 ContractResolver = new CamelCasePropertyNamesContractResolver { IgnoreIsSpecifiedMembers = true },
                 MissingMemberHandling = MissingMemberHandling.Ignore,
                 Converters = { new ConstantCaseEnumConverter() }
-            }), Http);
+            }), httpClient);
         }
         public async Task<string> AddRealNode(string graphName, string name, string externalId, string lin, string sublin)
         {
@@ -706,6 +713,51 @@ namespace Darl.GraphQL.Blazor.Client
             return System.Text.Json.JsonSerializer.Serialize(Convert(dm!), options);
         }
 
+        public Task<bool> ShowInteract()
+        {
+            return Task.FromResult(false);
+        }
+
+        public Task<string> GraphEditPath()
+        {
+            return Task.FromResult("graphedit");
+        }
+
+        public async Task<(bool, string)> Upload(string userId, IBrowserFile file)
+        {
+            try
+            {
+                var httpClient = _clientFactory.CreateClient("Darl.GraphQL.Blazor.ServerAPI");
+                using var content = new MultipartFormDataContent();
+                var fileContent = new StreamContent(file.OpenReadStream());
+
+                fileContent.Headers.ContentType =
+                    new MediaTypeHeaderValue(file.ContentType);
+
+                content.Add(
+                    content: fileContent,
+                    name: "\"files\"",
+                    fileName: file.Name);
+                await httpClient.PostAsync("/api/Files", content);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+            return (true, string.Empty);
+        }
+
+        public async Task<Stream> Download(string userId, string graphName)
+        {
+            var httpClient = _clientFactory.CreateClient("Darl.GraphQL.Blazor.ServerAPI");
+            var response = await httpClient.GetAsync($"/api/Files/{graphName}");
+            if (response.IsSuccessStatusCode)
+            {
+                return response.Content.ReadAsStream();
+            }
+            throw new Exception($"Error accessing graph {graphName}");
+        }
+
         #region private
 
         private async Task UpdateAttribute(string graphName, string currentNodeId, IClientConnectivity.GraphSource src, GraphAttributeInput att)
@@ -836,7 +888,7 @@ namespace Darl.GraphQL.Blazor.Client
             return new GraphConnectionInput { existence = existence, name = gc.name, lineage = gc.lineage, startId = gc.startId, endId = gc.endId };
         }
 
-        public static GraphAttributeInput ConvertAttributeInput(GraphAttribute a)
+        private static GraphAttributeInput ConvertAttributeInput(GraphAttribute a)
         {
             List<GraphAttributeInput>? properties = null;
             if (a.properties != null)
@@ -861,15 +913,7 @@ namespace Darl.GraphQL.Blazor.Client
             return om;
         }
 
-        public Task<bool> ShowInteract()
-        {
-            return Task.FromResult(false);
-        }
 
-        public Task<string> GraphEditPath()
-        {
-            return Task.FromResult("graphedit");
-        }
         #endregion
     }
 
