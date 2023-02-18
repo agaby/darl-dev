@@ -1,7 +1,9 @@
-﻿namespace Darl.GraphQL.Blazor.Client.Models
+﻿using ThinkBase.ComponentLibrary.Models;
+
+namespace Darl.GraphQL.Blazor.Client.Models
 {
     public class KGraphsResponse
     {
-        public List<KGraph>? kgraphs {get; set;}
+        public List<KGraphListElement>? kgraphs {get; set;}
     }
 }

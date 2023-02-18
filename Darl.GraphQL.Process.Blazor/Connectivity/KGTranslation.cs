@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
+using ThinkBase.ComponentLibrary.Models;
 
 namespace Darl.GraphQL.Process.Blazor.Connectivity
 {
@@ -27,7 +29,7 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
         private readonly IMemoryCache _localCache;
         private static readonly string existenceLineage = "noun:01,5,03,3,018";//life
         static readonly string objectIdClaimText = @"http://schemas.microsoft.com/identity/claims/objectidentifier";
-
+        static readonly string tenantIdClaimText = @"http://schemas.microsoft.com/identity/claims/tenantid";
 
 
 
@@ -132,8 +134,8 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
             {
                 var parts = address.Split('/');
                 int depth = 0;
-                GraphObject root = null;
-                GraphObject real = null;
+                GraphObject? root = null;
+                GraphObject? real = null;
                 GraphAttribute att;
                 foreach (var part in parts)
                 {
@@ -144,13 +146,13 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
                         switch (depth)
                         {
                             case 0: //leaf lineages
-                                root = graph.virtualVertices.Values.FirstOrDefault(a => a.name == name);
+                                root = graph!.virtualVertices.Values.FirstOrDefault(a => a.name == name);
                                 break;
                             case 1://real nodes
-                                real = graph.vertices.Values.FirstOrDefault(a => a.externalId == name);
+                                real = graph!.vertices.Values.FirstOrDefault(a => a.externalId == name);
                                 break;
                             case 2://attributes
-                                att = real.properties.FirstOrDefault(a => a.name == name);
+                                att = real!.properties!.FirstOrDefault(a => a.name == name);
                                 break;
                         }
                         depth++;
@@ -160,7 +162,7 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
                 {
                     case 1: //only a virtual node selected
                         {
-                            var children = graph.vertices.Values.Where(a => a.lineage == root.lineage);
+                            var children = graph!.vertices.Values.Where(a => a.lineage == root!.lineage);
                             if (children.Count() > 1)
                             {
                                 foreach (var g in children)
@@ -172,12 +174,12 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
                             {
                                 real = children.FirstOrDefault();
                                 if (real != null)
-                                    list.AddRange(real.properties);
+                                    list.AddRange(real.properties!);
                             }
                         }
                         break;
                     case 2:
-                        list.AddRange(real.properties);
+                        list.AddRange(real!.properties!);
                         break;
                 }
             }
@@ -209,6 +211,9 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
         }
 
 
+        public async Task Promote(string userId, string tenantId, string name)
+        {
+        }
 
         #region private
 
@@ -291,7 +296,7 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
             if (!ks.data.ContainsKey(objectId))
                 return;
             var properties = ks.data[objectId];
-            var val = properties.FirstOrDefault(a => a.lineage.StartsWith(existenceLineage));
+            var val = properties.FirstOrDefault(a => a.lineage!.StartsWith(existenceLineage));
             if (val == null)
             {
                 properties.Add(new GraphAttribute
@@ -319,10 +324,39 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
             return string.Empty;
         }
 
+        public string GetCurrentTenantId(GraphQLUserContext? userContext)
+        {
+            if (userContext!.User!.Identity!.IsAuthenticated)
+            {
+                return userContext!.User!.Claims.Where(ai => ai.Type == tenantIdClaimText).Single().Value;
+            }
+            return string.Empty;
+        }
 
 
 
+        public async Task<List<KGraphListElement>> GetKGraphs(string userId, string tenantId)
+        {
+            var kGraphs =  new List<KGraphListElement>();
+            //combine team and individual 
+            await GetGraphKind(userId, kGraphs, KGSource.individual);
+            await GetGraphKind(tenantId, kGraphs, KGSource.team);
+            return kGraphs;
+        }
 
+        private async Task GetGraphKind(string id, List<KGraphListElement> kGraphs, KGSource stype)
+        {
+            var inds = await _graph.GetGraphs(id);
+            foreach (var ind in inds)
+            {
+                var name = ind.Remove(0, id.Length);
+                name = name.Replace('/', ' ');
+                if (name.Trim().Any())
+                {
+                    kGraphs.Add(new KGraphListElement { name = name.Trim(), kgSource = stype });
+                }
+            }
+        }
 
         #endregion
     }

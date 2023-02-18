@@ -1,19 +1,22 @@
 ﻿@page "/viewer"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@inject HttpClient Http
+@inject IConfiguration config
+
+<PageTitle>ThinkBase GraphQL API</PageTitle>
 
 <AuthorizeView>
     <Authorized>
         <Playground />
     </Authorized>
+    <NotAuthorized>
+        <h3>Welcome to the ThinkBase GraphQL API viewer</h3>
+        <p>This gives you interactive access to our GraphQL API for test and development.</p>
+        <p>You need to be signed in and subscribed to use this page.</p>
+        <p>Subscribe at <a href="@config["SubscribeUrl"]">@config["SubscribeLabel"]</a>.</p>
+    </NotAuthorized>
  </AuthorizeView>
 
 @code {
-    protected override void OnParametersSet()
-    {
-        var headers = Http.DefaultRequestHeaders;
-        base.OnParametersSet();
-    }
 
 }

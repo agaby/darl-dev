@@ -210,22 +210,22 @@ namespace Darl.GraphQL.Blazor.Client
             }
         }
 
-        public async Task<List<string>> GetKGraphs(string userId)
+        public async Task<List<KGraphListElement>> GetKGraphs()
         {
             try
             {
                 var modelReq = new GraphQLHttpRequest
                 {
-                    Query = "query {kgraphs{name}}"
+                    Query = "query {kgraphs{name kgSource}}"
                 };
                 var list = await client.SendQueryAsync<KGraphsResponse>(modelReq);
                 if (list.Errors != null && list.Errors.Count() > 0)
                     throw new Exception(list.Errors[0].Message);
-                return list.Data.kgraphs!.Select(a => a.Name).ToList();
+                return list.Data.kgraphs ?? new List<KGraphListElement>();
             }
             catch(Exception ex)
             {
-                return new List<string>();
+                return new List<KGraphListElement>();
             }
         }
 
@@ -757,6 +757,13 @@ namespace Darl.GraphQL.Blazor.Client
             }
             throw new Exception($"Error accessing graph {graphName}");
         }
+
+        public Task Promote(string userId, string graphName)
+        {
+            throw new NotImplementedException();
+        }
+
+
 
         #region private
 

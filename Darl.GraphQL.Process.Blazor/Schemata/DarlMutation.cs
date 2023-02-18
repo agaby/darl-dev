@@ -148,6 +148,17 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
                     return "";
                 });
 
+            Field<StringGraphType>("promoteKGraph")
+                .Argument<NonNullGraphType<StringGraphType>>("name")
+                .ResolveAsync(async context =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var userId = trans.GetCurrentUserId(context.UserContext as GraphQLUserContext);
+                    var tenantId = trans.GetCurrentTenantId(context.UserContext as GraphQLUserContext);
+                    await trans.Promote(userId, tenantId, name);
+                    return "";
+                });
+
             Field<GraphObjectType>("updateRecognitionObject")
                 .Description("update a GraphObject in the recognition trees")
                 .Argument<NonNullGraphType<StringGraphType>>("name","The name of the Knowledge graph the object is in")

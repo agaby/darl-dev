@@ -12,7 +12,7 @@ namespace Darl.GraphQL.Process.Blazor.Models
         /// Gets or sets the name.
         /// </summary>
         /// <value>The name.</value>
-        public string name { get; set; }
+        public string name { get; set; } = string.Empty;
 
         /// <summary>
         /// This result is unknown if true.
@@ -36,16 +36,16 @@ namespace Darl.GraphQL.Process.Blazor.Models
         /// 3 a triangular fuzzy set,
         /// 4 a trapezoidal fuzzy set.
         /// The values must be ordered in ascending value, but it is permissible for two or more to hold the same value.</remarks>
-        public List<double> values { get; set; }
+        public List<double>? values { get; set; }
 
         /// <summary>
         /// list of categories, each indexed against a truth value.
         /// </summary>
         /// <value>The categories.</value>
-        public List<StringDoublePair> categories { get; set; }
+        public List<StringDoublePair>? categories { get; set; }
 
 
-        public List<DarlTime> times { get; set; }
+        public List<DarlTime>? times { get; set; }
 
         /// <summary>
         /// Indicates approximation has taken place in calculating the values.

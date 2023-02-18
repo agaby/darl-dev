@@ -35,7 +35,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
             _graph = graph;
             _config = config;
             _logger = logger;
-            systemId = _config["AppSettings:boaiuserid"];
+            systemId = _config["AppSettings:boaiuserid"] ?? string.Empty; 
             Name = "Subscription";
             AddField(new FieldType()
             {

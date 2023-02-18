@@ -11,6 +11,6 @@ namespace Darl.GraphQL.Process.Blazor.Models
         public double? ScoreBarMinVal { get; set; }
         public bool? Uncertainty { get; set; }
         public string ValueFormat { get; set; } = string.Empty;
-        public string path { get; set; }
+        public string path { get; set; } = string.Empty;
     }
 }
