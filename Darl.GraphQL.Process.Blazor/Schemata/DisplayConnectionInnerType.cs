@@ -11,6 +11,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
             Field<StringGraphType>("label").Resolve(c => c.Source.name);
             Field<StringGraphType>("source").Resolve(c => c.Source.source);
             Field<StringGraphType>("target").Resolve(c => c.Source.target);
+            Field<StringGraphType>("lineage").Resolve(c => c.Source.lineage);
         }
     }
 }

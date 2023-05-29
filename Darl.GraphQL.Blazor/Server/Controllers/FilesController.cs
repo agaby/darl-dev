@@ -30,7 +30,7 @@ namespace Darl.GraphQL.Blazor.Server.Controllers
         {
             var file = files.FirstOrDefault();
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // will give the user's userId
-            if (file == null) { return BadRequest("No file presnt"); }
+            if (file == null) { return BadRequest("No file present"); }
             try
             {
                 BlobGraphContent model;

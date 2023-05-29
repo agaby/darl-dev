@@ -12,16 +12,16 @@
 
 <AuthorizeView>
     <Authorized>
-        <GraphSelection userId="@userId" />
+        <GraphSelection />
     </Authorized>
     <NotAuthorized>
-        <h3>Welcome to the Thinkbase SaaS site</h3>
+        <h3>Welcome to the ThinkBase SaaS site</h3>
         <p>Using a GraphQL API, ThinkBase SaaS gives you programmatic access to all of ThinkBase functionality.</p>
-        <p>ThinkBase is a system that helps you build Knowledge Graphs of your problem domain, and then turn them into active models using a Fuzzy-Logic rules-based inference engine.</p>
-        <p>Once you've built a Knowledge graph, you can interact with it in two ways: via the chat interface in Teams, or programmatically over the GraphQL API here.</p>
+        <p>ThinkBase is a system that helps you build Knowledge Graphs for your problem domain, and then turn them into active models using a Fuzzy-Logic rules-based inference engine.</p>
+        <p>Once you've built a Knowledge graph, you can interact with it in two ways: via the chat interface in Microsoft Teams, or programmatically over the GraphQL API here.</p>
         <p>You can get the Teams App <a href="@config["TeamsAppAddress"]">here</a>. Any Knowledge Graphs you edit or create here will be available in your Teams App and vice versa.</p>
-        <p>Knowledge Graphs can be downloaded, exchanged and uploaded. We can support you using them within your own software if required.</p>
-        <p>You need to sign up at <a href="@config["SubscribeUrl"]">@config["SubscribeLabel"]</a> to use this API.</p>
+        <p>Knowledge Graphs can be downloaded, exchanged and uploaded. <a href="mailto:sales@thinkbase.ai">We can support you using them within your own software if required.</a></p>
+        <p><i>You need to subscribe at <a href="@config["SubscribeUrl"]">@config["SubscribeLabel"]</a> to use this site.</i> <span class="text-primary">There's a 30 day free trial!</span></p>
     </NotAuthorized>
 </AuthorizeView>
     

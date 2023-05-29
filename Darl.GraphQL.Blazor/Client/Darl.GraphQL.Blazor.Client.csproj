@@ -6,25 +6,23 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>563f2a9d-b59e-46ce-ac41-e31d4ea4955a</UserSecretsId>
   </PropertyGroup>
-
+	
   <ItemGroup>
     <None Include="wwwroot\playground\playground.css" />
     <None Include="wwwroot\playground\playground.min.js" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GraphQL.Client" Version="5.1.0" />
-    <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="5.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.0" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.Authentication.WebAssembly.Msal" Version="7.0.0" />
+    <PackageReference Include="GraphQL.Client" Version="5.1.1" />
+    <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="5.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.3" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Authentication.WebAssembly.Msal" Version="7.0.3" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="ThinkBase.ComponentLibrary" Version="1.0.17" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Shared\Darl.GraphQL.Blazor.Shared.csproj" />
+    <PackageReference Include="Microsoft.Fast.Components.FluentUI" Version="2.0.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="ThinkBase.ComponentLibrary" Version="1.0.42" />
+    <PackageReference Include="ThinkBase.GraphQLLibrary" Version="1.0.10" />
   </ItemGroup>
 
 </Project>

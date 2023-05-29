@@ -321,7 +321,7 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
             {
                 return userContext!.User!.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
             }
-            return string.Empty;
+            return "b8c4899c-b8a2-40b5-ae8e-d038a9589416";
         }
 
         public string GetCurrentTenantId(GraphQLUserContext? userContext)

@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Fast.Components.FluentUI;
+using Microsoft.Fast.Components.FluentUI.Infrastructure;
 using ThinkBase.ComponentLibrary.Interfaces;
+using ThinkBase.GraphQLLibrary;
 
 namespace Darl.GraphQL.Blazor.Client
 {
@@ -27,7 +29,10 @@ namespace Darl.GraphQL.Blazor.Client
                 options.ProviderOptions.DefaultAccessTokenScopes.Add(builder.Configuration.GetSection("ServerApi")["Scopes"]);
             });
             builder.Services.AddScoped<IClientConnectivity, LocalConnectivity>();
+            builder.Services.AddThinkBaseGraphQL(builder.HostEnvironment.BaseAddress + "/graphql");
             builder.Services.AddFluentUIComponents();
+            builder.Services.AddOptions();
+            builder.Services.AddAuthorizationCore();
 
             await builder.Build().RunAsync();
         }

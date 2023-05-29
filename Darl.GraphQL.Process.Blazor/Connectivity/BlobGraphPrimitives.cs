@@ -86,32 +86,6 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
                     throw new ExecutionError($"Error loading {blobName}: {ex.Message}");
                 }
             }
-            else
-            {
-                //check if it's a shared blob
-                var sharedState = await HandleSharedNames(blobName);
-                if (!string.IsNullOrEmpty(sharedState.Item1))
-                {
-                    try
-                    {
-                        var data = await _blob.Read(sharedState.Item1);
-                        model = DeserializeGraph(data);
-                        model.SanityCheck();
-                        _localCache.Set(blobName, model, TimeSpan.FromMinutes(kgCacheMinutes));
-                        return model;
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ExecutionError($"Error loading shared graph {blobName}: {ex.Message}");
-                    }
-                }
-                /*                else
-                                {
-                                    var model = new BlobGraphContent();
-                                    buffer.Add(blobName, model);
-                                    return model;
-                                }*/
-            }
             return null;
         }
 
@@ -148,9 +122,6 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
             var record = await GetRecord(compositeName);
             if (record != null)
                 throw new ExecutionError($"{record.Name} already exists.");
-            var divider = compositeName.IndexOf('_');
-            var id = compositeName.Substring(0, divider);
-            var name = compositeName[(divider + 1)..];
             var newGraph = new BlobGraphContent();
             newGraph.AddDefaultContent();
             await _blob.Write(compositeName, SerializeGraph(newGraph));
@@ -219,7 +190,7 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
 
         private async Task<KGraph> GetRecord(string compositeName)
         {
-            var divider = compositeName.IndexOf('_');
+            var divider = compositeName.IndexOf('/');
             var id = compositeName.Substring(0, divider);
             var name = compositeName[(divider + 1)..];
             return await _conn.GetKGModel(id, name);

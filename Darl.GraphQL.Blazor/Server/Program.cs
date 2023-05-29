@@ -47,6 +47,14 @@ namespace Darl.GraphQL.Blazor
                 .AddSystemTextJson()
                 .AddValidationRule<LicenseValidationRule>()
                 .AddUserContextBuilder(httpContext => new GraphQLUserContext(httpContext.User))
+                .UseMemoryCache(options =>
+                {
+                    // maximum total cached query length of 1,000,000 bytes (assume 10x memory usage
+                    // for 10MB maximum memory use by the cache - parsed AST and other stuff)
+                    options.SizeLimit = 1000000;
+                    // no expiration of cached queries (cached queries are only ejected when the cache is full)
+                    options.SlidingExpiration = null;
+                })
                 ); 
 
             builder.Services.Configure<GraphQLSettings>(builder.Configuration.GetSection("GraphQLSettings"));

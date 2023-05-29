@@ -1,8 +1,4 @@
-﻿export function initialize(hostElement) {
-//    window.renderReactApp = function () {
-//        ReactDOM.render('<App />', hostElement);
-//    }
-
+﻿export function initialize(hostElement, authHeader) {
 
         GraphQLPlayground.init(hostElement,
             {
@@ -11,7 +7,7 @@
                 subscriptionEndpoint: getSubscriptionsEndPoint(),
                 config: "",
                 settings: "",
-                headers: ""
+                headers: authHeader
             });
 }
 

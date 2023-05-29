@@ -13,6 +13,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
             Field<StringGraphType>("sublineage").Resolve(c => c.Source.subLineage);
             Field<StringGraphType>("externalId").Resolve(c => c.Source.externalId);
             Field<StringGraphType>("parent").Resolve(c => c.Source.parent);
+            Field<BooleanGraphType>("hasCode").Resolve(c => c.Source.hasCode);
         }
     }
 }

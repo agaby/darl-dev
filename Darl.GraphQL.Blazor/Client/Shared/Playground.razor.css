@@ -2,9 +2,9 @@
 #root {
     height: 100%;
     width: 100vw;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+//    display: flex;
+//    align-items: center;
+//    justify-content: center;
 }
 
 p, a, h1, h2, h3, h4, ul, pre, code {
@@ -47,5 +47,5 @@ img {
 
 .playground 
 {
-    width: 100%
+    width: calc(100vw - 250px);
 }

@@ -2,14 +2,14 @@ name: Build and deploy .NET Core app to Windows WebApp thinkbasedev
 on:
   push:
     branches:
-    - master
+    - microsoft-paid
 env:
   AZURE_WEBAPP_NAME: thinkbasedev
   AZURE_WEBAPP_SLOT_NAME: staging
   AZURE_WEBAPP_PACKAGE_PATH: Darl.GraphQL/publish
   AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.thinkbasedev_staging_8a1c }}
   CONFIGURATION: Release
-  DOTNET_CORE_VERSION: 6.0.x
+  DOTNET_CORE_VERSION: 7.0.x
   WORKING_DIRECTORY: Darl.GraphQL
 jobs:
   build-and-deploy:

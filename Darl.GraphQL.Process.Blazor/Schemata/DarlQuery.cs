@@ -423,7 +423,7 @@ namespace Darl.GraphQL.Process.Blazor.Schemata
 
         private string CompositeName(string userId, string graphName)
         {
-            return $"{userId}_{graphName}";
+            return $"{userId}/{graphName}";
         }
     }
 }

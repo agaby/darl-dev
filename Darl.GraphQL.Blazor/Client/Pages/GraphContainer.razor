@@ -1,0 +1,10 @@
+﻿@page "/graphcontainer/{graphName}"
+@using ThinkBase.ComponentLibrary.GraphEditContainer
+
+<div>
+    <GraphEditContainer graphName = "@graphName" />
+</div>
+
+@code {
+    [Parameter] public string graphName { get; set; } = default!;
+}
