@@ -2,7 +2,7 @@ name: Build and deploy .NET Core app to Windows WebApp thinkbasedev
 on:
   push:
     branches:
-    - master
+    - microsoft-paid
 env:
   AZURE_WEBAPP_NAME: thinkbasedev
   AZURE_WEBAPP_SLOT_NAME: staging
