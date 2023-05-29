@@ -20,8 +20,6 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
-    - name: Add private nuget source
-      run: dotnet nuget add source https://nuget.pkg.github.com/thinkbase-ai/index.json -n github -u ${{secrets.GITHUBUSER }} -p ${{secrets.GITHUBPAT }}
     - name: Restore
       run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
     - name: Build
