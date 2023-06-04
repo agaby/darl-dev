@@ -1,24 +1,17 @@
 
 using GraphQL;
-using GraphQL.Caching;
-using GraphQL.MicrosoftDI;
 using GraphQL.SystemTextJson;
 using Darl.GraphQL.Blazor.Server.Helpers;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Identity.Web;
 using Microsoft.Extensions.Options;
-using GraphQL.Server.Ui.Playground;
 using GraphQL.Server.Ui.GraphiQL;
 using Darl.Licensing;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase;
 using DarlLanguage.Processing;
-using GraphQL.Server;
 using Darl.GraphQL.Process.Blazor.Connectivity;
 using Darl.GraphQL.Process.Blazor.Schemata;
-using ThinkBase.Teams.Connectivity;
 using Darl.GraphQL.Process.Blazor.Models;
 
 namespace Darl.GraphQL.Blazor
@@ -80,7 +73,6 @@ namespace Darl.GraphQL.Blazor
             builder.Services.AddSingleton<IBotStateStorage, BotStateStorage>();
             builder.Services.AddSingleton<ILicensing, ProductLicensing>();
             builder.Services.AddSingleton<Thinkbase.IDataLoader, DataLoader>();
-            builder.Services.AddSingleton<ILicenseConnectivity, LocalLicenseConnectivity>();
 
 
             var app = builder.Build();

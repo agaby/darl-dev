@@ -1,4 +1,6 @@
 ﻿@using Microsoft.Fast.Components.FluentUI
+@inject IConfiguration config
+
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href=""><img src="/ThinkbaseLogo_50.png" alt="Logo"> ThinkBase SaaS API</a>
@@ -28,12 +30,17 @@
     </nav>
     <div class="m-sm-4">
         <p class="small text-white">
+            <a href="@config["SubscribeUrl"]" class="link-light">Subscribe</a>
+            <br/>
+            <a href="https://admin.microsoft.com" class="link-light">Manage subscription</a>
+        </p>
+        <p class="small text-white">
             ThinkBase LLC is a distributed and automated company.
             We exist to create and market intellectual property in the fields of AI, ML and NLP. Contact us via Sales for any investment, integration or alliance inquiries.
         </p>
         <ul class ="small text-white list-unstyled">
-            <li>Support: support@thinkbase.ai</li>
-            <li>Sales: sales@thinkbase.ai</li>
+            <li>Support: <a href="mailto:support@thinkbase.ai" class="link-light">support@thinkbase.ai</a></li>
+            <li>Sales: <a href="mailto:sales@thinkbase.ai" class="link-light">sales@thinkbase.ai</a></li>
             <li>Ph: +1 307 291 0705</li>
             <li>Fx: +1 307 222 0296</li>
         </ul>
@@ -41,7 +48,7 @@
             &copy; @DateTime.Now.Year - ThinkBase LLC. 
             <br />DARL&reg; is a trademark of ThinkBase. 
             <br />RQRF.
-            <br />Graphics by <a href="http://afwedmonds.com">A.F.W.Edmonds</a>
+            <br />Graphics by <a href="http://afwedmonds.com" class="link-light">A.F.W.Edmonds</a>
         </p>
         <img src="/MS_Startups_Celebration_Badge_Dark_small.png" alt="Microft for Startups logo" />
     </div>

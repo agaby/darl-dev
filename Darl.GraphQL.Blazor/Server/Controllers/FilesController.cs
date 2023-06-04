@@ -1,10 +1,7 @@
 ﻿using Darl.Thinkbase;
-using GraphQLParser.AST;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProtoBuf;
-using System.IO;
 using System.Security.Claims;
 
 namespace Darl.GraphQL.Blazor.Server.Controllers

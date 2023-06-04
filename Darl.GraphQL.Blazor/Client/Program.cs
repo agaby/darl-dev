@@ -1,4 +1,6 @@
 using Darl.GraphQL.Blazor.Client;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -32,7 +34,15 @@ namespace Darl.GraphQL.Blazor.Client
             builder.Services.AddThinkBaseGraphQL(builder.HostEnvironment.BaseAddress + "/graphql");
             builder.Services.AddFluentUIComponents();
             builder.Services.AddOptions();
-            builder.Services.AddAuthorizationCore();
+            var baseUrl = builder.Configuration.GetSection("MicrosoftGraph")["BaseUrl"];
+            var scopes = builder.Configuration.GetSection("MicrosoftGraph:Scopes")
+                .Get<List<string>>();
+            builder.Services.AddScoped<IAuthorizationHandler, AppSourcePolicyHandler>();
+            builder.Services.AddGraphClient(baseUrl, scopes);
+            builder.Services.AddAuthorizationCore(options =>
+            {
+                options.AddPolicy("appSource", policy => policy.Requirements.Add(new AppSourceRequirement(builder.Configuration["SaaSServiceIdentifier"] ?? "")));
+            });
 
             await builder.Build().RunAsync();
         }

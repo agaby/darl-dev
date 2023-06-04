@@ -1,16 +1,14 @@
 ﻿@page "/"
-
-@using System.Security.Claims;
-@using ThinkBase.ComponentLibrary.Interfaces;
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Graph.Beta
 @using ThinkBase.ComponentLibrary.KGSelection
-@using Microsoft.AspNetCore.Components.Authorization
-@inject NavigationManager Navigation
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject GraphServiceClient Client
 @inject IConfiguration config
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>ThinkBase SaaS</PageTitle>
 
-<AuthorizeView>
+<AuthorizeView Policy="appSource">
     <Authorized>
         <GraphSelection />
     </Authorized>
@@ -22,30 +20,12 @@
         <p>You can get the Teams App <a href="@config["TeamsAppAddress"]">here</a>. Any Knowledge Graphs you edit or create here will be available in your Teams App and vice versa.</p>
         <p>Knowledge Graphs can be downloaded, exchanged and uploaded. <a href="mailto:sales@thinkbase.ai">We can support you using them within your own software if required.</a></p>
         <p><i>You need to subscribe at <a href="@config["SubscribeUrl"]">@config["SubscribeLabel"]</a> to use this site.</i> <span class="text-primary">There's a 30 day free trial!</span></p>
+        <p>You can manage your subscriptions at the <a href="https://admin.microsoft.com">Microsoft 365 admin center</a> under <i>Billing/Your products</i>. You, or your site administrator, will need to assign you a license before you can get access. </p>
     </NotAuthorized>
 </AuthorizeView>
     
 
 @code {
-    private string userId { get; set; } = "";
-    private string tenantId { get; set; } = "";
+ 
 
-    protected override async Task OnParametersSetAsync()
-    {
-        await GetClaimsPrincipalData();
-        await base.OnParametersSetAsync();
-    }
-
-
-    private async Task GetClaimsPrincipalData()
-    {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (user.Identity!.IsAuthenticated)
-        {
-            userId = user.FindFirst(c => c.Type == "oid")?.Value ?? "";
-            tenantId = user.FindFirst(c => c.Type == "tid")?.Value ?? "";
-        }
-    }
 }
