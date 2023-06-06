@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>Darl.GraphQL.Blazor.Server-e3ed1ee8-bd5e-4144-8b7e-6e393c082c3a</UserSecretsId>
     <WebProject_DirectoryAccessLevelKey>0</WebProject_DirectoryAccessLevelKey>
+    <ApplicationInsightsResourceId>/subscriptions/3daf22fd-0d7b-4e8c-a4a8-0c340d64b0f4/resourceGroups/thinkbase/providers/microsoft.insights/components/DarlGraphQLBlazorServer</ApplicationInsightsResourceId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +20,7 @@
     <PackageReference Include="GraphQL.Server.Ui.Playground" Version="7.2.0" />
     <PackageReference Include="GraphQL.Server.Ui.Voyager" Version="7.2.0" />
     <PackageReference Include="GraphQL.SystemTextJson" Version="7.2.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.15.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.3" />
     <PackageReference Include="Microsoft.Fast.Components.FluentUI" Version="2.0.5" />
   </ItemGroup>

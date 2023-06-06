@@ -1,10 +1,10 @@
 ﻿
 #root {
     height: 100%;
-    width: 100vw;
-//    display: flex;
-//    align-items: center;
-//    justify-content: center;
+    width: 100vh;
+    // display: flex;
+    // align-items: center;
+    // justify-content: center;
 }
 
 p, a, h1, h2, h3, h4, ul, pre, code {
@@ -47,5 +47,5 @@ img {
 
 .playground 
 {
-    width: calc(100vw - 250px);
+    width: calc(100vw - 10px);
 }

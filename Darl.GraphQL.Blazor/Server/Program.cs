@@ -54,7 +54,7 @@ namespace Darl.GraphQL.Blazor
                 ); 
 
             builder.Services.Configure<GraphQLSettings>(builder.Configuration.GetSection("GraphQLSettings"));
-            builder.Services.AddLogging(builder => builder.AddConsole());
+            builder.Services.AddLogging(builder => builder.AddApplicationInsights());
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddControllersWithViews().AddJsonOptions(opts =>
