@@ -1,10 +1,40 @@
 ﻿@page "/graphcontainer/{graphName}"
 @using ThinkBase.ComponentLibrary.GraphEditContainer
+@using Microsoft.AspNetCore.Authorization
+@using ThinkBase.ComponentLibrary.KGSelection
+@using ThinkBase.ComponentLibrary.Models;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
 
-<div>
-    <GraphEditContainer graphName = "@graphName" />
-</div>
+ <AuthorizeView Policy="appSource">
+    <Authorized>
+        <CascadingValue Value="auth">
+            <GraphEditContainer graphName = "@graphName" />
+        </CascadingValue>
+    </Authorized>
+ </AuthorizeView>
+
 
 @code {
     [Parameter] public string graphName { get; set; } = default!;
+
+    private UserAuth auth { get; set; } = new UserAuth();
+    protected override async Task OnParametersSetAsync()
+    {
+        await GetClaimsPrincipalData();
+        await base.OnParametersSetAsync();
+    }
+
+
+    private async Task GetClaimsPrincipalData()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity!.IsAuthenticated)
+        {
+            auth.userId = user.FindFirst(c => c.Type == "oid")?.Value ?? "";
+            auth.tenantId = user.FindFirst(c => c.Type == "tid")?.Value ?? "";
+        }
+    }
 }

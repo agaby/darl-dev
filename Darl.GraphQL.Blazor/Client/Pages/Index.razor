@@ -1,8 +1,7 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.Graph.Beta
 @using ThinkBase.ComponentLibrary.KGSelection
-@inject GraphServiceClient Client
+@using ThinkBase.ComponentLibrary.Models;
 @inject IConfiguration config
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
@@ -10,7 +9,9 @@
 
 <AuthorizeView Policy="appSource">
     <Authorized>
-        <GraphSelection />
+        <CascadingValue Value="auth">
+            <GraphSelection/>
+        </CascadingValue>
     </Authorized>
     <NotAuthorized>
         <h3>Welcome to the ThinkBase SaaS site</h3>
@@ -26,6 +27,23 @@
     
 
 @code {
- 
+    private UserAuth auth { get; set; } = new UserAuth();
+    protected override async Task OnParametersSetAsync()
+    {
+        await GetClaimsPrincipalData();
+        await base.OnParametersSetAsync();
+    }
 
+
+    private async Task GetClaimsPrincipalData()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity!.IsAuthenticated)
+        {
+            auth.userId = user.FindFirst(c => c.Type == "oid")?.Value ?? "";
+            auth.tenantId = user.FindFirst(c => c.Type == "tid")?.Value ?? "";
+        }
+    }
 }

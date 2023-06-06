@@ -7,7 +7,7 @@
                 subscriptionEndpoint: getSubscriptionsEndPoint(),
                 config: "",
                 settings: "",
-                headers: authHeader
+                headers: JSON.parse(authHeader)
             });
 }
 

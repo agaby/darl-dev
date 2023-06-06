@@ -1,12 +1,14 @@
 ﻿@page "/documents"
+@inject IConfiguration config
 
 <PageTitle>ThinkBase Documentation</PageTitle>
-<iframe src="https://thinkbase.support"
-        frameborder="0"
-        marginheight="0"
-        marginwidth="0"
-        scrolling="auto"></iframe>
-
+<div>
+    <iframe src="@config["DocumentationAddress"]"
+            frameborder="0"
+            marginheight="0"
+            marginwidth="0"
+            scrolling="auto"></iframe>
+</div>
 @code {
 
 }

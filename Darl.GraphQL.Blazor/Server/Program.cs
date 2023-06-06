@@ -13,6 +13,10 @@ using DarlLanguage.Processing;
 using Darl.GraphQL.Process.Blazor.Connectivity;
 using Darl.GraphQL.Process.Blazor.Schemata;
 using Darl.GraphQL.Process.Blazor.Models;
+using MongoDB.Bson;
+using System.Data;
+using System.Security.Claims;
+using System.Security.Principal;
 
 namespace Darl.GraphQL.Blazor
 {
@@ -24,8 +28,7 @@ namespace Darl.GraphQL.Blazor
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+            builder.Services.AddAuthentication();
 
             builder.Services.AddGraphQL(b => b
                 .AddSchema<DarlSchema>()
@@ -98,9 +101,28 @@ namespace Darl.GraphQL.Blazor
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseAuthentication();
 
-            app.MapControllers();
+            app.Use(async (context, next) =>
+            {
+            var authHeader = context.Request.Headers["Authorization"].ToString();
+                if (authHeader != null && authHeader.StartsWith("Basic", StringComparison.OrdinalIgnoreCase))
+                {
+                    var token = authHeader.Substring("Basic ".Length).Trim(); //token is <UserId>/<tenantId>.
+                    var userId = token.Substring(0,36);
+                    var tenantId = token.Substring(36);
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        var identity = new GenericIdentity(userId);
+                        identity.AddClaims(context.User.Claims);
+                        identity.AddClaim(new Claim(KGTranslation.objectIdClaimText, userId));
+                        identity.AddClaim(new Claim(KGTranslation.tenantIdClaimText, tenantId));
+                        context.User = new GenericPrincipal(identity, null);
+                    }
+                }
+                await next.Invoke();
+            });
+                app.MapControllers();
 
             app.UseGraphQLGraphiQL("/graphiql", new GraphiQLOptions { GraphQLEndPoint = "/graphql" });
 

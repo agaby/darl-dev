@@ -24,7 +24,10 @@
     <PackageReference Include="Microsoft.Graph.Beta" Version="5.33.0-preview" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="ThinkBase.ComponentLibrary" Version="1.0.47" />
-    <PackageReference Include="ThinkBase.GraphQLLibrary" Version="1.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\ThinkBase.GraphQLLibrary\ThinkBase.GraphQLLibrary.csproj" />
   </ItemGroup>
 
 </Project>

@@ -28,8 +28,8 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
         private readonly IMetaStructureHandler _meta;
         private readonly IMemoryCache _localCache;
         private static readonly string existenceLineage = "noun:01,5,03,3,018";//life
-        static readonly string objectIdClaimText = @"http://schemas.microsoft.com/identity/claims/objectidentifier";
-        static readonly string tenantIdClaimText = @"http://schemas.microsoft.com/identity/claims/tenantid";
+        public static readonly string objectIdClaimText = @"http://schemas.microsoft.com/identity/claims/objectidentifier";
+        public static readonly string tenantIdClaimText = @"http://schemas.microsoft.com/identity/claims/tenantid";
 
 
 

@@ -31,7 +31,7 @@ namespace Darl.GraphQL.Blazor.Client
                 options.ProviderOptions.DefaultAccessTokenScopes.Add(builder.Configuration.GetSection("ServerApi")["Scopes"]);
             });
             builder.Services.AddScoped<IClientConnectivity, LocalConnectivity>();
-            builder.Services.AddThinkBaseGraphQL(builder.HostEnvironment.BaseAddress + "/graphql");
+            builder.Services.AddThinkBaseGraphQL(builder.HostEnvironment.BaseAddress + "graphql");
             builder.Services.AddFluentUIComponents();
             builder.Services.AddOptions();
             var baseUrl = builder.Configuration.GetSection("MicrosoftGraph")["BaseUrl"];

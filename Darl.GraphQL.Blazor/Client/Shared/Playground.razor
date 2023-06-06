@@ -1,7 +1,7 @@
 ﻿@using Microsoft.JSInterop
+@using ThinkBase.ComponentLibrary.Models;
 @inject IJSRuntime _jsRuntime
 @implements IAsyncDisposable
-@inject HttpClient Http
 
 
 <div id="root" @ref="_dedit">
@@ -12,7 +12,7 @@
 </div>
 
 @code {
-    [Parameter] public string token { get; set; } = "";
+    [CascadingParameter] public UserAuth auth { get; set; }
     private ElementReference _dedit;
     private IJSObjectReference? _deditModule;
 
@@ -21,7 +21,8 @@
         if (firstRender)
         {
             _deditModule = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", "./Shared/Playground.razor.js");
-            await _deditModule.InvokeVoidAsync("initialize", _dedit);
+            var header = $"{{\"Authorization\": \"Basic {auth.userId}{auth.tenantId}\"}}";
+            await _deditModule.InvokeVoidAsync("initialize", _dedit, header);
             await base.OnInitializedAsync();
         }
     }
