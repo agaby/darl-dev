@@ -17,6 +17,7 @@ using MongoDB.Bson;
 using System.Data;
 using System.Security.Claims;
 using System.Security.Principal;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 
 namespace Darl.GraphQL.Blazor
 {
@@ -54,8 +55,10 @@ namespace Darl.GraphQL.Blazor
                 ); 
 
             builder.Services.Configure<GraphQLSettings>(builder.Configuration.GetSection("GraphQLSettings"));
-            builder.Services.AddLogging(builder => builder.AddApplicationInsights());
-            builder.Services.AddHttpContextAccessor();
+            builder.Logging.AddApplicationInsights(configureTelemetryConfiguration: (config) => config.ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"],
+                        configureApplicationInsightsLoggerOptions: (options) => { });
+            builder.Logging.AddFilter<ApplicationInsightsLoggerProvider>("", LogLevel.Information);
+            builder.Logging.AddFilter<ApplicationInsightsLoggerProvider>("Microsoft", LogLevel.Warning); builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddControllersWithViews().AddJsonOptions(opts =>
             {
