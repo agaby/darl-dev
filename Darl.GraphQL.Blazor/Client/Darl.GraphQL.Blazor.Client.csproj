@@ -23,7 +23,7 @@
     <PackageReference Include="Microsoft.Graph" Version="5.12.0" />
     <PackageReference Include="Microsoft.Graph.Beta" Version="5.33.0-preview" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="ThinkBase.ComponentLibrary" Version="1.0.47" />
+    <PackageReference Include="ThinkBase.ComponentLibrary" Version="1.0.48" />
     <PackageReference Include="ThinkBase.GraphQLLibrary" Version="1.0.11" />
   </ItemGroup>
 

@@ -5,14 +5,17 @@
 @inject IConfiguration config
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-
+<!--
 <PageTitle>ThinkBase GraphQL API</PageTitle>
+    -->
 
 <AuthorizeView Policy="appSource">
     <Authorized>
+        <div>
         <CascadingValue Value="auth">
             <Playground />
         </CascadingValue>
+        </div>
     </Authorized>
     <NotAuthorized>
         <h3>Welcome to the ThinkBase GraphQL API viewer</h3>
