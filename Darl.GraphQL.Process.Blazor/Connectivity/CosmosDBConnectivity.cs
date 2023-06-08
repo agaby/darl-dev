@@ -380,6 +380,11 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
             return null;
         }
 
+        public Task<bool> CreateAndCheckAppSourceLicense(string userId, string tenantId)
+        {
+            throw new NotImplementedException();
+        }
+
 
         #endregion
 

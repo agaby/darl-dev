@@ -26,5 +26,6 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
         Task<string> ShareKGraph(string userId, string name, string sharerId, bool readOnly, bool hidden);
         Task<List<KnowledgeState>> GetSetOfKnowledgeStates(string userId, List<string> ksIds, string graphName);
         Task<List<GraphAbstraction>> GetSetofConnectedObjects(string userId, List<string> ksIds, string graphName, List<string> notFound);
+        Task<bool> CreateAndCheckAppSourceLicense(string userId, string tenantId);
     }
 }

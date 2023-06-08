@@ -3,6 +3,7 @@ using Darl.Lineage;
 using Darl.Thinkbase;
 using DarlCommon;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 using ThinkBase.ComponentLibrary.Models;
 
 namespace Darl.GraphQL.Process.Blazor.Connectivity
@@ -22,5 +23,9 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
         Task<List<KGraphListElement>>GetKGraphs(string userId, string tenantId);
         string GetCurrentTenantId(GraphQLUserContext? userContext);
         Task Promote(string userId, string tenantId, string name);
+        string GetCurrentHost(GraphQLUserContext? userContext);
+        string GetCurrentHostFromClaim(ClaimsPrincipal? user);
+        string GetCurrentTenantIdFromClaim(ClaimsPrincipal? user);
+        string GetCurrentUserIdFromClaim(ClaimsPrincipal? user);
     }
 }

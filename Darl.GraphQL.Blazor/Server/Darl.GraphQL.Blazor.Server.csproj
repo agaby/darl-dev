@@ -6,10 +6,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>Darl.GraphQL.Blazor.Server-e3ed1ee8-bd5e-4144-8b7e-6e393c082c3a</UserSecretsId>
     <WebProject_DirectoryAccessLevelKey>0</WebProject_DirectoryAccessLevelKey>
-    <ApplicationInsightsResourceId>/subscriptions/3daf22fd-0d7b-4e8c-a4a8-0c340d64b0f4/resourceGroups/thinkbase/providers/microsoft.insights/components/DarlGraphQLBlazorServer</ApplicationInsightsResourceId>
+    <ApplicationInsightsResourceId>/subscriptions/3daf22fd-0d7b-4e8c-a4a8-0c340d64b0f4/resourceGroups/thinkbase-dev/providers/microsoft.insights/components/thinkbase-dev</ApplicationInsightsResourceId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Data.Tables" Version="12.8.0" />
     <PackageReference Include="GraphQL" Version="7.2.2" />
     <PackageReference Include="GraphQL.MemoryCache" Version="7.2.1" />
     <PackageReference Include="GraphQL.MicrosoftDI" Version="7.2.1" />

@@ -30,6 +30,7 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
         private static readonly string existenceLineage = "noun:01,5,03,3,018";//life
         public static readonly string objectIdClaimText = @"http://schemas.microsoft.com/identity/claims/objectidentifier";
         public static readonly string tenantIdClaimText = @"http://schemas.microsoft.com/identity/claims/tenantid";
+        public static readonly string sourceHost = @"sourcehost";
 
 
 
@@ -321,7 +322,16 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
             {
                 return userContext!.User!.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
             }
-            return "b8c4899c-b8a2-40b5-ae8e-d038a9589416";
+            return string.Empty;
+        }
+
+        public string GetCurrentUserIdFromClaim(ClaimsPrincipal? user)
+        {
+            if (user!.Identity!.IsAuthenticated)
+            {
+                return user!.Claims.Where(ai => ai.Type == objectIdClaimText).Single().Value;
+            }
+            return string.Empty;
         }
 
         public string GetCurrentTenantId(GraphQLUserContext? userContext)
@@ -333,7 +343,32 @@ namespace Darl.GraphQL.Process.Blazor.Connectivity
             return string.Empty;
         }
 
+        public string GetCurrentTenantIdFromClaim(ClaimsPrincipal? user)
+        {
+            if (user!.Identity!.IsAuthenticated)
+            {
+                return user!.Claims.Where(ai => ai.Type == tenantIdClaimText).Single().Value;
+            }
+            return string.Empty;
+        }
 
+        public string GetCurrentHost(GraphQLUserContext? userContext)
+        {
+            if (userContext!.User!.Identity!.IsAuthenticated)
+            {
+                return userContext!.User!.Claims.Where(ai => ai.Type == sourceHost).Single().Value;
+            }
+            return string.Empty;
+        }
+
+        public string GetCurrentHostFromClaim(ClaimsPrincipal? user)
+        {
+            if (user!.Identity!.IsAuthenticated)
+            {
+                return user!.Claims.Where(ai => ai.Type == sourceHost).Single().Value;
+            }
+            return string.Empty;
+        }
 
         public async Task<List<KGraphListElement>> GetKGraphs(string userId, string tenantId)
         {

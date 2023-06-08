@@ -112,20 +112,21 @@ namespace Darl.GraphQL.Blazor
                 if (authHeader != null && authHeader.StartsWith("Basic", StringComparison.OrdinalIgnoreCase))
                 {
                     var token = authHeader.Substring("Basic ".Length).Trim(); //token is <UserId>/<tenantId>.
-                    var userId = token.Substring(0,36);
-                    var tenantId = token.Substring(36);
-                    if (!string.IsNullOrEmpty(token))
+                    if (!string.IsNullOrEmpty(token) && token.Length >= 72)
                     {
+                        var userId = token.Substring(0,36);
+                        var tenantId = token.Substring(36);
                         var identity = new GenericIdentity(userId);
                         identity.AddClaims(context.User.Claims);
                         identity.AddClaim(new Claim(KGTranslation.objectIdClaimText, userId));
                         identity.AddClaim(new Claim(KGTranslation.tenantIdClaimText, tenantId));
+                        identity.AddClaim(new Claim(KGTranslation.sourceHost, context.Request.Host.Value));
                         context.User = new GenericPrincipal(identity, null);
                     }
                 }
                 await next.Invoke();
             });
-                app.MapControllers();
+            app.MapControllers();
 
             app.UseGraphQLGraphiQL("/graphiql", new GraphiQLOptions { GraphQLEndPoint = "/graphql" });
 
