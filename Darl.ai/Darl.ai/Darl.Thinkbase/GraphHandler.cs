@@ -1,3 +1,7 @@
+/// <summary>
+/// GraphHandler.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Common;
 using Darl.Lineage;
 using Darl.Lineage.Bot;

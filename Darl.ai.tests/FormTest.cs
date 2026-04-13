@@ -1,3 +1,7 @@
+/// <summary>
+/// FormTest.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Forms;
 using DarlCommon;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

@@ -1,3 +1,7 @@
+/// <summary>
+/// DarlLicense.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Standard.Licensing;
 using Standard.Licensing.Validation;
 using System;

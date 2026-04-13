@@ -1,3 +1,7 @@
+/// <summary>
+/// CustomActionHintAction.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿// ***********************************************************************
 // Assembly         : DarlCompiler
 // Author           : Andrew

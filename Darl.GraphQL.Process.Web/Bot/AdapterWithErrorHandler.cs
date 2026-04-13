@@ -1,3 +1,7 @@
+/// <summary>
+/// AdapterWithErrorHandler.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Connector.Authentication;

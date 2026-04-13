@@ -1,3 +1,7 @@
+/// <summary>
+/// InteractResponseType.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Lineage.Bot;
 using Darl.Thinkbase.Meta;
 using GraphQL.Types;

@@ -1,3 +1,7 @@
+/// <summary>
+/// DatlProcess.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using System.Collections.Generic;
 using System.Linq;
 

@@ -1,3 +1,7 @@
+/// <summary>
+/// DarlParseTreeExtensionsTest.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlLanguage;
 using DarlLanguage.Processing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

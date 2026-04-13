@@ -1,3 +1,7 @@
+/// <summary>
+/// NowNode.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCompiler.Interpreter;
 using System;
 using System.Threading.Tasks;

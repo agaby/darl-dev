@@ -1,3 +1,8 @@
+/**
+ * @module GraphEdit.js
+ * @description Core module for the Darl.dev project.
+ */
+
 ﻿
 function findGetParameter(parameterName) {
     var result = null,

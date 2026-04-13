@@ -1,3 +1,8 @@
+/**
+ * @module infobox.js
+ * @description Core module for the Darl.dev project.
+ */
+
 /*
 Copyright 2017 Benjamin RICAUD
 

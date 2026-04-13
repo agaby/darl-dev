@@ -1,3 +1,8 @@
+/**
+ * @module lodash.js
+ * @description Core module for the Darl.dev project.
+ */
+
 ﻿/**
  * @license
  * Lodash <https://lodash.com/>

@@ -1,3 +1,7 @@
+/// <summary>
+/// LineageTemplateSet.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using ProtoBuf;
 using System;
 using System.Collections.Generic;

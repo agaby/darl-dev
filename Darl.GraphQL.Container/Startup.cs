@@ -1,3 +1,7 @@
+/// <summary>
+/// Startup.cs - Core module for the Darl.dev project.
+/// </summary>
+
 using Darl.GraphQL.Container.Models.Schemata;
 using Darl.GraphQL.Container.Ui.GraphiQL;
 using Darl.GraphQL.Container.Ui.Playground;

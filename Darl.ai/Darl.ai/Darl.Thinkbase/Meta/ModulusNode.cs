@@ -1,3 +1,7 @@
+/// <summary>
+/// ModulusNode.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta

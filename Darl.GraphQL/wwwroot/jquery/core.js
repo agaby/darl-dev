@@ -1,3 +1,8 @@
+/**
+ * @module core.js
+ * @description Core module for the Darl.dev project.
+ */
+
 /* global Symbol */
 // Defining this global in .eslintrc.json would create a danger of using the global
 // unguarded in another place, it seems safer to define global only for this module

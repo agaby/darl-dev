@@ -1,3 +1,7 @@
+/// <summary>
+/// InputFormat.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿// ***********************************************************************
 // Assembly         : CS.AutomationTest.Web
 // Author           : Andrew

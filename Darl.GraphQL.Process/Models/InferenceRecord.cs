@@ -1,3 +1,7 @@
+/// <summary>
+/// InferenceRecord.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Thinkbase;
 using System.Collections.Generic;
 

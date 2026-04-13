@@ -1,3 +1,7 @@
+/// <summary>
+/// FormFormatExtensions.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCommon;
 using DarlCompiler.Parsing;
 using DarlLanguage;

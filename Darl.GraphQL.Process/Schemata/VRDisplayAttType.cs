@@ -1,3 +1,7 @@
+/// <summary>
+/// VRDisplayAttType.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Thinkbase;
 using GraphQL.Types;
 

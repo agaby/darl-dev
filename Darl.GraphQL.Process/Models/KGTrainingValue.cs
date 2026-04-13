@@ -1,3 +1,7 @@
+/// <summary>
+/// KGTrainingValue.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.SoftMatch;
 using System.Collections.Generic;
 

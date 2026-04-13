@@ -1,3 +1,7 @@
+/// <summary>
+/// BotTests.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Lineage;
 using Darl.Lineage.Bot;
 using Darl.Lineage.Bot.Stores;

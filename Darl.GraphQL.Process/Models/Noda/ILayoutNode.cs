@@ -1,3 +1,7 @@
+/// <summary>
+/// ILayoutNode.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.GraphQL.Models.Models.Noda;
 
 namespace Darl.GraphQL.Process.Web.Models.Noda

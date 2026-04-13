@@ -1,3 +1,7 @@
+/// <summary>
+/// AssociationRoot.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlLanguage.Processing;
 using System;
 using System.Collections.Generic;

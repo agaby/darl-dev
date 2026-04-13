@@ -1,3 +1,7 @@
+/// <summary>
+/// PlaygroundMiddleware.cs - Core module for the Darl.dev project.
+/// </summary>
+
 using Darl.GraphQL.Container.Ui.Playground.Internal;
 using Microsoft.AspNetCore.Http;
 using System;

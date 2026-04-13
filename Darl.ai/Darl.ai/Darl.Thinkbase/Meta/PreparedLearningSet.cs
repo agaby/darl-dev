@@ -1,3 +1,7 @@
+/// <summary>
+/// PreparedLearningSet.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCompiler.Parsing;
 using System.Collections.Generic;
 

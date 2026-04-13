@@ -1,3 +1,8 @@
+/**
+ * @module WebInit.js
+ * @description Core module for the Darl.dev project.
+ */
+
 ﻿
 var allkgmodels;
 var graph;

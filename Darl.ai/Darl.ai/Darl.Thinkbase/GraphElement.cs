@@ -1,3 +1,7 @@
+/// <summary>
+/// GraphElement.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Common;
 using ProtoBuf;
 using System.Collections.Generic;

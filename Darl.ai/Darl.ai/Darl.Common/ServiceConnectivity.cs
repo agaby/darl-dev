@@ -1,3 +1,7 @@
+/// <summary>
+/// ServiceConnectivity.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace DarlCommon

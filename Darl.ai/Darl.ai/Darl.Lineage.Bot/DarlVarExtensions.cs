@@ -1,3 +1,7 @@
+/// <summary>
+/// DarlVarExtensions.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Common;
 using DarlCommon;
 using DarlLanguage.Processing;

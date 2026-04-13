@@ -1,3 +1,7 @@
+/// <summary>
+/// SetDefinitionNode.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCompiler.Ast;
 using DarlCompiler.Interpreter;
 using DarlCompiler.Parsing;

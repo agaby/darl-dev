@@ -1,3 +1,7 @@
+/// <summary>
+/// MapRootNode.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
 using System.Collections.Generic;

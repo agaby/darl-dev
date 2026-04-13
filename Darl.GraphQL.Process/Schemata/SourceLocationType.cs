@@ -1,3 +1,7 @@
+/// <summary>
+/// SourceLocationType.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCompiler.Parsing;
 using GraphQL.Types;
 using System;

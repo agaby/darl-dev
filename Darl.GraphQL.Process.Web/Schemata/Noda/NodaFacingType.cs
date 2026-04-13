@@ -1,3 +1,7 @@
+/// <summary>
+/// NodaFacingType.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.GraphQL.Models.Models.Noda;
 using GraphQL.Types;
 

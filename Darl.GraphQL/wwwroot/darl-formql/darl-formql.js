@@ -1,3 +1,8 @@
+/**
+ * @module darl-formql.js
+ * @description Core module for the Darl.dev project.
+ */
+
 ﻿// A library to create a form/questionnaire from the darl.dev GraphQL endpoint
 // relies on graphql.js here https://github.com/f/graphql.js
 var currentQSP;

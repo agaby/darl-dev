@@ -1,3 +1,7 @@
+/// <summary>
+/// OneFileConnectivity.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;

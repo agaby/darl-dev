@@ -1,3 +1,7 @@
+/// <summary>
+/// StringDarlVarPair.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCommon;
 
 namespace Darl.GraphQL.Models.Models

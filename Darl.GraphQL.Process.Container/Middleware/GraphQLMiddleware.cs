@@ -1,3 +1,7 @@
+/// <summary>
+/// GraphQLMiddleware.cs - Core module for the Darl.dev project.
+/// </summary>
+
 using GraphQL;
 using GraphQL.Instrumentation;
 using GraphQL.Types;

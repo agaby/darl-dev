@@ -1,3 +1,7 @@
+/// <summary>
+/// PlaygroundPageModel.cs - Core module for the Darl.dev project.
+/// </summary>
+
 using Newtonsoft.Json;
 using System.IO;
 using System.Reflection;

@@ -1,3 +1,7 @@
+/// <summary>
+/// LiteKGraph.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using LiteDB;
 
 namespace Darl.GraphQL.Models.Models

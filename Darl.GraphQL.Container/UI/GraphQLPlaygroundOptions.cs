@@ -1,3 +1,7 @@
+/// <summary>
+/// GraphQLPlaygroundOptions.cs - Core module for the Darl.dev project.
+/// </summary>
+
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 

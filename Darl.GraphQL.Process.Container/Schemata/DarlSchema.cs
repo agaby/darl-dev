@@ -1,3 +1,7 @@
+/// <summary>
+/// DarlSchema.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using GraphQL.Types;
 using GraphQL.Utilities;
 using Microsoft.Extensions.DependencyInjection;

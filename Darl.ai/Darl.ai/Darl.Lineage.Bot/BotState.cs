@@ -1,3 +1,7 @@
+/// <summary>
+/// BotState.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Common;
 using Darl.Thinkbase;
 using DarlCommon;

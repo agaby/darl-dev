@@ -1,3 +1,7 @@
+/// <summary>
+/// DaslSet.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

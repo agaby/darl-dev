@@ -1,3 +1,7 @@
+/// <summary>
+/// SettingsStore.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCommon;
 using DarlLanguage.Processing;
 using Newtonsoft.Json;

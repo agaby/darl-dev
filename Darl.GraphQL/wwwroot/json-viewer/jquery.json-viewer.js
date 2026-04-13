@@ -1,3 +1,8 @@
+/**
+ * @module jquery.json-viewer.js
+ * @description Core module for the Darl.dev project.
+ */
+
 ﻿/**
  * jQuery json-viewer
  * @author: Alexandre Bodelot <alexandre.bodelot@gmail.com>

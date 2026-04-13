@@ -1,3 +1,7 @@
+/// <summary>
+/// DurationOfNode.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Common;
 using System.Collections.Generic;
 using System.Linq;

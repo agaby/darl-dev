@@ -1,3 +1,7 @@
+/// <summary>
+/// BlobGraphConnectivity.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Azure.Storage.Blobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

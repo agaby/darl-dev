@@ -1,3 +1,7 @@
+/// <summary>
+/// Util.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using System;
 
 namespace Darl.GraphQL.Process.Models.Noda.Layout

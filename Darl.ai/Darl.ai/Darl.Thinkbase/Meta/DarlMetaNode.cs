@@ -1,3 +1,7 @@
+/// <summary>
+/// DarlMetaNode.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCompiler.Interpreter;
 using DarlCompiler.Interpreter.Ast;
 using System;

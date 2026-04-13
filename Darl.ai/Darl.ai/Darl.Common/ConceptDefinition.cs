@@ -1,3 +1,7 @@
+/// <summary>
+/// ConceptDefinition.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿namespace DarlCommon
 {
     public class ConceptDefinition

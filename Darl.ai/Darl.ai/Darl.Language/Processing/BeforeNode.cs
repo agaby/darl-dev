@@ -1,3 +1,7 @@
+/// <summary>
+/// BeforeNode.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCompiler.Interpreter;
 using System.Threading.Tasks;
 

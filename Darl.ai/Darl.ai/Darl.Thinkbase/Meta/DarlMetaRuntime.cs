@@ -1,3 +1,7 @@
+/// <summary>
+/// DarlMetaRuntime.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Common;
 using Darl.Licensing;
 using DarlCompiler.Parsing;

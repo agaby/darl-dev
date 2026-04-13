@@ -1,3 +1,7 @@
+/// <summary>
+/// LineageMatchNodePair.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Lineage;
 
 namespace Darl.GraphQL.Models.Models

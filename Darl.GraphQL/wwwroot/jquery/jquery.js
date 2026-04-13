@@ -1,3 +1,8 @@
+/**
+ * @module jquery.js
+ * @description Core module for the Darl.dev project.
+ */
+
 /*!
  * jQuery JavaScript Library v3.4.1
  * https://jquery.com/

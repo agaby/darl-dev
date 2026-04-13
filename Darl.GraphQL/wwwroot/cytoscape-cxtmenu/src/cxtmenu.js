@@ -1,3 +1,8 @@
+/**
+ * @module cxtmenu.js
+ * @description Core module for the Darl.dev project.
+ */
+
 const defaults = require('./defaults');
 const assign = require('./assign');
 const { removeEles, setStyles, createElement, getPixelRatio, getOffset } = require('./dom-util');

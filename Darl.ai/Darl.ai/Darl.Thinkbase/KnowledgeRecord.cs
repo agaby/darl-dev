@@ -1,3 +1,7 @@
+/// <summary>
+/// KnowledgeRecord.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Common;
 using Darl.Thinkbase.Meta;
 using System.Collections.Generic;

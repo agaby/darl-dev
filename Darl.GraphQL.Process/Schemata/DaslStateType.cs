@@ -1,3 +1,7 @@
+/// <summary>
+/// DaslStateType.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCommon;
 using GraphQL.Types;
 

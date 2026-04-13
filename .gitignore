@@ -340,3 +340,29 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+Pods/
+.gradle/
+DerivedData/
+xcuserdata/
+.expo/
+.cache/
+.next/
+dist/
+.DS_Store
+# Large binary files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.dmg
+*.iso
+*.mp4
+*.mov
+*.avi
+*.mp3
+*.wav
+*.psd
+*.sketch
+*.fig
+*.sqlite
+*.sql

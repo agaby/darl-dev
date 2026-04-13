@@ -1,3 +1,7 @@
+/// <summary>
+/// LocalConnectivity.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Common;
 using Darl.GraphQL.Models.Models;
 using Darl.Thinkbase;

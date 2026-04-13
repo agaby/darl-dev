@@ -1,3 +1,7 @@
+/// <summary>
+/// DarlTest.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCommon;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;

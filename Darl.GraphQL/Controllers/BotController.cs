@@ -1,3 +1,7 @@
+/// <summary>
+/// BotController.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;

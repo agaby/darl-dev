@@ -1,3 +1,7 @@
+/// <summary>
+/// InterpretedLanguageGrammar.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Thinkbase.Meta;
 using DarlCompiler.Ast;
 using DarlCompiler.Interpreter.Ast;

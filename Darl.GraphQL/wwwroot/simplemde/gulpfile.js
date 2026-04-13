@@ -1,3 +1,8 @@
+/**
+ * @module gulpfile.js
+ * @description Core module for the Darl.dev project.
+ */
+
 "use strict";
 
 var gulp = require("gulp"),

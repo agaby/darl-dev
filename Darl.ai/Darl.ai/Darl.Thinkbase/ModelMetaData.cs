@@ -1,3 +1,7 @@
+/// <summary>
+/// ModelMetaData.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Common;
 
 namespace Darl.Thinkbase

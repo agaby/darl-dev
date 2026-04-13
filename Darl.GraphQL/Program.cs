@@ -1,3 +1,7 @@
+/// <summary>
+/// Program.cs - Core module for the Darl.dev project.
+/// </summary>
+
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;

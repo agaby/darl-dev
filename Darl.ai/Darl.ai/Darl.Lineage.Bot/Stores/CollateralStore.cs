@@ -1,3 +1,7 @@
+/// <summary>
+/// CollateralStore.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlLanguage.Processing;
 using System.Collections.Generic;
 using System.Threading.Tasks;

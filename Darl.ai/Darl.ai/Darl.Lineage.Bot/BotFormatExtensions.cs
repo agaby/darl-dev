@@ -1,3 +1,7 @@
+/// <summary>
+/// BotFormatExtensions.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCommon;
 using DarlLanguage;
 using DarlLanguage.Processing;

@@ -1,3 +1,7 @@
+/// <summary>
+/// MetaRootNode.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCompiler.Ast;
 using DarlCompiler.Interpreter.Ast;
 using DarlCompiler.Parsing;

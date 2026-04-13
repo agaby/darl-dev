@@ -1,3 +1,7 @@
+/// <summary>
+/// IGraphHandler.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Common;
 using Darl.Lineage.Bot;
 using Darl.Thinkbase.Meta;

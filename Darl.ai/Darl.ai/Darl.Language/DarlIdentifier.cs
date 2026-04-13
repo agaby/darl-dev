@@ -1,3 +1,7 @@
+/// <summary>
+/// DarlIdentifier.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCompiler.Parsing;
 using System;
 using System.Collections.Generic;

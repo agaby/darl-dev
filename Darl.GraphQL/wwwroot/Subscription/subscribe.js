@@ -1,3 +1,8 @@
+/**
+ * @module subscribe.js
+ * @description Core module for the Darl.dev project.
+ */
+
 ﻿// helper method for displaying a status message.
 const setMessage = (message) => {
     const messageDiv = document.querySelector('#messages');

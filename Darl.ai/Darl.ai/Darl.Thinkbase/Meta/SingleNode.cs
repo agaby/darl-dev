@@ -1,3 +1,7 @@
+/// <summary>
+/// SingleNode.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using System.Linq;
 using System.Threading.Tasks;
 

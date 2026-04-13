@@ -1,3 +1,8 @@
+/**
+ * @module graphql.js
+ * @description Core module for the Darl.dev project.
+ */
+
 (function () {
   function __extend() {
     var extended = {}, deep = false, i = 0, length = arguments.length

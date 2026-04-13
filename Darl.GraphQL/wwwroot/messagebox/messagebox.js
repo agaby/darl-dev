@@ -1,3 +1,8 @@
+/**
+ * @module messagebox.js
+ * @description Core module for the Darl.dev project.
+ */
+
 ﻿/***********************************************************************************************************************
 MessageBox - A jQuery Plugin to replace Javascript's window.alert(), window.confirm() and window.prompt() functions
     Author          : Gaspare Sganga

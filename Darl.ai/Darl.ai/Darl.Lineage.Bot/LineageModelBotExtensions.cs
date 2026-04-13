@@ -1,3 +1,7 @@
+/// <summary>
+/// LineageModelBotExtensions.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Lineage.Bot.Stores;
 using DarlCommon;
 using DarlCompiler.Parsing;

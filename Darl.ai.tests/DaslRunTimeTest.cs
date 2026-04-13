@@ -1,3 +1,7 @@
+/// <summary>
+/// DaslRunTimeTest.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlLanguage.Processing;
 using DaslLanguage;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

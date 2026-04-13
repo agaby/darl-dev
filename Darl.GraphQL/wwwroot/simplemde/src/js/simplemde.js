@@ -1,3 +1,8 @@
+/**
+ * @module simplemde.js
+ * @description Core module for the Darl.dev project.
+ */
+
 /*global require,module*/
 "use strict";
 var CodeMirror = require("codemirror");

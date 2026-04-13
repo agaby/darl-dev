@@ -1,3 +1,7 @@
+/// <summary>
+/// GraphiQLOptions.cs - Core module for the Darl.dev project.
+/// </summary>
+
 using Microsoft.AspNetCore.Http;
 
 namespace Darl.GraphQL.Container.Ui.GraphiQL

@@ -1,3 +1,7 @@
+/// <summary>
+/// DarlUserInput.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using System;
 
 namespace Darl.GraphQL.Models.Models

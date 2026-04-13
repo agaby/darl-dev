@@ -1,3 +1,7 @@
+/// <summary>
+/// KGContainer.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.GraphQL.Models.Models;
 using Darl.GraphQL.Models.Models.Noda;
 using Darl.Licensing;

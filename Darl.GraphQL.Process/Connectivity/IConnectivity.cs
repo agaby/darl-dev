@@ -1,3 +1,7 @@
+/// <summary>
+/// IConnectivity.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿//using Darl.Connectivity.Models;
 using Darl.GraphQL.Models.Models;
 using Darl.Thinkbase;

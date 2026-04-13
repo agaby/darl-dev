@@ -1,3 +1,8 @@
+/**
+ * @module editGraph.js
+ * @description Core module for the Darl.dev project.
+ */
+
 	function editGraph() {
 		var x = document.getElementById("editGraph")
 		if(x.style.display == "none"){

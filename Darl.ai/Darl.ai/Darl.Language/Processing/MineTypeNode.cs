@@ -1,3 +1,7 @@
+/// <summary>
+/// MineTypeNode.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCompiler.Ast;
 using DarlCompiler.Parsing;
 

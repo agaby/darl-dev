@@ -1,3 +1,7 @@
+/// <summary>
+/// ContactTest.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.GraphQL.Models.Middleware;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;

@@ -1,3 +1,7 @@
+/// <summary>
+/// IBotDataInterface.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using System.Collections.Generic;
 
 namespace Darl.Lineage.Bot.Stores

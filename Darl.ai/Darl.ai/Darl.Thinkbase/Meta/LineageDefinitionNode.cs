@@ -1,3 +1,7 @@
+/// <summary>
+/// LineageDefinitionNode.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Lineage;
 using DarlCompiler.Ast;
 using DarlCompiler.Parsing;

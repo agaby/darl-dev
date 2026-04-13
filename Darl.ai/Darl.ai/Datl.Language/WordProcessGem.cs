@@ -1,3 +1,7 @@
+/// <summary>
+/// WordProcessGem.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using GemBox.Document;
 using System.Collections.Generic;
 using System.IO;

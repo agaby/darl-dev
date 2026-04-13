@@ -1,3 +1,7 @@
+/// <summary>
+/// LanguageRuntime_OpDispatch_Init.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿// ***********************************************************************
 // Assembly         : DarlCompiler.Interpreter
 // Author           : Andrew

@@ -1,3 +1,7 @@
+/// <summary>
+/// StoredBotData.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Lineage.Bot.Stores;
 using ProtoBuf;
 using System;

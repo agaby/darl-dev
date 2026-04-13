@@ -1,3 +1,7 @@
+/// <summary>
+/// LineageElementType.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Lineage;
 using GraphQL.Types;
 

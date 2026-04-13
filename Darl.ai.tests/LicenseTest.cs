@@ -1,3 +1,7 @@
+/// <summary>
+/// LicenseTest.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Licensing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

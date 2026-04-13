@@ -1,3 +1,8 @@
+/**
+ * @module cola.js
+ * @description Core module for the Darl.dev project.
+ */
+
 const assign = require('./assign');
 const defaults = require('./defaults');
 const cola = require('webcola') || ( typeof window !== 'undefined' ? window.cola : null );

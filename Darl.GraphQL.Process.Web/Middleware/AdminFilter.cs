@@ -1,3 +1,7 @@
+/// <summary>
+/// AdminFilter.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using GraphQL;
 using GraphQL.Introspection;
 using GraphQL.Types;

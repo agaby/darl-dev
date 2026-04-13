@@ -1,3 +1,7 @@
+/// <summary>
+/// InteractTests.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Lineage.Bot;
 using DarlCommon;
 using GraphQL.Client.Http;

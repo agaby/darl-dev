@@ -1,3 +1,7 @@
+/// <summary>
+/// AssociationTests.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlLanguage;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;

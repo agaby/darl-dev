@@ -1,3 +1,8 @@
+/**
+ * @module housekeeping.js
+ * @description Core module for the Darl.dev project.
+ */
+
 ﻿$(document).ready(async function () {
     if (localStorage.getItem('popState') != 'shown') {
         await ShowMDBox("Welcome to ThinkBase", "/md/thinkbase/visitor_text.md");

@@ -1,3 +1,7 @@
+/// <summary>
+/// DsvLiteral.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿// ***********************************************************************
 // Assembly         : DarlCompiler
 // Author           : Andrew

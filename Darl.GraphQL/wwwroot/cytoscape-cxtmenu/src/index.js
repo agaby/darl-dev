@@ -1,3 +1,8 @@
+/**
+ * @module index.js
+ * @description Core module for the Darl.dev project.
+ */
+
 const cxtmenu = require('./cxtmenu');
 
 // registers the extension on a cytoscape lib ref

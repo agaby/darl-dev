@@ -1,3 +1,7 @@
+/// <summary>
+/// NodaTest.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.GraphQL.Models.Models.Noda;
 using Darl.GraphQL.Process.Models.Noda.Layout;
 using Darl.Thinkbase;

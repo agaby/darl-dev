@@ -1,3 +1,7 @@
+/// <summary>
+/// DocumentNode.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCompiler.Interpreter;
 using Datl.Language;
 using System;

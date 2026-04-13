@@ -1,3 +1,8 @@
+/**
+ * @module jsoneditor.js
+ * @description Core module for the Darl.dev project.
+ */
+
 ﻿/*!
  * /**
  * * @name JSON Editor

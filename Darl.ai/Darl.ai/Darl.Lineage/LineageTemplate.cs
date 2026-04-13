@@ -1,3 +1,7 @@
+/// <summary>
+/// LineageTemplate.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Newtonsoft.Json;
 using ProtoBuf;
 using System.Collections.Generic;

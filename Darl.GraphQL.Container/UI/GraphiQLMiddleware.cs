@@ -1,3 +1,7 @@
+/// <summary>
+/// GraphiQLMiddleware.cs - Core module for the Darl.dev project.
+/// </summary>
+
 using Darl.GraphQL.Container.Ui.GraphiQL.Internal;
 using Microsoft.AspNetCore.Http;
 using System;

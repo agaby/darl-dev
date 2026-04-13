@@ -1,3 +1,8 @@
+/**
+ * @module webpack.config.js
+ * @description Core module for the Darl.dev project.
+ */
+
 const path = require('path');
 const pkg = require('./package.json');
 const camelcase = require('camelcase');

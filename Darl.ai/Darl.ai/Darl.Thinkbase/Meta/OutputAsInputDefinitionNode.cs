@@ -1,3 +1,7 @@
+/// <summary>
+/// OutputAsInputDefinitionNode.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using System;
 using System.Collections.Generic;
 using static Darl.Thinkbase.Meta.InputDefinitionNode;

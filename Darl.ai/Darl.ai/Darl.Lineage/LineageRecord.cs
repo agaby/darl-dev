@@ -1,3 +1,7 @@
+/// <summary>
+/// LineageRecord.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using ProtoBuf;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;

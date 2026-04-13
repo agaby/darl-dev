@@ -1,3 +1,7 @@
+/// <summary>
+/// DarlTimeTests.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;

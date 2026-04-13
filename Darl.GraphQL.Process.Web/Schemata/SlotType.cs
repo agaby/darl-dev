@@ -1,3 +1,7 @@
+/// <summary>
+/// SlotType.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.GraphQL.Process.Models.Alexa;
 using GraphQL.Types;
 

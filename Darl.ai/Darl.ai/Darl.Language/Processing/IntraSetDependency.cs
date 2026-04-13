@@ -1,3 +1,7 @@
+/// <summary>
+/// IntraSetDependency.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿namespace DarlLanguage.Processing
 {
     /// <summary>

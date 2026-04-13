@@ -1,3 +1,8 @@
+/**
+ * @module graphConf.js
+ * @description Core module for the Darl.dev project.
+ */
+
 
 // configuration for the graph database access
 

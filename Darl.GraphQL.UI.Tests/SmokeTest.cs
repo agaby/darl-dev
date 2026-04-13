@@ -1,3 +1,7 @@
+/// <summary>
+/// SmokeTest.cs - Core module for the Darl.dev project.
+/// </summary>
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;

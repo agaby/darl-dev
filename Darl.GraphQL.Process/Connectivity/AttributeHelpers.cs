@@ -1,3 +1,7 @@
+/// <summary>
+/// AttributeHelpers.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;

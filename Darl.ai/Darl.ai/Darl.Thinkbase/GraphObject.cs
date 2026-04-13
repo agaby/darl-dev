@@ -1,3 +1,7 @@
+/// <summary>
+/// GraphObject.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Lineage;
 using DarlCommon;
 using ProtoBuf;

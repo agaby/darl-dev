@@ -1,3 +1,7 @@
+/// <summary>
+/// DaslGrammar.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿// ***********************************************************************
 // Assembly         : DaslLanguage
 // Author           : Andrew

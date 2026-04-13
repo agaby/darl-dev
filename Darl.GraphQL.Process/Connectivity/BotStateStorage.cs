@@ -1,3 +1,7 @@
+/// <summary>
+/// BotStateStorage.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.Lineage.Bot;
 using Microsoft.Extensions.Caching.Distributed;
 using ProtoBuf;

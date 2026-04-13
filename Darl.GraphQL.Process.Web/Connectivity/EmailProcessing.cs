@@ -1,3 +1,7 @@
+/// <summary>
+/// EmailProcessing.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Azure.Storage.Queues;
 using Darl.GraphQL.Models.Models;
 using Datl.Language;

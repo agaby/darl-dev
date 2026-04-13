@@ -1,3 +1,8 @@
+/**
+ * @module defaults.js
+ * @description Core module for the Darl.dev project.
+ */
+
 let defaults = {
   menuRadius: function(ele){ return 100 }, // the radius of the circular menu in pixels
   selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus

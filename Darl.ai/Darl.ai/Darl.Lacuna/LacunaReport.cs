@@ -1,3 +1,7 @@
+/// <summary>
+/// LacunaReport.cs - Core module for the Darl.dev project.
+/// </summary>
+
 using System;
 using System.Reflection;
 using System.Text;

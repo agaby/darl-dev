@@ -1,3 +1,7 @@
+/// <summary>
+/// DarlNode.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCompiler.Interpreter.Ast;
 using System;
 using System.Collections.Generic;

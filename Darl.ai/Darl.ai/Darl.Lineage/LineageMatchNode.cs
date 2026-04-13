@@ -1,3 +1,7 @@
+/// <summary>
+/// LineageMatchNode.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCommon;
 using ProtoBuf;
 using System;

@@ -1,3 +1,7 @@
+/// <summary>
+/// DaslState.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿// ***********************************************************************
 // Assembly         : DarlInfAPI
 // Author           : Andrew

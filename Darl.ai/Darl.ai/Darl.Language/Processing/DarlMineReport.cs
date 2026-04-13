@@ -1,3 +1,7 @@
+/// <summary>
+/// DarlMineReport.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿namespace DarlLanguage.Processing
 {
     /// <summary>

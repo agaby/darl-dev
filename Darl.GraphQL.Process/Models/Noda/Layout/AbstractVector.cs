@@ -1,3 +1,7 @@
+/// <summary>
+/// AbstractVector.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.GraphQL.Models.Models.Noda;
 
 namespace Darl.GraphQL.Process.Models.Noda.Layout

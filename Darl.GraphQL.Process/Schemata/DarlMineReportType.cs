@@ -1,3 +1,7 @@
+/// <summary>
+/// DarlMineReportType.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using GraphQL.Types;
 
 namespace Darl.GraphQL.Models.Schemata

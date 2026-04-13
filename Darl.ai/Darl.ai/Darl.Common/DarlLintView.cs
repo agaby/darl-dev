@@ -1,3 +1,7 @@
+/// <summary>
+/// DarlLintView.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿namespace DarlCommon
 {
     public class DarlLintView

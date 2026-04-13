@@ -1,3 +1,8 @@
+/**
+ * @module wordcloud2.js
+ * @description Core module for the Darl.dev project.
+ */
+
 ﻿/*!
  * wordcloud2.js
  * http://timdream.org/wordcloud2.js/

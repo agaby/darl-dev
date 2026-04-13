@@ -1,3 +1,7 @@
+/// <summary>
+/// DarlUserUpdate.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using System;
 using static Darl.GraphQL.Models.Models.DarlUser;
 

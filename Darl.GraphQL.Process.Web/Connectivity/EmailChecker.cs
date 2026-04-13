@@ -1,3 +1,7 @@
+/// <summary>
+/// EmailChecker.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 

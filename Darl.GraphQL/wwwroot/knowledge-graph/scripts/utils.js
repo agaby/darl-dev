@@ -1,3 +1,8 @@
+/**
+ * @module utils.js
+ * @description Core module for the Darl.dev project.
+ */
+
 var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
         sURLVariables = sPageURL.split('&'),

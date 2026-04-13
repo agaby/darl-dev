@@ -1,3 +1,7 @@
+/// <summary>
+/// LacunaFinder.cs - Core module for the Darl.dev project.
+/// </summary>
+
 using DarlCompiler.Parsing;
 using DarlLanguage;
 using DarlLanguage.Processing;

@@ -1,3 +1,7 @@
+/// <summary>
+/// DarlDecisionNode.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿// ***********************************************************************
 // Assembly         : DarlLanguage
 // Author           : Andrew

@@ -1,3 +1,7 @@
+/// <summary>
+/// LineageLibraryTest.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using DarlCommon;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;

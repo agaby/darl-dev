@@ -1,3 +1,7 @@
+/// <summary>
+/// SourceSpanType.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using Darl.GraphQL.Models.Schemata;
 using Darl.Thinkbase.Meta;
 using DarlCompiler.Parsing;

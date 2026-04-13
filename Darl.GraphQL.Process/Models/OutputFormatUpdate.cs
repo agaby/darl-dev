@@ -1,3 +1,7 @@
+/// <summary>
+/// OutputFormatUpdate.cs - Core module for the Darl.dev project.
+/// </summary>
+
 ﻿using static DarlCommon.BotOutputFormat;
 
 namespace Darl.GraphQL.Models.Models
