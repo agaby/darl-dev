@@ -1,5 +1,4 @@
 /// <summary>
-/// DarlParseTreeExtensions.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using DarlCompiler.Parsing;

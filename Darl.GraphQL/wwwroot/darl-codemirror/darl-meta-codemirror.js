@@ -1,6 +1,5 @@
 /**
  * @module darl-meta-codemirror.js
- * @description Core module for the Darl.dev project.
  */
 
 ﻿//functions for adding darl functionality to CodeMirror

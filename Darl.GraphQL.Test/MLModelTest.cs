@@ -1,5 +1,4 @@
 /// <summary>
-/// MLModelTest.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using GraphQL.Client.Http;

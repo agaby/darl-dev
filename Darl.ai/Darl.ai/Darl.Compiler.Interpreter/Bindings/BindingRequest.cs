@@ -1,5 +1,4 @@
 /// <summary>
-/// BindingRequest.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿// ***********************************************************************

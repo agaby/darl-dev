@@ -1,6 +1,5 @@
 /**
  * @module WebInit.js
- * @description Core module for the Darl.dev project.
  */
 
 ﻿

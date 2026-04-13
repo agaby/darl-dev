@@ -1,6 +1,5 @@
 /**
  * @module jquery.json-viewer.js
- * @description Core module for the Darl.dev project.
  */
 
 ﻿/**

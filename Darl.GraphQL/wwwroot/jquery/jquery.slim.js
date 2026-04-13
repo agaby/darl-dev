@@ -1,6 +1,5 @@
 /**
  * @module jquery.slim.js
- * @description Core module for the Darl.dev project.
  */
 
 /*!

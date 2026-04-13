@@ -1,5 +1,6 @@
 /// <summary>
-/// InteractTests.cs - Core module for the Darl.dev project.
+/// Integration tests for the ThinkBase GraphQL interaction API.
+/// Sends chat-style messages to a staging endpoint and validates responses.
 /// </summary>
 
 ﻿using Darl.Lineage.Bot;

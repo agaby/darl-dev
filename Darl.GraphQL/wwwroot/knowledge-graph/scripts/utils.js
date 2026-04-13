@@ -1,6 +1,5 @@
 /**
  * @module utils.js
- * @description Core module for the Darl.dev project.
  */
 
 var getUrlParameter = function getUrlParameter(sParam) {

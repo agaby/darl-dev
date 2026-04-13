@@ -1,5 +1,4 @@
 /// <summary>
-/// Update.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using System;

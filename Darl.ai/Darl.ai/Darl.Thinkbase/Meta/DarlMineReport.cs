@@ -1,5 +1,4 @@
 /// <summary>
-/// DarlMineReport.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using static Darl.Thinkbase.IGraphHandler;

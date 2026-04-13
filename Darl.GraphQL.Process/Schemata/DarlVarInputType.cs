@@ -1,5 +1,4 @@
 /// <summary>
-/// DarlVarInputType.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using DarlCommon;

@@ -1,5 +1,4 @@
 /// <summary>
-/// ResourceTypeEnum.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using GraphQL.Types;

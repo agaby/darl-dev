@@ -1,6 +1,5 @@
 /**
  * @module dom-util.js
- * @description Core module for the Darl.dev project.
  */
 
 const removeEles = function(query, ancestor = document) {

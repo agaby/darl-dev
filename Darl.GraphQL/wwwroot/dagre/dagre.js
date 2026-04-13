@@ -1,6 +1,5 @@
 /**
  * @module dagre.js
- * @description Core module for the Darl.dev project.
  */
 
 ﻿!function (e) { if ("object" == typeof exports && "undefined" != typeof module) module.exports = e(); else if ("function" == typeof define && define.amd) define([], e); else { var f; "undefined" != typeof window ? f = window : "undefined" != typeof global ? f = global : "undefined" != typeof self && (f = self), f.dagre = e() } }(function () {

@@ -1,5 +1,4 @@
 /// <summary>
-/// _ISourceStream.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿// ***********************************************************************

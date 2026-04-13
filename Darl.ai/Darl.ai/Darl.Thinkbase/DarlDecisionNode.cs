@@ -1,5 +1,4 @@
 /// <summary>
-/// DarlDecisionNode.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿// ***********************************************************************

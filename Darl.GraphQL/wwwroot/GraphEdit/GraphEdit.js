@@ -1,6 +1,5 @@
 /**
  * @module GraphEdit.js
- * @description Core module for the Darl.dev project.
  */
 
 ﻿

@@ -1,6 +1,5 @@
 /**
  * @module gulpfile.js
- * @description Core module for the Darl.dev project.
  */
 
 "use strict";

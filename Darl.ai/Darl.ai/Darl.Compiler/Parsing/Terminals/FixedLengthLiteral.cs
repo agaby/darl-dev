@@ -1,5 +1,4 @@
 /// <summary>
-/// FixedLengthLiteral.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿// ***********************************************************************

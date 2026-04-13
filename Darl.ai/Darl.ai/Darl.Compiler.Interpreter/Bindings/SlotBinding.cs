@@ -1,5 +1,4 @@
 /// <summary>
-/// SlotBinding.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿// ***********************************************************************

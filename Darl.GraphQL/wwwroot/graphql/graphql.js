@@ -1,6 +1,5 @@
 /**
  * @module graphql.js
- * @description Core module for the Darl.dev project.
  */
 
 (function () {

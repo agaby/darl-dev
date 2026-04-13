@@ -1,6 +1,5 @@
 /**
  * @module defaults.js
- * @description Core module for the Darl.dev project.
  */
 
 let defaults = {

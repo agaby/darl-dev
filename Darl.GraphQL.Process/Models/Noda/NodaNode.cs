@@ -1,5 +1,4 @@
 /// <summary>
-/// NodaNode.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using Darl.GraphQL.Process.Web.Models.Noda;

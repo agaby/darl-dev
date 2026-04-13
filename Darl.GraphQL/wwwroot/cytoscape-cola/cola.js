@@ -1,6 +1,5 @@
 /**
  * @module cola.js
- * @description Core module for the Darl.dev project.
  */
 
 const assign = require('./assign');

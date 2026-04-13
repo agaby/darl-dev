@@ -1,5 +1,4 @@
 /// <summary>
-/// SequenceDefinitionNode.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using DarlCompiler.Ast;

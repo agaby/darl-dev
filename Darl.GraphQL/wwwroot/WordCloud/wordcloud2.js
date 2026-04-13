@@ -1,6 +1,5 @@
 /**
  * @module wordcloud2.js
- * @description Core module for the Darl.dev project.
  */
 
 ﻿/*!

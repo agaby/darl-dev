@@ -1,5 +1,4 @@
 /// <summary>
-/// SubscriptionProcessSpec.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using Darl.Thinkbase;

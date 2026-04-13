@@ -1,6 +1,5 @@
 /**
  * @module Darl.Meta.Monarch.js
- * @description Core module for the Darl.dev project.
  */
 
 ﻿// Darl.Meta language support

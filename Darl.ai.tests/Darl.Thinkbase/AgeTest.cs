@@ -1,5 +1,4 @@
 /// <summary>
-/// AgeTest.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using Darl.Thinkbase.Meta;

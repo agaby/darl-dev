@@ -1,6 +1,5 @@
 /**
  * @module editGraph.js
- * @description Core module for the Darl.dev project.
  */
 
 	function editGraph() {

@@ -1,6 +1,5 @@
 /**
  * @module ContainerInit.js
- * @description Core module for the Darl.dev project.
  */
 
 ﻿//cut down version with only the functionality needed to run in a container.

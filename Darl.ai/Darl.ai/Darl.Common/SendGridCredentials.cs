@@ -1,5 +1,4 @@
 /// <summary>
-/// SendGridCredentials.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using System.ComponentModel.DataAnnotations;

@@ -1,5 +1,4 @@
 /// <summary>
-/// KGContainer.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using Darl.GraphQL.Models.Models;

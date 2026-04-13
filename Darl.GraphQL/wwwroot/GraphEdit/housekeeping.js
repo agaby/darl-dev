@@ -1,6 +1,5 @@
 /**
  * @module housekeeping.js
- * @description Core module for the Darl.dev project.
  */
 
 ﻿$(document).ready(async function () {

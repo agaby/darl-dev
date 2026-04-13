@@ -1,5 +1,4 @@
 /// <summary>
-/// QuotedValueLiteral.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿// ***********************************************************************

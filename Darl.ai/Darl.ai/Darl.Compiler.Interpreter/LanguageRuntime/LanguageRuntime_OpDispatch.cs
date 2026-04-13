@@ -1,5 +1,4 @@
 /// <summary>
-/// LanguageRuntime_OpDispatch.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿// ***********************************************************************

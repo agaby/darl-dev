@@ -1,6 +1,5 @@
 /**
  * @module graphConf.js
- * @description Core module for the Darl.dev project.
  */
 
 

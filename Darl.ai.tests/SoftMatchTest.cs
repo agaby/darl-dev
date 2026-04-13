@@ -1,5 +1,4 @@
 /// <summary>
-/// SoftMatchTest.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using Darl.SoftMatch;

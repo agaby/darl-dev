@@ -1,5 +1,4 @@
 /// <summary>
-/// InputFormat.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿// ***********************************************************************

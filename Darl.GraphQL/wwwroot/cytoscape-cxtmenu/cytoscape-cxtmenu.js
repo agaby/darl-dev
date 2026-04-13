@@ -1,6 +1,5 @@
 /**
  * @module cytoscape-cxtmenu.js
- * @description Core module for the Darl.dev project.
  */
 
 (function webpackUniversalModuleDefinition(root, factory) {

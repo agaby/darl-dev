@@ -1,6 +1,5 @@
 /**
  * @module raf.js
- * @description Core module for the Darl.dev project.
  */
 
 let raf;

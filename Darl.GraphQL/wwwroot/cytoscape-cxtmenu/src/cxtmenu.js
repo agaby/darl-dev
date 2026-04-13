@@ -1,6 +1,5 @@
 /**
  * @module cxtmenu.js
- * @description Core module for the Darl.dev project.
  */
 
 const defaults = require('./defaults');

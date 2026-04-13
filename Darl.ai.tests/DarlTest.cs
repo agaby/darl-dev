@@ -1,5 +1,4 @@
 /// <summary>
-/// DarlTest.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using Darl.Lacuna;

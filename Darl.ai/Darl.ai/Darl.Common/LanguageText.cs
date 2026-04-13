@@ -1,5 +1,4 @@
 /// <summary>
-/// LanguageText.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿// ***********************************************************************

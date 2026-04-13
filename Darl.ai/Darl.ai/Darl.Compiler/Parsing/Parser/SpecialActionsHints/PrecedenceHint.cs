@@ -1,5 +1,4 @@
 /// <summary>
-/// PrecedenceHint.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿// ***********************************************************************

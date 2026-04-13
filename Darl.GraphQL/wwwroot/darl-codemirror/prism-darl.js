@@ -1,6 +1,5 @@
 /**
  * @module prism-darl.js
- * @description Core module for the Darl.dev project.
  */
 
 ﻿Prism.languages.darl = Prism.languages.extend('clike', {

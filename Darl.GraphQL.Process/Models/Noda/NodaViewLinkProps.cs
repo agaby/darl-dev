@@ -1,5 +1,4 @@
 /// <summary>
-/// NodaViewLinkProps.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using Newtonsoft.Json;

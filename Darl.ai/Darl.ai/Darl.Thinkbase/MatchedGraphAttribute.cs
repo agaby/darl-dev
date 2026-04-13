@@ -1,5 +1,4 @@
 /// <summary>
-/// MatchedGraphAttribute.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using Darl.Lineage;

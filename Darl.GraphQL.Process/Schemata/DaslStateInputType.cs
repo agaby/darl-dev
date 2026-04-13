@@ -1,5 +1,4 @@
 /// <summary>
-/// DaslStateInputType.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using DarlCommon;

@@ -1,6 +1,5 @@
 /**
  * @module darl-formql.js
- * @description Core module for the Darl.dev project.
  */
 
 ﻿// A library to create a form/questionnaire from the darl.dev GraphQL endpoint

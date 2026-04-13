@@ -1,5 +1,4 @@
 /// <summary>
-/// BinaryOperationNode.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿// ***********************************************************************

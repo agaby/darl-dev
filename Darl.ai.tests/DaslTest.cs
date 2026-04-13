@@ -1,5 +1,4 @@
 /// <summary>
-/// DaslTest.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using CsvHelper;

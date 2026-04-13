@@ -1,5 +1,4 @@
 /// <summary>
-/// GraphiQLMiddlewareExtensions.cs - Core module for the Darl.dev project.
 /// </summary>
 
 using Darl.GraphQL.Container.Ui.GraphiQL;

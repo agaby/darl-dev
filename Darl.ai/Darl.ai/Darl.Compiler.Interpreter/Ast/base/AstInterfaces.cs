@@ -1,5 +1,4 @@
 /// <summary>
-/// AstInterfaces.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿// ***********************************************************************

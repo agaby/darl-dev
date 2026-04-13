@@ -1,6 +1,5 @@
 /**
  * @module index.js
- * @description Core module for the Darl.dev project.
  */
 
 const cxtmenu = require('./cxtmenu');

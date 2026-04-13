@@ -1,5 +1,4 @@
 /// <summary>
-/// TextTest.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using Datl.Language;

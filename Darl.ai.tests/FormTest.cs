@@ -1,5 +1,4 @@
 /// <summary>
-/// FormTest.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿using Darl.Forms;

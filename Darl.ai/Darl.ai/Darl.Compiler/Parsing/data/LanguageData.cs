@@ -1,5 +1,4 @@
 /// <summary>
-/// LanguageData.cs - Core module for the Darl.dev project.
 /// </summary>
 
 ﻿// ***********************************************************************

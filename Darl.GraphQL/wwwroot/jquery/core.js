@@ -1,6 +1,5 @@
 /**
  * @module core.js
- * @description Core module for the Darl.dev project.
  */
 
 /* global Symbol */

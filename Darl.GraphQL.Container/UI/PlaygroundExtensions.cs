@@ -1,5 +1,4 @@
 /// <summary>
-/// PlaygroundExtensions.cs - Core module for the Darl.dev project.
 /// </summary>
 
 using Microsoft.AspNetCore.Builder;
