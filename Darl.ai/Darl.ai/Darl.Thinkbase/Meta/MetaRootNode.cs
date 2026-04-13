@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -14,42 +13,34 @@ namespace Darl.Thinkbase.Meta
 {
     public class MetaRootNode : DarlMetaNode
     {
-        /// <summary>
         /// The outputs
         /// </summary>
         public Dictionary<string, IOSequenceDefinitionNode> outputs = new Dictionary<string, IOSequenceDefinitionNode>();
 
-        /// <summary>
         /// The inputs
         /// </summary>
         public Dictionary<string, InputDefinitionNode> inputs = new Dictionary<string, InputDefinitionNode>();
 
-        /// <summary>
         /// The strings
         /// </summary>
         public Dictionary<string, StringDefinitionNode> strings = new Dictionary<string, StringDefinitionNode>();
 
-        /// <summary>
         /// The constants
         /// </summary>
         public Dictionary<string, ConstantDefinitionNode> constants = new Dictionary<string, ConstantDefinitionNode>();
 
-        /// <summary>
         /// The periods
         /// </summary>
         public Dictionary<string, DurationDefinitionNode> durations = new Dictionary<string, DurationDefinitionNode>();
 
-        /// <summary>
         /// The lineages
         /// </summary>
         public Dictionary<string, LineageDefinitionNode> lineages = new Dictionary<string, LineageDefinitionNode>();
 
-        /// <summary>
         /// The stores
         /// </summary>
         public Dictionary<string, StoreDefinitionNode> stores = new Dictionary<string, StoreDefinitionNode>();
 
-        /// <summary>
         /// The rules
         /// </summary>
         public Dictionary<string, List<RuleNode>> rules = new Dictionary<string, List<RuleNode>>();
@@ -61,12 +52,10 @@ namespace Darl.Thinkbase.Meta
 
         public string ruleset { get; set; } = string.Empty;
 
-        /// <summary>
         /// The ordered outputs in execution order
         /// </summary>
         List<IOSequenceDefinitionNode> orderedOutputs = new List<IOSequenceDefinitionNode>();
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -322,7 +311,6 @@ namespace Darl.Thinkbase.Meta
             return unsatisfiedInputSaliences;
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>

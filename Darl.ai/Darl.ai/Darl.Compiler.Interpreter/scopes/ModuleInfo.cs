@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -19,34 +18,27 @@ using System.Collections.Generic;
 namespace DarlCompiler.Interpreter
 {
 
-    /// <summary>
     /// Class ModuleInfoList.
     /// </summary>
     public class ModuleInfoList : List<ModuleInfo> { }
 
-    /// <summary>
     /// Class ModuleInfo.
     /// </summary>
     public class ModuleInfo
     {
-        /// <summary>
         /// The name
         /// </summary>
         public readonly string Name;
-        /// <summary>
         /// The file name
         /// </summary>
         public readonly string FileName;
-        /// <summary>
         /// The scope information
         /// </summary>
         public readonly ScopeInfo ScopeInfo; //scope for module variables
-        /// <summary>
         /// The imports
         /// </summary>
         public readonly BindingSourceList Imports = new BindingSourceList();
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ModuleInfo"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -60,7 +52,6 @@ namespace DarlCompiler.Interpreter
         }
 
         //Used for imported modules
-        /// <summary>
         /// Binds to export.
         /// </summary>
         /// <param name="request">The request.</param>

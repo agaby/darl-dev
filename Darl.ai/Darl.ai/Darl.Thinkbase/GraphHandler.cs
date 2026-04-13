@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -22,7 +21,6 @@ using static Darl.Thinkbase.IGraphHandler;
 
 namespace Darl.Thinkbase
 {
-    /// <summary>
     /// State of a graph based conversation using a bot
     /// </summary>
     public class GraphHandler : IGraphHandler
@@ -57,7 +55,6 @@ namespace Darl.Thinkbase
             _config = config;
         }
 
-        /// <summary>
         /// Seek pass, interrupted by data requests when unknown values are encountered.
         /// </summary>
         /// <param name="userId"></param>
@@ -159,7 +156,6 @@ namespace Darl.Thinkbase
             throw new NotImplementedException();
         }
 
-        /// <summary>
         /// Use the internal recognition tree to recognise the text - if graph processing is required 
         /// set completionLineage, target and paths 
         /// </summary>
@@ -276,7 +272,6 @@ namespace Darl.Thinkbase
             return outList;
         }
 
-        /// <summary>
         /// Single step discovery operator
         /// </summary>
         /// <param name="userId"></param>
@@ -308,7 +303,6 @@ namespace Darl.Thinkbase
             return res;
         }
         /*
-                /// <summary>
                 /// Discovery pass interrupted by data requests when unknown values are encountered
                 /// </summary>
                 /// <param name="userId"></param>
@@ -1156,7 +1150,6 @@ namespace Darl.Thinkbase
             return (false, pending);
         }
 
-        /// <summary>
         /// Hook for expansion to common-sense based evaluation
         /// </summary>
         /// <remarks>Only called if no other source of rules exists</remarks>
@@ -1299,7 +1292,6 @@ namespace Darl.Thinkbase
             return true;
         }
 
-        /// <summary>
         /// Gets a list of nodes that are connected to the target where the most remote have an execution order of 1
         /// </summary>
         /// <param name="model">The model</param>
@@ -1364,7 +1356,6 @@ namespace Darl.Thinkbase
 
 
 
-        /// <summary>
         /// Recursive Search over KnowledgeRecords 
         /// </summary>
         /// <param name="model">The model</param>
@@ -1505,7 +1496,6 @@ namespace Darl.Thinkbase
             return true;
         }
 
-        /// <summary>
         /// Recursive search over GraphObjects
         /// </summary>
         /// <param name="model"></param>
@@ -1552,7 +1542,6 @@ namespace Darl.Thinkbase
 
 
 
-        /// <summary>
         /// Recursively searches a network for dependencies
         /// </summary>
         /// <param name="model"></param>
@@ -1760,7 +1749,6 @@ namespace Darl.Thinkbase
         }
 
 
-        /// <summary>
         /// Convert a GraphAttribute to a DarlResult
         /// </summary>
         /// <param name="graphAttribute"></param>

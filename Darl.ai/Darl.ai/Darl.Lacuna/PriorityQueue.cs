@@ -1,34 +1,27 @@
-/// <summary>
 /// </summary>
 
 using System;
 
 namespace Darl.Lacuna
 {
-    /// <summary>
     /// 
     /// </summary>
     internal class PriorityQueue
     {
         private readonly double maxPriority = Double.MaxValue;
-        /// <summary>
         /// This contains the list of objects in the queue.
         /// </summary>
         private Object[] data;
-        /// <summary>
         /// This contains the list of prioritys in the queue.
         /// </summary>
         private double[] value;
-        /// <summary>
         /// Holds the number of elements currently in the queue.
         /// </summary>
         private int count;
-        /// <summary>
         /// This holds the number elements this queue can have.
         /// </summary>
         private int capacity;
 
-        /// <summary>
         /// Creates a new PriorityQueue object. The PriorityQueue object allows 
         /// objects to be entered into the queue and to leave in the order of priority 
         /// i.e the highest priority get's to leave first.
@@ -38,7 +31,6 @@ namespace Darl.Lacuna
             init(20);
         }
 
-        /// <summary>
         /// Creates a new PriorityQueue object. The PriorityQueue object allows 
         /// objects to be entered into the queue and to leave in the order of priority 
         /// i.e the highest priority get's to leave first.
@@ -49,7 +41,6 @@ namespace Darl.Lacuna
             init(capacity);
         }
 
-        /// <summary>
         /// Creates a new PriorityQueue object. The PriorityQueue object allows 
         /// objects to be entered into the queue and to leave in the order of priority 
         /// i.e the highest priority get's to leave first.
@@ -63,7 +54,6 @@ namespace Darl.Lacuna
         }
 
 
-        /// <summary>
         /// This is an initializer for the object. It basically initializes
         ///  an array of long called value to represent the prioritys of the objects, 
         ///  it also creates an array of objects to be used in parallel with the array 
@@ -88,7 +78,6 @@ namespace Darl.Lacuna
 		 * @param 
 		 * <code>PriorityQueue</code>
 		 */
-        /// <summary>
         /// This function adds the given object into the PriorityQueue its priority
         /// is the long priority. The way in which priority can be associated with the
         /// elements of the queue is by keeping the priority and the elements array entrys parallel.
@@ -116,7 +105,6 @@ namespace Darl.Lacuna
 		 * @return the object with the highest priority or if it's empty
 		 * null
 		 */
-        /// <summary>
         /// Remove is a function to remove the element in the queue with the
         ///  maximum priority. Once the element is removed then it can never be 
         ///  recovered from the queue with further calls. The lowest priority object will leave last.
@@ -149,7 +137,6 @@ namespace Darl.Lacuna
         }
 
 
-        /// <summary>
         /// Bubble down is used to put the element at subscript 'pos' 
         /// into it's rightful place in the heap (i.e heap is another name 
         /// for PriorityQueue). If the priority of an element at subscript 
@@ -191,7 +178,6 @@ namespace Darl.Lacuna
 
 
 
-        /// <summary>
         /// Bubble up is used to place an element relatively low in the queue 
         /// to it's rightful place higher in the queue, but only if it's priority 
         /// allows it to do so, similar to bubbleDown only in the other direction 
@@ -214,7 +200,6 @@ namespace Darl.Lacuna
             data[pos] = element;
         }
 
-        /// <summary>
         /// This ensures that there is enough space to keep adding elements 
         /// to the priority queue. It is however advised to make the capacity 
         /// of the queue large enough so that this will not be used as it is 
@@ -232,7 +217,6 @@ namespace Darl.Lacuna
             value = prioritys;
         }
 
-        /// <summary>
         /// This method will empty the queue. This also helps garbage 
         /// collection by releasing any reference it has to the elements 
         /// in the queue. This starts from offset 1 as off equals 0 for the elements array.
@@ -245,7 +229,6 @@ namespace Darl.Lacuna
             }
             count = 0;
         }
-        /// <summary>
         /// The number of elements in the queue. 
         /// The length indicates the number of elements 
         /// that are currently in the queue.

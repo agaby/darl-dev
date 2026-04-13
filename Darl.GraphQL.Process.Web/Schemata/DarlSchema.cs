@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.GraphQL.Process.Middleware;

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -25,7 +24,6 @@ using System.Linq;
 
 namespace DarlCommon
 {
-    /// <summary>
     /// Class DarlVar.
     /// </summary>
     /// <remarks>A general representation of a data value containing related uncertainty information from a fuzzy/possibilistic perspective.</remarks>
@@ -33,90 +31,69 @@ namespace DarlCommon
     [ProtoContract]
     public partial class DarlVar
     {
-        /// <summary>
         /// The type of data stored in the DarlVar
         /// </summary>
         public enum DataType
         {
-            /// <summary>
             /// Numeric including fuzzy
             /// </summary>
             numeric,
-            /// <summary>
             /// One or more categories with confidences
             /// </summary>
             categorical,
-            /// <summary>
             /// Textual
             /// </summary>
             textual,
-            /// <summary>
             /// a text sequence
             /// </summary>
             sequence,
-            /// <summary>
             /// A date with optional time
             /// </summary>
             date,
-            /// <summary>
             /// A time 
             /// </summary>
             time,
-            /// <summary>
             /// a time span
             /// </summary>
             duration,
-            /// <summary>
             /// A geographical location
             /// </summary>
             location,
-            /// <summary>
             /// A url/Uri
             /// </summary>
             link,
-            /// <summary>
             /// The uri of an image
             /// </summary>
             image,
-            /// <summary>
             /// The uri of a video
             /// </summary>
             video,
-            /// <summary>
             /// a username and password
             /// </summary>
             credentials,
-            /// <summary>
             /// A personal name
             /// </summary>
             name,
-            /// <summary>
             /// An organization name
             /// </summary>
             organization,
-            /// <summary>
             /// details of a financial transaction
             /// </summary>
             payment,
-            /// <summary>
             /// details of a ruleset to call
             /// </summary>
             ruleset,
-            /// <summary>
             /// signals a process is complete
             /// </summary>
             complete,
-            /// <summary>
             /// initiates a graph goal seek 
             /// </summary>
             seek,
-            /// <summary>
             /// initiates a graph discovery
             /// </summary>
             discover
         }
 
-        /// <summary>
         /// Gets or sets the name.
         /// </summary>
         /// <value>The name.</value>
@@ -125,14 +102,12 @@ namespace DarlCommon
         [Display(Name = "The name of the data value", Description = "This should match the name in any associated Darl rule sets")]
         public string name { get; set; } = string.Empty;
 
-        /// <summary>
         /// This result is unknown if true.
         /// </summary>
         /// <value><c>true</c> if unknown; otherwise, <c>false</c>.</value>
         [Display(Name = "The value is unknown", Description = "If true the value is unknown")]
         [ProtoMember(2)]
         public bool unknown { get; set; } = false;
-        /// <summary>
         /// The confidence placed in this result
         /// </summary>
         /// <value>The weight.</value>
@@ -140,7 +115,6 @@ namespace DarlCommon
         [ProtoMember(3)]
         public double weight { get; set; } = 1.0;
 
-        /// <summary>
         /// The array containing the up to 4 values representing the fuzzy number.
         /// </summary>
         /// <value>The values.</value>
@@ -155,7 +129,6 @@ namespace DarlCommon
         [ProtoMember(4)]
         public List<double> values { get; set; }
 
-        /// <summary>
         /// list of categories, each indexed against a truth value.
         /// </summary>
         /// <value>The categories.</value>
@@ -166,7 +139,6 @@ namespace DarlCommon
         [ProtoMember(6)]
         public List<DarlTime> times { get; set; }
 
-        /// <summary>
         /// Indicates approximation has taken place in calculating the values.
         /// </summary>
         /// <value><c>true</c> if approximate; otherwise, <c>false</c>.</value>
@@ -178,7 +150,6 @@ namespace DarlCommon
         public bool approximate { get; set; }
 
 
-        /// <summary>
         /// Gets or sets the type of the data.
         /// </summary>
         /// <value>The type of the data.</value>
@@ -187,14 +158,12 @@ namespace DarlCommon
         [ProtoMember(8)]
         public DataType dataType { get; set; }
 
-        /// <summary>
         /// Gets or sets the sequence.
         /// </summary>
         /// <value>The sequence.</value>
         [Display(Name = "The sequence", Description = "A list of ragged array of strings representing a sequence found or to match")]
         public List<List<string>> sequence { get; set; }
 
-        /// <summary>
         /// Single central or most confident value, expressed as a string or double.
         /// </summary>
         /// <value>The value.</value>

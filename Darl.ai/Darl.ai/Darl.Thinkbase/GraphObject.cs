@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Lineage;
@@ -141,7 +140,6 @@ namespace Darl.Thinkbase
 
 
 
-        /// <summary>
         /// Find the recognition tree child nodes from any given path
         /// </summary>
         /// <param name="model">The graph model</param>
@@ -170,7 +168,6 @@ namespace Darl.Thinkbase
             return new List<GraphObject>();
         }
 
-        /// <summary>
         /// Find the recognition tree graphObject at the end of a path
         /// </summary>
         /// <param name="model">The graph model</param>
@@ -224,7 +221,6 @@ namespace Darl.Thinkbase
             return sb.ToString();
         }
 
-        /// <summary>
         /// Does this object contain an attribute with the given lineage and type?
         /// </summary>
         /// <param name="Lineage">The attribute lineage to look for.</param>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -141,7 +140,6 @@ namespace Darl.GraphQL.Models.Connectivity
             }
             return Task.FromResult(list);
         }
-        /// <summary>
         /// Handle a set of requests that may combine GraphObjects and KnowledgeStates mixed in.
         /// </summary>
         /// <param name="userId"></param>

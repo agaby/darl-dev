@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -9,7 +8,6 @@ namespace Darl.Thinkbase.Meta
 {
     public class SetDefinitionNode : DarlMetaNode
     {
-        /// <summary>
         /// Gets or sets the set as a <see cref="DarlResult"/>.
         /// </summary>
         /// <value>
@@ -17,7 +15,6 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public DarlResult Set { get; set; }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>

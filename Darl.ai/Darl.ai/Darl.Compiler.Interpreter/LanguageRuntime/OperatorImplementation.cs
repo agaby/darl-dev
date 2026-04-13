@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -21,13 +20,11 @@ using System.Linq.Expressions;
 namespace DarlCompiler.Interpreter
 {
 
-    /// <summary>
     /// Delegate UnaryOperatorMethod
     /// </summary>
     /// <param name="arg">The argument.</param>
     /// <returns>System.Object.</returns>
     public delegate object UnaryOperatorMethod(object arg);
-    /// <summary>
     /// Delegate BinaryOperatorMethod
     /// </summary>
     /// <param name="arg1">The arg1.</param>
@@ -36,35 +33,28 @@ namespace DarlCompiler.Interpreter
     public delegate object BinaryOperatorMethod(object arg1, object arg2);
 
     #region OperatorDispatchKey class
-    /// <summary>
     /// The struct is used as a key for the dictionary of operator implementations.
     /// Contains types of arguments for a method or operator implementation.
     /// </summary>
     public struct OperatorDispatchKey
     {
-        /// <summary>
         /// The comparer
         /// </summary>
         public static readonly OperatorDispatchKeyComparer Comparer = new OperatorDispatchKeyComparer();
-        /// <summary>
         /// The op
         /// </summary>
         public readonly ExpressionType Op;
-        /// <summary>
         /// The arg1 type
         /// </summary>
         public readonly Type Arg1Type;
-        /// <summary>
         /// The arg2 type
         /// </summary>
         public readonly Type Arg2Type;
-        /// <summary>
         /// The hash code
         /// </summary>
         public readonly int HashCode;
 
         //For binary operators
-        /// <summary>
         /// Initializes a new instance of the <see cref="OperatorDispatchKey"/> struct.
         /// </summary>
         /// <param name="op">The op.</param>
@@ -82,7 +72,6 @@ namespace DarlCompiler.Interpreter
         }
 
         //For unary operators
-        /// <summary>
         /// Initializes a new instance of the <see cref="OperatorDispatchKey"/> struct.
         /// </summary>
         /// <param name="op">The op.</param>
@@ -98,7 +87,6 @@ namespace DarlCompiler.Interpreter
             HashCode = unchecked(h0 << 8 ^ h1 << 4 ^ h2);
         }
 
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
@@ -107,7 +95,6 @@ namespace DarlCompiler.Interpreter
             return HashCode;
         }
 
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -121,12 +108,10 @@ namespace DarlCompiler.Interpreter
     #region OperatorDispatchKeyComparer class
     // Note: I believe (guess) that a custom Comparer provided to a Dictionary is a bit more efficient 
     // than implementing IComparable on the key itself
-    /// <summary>
     /// Class OperatorDispatchKeyComparer.
     /// </summary>
     public class OperatorDispatchKeyComparer : IEqualityComparer<OperatorDispatchKey>
     {
-        /// <summary>
         /// Equalses the specified x.
         /// </summary>
         /// <param name="x">The x.</param>
@@ -136,7 +121,6 @@ namespace DarlCompiler.Interpreter
         {
             return x.HashCode == y.HashCode && x.Op == y.Op && x.Arg1Type == y.Arg1Type && x.Arg2Type == y.Arg2Type;
         }
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <param name="obj">The object.</param>
@@ -148,13 +132,11 @@ namespace DarlCompiler.Interpreter
     }
     #endregion
 
-    /// <summary>
     /// Class TypeConverterTable.
     /// </summary>
     [Serializable]
     public class TypeConverterTable : Dictionary<OperatorDispatchKey, UnaryOperatorMethod>
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="TypeConverterTable"/> class.
         /// </summary>
         /// <param name="capacity">The capacity.</param>
@@ -162,20 +144,17 @@ namespace DarlCompiler.Interpreter
 
     }
 
-    /// <summary>
     /// Class OperatorImplementationTable.
     /// </summary>
     [Serializable]
     public class OperatorImplementationTable : Dictionary<OperatorDispatchKey, OperatorImplementation>
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="OperatorImplementationTable"/> class.
         /// </summary>
         /// <param name="capacity">The capacity.</param>
         public OperatorImplementationTable(int capacity) : base(capacity, OperatorDispatchKey.Comparer) { }
     }
 
-    /// <summary>
     /// The OperatorImplementation class represents an implementation of an operator for specific argument types.
     /// </summary>
     /// <remarks>The OperatorImplementation is used for holding implementation for binary operators, unary operators,
@@ -186,51 +165,41 @@ namespace DarlCompiler.Interpreter
     /// operator (arg1 is used); the converter method is stored in Arg1Converter; the target type is in CommonType</remarks>
     public sealed class OperatorImplementation
     {
-        /// <summary>
         /// The key
         /// </summary>
         public readonly OperatorDispatchKey Key;
         // The type to which arguments are converted and no-conversion method for this type. 
-        /// <summary>
         /// The common type
         /// </summary>
         public readonly Type CommonType;
-        /// <summary>
         /// The base binary method
         /// </summary>
         public readonly BinaryOperatorMethod BaseBinaryMethod;
         //converters
-        /// <summary>
         /// The arg1 converter
         /// </summary>
         internal UnaryOperatorMethod Arg1Converter;
-        /// <summary>
         /// The arg2 converter
         /// </summary>
         internal UnaryOperatorMethod Arg2Converter;
-        /// <summary>
         /// The result converter
         /// </summary>
         internal UnaryOperatorMethod ResultConverter;
         //A reference to the actual binary evaluator method - one of EvaluateConvXXX 
-        /// <summary>
         /// The evaluate binary
         /// </summary>
         public BinaryOperatorMethod EvaluateBinary;
         // An overflow handler - the implementation to handle arithmetic overflow
-        /// <summary>
         /// The overflow handler
         /// </summary>
         public OperatorImplementation OverflowHandler;
         // No-box counterpart for implementations with auto-boxed output. If this field <> null, then this is 
         // implementation with auto-boxed output
-        /// <summary>
         /// The no box implementation
         /// </summary>
         public OperatorImplementation NoBoxImplementation;
 
         //constructor for binary operators
-        /// <summary>
         /// Initializes a new instance of the <see cref="OperatorImplementation"/> class.
         /// </summary>
         /// <param name="key">The key.</param>
@@ -252,7 +221,6 @@ namespace DarlCompiler.Interpreter
         }
 
         //constructor  for unary operators and type converters
-        /// <summary>
         /// Initializes a new instance of the <see cref="OperatorImplementation"/> class.
         /// </summary>
         /// <param name="key">The key.</param>
@@ -268,7 +236,6 @@ namespace DarlCompiler.Interpreter
             BaseBinaryMethod = null;
         }
 
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -277,7 +244,6 @@ namespace DarlCompiler.Interpreter
             return "[OpImpl for " + Key.ToString() + "]";
         }
 
-        /// <summary>
         /// Setups the evaluation method.
         /// </summary>
         public void SetupEvaluationMethod()
@@ -312,7 +278,6 @@ namespace DarlCompiler.Interpreter
             }
         }
 
-        /// <summary>
         /// Evaluates the conv none.
         /// </summary>
         /// <param name="arg1">The arg1.</param>
@@ -322,7 +287,6 @@ namespace DarlCompiler.Interpreter
         {
             return BaseBinaryMethod(arg1, arg2);
         }
-        /// <summary>
         /// Evaluates the conv left.
         /// </summary>
         /// <param name="arg1">The arg1.</param>
@@ -332,7 +296,6 @@ namespace DarlCompiler.Interpreter
         {
             return BaseBinaryMethod(Arg1Converter(arg1), arg2);
         }
-        /// <summary>
         /// Evaluates the conv right.
         /// </summary>
         /// <param name="arg1">The arg1.</param>
@@ -342,7 +305,6 @@ namespace DarlCompiler.Interpreter
         {
             return BaseBinaryMethod(arg1, Arg2Converter(arg2));
         }
-        /// <summary>
         /// Evaluates the conv both.
         /// </summary>
         /// <param name="arg1">The arg1.</param>
@@ -353,7 +315,6 @@ namespace DarlCompiler.Interpreter
             return BaseBinaryMethod(Arg1Converter(arg1), Arg2Converter(arg2));
         }
 
-        /// <summary>
         /// Evaluates the conv none conv result.
         /// </summary>
         /// <param name="arg1">The arg1.</param>
@@ -363,7 +324,6 @@ namespace DarlCompiler.Interpreter
         {
             return ResultConverter(BaseBinaryMethod(arg1, arg2));
         }
-        /// <summary>
         /// Evaluates the conv left conv result.
         /// </summary>
         /// <param name="arg1">The arg1.</param>
@@ -373,7 +333,6 @@ namespace DarlCompiler.Interpreter
         {
             return ResultConverter(BaseBinaryMethod(Arg1Converter(arg1), arg2));
         }
-        /// <summary>
         /// Evaluates the conv right conv result.
         /// </summary>
         /// <param name="arg1">The arg1.</param>
@@ -383,7 +342,6 @@ namespace DarlCompiler.Interpreter
         {
             return ResultConverter(BaseBinaryMethod(arg1, Arg2Converter(arg2)));
         }
-        /// <summary>
         /// Evaluates the conv both conv result.
         /// </summary>
         /// <param name="arg1">The arg1.</param>

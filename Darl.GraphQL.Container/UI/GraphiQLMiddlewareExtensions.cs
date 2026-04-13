@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 using Darl.GraphQL.Container.Ui.GraphiQL;
@@ -6,13 +5,11 @@ using Darl.GraphQL.Container.Ui.GraphiQL;
 namespace Microsoft.AspNetCore.Builder
 {
 
-    /// <summary>
     /// Extension methods for <see cref="GraphiQLMiddleware"/>
     /// </summary>
     public static class GraphiQLMiddlewareExtensions
     {
 
-        /// <summary>
         /// Enables a GraphiQLServer using the specified settings
         /// </summary>
         /// <param name="applicationBuilder"></param>

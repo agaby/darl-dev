@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -6,12 +5,10 @@ using DarlCompiler.Parsing;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Contains the optional pattern navigation string
     /// </summary>
     public class PatternDefinitionNode : DarlNode
     {
-        /// <summary>
         /// Gets the value.
         /// </summary>
         /// <value>
@@ -19,7 +16,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public string Value { get; private set; }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>

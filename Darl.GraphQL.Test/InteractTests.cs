@@ -1,4 +1,3 @@
-/// <summary>
 /// Integration tests for the ThinkBase GraphQL interaction API.
 /// Sends chat-style messages to a staging endpoint and validates responses.
 /// </summary>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -10,12 +9,10 @@ namespace Darl.Thinkbase.Meta
 {
     public class UnaryDarlMetaNode : DarlMetaNode
     {
-        /// <summary>
         /// The single argument
         /// </summary>
         protected DarlMetaNode Argument;
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -35,7 +32,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// Establishes dependencies and initializes constants
         /// </summary>
         /// <param name="dependencies">list of dependencies discovered</param>
@@ -47,7 +43,6 @@ namespace Darl.Thinkbase.Meta
                 Argument.WalkDependencies(dependencies, currentOutput, context, model, currentNode);
         }
 
-        /// <summary>
         /// Walks the saliences.
         /// </summary>
         /// <param name="saliency">The incoming saliency.</param>

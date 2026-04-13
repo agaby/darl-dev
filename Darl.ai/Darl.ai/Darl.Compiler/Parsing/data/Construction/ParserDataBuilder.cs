@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="ParserDataBuilder.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -18,31 +18,25 @@ using System.Text;
 namespace DarlCompiler.Parsing.Construction
 {
 
-    /// <summary>
     /// Class ParserDataBuilder.
     /// </summary>
     internal partial class ParserDataBuilder
     {
-        /// <summary>
         /// The _language
         /// </summary>
         readonly LanguageData _language;
-        /// <summary>
         /// The _data
         /// </summary>
         ParserData _data;
 
-        /// <summary>
         /// The _grammar
         /// </summary>
         readonly Grammar _grammar;
 
-        /// <summary>
         /// The _state hash
         /// </summary>
         readonly ParserStateHash _stateHash = new ParserStateHash();
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ParserDataBuilder"/> class.
         /// </summary>
         /// <param name="language">The language.</param>
@@ -52,7 +46,6 @@ namespace DarlCompiler.Parsing.Construction
             _grammar = _language.Grammar;
         }
 
-        /// <summary>
         /// Builds this instance.
         /// </summary>
         public void Build()
@@ -74,7 +67,6 @@ namespace DarlCompiler.Parsing.Construction
         }
 
         #region Creating parser states
-        /// <summary>
         /// Creates the parser states.
         /// </summary>
         private void CreateParserStates()
@@ -95,7 +87,6 @@ namespace DarlCompiler.Parsing.Construction
             }
         }
 
-        /// <summary>
         /// Creates the accept action.
         /// </summary>
         /// <param name="initialState">The initial state.</param>
@@ -109,7 +100,6 @@ namespace DarlCompiler.Parsing.Construction
         }
 
 
-        /// <summary>
         /// Creates the initial state.
         /// </summary>
         /// <param name="augmentedRoot">The augmented root.</param>
@@ -125,7 +115,6 @@ namespace DarlCompiler.Parsing.Construction
             return initialState;
         }
 
-        /// <summary>
         /// Expands the parser state list.
         /// </summary>
         /// <param name="initialIndex">The initial index.</param>
@@ -154,7 +143,6 @@ namespace DarlCompiler.Parsing.Construction
             } //for index
         }
 
-        /// <summary>
         /// Finds the state of the or create.
         /// </summary>
         /// <param name="coreItems">The core items.</param>
@@ -181,7 +169,6 @@ namespace DarlCompiler.Parsing.Construction
         // Then for each transition in the list we check if it has items with nullable tails; for those items we compute
         // lookbacks - these are new or already existing transitons - and so on, we repeat the operation until no new transitions
         // are created. 
-        /// <summary>
         /// Computes the transitions.
         /// </summary>
         /// <param name="forItems">For items.</param>
@@ -195,7 +182,6 @@ namespace DarlCompiler.Parsing.Construction
             }
         }
 
-        /// <summary>
         /// Selects the new items that need lookback.
         /// </summary>
         /// <param name="transitions">The transitions.</param>
@@ -211,7 +197,6 @@ namespace DarlCompiler.Parsing.Construction
             return items;
         }
 
-        /// <summary>
         /// Gets the state of the reduce items in inadequate.
         /// </summary>
         /// <returns>LRItemSet.</returns>
@@ -226,7 +211,6 @@ namespace DarlCompiler.Parsing.Construction
             return result;
         }
 
-        /// <summary>
         /// Creates the lookback transitions.
         /// </summary>
         /// <param name="sourceItems">The source items.</param>
@@ -279,7 +263,6 @@ namespace DarlCompiler.Parsing.Construction
             return newTransitions;
         }
 
-        /// <summary>
         /// Computes the lookaheads.
         /// </summary>
         /// <param name="forItems">For items.</param>
@@ -314,7 +297,6 @@ namespace DarlCompiler.Parsing.Construction
         #endregion
 
         #region Analyzing and resolving conflicts
-        /// <summary>
         /// Computes the conflicts.
         /// </summary>
         private void ComputeConflicts()
@@ -347,7 +329,6 @@ namespace DarlCompiler.Parsing.Construction
             }
         }
 
-        /// <summary>
         /// Applies the hints.
         /// </summary>
         private void ApplyHints()
@@ -374,7 +355,6 @@ namespace DarlCompiler.Parsing.Construction
         }
 
         //Resolve to default actions
-        /// <summary>
         /// Handles the unresolved conflicts.
         /// </summary>
         private void HandleUnresolvedConflicts()
@@ -408,7 +388,6 @@ namespace DarlCompiler.Parsing.Construction
 
         #region final actions: creating remaining reduce actions, computing expected terminals, cleaning up state data
         //Create reduce actions for states with a single reduce item (and no shifts)
-        /// <summary>
         /// Creates the remaining reduce actions.
         /// </summary>
         private void CreateRemainingReduceActions()
@@ -437,7 +416,6 @@ namespace DarlCompiler.Parsing.Construction
         }
 
         //Note that for states with a single reduce item the result is empty 
-        /// <summary>
         /// Computes the states expected terminals.
         /// </summary>
         private void ComputeStatesExpectedTerminals()
@@ -452,7 +430,6 @@ namespace DarlCompiler.Parsing.Construction
             }//foreach state
         }
 
-        /// <summary>
         /// Removes the terminals.
         /// </summary>
         /// <param name="terms">The terms.</param>
@@ -475,7 +452,6 @@ namespace DarlCompiler.Parsing.Construction
         // Before producing the key for a list, the list must be sorted; 
         //   thus we garantee one-to-one correspondence between LR0Item sets and keys.
         // And of course, we count only kernel items (with dot NOT in the first position).
-        /// <summary>
         /// Computes the l r0 item set key.
         /// </summary>
         /// <param name="items">The items.</param>
@@ -501,7 +477,6 @@ namespace DarlCompiler.Parsing.Construction
             return sb.ToString();
         }
 
-        /// <summary>
         /// Compares the l r0 items.
         /// </summary>
         /// <param name="x">The x.</param>
@@ -533,7 +508,6 @@ namespace DarlCompiler.Parsing.Construction
         // is "double-effort" when two threads start computing the same set around the same time, and the last one to finish would 
         // leave its result in the state field. 
         #endregion
-        /// <summary>
         /// Computes the state of the grouped expected set for.
         /// </summary>
         /// <param name="grammar">The grammar.</param>

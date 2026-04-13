@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -7,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements a category
     /// </summary>
     public class CategoryLiteralNode : DarlNode
     {
-        /// <summary>
         /// Gets or sets the category.
         /// </summary>
         /// <value>
@@ -20,7 +17,6 @@ namespace DarlLanguage.Processing
         /// </value>
         string category { get; set; }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -31,7 +27,6 @@ namespace DarlLanguage.Processing
             category = (string)treeNode.Token.Value;
         }
 
-        /// <summary>
         /// Does the evaluate.
         /// </summary>
         /// <param name="thread">The thread.</param>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -19,55 +18,43 @@ using System.Collections.Generic;
 
 namespace DarlCompiler.Parsing
 {
-    /// <summary>
     /// Enum GrammarErrorLevel
     /// </summary>
     public enum GrammarErrorLevel
     {
-        /// <summary>
         /// The no error
         /// </summary>
         NoError, //used only for max error level when there are no errors
-        /// <summary>
         /// The information
         /// </summary>
         Info,
-        /// <summary>
         /// The warning
         /// </summary>
         Warning,
-        /// <summary>
         /// The conflict
         /// </summary>
         Conflict, //shift-reduce or reduce-reduce conflict
-        /// <summary>
         /// The error
         /// </summary>
         Error,    //severe grammar error, parser construction cannot continue
-        /// <summary>
         /// The internal error
         /// </summary>
         InternalError,  //internal Darl error
     }
 
-    /// <summary>
     /// Class GrammarError.
     /// </summary>
     public class GrammarError
     {
-        /// <summary>
         /// The level
         /// </summary>
         public readonly GrammarErrorLevel Level;
-        /// <summary>
         /// The message
         /// </summary>
         public readonly string Message;
-        /// <summary>
         /// The state
         /// </summary>
         public readonly ParserState State; //can be null!
-        /// <summary>
         /// Initializes a new instance of the <see cref="GrammarError"/> class.
         /// </summary>
         /// <param name="level">The level.</param>
@@ -79,7 +66,6 @@ namespace DarlCompiler.Parsing
             State = state;
             Message = message;
         }
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -89,12 +75,10 @@ namespace DarlCompiler.Parsing
         }
     }
 
-    /// <summary>
     /// Class GrammarErrorList.
     /// </summary>
     public class GrammarErrorList : List<GrammarError>
     {
-        /// <summary>
         /// Adds the specified level.
         /// </summary>
         /// <param name="level">The level.</param>
@@ -107,7 +91,6 @@ namespace DarlCompiler.Parsing
                 message = String.Format(message, args);
             base.Add(new GrammarError(level, state, message));
         }
-        /// <summary>
         /// Adds the and throw.
         /// </summary>
         /// <param name="level">The level.</param>
@@ -121,7 +104,6 @@ namespace DarlCompiler.Parsing
             var exc = new GrammarErrorException(error.Message, error);
             throw exc;
         }
-        /// <summary>
         /// Gets the maximum level.
         /// </summary>
         /// <returns>GrammarErrorLevel.</returns>
@@ -136,17 +118,14 @@ namespace DarlCompiler.Parsing
     }
 
     //Used to cancel parser construction when fatal error is found
-    /// <summary>
     /// Class GrammarErrorException.
     /// </summary>
     [Serializable]
     public class GrammarErrorException : Exception
     {
-        /// <summary>
         /// The error
         /// </summary>
         public readonly GrammarError Error;
-        /// <summary>
         /// Initializes a new instance of the <see cref="GrammarErrorException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>

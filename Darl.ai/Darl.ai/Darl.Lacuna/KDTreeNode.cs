@@ -1,11 +1,9 @@
-/// <summary>
 /// </summary>
 
 using System;
 
 namespace Darl.Lacuna
 {
-    /// <summary>
     /// Implements a node of the KDTree structure
     /// </summary>
     [Serializable]

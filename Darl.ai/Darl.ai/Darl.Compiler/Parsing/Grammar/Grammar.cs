@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="Grammar.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -22,14 +22,12 @@ namespace DarlCompiler.Parsing
 {
 
 
-    /// <summary>
     /// Class Grammar.
     /// </summary>
     public class Grammar
     {
 
         #region properties
-        /// <summary>
         /// Gets case sensitivity of the grammar. Read-only, true by default.
         /// Can be set to false only through a parameter to grammar constructor.
         /// </summary>
@@ -37,25 +35,21 @@ namespace DarlCompiler.Parsing
 
         //List of chars that unambiguously identify the start of new token. 
         //used in scanner error recovery, and in quick parse path in NumberLiterals, Identifiers 
-        /// <summary>
         /// The delimiters
         /// </summary>
         [Obsolete("Use IsWhitespaceOrDelimiter() method instead.")]
         public string Delimiters = null;
 
-        /// <summary>
         /// The whitespace chars
         /// </summary>
         [Obsolete("Override Grammar.SkipWhitespace method instead.")]
         // Not used anymore
         public string WhitespaceChars = " \t\r\n\v";
 
-        /// <summary>
         /// The language flags
         /// </summary>
         public LanguageFlags LanguageFlags = LanguageFlags.Default;
 
-        /// <summary>
         /// The term report groups
         /// </summary>
         public TermReportGroupList TermReportGroups = new TermReportGroupList();
@@ -63,45 +57,36 @@ namespace DarlCompiler.Parsing
         //Terminals not present in grammar expressions and not reachable from the Root
         // (Comment terminal is usually one of them)
         // Tokens produced by these terminals will be ignored by parser input. 
-        /// <summary>
         /// The non grammar terminals
         /// </summary>
         public readonly TerminalSet NonGrammarTerminals = new TerminalSet();
 
-        /// <summary>
         /// The main root entry for the grammar.
         /// </summary>
         public NonTerminal Root;
 
-        /// <summary>
         /// Alternative roots for parsing code snippets.
         /// </summary>
         public NonTerminalSet SnippetRoots = new NonTerminalSet();
 
-        /// <summary>
         /// The grammar comments
         /// </summary>
         public string GrammarComments; //shown in Grammar info tab
 
-        /// <summary>
         /// The default culture
         /// </summary>
         public CultureInfo DefaultCulture = CultureInfo.InvariantCulture;
 
         //Console-related properties, initialized in grammar constructor
-        /// <summary>
         /// The console title
         /// </summary>
         public string ConsoleTitle;
-        /// <summary>
         /// The console greeting
         /// </summary>
         public string ConsoleGreeting;
-        /// <summary>
         /// The console prompt
         /// </summary>
         public string ConsolePrompt; //default prompt
-        /// <summary>
         /// The console prompt more input
         /// </summary>
         public string ConsolePromptMoreInput; //prompt to show when more input is expected
@@ -109,12 +94,10 @@ namespace DarlCompiler.Parsing
 
         #region constructors
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="Grammar"/> class.
         /// </summary>
         public Grammar() : this(true) { } //case sensitive by default
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="Grammar"/> class.
         /// </summary>
         /// <param name="caseSensitive">if set to <c>true</c> [case sensitive].</param>
@@ -135,7 +118,6 @@ namespace DarlCompiler.Parsing
 
         #region Reserved words handling
         //Reserved words handling 
-        /// <summary>
         /// Marks the reserved words.
         /// </summary>
         /// <param name="reservedWords">The reserved words.</param>
@@ -150,7 +132,6 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region Register/Mark methods
-        /// <summary>
         /// Registers the operators.
         /// </summary>
         /// <param name="precedence">The precedence.</param>
@@ -160,7 +141,6 @@ namespace DarlCompiler.Parsing
             RegisterOperators(precedence, Associativity.Left, opSymbols);
         }
 
-        /// <summary>
         /// Registers the operators.
         /// </summary>
         /// <param name="precedence">The precedence.</param>
@@ -177,7 +157,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Registers the operators.
         /// </summary>
         /// <param name="precedence">The precedence.</param>
@@ -186,7 +165,6 @@ namespace DarlCompiler.Parsing
         {
             RegisterOperators(precedence, Associativity.Left, opTerms);
         }
-        /// <summary>
         /// Registers the operators.
         /// </summary>
         /// <param name="precedence">The precedence.</param>
@@ -202,7 +180,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Registers the brace pair.
         /// </summary>
         /// <param name="openBrace">The open brace.</param>
@@ -217,7 +194,6 @@ namespace DarlCompiler.Parsing
             closeS.IsPairFor = openS;
         }
 
-        /// <summary>
         /// Marks the punctuation.
         /// </summary>
         /// <param name="symbols">The symbols.</param>
@@ -230,7 +206,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Marks the punctuation.
         /// </summary>
         /// <param name="terms">The terms.</param>
@@ -241,7 +216,6 @@ namespace DarlCompiler.Parsing
         }
 
 
-        /// <summary>
         /// Marks the transient.
         /// </summary>
         /// <param name="nonTerminals">The non terminals.</param>
@@ -251,7 +225,6 @@ namespace DarlCompiler.Parsing
                 nt.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;
         }
         //MemberSelect are symbols invoking member list dropdowns in editor; for ex: . (dot), ::
-        /// <summary>
         /// Marks the member select.
         /// </summary>
         /// <param name="symbols">The symbols.</param>
@@ -262,7 +235,6 @@ namespace DarlCompiler.Parsing
         }
         //Sets IsNotReported flag on terminals. As a result the terminal wouldn't appear in expected terminal list
         // in syntax error messages
-        /// <summary>
         /// Marks the not reported.
         /// </summary>
         /// <param name="terms">The terms.</param>
@@ -271,7 +243,6 @@ namespace DarlCompiler.Parsing
             foreach (var term in terms)
                 term.SetFlag(TermFlags.IsNotReported);
         }
-        /// <summary>
         /// Marks the not reported.
         /// </summary>
         /// <param name="symbols">The symbols.</param>
@@ -284,7 +255,6 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region virtual methods: CreateTokenFilters, TryMatch
-        /// <summary>
         /// Creates the token filters.
         /// </summary>
         /// <param name="language">The language.</param>
@@ -294,7 +264,6 @@ namespace DarlCompiler.Parsing
         }
 
         //This method is called if Scanner fails to produce a token; it offers custom method a chance to produce the token    
-        /// <summary>
         /// Tries the match.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -306,7 +275,6 @@ namespace DarlCompiler.Parsing
         }
 
         //Gives a way to customize parse tree nodes captions in the tree view. 
-        /// <summary>
         /// Gets the parse node caption.
         /// </summary>
         /// <param name="node">The node.</param>
@@ -325,7 +293,6 @@ namespace DarlCompiler.Parsing
             return node.Term.Name;
         }
 
-        /// <summary>
         /// Override this method to help scanner select a terminal to create token when there are more than one candidates
         /// for an input char. context.CurrentTerminals contains candidate terminals; leave a single terminal in this list
         /// as the one to use.
@@ -333,7 +300,6 @@ namespace DarlCompiler.Parsing
         /// <param name="context">The context.</param>
         public virtual void OnScannerSelectTerminal(ParsingContext context) { }
 
-        /// <summary>
         /// Skips whitespace characters in the input stream.
         /// </summary>
         /// <param name="source">Source stream.</param>
@@ -359,7 +325,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Returns true if a character is whitespace or delimiter. Used in quick-scanning versions of some terminals.
         /// </summary>
         /// <param name="ch">The character to check.</param>
@@ -392,7 +357,6 @@ namespace DarlCompiler.Parsing
 
 
         //The method is called after GrammarData is constructed 
-        /// <summary>
         /// Called when [grammar data constructed].
         /// </summary>
         /// <param name="language">The language.</param>
@@ -400,7 +364,6 @@ namespace DarlCompiler.Parsing
         {
         }
 
-        /// <summary>
         /// Called when [language data constructed].
         /// </summary>
         /// <param name="language">The language.</param>
@@ -411,7 +374,6 @@ namespace DarlCompiler.Parsing
 
         //Constructs the error message in situation when parser has no available action for current input.
         // override this method if you want to change this message
-        /// <summary>
         /// Constructs the parser error message.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -426,7 +388,6 @@ namespace DarlCompiler.Parsing
         }
 
         // Override this method to perform custom error processing
-        /// <summary>
         /// Reports the parse error.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -458,7 +419,6 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region MakePlusRule, MakeStarRule methods
-        /// <summary>
         /// Makes the plus rule.
         /// </summary>
         /// <param name="listNonTerminal">The list non terminal.</param>
@@ -468,7 +428,6 @@ namespace DarlCompiler.Parsing
         {
             return MakeListRule(listNonTerminal, null, listMember);
         }
-        /// <summary>
         /// Makes the plus rule.
         /// </summary>
         /// <param name="listNonTerminal">The list non terminal.</param>
@@ -479,7 +438,6 @@ namespace DarlCompiler.Parsing
         {
             return MakeListRule(listNonTerminal, delimiter, listMember);
         }
-        /// <summary>
         /// Makes the star rule.
         /// </summary>
         /// <param name="listNonTerminal">The list non terminal.</param>
@@ -489,7 +447,6 @@ namespace DarlCompiler.Parsing
         {
             return MakeListRule(listNonTerminal, null, listMember, TermListOptions.StarList);
         }
-        /// <summary>
         /// Makes the star rule.
         /// </summary>
         /// <param name="listNonTerminal">The list non terminal.</param>
@@ -501,7 +458,6 @@ namespace DarlCompiler.Parsing
             return MakeListRule(listNonTerminal, delimiter, listMember, TermListOptions.StarList);
         }
 
-        /// <summary>
         /// Makes the list rule.
         /// </summary>
         /// <param name="list">The list.</param>
@@ -546,7 +502,6 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region Hint utilities
-        /// <summary>
         /// Prefers the shift here.
         /// </summary>
         /// <returns>GrammarHint.</returns>
@@ -554,7 +509,6 @@ namespace DarlCompiler.Parsing
         {
             return new PreferredActionHint(PreferredActionType.Shift);
         }
-        /// <summary>
         /// Reduces the here.
         /// </summary>
         /// <returns>GrammarHint.</returns>
@@ -562,7 +516,6 @@ namespace DarlCompiler.Parsing
         {
             return new PreferredActionHint(PreferredActionType.Reduce);
         }
-        /// <summary>
         /// Reduces if.
         /// </summary>
         /// <param name="thisSymbol">The this symbol.</param>
@@ -572,7 +525,6 @@ namespace DarlCompiler.Parsing
         {
             return new TokenPreviewHint(PreferredActionType.Reduce, thisSymbol, comesBefore);
         }
-        /// <summary>
         /// Reduces if.
         /// </summary>
         /// <param name="thisSymbol">The this symbol.</param>
@@ -582,7 +534,6 @@ namespace DarlCompiler.Parsing
         {
             return new TokenPreviewHint(PreferredActionType.Reduce, thisSymbol, comesBefore);
         }
-        /// <summary>
         /// Shifts if.
         /// </summary>
         /// <param name="thisSymbol">The this symbol.</param>
@@ -592,7 +543,6 @@ namespace DarlCompiler.Parsing
         {
             return new TokenPreviewHint(PreferredActionType.Shift, thisSymbol, comesBefore);
         }
-        /// <summary>
         /// Shifts if.
         /// </summary>
         /// <param name="thisSymbol">The this symbol.</param>
@@ -602,7 +552,6 @@ namespace DarlCompiler.Parsing
         {
             return new TokenPreviewHint(PreferredActionType.Shift, thisSymbol, comesBefore);
         }
-        /// <summary>
         /// Implies the precedence here.
         /// </summary>
         /// <param name="precedence">The precedence.</param>
@@ -611,7 +560,6 @@ namespace DarlCompiler.Parsing
         {
             return ImplyPrecedenceHere(precedence, Associativity.Left);
         }
-        /// <summary>
         /// Implies the precedence here.
         /// </summary>
         /// <param name="precedence">The precedence.</param>
@@ -621,7 +569,6 @@ namespace DarlCompiler.Parsing
         {
             return new ImpliedPrecedenceHint(precedence, associativity);
         }
-        /// <summary>
         /// Customs the action here.
         /// </summary>
         /// <param name="executeMethod">The execute method.</param>
@@ -635,7 +582,6 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region Term report group methods
-        /// <summary>
         /// Creates a terminal reporting group, so all terminals in the group will be reported as a single "alias" in syntex error messages like
         /// "Syntax error, expected: [list of terms]"
         /// </summary>
@@ -645,7 +591,6 @@ namespace DarlCompiler.Parsing
         {
             TermReportGroups.Add(new TermReportGroup(alias, TermReportGroupType.Normal, SymbolsToTerms(symbols)));
         }
-        /// <summary>
         /// Creates a terminal reporting group, so all terminals in the group will be reported as a single "alias" in syntex error messages like
         /// "Syntax error, expected: [list of terms]"
         /// </summary>
@@ -655,7 +600,6 @@ namespace DarlCompiler.Parsing
         {
             TermReportGroups.Add(new TermReportGroup(alias, TermReportGroupType.Normal, terminals));
         }
-        /// <summary>
         /// Adds symbols to a group with no-report type, so symbols will not be shown in expected lists in syntax error messages.
         /// </summary>
         /// <param name="symbols">Symbols to exclude.</param>
@@ -663,7 +607,6 @@ namespace DarlCompiler.Parsing
         {
             TermReportGroups.Add(new TermReportGroup(string.Empty, TermReportGroupType.DoNotReport, SymbolsToTerms(symbols)));
         }
-        /// <summary>
         /// Adds symbols to a group with no-report type, so symbols will not be shown in expected lists in syntax error messages.
         /// </summary>
         /// <param name="terminals">The terminals.</param>
@@ -671,7 +614,6 @@ namespace DarlCompiler.Parsing
         {
             TermReportGroups.Add(new TermReportGroup(string.Empty, TermReportGroupType.DoNotReport, terminals));
         }
-        /// <summary>
         /// Adds a group and an alias for all operator symbols used in the grammar.
         /// </summary>
         /// <param name="alias">An alias for operator symbols.</param>
@@ -680,7 +622,6 @@ namespace DarlCompiler.Parsing
             TermReportGroups.Add(new TermReportGroup(alias, TermReportGroupType.Operator, null)); //operators will be filled later
         }
 
-        /// <summary>
         /// Symbolses to terms.
         /// </summary>
         /// <param name="symbols">The symbols.</param>
@@ -697,63 +638,52 @@ namespace DarlCompiler.Parsing
         #region Standard terminals: EOF, Empty, NewLine, Indent, Dedent
         // Empty object is used to identify optional element: 
         //    term.Rule = term1 | Empty;
-        /// <summary>
         /// The empty
         /// </summary>
         public readonly Terminal Empty = new Terminal("EMPTY");
-        /// <summary>
         /// The new line
         /// </summary>
         public readonly NewLineTerminal NewLine = new NewLineTerminal("LF");
         //set to true automatically by NewLine terminal; prevents treating new-line characters as whitespaces
-        /// <summary>
         /// The uses new line
         /// </summary>
         public bool UsesNewLine;
         // The following terminals are used in indent-sensitive languages like Python;
         // they are not produced by scanner but are produced by CodeOutlineFilter after scanning
-        /// <summary>
         /// The indent
         /// </summary>
         public readonly Terminal Indent = new Terminal("INDENT", TokenCategory.Outline, TermFlags.IsNonScanner);
-        /// <summary>
         /// The dedent
         /// </summary>
         public readonly Terminal Dedent = new Terminal("DEDENT", TokenCategory.Outline, TermFlags.IsNonScanner);
         //End-of-Statement terminal - used in indentation-sensitive language to signal end-of-statement;
         // it is not always synced with CRLF chars, and CodeOutlineFilter carefully produces Eos tokens
         // (as well as Indent and Dedent) based on line/col information in incoming content tokens.
-        /// <summary>
         /// The eos
         /// </summary>
         public readonly Terminal Eos = new Terminal("EOS", Resources.LabelEosLabel, TokenCategory.Outline, TermFlags.IsNonScanner);
         // Identifies end of file
         // Note: using Eof in grammar rules is optional. Parser automatically adds this symbol 
         // as a lookahead to Root non-terminal
-        /// <summary>
         /// The EOF
         /// </summary>
         public readonly Terminal Eof = new Terminal("EOF", TokenCategory.Outline);
 
         //Artificial terminal to use for injected/replaced tokens that must be ignored by parser. 
-        /// <summary>
         /// The skip
         /// </summary>
         public readonly Terminal Skip = new Terminal("(SKIP)", TokenCategory.Outline, TermFlags.IsNonGrammar);
 
         //Used as a "line-start" indicator
-        /// <summary>
         /// The line start terminal
         /// </summary>
         public readonly Terminal LineStartTerminal = new Terminal("LINE_START", TokenCategory.Outline);
 
         //Used for error tokens
-        /// <summary>
         /// The syntax error
         /// </summary>
         public readonly Terminal SyntaxError = new Terminal("SYNTAX_ERROR", TokenCategory.Error, TermFlags.IsNonScanner);
 
-        /// <summary>
         /// Gets the new line plus.
         /// </summary>
         /// <value>The new line plus.</value>
@@ -772,13 +702,11 @@ namespace DarlCompiler.Parsing
                 }
                 return _newLinePlus;
             }
-            /// <summary>
             /// The _new line plus
             /// </summary>
         }
         NonTerminal _newLinePlus;
 
-        /// <summary>
         /// Gets the new line star.
         /// </summary>
         /// <value>The new line star.</value>
@@ -794,7 +722,6 @@ namespace DarlCompiler.Parsing
                 }
                 return _newLineStar;
             }
-            /// <summary>
             /// The _new line star
             /// </summary>
         }
@@ -803,12 +730,10 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region KeyTerms (keywords + special symbols)
-        /// <summary>
         /// The key terms
         /// </summary>
         public KeyTermTable KeyTerms;
 
-        /// <summary>
         /// To the term.
         /// </summary>
         /// <param name="text">The text.</param>
@@ -817,7 +742,6 @@ namespace DarlCompiler.Parsing
         {
             return ToTerm(text, text);
         }
-        /// <summary>
         /// To the term.
         /// </summary>
         /// <param name="text">The text.</param>
@@ -848,12 +772,10 @@ namespace DarlCompiler.Parsing
         //Static per-thread instance; Grammar constructor sets it to self (this). 
         // This field/property is used by operator overloads (which are static) to access Grammar's predefined terminals like Empty,
         //  and SymbolTerms dictionary to convert string literals to symbol terminals and add them to the SymbolTerms dictionary
-        /// <summary>
         /// The _current grammar
         /// </summary>
         [ThreadStatic]
         private static Grammar _currentGrammar;
-        /// <summary>
         /// Gets the current grammar.
         /// </summary>
         /// <value>The current grammar.</value>
@@ -865,7 +787,6 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region AST construction
-        /// <summary>
         /// Builds the ast.
         /// </summary>
         /// <param name="language">The language.</param>

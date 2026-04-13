@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -21,26 +20,21 @@ using System.Threading.Tasks;
 namespace DarlCompiler.Interpreter.Ast
 {
 
-    /// <summary>
     /// Class IdentifierNode.
     /// </summary>
     public class IdentifierNode : AstNode
     {
-        /// <summary>
         /// The symbol
         /// </summary>
         public string Symbol;
-        /// <summary>
         /// The _accessor
         /// </summary>
         private Binding _accessor;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="IdentifierNode"/> class.
         /// </summary>
         public IdentifierNode() { }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -53,7 +47,6 @@ namespace DarlCompiler.Interpreter.Ast
         }
 
         //Executed only once, on the first call
-        /// <summary>
         /// Does the evaluate.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -68,7 +61,6 @@ namespace DarlCompiler.Interpreter.Ast
             return result;
         }
 
-        /// <summary>
         /// Does the set value.
         /// </summary>
         /// <param name="thread">The thread.</param>

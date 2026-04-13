@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="ParserDataBuilder_HelperClasses.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -19,54 +19,42 @@ using System.Linq;
 namespace DarlCompiler.Parsing.Construction
 {
 
-    /// <summary>
     /// Class ParserStateData.
     /// </summary>
     public class ParserStateData
     {
-        /// <summary>
         /// The state
         /// </summary>
         public readonly ParserState State;
-        /// <summary>
         /// All items
         /// </summary>
         public readonly LRItemSet AllItems = new LRItemSet();
-        /// <summary>
         /// The shift items
         /// </summary>
         public readonly LRItemSet ShiftItems = new LRItemSet();
-        /// <summary>
         /// The reduce items
         /// </summary>
         public readonly LRItemSet ReduceItems = new LRItemSet();
-        /// <summary>
         /// The initial items
         /// </summary>
         public readonly LRItemSet InitialItems = new LRItemSet();
-        /// <summary>
         /// The shift terms
         /// </summary>
         public readonly BnfTermSet ShiftTerms = new BnfTermSet();
-        /// <summary>
         /// The shift terminals
         /// </summary>
         public readonly TerminalSet ShiftTerminals = new TerminalSet();
-        /// <summary>
         /// The conflicts
         /// </summary>
         public readonly TerminalSet Conflicts = new TerminalSet();
-        /// <summary>
         /// The is inadequate
         /// </summary>
         public readonly bool IsInadequate;
-        /// <summary>
         /// All cores
         /// </summary>
         public LR0ItemSet AllCores = new LR0ItemSet();
 
         //used for creating canonical states from core set
-        /// <summary>
         /// Initializes a new instance of the <see cref="ParserStateData"/> class.
         /// </summary>
         /// <param name="state">The state.</param>
@@ -79,7 +67,6 @@ namespace DarlCompiler.Parsing.Construction
             IsInadequate = ReduceItems.Count > 1 || ReduceItems.Count == 1 && ShiftItems.Count > 0;
         }
 
-        /// <summary>
         /// Adds the item.
         /// </summary>
         /// <param name="core">The core.</param>
@@ -108,7 +95,6 @@ namespace DarlCompiler.Parsing.Construction
                 AddItem(prod.LR0Items[0]);
         }
 
-        /// <summary>
         /// Gets the transitions.
         /// </summary>
         /// <value>The transitions.</value>
@@ -124,7 +110,6 @@ namespace DarlCompiler.Parsing.Construction
         TransitionTable _transitions;
 
         //A set of states reachable through shifts over nullable non-terminals. Computed on demand
-        /// <summary>
         /// Gets the read state set.
         /// </summary>
         /// <value>The read state set.</value>
@@ -149,7 +134,6 @@ namespace DarlCompiler.Parsing.Construction
         }
         ParserStateSet _readStateSet;
 
-        /// <summary>
         /// Gets the state of the next.
         /// </summary>
         /// <param name="shiftTerm">The shift term.</param>
@@ -161,7 +145,6 @@ namespace DarlCompiler.Parsing.Construction
             return shift.ShiftedItem.State;
         }
 
-        /// <summary>
         /// Gets the shift reduce conflicts.
         /// </summary>
         /// <returns>TerminalSet.</returns>
@@ -172,7 +155,6 @@ namespace DarlCompiler.Parsing.Construction
             result.IntersectWith(ShiftTerminals);
             return result;
         }
-        /// <summary>
         /// Gets the reduce reduce conflicts.
         /// </summary>
         /// <returns>TerminalSet.</returns>
@@ -187,42 +169,33 @@ namespace DarlCompiler.Parsing.Construction
     }
 
     //An object representing inter-state transitions. Defines Includes, IncludedBy that are used for efficient lookahead computation 
-    /// <summary>
     /// Class Transition.
     /// </summary>
     public class Transition
     {
-        /// <summary>
         /// From state
         /// </summary>
         public readonly ParserState FromState;
-        /// <summary>
         /// To state
         /// </summary>
         public readonly ParserState ToState;
-        /// <summary>
         /// The over non terminal
         /// </summary>
         public readonly NonTerminal OverNonTerminal;
-        /// <summary>
         /// The items
         /// </summary>
         public readonly LRItemSet Items;
-        /// <summary>
         /// The includes
         /// </summary>
         public readonly TransitionSet Includes = new TransitionSet();
-        /// <summary>
         /// The included by
         /// </summary>
         public readonly TransitionSet IncludedBy = new TransitionSet();
 
-        /// <summary>
         /// The _hash code
         /// </summary>
         readonly int _hashCode;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="Transition"/> class.
         /// </summary>
         /// <param name="fromState">From state.</param>
@@ -242,7 +215,6 @@ namespace DarlCompiler.Parsing.Construction
 
         }
 
-        /// <summary>
         /// Includes the specified other.
         /// </summary>
         /// <param name="other">The other.</param>
@@ -256,7 +228,6 @@ namespace DarlCompiler.Parsing.Construction
                 IncludeTransition(child);
             }
         }
-        /// <summary>
         /// Includes the transition.
         /// </summary>
         /// <param name="other">The other.</param>
@@ -271,7 +242,6 @@ namespace DarlCompiler.Parsing.Construction
             return true;
         }
 
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -279,7 +249,6 @@ namespace DarlCompiler.Parsing.Construction
         {
             return FromState.Name + " -> (over " + OverNonTerminal.Name + ") -> " + ToState.Name;
         }
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
@@ -289,60 +258,48 @@ namespace DarlCompiler.Parsing.Construction
         }
     }
 
-    /// <summary>
     /// Class TransitionSet.
     /// </summary>
     [Serializable]
     public class TransitionSet : HashSet<Transition> { }
-    /// <summary>
     /// Class TransitionList.
     /// </summary>
     public class TransitionList : List<Transition> { }
-    /// <summary>
     /// Class TransitionTable.
     /// </summary>
     [Serializable]
     public class TransitionTable : Dictionary<NonTerminal, Transition> { }
 
-    /// <summary>
     /// Class LRItem.
     /// </summary>
     public class LRItem
     {
-        /// <summary>
         /// The state
         /// </summary>
         public readonly ParserState State;
-        /// <summary>
         /// The core
         /// </summary>
         public readonly LR0Item Core;
         //these properties are used in lookahead computations
-        /// <summary>
         /// The shifted item
         /// </summary>
         public LRItem ShiftedItem;
-        /// <summary>
         /// The transition
         /// </summary>
         public Transition Transition;
 
-        /// <summary>
         /// The _hash code
         /// </summary>
         readonly int _hashCode;
 
         //Lookahead info for reduce items
-        /// <summary>
         /// The lookbacks
         /// </summary>
         public TransitionSet Lookbacks = new TransitionSet();
-        /// <summary>
         /// The lookaheads
         /// </summary>
         public TerminalSet Lookaheads = new TerminalSet();
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="LRItem"/> class.
         /// </summary>
         /// <param name="state">The state.</param>
@@ -353,7 +310,6 @@ namespace DarlCompiler.Parsing.Construction
             Core = core;
             _hashCode = unchecked(state.GetHashCode() + core.GetHashCode());
         }
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -361,7 +317,6 @@ namespace DarlCompiler.Parsing.Construction
         {
             return Core.ToString();
         }
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
@@ -370,7 +325,6 @@ namespace DarlCompiler.Parsing.Construction
             return _hashCode;
         }
 
-        /// <summary>
         /// Gets the lookaheads in conflict.
         /// </summary>
         /// <returns>TerminalSet.</returns>
@@ -384,19 +338,16 @@ namespace DarlCompiler.Parsing.Construction
 
     }//LRItem class
 
-    /// <summary>
     /// Class LRItemList.
     /// </summary>
     public class LRItemList : List<LRItem> { }
 
-    /// <summary>
     /// Class LRItemSet.
     /// </summary>
     [Serializable]
     public class LRItemSet : HashSet<LRItem>
     {
 
-        /// <summary>
         /// Finds the by core.
         /// </summary>
         /// <param name="core">The core.</param>
@@ -407,7 +358,6 @@ namespace DarlCompiler.Parsing.Construction
                 if (item.Core == core) return item;
             return null;
         }
-        /// <summary>
         /// Selects the by current.
         /// </summary>
         /// <param name="current">The current.</param>
@@ -421,7 +371,6 @@ namespace DarlCompiler.Parsing.Construction
             return result;
         }
 
-        /// <summary>
         /// Gets the shifted cores.
         /// </summary>
         /// <returns>LR0ItemSet.</returns>
@@ -433,7 +382,6 @@ namespace DarlCompiler.Parsing.Construction
                     result.Add(item.Core.ShiftedItem);
             return result;
         }
-        /// <summary>
         /// Selects the by lookahead.
         /// </summary>
         /// <param name="lookahead">The lookahead.</param>
@@ -449,40 +397,32 @@ namespace DarlCompiler.Parsing.Construction
 
     }
 
-    /// <summary>
     /// Class LR0Item.
     /// </summary>
     public partial class LR0Item
     {
-        /// <summary>
         /// The production
         /// </summary>
         public readonly Production Production;
-        /// <summary>
         /// The position
         /// </summary>
         public readonly int Position;
-        /// <summary>
         /// The current
         /// </summary>
         public readonly BnfTerm Current;
-        /// <summary>
         /// The tail is nullable
         /// </summary>
         public bool TailIsNullable;
-        /// <summary>
         /// The hints
         /// </summary>
         public GrammarHintList Hints = new GrammarHintList();
 
         //automatically generated IDs - used for building keys for lists of kernel LR0Items
         // which in turn are used to quickly lookup parser states in hash
-        /// <summary>
         /// The identifier
         /// </summary>
         internal readonly int ID;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="LR0Item"/> class.
         /// </summary>
         /// <param name="id">The identifier.</param>
@@ -500,7 +440,6 @@ namespace DarlCompiler.Parsing.Construction
             _hashCode = ID.ToString().GetHashCode();
         }
 
-        /// <summary>
         /// Gets the shifted item.
         /// </summary>
         /// <value>The shifted item.</value>
@@ -514,7 +453,6 @@ namespace DarlCompiler.Parsing.Construction
                     return Production.LR0Items[Position + 1];
             }
         }
-        /// <summary>
         /// Gets a value indicating whether this instance is kernel.
         /// </summary>
         /// <value><c>true</c> if this instance is kernel; otherwise, <c>false</c>.</value>
@@ -522,7 +460,6 @@ namespace DarlCompiler.Parsing.Construction
         {
             get { return Position > 0; }
         }
-        /// <summary>
         /// Gets a value indicating whether this instance is initial.
         /// </summary>
         /// <value><c>true</c> if this instance is initial; otherwise, <c>false</c>.</value>
@@ -530,7 +467,6 @@ namespace DarlCompiler.Parsing.Construction
         {
             get { return Position == 0; }
         }
-        /// <summary>
         /// Gets a value indicating whether this instance is final.
         /// </summary>
         /// <value><c>true</c> if this instance is final; otherwise, <c>false</c>.</value>
@@ -538,7 +474,6 @@ namespace DarlCompiler.Parsing.Construction
         {
             get { return Position == Production.RValues.Count; }
         }
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -546,14 +481,12 @@ namespace DarlCompiler.Parsing.Construction
         {
             return Production.ProductionToString(Production, Position);
         }
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
         public override int GetHashCode()
         {
             return _hashCode;
-            /// <summary>
             /// The _hash code
             /// </summary>
         }
@@ -562,11 +495,9 @@ namespace DarlCompiler.Parsing.Construction
 
     }
 
-    /// <summary>
     /// Class LR0ItemList.
     /// </summary>
     public class LR0ItemList : List<LR0Item> { }
-    /// <summary>
     /// Class LR0ItemSet.
     /// </summary>
     [Serializable]

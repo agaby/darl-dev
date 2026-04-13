@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="BnfExpression.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -18,12 +18,10 @@ namespace DarlCompiler.Parsing
 {
 
     //BNF expressions are represented as OR-list of Plus-lists of BNF terms
-    /// <summary>
     /// Class BnfExpressionData.
     /// </summary>
     internal class BnfExpressionData : List<BnfTermList>
     {
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -50,13 +48,11 @@ namespace DarlCompiler.Parsing
         }
     }
 
-    /// <summary>
     /// Class BnfExpression.
     /// </summary>
     public class BnfExpression : BnfTerm
     {
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="BnfExpression"/> class.
         /// </summary>
         /// <param name="element">The element.</param>
@@ -65,7 +61,6 @@ namespace DarlCompiler.Parsing
         {
             Data[0].Add(element);
         }
-        /// <summary>
         /// Initializes a new instance of the <see cref="BnfExpression"/> class.
         /// </summary>
         public BnfExpression()
@@ -75,11 +70,9 @@ namespace DarlCompiler.Parsing
             Data.Add(new BnfTermList());
         }
 
-        /// <summary>
         /// The data
         /// </summary>
         internal BnfExpressionData Data;
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -89,7 +82,6 @@ namespace DarlCompiler.Parsing
         }
 
         #region Implicit cast operators
-        /// <summary>
         /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="BnfExpression"/>.
         /// </summary>
         /// <param name="symbol">The symbol.</param>
@@ -101,7 +93,6 @@ namespace DarlCompiler.Parsing
         //It seems better to define one method instead of the following two, with parameter of type BnfTerm -
         // but that's not possible - it would be a conversion from base type of BnfExpression itself, which
         // is not allowed in c#
-        /// <summary>
         /// Performs an implicit conversion from <see cref="Terminal"/> to <see cref="BnfExpression"/>.
         /// </summary>
         /// <param name="term">The term.</param>
@@ -110,7 +101,6 @@ namespace DarlCompiler.Parsing
         {
             return new BnfExpression(term);
         }
-        /// <summary>
         /// Performs an implicit conversion from <see cref="NonTerminal"/> to <see cref="BnfExpression"/>.
         /// </summary>
         /// <param name="nonTerminal">The non terminal.</param>

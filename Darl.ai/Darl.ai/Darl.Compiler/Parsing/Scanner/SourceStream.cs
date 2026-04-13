@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="SourceStream.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -17,32 +17,26 @@ using System;
 namespace DarlCompiler.Parsing
 {
 
-    /// <summary>
     /// Class SourceStream.
     /// </summary>
     public class SourceStream : ISourceStream
     {
-        /// <summary>
         /// The _string comparison
         /// </summary>
         readonly StringComparison _stringComparison;
 
-        /// <summary>
         /// The _tab width
         /// </summary>
         readonly int _tabWidth;
 
-        /// <summary>
         /// The _chars
         /// </summary>
         readonly char[] _chars;
 
-        /// <summary>
         /// The _text length
         /// </summary>
         readonly int _textLength;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="SourceStream"/> class.
         /// </summary>
         /// <param name="text">The text.</param>
@@ -53,7 +47,6 @@ namespace DarlCompiler.Parsing
         {
         }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="SourceStream"/> class.
         /// </summary>
         /// <param name="text">The text.</param>
@@ -74,21 +67,18 @@ namespace DarlCompiler.Parsing
         }
 
         #region ISourceStream Members
-        /// <summary>
         /// Returns the source text
         /// </summary>
         /// <value>The text.</value>
         public string Text
         {
             get { return _text; }
-            /// <summary>
             /// The _text
             /// </summary>
         }
 
         readonly string _text;
 
-        /// <summary>
         /// Gets or sets the current position in the source file. When reading the value, returns Location.Position value.
         /// When a new value is assigned, the Location is modified accordingly.
         /// </summary>
@@ -103,7 +93,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Gets or sets the start location (position, row, column) of the new token
         /// </summary>
         /// <value>The location.</value>
@@ -112,13 +101,11 @@ namespace DarlCompiler.Parsing
             [System.Diagnostics.DebuggerStepThrough]
             get { return _location; }
             set { _location = value; }
-            /// <summary>
             /// The _location
             /// </summary>
         }
         SourceLocation _location;
 
-        /// <summary>
         /// Gets or sets the current preview position in the source file. Must be greater or equal to Location.Position
         /// </summary>
         /// <value>The preview position.</value>
@@ -126,13 +113,11 @@ namespace DarlCompiler.Parsing
         {
             get { return _previewPosition; }
             set { _previewPosition = value; }
-            /// <summary>
             /// The _preview position
             /// </summary>
         }
         int _previewPosition;
 
-        /// <summary>
         /// Gets a char at preview position
         /// </summary>
         /// <value>The preview character.</value>
@@ -147,7 +132,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Gets the char at position next after the PrevewPosition
         /// </summary>
         /// <value>The next preview character.</value>
@@ -161,7 +145,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Tries to match the symbol with the text at current preview position.
         /// </summary>
         /// <param name="symbol">A symbol to match</param>
@@ -183,7 +166,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Creates a new token based on current preview position.
         /// </summary>
         /// <param name="terminal">A terminal associated with the token.</param>
@@ -193,7 +175,6 @@ namespace DarlCompiler.Parsing
             var tokenText = GetPreviewText();
             return new Token(terminal, this.Location, tokenText, tokenText);
         }
-        /// <summary>
         /// Creates a new token based on current preview position and sets its Value field.
         /// </summary>
         /// <param name="terminal">A terminal associated with the token.</param>
@@ -205,7 +186,6 @@ namespace DarlCompiler.Parsing
             return new Token(terminal, this.Location, tokenText, value);
         }
 
-        /// <summary>
         /// EOFs this instance.
         /// </summary>
         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
@@ -217,7 +197,6 @@ namespace DarlCompiler.Parsing
         #endregion
 
         //returns substring from Location.Position till (PreviewPosition - 1)
-        /// <summary>
         /// Gets the preview text.
         /// </summary>
         /// <returns>System.String.</returns>
@@ -231,7 +210,6 @@ namespace DarlCompiler.Parsing
         }
 
         // To make debugging easier: show 20 chars from current position
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -254,7 +232,6 @@ namespace DarlCompiler.Parsing
         }
 
         //Computes the Location info (line, col) for a new source position.
-        /// <summary>
         /// Sets the new position.
         /// </summary>
         /// <param name="newPosition">The new position.</param>

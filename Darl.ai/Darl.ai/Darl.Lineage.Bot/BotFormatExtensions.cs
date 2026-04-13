@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCommon;
@@ -58,7 +57,6 @@ namespace Darl.Lineage.Bot
             return sb.ToString();
         }
 
-        /// <summary>
         /// Create a BotFormat class from a given DARL file
         /// </summary>
         /// <param name="darl">the source</param>

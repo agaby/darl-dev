@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System;
@@ -6,16 +5,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DarlCommon
 {
-    /// <summary>
     /// Decides if a data item is provided from a rule set result or from a fixed value
     /// </summary>
     public enum SourceType { results, fixedvalue }
-    /// <summary>
     /// Decides the format of data sent with a post
     /// </summary>
     public enum PostType { darlvarlist, form }
 
-    /// <summary>
     /// Defines what is executed when a form completes.
     /// </summary>
     [Serializable]
@@ -68,7 +64,6 @@ namespace DarlCommon
 
         [Display(Name = "Post data source", Description = "Is the decision to send a POST message rule-set generated or fixed?")]
         public SourceType postDataSource { get; set; } = SourceType.fixedvalue;
-        /// <summary>
         /// The io and category that corresponds to a decision to send the POST, or "true","false" if fixed.
         /// </summary>
         [Display(Name = "Post data decision", Description = "The io and category that corresponds to a decision to post, or \"true\",\"false\" if fixed.")]

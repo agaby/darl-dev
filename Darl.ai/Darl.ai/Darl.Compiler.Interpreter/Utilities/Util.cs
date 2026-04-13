@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -18,12 +17,10 @@ using System;
 
 namespace DarlCompiler.Interpreter
 {
-    /// <summary>
     /// Class Util.
     /// </summary>
     public static class Util
     {
-        /// <summary>
         /// Safes the format.
         /// </summary>
         /// <param name="template">The template.</param>
@@ -43,7 +40,6 @@ namespace DarlCompiler.Interpreter
             return template;
         }
 
-        /// <summary>
         /// Checks the specified condition.
         /// </summary>
         /// <param name="condition">if set to <c>true</c> [condition].</param>

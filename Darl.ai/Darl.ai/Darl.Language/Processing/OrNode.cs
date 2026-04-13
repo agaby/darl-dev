@@ -1,16 +1,13 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements the OR operator
     /// </summary>
     public class OrNode : BinaryDarlNode
     {
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -28,7 +25,6 @@ namespace DarlLanguage.Processing
             return res1 | res2;
         }
 
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>
@@ -42,7 +38,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Walks the saliences.
         /// </summary>
         /// <param name="saliency">The saliency.</param>

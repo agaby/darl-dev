@@ -1,16 +1,13 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements the NOT operator
     /// </summary>
     public class NotNode : UnaryDarlNode
     {
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -25,7 +22,6 @@ namespace DarlLanguage.Processing
             return !res;
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>

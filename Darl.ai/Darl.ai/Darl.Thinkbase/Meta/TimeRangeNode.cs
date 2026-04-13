@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Interpreter;
@@ -47,7 +46,6 @@ namespace Darl.Thinkbase.Meta
         }
 
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>
@@ -60,7 +58,6 @@ namespace Darl.Thinkbase.Meta
                 return "timerange( ";
             }
         }
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>
@@ -74,7 +71,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// Gets the postamble.
         /// </summary>
         /// <value>

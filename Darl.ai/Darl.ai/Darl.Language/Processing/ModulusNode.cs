@@ -1,17 +1,14 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements the modulus of a pair of numeric values
     /// </summary>
     public class ModulusNode : BinaryDarlNode
     {
 
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -27,7 +24,6 @@ namespace DarlLanguage.Processing
             return DarlResult.Modulus(res1, res2);
         }
 
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>

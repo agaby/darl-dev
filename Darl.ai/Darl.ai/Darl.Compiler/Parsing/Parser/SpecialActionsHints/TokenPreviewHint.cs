@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -20,41 +19,32 @@ namespace DarlCompiler.Parsing
 {
     using ConditionalEntry = ConditionalParserAction.ConditionalEntry;
 
-    /// <summary>
     /// Class TokenPreviewHint.
     /// </summary>
     public class TokenPreviewHint : GrammarHint
     {
-        /// <summary>
         /// The maximum preview tokens
         /// </summary>
         public int MaxPreviewTokens = 1000;
-        /// <summary>
         /// The _action type
         /// </summary>
         private readonly PreferredActionType _actionType;
-        /// <summary>
         /// The _first string
         /// </summary>
         private readonly string _firstString;
-        /// <summary>
         /// The _before strings
         /// </summary>
         private readonly StringSet _beforeStrings = new StringSet();
-        /// <summary>
         /// The _first terminal
         /// </summary>
         private Terminal _firstTerminal;
-        /// <summary>
         /// The _before terminals
         /// </summary>
         private readonly TerminalSet _beforeTerminals = new TerminalSet();
-        /// <summary>
         /// The _description
         /// </summary>
         private string _description;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="TokenPreviewHint"/> class.
         /// </summary>
         /// <param name="actionType">Type of the action.</param>
@@ -66,7 +56,6 @@ namespace DarlCompiler.Parsing
             _firstString = thisSymbol;
             _beforeStrings.AddRange(comesBefore);
         }
-        /// <summary>
         /// Initializes a new instance of the <see cref="TokenPreviewHint"/> class.
         /// </summary>
         /// <param name="actionType">Type of the action.</param>
@@ -80,7 +69,6 @@ namespace DarlCompiler.Parsing
         }
 
 
-        /// <summary>
         /// Initializes the specified grammar data.
         /// </summary>
         /// <param name="grammarData">The grammar data.</param>
@@ -100,7 +88,6 @@ namespace DarlCompiler.Parsing
             _description = string.Format("{0} if {1} comes before {2}.", _actionType, _firstTerminal.Name, beforeTerms);
         }
 
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -111,7 +98,6 @@ namespace DarlCompiler.Parsing
             return _description;
         }
 
-        /// <summary>
         /// Gives a chance to a custom code in hint to interfere in parser automaton construction.
         /// </summary>
         /// <param name="language">The LanguageData instance.</param>
@@ -162,7 +148,6 @@ namespace DarlCompiler.Parsing
 
         }
 
-        /// <summary>
         /// Checks the condition.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -197,7 +182,6 @@ namespace DarlCompiler.Parsing
         //Check if there is an action already in state for this term; if yes, and it is Conditional action, 
         // then simply add an extra conditional entry to it. If an action does not exist, or it is not conditional, 
         // create new conditional action for this term.
-        /// <summary>
         /// Adds the conditional entry.
         /// </summary>
         /// <param name="state">The state.</param>
@@ -225,7 +209,6 @@ namespace DarlCompiler.Parsing
         //Find an LR item without hints compatible with term (either shift on term or reduce with term as lookahead); 
         // this item without hints would become our default. We assume that other items have hints, and when conditions
         // on all these hints fail, we chose this remaining item without hints.
-        /// <summary>
         /// Finds the default action.
         /// </summary>
         /// <param name="state">The state.</param>

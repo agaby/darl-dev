@@ -1,17 +1,14 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Collections.Generic;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Processes and matches sequences
     /// </summary>
     /// <typeparam name="T">The kind of sequenced entity</typeparam>
     public class Sequence<T>
     {
-        /// <summary>
         /// Finds a match in the source.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -27,7 +24,6 @@ namespace DarlLanguage.Processing
 
         }
 
-        /// <summary>
         /// Recursively match the sequence.
         /// </summary>
         /// <param name="source">The source.</param>

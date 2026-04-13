@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -20,21 +19,17 @@ using System.Collections.Generic;
 namespace DarlCompiler.Parsing
 {
     //Terminal for reading values enclosed in a pair of start/end characters. For ex, date literal #15/10/2009# in VB
-    /// <summary>
     /// Class QuotedValueLiteral.
     /// </summary>
     public class QuotedValueLiteral : DataLiteralBase
     {
-        /// <summary>
         /// The start symbol
         /// </summary>
         public string StartSymbol;
-        /// <summary>
         /// The end symbol
         /// </summary>
         public string EndSymbol;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="QuotedValueLiteral"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -42,7 +37,6 @@ namespace DarlCompiler.Parsing
         /// <param name="dataType">Type of the data.</param>
         public QuotedValueLiteral(string name, string startEndSymbol, TypeCode dataType) : this(name, startEndSymbol, startEndSymbol, dataType) { }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="QuotedValueLiteral"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -56,7 +50,6 @@ namespace DarlCompiler.Parsing
             EndSymbol = endSymbol;
         }
 
-        /// <summary>
         /// Gets the firsts.
         /// </summary>
         /// <returns>IList&lt;System.String&gt;.</returns>
@@ -64,7 +57,6 @@ namespace DarlCompiler.Parsing
         {
             return new string[] { StartSymbol };
         }
-        /// <summary>
         /// Reads the body.
         /// </summary>
         /// <param name="context">The context.</param>

@@ -1,16 +1,13 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements numeric raising to a power including fuzzy arithmetic.
     /// </summary>
     public class PowerNode : BinaryDarlNode
     {
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>

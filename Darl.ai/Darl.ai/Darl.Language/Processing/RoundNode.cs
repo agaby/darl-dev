@@ -1,17 +1,14 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements numeric rounding including fuzzy arithmetic.
     /// </summary>
     public class RoundNode : BinaryDarlNode
     {
 
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>

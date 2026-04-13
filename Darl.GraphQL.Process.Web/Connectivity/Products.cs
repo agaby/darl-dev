@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.GraphQL.Models.Models;
@@ -12,7 +11,6 @@ using System.Linq;
 namespace Darl.GraphQL.Models.Connectivity
 {
 
-    /// <summary>
     /// makes Stripe single source of truth for products
     /// download the current set of active products
     /// </summary>

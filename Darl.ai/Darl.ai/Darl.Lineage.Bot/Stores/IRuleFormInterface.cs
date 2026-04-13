@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCommon;
@@ -9,7 +8,6 @@ namespace Darl.Lineage.Bot.Stores
 {
     public interface IRuleFormInterface
     {
-        /// <summary>
         /// Get a RuleForm object by name
         /// </summary>
         /// <param name="address"></param>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -19,24 +18,19 @@ using Darl.ai;
 namespace DarlCompiler.Parsing
 {
 
-    /// <summary>
     /// Struct SourceLocation
     /// </summary>
     public struct SourceLocation
     {
-        /// <summary>
         /// The position
         /// </summary>
         public int Position;
-        /// <summary>
         /// Source line number, 0-based.
         /// </summary>
         public int Line;
-        /// <summary>
         /// Source column number, 0-based.
         /// </summary>
         public int Column;
-        /// <summary>
         /// Initializes a new instance of the <see cref="SourceLocation"/> struct.
         /// </summary>
         /// <param name="position">The position.</param>
@@ -49,7 +43,6 @@ namespace DarlCompiler.Parsing
             Column = column;
         }
         //Line/col are zero-based internally
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -58,7 +51,6 @@ namespace DarlCompiler.Parsing
             return string.Format(Resources.FmtRowCol, Line + 1, Column + 1);
         }
         //Line and Column displayed to user should be 1-based
-        /// <summary>
         /// To the UI string.
         /// </summary>
         /// <returns>System.String.</returns>
@@ -66,7 +58,6 @@ namespace DarlCompiler.Parsing
         {
             return string.Format(Resources.FmtRowCol, Line + 1, Column + 1);
         }
-        /// <summary>
         /// Compares the specified x.
         /// </summary>
         /// <param name="x">The x.</param>
@@ -78,20 +69,17 @@ namespace DarlCompiler.Parsing
             if (x.Position == y.Position) return 0;
             return 1;
         }
-        /// <summary>
         /// Gets the empty.
         /// </summary>
         /// <value>The empty.</value>
         public static SourceLocation Empty
         {
             get { return _empty; }
-            /// <summary>
             /// The _empty
             /// </summary>
         }
         static SourceLocation _empty = new SourceLocation();
 
-        /// <summary>
         /// Implements the +.
         /// </summary>
         /// <param name="x">The x.</param>
@@ -101,7 +89,6 @@ namespace DarlCompiler.Parsing
         {
             return new SourceLocation(x.Position + y.Position, x.Line + y.Line, x.Column + y.Column);
         }
-        /// <summary>
         /// Implements the +.
         /// </summary>
         /// <param name="x">The x.</param>
@@ -113,20 +100,16 @@ namespace DarlCompiler.Parsing
         }
     }//SourceLocation
 
-    /// <summary>
     /// Struct SourceSpan
     /// </summary>
     public struct SourceSpan
     {
-        /// <summary>
         /// The location
         /// </summary>
         public readonly SourceLocation Location;
-        /// <summary>
         /// The length
         /// </summary>
         public readonly int Length;
-        /// <summary>
         /// Initializes a new instance of the <see cref="SourceSpan"/> struct.
         /// </summary>
         /// <param name="location">The location.</param>
@@ -136,7 +119,6 @@ namespace DarlCompiler.Parsing
             Location = location;
             Length = length;
         }
-        /// <summary>
         /// Gets the end position.
         /// </summary>
         /// <value>The end position.</value>
@@ -144,7 +126,6 @@ namespace DarlCompiler.Parsing
         {
             get { return Location.Position + Length; }
         }
-        /// <summary>
         /// Ins the range.
         /// </summary>
         /// <param name="position">The position.</param>

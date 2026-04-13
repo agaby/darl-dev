@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -21,18 +20,15 @@ using System.Collections.Generic;
 namespace DarlCompiler.Parsing
 {
 
-    /// <summary>
     /// Class ParserAction.
     /// </summary>
     public abstract partial class ParserAction
     {
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ParserAction"/> class.
         /// </summary>
         public ParserAction() { }
 
-        /// <summary>
         /// Executes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -41,7 +37,6 @@ namespace DarlCompiler.Parsing
 
         }
 
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -52,7 +47,6 @@ namespace DarlCompiler.Parsing
 
     }
 
-    /// <summary>
     /// Class ParserActionTable.
     /// </summary>
     [Serializable]

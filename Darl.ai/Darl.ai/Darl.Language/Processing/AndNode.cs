@@ -1,17 +1,14 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements the AND operator
     /// </summary>
     public class AndNode : BinaryDarlNode
     {
 
-        /// <summary>
         /// Does the evaluate.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -27,7 +24,6 @@ namespace DarlLanguage.Processing
             return res1 & res2;
         }
 
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>
@@ -41,7 +37,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Walks the saliences.
         /// </summary>
         /// <param name="saliency">The incoming saliency.</param>

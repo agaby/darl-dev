@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -18,60 +17,48 @@ using DarlCompiler.Interpreter.Ast;
 using System;
 using System.Collections.Generic;
 
-/// <summary>
 /// The Interpreter namespace.
 /// </summary>
 namespace DarlCompiler.Interpreter
 {
 
-    /// <summary>
     /// Class ScopeInfoList.
     /// </summary>
     public class ScopeInfoList : List<ScopeInfo> { }
 
-    /// <summary>
     /// Describes all variables (locals and parameters) defined in a scope of a function or module.
     /// </summary>
     /// <remarks>ScopeInfo is metadata, it does not contain variable values. The Scope object (described by ScopeInfo) is a container for values.</remarks>
     // Note that all access to SlotTable is done through "lock" operator, so it's thread safe
     public class ScopeInfo
     {
-        /// <summary>
         /// The values count
         /// </summary>
         public int ValuesCount, ParametersCount;
-        /// <summary>
         /// The owner node
         /// </summary>
         public AstNode OwnerNode; //might be null
         // Static/singleton scopes only; for ex,  modules are singletons. Index in App.StaticScopes array  
-        /// <summary>
         /// The static index
         /// </summary>
         public int StaticIndex = -1;
-        /// <summary>
         /// The level
         /// </summary>
         public int Level;
-        /// <summary>
         /// As string
         /// </summary>
         public readonly string AsString;
-        /// <summary>
         /// The scope instance
         /// </summary>
         public Scope ScopeInstance; //Experiment: reusable scope instance; see ScriptThread.cs class
 
-        /// <summary>
         /// The _slots
         /// </summary>
         private readonly SlotInfoDictionary _slots;
-        /// <summary>
         /// The lock object
         /// </summary>
         protected internal object LockObject = new object();
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ScopeInfo"/> class.
         /// </summary>
         /// <param name="ownerNode">The owner node.</param>
@@ -90,7 +77,6 @@ namespace DarlCompiler.Interpreter
         }
 
         //Lexical parent
-        /// <summary>
         /// Gets the parent.
         /// </summary>
         /// <value>The parent.</value>
@@ -102,13 +88,11 @@ namespace DarlCompiler.Interpreter
                     _parent = GetParent();
                 return _parent;
             }
-            /// <summary>
             /// The _parent
             /// </summary>
         }
         ScopeInfo _parent;
 
-        /// <summary>
         /// Gets the parent.
         /// </summary>
         /// <returns>ScopeInfo.</returns>
@@ -126,7 +110,6 @@ namespace DarlCompiler.Interpreter
         }
 
         #region Slot operations
-        /// <summary>
         /// Adds the slot.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -144,7 +127,6 @@ namespace DarlCompiler.Interpreter
         }
 
         //Returns null if slot not found.
-        /// <summary>
         /// Gets the slot.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -159,7 +141,6 @@ namespace DarlCompiler.Interpreter
             }
         }
 
-        /// <summary>
         /// Gets the slots.
         /// </summary>
         /// <returns>IList&lt;SlotInfo&gt;.</returns>
@@ -171,7 +152,6 @@ namespace DarlCompiler.Interpreter
             }
         }
 
-        /// <summary>
         /// Gets the names.
         /// </summary>
         /// <returns>IList&lt;System.String&gt;.</returns>
@@ -183,7 +163,6 @@ namespace DarlCompiler.Interpreter
             }
         }
 
-        /// <summary>
         /// Gets the slot count.
         /// </summary>
         /// <returns>System.Int32.</returns>
@@ -196,7 +175,6 @@ namespace DarlCompiler.Interpreter
         }
         #endregion
 
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>

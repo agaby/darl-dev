@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.GraphQL.Models.Models;
@@ -71,7 +70,6 @@ namespace Darl.GraphQL.Models.Connectivity
         }
 
 
-        /// <summary>
         /// Updates a real object
         /// </summary>
         /// <param name="compositeName"></param>
@@ -209,7 +207,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return _blob.List(userId);
         }
 
-        /// <summary>
         /// writes out any modified graph models to the blob storage
         /// </summary>
         /// <param name="stateInfo"></param>
@@ -259,7 +256,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return await _conn.GetKGModel(id, name);
         }
 
-        /// <summary>
         /// Recursively searches a network for dependencies
         /// </summary>
         /// <param name="model"></param>
@@ -282,7 +278,6 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        /// <summary>
         /// Creates a list of nodes connected by connections with lineages in path, with a depth value
         /// </summary>
         /// <param name="model">The model</param>
@@ -354,7 +349,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return await GetKnowledgeStateByExternalId(userId, subjectId, graphName, external);
         }
 
-        /// <summary>
         /// Get the KS 
         /// </summary>
         /// <param name="userId">The user</param>
@@ -425,7 +419,6 @@ namespace Darl.GraphQL.Models.Connectivity
         //very brute force and slow. consider caching, or using virtual world
 
 
-        /// <summary>
         /// Get data for VR display, including Attributes if required
         /// </summary>
         /// <param name="userId"></param>

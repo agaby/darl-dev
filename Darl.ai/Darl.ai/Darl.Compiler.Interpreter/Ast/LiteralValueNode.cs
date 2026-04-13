@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -20,17 +19,14 @@ using System.Threading.Tasks;
 
 namespace DarlCompiler.Interpreter.Ast
 {
-    /// <summary>
     /// Class LiteralValueNode.
     /// </summary>
     public class LiteralValueNode : AstNode
     {
-        /// <summary>
         /// The value
         /// </summary>
         public object Value;
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -44,7 +40,6 @@ namespace DarlCompiler.Interpreter.Ast
                 AsString = "\"" + AsString + "\"";
         }
 
-        /// <summary>
         /// Does the evaluate.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -54,7 +49,6 @@ namespace DarlCompiler.Interpreter.Ast
             return Task.FromResult<object>(Value);
         }
 
-        /// <summary>
         /// Determines whether this instance is constant.
         /// </summary>
         /// <returns><c>true</c> if this instance is constant; otherwise, <c>false</c>.</returns>

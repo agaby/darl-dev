@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -23,19 +22,16 @@ namespace DarlCompiler.Parsing
     // ie those on the "left" of precedence comparison. It does not set precedence when operator symbol first appears in parser
     // input. This works OK for unary operator but might break some advanced scenarios.
 
-    /// <summary>
     /// Class ImpliedPrecedenceHint.
     /// </summary>
     public class ImpliedPrecedenceHint : GrammarHint
     {
-        /// <summary>
         /// The implied precedence custom flag
         /// </summary>
         public const int ImpliedPrecedenceCustomFlag = 0x01000000; // a flag to mark a state for setting implied precedence
 
         //GrammarHint inherits Precedence and Associativity members from BnfTerm; we'll use them to store implied values for this hint
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ImpliedPrecedenceHint"/> class.
         /// </summary>
         /// <param name="precedence">The precedence.</param>
@@ -46,7 +42,6 @@ namespace DarlCompiler.Parsing
             Associativity = associativity;
         }
 
-        /// <summary>
         /// Gives a chance to a custom code in hint to interfere in parser automaton construction.
         /// </summary>
         /// <param name="language">The LanguageData instance.</param>
@@ -66,7 +61,6 @@ namespace DarlCompiler.Parsing
             curr.Shifting += Term_Shifting;
         }
 
-        /// <summary>
         /// Handles the Shifting event of the Term control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>

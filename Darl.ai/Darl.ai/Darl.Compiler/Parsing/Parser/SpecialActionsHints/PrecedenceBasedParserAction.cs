@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -19,22 +18,18 @@ using Darl.ai;
 namespace DarlCompiler.Parsing
 {
 
-    /// <summary>
     /// Class PrecedenceBasedParserAction.
     /// </summary>
     public class PrecedenceBasedParserAction : ConditionalParserAction
     {
-        /// <summary>
         /// The _shift action
         /// </summary>
         readonly ShiftParserAction _shiftAction;
 
-        /// <summary>
         /// The _reduce action
         /// </summary>
         readonly ReduceParserAction _reduceAction;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="PrecedenceBasedParserAction"/> class.
         /// </summary>
         /// <param name="shiftTerm">The shift term.</param>
@@ -48,7 +43,6 @@ namespace DarlCompiler.Parsing
             base.DefaultAction = _shiftAction = new ShiftParserAction(shiftTerm, newShiftState);
         }
 
-        /// <summary>
         /// Checks the must reduce.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -73,7 +67,6 @@ namespace DarlCompiler.Parsing
             return false;
         }
 
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>

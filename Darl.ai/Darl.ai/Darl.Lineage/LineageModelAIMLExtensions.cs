@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System;
@@ -87,7 +86,6 @@ namespace Darl.Lineage
                 catch { }
             }
         }
-        /// <summary>
         /// Tidy up after loading all AIML 
         /// </summary>
         public static void PostProcessAIML(this LineageModel lm)

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -19,13 +18,11 @@ using System.Xml;
 
 namespace DarlCompiler.Parsing
 {
-    /// <summary>
     /// Class ParseTreeExtensions.
     /// </summary>
     public static class ParseTreeExtensions
     {
 
-        /// <summary>
         /// To the XML.
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -42,7 +39,6 @@ namespace DarlCompiler.Parsing
             return sw.ToString();
         }
 
-        /// <summary>
         /// To the XML document.
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -58,7 +54,6 @@ namespace DarlCompiler.Parsing
             return xdoc;
         }
 
-        /// <summary>
         /// To the XML element.
         /// </summary>
         /// <param name="node">The node.</param>

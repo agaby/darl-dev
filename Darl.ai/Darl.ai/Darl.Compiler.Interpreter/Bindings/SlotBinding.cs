@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -22,33 +21,26 @@ namespace DarlCompiler.Interpreter
 
     // Implements fast access to a variable (local/global var or parameter) in local scope or in any enclosing scope
     // Important: the following code is very sensitive to even tiny changes - do not know exactly particular reasons. 
-    /// <summary>
     /// Class SlotBinding. This class cannot be inherited.
     /// </summary>
     public sealed class SlotBinding : Binding
     {
-        /// <summary>
         /// The slot
         /// </summary>
         public SlotInfo Slot;
-        /// <summary>
         /// From scope
         /// </summary>
         public ScopeInfo FromScope;
-        /// <summary>
         /// The slot index
         /// </summary>
         public int SlotIndex;
-        /// <summary>
         /// The static scope index
         /// </summary>
         public int StaticScopeIndex;
-        /// <summary>
         /// From node
         /// </summary>
         public AstNode FromNode;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="SlotBinding"/> class.
         /// </summary>
         /// <param name="slot">The slot.</param>
@@ -65,7 +57,6 @@ namespace DarlCompiler.Interpreter
             SetupAccessorMethods();
         }
 
-        /// <summary>
         /// Setups the accessor methods.
         /// </summary>
         private void SetupAccessorMethods()
@@ -128,7 +119,6 @@ namespace DarlCompiler.Interpreter
         // to the owner Identifier node as a location of error. 
 
         // Current scope
-        /// <summary>
         /// Fasts the get current scope value.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -146,7 +136,6 @@ namespace DarlCompiler.Interpreter
             }
         }
 
-        /// <summary>
         /// Gets the current scope value.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -161,7 +150,6 @@ namespace DarlCompiler.Interpreter
         }
 
 
-        /// <summary>
         /// Fasts the get current scope parameter.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -178,7 +166,6 @@ namespace DarlCompiler.Interpreter
                 return Task.FromResult<object>(GetCurrentScopeParameter(thread));
             }
         }
-        /// <summary>
         /// Gets the current scope parameter.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -192,7 +179,6 @@ namespace DarlCompiler.Interpreter
             catch { thread.CurrentNode = FromNode; throw; }
         }
 
-        /// <summary>
         /// Sets the current scope value.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -203,7 +189,6 @@ namespace DarlCompiler.Interpreter
             return Task.CompletedTask;
         }
 
-        /// <summary>
         /// Sets the current scope parameter.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -215,7 +200,6 @@ namespace DarlCompiler.Interpreter
         }
 
         // Static scope (module-level variables)
-        /// <summary>
         /// Fasts the get static value.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -231,7 +215,6 @@ namespace DarlCompiler.Interpreter
                 return Task.FromResult<object>(GetStaticValue(thread));
             }
         }
-        /// <summary>
         /// Gets the static value.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -246,7 +229,6 @@ namespace DarlCompiler.Interpreter
         }
 
 
-        /// <summary>
         /// Sets the static.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -258,7 +240,6 @@ namespace DarlCompiler.Interpreter
         }
 
         // Direct parent
-        /// <summary>
         /// Gets the immediate parent scope value.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -278,7 +259,6 @@ namespace DarlCompiler.Interpreter
             catch { thread.CurrentNode = FromNode; throw; }
         }
 
-        /// <summary>
         /// Gets the immediate parent scope parameter.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -298,7 +278,6 @@ namespace DarlCompiler.Interpreter
             catch { thread.CurrentNode = FromNode; throw; }
         }
 
-        /// <summary>
         /// Sets the immediate parent scope value.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -309,7 +288,6 @@ namespace DarlCompiler.Interpreter
             return Task.CompletedTask;
         }
 
-        /// <summary>
         /// Sets the immediate parent scope parameter.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -321,7 +299,6 @@ namespace DarlCompiler.Interpreter
         }
 
         // Generic case
-        /// <summary>
         /// Gets the parent scope value.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -331,7 +308,6 @@ namespace DarlCompiler.Interpreter
             var targetScope = GetTargetScope(thread);
             return Task.FromResult<object>(targetScope.GetValue(SlotIndex));
         }
-        /// <summary>
         /// Gets the parent scope parameter.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -341,7 +317,6 @@ namespace DarlCompiler.Interpreter
             var targetScope = GetTargetScope(thread);
             return Task.FromResult<object>(targetScope.GetParameter(SlotIndex));
         }
-        /// <summary>
         /// Sets the parent scope value.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -353,7 +328,6 @@ namespace DarlCompiler.Interpreter
             return Task.CompletedTask;
         }
 
-        /// <summary>
         /// Sets the parent scope parameter.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -365,7 +339,6 @@ namespace DarlCompiler.Interpreter
             return Task.CompletedTask;
         }
 
-        /// <summary>
         /// Gets the target scope.
         /// </summary>
         /// <param name="thread">The thread.</param>

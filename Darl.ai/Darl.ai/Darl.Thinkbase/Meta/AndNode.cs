@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
@@ -8,7 +7,6 @@ namespace Darl.Thinkbase.Meta
     public class AndNode : BinaryDarlMetaNode
     {
 
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>
@@ -22,7 +20,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// Does the evaluate.
         /// </summary>
         /// <param name="thread">The thread.</param>

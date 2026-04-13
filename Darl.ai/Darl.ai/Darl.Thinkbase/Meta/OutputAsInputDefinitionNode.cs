@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System;
@@ -29,7 +28,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// Calculate the mutual information between the data items indexed by the indexes in indices,
         /// from this input and the matching items in the output. dSplit is the partial result as in C4.
         /// </summary>
@@ -90,7 +88,6 @@ namespace Darl.Thinkbase.Meta
             return dResult;
         }
 
-        /// <summary>
         /// Writes out a single "is" term and asociated input and set/category/vocab
         /// </summary>
         /// <param name="middle">Receives text</param>

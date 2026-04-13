@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Thinkbase;
@@ -13,7 +12,6 @@ namespace Darl_standard.Darl.Thinkbase.Meta
 {
     public class ExistsNode : UnaryDarlMetaNode
     {
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -32,7 +30,6 @@ namespace Darl_standard.Darl.Thinkbase.Meta
 
             }
         }
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -84,7 +81,6 @@ namespace Darl_standard.Darl.Thinkbase.Meta
         }
 
 
-        /// <summary>
         /// Establishes dependencies and initializes constants
         /// </summary>
         /// <param name="dependencies">list of dependencies discovered</param>
@@ -96,7 +92,6 @@ namespace Darl_standard.Darl.Thinkbase.Meta
                 Argument.WalkDependencies(dependencies, currentOutput, context, model, currentNode);
         }
 
-        /// <summary>
         /// Walks the saliences.
         /// </summary>
         /// <param name="saliency">The incoming saliency.</param>
@@ -108,7 +103,6 @@ namespace Darl_standard.Darl.Thinkbase.Meta
                 Argument.WalkSaliences(saliency, root);
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>

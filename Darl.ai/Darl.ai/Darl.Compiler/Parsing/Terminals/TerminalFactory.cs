@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="TerminalFactory.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -17,13 +17,11 @@ using System.Globalization;
 
 namespace DarlCompiler.Parsing
 {
-    /// <summary>
     /// Class TerminalFactory.
     /// </summary>
     public static class TerminalFactory
     {
 
-        /// <summary>
         /// Creates the c sharp string.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -34,7 +32,6 @@ namespace DarlCompiler.Parsing
             term.AddPrefix("@", StringOptions.NoEscapes | StringOptions.AllowsLineBreak | StringOptions.AllowsDoubledQuote);
             return term;
         }
-        /// <summary>
         /// Creates the c sharp character.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -45,7 +42,6 @@ namespace DarlCompiler.Parsing
             return term;
         }
 
-        /// <summary>
         /// Creates the vb string.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -59,7 +55,6 @@ namespace DarlCompiler.Parsing
             return term;
         }
 
-        /// <summary>
         /// Creates the python string.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -80,7 +75,6 @@ namespace DarlCompiler.Parsing
         }
 
         //http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-334.pdf section 9.4.4
-        /// <summary>
         /// Creates the c sharp number.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -100,7 +94,6 @@ namespace DarlCompiler.Parsing
             return term;
         }
         //http://www.microsoft.com/downloads/details.aspx?FamilyId=6D50D709-EAA4-44D7-8AF3-E14280403E6E&displaylang=en section 2
-        /// <summary>
         /// Creates the vb number.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -129,7 +122,6 @@ namespace DarlCompiler.Parsing
             return term;
         }
         //http://docs.python.org/ref/numbers.html
-        /// <summary>
         /// Creates the python number.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -155,7 +147,6 @@ namespace DarlCompiler.Parsing
         // ...
         // In addition, the exponent marker e specifies the default precision for the implementation. The default precision 
         //  has at least as much precision as double, but implementations may wish to allow this default to be set by the user.
-        /// <summary>
         /// Creates the scheme number.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -179,7 +170,6 @@ namespace DarlCompiler.Parsing
         }
 
 
-        /// <summary>
         /// Creates the c sharp identifier.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -219,7 +209,6 @@ namespace DarlCompiler.Parsing
 
 
         //Covers simple identifiers like abcd, and also quoted versions: [abc d], "abc d".
-        /// <summary>
         /// Creates the SQL ext identifier.
         /// </summary>
         /// <param name="grammar">The grammar.</param>

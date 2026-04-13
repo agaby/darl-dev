@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Parsing;
@@ -8,7 +7,6 @@ using System.Linq;
 
 namespace DarlLanguage
 {
-    /// <summary>
     /// Terminal for DARL identifiers
     /// </summary>
     public class DarlIdentifier : IdentifierTerminal
@@ -17,7 +15,6 @@ namespace DarlLanguage
         static readonly HashSet<string> IOTokens = new HashSet<string>() { "numeric_input", "numeric_output", "categorical_input", "categorical_output", "textual_input", "textual_output", "temporal_output", "temporal_input", "store_io", "dynamic_categorical_input" };
         static readonly HashSet<string> ConstantTokens = new HashSet<string> { "numeric_constant", "string_constant", "sequence_constant", "temporal_constant" };
 
-        /// <summary>
         /// Gets the Qualified name.
         /// </summary>
         /// <value>
@@ -28,7 +25,6 @@ namespace DarlLanguage
         private static readonly Object thisLock = new Object();
 
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="DarlIdentifier"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -39,7 +35,6 @@ namespace DarlLanguage
 
 
 
-        /// <summary>
         /// Called when [validate token].
         /// </summary>
         /// <param name="context">The context.</param>

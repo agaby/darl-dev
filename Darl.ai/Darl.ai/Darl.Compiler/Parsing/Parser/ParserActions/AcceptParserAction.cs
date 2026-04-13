@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -18,13 +17,11 @@ using Darl.ai;
 
 namespace DarlCompiler.Parsing
 {
-    /// <summary>
     /// Class AcceptParserAction.
     /// </summary>
     public class AcceptParserAction : ParserAction
     {
 
-        /// <summary>
         /// Executes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -34,7 +31,6 @@ namespace DarlCompiler.Parsing
             context.Status = ParserStatus.Accepted;
         }
 
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>

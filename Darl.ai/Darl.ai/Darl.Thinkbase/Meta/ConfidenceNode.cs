@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -12,7 +11,6 @@ namespace Darl.Thinkbase.Meta
     {
         public double weight = 1.0;
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -34,7 +32,6 @@ namespace Darl.Thinkbase.Meta
             return Task.FromResult<object>(conf);
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>

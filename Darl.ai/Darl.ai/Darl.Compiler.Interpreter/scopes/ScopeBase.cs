@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -21,26 +20,21 @@ using System.Threading;
 namespace DarlCompiler.Interpreter
 {
 
-    /// <summary>
     /// Class ScopeBase.
     /// </summary>
     public class ScopeBase
     {
-        /// <summary>
         /// The information
         /// </summary>
         public ScopeInfo Info;
-        /// <summary>
         /// The values
         /// </summary>
         public volatile object[] Values;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ScopeBase"/> class.
         /// </summary>
         /// <param name="scopeInfo">The scope information.</param>
         public ScopeBase(ScopeInfo scopeInfo) : this(scopeInfo, null) { }
-        /// <summary>
         /// Initializes a new instance of the <see cref="ScopeBase"/> class.
         /// </summary>
         /// <param name="scopeInfo">The scope information.</param>
@@ -53,7 +47,6 @@ namespace DarlCompiler.Interpreter
                 Values = new object[scopeInfo.ValuesCount];
         }
 
-        /// <summary>
         /// Adds the slot.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -66,7 +59,6 @@ namespace DarlCompiler.Interpreter
             return slot;
         }
 
-        /// <summary>
         /// Gets the values.
         /// </summary>
         /// <returns>System.Object[].</returns>
@@ -75,7 +67,6 @@ namespace DarlCompiler.Interpreter
             return Values;
         }
 
-        /// <summary>
         /// Gets the value.
         /// </summary>
         /// <param name="index">The index.</param>
@@ -104,7 +95,6 @@ namespace DarlCompiler.Interpreter
 
         }
 
-        /// <summary>
         /// Sets the value.
         /// </summary>
         /// <param name="index">The index.</param>
@@ -139,7 +129,6 @@ namespace DarlCompiler.Interpreter
         // According to MSDN for CS0420 warning (see http://msdn.microsoft.com/en-us/library/4bw5ewxy.aspx),
         // this does NOT apply to Interlocked API - which we use here.
 #pragma warning disable 0420
-        /// <summary>
         /// Resizes the specified new size.
         /// </summary>
         /// <param name="newSize">The new size.</param>
@@ -154,7 +143,6 @@ namespace DarlCompiler.Interpreter
             }
         }
 
-        /// <summary>
         /// Ases the dictionary.
         /// </summary>
         /// <returns>IDictionary&lt;System.String, System.Object&gt;.</returns>
@@ -163,7 +151,6 @@ namespace DarlCompiler.Interpreter
             return new ScopeValuesDictionary(this);
         }
 
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>

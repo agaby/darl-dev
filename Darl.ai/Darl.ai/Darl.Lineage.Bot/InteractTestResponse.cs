@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Thinkbase.Meta;
@@ -22,7 +21,6 @@ namespace Darl.Lineage.Bot
 
         public DarlMetaActivity? codeActivity { get; set; }
 
-        /// <summary>
         /// Add highlighting to the darl code using markdown based on the codeActivity list
         /// </summary>
         /// <returns>A markdown string</returns>

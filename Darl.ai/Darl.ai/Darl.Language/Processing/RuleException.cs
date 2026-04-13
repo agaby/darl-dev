@@ -1,28 +1,23 @@
-/// <summary>
 /// </summary>
 
 ﻿using System;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// A ruleset specific exception
     /// </summary>
     [Serializable]
     public class RuleException : Exception
     {
-        /// <summary>
         /// Initializes a RuleException object
         /// </summary>
         public RuleException()
             : base() { }
-        /// <summary>
         /// Initializes a RuleException object
         /// </summary>
         /// <param name="message">Text to pass with the exception</param>
         public RuleException(String message)
             : base(message) { }
-        /// <summary>
         /// Initializes a RuleException object
         /// </summary>
         /// <param name="message">Text to pass with the exception</param>

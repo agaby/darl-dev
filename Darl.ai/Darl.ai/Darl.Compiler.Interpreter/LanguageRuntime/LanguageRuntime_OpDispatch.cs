@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -21,18 +20,15 @@ using System.Linq.Expressions;
 namespace DarlCompiler.Interpreter
 {
 
-    /// <summary>
     /// Class LanguageRuntime.
     /// </summary>
     public partial class LanguageRuntime
     {
-        /// <summary>
         /// The operator implementations
         /// </summary>
         public readonly OperatorImplementationTable OperatorImplementations = new OperatorImplementationTable(2000);
 
 
-        /// <summary>
         /// Executes the binary operator.
         /// </summary>
         /// <param name="op">The op.</param>
@@ -100,7 +96,6 @@ namespace DarlCompiler.Interpreter
 
         }
 
-        /// <summary>
         /// Executes the unary operator.
         /// </summary>
         /// <param name="op">The op.</param>
@@ -151,7 +146,6 @@ namespace DarlCompiler.Interpreter
         }
 
 
-        /// <summary>
         /// Checks the unassigned.
         /// </summary>
         /// <param name="value">The value.</param>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -24,13 +23,11 @@ using System.Threading.Tasks;
 
 namespace DarlCompiler.Interpreter
 {
-    /// <summary>
     /// Base class for languages that use Darl Interpreter to execute scripts.
     /// </summary>
     public abstract class InterpretedMetaLanguageGrammar : InterpretedLanguageGrammar
     {
         // making the class abstract so it won't load into Grammar Explorer
-        /// <summary>
         /// Initializes a new instance of the <see cref="InterpretedMetaLanguageGrammar"/> class.
         /// </summary>
         /// <param name="caseSensitive">if set to <c>true</c> [case sensitive].</param>
@@ -40,7 +37,6 @@ namespace DarlCompiler.Interpreter
             this.LanguageFlags = LanguageFlags.CreateAst;
         }
 
-        /// <summary>
         /// Runs the sample.
         /// </summary>
         /// <param name="args">The arguments.</param>

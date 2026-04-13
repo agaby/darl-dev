@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -10,42 +9,34 @@ using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// THe root node of the evaluation tree
     /// </summary>
     public class MapRootNode : DarlNode
     {
-        /// <summary>
         /// The rulesets
         /// </summary>
         public Dictionary<string, RuleSetNode> rulesets = new Dictionary<string, RuleSetNode>();
-        /// <summary>
         /// The inputs
         /// </summary>
         public Dictionary<string, MapInputDefinitionNode> inputs = new Dictionary<string, MapInputDefinitionNode>();
-        /// <summary>
         /// The outputs
         /// </summary>
         public Dictionary<string, MapOutputDefinitionNode> outputs = new Dictionary<string, MapOutputDefinitionNode>();
 
 
         public Dictionary<string, MapStoreDefinitionNode> stores = new Dictionary<string, MapStoreDefinitionNode>();
-        /// <summary>
         /// The wires
         /// </summary>
         public List<WireDefinitionNode> wires = new List<WireDefinitionNode>();
 
-        /// <summary>
         /// The delays{CC2D43FA-BBC4-448A-9D0B-7B57ADF2655C}
         /// </summary>
         public List<DelayDefinitionNode> delays = new List<DelayDefinitionNode>();
 
-        /// <summary>
         /// The ordered rulesets
         /// </summary>
         public List<RuleSetNode> orderedRulesets;
 
-        /// <summary>
         /// Gets the pattern.
         /// </summary>
         /// <value>
@@ -53,7 +44,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public string pattern { get; private set; }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -134,7 +124,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -203,7 +192,6 @@ namespace DarlLanguage.Processing
             return null;
         }
 
-        /// <summary>
         /// Calculates the saliences.
         /// </summary>
         /// <param name="currentState">Current state of the inputs or outputs.</param>

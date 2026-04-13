@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Parsing;
@@ -10,12 +9,10 @@ using System.Text;
 
 namespace DarlLanguage
 {
-    /// <summary>
     /// Darl Parse tree extensions
     /// </summary>
     public static class DarlParseTreeExtensions
     {
-        /// <summary>
         /// Extension method converting a parse tree back to formatted source code
         /// </summary>
         /// <param name="parseTree">The tree to convert</param>
@@ -28,7 +25,6 @@ namespace DarlLanguage
         }
 
 
-        /// <summary>
         /// Recursively builds a string from the tree of nodes
         /// </summary>
         /// <param name="node">The current parent node</param>
@@ -58,7 +54,6 @@ namespace DarlLanguage
         }
 
 
-        /// <summary>
         /// Gets the map root node.
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -70,7 +65,6 @@ namespace DarlLanguage
             return parseTree.Root.AstNode as MapRootNode;
         }
 
-        /// <summary>
         /// Gets the map inputs.
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -83,7 +77,6 @@ namespace DarlLanguage
             return new List<MapInputDefinitionNode>(root.inputs.Values);
         }
 
-        /// <summary>
         /// Gets the map outputs.
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -96,7 +89,6 @@ namespace DarlLanguage
             return new List<MapOutputDefinitionNode>(root.outputs.Values);
         }
 
-        /// <summary>
         /// Get the map stores
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -109,7 +101,6 @@ namespace DarlLanguage
             return new List<MapStoreDefinitionNode>(root.stores.Values);
         }
 
-        /// <summary>
         /// Gets the type of the map input.
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -124,7 +115,6 @@ namespace DarlLanguage
 
         }
 
-        /// <summary>
         /// Gets the type of the map output.
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -138,7 +128,6 @@ namespace DarlLanguage
             return string.Empty;
         }
 
-        /// <summary>
         /// Gets the map output range.
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -166,7 +155,6 @@ namespace DarlLanguage
 
         }
 
-        /// <summary>
         /// Gets the map input range.
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -189,7 +177,6 @@ namespace DarlLanguage
             return res;
         }
 
-        /// <summary>
         /// Gets the map practical input range.
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -371,7 +358,6 @@ namespace DarlLanguage
 
         }
 
-        /// <summary>
         /// delete all the rules associated with an output
         /// </summary>
         /// <param name="tree"></param> 
@@ -391,7 +377,6 @@ namespace DarlLanguage
         }
 
 
-        /// <summary>
         /// Gets the map output categories.
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -421,7 +406,6 @@ namespace DarlLanguage
             return cats.ToList();
         }
 
-        /// <summary>
         /// Gets the map input categories.
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -453,7 +437,6 @@ namespace DarlLanguage
             return cats.ToList();
         }
 
-        /// <summary>
         /// Get the ruleset inputs connected to this map input in this tree
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -480,7 +463,6 @@ namespace DarlLanguage
             return inputs;
         }
 
-        /// <summary>
         /// Gets the ruleset outputs connected to this map output
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -505,7 +487,6 @@ namespace DarlLanguage
             return outputs;
         }
 
-        /// <summary>
         /// Create an HTML Version of a parse tree
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>

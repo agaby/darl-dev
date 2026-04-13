@@ -1,16 +1,13 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements temporal addition including fuzzy arithmetic.
     /// </summary>
     public class TemporalPlusNode : BinaryDarlNode
     {
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 using System;
@@ -7,7 +6,6 @@ using System.Text;
 
 namespace Darl.Lacuna
 {
-    /// <summary>
     /// Used to report lacunae in Rulesets
     /// </summary>
     [Serializable]
@@ -54,7 +52,6 @@ namespace Darl.Lacuna
             return build.ToString();
         }
     }
-    /// <summary>
     /// A report for a given output
     /// </summary>
     [Serializable]
@@ -63,7 +60,6 @@ namespace Darl.Lacuna
         public string name;
         public SingleLacuna[] lacunae;
     }
-    /// <summary>
     /// A report on a lacuna
     /// </summary>
     [Serializable]
@@ -73,29 +69,23 @@ namespace Darl.Lacuna
         public double minimumConfidence;
         public int examples;
     }
-    /// <summary>
     /// Details for that individual input
     /// </summary>
     [Serializable]
     public class LacunaInput
     {
-        /// <summary>
         /// Lower bound of the numeric lacuna
         /// </summary>
         public string minValue;
-        /// <summary>
         /// upper bound of the numeric lacuna
         /// </summary>
         public string maxValue;
-        /// <summary>
         /// Name opf the input
         /// </summary>
         public string name;
-        /// <summary>
         /// lacuna category if categorical
         /// </summary>
         public string category;
-        /// <summary>
         /// Textual version of type of input
         /// </summary>
         public string inputType;

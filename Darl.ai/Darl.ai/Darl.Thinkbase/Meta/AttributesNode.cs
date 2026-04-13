@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Linq;
@@ -28,7 +27,6 @@ namespace Darl.Thinkbase.Meta
         }
 
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>
@@ -42,7 +40,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>
@@ -56,7 +53,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// Gets the postamble.
         /// </summary>
         /// <value>

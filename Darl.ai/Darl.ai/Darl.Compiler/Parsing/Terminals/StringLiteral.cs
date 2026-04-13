@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="StringLiteral.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -19,49 +19,38 @@ using System.Collections.Generic;
 namespace DarlCompiler.Parsing
 {
 
-    /// <summary>
     /// Enum StringOptions
     /// </summary>
     [Flags]
     public enum StringOptions : short
     {
-        /// <summary>
         /// The none
         /// </summary>
         None = 0,
-        /// <summary>
         /// The is character
         /// </summary>
         IsChar = 0x01,
-        /// <summary>
         /// The allows doubled quote
         /// </summary>
         AllowsDoubledQuote = 0x02, //Convert doubled start/end symbol to a single symbol; for ex. in SQL, '' -> '
-        /// <summary>
         /// The allows line break
         /// </summary>
         AllowsLineBreak = 0x04,
-        /// <summary>
         /// The is template
         /// </summary>
         IsTemplate = 0x08, //Can include embedded expressions that should be evaluated on the fly; ex in Ruby: "hello #{name}"
-        /// <summary>
         /// The no escapes
         /// </summary>
         NoEscapes = 0x10,
-        /// <summary>
         /// The allows u escapes
         /// </summary>
         AllowsUEscapes = 0x20,
-        /// <summary>
         /// The allows x escapes
         /// </summary>
         AllowsXEscapes = 0x40,
-        /// <summary>
         /// The allows octal escapes
         /// </summary>
         AllowsOctalEscapes = 0x80,
-        /// <summary>
         /// The allows all escapes
         /// </summary>
         AllowsAllEscapes = AllowsUEscapes | AllowsXEscapes | AllowsOctalEscapes,
@@ -72,61 +61,49 @@ namespace DarlCompiler.Parsing
     // like in Ruby:
     // "Hello, #{name}"
     // Default values match settings for Ruby strings
-    /// <summary>
     /// Class StringTemplateSettings.
     /// </summary>
     public class StringTemplateSettings
     {
-        /// <summary>
         /// The start tag
         /// </summary>
         public string StartTag = "#{";
-        /// <summary>
         /// The end tag
         /// </summary>
         public string EndTag = "}";
-        /// <summary>
         /// The expression root
         /// </summary>
         public NonTerminal ExpressionRoot;
     }
 
-    /// <summary>
     /// Class StringLiteral.
     /// </summary>
     public class StringLiteral : CompoundTerminalBase
     {
 
-        /// <summary>
         /// Enum StringFlagsInternal
         /// </summary>
         public enum StringFlagsInternal : short
         {
-            /// <summary>
             /// The has escapes
             /// </summary>
             HasEscapes = 0x100,
         }
 
         #region StringSubType
-        /// <summary>
         /// Class StringSubType.
         /// </summary>
         class StringSubType
         {
-            /// <summary>
             /// The start
             /// </summary>
             internal readonly string Start, End;
-            /// <summary>
             /// The flags
             /// </summary>
             internal readonly StringOptions Flags;
-            /// <summary>
             /// The index
             /// </summary>
             internal readonly byte Index;
-            /// <summary>
             /// Initializes a new instance of the <see cref="StringSubType"/> class.
             /// </summary>
             /// <param name="start">The start.</param>
@@ -141,7 +118,6 @@ namespace DarlCompiler.Parsing
                 Index = index;
             }
 
-            /// <summary>
             /// Longers the start first.
             /// </summary>
             /// <param name="x">The x.</param>
@@ -157,12 +133,10 @@ namespace DarlCompiler.Parsing
                 return 0;
             }
         }
-        /// <summary>
         /// Class StringSubTypeList.
         /// </summary>
         class StringSubTypeList : List<StringSubType>
         {
-            /// <summary>
             /// Adds the specified start.
             /// </summary>
             /// <param name="start">The start.</param>
@@ -176,7 +150,6 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region constructors and initialization
-        /// <summary>
         /// Initializes a new instance of the <see cref="BnfTerm" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -186,7 +159,6 @@ namespace DarlCompiler.Parsing
             base.SetFlag(TermFlags.IsLiteral);
         }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="StringLiteral"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -198,14 +170,12 @@ namespace DarlCompiler.Parsing
             _subtypes.Add(startEndSymbol, startEndSymbol, options);
         }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="StringLiteral"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="startEndSymbol">The start end symbol.</param>
         public StringLiteral(string name, string startEndSymbol) : this(name, startEndSymbol, StringOptions.None) { }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="StringLiteral"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -217,7 +187,6 @@ namespace DarlCompiler.Parsing
         {
             base.AstConfig.NodeType = astNodeType;
         }
-        /// <summary>
         /// Initializes a new instance of the <see cref="StringLiteral"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -230,7 +199,6 @@ namespace DarlCompiler.Parsing
             base.AstConfig.NodeCreator = astNodeCreator;
         }
 
-        /// <summary>
         /// Adds the start end.
         /// </summary>
         /// <param name="startEndSymbol">The start end symbol.</param>
@@ -239,7 +207,6 @@ namespace DarlCompiler.Parsing
         {
             AddStartEnd(startEndSymbol, startEndSymbol, stringOptions);
         }
-        /// <summary>
         /// Adds the start end.
         /// </summary>
         /// <param name="startSymbol">The start symbol.</param>
@@ -249,7 +216,6 @@ namespace DarlCompiler.Parsing
         {
             _subtypes.Add(startSymbol, endSymbol, stringOptions);
         }
-        /// <summary>
         /// Adds the prefix.
         /// </summary>
         /// <param name="prefix">The prefix.</param>
@@ -262,18 +228,15 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region Properties/Fields
-        /// <summary>
         /// The _subtypes
         /// </summary>
         private readonly StringSubTypeList _subtypes = new StringSubTypeList();
-        /// <summary>
         /// The _start symbols firsts
         /// </summary>
         string _startSymbolsFirsts; //first chars  of start-end symbols
         #endregion
 
         #region overrides: Init, GetFirsts, ReadBody, etc...
-        /// <summary>
         /// Initializes the specified grammar data.
         /// </summary>
         /// <param name="grammarData">The grammar data.</param>
@@ -327,7 +290,6 @@ namespace DarlCompiler.Parsing
                 this.EditorInfo = new TokenEditorInfo(TokenType.String, TokenColor.String, TokenTriggers.None);
         }
 
-        /// <summary>
         /// Gets the firsts.
         /// </summary>
         /// <returns>IList&lt;System.String&gt;.</returns>
@@ -341,7 +303,6 @@ namespace DarlCompiler.Parsing
             return result;
         }
 
-        /// <summary>
         /// Reads the body.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -356,7 +317,6 @@ namespace DarlCompiler.Parsing
             return CompleteReadBody(source, details);
         }
 
-        /// <summary>
         /// Completes the read body.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -419,7 +379,6 @@ namespace DarlCompiler.Parsing
                 return true; //if we come here it means we're done - we found string end.
             }  //end of loop to find string end; 
         }
-        /// <summary>
         /// Processes the partial body.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -432,7 +391,6 @@ namespace DarlCompiler.Parsing
             details.IsPartial = true;
         }
 
-        /// <summary>
         /// Initializes the details.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -451,7 +409,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Reads the suffix.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -470,7 +427,6 @@ namespace DarlCompiler.Parsing
                 details.TypeCodes = new TypeCode[] { TypeCode.Char };
         }
 
-        /// <summary>
         /// Determines whether [is end quote escaped] [the specified text].
         /// </summary>
         /// <param name="text">The text.</param>
@@ -488,7 +444,6 @@ namespace DarlCompiler.Parsing
             return escaped;
         }
 
-        /// <summary>
         /// Reads the start symbol.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -517,7 +472,6 @@ namespace DarlCompiler.Parsing
 
 
         //Extract the string content from lexeme, adjusts the escaped and double-end symbols
-        /// <summary>
         /// Converts the value.
         /// </summary>
         /// <param name="details">The details.</param>
@@ -584,7 +538,6 @@ namespace DarlCompiler.Parsing
         }
 
         //Should support:  \Udddddddd, \udddd, \xdddd, \N{name}, \0, \ddd (octal),  
-        /// <summary>
         /// Handles the special escape.
         /// </summary>
         /// <param name="segment">The segment.</param>

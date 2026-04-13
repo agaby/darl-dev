@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -19,34 +18,27 @@ using Darl.ai;
 namespace DarlCompiler.Parsing.Construction
 {
 
-    /// <summary>
     /// Class GrammarDataBuilder.
     /// </summary>
     internal class GrammarDataBuilder
     {
-        /// <summary>
         /// The _language
         /// </summary>
         readonly LanguageData _language;
 
-        /// <summary>
         /// The _grammar
         /// </summary>
         readonly Grammar _grammar;
-        /// <summary>
         /// The _grammar data
         /// </summary>
         GrammarData _grammarData;
-        /// <summary>
         /// The _unnamed count
         /// </summary>
         int _unnamedCount; //internal counter for generating names for unnamed non-terminals
-        /// <summary>
         /// The _last item identifier
         /// </summary>
         internal int _lastItemId; //each LR0Item gets its unique ID, last assigned (max) Id is kept in this field
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="GrammarDataBuilder"/> class.
         /// </summary>
         /// <param name="language">The language.</param>
@@ -56,7 +48,6 @@ namespace DarlCompiler.Parsing.Construction
             _grammar = _language.Grammar;
         }
 
-        /// <summary>
         /// Builds this instance.
         /// </summary>
         internal void Build()
@@ -72,7 +63,6 @@ namespace DarlCompiler.Parsing.Construction
             ValidateGrammar();
         }
 
-        /// <summary>
         /// Creates the augmented roots.
         /// </summary>
         private void CreateAugmentedRoots()
@@ -82,7 +72,6 @@ namespace DarlCompiler.Parsing.Construction
                 _grammarData.AugmentedSnippetRoots.Add(CreateAugmentedRoot(snippetRoot));
         }
 
-        /// <summary>
         /// Creates the augmented root.
         /// </summary>
         /// <param name="root">The root.</param>
@@ -94,7 +83,6 @@ namespace DarlCompiler.Parsing.Construction
             return result;
         }
 
-        /// <summary>
         /// Collects the terms from grammar.
         /// </summary>
         private void CollectTermsFromGrammar()
@@ -115,7 +103,6 @@ namespace DarlCompiler.Parsing.Construction
             _grammarData.AllTerms.Add(_grammar.SyntaxError);
         }
 
-        /// <summary>
         /// Collects the terms recursive.
         /// </summary>
         /// <param name="term">The term.</param>
@@ -156,7 +143,6 @@ namespace DarlCompiler.Parsing.Construction
                 }//for i
         }
 
-        /// <summary>
         /// Fills the operator report group.
         /// </summary>
         private void FillOperatorReportGroup()
@@ -171,7 +157,6 @@ namespace DarlCompiler.Parsing.Construction
                 }
         }
 
-        /// <summary>
         /// Initializes the term lists.
         /// </summary>
         private void InitTermLists()
@@ -196,7 +181,6 @@ namespace DarlCompiler.Parsing.Construction
                 term.Init(_grammarData);
         }
 
-        /// <summary>
         /// Creates the productions.
         /// </summary>
         private void CreateProductions()
@@ -220,7 +204,6 @@ namespace DarlCompiler.Parsing.Construction
             }
         }
 
-        /// <summary>
         /// Creates the production.
         /// </summary>
         /// <param name="lvalue">The lvalue.</param>
@@ -257,7 +240,6 @@ namespace DarlCompiler.Parsing.Construction
             return prod;
         }
 
-        /// <summary>
         /// Computes the production flags.
         /// </summary>
         /// <param name="production">The production.</param>
@@ -277,7 +259,6 @@ namespace DarlCompiler.Parsing.Construction
             }//foreach
         }
 
-        /// <summary>
         /// Computes the non terminals nullability.
         /// </summary>
         /// <param name="data">The data.</param>
@@ -295,7 +276,6 @@ namespace DarlCompiler.Parsing.Construction
             }
         }
 
-        /// <summary>
         /// Computes the nullability.
         /// </summary>
         /// <param name="nonTerminal">The non terminal.</param>
@@ -326,7 +306,6 @@ namespace DarlCompiler.Parsing.Construction
             return false; //cannot decide
         }
 
-        /// <summary>
         /// Computes the tails nullability.
         /// </summary>
         /// <param name="data">The data.</param>
@@ -350,7 +329,6 @@ namespace DarlCompiler.Parsing.Construction
         }
 
         #region Grammar Validation
-        /// <summary>
         /// Validates the grammar.
         /// </summary>
         private void ValidateGrammar()
@@ -384,7 +362,6 @@ namespace DarlCompiler.Parsing.Construction
                 _language.Errors.Add(GrammarErrorLevel.Error, null, Resources.ErrTransientNtMustHaveOneTerm, invalidTransSet.ToString());
         }
 
-        /// <summary>
         /// Counts the non punctuation terms.
         /// </summary>
         /// <param name="production">The production.</param>

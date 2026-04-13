@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
@@ -7,7 +6,6 @@ namespace Darl.Thinkbase.Meta
 {
     public class SigmoidNode : UnaryDarlMetaNode
     {
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -32,7 +30,6 @@ namespace Darl.Thinkbase.Meta
         }
 
 
-        /// <summary>
         /// Gets the postamble.
         /// </summary>
         /// <value>

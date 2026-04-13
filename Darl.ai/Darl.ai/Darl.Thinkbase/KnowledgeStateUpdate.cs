@@ -1,11 +1,9 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Collections.Generic;
 
 namespace Darl.Thinkbase
 {
-    /// <summary>
     /// Class to update a knowledge state
     /// </summary>
     public class KnowledgeStateUpdate

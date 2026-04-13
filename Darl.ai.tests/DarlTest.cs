@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Lacuna;
@@ -1586,7 +1585,6 @@ namespace Darl_standard_core.test
             Assert.AreEqual("arbuthnot", m_b.results.First(a => a.name == "name").Value);
         }
 
-        /// <summary>
         /// if a rule set contains only a store, no salience calcs are performed.
         /// </summary>
         /// <returns></returns>

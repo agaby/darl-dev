@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System;
@@ -9,37 +8,30 @@ using System.Text;
 
 namespace Darl.Lineage
 {
-    /// <summary>
     /// Determines how empty lines are interpreted when reading CSV files.
     /// These values do not affect empty lines that occur within quoted fields
     /// or empty lines that appear at the end of the input file.
     /// </summary>
     public enum EmptyLineBehavior
     {
-        /// <summary>
         /// Empty lines are interpreted as a line with zero columns.
         /// </summary>
         NoColumns,
-        /// <summary>
         /// Empty lines are interpreted as a line with a single empty column.
         /// </summary>
         EmptyColumn,
-        /// <summary>
         /// Empty lines are skipped over as though they did not exist.
         /// </summary>
         Ignore,
-        /// <summary>
         /// An empty line is interpreted as the end of the input file.
         /// </summary>
         EndOfFile,
     }
 
-    /// <summary>
     /// Common base class for CSV reader and writer classes.
     /// </summary>
     public abstract class CsvFileCommon
     {
-        /// <summary>
         /// These are special characters in CSV files. If a column contains any
         /// of these characters, the entire column is wrapped in double quotes.
         /// </summary>
@@ -49,7 +41,6 @@ namespace Darl.Lineage
         private const int DelimiterIndex = 0;
         private const int QuoteIndex = 1;
 
-        /// <summary>
         /// Gets/sets the character used for column delimiters.
         /// </summary>
         public char Delimiter
@@ -58,7 +49,6 @@ namespace Darl.Lineage
             set { SpecialChars[DelimiterIndex] = value; }
         }
 
-        /// <summary>
         /// Gets/sets the character used for column quotes.
         /// </summary>
         public char Quote
@@ -68,7 +58,6 @@ namespace Darl.Lineage
         }
     }
 
-    /// <summary>
     /// Class for reading from comma-separated-value (CSV) files
     /// </summary>
     public class CsvFileReader : CsvFileCommon, IDisposable
@@ -79,7 +68,6 @@ namespace Darl.Lineage
         private int CurrPos;
         private readonly EmptyLineBehavior EmptyLineBehavior;
 
-        /// <summary>
         /// Initializes a new instance of the CsvFileReader class for the
         /// specified stream.
         /// </summary>
@@ -92,7 +80,6 @@ namespace Darl.Lineage
             EmptyLineBehavior = emptyLineBehavior;
         }
 
-        /// <summary>
         /// Initializes a new instance of the CsvFileReader class for the
         /// specified file path.
         /// </summary>
@@ -105,7 +92,6 @@ namespace Darl.Lineage
             EmptyLineBehavior = emptyLineBehavior;
         }
 
-        /// <summary>
         /// Reads a row of columns from the current CSV file. Returns false if no
         /// more data could be read because the end of the file was reached.
         /// </summary>
@@ -168,7 +154,6 @@ namespace Darl.Lineage
             return true;
         }
 
-        /// <summary>
         /// Reads a quoted column by reading from the current line until a
         /// closing quote is found or the end of the file is reached. On return,
         /// the current position points to the delimiter or the end of the last
@@ -222,7 +207,6 @@ namespace Darl.Lineage
             return builder.ToString();
         }
 
-        /// <summary>
         /// Reads an unquoted column by reading from the current line until a
         /// delimiter is found or the end of the line is reached. On return, the
         /// current position points to the delimiter or the end of the current
@@ -246,7 +230,6 @@ namespace Darl.Lineage
         }
     }
 
-    /// <summary>
     /// Class for writing to comma-separated-value (CSV) files.
     /// </summary>
     public class CsvFileWriter : CsvFileCommon, IDisposable
@@ -257,7 +240,6 @@ namespace Darl.Lineage
         private string TwoQuotes = null;
         private string QuotedFormat = null;
 
-        /// <summary>
         /// Initializes a new instance of the CsvFileWriter class for the
         /// specified stream.
         /// </summary>
@@ -267,7 +249,6 @@ namespace Darl.Lineage
             Writer = new StreamWriter(stream);
         }
 
-        /// <summary>
         /// Initializes a new instance of the CsvFileWriter class for the
         /// specified file path.
         /// </summary>
@@ -277,7 +258,6 @@ namespace Darl.Lineage
             Writer = new StreamWriter(path);
         }
 
-        /// <summary>
         /// Writes a row of columns to the current CSV file.
         /// </summary>
         /// <param name="columns">The list of columns to write</param>

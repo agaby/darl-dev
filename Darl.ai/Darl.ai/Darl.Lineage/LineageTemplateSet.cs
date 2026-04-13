@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using ProtoBuf;
@@ -22,7 +21,6 @@ namespace Darl.Lineage
         [ProtoMember(2)]
         public string payload { get; set; }
 
-        /// <summary>
         /// Used as an identifier during editing
         /// </summary>
         public string id { get; set; } = Guid.NewGuid().ToString();

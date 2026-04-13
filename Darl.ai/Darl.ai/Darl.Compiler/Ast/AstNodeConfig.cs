@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -20,12 +19,10 @@ using System;
 namespace DarlCompiler.Ast
 {
 
-    /// <summary>
     /// Class AstNodeEventArgs.
     /// </summary>
     public class AstNodeEventArgs : EventArgs
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="AstNodeEventArgs"/> class.
         /// </summary>
         /// <param name="parseTreeNode">The parse tree node.</param>
@@ -33,11 +30,9 @@ namespace DarlCompiler.Ast
         {
             ParseTreeNode = parseTreeNode;
         }
-        /// <summary>
         /// The parse tree node
         /// </summary>
         public readonly ParseTreeNode ParseTreeNode;
-        /// <summary>
         /// Gets the ast node.
         /// </summary>
         /// <value>The ast node.</value>
@@ -47,37 +42,30 @@ namespace DarlCompiler.Ast
         }
     }
 
-    /// <summary>
     /// Delegate AstNodeCreator
     /// </summary>
     /// <param name="context">The context.</param>
     /// <param name="parseNode">The parse node.</param>
     public delegate void AstNodeCreator(AstContext context, ParseTreeNode parseNode);
-    /// <summary>
     /// Delegate DefaultAstNodeCreator
     /// </summary>
     /// <returns>System.Object.</returns>
     public delegate object DefaultAstNodeCreator();
 
-    /// <summary>
     /// Class AstNodeConfig.
     /// </summary>
     public class AstNodeConfig
     {
 
-        /// <summary>
         /// The node type
         /// </summary>
         public Type NodeType;
-        /// <summary>
         /// The data
         /// </summary>
         public object Data; //config data passed to AstNode
-        /// <summary>
         /// The node creator
         /// </summary>
         public AstNodeCreator NodeCreator; // a custom method for creating AST nodes
-        /// <summary>
         /// The default node creator
         /// </summary>
         public DefaultAstNodeCreator DefaultNodeCreator; //default method for creating AST nodes; compiled dynamic method, wrapper around "new nodeType();"
@@ -91,13 +79,11 @@ namespace DarlCompiler.Ast
         //           term.AstPartsMap = new int[] {1, 4, 2}; 
         // then MappedChildNodes will contain 3 child nodes, which are under indexes 1, 4, 2 in ChildNodes list.
         // The mapping is performed in CoreParser.cs, method CheckCreateMappedChildNodeList.
-        /// <summary>
         /// The parts map
         /// </summary>
         public int[] PartsMap;
 
 
-        /// <summary>
         /// Determines whether this instance [can create node].
         /// </summary>
         /// <returns><c>true</c> if this instance [can create node]; otherwise, <c>false</c>.</returns>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System;
@@ -7,12 +6,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DarlCommon
 {
-    /// <summary>
     /// A data set for a simulation
     /// </summary>
     public class DaslSet
     {
-        /// <summary>
         /// Gets or sets the events.
         /// </summary>
         /// <value>
@@ -22,7 +19,6 @@ namespace DarlCommon
         [Display(Name = "The sequence of events", Description = "A sequence of time-tagged sets of values")]
         public List<DaslState> events { get; set; } = new List<DaslState>();
 
-        /// <summary>
         /// Gets or sets the sample time.
         /// </summary>
         /// <value>
@@ -32,7 +28,6 @@ namespace DarlCommon
         [Display(Name = "The sample time", Description = "Will be used to set up the sample time of the simulation")]
         public TimeSpan sampleTime { get; set; }
 
-        /// <summary>
         /// Gets or sets the description.
         /// </summary>
         /// <value>

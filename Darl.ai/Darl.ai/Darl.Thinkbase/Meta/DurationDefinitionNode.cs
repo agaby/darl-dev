@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -9,7 +8,6 @@ namespace Darl.Thinkbase.Meta
 {
     public class DurationDefinitionNode : DarlMetaNode
     {
-        /// <summary>
         /// Gets the value of the constant.
         /// </summary>
         /// <value>
@@ -17,7 +15,6 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public TimeSpan Value { get; private set; }
 
-        /// <summary>
         /// Gets the name of the constant.
         /// </summary>
         /// <value>
@@ -26,7 +23,6 @@ namespace Darl.Thinkbase.Meta
         public string name { get; private set; }
 
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>

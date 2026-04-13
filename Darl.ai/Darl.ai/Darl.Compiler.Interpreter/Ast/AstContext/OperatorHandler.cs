@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -23,42 +22,34 @@ namespace DarlCompiler.Interpreter.Ast
 {
 
 
-    /// <summary>
     /// Class OperatorInfo.
     /// </summary>
     public class OperatorInfo
     {
-        /// <summary>
         /// The symbol
         /// </summary>
         public string Symbol;
-        /// <summary>
         /// The expression type
         /// </summary>
         public ExpressionType ExpressionType;
-        /// <summary>
         /// The precedence
         /// </summary>
         public int Precedence;
-        /// <summary>
         /// The associativity
         /// </summary>
         public Associativity Associativity;
     }
 
-    /// <summary>
     /// Class OperatorInfoDictionary.
     /// </summary>
     [Serializable]
     public class OperatorInfoDictionary : Dictionary<string, OperatorInfo>
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="OperatorInfoDictionary"/> class.
         /// </summary>
         /// <param name="caseSensitive">if set to <c>true</c> [case sensitive].</param>
         public OperatorInfoDictionary(bool caseSensitive) : base(caseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase) { }
 
-        /// <summary>
         /// Adds the specified symbol.
         /// </summary>
         /// <param name="symbol">The symbol.</param>
@@ -79,18 +70,15 @@ namespace DarlCompiler.Interpreter.Ast
     }
 
 
-    /// <summary>
     /// Class OperatorHandler.
     /// </summary>
     public class OperatorHandler
     {
-        /// <summary>
         /// The _registered operators
         /// </summary>
         private readonly OperatorInfoDictionary _registeredOperators;
 
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="OperatorHandler"/> class.
         /// </summary>
         /// <param name="languageCaseSensitive">if set to <c>true</c> [language case sensitive].</param>
@@ -100,7 +88,6 @@ namespace DarlCompiler.Interpreter.Ast
             BuildDefaultOperatorMappings();
         }
 
-        /// <summary>
         /// Gets the type of the operator expression.
         /// </summary>
         /// <param name="symbol">The symbol.</param>
@@ -113,7 +100,6 @@ namespace DarlCompiler.Interpreter.Ast
             return CustomExpressionTypes.NotAnExpression;
         }
 
-        /// <summary>
         /// Gets the type of the unary operator expression.
         /// </summary>
         /// <param name="symbol">The symbol.</param>
@@ -134,7 +120,6 @@ namespace DarlCompiler.Interpreter.Ast
         }
 
 
-        /// <summary>
         /// Gets the binary operator for augmented.
         /// </summary>
         /// <param name="augmented">The augmented.</param>
@@ -173,7 +158,6 @@ namespace DarlCompiler.Interpreter.Ast
             }
         }
 
-        /// <summary>
         /// Builds the default operator mappings.
         /// </summary>
         /// <returns>OperatorInfoDictionary.</returns>

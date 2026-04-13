@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.GraphQL.Models.Connectivity;
@@ -145,7 +144,6 @@ namespace Darl.GraphQL.Web.Models.Schemata
             return state;
         }
 
-        /// <summary>
         /// One shot learning. The subscription triggers learning and closes on completion.
         /// </summary>
         /// <param name="arg">The arguments</param>

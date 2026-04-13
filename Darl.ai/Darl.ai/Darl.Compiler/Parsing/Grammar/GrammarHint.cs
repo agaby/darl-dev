@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -20,7 +19,6 @@ using System.Collections.Generic;
 namespace DarlCompiler.Parsing
 {
 
-    /// <summary>
     /// Class GrammarHintList.
     /// </summary>
     public class GrammarHintList : List<GrammarHint> { }
@@ -30,17 +28,14 @@ namespace DarlCompiler.Parsing
     // One example is a PreferredActionHint produced by the Grammar.PreferShiftHere() method. It tells parser to perform
     // shift in case of a shift/reduce conflict. It is in fact the default action of LALR parser, so the hint simply suppresses the error 
     // message about the shift/reduce conflict in the grammar.
-    /// <summary>
     /// Class GrammarHint.
     /// </summary>
     public abstract class GrammarHint : BnfTerm
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="GrammarHint"/> class.
         /// </summary>
         public GrammarHint() : base("hint") { }
 
-        /// <summary>
         /// Gives a chance to a custom code in hint to interfere in parser automaton construction.
         /// </summary>
         /// <param name="language">The LanguageData instance.</param>

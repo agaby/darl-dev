@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="SyntaxError.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -17,12 +17,10 @@ namespace DarlCompiler.Parsing
 {
 
     //Container for syntax error
-    /// <summary>
     /// Class SyntaxError.
     /// </summary>
     public class SyntaxError
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="SyntaxError"/> class.
         /// </summary>
         /// <param name="location">The location.</param>
@@ -35,20 +33,16 @@ namespace DarlCompiler.Parsing
             ParserState = parserState;
         }
 
-        /// <summary>
         /// The location
         /// </summary>
         public readonly SourceLocation Location;
-        /// <summary>
         /// The message
         /// </summary>
         public readonly string Message;
-        /// <summary>
         /// The parser state
         /// </summary>
         public ParserState ParserState;
 
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -58,12 +52,10 @@ namespace DarlCompiler.Parsing
         }
     }
 
-    /// <summary>
     /// Class SyntaxErrorList.
     /// </summary>
     public class SyntaxErrorList : List<SyntaxError>
     {
-        /// <summary>
         /// Bies the location.
         /// </summary>
         /// <param name="x">The x.</param>

@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="CommentTerminal.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -18,12 +18,10 @@ using System.Collections.Generic;
 namespace DarlCompiler.Parsing
 {
 
-    /// <summary>
     /// Class CommentTerminal.
     /// </summary>
     public class CommentTerminal : Terminal
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="CommentTerminal"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -38,26 +36,21 @@ namespace DarlCompiler.Parsing
             Priority = TerminalPriority.High; //assign max priority
         }
 
-        /// <summary>
         /// The start symbol
         /// </summary>
         public string StartSymbol;
-        /// <summary>
         /// The end symbols
         /// </summary>
         public StringList EndSymbols;
-        /// <summary>
         /// The _end symbols firsts
         /// </summary>
         private char[] _endSymbolsFirsts;
-        /// <summary>
         /// The _is line comment
         /// </summary>
         private bool _isLineComment; //true if NewLine is one of EndSymbols; if yes, EOF is also considered a valid end symbol
 
 
         #region overrides
-        /// <summary>
         /// Initializes the specified grammar data.
         /// </summary>
         /// <param name="grammarData">The grammar data.</param>
@@ -81,7 +74,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Tries the match.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -110,7 +102,6 @@ namespace DarlCompiler.Parsing
             return context.CreateErrorToken(Resources.ErrUnclosedComment);
         }
 
-        /// <summary>
         /// Creates the incomplete token.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -125,7 +116,6 @@ namespace DarlCompiler.Parsing
             return result;
         }
 
-        /// <summary>
         /// Begins the match.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -138,7 +128,6 @@ namespace DarlCompiler.Parsing
             source.PreviewPosition += StartSymbol.Length;
             return true;
         }
-        /// <summary>
         /// Completes the match.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -177,7 +166,6 @@ namespace DarlCompiler.Parsing
             return null; //might happen if we found a start char of end symbol, but not the full endSymbol
         }
 
-        /// <summary>
         /// Gets the firsts.
         /// </summary>
         /// <returns>IList&lt;System.String&gt;.</returns>

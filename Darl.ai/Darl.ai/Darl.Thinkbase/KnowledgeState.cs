@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using ProtoBuf;
@@ -22,19 +21,16 @@ namespace Darl.Thinkbase
             knowledgeGraphName = string.Empty;
         }
 
-        /// <summary>
         /// The owner of the data, a Guid
         /// </summary>
         [ProtoMember(1)]
         public string userId { get; set; }
 
-        /// <summary>
         /// the id of the subject to which this data relates 
         /// </summary>
         [ProtoMember(2)]
         public string subjectId { get; set; }
 
-        /// <summary>
         /// the KG it applies to
         /// </summary>
         [ProtoMember(3)]
@@ -43,14 +39,12 @@ namespace Darl.Thinkbase
         [ProtoMember(4)]
         public DateTime? created { get; set; }
 
-        /// <summary>
         /// If a processId is present, this data is used only for machine learning and can be deleted when that process terminates.
         /// </summary>
         [ProtoMember(5)]
         public string? processId { get; set; }
 
 
-        /// <summary>
         /// The data, organized as GraphObject.Id against the graphAttributes to apply.
         /// Connections can also be handled. In that case the id relates to the parent GraphConnection
         /// and the value contains the subjectId of the remote connection.

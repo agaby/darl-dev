@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.GraphQL.Models.Connectivity;
@@ -138,7 +137,6 @@ namespace Darl.GraphQL.Test
             Assert.AreEqual("There is no path found", res.Value);
         }
 
-        /// <summary>
         /// Adds a student starting point for graph inference
         /// </summary>
         /// <returns></returns>

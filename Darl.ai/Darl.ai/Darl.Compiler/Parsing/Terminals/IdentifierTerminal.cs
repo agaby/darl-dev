@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="IdentifierTerminal.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -25,80 +25,64 @@ namespace DarlCompiler.Parsing
 
     #endregion
 
-    /// <summary>
     /// Enum IdOptions
     /// </summary>
     [Flags]
     public enum IdOptions : short
     {
-        /// <summary>
         /// The none
         /// </summary>
         None = 0,
-        /// <summary>
         /// The allows escapes
         /// </summary>
         AllowsEscapes = 0x01,
-        /// <summary>
         /// The can start with escape
         /// </summary>
         CanStartWithEscape = 0x03,
 
-        /// <summary>
         /// The is not keyword
         /// </summary>
         IsNotKeyword = 0x10,
-        /// <summary>
         /// The name includes prefix
         /// </summary>
         NameIncludesPrefix = 0x20,
     }
 
-    /// <summary>
     /// Enum CaseRestriction
     /// </summary>
     public enum CaseRestriction
     {
-        /// <summary>
         /// The none
         /// </summary>
         None,
-        /// <summary>
         /// The first upper
         /// </summary>
         FirstUpper,
-        /// <summary>
         /// The first lower
         /// </summary>
         FirstLower,
-        /// <summary>
         /// All upper
         /// </summary>
         AllUpper,
-        /// <summary>
         /// All lower
         /// </summary>
         AllLower
     }
 
-    /// <summary>
     /// Class UnicodeCategoryList.
     /// </summary>
     public class UnicodeCategoryList : List<UnicodeCategory> { }
 
-    /// <summary>
     /// Class IdentifierTerminal.
     /// </summary>
     public class IdentifierTerminal : CompoundTerminalBase
     {
 
         //Id flags for internal use
-        /// <summary>
         /// Enum IdFlagsInternal
         /// </summary>
         internal enum IdFlagsInternal : short
         {
-            /// <summary>
             /// The has escapes
             /// </summary>
             HasEscapes = 0x100,
@@ -106,7 +90,6 @@ namespace DarlCompiler.Parsing
 
 
         #region constructors and initialization
-        /// <summary>
         /// Initializes a new instance of the <see cref="BnfTerm" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -114,7 +97,6 @@ namespace DarlCompiler.Parsing
             : this(name, IdOptions.None)
         {
         }
-        /// <summary>
         /// Initializes a new instance of the <see cref="IdentifierTerminal"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -124,7 +106,6 @@ namespace DarlCompiler.Parsing
         {
             Options = options;
         }
-        /// <summary>
         /// Initializes a new instance of the <see cref="IdentifierTerminal"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -137,7 +118,6 @@ namespace DarlCompiler.Parsing
             AllChars = Strings.AllLatinLetters + Strings.DecimalDigits + extraChars;
         }
 
-        /// <summary>
         /// Adds the prefix.
         /// </summary>
         /// <param name="prefix">The prefix.</param>
@@ -149,52 +129,41 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region properties: AllChars, AllFirstChars
-        /// <summary>
         /// The _all chars set
         /// </summary>
         CharHashSet _allCharsSet;
-        /// <summary>
         /// The _all first chars set
         /// </summary>
         CharHashSet _allFirstCharsSet;
 
-        /// <summary>
         /// All first chars
         /// </summary>
         public string AllFirstChars;
-        /// <summary>
         /// All chars
         /// </summary>
         public string AllChars;
-        /// <summary>
         /// The keyword editor information
         /// </summary>
         public TokenEditorInfo KeywordEditorInfo = new TokenEditorInfo(TokenType.Keyword, TokenColor.Keyword, TokenTriggers.None);
-        /// <summary>
         /// The options
         /// </summary>
         public IdOptions Options; //flags for the case when there are no prefixes
-        /// <summary>
         /// The case restriction
         /// </summary>
         public CaseRestriction CaseRestriction;
 
-        /// <summary>
         /// The start character categories
         /// </summary>
         public readonly UnicodeCategoryList StartCharCategories = new UnicodeCategoryList(); //categories of first char
-        /// <summary>
         /// The character categories
         /// </summary>
         public readonly UnicodeCategoryList CharCategories = new UnicodeCategoryList();      //categories of all other chars
-        /// <summary>
         /// The chars to remove categories
         /// </summary>
         public readonly UnicodeCategoryList CharsToRemoveCategories = new UnicodeCategoryList(); //categories of chars to remove from final id, usually formatting category
         #endregion
 
         #region overrides
-        /// <summary>
         /// Initializes the specified grammar data.
         /// </summary>
         /// <param name="grammarData">The grammar data.</param>
@@ -230,7 +199,6 @@ namespace DarlCompiler.Parsing
                 this.EditorInfo = new TokenEditorInfo(TokenType.Identifier, TokenColor.Identifier, TokenTriggers.None);
         }
 
-        /// <summary>
         /// Gets the firsts.
         /// </summary>
         /// <returns>IList&lt;System.String&gt;.</returns>
@@ -249,7 +217,6 @@ namespace DarlCompiler.Parsing
              */
         }
 
-        /// <summary>
         /// Initializes the details.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -261,7 +228,6 @@ namespace DarlCompiler.Parsing
         }
 
         //Override to assign IsKeyword flag to keyword tokens
-        /// <summary>
         /// Creates the token.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -277,7 +243,6 @@ namespace DarlCompiler.Parsing
             CheckReservedWord(token);
             return token;
         }
-        /// <summary>
         /// Checks the reserved word.
         /// </summary>
         /// <param name="token">The token.</param>
@@ -293,7 +258,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Quicks the parse.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -320,7 +284,6 @@ namespace DarlCompiler.Parsing
             return token;
         }
 
-        /// <summary>
         /// Reads the body.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -364,7 +327,6 @@ namespace DarlCompiler.Parsing
             return !string.IsNullOrEmpty(details.Body);
         }
 
-        /// <summary>
         /// Characters the ok.
         /// </summary>
         /// <param name="ch">The ch.</param>
@@ -385,7 +347,6 @@ namespace DarlCompiler.Parsing
             return false;
         }
 
-        /// <summary>
         /// Checks the case restriction.
         /// </summary>
         /// <param name="body">The body.</param>
@@ -403,7 +364,6 @@ namespace DarlCompiler.Parsing
         }
 
 
-        /// <summary>
         /// Reads the unicode escape.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -435,7 +395,6 @@ namespace DarlCompiler.Parsing
             return result;
         }
 
-        /// <summary>
         /// Converts the value.
         /// </summary>
         /// <param name="details">The details.</param>

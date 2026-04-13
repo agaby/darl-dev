@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -19,33 +18,26 @@ using System.Collections.Generic;
 
 namespace DarlCompiler.Parsing
 {
-    /// <summary>
     /// Class ParserTraceEntry.
     /// </summary>
     public class ParserTraceEntry
     {
-        /// <summary>
         /// The state
         /// </summary>
         public ParserState State;
-        /// <summary>
         /// The stack top
         /// </summary>
         public ParseTreeNode StackTop;
-        /// <summary>
         /// The input
         /// </summary>
         public ParseTreeNode Input;
-        /// <summary>
         /// The message
         /// </summary>
         public string Message;
-        /// <summary>
         /// The is error
         /// </summary>
         public bool IsError;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ParserTraceEntry"/> class.
         /// </summary>
         /// <param name="state">The state.</param>
@@ -63,17 +55,14 @@ namespace DarlCompiler.Parsing
         }
     }
 
-    /// <summary>
     /// Class ParserTrace.
     /// </summary>
     public class ParserTrace : List<ParserTraceEntry> { }
 
-    /// <summary>
     /// Class ParserTraceEventArgs.
     /// </summary>
     public class ParserTraceEventArgs : EventArgs
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="ParserTraceEventArgs"/> class.
         /// </summary>
         /// <param name="entry">The entry.</param>
@@ -82,12 +71,10 @@ namespace DarlCompiler.Parsing
             Entry = entry;
         }
 
-        /// <summary>
         /// The entry
         /// </summary>
         public readonly ParserTraceEntry Entry;
 
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>

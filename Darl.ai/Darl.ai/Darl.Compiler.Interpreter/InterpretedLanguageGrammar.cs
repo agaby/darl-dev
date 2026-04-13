@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Thinkbase.Meta;
@@ -18,7 +17,6 @@ namespace DarlCompiler.Interpreter
     public class InterpretedLanguageGrammar : Grammar, ICanRunSample
     {
         // making the class abstract so it won't load into Grammar Explorer
-        /// <summary>
         /// Initializes a new instance of the <see cref="InterpretedLanguageGrammar"/> class.
         /// </summary>
         /// <param name="caseSensitive">if set to <c>true</c> [case sensitive].</param>
@@ -35,16 +33,13 @@ namespace DarlCompiler.Interpreter
         // If you want to evaluate the AST tree again, you have to do it in the context of the same DataMap. 
         // Grammar Explorer may call RunSample method repeatedly for evaluation of the same parsed script. So we keep ScriptApp instance in 
         // the field, and if we get the same script node, then we reuse the ScriptApp thus satisfying the requirement. 
-        /// <summary>
         /// The _app
         /// </summary>
         protected ScriptApp _app;
-        /// <summary>
         /// The _prev sample
         /// </summary>
         protected ParseTree _prevSample;
 
-        /// <summary>
         /// Runs the sample.
         /// </summary>
         /// <param name="args">The arguments.</param>
@@ -58,7 +53,6 @@ namespace DarlCompiler.Interpreter
             return res == null ? "" : res.ToString();
         }
 
-        /// <summary>
         /// Creates the runtime.
         /// </summary>
         /// <param name="language">The language.</param>
@@ -68,7 +62,6 @@ namespace DarlCompiler.Interpreter
             return new LanguageRuntime(language);
         }
 
-        /// <summary>
         /// Builds the ast.
         /// </summary>
         /// <param name="language">The language.</param>

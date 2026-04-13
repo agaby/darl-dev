@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.SoftMatch;
@@ -15,7 +14,6 @@ namespace Darl_standard_core.test
     public class SoftMatchTest
     {
 
-        /// <summary>
         /// Test the algorithm on the Microsoft Research Paraphrase dataset.
         /// </summary>
         [TestMethod]

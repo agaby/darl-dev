@@ -1,16 +1,13 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Evaluates a regular expression match
     /// </summary>
     public class MatchNode : UnaryDarlNode
     {
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -25,7 +22,6 @@ namespace DarlLanguage.Processing
             return new DarlResult(r1 == inp ? 1.0 : 0.0, false);
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>

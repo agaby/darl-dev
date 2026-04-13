@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Thinkbase;
@@ -29,7 +28,6 @@ namespace Darl.GraphQL.Models.Connectivity
             this.graph = graph;
         }
 
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="address"></param>

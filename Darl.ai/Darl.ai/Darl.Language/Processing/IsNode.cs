@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -8,21 +7,17 @@ using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements the "is" function, which returns the degree of truth of the statement surrounding it.
     /// </summary>
     public class IsNode : DarlNode
     {
-        /// <summary>
         /// The left side
         /// </summary>
         DarlNode Left;//left side of "is" is always an identifier of an input or output or a store
-        /// <summary>
         /// The right side
         /// </summary>
         DarlNode Right;
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -35,7 +30,6 @@ namespace DarlLanguage.Processing
             Right = (DarlNode)AddChild("-", nodes[1]);
         }
 
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -120,7 +114,6 @@ namespace DarlLanguage.Processing
             return result;
         }
 
-        /// <summary>
         /// Establishes dependencies and initializes constants
         /// </summary>
         /// <param name="dependencies">list of dependencies discovered</param>
@@ -132,7 +125,6 @@ namespace DarlLanguage.Processing
             Right.WalkDependencies(dependencies, currentOutput, context);
         }
 
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>
@@ -146,7 +138,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Walks the saliences.
         /// </summary>
         /// <param name="saliency">The incoming saliency.</param>

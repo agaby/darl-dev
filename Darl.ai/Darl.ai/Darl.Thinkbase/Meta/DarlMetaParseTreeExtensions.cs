@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Parsing;
@@ -11,7 +10,6 @@ namespace Darl.Thinkbase.Meta
     public static class DarlMetaParseTreeExtensions
     {
 
-        /// <summary>
         /// Extension method converting a parse tree back to formatted source code
         /// </summary>
         /// <param name="parseTree">The tree to convert</param>
@@ -24,7 +22,6 @@ namespace Darl.Thinkbase.Meta
         }
 
 
-        /// <summary>
         /// Recursively builds a string from the tree of nodes
         /// </summary>
         /// <param name="node">The current parent node</param>
@@ -61,7 +58,6 @@ namespace Darl.Thinkbase.Meta
             return new List<InputDefinitionNode>(root.inputs.Values);
         }
 
-        /// <summary>
         /// Gets the input range.
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -85,7 +81,6 @@ namespace Darl.Thinkbase.Meta
             }
             return res;
         }
-        /// <summary>
         /// Gets the practical input range.
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -108,7 +103,6 @@ namespace Darl.Thinkbase.Meta
             return res;
         }
 
-        /// <summary>
         /// Clears inputs of an existing tree so it can be re-used
         /// </summary>
         /// <param name="tree">The tree</param>

@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="AppDataMap.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -16,33 +16,26 @@ using DarlCompiler.Interpreter.Ast;
 namespace DarlCompiler.Interpreter
 {
 
-    /// <summary>
     /// Represents a set of all of static scopes/modules in the application.
     /// </summary>
     public class AppDataMap
     {
-        /// <summary>
         /// The program root
         /// </summary>
         public AstNode ProgramRoot; //artificial root associated with MainModule
-        /// <summary>
         /// The static scope infos
         /// </summary>
         public ScopeInfoList StaticScopeInfos = new ScopeInfoList();
-        /// <summary>
         /// The modules
         /// </summary>
         public ModuleInfoList Modules = new ModuleInfoList();
-        /// <summary>
         /// The main module
         /// </summary>
         public ModuleInfo MainModule;
-        /// <summary>
         /// The language case sensitive
         /// </summary>
         public readonly bool LanguageCaseSensitive;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="AppDataMap"/> class.
         /// </summary>
         /// <param name="languageCaseSensitive">if set to <c>true</c> [language case sensitive].</param>
@@ -58,7 +51,6 @@ namespace DarlCompiler.Interpreter
             Modules.Add(MainModule);
         }
 
-        /// <summary>
         /// Gets the module.
         /// </summary>
         /// <param name="moduleNode">The module node.</param>

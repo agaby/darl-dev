@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -23,20 +22,17 @@ using System.Threading.Tasks;
 
 namespace DaslLanguage
 {
-    /// <summary>
     /// Extends the DArlRuntime to perform simulations
     /// </summary>
     public class DaslRunTime : DarlRunTime
     {
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="DaslRunTime" /> class.
         /// </summary>
         public DaslRunTime() : base()
         {
         }
 
-        /// <summary>
         /// Simulates the specified data.
         /// </summary>
         /// <param name="data">The data.</param>

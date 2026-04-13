@@ -7,19 +7,17 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="CustomTerminal.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
 using System.Collections.Generic;
 
-/// <summary>
 /// The Parsing namespace.
 /// </summary>
 namespace DarlCompiler.Parsing
 {
     //Terminal based on custom method; allows creating custom match without creating new class derived from Terminal 
-    /// <summary>
     /// Delegate MatchHandler
     /// </summary>
     /// <param name="terminal">The terminal.</param>
@@ -28,12 +26,10 @@ namespace DarlCompiler.Parsing
     /// <returns>Token.</returns>
     public delegate Token MatchHandler(Terminal terminal, ParsingContext context, ISourceStream source);
 
-    /// <summary>
     /// Class CustomTerminal.
     /// </summary>
     public class CustomTerminal : Terminal
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="CustomTerminal"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -48,12 +44,10 @@ namespace DarlCompiler.Parsing
             this.EditorInfo = new TokenEditorInfo(TokenType.Unknown, TokenColor.Text, TokenTriggers.None);
         }
 
-        /// <summary>
         /// The prefixes
         /// </summary>
         public readonly StringList Prefixes = new StringList();
 
-        /// <summary>
         /// Gets the handler.
         /// </summary>
         /// <value>The handler.</value>
@@ -61,14 +55,12 @@ namespace DarlCompiler.Parsing
         {
             [System.Diagnostics.DebuggerStepThrough]
             get { return _handler; }
-            /// <summary>
             /// The _handler
             /// </summary>
         }
 
         readonly MatchHandler _handler;
 
-        /// <summary>
         /// Tries the match.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -78,7 +70,6 @@ namespace DarlCompiler.Parsing
         {
             return _handler(this, context, source);
         }
-        /// <summary>
         /// Gets the firsts.
         /// </summary>
         /// <returns>IList&lt;System.String&gt;.</returns>

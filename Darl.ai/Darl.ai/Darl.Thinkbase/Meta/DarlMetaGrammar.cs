@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -580,7 +579,6 @@ namespace Darl.Thinkbase.Meta
 
         }
 
-        /// <summary>
         /// Gets the specified keyword.
         /// </summary>
         /// <param name="keyword">The keyword.</param>
@@ -590,7 +588,6 @@ namespace Darl.Thinkbase.Meta
             return Keyword(keyword, string.Empty);
         }
 
-        /// <summary>
         /// Keywords the specified keyword.
         /// </summary>
         /// <param name="keyword">The keyword.</param>
@@ -606,7 +603,6 @@ namespace Darl.Thinkbase.Meta
             return term;
         }
 
-        /// <summary>
         /// Operators the specified op.
         /// </summary>
         /// <param name="op">The op.</param>
@@ -651,7 +647,6 @@ namespace Darl.Thinkbase.Meta
             return new DarlResult(0.0, true);
         }
 
-        /// <summary>
         /// Ensure the object id and lineage reference an existing attribute within an existing object, linked to with the given connection lineage
         /// </summary>
         /// <param name="id">id or externalId</param>

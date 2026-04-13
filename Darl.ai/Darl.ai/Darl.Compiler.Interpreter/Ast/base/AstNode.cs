@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="AstNode.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -21,46 +21,37 @@ using System.Threading.Tasks;
 namespace DarlCompiler.Interpreter.Ast
 {
 
-    /// <summary>
     /// Class CustomExpressionTypes.
     /// </summary>
     public static class CustomExpressionTypes
     {
-        /// <summary>
         /// The not an expression
         /// </summary>
         public const ExpressionType NotAnExpression = (ExpressionType)(-1);
     }
 
-    /// <summary>
     /// Class AstNodeList.
     /// </summary>
     public class AstNodeList : List<AstNode> { }
 
     //Base AST node class
-    /// <summary>
     /// Class AstNode.
     /// </summary>
     public partial class AstNode : IAstNodeInit, IBrowsableAstNode, IVisitableNode
     {
-        /// <summary>
         /// The parent
         /// </summary>
         public AstNode Parent;
-        /// <summary>
         /// The term
         /// </summary>
         public BnfTerm Term;
-        /// <summary>
         /// Gets or sets the span.
         /// </summary>
         /// <value>The span.</value>
         public SourceSpan Span { get; set; }
-        /// <summary>
         /// The flags
         /// </summary>
         public AstNodeFlags Flags;
-        /// <summary>
         /// The expression type
         /// </summary>
         protected ExpressionType ExpressionType = CustomExpressionTypes.NotAnExpression;
@@ -69,54 +60,45 @@ namespace DarlCompiler.Interpreter.Ast
         //  x = (5 + 3) / (2 - 2)
         // it is better to point to "/" as error location, rather than the first "(" - which is the start 
         // location of binary expression. 
-        /// <summary>
         /// The error anchor
         /// </summary>
         public SourceLocation ErrorAnchor;
         //UseType is set by parent
-        /// <summary>
         /// The use type
         /// </summary>
         public NodeUseType UseType = NodeUseType.Unknown;
         // Role is a free-form string used as prefix in ToString() representation of the node. 
         // Node's parent can set it to "property name" or role of the child node in parent's node currentFrame.Context. 
-        /// <summary>
         /// The role
         /// </summary>
         public string Role;
         // Default AstNode.ToString() returns 'Role: AsString', which is used for showing node in AST tree. 
-        /// <summary>
         /// Gets or sets as string.
         /// </summary>
         /// <value>As string.</value>
         public virtual string AsString { get; protected set; }
-        /// <summary>
         /// The child nodes
         /// </summary>
         public readonly AstNodeList ChildNodes = new AstNodeList();  //List of child nodes
 
         //Reference to Evaluate method implementation. Initially set to DoEvaluate virtual method. 
-        /// <summary>
         /// The evaluate
         /// </summary>
         public EvaluateMethod Evaluate;
 
         // Public default constructor
-        /// <summary>
         /// Initializes a new instance of the <see cref="AstNode"/> class.
         /// </summary>
         public AstNode()
         {
             this.Evaluate = DoEvaluate;
         }
-        /// <summary>
         /// Gets the location.
         /// </summary>
         /// <value>The location.</value>
         public SourceLocation Location { get { return Span.Location; } }
 
         #region IAstNodeInit Members
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -132,7 +114,6 @@ namespace DarlCompiler.Interpreter.Ast
         #endregion
 
         //ModuleNode - computed on demand
-        /// <summary>
         /// Gets or sets the module node.
         /// </summary>
         /// <value>The module node.</value>
@@ -148,14 +129,12 @@ namespace DarlCompiler.Interpreter.Ast
             }
             set { _moduleNode = value; }
         }
-        /// <summary>
         /// The _module node
         /// </summary>
         AstNode _moduleNode;
 
 
         #region virtual methods: DoEvaluate, SetValue, IsConstant, SetIsTail, GetDependentScopeInfo
-        /// <summary>
         /// Resets this instance.
         /// </summary>
         public virtual void Reset()
@@ -167,7 +146,6 @@ namespace DarlCompiler.Interpreter.Ast
         }
 
         //By default the Evaluate field points to this method.
-        /// <summary>
         /// Does the evaluate.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -180,7 +158,6 @@ namespace DarlCompiler.Interpreter.Ast
             return null;
         }
 
-        /// <summary>
         /// Does the set value.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -190,7 +167,6 @@ namespace DarlCompiler.Interpreter.Ast
             //Place the prologue/epilogue lines in every implementation of SetValue method (see DoEvaluate above)
         }
 
-        /// <summary>
         /// Determines whether this instance is constant.
         /// </summary>
         /// <returns><c>true</c> if this instance is constant; otherwise, <c>false</c>.</returns>
@@ -199,7 +175,6 @@ namespace DarlCompiler.Interpreter.Ast
             return false;
         }
 
-        /// <summary>
         /// Sets a flag indicating that the node is in tail position. The value is propagated from parent to children.
         /// Should propagate this call to appropriate children.
         /// </summary>
@@ -208,7 +183,6 @@ namespace DarlCompiler.Interpreter.Ast
             Flags |= AstNodeFlags.IsTail;
         }
 
-        /// <summary>
         /// Dependent scope is a scope produced by the node. For ex, FunctionDefNode defines a scope
         /// </summary>
         /// <value>The dependent scope information.</value>
@@ -217,7 +191,6 @@ namespace DarlCompiler.Interpreter.Ast
             get { return _dependentScope; }
             set { _dependentScope = value; }
         }
-        /// <summary>
         /// The _dependent scope
         /// </summary>
         ScopeInfo _dependentScope;
@@ -225,7 +198,6 @@ namespace DarlCompiler.Interpreter.Ast
         #endregion
 
         #region IBrowsableAstNode Members
-        /// <summary>
         /// Gets the child nodes.
         /// </summary>
         /// <returns>System.Collections.IEnumerable.</returns>
@@ -233,7 +205,6 @@ namespace DarlCompiler.Interpreter.Ast
         {
             return ChildNodes;
         }
-        /// <summary>
         /// Gets the position.
         /// </summary>
         /// <value>The position.</value>
@@ -245,7 +216,6 @@ namespace DarlCompiler.Interpreter.Ast
 
         #region Visitors, Iterators
         //the first primitive Visitor facility
-        /// <summary>
         /// Accepts the visitor.
         /// </summary>
         /// <param name="visitor">The visitor.</param>
@@ -259,7 +229,6 @@ namespace DarlCompiler.Interpreter.Ast
         }
 
         //Node traversal 
-        /// <summary>
         /// Gets all.
         /// </summary>
         /// <returns>IEnumerable&lt;AstNode&gt;.</returns>
@@ -269,7 +238,6 @@ namespace DarlCompiler.Interpreter.Ast
             AddAll(result);
             return result;
         }
-        /// <summary>
         /// Adds all.
         /// </summary>
         /// <param name="list">The list.</param>
@@ -283,7 +251,6 @@ namespace DarlCompiler.Interpreter.Ast
         #endregion
 
         #region overrides: ToString
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -295,7 +262,6 @@ namespace DarlCompiler.Interpreter.Ast
 
         #region Utility methods: AddChild, HandleError
 
-        /// <summary>
         /// Adds the child.
         /// </summary>
         /// <param name="role">The role.</param>
@@ -306,7 +272,6 @@ namespace DarlCompiler.Interpreter.Ast
             return AddChild(NodeUseType.Unknown, role, childParseNode);
         }
 
-        /// <summary>
         /// Adds the child.
         /// </summary>
         /// <param name="useType">Type of the use.</param>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -28,7 +27,6 @@ namespace Darl.GraphQL.UI.Tests
             driver.Dispose();
         }
 
-        /// <summary>
         /// Opens the site, opens a public kg and runs a conversation on it.
         /// </summary>
         /// <returns></returns>
@@ -90,7 +88,6 @@ namespace Darl.GraphQL.UI.Tests
             driver.FindElement(By.XPath(@"//*[contains(text(),'The problem you have described may be amenable to soft')]"));
         }
 
-        /// <summary>
         /// Log in, access Stripe page, access files, get api key, log out
         /// </summary>
         /// <returns></returns>

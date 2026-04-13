@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="Token.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -16,82 +16,65 @@ using System.Collections.Generic;
 namespace DarlCompiler.Parsing
 {
 
-    /// <summary>
     /// Enum TokenFlags
     /// </summary>
     public enum TokenFlags
     {
-        /// <summary>
         /// The is incomplete
         /// </summary>
         IsIncomplete = 0x01,
     }
 
-    /// <summary>
     /// Enum TokenCategory
     /// </summary>
     public enum TokenCategory
     {
-        /// <summary>
         /// The content
         /// </summary>
         Content,
-        /// <summary>
         /// The outline
         /// </summary>
         Outline, //newLine, indent, dedent
-        /// <summary>
         /// The comment
         /// </summary>
         Comment,
-        /// <summary>
         /// The directive
         /// </summary>
         Directive,
-        /// <summary>
         /// The error
         /// </summary>
         Error,
     }
 
-    /// <summary>
     /// Class TokenList.
     /// </summary>
     public class TokenList : List<Token> { }
-    /// <summary>
     /// Class TokenStack.
     /// </summary>
     public class TokenStack : Stack<Token> { }
 
     //Tokens are produced by scanner and fed to parser, optionally passing through Token filters in between. 
-    /// <summary>
     /// Class Token.
     /// </summary>
     public partial class Token
     {
-        /// <summary>
         /// Gets the terminal.
         /// </summary>
         /// <value>The terminal.</value>
         public Terminal Terminal { get; private set; }
-        /// <summary>
         /// The key term
         /// </summary>
         public KeyTerm KeyTerm;
-        /// <summary>
         /// The location
         /// </summary>
         public readonly SourceLocation Location;
-        /// <summary>
         /// The text
         /// </summary>
         public readonly string Text;
 
-        /// <summary>
         /// The value
         /// </summary>
         public object Value;
-        /// <summary>
         /// Gets the value string.
         /// </summary>
         /// <value>The value string.</value>
@@ -100,20 +83,16 @@ namespace DarlCompiler.Parsing
             get { return (Value == null ? string.Empty : Value.ToString()); }
         }
 
-        /// <summary>
         /// The details
         /// </summary>
         public object Details;
-        /// <summary>
         /// The flags
         /// </summary>
         public TokenFlags Flags;
-        /// <summary>
         /// The editor information
         /// </summary>
         public TokenEditorInfo EditorInfo;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="Token"/> class.
         /// </summary>
         /// <param name="term">The term.</param>
@@ -129,7 +108,6 @@ namespace DarlCompiler.Parsing
             Value = value;
         }
 
-        /// <summary>
         /// Sets the terminal.
         /// </summary>
         /// <param name="terminal">The terminal.</param>
@@ -139,7 +117,6 @@ namespace DarlCompiler.Parsing
             this.EditorInfo = Terminal.EditorInfo;  //set to term's EditorInfo by default
         }
 
-        /// <summary>
         /// Determines whether the specified flag is set.
         /// </summary>
         /// <param name="flag">The flag.</param>
@@ -148,7 +125,6 @@ namespace DarlCompiler.Parsing
         {
             return (Flags & flag) != 0;
         }
-        /// <summary>
         /// Gets the category.
         /// </summary>
         /// <value>The category.</value>
@@ -157,7 +133,6 @@ namespace DarlCompiler.Parsing
             get { return Terminal.Category; }
         }
 
-        /// <summary>
         /// Determines whether this instance is error.
         /// </summary>
         /// <returns><c>true</c> if this instance is error; otherwise, <c>false</c>.</returns>
@@ -166,7 +141,6 @@ namespace DarlCompiler.Parsing
             return Category == TokenCategory.Error;
         }
 
-        /// <summary>
         /// Gets the length.
         /// </summary>
         /// <value>The length.</value>
@@ -176,17 +150,14 @@ namespace DarlCompiler.Parsing
         }
 
         //matching opening/closing brace
-        /// <summary>
         /// The other brace
         /// </summary>
         public Token OtherBrace;
 
-        /// <summary>
         /// The scanner state
         /// </summary>
         public short ScannerState; //Scanner state after producing token 
 
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -199,17 +170,14 @@ namespace DarlCompiler.Parsing
     }
 
     //Some terminals may need to return a bunch of tokens in one call to TryMatch; MultiToken is a container for these tokens
-    /// <summary>
     /// Class MultiToken.
     /// </summary>
     public class MultiToken : Token
     {
-        /// <summary>
         /// The child tokens
         /// </summary>
         public TokenList ChildTokens;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="MultiToken"/> class.
         /// </summary>
         /// <param name="tokens">The tokens.</param>
@@ -218,7 +186,6 @@ namespace DarlCompiler.Parsing
         {
             ChildTokens.AddRange(tokens);
         }
-        /// <summary>
         /// Initializes a new instance of the <see cref="MultiToken"/> class.
         /// </summary>
         /// <param name="term">The term.</param>

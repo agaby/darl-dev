@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -19,17 +18,14 @@ using System.Collections.Generic;
 
 namespace DarlCompiler.Interpreter
 {
-    /// <summary>
     /// A wrapper around Scope exposing it as a string-object dictionary. Used to expose Globals dictionary from Main scope
     /// </summary>
     public class ScopeValuesDictionary : IDictionary<string, object>
     {
-        /// <summary>
         /// The _scope
         /// </summary>
         readonly ScopeBase _scope;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ScopeValuesDictionary"/> class.
         /// </summary>
         /// <param name="scope">The scope.</param>
@@ -38,7 +34,6 @@ namespace DarlCompiler.Interpreter
             _scope = scope;
         }
 
-        /// <summary>
         /// Adds the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
@@ -51,7 +46,6 @@ namespace DarlCompiler.Interpreter
             _scope.SetValue(slot.Index, value);
         }
 
-        /// <summary>
         /// Determines whether the specified key contains key.
         /// </summary>
         /// <param name="key">The key.</param>
@@ -61,7 +55,6 @@ namespace DarlCompiler.Interpreter
             return _scope.Info.GetSlot(key) != null;
         }
 
-        /// <summary>
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
         /// <value>The keys.</value>
@@ -72,7 +65,6 @@ namespace DarlCompiler.Interpreter
 
         //We do not remove the slotInfo (you can't do that, slot set can only grow); instead we set the value to null
         // to indicate "unassigned"
-        /// <summary>
         /// Removes the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
@@ -83,7 +75,6 @@ namespace DarlCompiler.Interpreter
             return true;
         }
 
-        /// <summary>
         /// Tries the get value.
         /// </summary>
         /// <param name="key">The key.</param>
@@ -99,7 +90,6 @@ namespace DarlCompiler.Interpreter
             return true;
         }
 
-        /// <summary>
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
         /// <value>The values.</value>
@@ -108,7 +98,6 @@ namespace DarlCompiler.Interpreter
             get { return _scope.GetValues(); }
         }
 
-        /// <summary>
         /// Gets or sets the <see cref="System.Object"/> with the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
@@ -127,7 +116,6 @@ namespace DarlCompiler.Interpreter
             }
         }
 
-        /// <summary>
         /// Adds the specified item.
         /// </summary>
         /// <param name="item">The item.</param>
@@ -136,7 +124,6 @@ namespace DarlCompiler.Interpreter
             Add(item.Key, item.Value);
         }
 
-        /// <summary>
         /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </summary>
         public void Clear()
@@ -146,7 +133,6 @@ namespace DarlCompiler.Interpreter
                 values[i] = null;
         }
 
-        /// <summary>
         /// Determines whether [contains] [the specified item].
         /// </summary>
         /// <param name="item">The item.</param>
@@ -156,7 +142,6 @@ namespace DarlCompiler.Interpreter
             return _scope.Info.GetSlot(item.Key) != null;
         }
 
-        /// <summary>
         /// Copies to.
         /// </summary>
         /// <param name="array">The array.</param>
@@ -167,7 +152,6 @@ namespace DarlCompiler.Interpreter
             throw new NotImplementedException();
         }
 
-        /// <summary>
         /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </summary>
         /// <value>The count.</value>
@@ -176,7 +160,6 @@ namespace DarlCompiler.Interpreter
             get { return _scope.Info.GetSlotCount(); }
         }
 
-        /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
         /// </summary>
         /// <value><c>true</c> if this instance is read only; otherwise, <c>false</c>.</value>
@@ -185,7 +168,6 @@ namespace DarlCompiler.Interpreter
             get { return true; }
         }
 
-        /// <summary>
         /// Removes the specified item.
         /// </summary>
         /// <param name="item">The item.</param>
@@ -195,7 +177,6 @@ namespace DarlCompiler.Interpreter
             return Remove(item.Key);
         }
 
-        /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
@@ -206,7 +187,6 @@ namespace DarlCompiler.Interpreter
                 yield return new KeyValuePair<string, object>(slot.Name, _scope.GetValue(slot.Index));
         }
 
-        /// <summary>
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>

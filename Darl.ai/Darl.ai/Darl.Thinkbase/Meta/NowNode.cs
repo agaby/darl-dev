@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -8,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
 {
-    /// <summary>
     /// Returns either the crisp current UTC time or a fuzzy time set in the grammar object
     /// </summary>
     public class NowNode : DarlMetaNode

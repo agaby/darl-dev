@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using static Darl.Thinkbase.GraphAttribute;

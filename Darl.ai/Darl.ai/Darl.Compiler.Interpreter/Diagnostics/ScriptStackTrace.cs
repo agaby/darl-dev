@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -17,7 +16,6 @@
 
 namespace DarlCompiler.Interpreter
 {
-    /// <summary>
     /// Class ScriptStackTrace.
     /// </summary>
     public class ScriptStackTrace

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCommon;
@@ -49,7 +48,6 @@ namespace Darl.Forms
             return schema.ToString();
         }
 
-        /// <summary>
         /// creates a property tree based on the data type and settings
         /// </summary>
         /// <param name="p"></param>
@@ -89,7 +87,6 @@ namespace Darl.Forms
             return new JObject(list.ToArray());
 
         }
-        /// <summary>
         /// creates a property tree based on the data type and settings
         /// </summary>
         /// <param name="p"></param>
@@ -115,7 +112,6 @@ namespace Darl.Forms
 
         }
 
-        /// <summary>
         /// Align the darl and the IO/texts. Run the tests
         /// </summary>
         /// <param name="pr">The ruleform holding the ruleset and ancillaries</param>
@@ -342,7 +338,6 @@ namespace Darl.Forms
             return errors;
         }
 
-        /// <summary>
         /// Add fixed names to the list of language texts
         /// </summary>
         /// <param name="language"></param>
@@ -368,7 +363,6 @@ namespace Darl.Forms
             return langChanges;
         }
 
-        /// <summary>
         /// Create a new initialised RuleForm
         /// </summary>
         /// <param name="name">The name of the ruleset</param>
@@ -381,7 +375,6 @@ namespace Darl.Forms
             return Task.FromResult<RuleForm>(rf);
         }
 
-        /// <summary>
         /// Create an initialised MLModel
         /// </summary>
         /// <param name="name"></param>
@@ -394,7 +387,6 @@ namespace Darl.Forms
             return Task.FromResult<MLModel>(mlm);
         }
 
-        /// <summary>
         /// Mine 
         /// </summary>
         /// <param name="rulesource"></param>
@@ -416,7 +408,6 @@ namespace Darl.Forms
             return rf;
         }
 
-        /// <summary>
         /// Create a rule set enabling querying and editing a GraphQL schema
         /// </summary>
         /// <param name="name"></param>
@@ -429,7 +420,6 @@ namespace Darl.Forms
         }
 
 
-        /// <summary>
         /// Convert a Json schema into darl
         /// </summary>
         /// <param name="jsonSchemaString"></param>
@@ -469,7 +459,6 @@ namespace Darl.Forms
             return sb.ToString();
         }
 
-        /// <summary>
         /// initialize trigger view
         /// </summary>
         /// <returns></returns>
@@ -478,7 +467,6 @@ namespace Darl.Forms
             return new TriggerView { sendEmailSource = SourceType.fixedvalue, sendEmail = "false", postDataSource = SourceType.fixedvalue, postData = "false", graphqlDataSource = SourceType.fixedvalue, graphqlData = "false" };
         }
 
-        /// <summary>
         /// Converts the type of the input.
         /// </summary>
         /// <param name="ty">The type</param>
@@ -494,7 +482,6 @@ namespace Darl.Forms
             return InputFormat.InputType.textual;
         }
 
-        /// <summary>
         /// Converts the type of the output.
         /// </summary>
         /// <param name="ty">The type.</param>
@@ -592,7 +579,6 @@ namespace Darl.Forms
 
         }
 
-        /// <summary>
         /// Creates initial text for language from the name of IO given
         /// </summary>
         /// <param name="name">The name of the IO</param>

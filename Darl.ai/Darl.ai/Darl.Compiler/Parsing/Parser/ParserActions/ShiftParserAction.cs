@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -19,27 +18,22 @@ using System;
 
 namespace DarlCompiler.Parsing
 {
-    /// <summary>
     /// Class ShiftParserAction.
     /// </summary>
     public class ShiftParserAction : ParserAction
     {
-        /// <summary>
         /// The term
         /// </summary>
         public readonly BnfTerm Term;
-        /// <summary>
         /// The new state
         /// </summary>
         public readonly ParserState NewState;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ShiftParserAction"/> class.
         /// </summary>
         /// <param name="item">The item.</param>
         public ShiftParserAction(Construction.LRItem item) : this(item.Core.Current, item.ShiftedItem.State) { }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ShiftParserAction"/> class.
         /// </summary>
         /// <param name="term">The term.</param>
@@ -54,7 +48,6 @@ namespace DarlCompiler.Parsing
             NewState = newState;
         }
 
-        /// <summary>
         /// Executes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -67,7 +60,6 @@ namespace DarlCompiler.Parsing
             context.CurrentParserInput = null;
         }
 
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>

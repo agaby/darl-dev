@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Interpreter;
@@ -12,7 +11,6 @@ namespace Darl.Thinkbase.Meta
     public class DocumentNode : BinaryDarlMetaNode
     {
         public static string insertEscapeString { get; set; } = "%%";
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -49,7 +47,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>

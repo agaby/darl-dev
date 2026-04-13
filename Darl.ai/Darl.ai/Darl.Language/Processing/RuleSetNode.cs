@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -8,39 +7,31 @@ using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements a rule set body
     /// </summary>
     public class RuleSetNode : DarlNode
     {
-        /// <summary>
         /// The type of processing to apply
         /// </summary>
         public enum ProcessType
         {
-            /// <summary>
             /// manual rule creation (default)
             /// </summary>
             manual,
-            /// <summary>
             /// supervised rule creation
             /// </summary>
             supervised,
-            /// <summary>
             /// unsupervised rule creation
             /// </summary>
             unsupervised,
-            /// <summary>
             /// reinforcement rule creation
             /// </summary>
             reinforcement,
-            /// <summary>
             /// Association rule creation
             /// </summary>
             association
         };
 
-        /// <summary>
         /// Gets the type of the ruleset.
         /// </summary>
         /// <value>
@@ -48,7 +39,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public ProcessType pType { get; private set; }
 
-        /// <summary>
         /// Gets the rulesetname.
         /// </summary>
         /// <value>
@@ -56,7 +46,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public string rulesetname { get; private set; }
 
-        /// <summary>
         /// Gets the rule root.
         /// </summary>
         /// <value>
@@ -64,7 +53,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public RuleRootNode ruleRoot { get; private set; }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -91,7 +79,6 @@ namespace DarlLanguage.Processing
             ruleRoot.ruleset = rulesetname;
         }
 
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -106,7 +93,6 @@ namespace DarlLanguage.Processing
             return null;
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>
@@ -120,7 +106,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Gets the postamble.
         /// </summary>
         /// <value>
@@ -134,7 +119,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Walks the saliences.
         /// </summary>
         /// <param name="saliency">The incoming saliency.</param>
@@ -146,7 +130,6 @@ namespace DarlLanguage.Processing
             ruleRoot.WalkSaliences(saliency, root, currentRuleSet, currentOutput);
         }
 
-        /// <summary>
         /// Gets the HTML preamble.
         /// </summary>
         /// <value>
@@ -160,7 +143,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Gets the HTML postamble.
         /// </summary>
         /// <value>

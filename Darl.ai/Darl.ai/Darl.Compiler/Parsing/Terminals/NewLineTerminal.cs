@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -21,12 +20,10 @@ namespace DarlCompiler.Parsing
 {
     //This is a simple NewLine terminal recognizing line terminators for use in grammars for line-based languages like VB
     // instead of more complex alternative of using CodeOutlineFilter. 
-    /// <summary>
     /// Class NewLineTerminal.
     /// </summary>
     public class NewLineTerminal : Terminal
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="BnfTerm" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -37,13 +34,11 @@ namespace DarlCompiler.Parsing
             this.Flags |= TermFlags.IsPunctuation;
         }
 
-        /// <summary>
         /// The line terminators
         /// </summary>
         public string LineTerminators = "\n\r\v";
 
         #region overrides: Init, GetFirsts, TryMatch
-        /// <summary>
         /// Initializes the specified grammar data.
         /// </summary>
         /// <param name="grammarData">The grammar data.</param>
@@ -52,7 +47,6 @@ namespace DarlCompiler.Parsing
             base.Init(grammarData);
             Grammar.UsesNewLine = true; //That will prevent SkipWhitespace method from skipping new-line chars
         }
-        /// <summary>
         /// Gets the firsts.
         /// </summary>
         /// <returns>IList&lt;System.String&gt;.</returns>
@@ -63,7 +57,6 @@ namespace DarlCompiler.Parsing
                 firsts.Add(t.ToString());
             return firsts;
         }
-        /// <summary>
         /// Tries the match.
         /// </summary>
         /// <param name="context">The context.</param>

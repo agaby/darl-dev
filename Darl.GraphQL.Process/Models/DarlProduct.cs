@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿namespace Darl.GraphQL.Models.Models
@@ -11,7 +10,6 @@
 
         public string? image { get; set; }
 
-        /// <summary>
         ///price in cents
         /// </summary>
         public long price { get; set; } = 0L;

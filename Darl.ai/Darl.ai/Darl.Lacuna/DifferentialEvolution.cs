@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 using System;
@@ -7,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace Darl.Lacuna
 {
-    /// <summary>
     /// Summary description for DifferentialEvolution.
     /// </summary>
     internal class DifferentialEvolution
     {
-        /// <summary>
         /// 
         /// </summary>
         internal DifferentialEvolution()
@@ -21,79 +18,61 @@ namespace Darl.Lacuna
             // TODO: Add constructor logic here
             //
         }
-        /// <summary>
         /// Differential Evolution is available with several different mutation schemes. This identifies them
         /// </summary>
         internal enum Method
         {
-            /// <summary>
             /// DE/rand/1/bin
             /// </summary>
             method1,
-            /// <summary>
             /// DE/current-to-rand/1
             /// </summary>
             method2,
-            /// <summary>
             /// DE/rand/1/exp
             /// </summary>
             method3,
-            /// <summary>
             /// DE/current-to-rand/l/bin
             /// </summary>
             method4
         };
-        /// <summary>
         /// Used to set the mutation scheme
         /// </summary>
         internal Method method;
 
-        /// <summary>
         /// Number of parameters
         /// </summary>
         internal int D;
-        /// <summary>
         /// Population size
         /// </summary>
         internal int NP;
-        /// <summary>
         /// Scale factor [0,1]
         /// </summary>
         internal double F;
-        /// <summary>
         /// Coefficient of combination [0,1]
         /// </summary>
         internal double K;
-        /// <summary>
         /// Crossover control constant [0,1]
         /// </summary>
         internal double CR;
-        /// <summary>
         /// maximum number of generations
         /// </summary>
         internal int Gmax;
-        /// <summary>
         /// upper parameter bounds
         /// </summary>
         internal double[] hi;
-        /// <summary>
         /// lower parameter bounds
         /// </summary>
         internal double[] lo;
-        /// <summary>
         /// Scaling factor for sharing 
         /// </summary>
         internal double sigma;
-        /// <summary>
         /// The population array
         /// </summary>
         private double[,] x;
-        /// <summary>
         /// Array of processed costs.
         /// </summary>
         /// <remarks>These are the confidence figures modified by the sharing algorithm</remarks>
         internal double[] cost;
-        /// <summary>
         /// Array of pre-processed costs
         /// </summary>
         /// <remarks>These are the rule confidences</remarks>
@@ -101,7 +80,6 @@ namespace Darl.Lacuna
 
         internal static Random random = new Random();
         internal KDTree tree;
-        /// <summary>
         /// Differential Evolution, Appendix 6.A, New ideas in optimisation
         /// </summary>
         /// <returns>the population of solutions</returns>
@@ -167,7 +145,6 @@ namespace Darl.Lacuna
             } while (generation < Gmax);
             return x;
         }
-        /// <summary>
         /// DE/rand/1/bin
         /// </summary>
         /// <param name="i">indexes solutions</param>
@@ -189,7 +166,6 @@ namespace Darl.Lacuna
                 j = (j + 1) % D;
             }
         }
-        /// <summary>
         /// DE/current-to-rand/1
         /// </summary>
         /// <param name="i">indexes solutions</param>
@@ -206,7 +182,6 @@ namespace Darl.Lacuna
                 temp[j] = BoundsCheck(temp[j], x[i, j], j);
             }
         }
-        /// <summary>
         /// DE/rand/1/exp
         /// </summary>
         /// <param name="i">indexes solutions</param>
@@ -231,7 +206,6 @@ namespace Darl.Lacuna
                 j = (j + 1) % D; /*   % = modulo; index j runs from 0 to D-1    */
             }
         }
-        /// <summary>
         /// DE/current-to-rand/l/bin
         /// </summary>
         /// <param name="i">indexes solutions</param>
@@ -283,7 +257,6 @@ namespace Darl.Lacuna
             cost[i] = cost[i] / scale;
         }
 
-        /// <summary>
         /// De Jong's test functions number 5
         /// </summary>
         /// <remarks>input data range -65.536 to +65.536

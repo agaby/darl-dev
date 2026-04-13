@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -12,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace DarlLanguage
 {
-    /// <summary>
     /// Defines the Darl language and the interpreter.
     /// </summary>
     [Language("Darl", "1.3", "Darl language, Copyright(c) Dr Andy's IP Ltd, 2020")]
@@ -20,22 +18,18 @@ namespace DarlLanguage
     {
 
 
-        /// <summary>
         /// Used to get values in and out of the map/ruleset
         /// </summary>
         public List<DarlResult> results { get; set; }
 
-        /// <summary>
         /// Used to get values in and out of the map/ruleset
         /// </summary>
         public Dictionary<string, ILocalStore> stores { get; set; } = new Dictionary<string, ILocalStore>();
 
-        /// <summary>
         /// If non-empty indicates that just the specified rule set is targeted for evaluation
         /// </summary>
         public string rulesetFilter { get; private set; }
 
-        /// <summary>
         /// Constructor
         /// </summary>
         public DarlGrammar() : base(true)
@@ -649,7 +643,6 @@ namespace DarlLanguage
         }
 
         //Must create new overrides here in order to support the "Operator" token color
-        /// <summary>
         /// Registers the operators.
         /// </summary>
         /// <param name="precedence">The precedence.</param>
@@ -659,7 +652,6 @@ namespace DarlLanguage
             RegisterOperators(precedence, Associativity.Left, opSymbols);
         }
 
-        /// <summary>
         /// Gets the specified keyword.
         /// </summary>
         /// <param name="keyword">The keyword.</param>
@@ -669,7 +661,6 @@ namespace DarlLanguage
             return Keyword(keyword, string.Empty);
         }
 
-        /// <summary>
         /// Keywords the specified keyword.
         /// </summary>
         /// <param name="keyword">The keyword.</param>
@@ -685,7 +676,6 @@ namespace DarlLanguage
             return term;
         }
 
-        /// <summary>
         /// Operators the specified op.
         /// </summary>
         /// <param name="op">The op.</param>
@@ -697,7 +687,6 @@ namespace DarlLanguage
             return term;
         }
 
-        /// <summary>
         /// Builds the ast.
         /// </summary>
         /// <param name="language">The language.</param>
@@ -737,7 +726,6 @@ namespace DarlLanguage
 
         }
 
-        /// <summary>
         /// Runs the sample.
         /// </summary>
         /// <param name="args">The args.</param>

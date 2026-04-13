@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Interpreter;
@@ -11,21 +10,18 @@ namespace Darl.Thinkbase.Meta
 {
     public abstract class DarlMetaNode : AstNode
     {
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>
         /// The preamble, used to reconstruct the source code.
         /// </value>
         public virtual string preamble { get { return string.Empty; } }
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>
         /// The midamble, used to reconstruct the source code.
         /// </value>
         public virtual string midamble { get { return string.Empty; } }
-        /// <summary>
         /// Gets the postamble.
         /// </summary>
         /// <value>
@@ -38,7 +34,6 @@ namespace Darl.Thinkbase.Meta
             return String.Empty;
         }
 
-        /// <summary>
         /// Establishes dependencies and initializes constants
         /// </summary>
         /// <param name="dependencies">list of dependencies discovered</param>
@@ -49,7 +44,6 @@ namespace Darl.Thinkbase.Meta
 
         }
 
-        /// <summary>
         /// Walks the saliences.
         /// </summary>
         /// <param name="saliency">The incoming saliency.</param>

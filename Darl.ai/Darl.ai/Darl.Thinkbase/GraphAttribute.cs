@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCommon;
@@ -15,43 +14,33 @@ namespace Darl.Thinkbase
 
         public enum DataType
         {
-            /// <summary>
             /// Numeric including fuzzy
             /// </summary>
             numeric,
-            /// <summary>
             /// One or more categories with confidences
             /// </summary>
             categorical,
-            /// <summary>
             /// Textual
             /// </summary>
             textual,
-            /// <summary>
             /// a text sequence
             /// </summary>
             sequence,
-            /// <summary>
             /// A time value
             /// </summary>
             temporal,
-            /// <summary>
             /// A time period
             /// </summary>
             duration,
-            /// <summary>
             /// Text in markdown format
             /// </summary>
             markdown,
-            /// <summary>
             /// A rule set
             /// </summary>
             ruleset,
-            /// <summary>
             /// A link to another attribute in another kg
             /// </summary>
             link,
-            /// <summary>
             /// For use only in KStates. The endpoint subjectId resides in value
             /// </summary>
             connection

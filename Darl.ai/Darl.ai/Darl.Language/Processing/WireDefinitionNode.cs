@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -6,39 +5,31 @@ using DarlCompiler.Parsing;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements a wire definition
     /// </summary>
     public class WireDefinitionNode : DarlNode
     {
-        /// <summary>
         /// The possible types of wires
         /// </summary>
         public enum WireType
         {
-            /// <summary>
             /// The wirein
             /// </summary>
             wirein,
-            /// <summary>
             /// The wireout
             /// </summary>
             wireout,
-            /// <summary>
             /// The wirethrough
             /// </summary>
             wirethrough,
-            /// <summary>
             /// The wireinternal
             /// </summary>
             wireinternal,
-            /// <summary>
             /// Bidirectional wire for a store
             /// </summary>
             wirestore
         }
 
-        /// <summary>
         /// Gets the sourcename.
         /// </summary>
         /// <value>
@@ -46,7 +37,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public string sourcename { get; set; }
 
-        /// <summary>
         /// Gets the destname.
         /// </summary>
         /// <value>
@@ -54,7 +44,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public string destname { get; set; }
 
-        /// <summary>
         /// Gets the source ruleset.
         /// </summary>
         /// <value>
@@ -62,7 +51,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public string sourceRuleset { get; set; }
 
-        /// <summary>
         /// Gets the dest ruleset.
         /// </summary>
         /// <value>
@@ -70,7 +58,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public string destRuleset { get; set; }
 
-        /// <summary>
         /// Get the composite source
         /// </summary>
         public string compSource
@@ -86,7 +73,6 @@ namespace DarlLanguage.Processing
 
         int writeIndex = 0;
 
-        /// <summary>
         /// Get the composite destination
         /// </summary>
         public string compDest
@@ -100,7 +86,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Gets the wiretype.
         /// </summary>
         /// <value>
@@ -108,7 +93,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public WireType wiretype { get; set; }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -163,7 +147,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Walks the saliences.
         /// </summary>
         /// <param name="saliency">The incoming saliency.</param>

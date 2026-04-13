@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -10,12 +9,10 @@ namespace Darl.Thinkbase.Meta
     public class BinaryDarlMetaNode : DarlMetaNode
     {
         protected DarlMetaNode Left;
-        /// <summary>
         /// The right child
         /// </summary>
         protected DarlMetaNode Right;
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>

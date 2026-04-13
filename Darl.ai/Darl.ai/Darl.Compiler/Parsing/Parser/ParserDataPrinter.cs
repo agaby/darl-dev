@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -21,13 +20,11 @@ using System.Text;
 
 namespace DarlCompiler.Parsing
 {
-    /// <summary>
     /// Class ParserDataPrinter.
     /// </summary>
     public static class ParserDataPrinter
     {
 
-        /// <summary>
         /// Prints the state list.
         /// </summary>
         /// <param name="language">The language.</param>
@@ -83,7 +80,6 @@ namespace DarlCompiler.Parsing
             return sb.ToString();
         }
 
-        /// <summary>
         /// Prints the terminals.
         /// </summary>
         /// <param name="language">The language.</param>
@@ -96,7 +92,6 @@ namespace DarlCompiler.Parsing
             return result;
         }
 
-        /// <summary>
         /// Prints the non terminals.
         /// </summary>
         /// <param name="language">The language.</param>

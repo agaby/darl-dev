@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -8,7 +7,6 @@ namespace DarlLanguage.Processing
 {
     public class MapStoreDefinitionNode : DarlNode
     {
-        /// <summary>
         /// Gets the name of the output.
         /// </summary>
         /// <value>
@@ -16,7 +14,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public string Name { get; set; }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>

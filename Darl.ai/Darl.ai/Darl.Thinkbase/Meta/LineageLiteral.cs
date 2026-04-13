@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Lineage;
@@ -8,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
 {
-    /// <summary>
     /// Holds a lineage with validation checks
     /// </summary>
     public class LineageLiteral : DarlMetaNode

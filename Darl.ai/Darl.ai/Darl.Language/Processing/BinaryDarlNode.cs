@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -7,21 +6,17 @@ using System.Collections.Generic;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements an interpreter functional node with arity 2.
     /// </summary>
     public class BinaryDarlNode : DarlNode
     {
-        /// <summary>
         /// The left child
         /// </summary>
         protected DarlNode Left;
-        /// <summary>
         /// The right child
         /// </summary>
         protected DarlNode Right;
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -34,7 +29,6 @@ namespace DarlLanguage.Processing
             Right = (DarlNode)AddChild("-", nodes[1]);
         }
 
-        /// <summary>
         /// Establishes dependencies and initialises constants
         /// </summary>
         /// <param name="dependencies">list of dependencies discovered</param>
@@ -46,7 +40,6 @@ namespace DarlLanguage.Processing
             Right.WalkDependencies(dependencies, currentOutput, context);
         }
 
-        /// <summary>
         /// Walks the saliences.
         /// </summary>
         /// <param name="saliency">The incoming saliency.</param>

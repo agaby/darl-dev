@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -24,54 +23,43 @@ namespace DarlCompiler.Parsing
 {
 
     //Parser class represents combination of scanner and LALR parser (CoreParser)
-    /// <summary>
     /// Class Parser.
     /// </summary>
     public class Parser
     {
-        /// <summary>
         /// The language
         /// </summary>
         public readonly LanguageData Language;
-        /// <summary>
         /// The data
         /// </summary>
         public readonly ParserData Data;
-        /// <summary>
         /// The _grammar
         /// </summary>
         private readonly Grammar _grammar;
         //public readonly CoreParser CoreParser;
-        /// <summary>
         /// The scanner
         /// </summary>
         public readonly Scanner Scanner;
-        /// <summary>
         /// Gets the context.
         /// </summary>
         /// <value>The context.</value>
         public ParsingContext Context { get; internal set; }
-        /// <summary>
         /// The root
         /// </summary>
         public readonly NonTerminal Root;
         // Either language root or initial state for parsing snippets - like Ruby's expressions in strings : "result= #{x+y}"  
-        /// <summary>
         /// The initial state
         /// </summary>
         internal readonly ParserState InitialState;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="Parser"/> class.
         /// </summary>
         /// <param name="grammar">The grammar.</param>
         public Parser(Grammar grammar) : this(new LanguageData(grammar)) { }
-        /// <summary>
         /// Initializes a new instance of the <see cref="Parser"/> class.
         /// </summary>
         /// <param name="language">The language.</param>
         public Parser(LanguageData language) : this(language, null) { }
-        /// <summary>
         /// Initializes a new instance of the <see cref="Parser"/> class.
         /// </summary>
         /// <param name="language">The language.</param>
@@ -98,7 +86,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Resets this instance.
         /// </summary>
         internal void Reset()
@@ -108,7 +95,6 @@ namespace DarlCompiler.Parsing
         }
 
 
-        /// <summary>
         /// Parses the specified source text.
         /// </summary>
         /// <param name="sourceText">The source text.</param>
@@ -150,7 +136,6 @@ namespace DarlCompiler.Parsing
             return parseTree;
         }
 
-        /// <summary>
         /// Parses all.
         /// </summary>
         private void ParseAll()
@@ -163,7 +148,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Scans the only.
         /// </summary>
         /// <param name="sourceText">The source text.</param>
@@ -182,7 +166,6 @@ namespace DarlCompiler.Parsing
         }
 
         #region Parser Action execution
-        /// <summary>
         /// Executes the next action.
         /// </summary>
         private void ExecuteNextAction()
@@ -211,7 +194,6 @@ namespace DarlCompiler.Parsing
             action.Execute(Context);
         }
 
-        /// <summary>
         /// Gets the next action.
         /// </summary>
         /// <returns>ParserAction.</returns>
@@ -266,7 +248,6 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region reading input
-        /// <summary>
         /// Reads the input.
         /// </summary>
         public void ReadInput()
@@ -299,7 +280,6 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region Error Recovery
-        /// <summary>
         /// Recovers from error.
         /// </summary>
         public void RecoverFromError()
@@ -309,7 +289,6 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region Utilities
-        /// <summary>
         /// Checks the partial input completed.
         /// </summary>
         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
@@ -324,7 +303,6 @@ namespace DarlCompiler.Parsing
         }
 
         // We assume here that the token is a brace (opening or closing)
-        /// <summary>
         /// Checks the brace token.
         /// </summary>
         /// <param name="token">The token.</param>

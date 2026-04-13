@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿namespace Darl.GraphQL.Process.Web.Models.Noda

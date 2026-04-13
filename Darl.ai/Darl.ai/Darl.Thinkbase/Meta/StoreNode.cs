@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -11,7 +10,6 @@ namespace Darl.Thinkbase.Meta
     public class StoreNode : DarlMetaNode
     {
         public enum StoreType { sink, source }
-        /// <summary>
         /// The left side
         /// </summary>
         public DarlMetaIdentifierNode Left { get; private set; }
@@ -25,7 +23,6 @@ namespace Darl.Thinkbase.Meta
 
         readonly int writeIndex = 0;
 
-        /// <summary>
         /// Data direction
         /// </summary>
         public StoreType storeType { get; set; } = StoreType.source;
@@ -55,7 +52,6 @@ namespace Darl.Thinkbase.Meta
             Left.WalkDependencies(dependencies, currentOutput, context, model, currentNode);
         }
 
-        /// <summary>
         /// return the local name
         /// </summary>
         /// <returns></returns>

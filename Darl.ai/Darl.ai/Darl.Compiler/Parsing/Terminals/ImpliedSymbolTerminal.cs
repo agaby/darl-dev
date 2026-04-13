@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -31,12 +30,10 @@ namespace DarlCompiler.Parsing
     // It relies on scanner-parser link enabled - so the implied symbol token is created ONLY 
     // when the current parser state allows it and there are no other alternatives (hence lowest priority value).
     // See SearchGrammar as an example of use of this terminal. 
-    /// <summary>
     /// Class ImpliedSymbolTerminal.
     /// </summary>
     public class ImpliedSymbolTerminal : Terminal
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="BnfTerm" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -46,7 +43,6 @@ namespace DarlCompiler.Parsing
             this.Priority = TerminalPriority.Low; //This terminal should be tried after all candidate terminals failed. 
         }
 
-        /// <summary>
         /// Initializes the specified grammar data.
         /// </summary>
         /// <param name="grammarData">The grammar data.</param>
@@ -59,7 +55,6 @@ namespace DarlCompiler.Parsing
             //"ImpliedSymbolTerminal cannot be used in grammar with DisableScannerParserLink flag set"
         }
 
-        /// <summary>
         /// Tries the match.
         /// </summary>
         /// <param name="context">The context.</param>

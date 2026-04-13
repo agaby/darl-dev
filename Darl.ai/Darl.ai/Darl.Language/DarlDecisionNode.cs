@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -20,71 +19,55 @@ using System.Collections.Generic;
 
 namespace DarlLanguage
 {
-    /// <summary>
     /// Class DarlDecisionNode.
     /// </summary>
     class DarlDecisionNode
     {
-        /// <summary>
         /// The minimum number of leaf nodes to continue tree generation.
         /// </summary>
         private const int dataThreshold = 5;
-        /// <summary>
         /// Scaling value to penalize large trees.
         /// </summary>
         private const double leafInfoThreshold = 0.05;
-        /// <summary>
         /// The input associated with the current node.
         /// </summary>
         protected InputDefinitionNode input;
-        /// <summary>
         /// The single output used in the analysis
         /// </summary>
         protected OutputDefinitionNode output;
-        /// <summary>
         /// The list of inputs still unassigned to a DarlDecisionNode
         /// </summary>
         protected List<InputDefinitionNode> inputs;
-        /// <summary>
         /// An array of integers containing the indexes of the data records associated with this part of the tree.
         /// </summary>
         protected List<int> indices;
-        /// <summary>
         /// Child nodes of this node.
         /// </summary>
         protected List<DarlDecisionNode> subNodes;
-        /// <summary>
         /// Holds list of inputs minus that associated with this node to be passed on.
         /// This does not really need to be stored.
         /// </summary>
         protected List<InputDefinitionNode> newInputs;
-        /// <summary>
         /// The category or set associated with this node.
         /// </summary>
         protected int index;
-        /// <summary>
         /// During merging, a list of the indexes, to sets or categories, that relate to this node.
         /// </summary>
         protected List<int> mergedIndexes;
-        /// <summary>
         /// A table of the outputs partitions, so sets or categories, found to be associated with this node
         /// </summary>
         protected Dictionary<object, double> outputPartitions;
-        /// <summary>
         /// Shows that this node has been merged with another.
         /// </summary>
         protected bool merged; // m_bMerged
-        /// <summary>
         /// Rules below this confidence will not be outputted
         /// </summary>
         internal static double minimumConfidence = 0.0;
-        /// <summary>
         /// Rules with support less than this value will not be outputted.
         /// </summary>
         internal static int minimumSupport = 1;
 
 
-        /// <summary>
         /// Main function to generate the decision node tree
         /// </summary>
         /// <param name="currentInput">The input chosen to divide on</param>
@@ -163,7 +146,6 @@ namespace DarlLanguage
                 node.GenerateNodes(bestInput, output, newInputs, newList, n, depth);
             }
         }
-        /// <summary>
         /// Main function to create a metarule version of the decision tree.
         /// </summary>
         /// <param name="start">Reference to start text</param>
@@ -216,7 +198,6 @@ namespace DarlLanguage
             }
             return count;
         }
-        /// <summary>
         /// Writes out a single "is" term and asociated input and set/category/vocab
         /// </summary>
         /// <param name="middle">Recieves text</param>
@@ -241,7 +222,6 @@ namespace DarlLanguage
                 middle = string.Concat(middle, currentIndex, " ");
             }
         }
-        /// <summary>
         /// Consider if this and the node parameter can be merged, if not return false.
         /// </summary>
         /// <param name="node">prospective mergee</param>
@@ -315,7 +295,6 @@ namespace DarlLanguage
             }
             return true;
         }
-        /// <summary>
         /// Detects if this node is a leaf node
         /// </summary>
         /// <returns>true if a leaf.</returns>
@@ -323,7 +302,6 @@ namespace DarlLanguage
         {
             return subNodes.Count == 0;
         }
-        /// <summary>
         /// Generates the right hand side of a rule.
         /// </summary>
         /// <param name="start">Reference to text receiving definitions</param>
@@ -350,7 +328,6 @@ namespace DarlLanguage
             }
             return count;
         }
-        /// <summary>
         /// constructor.
         /// </summary>
         internal DarlDecisionNode()
@@ -363,7 +340,6 @@ namespace DarlLanguage
             subNodes = new List<DarlDecisionNode>();
             mergedIndexes = new List<int>();
         }
-        /// <summary>
         /// Controls the merging process
         /// </summary>
         internal void CheckForMerge()

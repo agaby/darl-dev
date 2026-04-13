@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -8,17 +7,14 @@ using System.Linq;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements an operator of arity 1
     /// </summary>
     public class UnaryDarlNode : DarlNode
     {
-        /// <summary>
         /// The single argument
         /// </summary>
         protected DarlNode Argument;
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -37,7 +33,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Establishes dependencies and initializes constants
         /// </summary>
         /// <param name="dependencies">list of dependencies discovered</param>
@@ -48,7 +43,6 @@ namespace DarlLanguage.Processing
             Argument.WalkDependencies(dependencies, currentOutput, context);
         }
 
-        /// <summary>
         /// Walks the saliences.
         /// </summary>
         /// <param name="saliency">The incoming saliency.</param>

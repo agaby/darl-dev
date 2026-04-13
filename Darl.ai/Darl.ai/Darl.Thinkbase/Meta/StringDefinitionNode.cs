@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -8,7 +7,6 @@ namespace Darl.Thinkbase.Meta
 {
     public class StringDefinitionNode : DarlMetaNode
     {
-        /// <summary>
         /// Gets the value of the string.
         /// </summary>
         /// <value>
@@ -16,7 +14,6 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public string Value { get; private set; }
 
-        /// <summary>
         /// Gets the name of the string.
         /// </summary>
         /// <value>
@@ -24,7 +21,6 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public string name { get; private set; }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -36,7 +32,6 @@ namespace Darl.Thinkbase.Meta
             Value = (string)nodes[1].Token.Value;
             name = nodes[0].Token.Text;
         }
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>

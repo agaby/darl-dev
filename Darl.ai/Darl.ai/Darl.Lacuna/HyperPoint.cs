@@ -1,11 +1,9 @@
-/// <summary>
 /// </summary>
 
 using System;
 
 namespace Darl.Lacuna
 {
-    /// <summary>
     /// hyper point class
     /// </summary>
     internal class HyperPoint

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Interpreter;
@@ -40,7 +39,6 @@ namespace DarlLanguage.Processing
         }
 
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>
@@ -53,7 +51,6 @@ namespace DarlLanguage.Processing
                 return "timerange( ";
             }
         }
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>
@@ -67,7 +64,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Gets the postamble.
         /// </summary>
         /// <value>

@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="NumberLiteral.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -20,91 +20,73 @@ namespace DarlCompiler.Parsing
     using DarlCompiler.Ast; // Microsoft.Scripting.Math.Complex64;
     using Complex64 = System.Numerics.Complex;
 
-    /// <summary>
     /// Enum NumberOptions
     /// </summary>
     [Flags]
     public enum NumberOptions
     {
-        /// <summary>
         /// The none
         /// </summary>
         None = 0,
-        /// <summary>
         /// The default
         /// </summary>
         Default = None,
 
-        /// <summary>
         /// The allow start end dot
         /// </summary>
         AllowStartEndDot = 0x01,     //python : http://docs.python.org/ref/floating.html
-        /// <summary>
         /// The int only
         /// </summary>
         IntOnly = 0x02,
-        /// <summary>
         /// The no dot after int
         /// </summary>
         NoDotAfterInt = 0x04,     //for use with IntOnly flag; essentially tells terminal to avoid matching integer if 
         // it is followed by dot (or exp symbol) - leave to another terminal that will handle float numbers
-        /// <summary>
         /// The allow sign
         /// </summary>
         AllowSign = 0x08,
-        /// <summary>
         /// The disable quick parse
         /// </summary>
         DisableQuickParse = 0x10,
-        /// <summary>
         /// The allow letter after
         /// </summary>
         AllowLetterAfter = 0x20,      // allow number be followed by a letter or underscore; by default this flag is not set, so "3a" would not be 
         //  recognized as number followed by an identifier
-        /// <summary>
         /// The allow underscore
         /// </summary>
         AllowUnderscore = 0x40,      // Ruby allows underscore inside number: 1_234
 
         //The following should be used with base-identifying prefixes
-        /// <summary>
         /// The binary
         /// </summary>
         Binary = 0x0100, //e.g. GNU GCC C Extension supports binary number literals
-        /// <summary>
         /// The octal
         /// </summary>
         Octal = 0x0200,
-        /// <summary>
         /// The hexadecimal
         /// </summary>
         Hex = 0x0400,
     }
 
 
-    /// <summary>
     /// Class NumberLiteral.
     /// </summary>
     public class NumberLiteral : CompoundTerminalBase
     {
 
         //Flags for internal use
-        /// <summary>
         /// Enum NumberFlagsInternal
         /// </summary>
         public enum NumberFlagsInternal : short
         {
-            /// <summary>
             /// The has dot
             /// </summary>
             HasDot = 0x1000,
-            /// <summary>
             /// The has exp
             /// </summary>
             HasExp = 0x2000,
         }
         //nested helper class
-        /// <summary>
         /// Class ExponentsTable.
         /// </summary>
         [Serializable]
@@ -112,18 +94,15 @@ namespace DarlCompiler.Parsing
 
         #region Public Consts
         //currently using TypeCodes for identifying numeric types
-        /// <summary>
         /// The type code big int
         /// </summary>
         public const TypeCode TypeCodeBigInt = (TypeCode)30;
-        /// <summary>
         /// The type code imaginary
         /// </summary>
         public const TypeCode TypeCodeImaginary = (TypeCode)31;
         #endregion
 
         #region constructors and initialization
-        /// <summary>
         /// Initializes a new instance of the <see cref="BnfTerm" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -131,7 +110,6 @@ namespace DarlCompiler.Parsing
             : this(name, NumberOptions.Default)
         {
         }
-        /// <summary>
         /// Initializes a new instance of the <see cref="NumberLiteral"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -142,7 +120,6 @@ namespace DarlCompiler.Parsing
         {
             base.AstConfig.NodeType = astNodeType;
         }
-        /// <summary>
         /// Initializes a new instance of the <see cref="NumberLiteral"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -153,7 +130,6 @@ namespace DarlCompiler.Parsing
         {
             base.AstConfig.NodeCreator = astNodeCreator;
         }
-        /// <summary>
         /// Initializes a new instance of the <see cref="NumberLiteral"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -164,7 +140,6 @@ namespace DarlCompiler.Parsing
             Options = options;
             base.SetFlag(TermFlags.IsLiteral);
         }
-        /// <summary>
         /// Adds the prefix.
         /// </summary>
         /// <param name="prefix">The prefix.</param>
@@ -174,7 +149,6 @@ namespace DarlCompiler.Parsing
             PrefixFlags.Add(prefix, (short)options);
             Prefixes.Add(prefix);
         }
-        /// <summary>
         /// Adds the exponent symbols.
         /// </summary>
         /// <param name="symbols">The symbols.</param>
@@ -187,30 +161,24 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region Public fields/properties: ExponentSymbols, Suffixes
-        /// <summary>
         /// The options
         /// </summary>
         public NumberOptions Options;
-        /// <summary>
         /// The decimal separator
         /// </summary>
         public char DecimalSeparator = '.';
 
         //Default types are assigned to literals without suffixes; first matching type used
-        /// <summary>
         /// The default int types
         /// </summary>
         public TypeCode[] DefaultIntTypes = new TypeCode[] { TypeCode.Int32 };
-        /// <summary>
         /// The default float type
         /// </summary>
         public TypeCode DefaultFloatType = TypeCode.Double;
-        /// <summary>
         /// The _exponents table
         /// </summary>
         private readonly ExponentsTable _exponentsTable = new ExponentsTable();
 
-        /// <summary>
         /// Determines whether the specified option is set.
         /// </summary>
         /// <param name="option">The option.</param>
@@ -225,7 +193,6 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region overrides
-        /// <summary>
         /// Initializes the specified grammar data.
         /// </summary>
         /// <param name="grammarData">The grammar data.</param>
@@ -242,7 +209,6 @@ namespace DarlCompiler.Parsing
                 this.EditorInfo = new TokenEditorInfo(TokenType.Literal, TokenColor.Number, TokenTriggers.None);
         }
 
-        /// <summary>
         /// Gets the firsts.
         /// </summary>
         /// <returns>IList&lt;System.String&gt;.</returns>
@@ -262,7 +228,6 @@ namespace DarlCompiler.Parsing
 
         //Most numbers in source programs are just one-digit instances of 0, 1, 2, and maybe others until 9
         // so we try to do a quick parse for these, without starting the whole general process
-        /// <summary>
         /// Quicks the parse.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -292,7 +257,6 @@ namespace DarlCompiler.Parsing
             return source.CreateToken(this.OutputTerminal, value);
         }
 
-        /// <summary>
         /// Initializes the details.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -303,7 +267,6 @@ namespace DarlCompiler.Parsing
             details.Flags = (short)this.Options;
         }
 
-        /// <summary>
         /// Reads the prefix.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -316,7 +279,6 @@ namespace DarlCompiler.Parsing
             base.ReadPrefix(source, details);
         }
 
-        /// <summary>
         /// Reads the body.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -400,7 +362,6 @@ namespace DarlCompiler.Parsing
             return true;
         }
 
-        /// <summary>
         /// Called when [validate token].
         /// </summary>
         /// <param name="context">The context.</param>
@@ -417,7 +378,6 @@ namespace DarlCompiler.Parsing
             base.OnValidateToken(context);
         }
 
-        /// <summary>
         /// Converts the value.
         /// </summary>
         /// <param name="details">The details.</param>
@@ -474,7 +434,6 @@ namespace DarlCompiler.Parsing
             return false;
         }
 
-        /// <summary>
         /// Assigns the type codes.
         /// </summary>
         /// <param name="details">The details.</param>
@@ -508,7 +467,6 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region private utilities
-        /// <summary>
         /// Quicks the convert to int32.
         /// </summary>
         /// <param name="details">The details.</param>
@@ -534,7 +492,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Quicks the convert to double.
         /// </summary>
         /// <param name="details">The details.</param>
@@ -551,7 +508,6 @@ namespace DarlCompiler.Parsing
         }
 
 
-        /// <summary>
         /// Converts to float.
         /// </summary>
         /// <param name="typeCode">The type code.</param>
@@ -599,7 +555,6 @@ namespace DarlCompiler.Parsing
             }//switch
             return false;
         }
-        /// <summary>
         /// Tries the type of the cast to integer.
         /// </summary>
         /// <param name="typeCode">The type code.</param>
@@ -621,7 +576,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Tries the convert to long.
         /// </summary>
         /// <param name="details">The details.</param>
@@ -653,7 +607,6 @@ namespace DarlCompiler.Parsing
         }
 
 
-        /// <summary>
         /// Gets the radix.
         /// </summary>
         /// <param name="details">The details.</param>
@@ -668,7 +621,6 @@ namespace DarlCompiler.Parsing
                 return 2;
             return 10;
         }
-        /// <summary>
         /// Gets the digits.
         /// </summary>
         /// <param name="details">The details.</param>
@@ -683,7 +635,6 @@ namespace DarlCompiler.Parsing
                 return Strings.BinaryDigits;
             return Strings.DecimalDigits;
         }
-        /// <summary>
         /// Gets the length of the safe word.
         /// </summary>
         /// <param name="details">The details.</param>
@@ -698,7 +649,6 @@ namespace DarlCompiler.Parsing
                 return 63;
             return 19; //maxWordLength 20
         }
-        /// <summary>
         /// Gets the section count.
         /// </summary>
         /// <param name="stringLength">Length of the string.</param>
@@ -712,7 +662,6 @@ namespace DarlCompiler.Parsing
         }
 
         //radix^safeWordLength
-        /// <summary>
         /// Gets the safe word radix.
         /// </summary>
         /// <param name="details">The details.</param>

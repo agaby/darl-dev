@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Forms;
@@ -212,7 +211,6 @@ namespace Darl_standard_core.test
             Assert.AreEqual("Qualifying date", rf.language.LanguageList[37].Text);
         }
 
-        /// <summary>
         /// Tests change to salience calcs in RuleRootNode where salience is divided not by the number of rules, but the number of unsatisfied rules, thus upping
         /// the salience of inputs that become more pivotal.
         /// </summary>

@@ -1,11 +1,9 @@
-/// <summary>
 /// </summary>
 
 using System;
 
 namespace Darl.Lacuna
 {
-    /// <summary>
     /// hyper rectangle class 
     /// </summary>
     internal class HyperRect

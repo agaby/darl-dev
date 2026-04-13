@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using GraphQL;
@@ -11,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace Darl.GraphQL.Process.Middleware
 {
-    /// <summary>
     /// Used to remove administrator only facilities from the observable schema
     /// </summary>
     public class AdminFilter : ISchemaFilter

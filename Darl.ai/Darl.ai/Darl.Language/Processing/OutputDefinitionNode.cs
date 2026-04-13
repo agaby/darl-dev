@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -9,36 +8,29 @@ using System.Text;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements an output definition
     /// </summary>
     public class OutputDefinitionNode : IOSequenceDefinitionNode
     {
 
-        /// <summary>
         /// Enumerates the possible output types
         /// </summary>
         public enum OutputTypes
         {
-            /// <summary>
             /// is numeric
             /// </summary>
             numeric_output,
-            /// <summary>
             /// is categorical
             /// </summary>
             categorical_output,
-            /// <summary>
             /// is textual
             /// </summary>
             textual_output,
-            /// <summary>
             /// is temporal
             /// </summary>
             temporal_output
         };
 
-        /// <summary>
         /// Gets the type of the output.
         /// </summary>
         /// <value>
@@ -46,7 +38,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public OutputTypes iType { get; private set; }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="OutputDefinitionNode"/> class.
         /// </summary>
         public OutputDefinitionNode()
@@ -55,7 +46,6 @@ namespace DarlLanguage.Processing
         }
 
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -94,7 +84,6 @@ namespace DarlLanguage.Processing
             sequence = 0;
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>
@@ -168,7 +157,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// get a table of the partitions found in the list of indices, derived from a decision node
         /// ignoring minor results. the 2nd element is the confidence.
         /// </summary>
@@ -233,7 +221,6 @@ namespace DarlLanguage.Processing
             return newMap;
         }
 
-        /// <summary>
         /// Calculates the membership.
         /// </summary>
         /// <param name="index">The index.</param>

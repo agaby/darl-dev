@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -21,33 +20,27 @@ namespace DarlCompiler.Parsing
 {
 
     //These two delegates define custom methods that Grammar can implement to execute custom action
-    /// <summary>
     /// Delegate PreviewActionMethod
     /// </summary>
     /// <param name="action">The action.</param>
     public delegate void PreviewActionMethod(CustomParserAction action);
-    /// <summary>
     /// Delegate ExecuteActionMethod
     /// </summary>
     /// <param name="context">The context.</param>
     /// <param name="action">The action.</param>
     public delegate void ExecuteActionMethod(ParsingContext context, CustomParserAction action);
 
-    /// <summary>
     /// Class CustomActionHint.
     /// </summary>
     public class CustomActionHint : GrammarHint
     {
-        /// <summary>
         /// The _execute method
         /// </summary>
         private readonly ExecuteActionMethod _executeMethod;
-        /// <summary>
         /// The _preview method
         /// </summary>
         private readonly PreviewActionMethod _previewMethod;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="CustomActionHint"/> class.
         /// </summary>
         /// <param name="executeMethod">The execute method.</param>
@@ -58,7 +51,6 @@ namespace DarlCompiler.Parsing
             _previewMethod = previewMethod;
         }
 
-        /// <summary>
         /// Gives a chance to a custom code in hint to interfere in parser automaton construction.
         /// </summary>
         /// <param name="language">The LanguageData instance.</param>
@@ -89,41 +81,32 @@ namespace DarlCompiler.Parsing
 
     // CustomParserAction is in fact action selector: it allows custom Grammar code to select the action to execute from a set of 
     // shift/reduce actions available in this state.
-    /// <summary>
     /// Class CustomParserAction.
     /// </summary>
     public class CustomParserAction : ParserAction
     {
-        /// <summary>
         /// The language
         /// </summary>
         public LanguageData Language;
-        /// <summary>
         /// The state
         /// </summary>
         public ParserState State;
-        /// <summary>
         /// The execute reference
         /// </summary>
         public ExecuteActionMethod ExecuteRef;
-        /// <summary>
         /// The conflicts
         /// </summary>
         public TerminalSet Conflicts = new TerminalSet();
-        /// <summary>
         /// The shift actions
         /// </summary>
         public IList<ShiftParserAction> ShiftActions = new List<ShiftParserAction>();
-        /// <summary>
         /// The reduce actions
         /// </summary>
         public IList<ReduceParserAction> ReduceActions = new List<ReduceParserAction>();
-        /// <summary>
         /// The custom data
         /// </summary>
         public object CustomData;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="CustomParserAction"/> class.
         /// </summary>
         /// <param name="language">The language.</param>
@@ -143,7 +126,6 @@ namespace DarlCompiler.Parsing
                 ReduceActions.Add(ReduceParserAction.Create(item.Core.Production));
         }
 
-        /// <summary>
         /// Executes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -166,7 +148,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>

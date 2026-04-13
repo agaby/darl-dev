@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -25,17 +24,14 @@ using System.Reflection.Emit;
 namespace DarlCompiler.Ast
 {
 
-    /// <summary>
     /// Class AstBuilder.
     /// </summary>
     public class AstBuilder
     {
-        /// <summary>
         /// The context
         /// </summary>
         public AstContext Context;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="AstBuilder"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -44,7 +40,6 @@ namespace DarlCompiler.Ast
             Context = context;
         }
 
-        /// <summary>
         /// Builds the ast.
         /// </summary>
         /// <param name="parseTree">The parse tree.</param>
@@ -60,7 +55,6 @@ namespace DarlCompiler.Ast
             BuildAst(parseTree.Root);
         }
 
-        /// <summary>
         /// Verifies the language data.
         /// </summary>
         public virtual void VerifyLanguageData()
@@ -93,7 +87,6 @@ namespace DarlCompiler.Ast
             Context.Language.AstDataVerified = true;
         }
 
-        /// <summary>
         /// Gets the default type of the node.
         /// </summary>
         /// <param name="term">The term.</param>
@@ -108,7 +101,6 @@ namespace DarlCompiler.Ast
                 return Context.DefaultNodeType;
         }
 
-        /// <summary>
         /// Builds the ast.
         /// </summary>
         /// <param name="parseNode">The parse node.</param>
@@ -146,7 +138,6 @@ namespace DarlCompiler.Ast
             term.OnAstNodeCreated(parseNode);
         }
 
-        /// <summary>
         /// Compiles the default node creator.
         /// </summary>
         /// <param name="nodeType">Type of the node.</param>

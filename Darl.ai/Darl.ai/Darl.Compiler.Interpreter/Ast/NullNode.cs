@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -22,13 +21,11 @@ namespace DarlCompiler.Interpreter.Ast
 {
     //A stub to use when AST node was not created (type not specified on NonTerminal, or error on creation)
     // The purpose of the stub is to throw a meaningful message when interpreter tries to evaluate null node.
-    /// <summary>
     /// Class NullNode.
     /// </summary>
     public class NullNode : AstNode
     {
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="NullNode"/> class.
         /// </summary>
         /// <param name="term">The term.</param>
@@ -37,7 +34,6 @@ namespace DarlCompiler.Interpreter.Ast
             this.Term = term;
         }
 
-        /// <summary>
         /// Does the evaluate.
         /// </summary>
         /// <param name="thread">The thread.</param>

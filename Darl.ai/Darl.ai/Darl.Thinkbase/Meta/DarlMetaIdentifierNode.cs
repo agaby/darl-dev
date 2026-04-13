@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -12,96 +11,73 @@ namespace Darl.Thinkbase.Meta
 {
     public class DarlMetaIdentifierNode : DarlMetaNode
     {
-        /// <summary>
         /// The type of the identifier
         /// </summary>
         public enum IdentifierType
         {
-            /// <summary>
             /// The categorical_input
             /// </summary>
             categorical_input,
-            /// <summary>
             /// The numeric_input
             /// </summary>
             numeric_input,
-            /// <summary>
             /// The arity_input
             /// </summary>
             arity_input,
-            /// <summary>
             /// The presence_input
             /// </summary>
             presence_input,
-            /// <summary>
             /// The textual_input
             /// </summary>
             textual_input,
-            /// <summary>
             /// The textual_output
             /// </summary>
             textual_output,
-            /// <summary>
             /// The categorical_output
             /// </summary>
             categorical_output,
-            /// <summary>
             /// The numeric_output
             /// </summary>
             numeric_output,
-            /// <summary>
             /// The category
             /// </summary>
             category,
-            /// <summary>
             /// The set
             /// </summary>
             set,
-            /// <summary>
             /// The string_constant
             /// </summary>
             string_constant,
-            /// <summary>
             /// The numeric_constant
             /// </summary>
             numeric_constant,
-            /// <summary>
             /// a sequence constant
             /// </summary>
             sequence_constant,
-            /// <summary>
             /// The rule_identifier
             /// </summary>
             rule_identifier,
-            /// <summary>
             /// The map_input
             /// </summary>
             map_input,
-            /// <summary>
             /// The map_output
             /// </summary>
             map_output,
-            /// <summary>
             /// The store name.
             /// </summary>
             store_io,
-            /// <summary>
             /// Temporal input
             /// </summary>
             temporal_input,
-            /// <summary>
             /// temporal output
             /// </summary>
             temporal_output,
-            /// <summary>
             /// temporal constant
             /// </summary>
             temporal_constant,
-            ///<summary>
             /// dynamic categorical input
             /// </summary>
             dynamic_categorical_input,
-            /// <summary>
             /// Network output
             /// </summary>
             network_output,
@@ -109,7 +85,6 @@ namespace Darl.Thinkbase.Meta
             lineage_constant
         };
 
-        /// <summary>
         /// Gets the identifier's name.
         /// </summary>
         /// <value>
@@ -117,7 +92,6 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public string name { get; private set; }
 
-        /// <summary>
         /// Gets the type of the identifier.
         /// </summary>
         /// <value>
@@ -129,12 +103,10 @@ namespace Darl.Thinkbase.Meta
 
         private DarlResult fixedResult { get; set; }
 
-        /// <summary>
         /// Update linked values when updated.
         /// </summary>
         public List<DarlMetaIdentifierNode> links = new List<DarlMetaIdentifierNode>();
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -146,7 +118,6 @@ namespace Darl.Thinkbase.Meta
             identType = (IdentifierType)Enum.Parse(typeof(IdentifierType), treeNode.Term.Name, true);
         }
 
-        /// <summary>
         /// Establishes dependencies and initializes constants
         /// </summary>
         /// <param name="dependencies">list of dependencies discovered</param>

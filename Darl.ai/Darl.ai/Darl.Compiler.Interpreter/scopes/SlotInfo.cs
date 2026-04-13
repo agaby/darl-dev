@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -19,55 +18,43 @@ using System.Collections.Generic;
 namespace DarlCompiler.Interpreter
 {
 
-    /// <summary>
     /// Enum SlotType
     /// </summary>
     public enum SlotType
     {
-        /// <summary>
         /// The value
         /// </summary>
         Value,     //local or property value
-        /// <summary>
         /// The parameter
         /// </summary>
         Parameter, //function parameter
-        /// <summary>
         /// The function
         /// </summary>
         Function,
-        /// <summary>
         /// The closure
         /// </summary>
         Closure,
     }
 
-    /// <summary>
     /// Describes a variable.
     /// </summary>
     public class SlotInfo
     {
-        /// <summary>
         /// The scope information
         /// </summary>
         public readonly ScopeInfo ScopeInfo;
-        /// <summary>
         /// The type
         /// </summary>
         public readonly SlotType Type;
-        /// <summary>
         /// The name
         /// </summary>
         public readonly string Name;
-        /// <summary>
         /// The index
         /// </summary>
         public readonly int Index;
-        /// <summary>
         /// The is public
         /// </summary>
         public bool IsPublic = true; //for module-level slots, indicator that symbol is "exported" and visible by code that imports the module
-        /// <summary>
         /// Initializes a new instance of the <see cref="SlotInfo"/> class.
         /// </summary>
         /// <param name="scopeInfo">The scope information.</param>
@@ -83,13 +70,11 @@ namespace DarlCompiler.Interpreter
         }
     }
 
-    /// <summary>
     /// Class SlotInfoDictionary.
     /// </summary>
     [Serializable]
     public class SlotInfoDictionary : Dictionary<string, SlotInfo>
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="SlotInfoDictionary"/> class.
         /// </summary>
         /// <param name="caseSensitive">if set to <c>true</c> [case sensitive].</param>

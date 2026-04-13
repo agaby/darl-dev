@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -7,7 +6,6 @@ using System.Collections.Generic;
 
 namespace Darl.Thinkbase
 {
-    /// <summary>
     /// Top level of graph element hierarchy. Links KnowledgeStates and GraphElements
     /// </summary>
     /// <remarks>Intended to refer only to GraphObject or KnowledgeRecord - No union in C#</remarks>
@@ -59,7 +57,6 @@ namespace Darl.Thinkbase
             return string.Empty;
         }
 
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="other"></param>

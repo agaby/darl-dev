@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -21,13 +20,11 @@ using System.ComponentModel.DataAnnotations;
 namespace DarlCommon
 {
 
-    /// <summary>
     /// Class LanguageText.
     /// </summary>
     [Serializable]
     public class LanguageText
     {
-        /// <summary>
         /// Gets or sets the name.
         /// </summary>
         /// <value>The name.</value>
@@ -35,7 +32,6 @@ namespace DarlCommon
         [Required]
         public string Name { get; set; } = string.Empty;
 
-        /// <summary>
         /// Gets or sets the text.
         /// </summary>
         /// <value>The text.</value>
@@ -43,7 +39,6 @@ namespace DarlCommon
         [Required]
         public string Text { get; set; }
 
-        /// <summary>
         /// Gets or sets the variant list.
         /// </summary>
         /// <value>The variant list.</value>

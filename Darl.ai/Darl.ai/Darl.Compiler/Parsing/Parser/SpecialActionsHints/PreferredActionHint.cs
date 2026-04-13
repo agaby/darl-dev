@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -20,16 +19,13 @@ using DarlCompiler.Parsing.Construction;
 namespace DarlCompiler.Parsing
 {
 
-    /// <summary>
     /// Class PreferredActionHint.
     /// </summary>
     public class PreferredActionHint : GrammarHint
     {
-        /// <summary>
         /// The action type
         /// </summary>
         readonly PreferredActionType ActionType;
-        /// <summary>
         /// Initializes a new instance of the <see cref="PreferredActionHint"/> class.
         /// </summary>
         /// <param name="actionType">Type of the action.</param>
@@ -37,7 +33,6 @@ namespace DarlCompiler.Parsing
         {
             ActionType = actionType;
         }
-        /// <summary>
         /// Gives a chance to a custom code in hint to interfere in parser automaton construction.
         /// </summary>
         /// <param name="language">The LanguageData instance.</param>

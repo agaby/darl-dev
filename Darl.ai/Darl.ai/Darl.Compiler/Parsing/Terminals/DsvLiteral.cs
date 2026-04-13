@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -27,26 +26,21 @@ namespace DarlCompiler.Parsing
     // It might seem that this terminal is not that useful and it is easy enough to create a custom CSV reader for a particular data format
     // format. However, if you consider all escaping and double-quote enclosing rules, then a custom reader solution would not seem so trivial.
     // So DsvLiteral can simplify this task.  
-    /// <summary>
     /// Class DsvLiteral.
     /// </summary>
     public class DsvLiteral : DataLiteralBase
     {
-        /// <summary>
         /// The terminator
         /// </summary>
         public string Terminator = ",";
-        /// <summary>
         /// The consume terminator
         /// </summary>
         public bool ConsumeTerminator = true; //if true, the source pointer moves after the separator 
-        /// <summary>
         /// The _terminators
         /// </summary>
         private char[] _terminators;
 
         //For last value on the line specify terminator = null; the DsvLiteral will then look for NewLine as terminator
-        /// <summary>
         /// Initializes a new instance of the <see cref="DsvLiteral"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -57,14 +51,12 @@ namespace DarlCompiler.Parsing
         {
             Terminator = terminator;
         }
-        /// <summary>
         /// Initializes a new instance of the <see cref="DataLiteralBase" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="dataType">Type of the data.</param>
         public DsvLiteral(string name, TypeCode dataType) : base(name, dataType) { }
 
-        /// <summary>
         /// Initializes the specified grammar data.
         /// </summary>
         /// <param name="grammarData">The grammar data.</param>
@@ -77,7 +69,6 @@ namespace DarlCompiler.Parsing
                 _terminators = new char[] { Terminator[0] };
         }
 
-        /// <summary>
         /// Reads the body.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -95,7 +86,6 @@ namespace DarlCompiler.Parsing
             return body;
         }
 
-        /// <summary>
         /// Reads the quoted body.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -129,7 +119,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Reads the not quoted body.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -146,7 +135,6 @@ namespace DarlCompiler.Parsing
             return valueText;
         }
 
-        /// <summary>
         /// Moves the source position after terminator.
         /// </summary>
         /// <param name="source">The source.</param>

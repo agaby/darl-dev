@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="TokenFilter.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -38,13 +38,11 @@ namespace DarlCompiler.Parsing
     //     The CodeOutlineFilter re-creates new-line and indent tokens by analyzing 
     //     the line/column properties of the incoming tokens, and inserts them into its output. 
     #endregion
-    /// <summary>
     /// Class TokenFilter.
     /// </summary>
     public class TokenFilter
     {
 
-        /// <summary>
         /// Begins the filtering.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -55,13 +53,11 @@ namespace DarlCompiler.Parsing
             yield break;
         }
 
-        /// <summary>
         /// Resets this instance.
         /// </summary>
         public virtual void Reset()
         {
         }
-        /// <summary>
         /// Called when [set source location].
         /// </summary>
         /// <param name="location">The location.</param>
@@ -70,7 +66,6 @@ namespace DarlCompiler.Parsing
         }
     }
 
-    /// <summary>
     /// Class TokenFilterList.
     /// </summary>
     public class TokenFilterList : List<TokenFilter> { }

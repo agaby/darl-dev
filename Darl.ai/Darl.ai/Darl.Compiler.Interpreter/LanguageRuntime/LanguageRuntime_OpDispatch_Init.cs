@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -25,12 +24,10 @@ namespace DarlCompiler.Interpreter
 {
 
     //Initialization of Runtime
-    /// <summary>
     /// Class LanguageRuntime.
     /// </summary>
     public partial class LanguageRuntime
     {
-        /// <summary>
         /// The _overflow operators
         /// </summary>
         private static readonly ExpressionType[] _overflowOperators = new ExpressionType[] {
@@ -38,35 +35,28 @@ namespace DarlCompiler.Interpreter
        ExpressionType.Multiply, ExpressionType.MultiplyChecked, ExpressionType.Power};
 
         // Smart boxing: boxes for a bunch of integers are preallocated
-        /// <summary>
         /// The _boxes
         /// </summary>
         private readonly object[] _boxes = new object[4096];
-        /// <summary>
         /// The _boxes middle
         /// </summary>
         private const int _boxesMiddle = 2048;
         // Note: ran some primitive tests, and it appears that use of smart boxing makes it slower 
         //  by about 5-10%; so disabling it for now
-        /// <summary>
         /// The smart boxing enabled
         /// </summary>
         public bool SmartBoxingEnabled = false;
-        /// <summary>
         /// The _supports complex
         /// </summary>
         bool _supportsComplex;
-        /// <summary>
         /// The _supports big int
         /// </summary>
         bool _supportsBigInt;
-        /// <summary>
         /// The _supports rational
         /// </summary>
         bool _supportsRational;
 
 
-        /// <summary>
         /// Initializes the operator implementations.
         /// </summary>
         protected virtual void InitOperatorImplementations()
@@ -84,7 +74,6 @@ namespace DarlCompiler.Interpreter
         }
 
         //The value of smart boxing is questionable - so far did not see perf improvements, so currently it is disabled
-        /// <summary>
         /// Initializes the boxes.
         /// </summary>
         private void InitBoxes()
@@ -94,7 +83,6 @@ namespace DarlCompiler.Interpreter
         }
 
         #region Utility methods for adding converters and binary implementations
-        /// <summary>
         /// Adds the converter.
         /// </summary>
         /// <param name="fromType">From type.</param>
@@ -109,7 +97,6 @@ namespace DarlCompiler.Interpreter
             return impl;
         }
 
-        /// <summary>
         /// Adds the binary boxed.
         /// </summary>
         /// <param name="op">The op.</param>
@@ -130,7 +117,6 @@ namespace DarlCompiler.Interpreter
             return boxedImpl;
         }
 
-        /// <summary>
         /// Adds the binary.
         /// </summary>
         /// <param name="op">The op.</param>
@@ -142,7 +128,6 @@ namespace DarlCompiler.Interpreter
             return AddBinary(op, baseType, binaryMethod, null);
         }
 
-        /// <summary>
         /// Adds the binary.
         /// </summary>
         /// <param name="op">The op.</param>
@@ -159,7 +144,6 @@ namespace DarlCompiler.Interpreter
             return impl;
         }
 
-        /// <summary>
         /// Adds the unary.
         /// </summary>
         /// <param name="op">The op.</param>
@@ -177,7 +161,6 @@ namespace DarlCompiler.Interpreter
         #endregion
 
         #region Initializing type converters
-        /// <summary>
         /// Initializes the type converters.
         /// </summary>
         public virtual void InitTypeConverters()
@@ -309,7 +292,6 @@ namespace DarlCompiler.Interpreter
         }
 
         // Some specialized convert implementation methods
-        /// <summary>
         /// Converts any to string.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -319,7 +301,6 @@ namespace DarlCompiler.Interpreter
             return value == null ? string.Empty : value.ToString();
         }
 
-        /// <summary>
         /// Converts the big int to complex.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -330,7 +311,6 @@ namespace DarlCompiler.Interpreter
             return new Complex((double)bi, 0);
         }
 
-        /// <summary>
         /// Converts any to complex.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -340,7 +320,6 @@ namespace DarlCompiler.Interpreter
             double d = Convert.ToDouble(value);
             return new Complex(d, 0);
         }
-        /// <summary>
         /// Converts any int to big integer.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -354,7 +333,6 @@ namespace DarlCompiler.Interpreter
 
         #region Binary operators implementations
         // Generates of binary implementations for matched argument types
-        /// <summary>
         /// Initializes the binary operator implementations for matched types.
         /// </summary>
         public virtual void InitBinaryOperatorImplementationsForMatchedTypes()
@@ -539,7 +517,6 @@ namespace DarlCompiler.Interpreter
 
         }
 
-        /// <summary>
         /// Initializes the unary operator implementations.
         /// </summary>
         public virtual void InitUnaryOperatorImplementations()
@@ -588,7 +565,6 @@ namespace DarlCompiler.Interpreter
         }
 
         // Generates binary implementations for mismatched argument types
-        /// <summary>
         /// Creates the binary operator implementations for mismatched types.
         /// </summary>
         public virtual void CreateBinaryOperatorImplementationsForMismatchedTypes()
@@ -612,7 +588,6 @@ namespace DarlCompiler.Interpreter
         // Creates a binary implementations for an operator with mismatched argument types.
         // Determines common type, retrieves implementation for operator with both args of common type, then creates
         // implementation for mismatched types using type converters (by converting to common type)
-        /// <summary>
         /// Creates the binary operator implementation.
         /// </summary>
         /// <param name="op">The op.</param>
@@ -641,7 +616,6 @@ namespace DarlCompiler.Interpreter
             return impl;
         }
 
-        /// <summary>
         /// Creates the binary operator implementation.
         /// </summary>
         /// <param name="op">The op.</param>
@@ -665,7 +639,6 @@ namespace DarlCompiler.Interpreter
         // Creates overflow handlers. For each implementation, checks if operator can overflow; 
         // if yes, creates and sets an overflow handler - another implementation that performs
         // operation using "upper" type that wouldn't overflow. For ex: (int * int) has overflow handler (int64 * int64) 
-        /// <summary>
         /// Creates the overflow handlers.
         /// </summary>
         protected virtual void CreateOverflowHandlers()
@@ -687,7 +660,6 @@ namespace DarlCompiler.Interpreter
             }
         }
 
-        /// <summary>
         /// Finds the base implementation.
         /// </summary>
         /// <param name="op">The op.</param>
@@ -702,7 +674,6 @@ namespace DarlCompiler.Interpreter
         }
 
         // Important: returns null if fromType == toType
-        /// <summary>
         /// Gets the converter.
         /// </summary>
         /// <param name="fromType">From type.</param>
@@ -722,7 +693,6 @@ namespace DarlCompiler.Interpreter
 
         #region Utilities
 
-        /// <summary>
         /// Determines whether this instance can overflow the specified implementation.
         /// </summary>
         /// <param name="impl">The implementation.</param>
@@ -740,7 +710,6 @@ namespace DarlCompiler.Interpreter
             return true;
         }
 
-        /// <summary>
         /// Determines whether this instance can overflow the specified expression.
         /// </summary>
         /// <param name="expression">The expression.</param>
@@ -751,7 +720,6 @@ namespace DarlCompiler.Interpreter
         }
 
 
-        /// <summary>
         /// Determines whether [is small int] [the specified type].
         /// </summary>
         /// <param name="type">The type.</param>
@@ -761,7 +729,6 @@ namespace DarlCompiler.Interpreter
             return type == typeof(byte) || type == typeof(sbyte) || type == typeof(Int16) || type == typeof(UInt16);
         }
 
-        /// <summary>
         /// Returns the type to which arguments should be converted to perform the operation
         /// for a given operator and arguments types.
         /// </summary>
@@ -790,7 +757,6 @@ namespace DarlCompiler.Interpreter
         }
 
         // If a type is one of "unsigned" int types, returns next bigger signed type
-        /// <summary>
         /// Gets the signed type for unsigned.
         /// </summary>
         /// <param name="type">The type.</param>
@@ -804,7 +770,6 @@ namespace DarlCompiler.Interpreter
             return typeof(BigInteger);
         }
 
-        /// <summary>
         /// Returns the "up-type" to use in operation instead of the type that caused overflow.
         /// </summary>
         /// <param name="type">The base type for operation that caused overflow.</param>
@@ -826,7 +791,6 @@ namespace DarlCompiler.Interpreter
         }
 
         //Note bool type at the end - if any of operands is of bool type, convert the other to bool as well
-        /// <summary>
         /// The _types sequence
         /// </summary>
         static readonly TypeList _typesSequence = new TypeList(
@@ -834,7 +798,6 @@ namespace DarlCompiler.Interpreter
             typeof(Single), typeof(Double), typeof(Complex),
             typeof(bool), typeof(char), typeof(string)
         );
-        /// <summary>
         /// The _unsigned types
         /// </summary>
         static readonly TypeList _unsignedTypes = new TypeList(

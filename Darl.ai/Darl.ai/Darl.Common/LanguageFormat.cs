@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -20,13 +19,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DarlCommon
 {
-    /// <summary>
     /// Language format
     /// </summary>
     [Serializable]
     public class LanguageFormat
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="LanguageFormat" /> class.
         /// </summary>
         public LanguageFormat()
@@ -34,7 +31,6 @@ namespace DarlCommon
             LanguageList = new List<LanguageText>();
             DefaultLanguage = "en";
         }
-        /// <summary>
         /// Gets or sets the language list.
         /// </summary>
         /// <value>The language list.</value>
@@ -42,7 +38,6 @@ namespace DarlCommon
         [Required]
         public List<LanguageText> LanguageList { get; set; }
 
-        /// <summary>
         /// Gets or sets the default language.
         /// </summary>
         /// <value>The default language.</value>

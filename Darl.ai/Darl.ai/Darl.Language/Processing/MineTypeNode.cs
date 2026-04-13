@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -6,13 +5,11 @@ using DarlCompiler.Parsing;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Used to determine how the attached ruleset is generated
     /// </summary>
     class MineTypeNode : DarlNode
     {
 
-        /// <summary>
         /// Gets the type of the mine.
         /// </summary>
         /// <value>
@@ -21,7 +18,6 @@ namespace DarlLanguage.Processing
         public string mineType { get; private set; }
 
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>

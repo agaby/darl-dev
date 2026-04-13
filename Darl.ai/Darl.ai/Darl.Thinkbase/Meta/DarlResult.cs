@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -9,7 +8,6 @@ using System.Text.RegularExpressions;
 
 namespace Darl.Thinkbase.Meta
 {
-    /// <summary>
     /// Darl Form's general purpose representation for numbers and constants containing uncertainty.
     /// </summary>
     /// <remarks>
@@ -27,77 +25,60 @@ namespace Darl.Thinkbase.Meta
     public class DarlResult : IComparable
     {
 
-        /// <summary>
         /// Indicates the type of fuzzy number contained in this result
         /// </summary>
         public enum Fuzzyness
         {
-            /// <summary>
             /// This result is unknown
             /// </summary>
             unknown,
-            /// <summary>
             /// This result is a single crisp value
             /// </summary>
             singleton,
-            /// <summary>
             /// This result is an interval, two values.
             /// </summary>
             interval,
-            /// <summary>
             /// This result is a triangular fuzzy set
             /// </summary>
             triangle,
-            /// <summary>
             /// This result is a trapezoidal fuzzy set defined by 4 values.
             /// </summary>
             trapezoid
         };
 
-        /// <summary>
         /// The type of data stored in the Result
         /// </summary>
         public enum DataType
         {
-            /// <summary>
             /// Numeric including fuzzy
             /// </summary>
             numeric,
-            /// <summary>
             /// One or more categories with confidences
             /// </summary>
             categorical,
-            /// <summary>
             /// Textual
             /// </summary>
             textual,
-            /// <summary>
             /// a text sequence
             /// </summary>
             sequence,
-            /// <summary>
             /// A time value
             /// </summary>
             temporal,
-            /// <summary>
             /// A time period
             /// </summary>
             duration,
-            /// <summary>
             /// a goal seek specification
             /// </summary>
             seek,
-            /// <summary>
             /// a possibility discovery specification
             /// </summary>
             discover,
-            /// <summary>
             /// a network action such as seek or discover
             /// </summary>
             network
         }
 
-        /// <summary>
         /// Initializes a Result
         /// </summary>
         public DarlResult()
@@ -112,7 +93,6 @@ namespace Darl.Thinkbase.Meta
             rightUnbounded = false;
             dataType = DataType.numeric;
         }
-        /// <summary>
         /// Is numeric if true.
         /// </summary>
         private bool numeric
@@ -130,7 +110,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// if temporal is true
         /// </summary>
         private bool temporal
@@ -138,16 +117,13 @@ namespace Darl.Thinkbase.Meta
             get { return dataType == DataType.temporal || dataType == DataType.duration; }
         }
 
-        /// <summary>
         ///  This result is unknown if true.
         /// </summary>
         private bool unknown;
-        /// <summary>
         /// The confidence placed in this result
         /// </summary>
         private double weight;
 
-        /// <summary>
         /// Gets or sets the type of the data.
         /// </summary>
         /// <value>
@@ -155,7 +131,6 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public DataType dataType { get; set; }
 
-        /// <summary>
         /// The array containing the up to 4 values representing the fuzzy number.
         /// </summary>
         /// <remarks>Since all fuzzy numbers used by DARL are convex, i,e. their envelope doesn't have any in-folding 
@@ -167,7 +142,6 @@ namespace Darl.Thinkbase.Meta
         /// The values must be ordered in ascending order, but it is permissible for two or more to hold the same value.</remarks>
         public List<object> values = new List<object>();
 
-        /// <summary>
         /// Gets or sets the sequence.
         /// </summary>
         /// <value>
@@ -175,19 +149,16 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public List<List<string>> sequence { get; set; }
 
-        /// <summary>
         /// Single central or most confident value, expressed as a string or double.
         /// </summary>
         public object Value { get; set; }
 
         public string name { get; set; }
 
-        /// <summary>
         /// Hash-table with list of categories, each indexed against a truth value.
         /// </summary>
         public Dictionary<string, double> categories = new Dictionary<string, double>();
 
-        /// <summary>
         /// Array of 11 intervals representing horizontal cuts across 
         /// the truth diagram at 0,0.1,0,2...1.0 truth levels.
         /// </summary>
@@ -197,11 +168,9 @@ namespace Darl.Thinkbase.Meta
         /// or trapezoids. This approach gives us an approximation to the true shape. It is very
         /// unlikely that the 1-3% error inherent in interpolating the results will matter in a practical application.</remarks>
         public Interval[] cuts;
-        /// <summary>
         /// String constant used in string processing
         /// </summary>
         public string stringConstant = string.Empty;
-        /// <summary>
         /// Processes the results of an aggregation
         /// </summary>
         /// <param name="output">The output to aggregate rule truth values for.</param>
@@ -323,7 +292,6 @@ namespace Darl.Thinkbase.Meta
             output.fuzzyResults = this;
         }
 
-        /// <summary>
         /// Processes the results of an aggregation with type derived from the aggregation
         /// </summary>
         /// <param name="output">The output to aggregate rule truth values for.</param>
@@ -459,7 +427,6 @@ namespace Darl.Thinkbase.Meta
                 values.Add(result);
             }
         }
-        /// <summary>
         /// Sets the weight of this Result
         /// </summary>
         /// <param name="dWeight">The weight 0-1</param>
@@ -467,7 +434,6 @@ namespace Darl.Thinkbase.Meta
         {
             weight = dWeight;
         }
-        /// <summary>
         /// Returns the weight of this Result
         /// </summary>
         /// <returns>Weight 0-1</returns>
@@ -475,7 +441,6 @@ namespace Darl.Thinkbase.Meta
         {
             return weight;
         }
-        /// <summary>
         /// Compares this result with another and returns a result corresponding to their
         /// mutual features.
         /// </summary>
@@ -530,7 +495,6 @@ namespace Darl.Thinkbase.Meta
             };
             return res;
         }
-        /// <summary>
         /// Changes the sign of a fuzzy number.
         /// </summary>
         /// <returns>Result of sign change.</returns>
@@ -543,7 +507,6 @@ namespace Darl.Thinkbase.Meta
             return this * new DarlResult(-1.0);
         }
 
-        /// <summary>
         /// Returns true if Result is unknown
         /// </summary>
         /// <returns>true if unknown</returns>
@@ -551,7 +514,6 @@ namespace Darl.Thinkbase.Meta
         {
             return unknown;
         }
-        /// <summary>
         /// Returns true if Result is Numeric
         /// </summary>
         /// <returns>true if numeric</returns>
@@ -562,7 +524,6 @@ namespace Darl.Thinkbase.Meta
 
         #region constructors
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="DarlResult"/> class.
         /// </summary>
         /// <param name="d">A double value</param>
@@ -587,7 +548,6 @@ namespace Darl.Thinkbase.Meta
             this.name = name;
         }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="DarlResult"/> class.
         /// </summary>
         /// <param name="i">An integer value</param>
@@ -600,7 +560,6 @@ namespace Darl.Thinkbase.Meta
             this.name = name;
         }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="DarlResult"/> class.
         /// </summary>
         /// <param name="vals">A list of double values: a fuzzytuple.</param>
@@ -620,7 +579,6 @@ namespace Darl.Thinkbase.Meta
             this.Normalise(false);
         }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="DarlResult"/> class.
         /// </summary>
         /// <param name="s">A string value</param>
@@ -640,7 +598,6 @@ namespace Darl.Thinkbase.Meta
             Value = s;
         }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="DarlResult"/> class.
         /// </summary>
         /// <param name="res">A result value</param>
@@ -687,7 +644,6 @@ namespace Darl.Thinkbase.Meta
 
         }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="DarlResult"/> class.
         /// </summary>
         /// <param name="res">A result value</param>
@@ -782,7 +738,6 @@ namespace Darl.Thinkbase.Meta
 
 
 
-        /// <summary>
         /// Initializes a Result
         /// </summary>
         /// <param name="numeric">true if numeric</param>
@@ -837,7 +792,6 @@ namespace Darl.Thinkbase.Meta
 
 
 
-        /// <summary>
         /// Creates and initializes a Result.
         /// </summary>
         /// <param name="numeric">true if numeric</param>
@@ -879,7 +833,6 @@ namespace Darl.Thinkbase.Meta
             this.name = name;
         }
 
-        /// <summary>
         /// Initializes a Result containing a degree of truth.
         /// </summary>
         /// <param name="truth">Degree of truth, 0-1</param>
@@ -897,7 +850,6 @@ namespace Darl.Thinkbase.Meta
             rightUnbounded = false;
             dataType = DataType.numeric;
         }
-        /// <summary>
         /// Initializes an interval Result
         /// </summary>
         /// <param name="lower">first value</param>
@@ -920,7 +872,6 @@ namespace Darl.Thinkbase.Meta
             for (int n = 0; n < cutCount; n++)
                 cuts[n] = new Interval(lower, upper);
         }
-        /// <summary>
         /// Initializes a triangular set Result
         /// </summary>
         /// <param name="lower">first value</param>
@@ -959,7 +910,6 @@ namespace Darl.Thinkbase.Meta
                                         double.IsInfinity(tmp2) ? double.PositiveInfinity : upper - tmp2 * tmp3);
             }
         }
-        /// <summary>
         /// Initializes a trapezoidal set Result
         /// </summary>
         /// <param name="lower">first value</param>
@@ -999,7 +949,6 @@ namespace Darl.Thinkbase.Meta
                     double.IsInfinity(tmp2) ? double.PositiveInfinity : upper - tmp2 * tmp3);
             }
         }
-        /// <summary>
         /// Initializes a result based on the three parts of a rule evaluation.
         /// </summary>
         /// <param name="condition">The Result of the calculation of the left side of the rule</param>
@@ -1041,7 +990,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="DarlResult"/> class.
         /// </summary>
         /// <param name="obj">The object.</param>
@@ -1205,7 +1153,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// aggregating constructor
         /// </summary>
         /// <param name="name">the name of the data contained</param>
@@ -1235,7 +1182,6 @@ namespace Darl.Thinkbase.Meta
         #endregion
 
 
-        /// <summary>
         /// Returns an enum representing the fuzziness of the rule
         /// </summary>
         /// <returns>Fuzziness</returns>
@@ -1245,7 +1191,6 @@ namespace Darl.Thinkbase.Meta
                 return (Fuzzyness)values.Count;
             return Fuzzyness.unknown;
         }
-        /// <summary>
         /// Calculates a neural network sigmoid function on the existing numeric values.
         /// </summary>
         /// <returns>The result</returns>
@@ -1258,7 +1203,6 @@ namespace Darl.Thinkbase.Meta
             return new DarlResult(dRes, false);
         }
 
-        /// <summary>
         /// Calculates the Cumulative Normal Distribution of a value for a normal distribution of average zero and SD 1.
         /// From Abromowitz and Stegun, Handbook of Mathematical Functions
         /// </summary>
@@ -1293,7 +1237,6 @@ namespace Darl.Thinkbase.Meta
         }
 
         #region operators
-        /// <summary>
         /// Compares two Results for equality.
         /// </summary>
         /// <param name="res1">Result 1</param>
@@ -1303,7 +1246,6 @@ namespace Darl.Thinkbase.Meta
         {
             return res1.Equals(res2);
         }
-        /// <summary>
         /// Compares two Results for inequality.
         /// </summary>
         /// <param name="res1">Result 1</param>
@@ -1313,7 +1255,6 @@ namespace Darl.Thinkbase.Meta
         {
             return !(res1 == res2);
         }
-        /// <summary>
         /// Returns the degree of truth to the statement "Result1 is greater than Result 2".
         /// </summary>
         /// <remarks>Based on B. Dorohonceanu. Comparing Fuzzy Numbers, Algorithm Alley, Dr. Dobb's Journal, vol. 343, pp. 38-45, CMP Media LLC., San Francisco, CA, 12/2002,  ISSN 1044-789X. Also in Dr. Dobb's CD Release 14, CMP Media LLC., San Francisco, CA, 8/2003. 
@@ -1375,7 +1316,6 @@ namespace Darl.Thinkbase.Meta
             }
             return new DarlResult((m == 0.0) ? alpha : (alpha / m), false);
         }
-        /// <summary>
         /// Compares if Result1 is lesser than Result 2.
         /// </summary>
         /// <param name="res1">Result 1</param>
@@ -1391,7 +1331,6 @@ namespace Darl.Thinkbase.Meta
                 return new DarlResult(-1.0, true);
             return !(res1 > res2);
         }
-        /// <summary>
         /// Compares if Result1 is greater than or equal to Result 2.
         /// </summary>
         /// <param name="res1">Result 1</param>
@@ -1407,7 +1346,6 @@ namespace Darl.Thinkbase.Meta
                 return new DarlResult(-1.0, true);
             return (res1 > res2) | res1.Equal(res2);
         }
-        /// <summary>
         /// Compares if Result1 is less than or equal to Result 2.
         /// </summary>
         /// <param name="res1">Result 1</param>
@@ -1423,7 +1361,6 @@ namespace Darl.Thinkbase.Meta
                 return new DarlResult(-1.0, true);
             return (res1 < res2) | res1.Equal(res2);
         }
-        /// <summary>
         /// Adds Result 1 to Result 2.
         /// </summary>
         /// <param name="res1">Result 1</param>
@@ -1443,7 +1380,6 @@ namespace Darl.Thinkbase.Meta
             res.weight = Math.Min(res1.weight, res2.weight);
             return res;
         }
-        /// <summary>
         /// subtracts Result 2 from Result 1.
         /// </summary>
         /// <param name="res1">Result 1</param>
@@ -1463,7 +1399,6 @@ namespace Darl.Thinkbase.Meta
             res.weight = Math.Min(res1.weight, res2.weight);
             return res;
         }
-        /// <summary>
         /// multiplies Result 1 by Result 2.
         /// </summary>
         /// <param name="res1">Result 1</param>
@@ -1484,7 +1419,6 @@ namespace Darl.Thinkbase.Meta
             res.weight = Math.Min(res1.weight, res2.weight);
             return res;
         }
-        /// <summary>
         /// Divides Result 1 by Result 2.
         /// </summary>
         /// <param name="res1">Result 1</param>
@@ -1505,7 +1439,6 @@ namespace Darl.Thinkbase.Meta
             res.weight = Math.Min(res1.weight, res2.weight);
             return res;
         }
-        /// <summary>
         /// Divides Result 1 by an int.
         /// </summary>
         /// <param name="res1">Result 1</param>
@@ -1528,7 +1461,6 @@ namespace Darl.Thinkbase.Meta
             res.weight = res1.weight;
             return res;
         }
-        /// <summary>
         /// raises Result 1 to the power Result 2.
         /// </summary>
         /// <param name="res1">Result 1</param>
@@ -1549,7 +1481,6 @@ namespace Darl.Thinkbase.Meta
             res.weight = Math.Min(res1.weight, res2.weight);
             return res;
         }
-        /// <summary>
         /// Performs logical or operator between two logical Results
         /// Throws exception if not singletons.
         /// </summary>
@@ -1572,7 +1503,6 @@ namespace Darl.Thinkbase.Meta
                 return res1;
             return new DarlResult(Math.Max((double)res1.values[0], (double)res2.values[0]));
         }
-        /// <summary>
         /// Performs logical "and" operator between two logical Results
         /// Throws exception if not singletons.
         /// </summary>
@@ -1591,7 +1521,6 @@ namespace Darl.Thinkbase.Meta
                 throw new MetaRuleException("Operations other than comparison not available for fuzzy numbers in this version");
             return new DarlResult(Math.Min((double)res1.values[0], (double)res2.values[0]));
         }
-        /// <summary>
         /// Performs logical not operator on a single Result
         /// Throws exception if not singleton.
         /// </summary>
@@ -1610,7 +1539,6 @@ namespace Darl.Thinkbase.Meta
         }
 
         #endregion
-        /// <summary>
         /// Looks for strict equality between two results.
         /// </summary>
         /// <param name="o">Other Result</param>
@@ -1667,7 +1595,6 @@ namespace Darl.Thinkbase.Meta
             return list;
         }
 
-        /// <summary>
         /// Returns the minimum of two fuzzy numbers
         /// </summary>
         /// <param name="res1">Fuzzy number 1</param>
@@ -1686,7 +1613,6 @@ namespace Darl.Thinkbase.Meta
             res.weight = Math.Min(res1.weight, res2.weight);
             return res;
         }
-        /// <summary>
         /// Returns the maximum of two fuzzy numbers
         /// </summary>
         /// <param name="res1">Fuzzy number 1</param>
@@ -1706,7 +1632,6 @@ namespace Darl.Thinkbase.Meta
             return res;
         }
 
-        /// <summary>
         /// Returns the Modulus of one fuzzy number by another
         /// </summary>
         /// <param name="res1">Fuzzy number 1</param>
@@ -1727,7 +1652,6 @@ namespace Darl.Thinkbase.Meta
             return res;
         }
 
-        /// <summary>
         /// Returns one fuzzy number rounded by another
         /// </summary>
         /// <param name="res1">Fuzzy number 1</param>
@@ -1748,7 +1672,6 @@ namespace Darl.Thinkbase.Meta
             return res;
         }
 
-        /// <summary>
         /// synchronizes the values and cuts representation.
         /// </summary>
         /// <remarks>May involve approximation.</remarks>
@@ -1827,7 +1750,6 @@ namespace Darl.Thinkbase.Meta
                 }
             }
         }
-        /// <summary>
         /// Used to create hash-tables of results
         /// </summary>
         /// <returns>Hash value</returns>
@@ -1838,7 +1760,6 @@ namespace Darl.Thinkbase.Meta
             else
                 return this.categories.GetHashCode();
         }
-        /// <summary>
         /// Calculates the center of gravity of the numeric values
         /// </summary>
         /// <returns>the center of gravity</returns>
@@ -1851,26 +1772,21 @@ namespace Darl.Thinkbase.Meta
         }
 
 
-        /// <summary>
         /// number of alpha cuts used to represent fuzzy numbers
         /// </summary>
         internal const int cutCount = 11;
-        /// <summary>
         /// Indicates approximation has taken place in calculating the values.
         /// </summary>
         /// <remarks>Under some circumstances the coordinates of the fuzzy number 
         /// in "values" may not exactly represent the "cuts" values.</remarks>
         public bool approximate;
-        /// <summary>
         /// Indicates the set should be considered unbounded on the lower side
         /// </summary>
         public bool leftUnbounded;
-        /// <summary>
         /// Indicates the set should be considered unbounded on the upper side
         /// </summary>
         public bool rightUnbounded;
         #region IComparable Members
-        /// <summary>
         /// Compares results in order to sort them
         /// </summary>
         /// <param name="obj">An object to compare with this instance.</param>
@@ -1910,12 +1826,10 @@ namespace Darl.Thinkbase.Meta
             return double.NaN;
         }
 
-        /// <summary>
         /// optional identifier used for sets
         /// </summary>
         public string identifier;
 
-        /// <summary>
         /// returns the interval at a particular confidence level or cut for numeric Results
         /// </summary>
         internal Interval IntervalAtConfidence(double confidence)
@@ -1932,7 +1846,6 @@ namespace Darl.Thinkbase.Meta
             }
             return null;
         }
-        /// <summary>
         /// Displays contents of the result
         /// </summary>
         /// <returns>a formatted string</returns>
@@ -1980,7 +1893,6 @@ namespace Darl.Thinkbase.Meta
             }
             return result;
         }
-        /// <summary>
         /// Displays the contents of the result with numeric values formatted
         /// </summary>
         /// <param name="format">format string <see cref="Double.ToString()"/></param>
@@ -2076,7 +1988,6 @@ namespace Darl.Thinkbase.Meta
         }
 
 
-        /// <summary>
         /// updates the public data representation if revision is more accurate
         /// </summary>
         /// <param name="revision">Potentially more accurate data</param>
@@ -2121,7 +2032,6 @@ namespace Darl.Thinkbase.Meta
                 }
             }
         }
-        /// <summary>
         /// Copy revision into this
         /// </summary>
         /// <param name="revision">result to be copied</param>
@@ -2145,7 +2055,6 @@ namespace Darl.Thinkbase.Meta
             }
             weight = revision.weight;
         }
-        /// <summary>
         /// returns the area under the fuzzy number.
         /// </summary>
         internal double Area()
@@ -2161,7 +2070,6 @@ namespace Darl.Thinkbase.Meta
             return res;
         }
 
-        /// <summary>
         /// Look up the crisp value in the attached table
         /// </summary>
         /// <param name="list">The table</param>
@@ -2237,7 +2145,6 @@ namespace Darl.Thinkbase.Meta
             return res;
         }
 
-        /// <summary>
         /// returns the support of the given sets.
         /// </summary>
         /// <param name="res1">The res1.</param>
@@ -2250,7 +2157,6 @@ namespace Darl.Thinkbase.Meta
             return new DarlResult(min, max);
         }
 
-        /// <summary>
         /// Returns the practical support of the given sets
         /// </summary>
         /// <param name="res1"></param>
@@ -2443,7 +2349,6 @@ namespace Darl.Thinkbase.Meta
         //and Schockaert S, et al., An Efficient Characterization of Fuzzy Temporal Interval Relations 2006 IEEE Int. Conf.
         #region temporal_operators
 
-        /// <summary>
         /// returns the truth of the statement res1 occurs during res2
         /// </summary>
         /// <param name="res1"></param>
@@ -2470,7 +2375,6 @@ namespace Darl.Thinkbase.Meta
         }
 
 
-        /// <summary>
         /// returns the truth of the statement res1 is after res2
         /// </summary>
         /// <param name="res1"></param>
@@ -2491,7 +2395,6 @@ namespace Darl.Thinkbase.Meta
             return !Intersection(t1, t2);
         }
 
-        /// <summary>
         /// returns the truth of the statement res1 is before res2
         /// </summary>
         /// <param name="res1"></param>
@@ -2512,7 +2415,6 @@ namespace Darl.Thinkbase.Meta
             return !Intersection(t1, t2);
         }
 
-        /// <summary>
         /// returns the truth of the statement res1 overlaps res2
         /// 
         /// </summary>
@@ -2543,7 +2445,6 @@ namespace Darl.Thinkbase.Meta
             return new DarlResult(0.0, false);
         }
 
-        /// <summary>
         /// Calculate the fuzzy age of a fuzzy existence expressed as a temporal variable relative to a given (fuzzy) time.
         /// </summary>
         /// <param name="res1">The existence</param>
@@ -2629,7 +2530,6 @@ namespace Darl.Thinkbase.Meta
             return this;
         }
 
-        /// <summary>
         /// returns the truth of the statement res1 equals res2 exactly
         /// 
         /// </summary>
@@ -2649,7 +2549,6 @@ namespace Darl.Thinkbase.Meta
             return new DarlResult(0.0, false);
         }
 
-        /// <summary>
         /// convert a result to its 4 value representation
         /// </summary>
         private DarlResult Quadrify()
@@ -2682,7 +2581,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// For a pair of temporal results, Find the Y value of the Min intersection of the outer edges.
         /// </summary>
         /// <param name="other">The other result.</param>

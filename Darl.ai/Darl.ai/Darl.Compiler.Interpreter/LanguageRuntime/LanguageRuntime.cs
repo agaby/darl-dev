@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -21,16 +20,13 @@ using System;
 namespace DarlCompiler.Interpreter
 {
 
-    /// <summary>
     /// Class ConsoleWriteEventArgs.
     /// </summary>
     public class ConsoleWriteEventArgs : EventArgs
     {
-        /// <summary>
         /// The text
         /// </summary>
         public string Text;
-        /// <summary>
         /// Initializes a new instance of the <see cref="ConsoleWriteEventArgs"/> class.
         /// </summary>
         /// <param name="text">The text.</param>
@@ -43,39 +39,32 @@ namespace DarlCompiler.Interpreter
 
     //Note: mark the derived language-specific class as sealed - important for JIT optimizations
     // details here: http://www.codeproject.com/KB/dotnet/JITOptimizations.aspx
-    /// <summary>
     /// Class LanguageRuntime.
     /// </summary>
     public partial class LanguageRuntime
     {
-        /// <summary>
         /// The language
         /// </summary>
         public readonly LanguageData Language;
-        /// <summary>
         /// The operator handler
         /// </summary>
         public OperatorHandler OperatorHandler;
         //Converter of the result for comparison operation; converts bool value to values
         // specific for the language
-        /// <summary>
         /// The bool result converter
         /// </summary>
         public UnaryOperatorMethod BoolResultConverter = null;
         //An unassigned reserved object for a language implementation
-        /// <summary>
         /// Gets or sets the none value.
         /// </summary>
         /// <value>The none value.</value>
         public NoneClass NoneValue { get; protected set; }
 
         //Built-in binding sources
-        /// <summary>
         /// The built ins
         /// </summary>
         public BindingSourceTable BuiltIns;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="LanguageRuntime"/> class.
         /// </summary>
         /// <param name="language">The language.</param>
@@ -87,7 +76,6 @@ namespace DarlCompiler.Interpreter
             Init();
         }
 
-        /// <summary>
         /// Initializes this instance.
         /// </summary>
         public virtual void Init()
@@ -95,7 +83,6 @@ namespace DarlCompiler.Interpreter
             InitOperatorImplementations();
         }
 
-        /// <summary>
         /// Determines whether the specified value is true.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -111,7 +98,6 @@ namespace DarlCompiler.Interpreter
             return value != null;
         }
 
-        /// <summary>
         /// Throws the error.
         /// </summary>
         /// <param name="message">The message.</param>
@@ -124,7 +110,6 @@ namespace DarlCompiler.Interpreter
             throw new Exception(message);
         }
 
-        /// <summary>
         /// Throws the script error.
         /// </summary>
         /// <param name="message">The message.</param>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -16,25 +15,21 @@ namespace Darl.Thinkbase
     [ProtoContract]
     public class BlobGraphContent : IGraphModel
     {
-        /// <summary>
         /// real objects indexed by id
         /// </summary>
         [ProtoMember(1)]
         public Dictionary<string, GraphObject> vertices { get; set; } = new Dictionary<string, GraphObject>();
 
-        /// <summary>
         /// real connections
         /// </summary>
         [ProtoMember(2)]
         public Dictionary<string, GraphConnection> edges { get; set; } = new Dictionary<string, GraphConnection>();
 
-        /// <summary>
         /// virtual vertices indexed by lineage
         /// </summary>
         [ProtoMember(3)]
         public Dictionary<string, GraphObject> virtualVertices { get; set; } = new Dictionary<string, GraphObject>();
 
-        /// <summary>
         /// virtual edges 
         /// </summary>
         [ProtoMember(4)]
@@ -42,7 +37,6 @@ namespace Darl.Thinkbase
         [ProtoMember(10)]
         public string modelName { get; set; } = String.Empty;
 
-        /// <summary>
         /// Recognition DAG networks  in this model, indexed by lineage
         /// The top level network has the index "default:"
         /// </summary>
@@ -55,7 +49,6 @@ namespace Darl.Thinkbase
         [ProtoMember(8)]
         public Dictionary<string, IDynamicConverter> dynamicSources { get; set; } = new Dictionary<string, IDynamicConverter>();
 
-        /// <summary>
         /// key used for verification of source
         /// </summary>
         [ProtoMember(9)]
@@ -112,7 +105,6 @@ namespace Darl.Thinkbase
             }
         }
 
-        /// <summary>
         /// remove disconnected edges
         /// </summary>
         public void SanityCheck()
@@ -188,7 +180,6 @@ namespace Darl.Thinkbase
                 virtualEdges.Remove(c.id);
         }
 
-        /// <summary>
         /// Finds a ruleset of a particular kind looking on the given node, it's virtual counterpart or up the hypernymy tree.
         /// </summary>
         /// <param name="id"></param>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -9,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements the root of a rule
     /// </summary>
     public class RuleNode : DarlNode
@@ -18,7 +16,6 @@ namespace DarlLanguage.Processing
 
         public bool IsUnknown { get; internal set; }
 
-        /// <summary>
         /// Gets the rule output or store sink.
         /// </summary>
         /// <value>
@@ -26,7 +23,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public DarlNode ruleOutput { get; protected set; }
 
-        /// <summary>
         /// Gets the conditions.
         /// </summary>
         /// <value>
@@ -34,7 +30,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public DarlNode conditions { get; protected set; }
 
-        /// <summary>
         /// Gets the RHS.
         /// </summary>
         /// <value>
@@ -42,7 +37,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public DarlNode rhs { get; set; }
 
-        /// <summary>
         /// Gets the confidence node.
         /// </summary>
         /// <value>
@@ -50,7 +44,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public ConfidenceNode confidenceNode { get; protected set; }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -72,7 +65,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -109,7 +101,6 @@ namespace DarlLanguage.Processing
             return r;
         }
 
-        /// <summary>
         /// Establishes dependencies and initializes constants
         /// </summary>
         /// <param name="dependencies">list of dependencies discovered</param>
@@ -137,7 +128,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Walks the saliences.
         /// </summary>
         /// <param name="saliency">The incoming saliency.</param>
@@ -150,7 +140,6 @@ namespace DarlLanguage.Processing
             rhs.WalkSaliences(saliency, root, currentRuleSet, currentOutput);
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>
@@ -164,7 +153,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>
@@ -189,7 +177,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Gets the postamble.
         /// </summary>
         /// <value>
@@ -204,7 +191,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Gets the HTML postamble.
         /// </summary>
         /// <value>
@@ -218,7 +204,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Gets the HTML preamble.
         /// </summary>
         /// <value>
@@ -232,7 +217,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Gets the HTML midamble.
         /// </summary>
         /// <value>

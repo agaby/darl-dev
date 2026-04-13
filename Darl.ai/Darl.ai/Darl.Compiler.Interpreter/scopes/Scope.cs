@@ -7,36 +7,30 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="Scope.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
 namespace DarlCompiler.Interpreter
 {
 
-    /// <summary>
     /// Class Scope.
     /// </summary>
     public class Scope : ScopeBase
     {
-        /// <summary>
         /// The parameters
         /// </summary>
         public object[] Parameters;
-        /// <summary>
         /// The caller
         /// </summary>
         public Scope Caller;
-        /// <summary>
         /// The creator
         /// </summary>
         public Scope Creator; //either caller or closure parent
-        /// <summary>
         /// The _parent
         /// </summary>
         private Scope _parent; //computed on demand
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="Scope"/> class.
         /// </summary>
         /// <param name="scopeInfo">The scope information.</param>
@@ -51,7 +45,6 @@ namespace DarlCompiler.Interpreter
             Parameters = parameters;
         }
 
-        /// <summary>
         /// Gets the parameters.
         /// </summary>
         /// <returns>System.Object[].</returns>
@@ -60,7 +53,6 @@ namespace DarlCompiler.Interpreter
             return Parameters;
         }
 
-        /// <summary>
         /// Gets the parameter.
         /// </summary>
         /// <param name="index">The index.</param>
@@ -69,7 +61,6 @@ namespace DarlCompiler.Interpreter
         {
             return Parameters[index];
         }
-        /// <summary>
         /// Sets the parameter.
         /// </summary>
         /// <param name="index">The index.</param>
@@ -80,7 +71,6 @@ namespace DarlCompiler.Interpreter
         }
 
         // Lexical parent, computed on demand
-        /// <summary>
         /// Gets or sets the parent.
         /// </summary>
         /// <value>The parent.</value>
@@ -95,7 +85,6 @@ namespace DarlCompiler.Interpreter
             set { _parent = value; }
         }
 
-        /// <summary>
         /// Gets the parent.
         /// </summary>
         /// <returns>Scope.</returns>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Chronic;
@@ -24,14 +23,12 @@ namespace Darl.Lineage
 
         public static Dictionary<string, LineageRecord> lineages { get; } = new Dictionary<string, LineageRecord>();
         public static Dictionary<string, List<LineageRecord>> words { get; } = new Dictionary<string, List<LineageRecord>>();
-        /// <summary>
         /// The maximum phrase length
         /// </summary>
         private static int maxPhraseLength { get; } = 3;
 
         private static readonly SymSpell symSpell = new SymSpell(82765, 2);
 
-        /// <summary>
         /// Gets the suffixes.
         /// </summary>
         /// <value>The suffixes.</value>
@@ -40,7 +37,6 @@ namespace Darl.Lineage
         private static string[] keywords { get { return new string[] { "noun", "verb", "adjective", "adverb", "punctuation", "conjunction", "article", "preposition", "postposition", "pronoun", "proper_noun", "auxiliary_verb", "mathsymbol", "negative_auxiliary" }; } }
 
         private static string[] ValuePlaceholders { get { return new string[] { "value:", "value:number", "value:number,integer", "value:number,float", "value:choice", "value:choice,boolean", "value:time", "value:date", "value:duration", "value:location", "value:currency", "default:", "value:text", "terminus:" }; } }
-        /// <summary>
         /// Gets the endings.
         /// </summary>
         /// <value>The endings.</value>
@@ -91,7 +87,6 @@ namespace Darl.Lineage
         private static readonly Dictionary<string, TimeSpan> periods = new Dictionary<string, TimeSpan> { { "noun:01,5,15,00", new TimeSpan(1, 0, 0, 0) }, { "noun:01,5,15,04", new TimeSpan(30, 0, 0, 0) }, { "noun:01,5,03,3,045", new TimeSpan(365, 0, 0, 0) }, { "noun:01,5,15,07", new TimeSpan(1, 0, 0) }, { "noun:01,5,15,10", new TimeSpan(0, 1, 0) }, { "noun:01,5,15,12", new TimeSpan(0, 0, 1) }, { "noun:01,5,03,3,039", new TimeSpan(7, 0, 0, 0) } };
 
         private static readonly string locationRoot = "noun:99,";
-        /// <summary>
         /// Constructor
         /// </summary>
         static LineageLibrary()
@@ -193,7 +188,6 @@ namespace Darl.Lineage
             return source;
         }
 
-        /// <summary>
         /// Matches a single word against a list of lineages
         /// </summary>
         /// <param name="text">The word text</param>
@@ -230,7 +224,6 @@ namespace Darl.Lineage
             }
             return false;
         }
-        /// <summary>
         /// Match a string against a lineage sequence
         /// </summary>
         /// <param name="text">The string to match</param>
@@ -548,7 +541,6 @@ namespace Darl.Lineage
 
         enum TokenizerState { scanning, token, reported_speech };
 
-        /// <summary>
         /// Simple tokenizer.
         /// </summary>
         /// <param name="text">The text.</param>
@@ -625,7 +617,6 @@ namespace Darl.Lineage
             return tokens;
         }
 
-        /// <summary>
         /// Recognizes and stems up to 3 word phrases, returning the raw lineages.
         /// </summary>
         /// <param name="wordList"></param>
@@ -807,7 +798,6 @@ namespace Darl.Lineage
             return res;
         }
 
-        /// <summary>
         /// This is based on the levenshtein distance measure. The distance is turned into a possibility value
         /// via 1-d/l where d is distance and l is the max length of the two strings
         /// </summary>
@@ -849,7 +839,6 @@ namespace Darl.Lineage
             return symSpell.Lookup(word, Verbosity.Closest, maxDistance);
         }
 
-        /// <summary>
         /// Check that a string holding a lineage is properly formed
         /// </summary>
         /// <param name="lineage"></param>

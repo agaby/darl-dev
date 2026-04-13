@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using static DarlCommon.BotOutputFormat;

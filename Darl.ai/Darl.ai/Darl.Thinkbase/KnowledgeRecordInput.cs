@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -10,7 +9,6 @@ namespace Darl.Thinkbase
 {
     public class KnowledgeRecordInput : KnowledgeStateInput
     {
-        /// <summary>
         /// Add an attribute reference to a knowledge record
         /// </summary>
         /// <param name="parent"></param>
@@ -50,7 +48,6 @@ namespace Darl.Thinkbase
             }
         }
 
-        /// <summary>
         /// Add existence to a knowledge state.
         /// </summary>
         /// <param name="parent"></param>

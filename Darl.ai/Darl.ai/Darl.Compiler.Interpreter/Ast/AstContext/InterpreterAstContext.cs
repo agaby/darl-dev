@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -23,17 +22,14 @@ using System.Collections.Generic;
 namespace DarlCompiler.Interpreter.Ast
 {
     //Extension of AstContext
-    /// <summary>
     /// Class InterpreterAstContext.
     /// </summary>
     public class InterpreterAstContext : AstContext
     {
-        /// <summary>
         /// The operator handler
         /// </summary>
         public readonly OperatorHandler OperatorHandler;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="InterpreterAstContext"/> class.
         /// </summary>
         /// <param name="language">The language.</param>

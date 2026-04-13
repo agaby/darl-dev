@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -172,7 +171,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return states.ToList<KnowledgeState>();
         }
 
-        /// <summary>
         /// Returns an IAsyncCursor<<KnowledgeState>> you can iterate to get all the states
         /// </summary>
         /// <param name="userId"></param>
@@ -221,7 +219,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return states.ToList<KnowledgeState>();
         }
 
-        /// <summary>
         /// Update the data field in the KnowledgeState
         /// </summary>
         /// <param name="state"></param>
@@ -258,7 +255,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return await query.FirstOrDefaultAsync();
         }
 
-        /// <summary>
         /// Get a set of KSs by subjectId
         /// </summary>
         /// <param name="userId">The userId</param>
@@ -277,7 +273,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return cursor.Current.ToList<KnowledgeState>();
         }
 
-        /// <summary>
         /// Handle a set of requests that may combine GraphObjects and KnowledgeStates mixed in.
         /// </summary>
         /// <param name="userId"></param>

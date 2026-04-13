@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System;
@@ -8,27 +7,22 @@ namespace Darl.GraphQL.Models.Models
 {
     public class DarlUserUpdate
     {
-        /// <summary>
         /// Date of upgrade
         /// </summary>
         public DateTime? PaidUsageStarted { get; set; }
-        /// <summary>
         /// Person to authorize invoice
         /// </summary>
         public string InvoiceName { get; set; }
 
-        /// <summary>
         /// Organization to invoice
         /// </summary>
         public string InvoiceOrganization { get; set; }
 
-        /// <summary>
         /// Email to send invoice
         /// </summary>
         public string InvoiceEmail { get; set; }
 
         public AccountState? accountState { get; set; }
-        /// <summary>
         /// end of current subscription period.
         /// </summary>
         public DateTime current_period_end { get; set; }

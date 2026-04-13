@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Interpreter.Ast;
@@ -7,13 +6,11 @@ using System.Collections.Generic;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements an interpreter functional node
     /// </summary>
     public class DarlNode : AstNode
 
     {
-        /// <summary>
         /// Establishes dependencies and initializes constants
         /// </summary>
         /// <param name="dependencies">list of dependencies discovered</param>
@@ -24,7 +21,6 @@ namespace DarlLanguage.Processing
 
         }
 
-        /// <summary>
         /// Walks the saliences.
         /// </summary>
         /// <param name="saliency">The incoming saliency.</param>
@@ -36,21 +32,18 @@ namespace DarlLanguage.Processing
         }
 
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>
         /// The preamble, used to reconstruct the source code.
         /// </value>
         public virtual string preamble { get { return string.Empty; } }
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>
         /// The midamble, used to reconstruct the source code.
         /// </value>
         public virtual string midamble { get { return string.Empty; } }
-        /// <summary>
         /// Gets the postamble.
         /// </summary>
         /// <value>
@@ -58,7 +51,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public virtual string postamble { get { return string.Empty; } }
 
-        /// <summary>
         /// Gets the HTML preamble.
         /// </summary>
         /// <value>
@@ -66,7 +58,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public virtual string htmlPreamble { get { return preamble; } }
 
-        /// <summary>
         /// Gets the HTML midamble.
         /// </summary>
         /// <value>
@@ -74,7 +65,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public virtual string htmlMidamble { get { return "<span class=\"text-info\">" + midamble + "</span>"; } }
 
-        /// <summary>
         /// Gets the HTML postamble.
         /// </summary>
         /// <value>
@@ -82,7 +72,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public virtual string htmlPostamble { get { return postamble; } }
 
-        /// <summary>
         /// Apply a mutation to each element of the tree with the given probability
         /// </summary>
         /// <param name="rate">mutation rate, greater or equal to zero, less than 1.</param>
@@ -91,7 +80,6 @@ namespace DarlLanguage.Processing
 
         }
 
-        /// <summary>
         /// Crossover operator
         /// </summary>
         /// <param name="other">Other node to cross with</param>

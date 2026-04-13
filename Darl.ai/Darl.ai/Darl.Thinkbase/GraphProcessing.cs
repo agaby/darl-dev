@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -20,7 +19,6 @@ using System.Xml.Serialization;
 
 namespace Darl.Thinkbase
 {
-    /// <summary>
     /// Perform the high level processing required to create, maintain and infer from knowledge graphs
     /// </summary>
     public class GraphProcessing : IGraphProcessing
@@ -332,7 +330,6 @@ namespace Darl.Thinkbase
             return await UpdateObject(compositeName, graphObject);
         }
 
-        /// <summary>
         /// Get a connection based on the node ids and the lineage
         /// </summary>
         /// <param name="compositeName"></param>
@@ -381,7 +378,6 @@ namespace Darl.Thinkbase
             return GetAttibuteGivenObject(obj, propertyName);
         }
 
-        /// <summary>
         /// get categories from objects of the lineage given linked to the root object.
         /// </summary>
         /// <param name="compositeName"></param>
@@ -439,7 +435,6 @@ namespace Darl.Thinkbase
 
         }
 
-        /// <summary>
         /// get categories from objects of the lineage given.
         /// </summary>
         /// <param name="compositeName"></param>
@@ -855,7 +850,6 @@ namespace Darl.Thinkbase
             return cont.recognitionRoots[root].Find(cont, tokens);
         }
 
-        /// <summary>
         /// return objects in the format expected by cytoscape.
         /// </summary>
         /// <param name="compositeName">finds the model</param>
@@ -1813,7 +1807,6 @@ namespace Darl.Thinkbase
             throw new Exception($"Recognition root '{rootLineage}' does not exist");
         }
 
-        /// <summary>
         /// Dijkstra's shortest path algorithm
         /// </summary>
         /// <param name="model"></param>
@@ -1958,7 +1951,6 @@ namespace Darl.Thinkbase
         }
 
 
-        /// <summary>
         /// Recursively add an object to an ontology and all its parents
         /// </summary>
         /// <param name="gremlinClient"></param>
@@ -2151,7 +2143,6 @@ namespace Darl.Thinkbase
 
 
 
-        /// <summary>
         /// Add the ontology elements for this object
         /// </summary>
         /// <param name="gremlinClient"></param>
@@ -2170,7 +2161,6 @@ namespace Darl.Thinkbase
 
         }
 
-        /// <summary>
         /// Add the ontology elements for this connection
         /// </summary>
         /// <param name="gremlinClient"></param>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
@@ -7,7 +6,6 @@ namespace Darl.Thinkbase.Meta
 {
     public class NotNode : UnaryDarlMetaNode
     {
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -23,7 +21,6 @@ namespace Darl.Thinkbase.Meta
             return res2;
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>

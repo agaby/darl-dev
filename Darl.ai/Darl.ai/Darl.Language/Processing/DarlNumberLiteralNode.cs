@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -7,18 +6,15 @@ using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Identifies a number literal
     /// </summary>
     public class DarlNumberLiteralNode : DarlNode
     {
 
-        /// <summary>
         /// The fixed result
         /// </summary>
         public DarlResult FixedResult;
 
-        /// <summary>
         /// Determines whether this instance is a constant.
         /// </summary>
         /// <returns>True if a constant</returns>
@@ -27,7 +23,6 @@ namespace DarlLanguage.Processing
             return true;
         }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -43,7 +38,6 @@ namespace DarlLanguage.Processing
                 FixedResult = new DarlResult("", (string)treeNode.Token.Value, DarlResult.DataType.textual);
         }
 
-        /// <summary>
         /// Does the evaluate.
         /// </summary>
         /// <param name="thread">The thread.</param>

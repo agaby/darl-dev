@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Collections.Generic;
@@ -6,7 +5,6 @@ using System.Linq;
 
 namespace Datl.Language
 {
-    /// <summary>
     /// Provides a framework for processing datl for a variety of media, such as text, word documents, etc.
     /// <remarks>Additive processes are ones where you take a source document and build a new one by copying over the appropriate parts from the source.
     /// Subtractive processes are where you operate on an existing document, replacing or removing sections.
@@ -20,7 +18,6 @@ namespace Datl.Language
         protected virtual string separator { get; set; } = ".";
 
 
-        /// <summary>
         /// override to find all the datl control blocks in a document, in document order.
         /// </summary>
         /// <returns>the list</returns>
@@ -29,7 +26,6 @@ namespace Datl.Language
             return null;
         }
 
-        /// <summary>
         /// is this a block representing the start of a conditional section?
         /// </summary>
         /// <param name="block">The block</param>
@@ -39,7 +35,6 @@ namespace Datl.Language
             return false;
         }
 
-        /// <summary>
         /// is this a block representing the end of a conditional section?
         /// </summary>
         /// <param name="block">the block</param>
@@ -49,7 +44,6 @@ namespace Datl.Language
             return false;
         }
 
-        /// <summary>
         /// Does this block represent a simple text replacement?
         /// </summary>
         /// <param name="block">The block</param>
@@ -59,7 +53,6 @@ namespace Datl.Language
             return false;
         }
 
-        /// <summary>
         /// Perform a text replacement
         /// </summary>
         /// <param name="output">The document or stream</param>
@@ -70,7 +63,6 @@ namespace Datl.Language
 
         }
 
-        /// <summary>
         /// Extract a simple variable name
         /// </summary>
         /// <param name="block">The block</param>
@@ -90,7 +82,6 @@ namespace Datl.Language
             return s;
         }
 
-        /// <summary>
         /// Extract a variable name and category
         /// </summary>
         /// <param name="block">The block</param>
@@ -109,7 +100,6 @@ namespace Datl.Language
             return s;
         }
 
-        /// <summary>
         /// For additive processes override to write a conditional section, subtractive ignore
         /// </summary>
         /// <param name="output"> The stream or document</param>
@@ -120,7 +110,6 @@ namespace Datl.Language
 
         }
 
-        /// <summary>
         /// For subtractive processes override to remove a conditional section, additive ignore
         /// </summary>
         /// <param name="output"></param>
@@ -131,7 +120,6 @@ namespace Datl.Language
 
         }
 
-        /// <summary>
         /// For additive processes overide this to create the destination document
         /// </summary>
         /// <param name="source">The source document</param>
@@ -152,7 +140,6 @@ namespace Datl.Language
             return source;
         }
 
-        /// <summary>
         /// Process a document, replace values and infer conditional text
         /// </summary>
         /// <param name="source"></param>

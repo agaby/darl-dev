@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 using DarlCompiler.Parsing;
@@ -12,12 +11,10 @@ using System.Threading.Tasks;
 
 namespace Darl.Lacuna
 {
-    /// <summary>
     /// Finds gaps and defects in rule sets.
     /// </summary>
     public class LacunaFinder
     {
-        /// <summary>
         /// Constructor
         /// </summary>
         public LacunaFinder()
@@ -29,7 +26,6 @@ namespace Darl.Lacuna
             population = 50;
             _mutation = 0.01;
         }
-        /// <summary>
         /// Gets or sets the rule set to be analyzed.
         /// </summary>
         public string ruleSet
@@ -45,7 +41,6 @@ namespace Darl.Lacuna
             }
         }
         private string _ruleSet;
-        /// <summary>
         /// If true, GA uses the same random seed each run.
         /// </summary>
         /// <remarks>Ensures repeatability for unit testing</remarks>
@@ -64,17 +59,14 @@ namespace Darl.Lacuna
 
         private readonly List<List<int>> clusters = new List<List<int>>();
         private bool ruleSetSet;
-        /// <summary>
         /// Maximum range of arity to be tested.
         /// </summary>
         /// <remarks>Default is 10; arity is >= 0 and unbounded.</remarks>
         public int maxArity;
-        /// <summary>
         /// Consider if behavior testing should cover null/unknown categories. 
         /// </summary>
         /// <remarks>Frequently category lists may not cover all the categories that may be experienced in practice.</remarks>
         public bool nullCategories;
-        /// <summary>
         /// Determines if rule contention is permissible;
         /// </summary>
         /// <remarks>Enforces strict non-contention. Fuzzy rule sets typically cope with. and benefit from contention, 
@@ -83,17 +75,14 @@ namespace Darl.Lacuna
         /// <example>if a is true then b will be red
         /// if a is true then b will be green.</example>
         public bool noContention;
-        /// <summary>
         /// Population of solutions.
         /// </summary>
         /// <remarks>Default is 50.</remarks>
         public int population;
-        /// <summary>
         /// Number of generations to run for.
         /// </summary>
         /// <remarks>Default is 50.</remarks>
         public int maxGenerations;
-        /// <summary>
         /// Gets or sets the mutation rate (0,1)
         /// </summary>
         public double mutation
@@ -116,13 +105,11 @@ namespace Darl.Lacuna
         private List<InputInterface> inputList;
         private readonly DarlRunTime rule = new DarlRunTime();
         private ParseTree tree;
-        /// <summary>
         /// Used to hold the current output name.
         /// </summary>
         private string outputName;
 
 
-        /// <summary>
         /// Starts the process of finding lacunae.
         /// Returns immediately
         /// </summary>
@@ -133,7 +120,6 @@ namespace Darl.Lacuna
             this.ruleSetSet = true;
             return await Find();
         }
-        /// <summary>
         /// Starts the process of finding lacunae.
         /// </summary>
         /// <remarks>Uses a preloaded rule set.</remarks>
@@ -213,7 +199,6 @@ namespace Darl.Lacuna
             }
             return report;
         }
-        /// <summary>
         /// Evaluate the rule set on the test values 
         /// </summary>
         /// <param name="values">values created by Differential Evolution</param>
@@ -344,7 +329,6 @@ namespace Darl.Lacuna
             }
             return result;
         }
-        /// <summary>
         /// Evaluate a point midway between these two.
         /// </summary>
         /// <param name="first">set of input values for first point</param>

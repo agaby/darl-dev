@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="LineContinuationTerminal.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -19,13 +19,11 @@ using System.Linq;
 namespace DarlCompiler.Parsing
 {
 
-    /// <summary>
     /// Class LineContinuationTerminal.
     /// </summary>
     public class LineContinuationTerminal : Terminal
     {
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="LineContinuationTerminal"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -40,26 +38,21 @@ namespace DarlCompiler.Parsing
             Priority = TerminalPriority.High;
         }
 
-        /// <summary>
         /// The start symbols
         /// </summary>
         public StringList StartSymbols;
-        /// <summary>
         /// The _start symbols firsts
         /// </summary>
         private string _startSymbolsFirsts = String.Concat(_defaultStartSymbols);
-        /// <summary>
         /// The _default start symbols
         /// </summary>
         static readonly string[] _defaultStartSymbols = new[] { "\\", "_" };
-        /// <summary>
         /// The line terminators
         /// </summary>
         public string LineTerminators = "\n\r\v";
 
         #region overrides
 
-        /// <summary>
         /// Initializes the specified grammar data.
         /// </summary>
         /// <param name="grammarData">The grammar data.</param>
@@ -76,7 +69,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Tries the match.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -103,7 +95,6 @@ namespace DarlCompiler.Parsing
             return context.CreateErrorToken(Resources.ErrNewLineExpected);
         }
 
-        /// <summary>
         /// Begins the match.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -125,7 +116,6 @@ namespace DarlCompiler.Parsing
             return false;
         }
 
-        /// <summary>
         /// Completes the match.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -164,7 +154,6 @@ namespace DarlCompiler.Parsing
             return source.CreateToken(this.OutputTerminal);
         }
 
-        /// <summary>
         /// Gets the firsts.
         /// </summary>
         /// <returns>IList&lt;System.String&gt;.</returns>
@@ -175,7 +164,6 @@ namespace DarlCompiler.Parsing
 
         #endregion
 
-        /// <summary>
         /// Determines whether [is null or white space] [the specified s].
         /// </summary>
         /// <param name="s">The s.</param>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System;
@@ -70,7 +69,6 @@ namespace Darl.Thinkbase.Meta
             return res1;
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>
@@ -84,7 +82,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// Gets the postamble.
         /// </summary>
         /// <value>

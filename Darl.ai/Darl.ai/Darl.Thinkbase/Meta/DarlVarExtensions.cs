@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -8,12 +7,10 @@ using System.Linq;
 
 namespace Darl.Thinkbase.Meta
 {
-    /// <summary>
     /// Class DarlVarExtensions.
     /// </summary>
     public static class DarlVarExtensions
     {
-        /// <summary>
         /// Converts the specified values.
         /// </summary>
         /// <param name="values">The values.</param>
@@ -74,7 +71,6 @@ namespace Darl.Thinkbase.Meta
             return new DarlResult(val.name, val.Value, d);
         }
 
-        /// <summary>
         /// Converts the specified values.
         /// </summary>
         /// <param name="values">The values.</param>

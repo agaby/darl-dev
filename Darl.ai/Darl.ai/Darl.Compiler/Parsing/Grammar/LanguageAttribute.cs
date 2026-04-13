@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -19,23 +18,19 @@ using System;
 namespace DarlCompiler.Parsing
 {
 
-    /// <summary>
     /// Class LanguageAttribute.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     public class LanguageAttribute : Attribute
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="LanguageAttribute"/> class.
         /// </summary>
         public LanguageAttribute() : this(null) { }
-        /// <summary>
         /// Initializes a new instance of the <see cref="LanguageAttribute"/> class.
         /// </summary>
         /// <param name="languageName">Name of the language.</param>
         public LanguageAttribute(string languageName) : this(languageName, "1.0", string.Empty) { }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="LanguageAttribute"/> class.
         /// </summary>
         /// <param name="languageName">Name of the language.</param>
@@ -48,49 +43,42 @@ namespace DarlCompiler.Parsing
             _description = description;
         }
 
-        /// <summary>
         /// Gets the name of the language.
         /// </summary>
         /// <value>The name of the language.</value>
         public string LanguageName
         {
             get { return _languageName; }
-            /// <summary>
             /// The _language name
             /// </summary>
         }
 
         readonly string _languageName;
 
-        /// <summary>
         /// Gets the version.
         /// </summary>
         /// <value>The version.</value>
         public string Version
         {
             get { return _version; }
-            /// <summary>
             /// The _version
             /// </summary>
         }
 
         readonly string _version;
 
-        /// <summary>
         /// Gets the description.
         /// </summary>
         /// <value>The description.</value>
         public string Description
         {
             get { return _description; }
-            /// <summary>
             /// The _description
             /// </summary>
         }
 
         readonly string _description;
 
-        /// <summary>
         /// Gets the value.
         /// </summary>
         /// <param name="grammarClass">The grammar class.</param>

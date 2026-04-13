@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -10,48 +9,38 @@ using System.Text;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements an input definition
     /// </summary>
     public class InputDefinitionNode : IODefinitionNode
     {
 
-        /// <summary>
         /// Permissible input types
         /// </summary>
         public enum InputTypes
         {
-            /// <summary>
             /// The numeric_input
             /// </summary>
             numeric_input,
-            /// <summary>
             /// The categorical_input
             /// </summary>
             categorical_input,
-            /// <summary>
             /// The textual_input
             /// </summary>
             textual_input,
-            /// <summary>
             /// The arity_input
             /// </summary>
             arity_input,
-            /// <summary>
             /// The presence_input
             /// </summary>
             presence_input,
-            /// <summary>
             /// temporal input
             /// </summary>
             temporal_input,
-            ///<summary>
             /// dynamic categorical input
             ///</summary>
             dynamic_categorical_input
         };
 
-        /// <summary>
         /// Gets the type of the input.
         /// </summary>
         /// <value>
@@ -59,7 +48,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public InputTypes iType { get; private set; }
 
-        /// <summary>
         /// Gets or sets the value.
         /// </summary>
         /// <value>
@@ -67,7 +55,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public DarlResult Value { get; set; }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="InputDefinitionNode"/> class.
         /// </summary>
         public InputDefinitionNode()
@@ -75,7 +62,6 @@ namespace DarlLanguage.Processing
             Value = new DarlResult(0.0, true);
         }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -146,7 +132,6 @@ namespace DarlLanguage.Processing
         }
 
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>
@@ -224,7 +209,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Calculate the mutual information between the data items indexed by the indexes in indices,
         /// from this input and the matching items in the output. dSplit is the partial result as in C4.
         /// </summary>
@@ -285,7 +269,6 @@ namespace DarlLanguage.Processing
             return dResult;
         }
 
-        /// <summary>
         /// Calculates the membership.
         /// </summary>
         /// <param name="index">The index.</param>

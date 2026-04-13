@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="CompoundTerminalBase.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -40,98 +40,77 @@ namespace DarlCompiler.Parsing
     #endregion
 
 
-    /// <summary>
     /// Class EscapeTable.
     /// </summary>
     [Serializable]
     public class EscapeTable : Dictionary<char, char> { }
 
-    /// <summary>
     /// Class CompoundTerminalBase.
     /// </summary>
     public abstract class CompoundTerminalBase : Terminal
     {
 
         #region Nested classes
-        /// <summary>
         /// Class ScanFlagTable.
         /// </summary>
         [Serializable]
         protected class ScanFlagTable : Dictionary<string, short> { }
-        /// <summary>
         /// Class TypeCodeTable.
         /// </summary>
         [Serializable]
         protected class TypeCodeTable : Dictionary<string, TypeCode[]> { }
 
-        /// <summary>
         /// Class CompoundTokenDetails.
         /// </summary>
         public class CompoundTokenDetails
         {
-            /// <summary>
             /// The prefix
             /// </summary>
             public string Prefix;
-            /// <summary>
             /// The body
             /// </summary>
             public string Body;
-            /// <summary>
             /// The suffix
             /// </summary>
             public string Suffix;
-            /// <summary>
             /// The sign
             /// </summary>
             public string Sign;
-            /// <summary>
             /// The flags
             /// </summary>
             public short Flags;  //need to be short, because we need to save it in Scanner state for Vs integration
-            /// <summary>
             /// The error
             /// </summary>
             public string Error;
-            /// <summary>
             /// The type codes
             /// </summary>
             public TypeCode[] TypeCodes;
-            /// <summary>
             /// The exponent symbol
             /// </summary>
             public string ExponentSymbol;  //exponent symbol for Number literal
-            /// <summary>
             /// The start symbol
             /// </summary>
             public string StartSymbol;     //string start and end symbols
-            /// <summary>
             /// The end symbol
             /// </summary>
             public string EndSymbol;
-            /// <summary>
             /// The value
             /// </summary>
             public object Value;
             //partial token info, used by VS integration
-            /// <summary>
             /// The partial ok
             /// </summary>
             public bool PartialOk;
-            /// <summary>
             /// The is partial
             /// </summary>
             public bool IsPartial;
-            /// <summary>
             /// The partial continues
             /// </summary>
             public bool PartialContinues;
-            /// <summary>
             /// The sub type index
             /// </summary>
             public byte SubTypeIndex; //used for string literal kind
             //Flags helper method
-            /// <summary>
             /// Determines whether the specified flag is set.
             /// </summary>
             /// <param name="flag">The flag.</param>
@@ -140,7 +119,6 @@ namespace DarlCompiler.Parsing
             {
                 return (Flags & flag) != 0;
             }
-            /// <summary>
             /// Gets the text.
             /// </summary>
             /// <value>The text.</value>
@@ -150,12 +128,10 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region constructors and initialization
-        /// <summary>
         /// Initializes a new instance of the <see cref="BnfTerm" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
         public CompoundTerminalBase(string name) : this(name, TermFlags.None) { }
-        /// <summary>
         /// Initializes a new instance of the <see cref="CompoundTerminalBase"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -167,7 +143,6 @@ namespace DarlCompiler.Parsing
             Escapes = GetDefaultEscapes();
         }
 
-        /// <summary>
         /// Adds the prefix flag.
         /// </summary>
         /// <param name="prefix">The prefix.</param>
@@ -177,7 +152,6 @@ namespace DarlCompiler.Parsing
             PrefixFlags.Add(prefix, flags);
             Prefixes.Add(prefix);
         }
-        /// <summary>
         /// Adds the suffix.
         /// </summary>
         /// <param name="suffix">The suffix.</param>
@@ -190,16 +164,13 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region public Properties/Fields
-        /// <summary>
         /// The escape character
         /// </summary>
         public Char EscapeChar = '\\';
-        /// <summary>
         /// The escapes
         /// </summary>
         public EscapeTable Escapes = new EscapeTable();
         //Case sensitivity for prefixes and suffixes
-        /// <summary>
         /// The case sensitive prefixes suffixes
         /// </summary>
         public bool CaseSensitivePrefixesSuffixes = false;
@@ -207,27 +178,21 @@ namespace DarlCompiler.Parsing
 
 
         #region private fields
-        /// <summary>
         /// The prefix flags
         /// </summary>
         protected readonly ScanFlagTable PrefixFlags = new ScanFlagTable();
-        /// <summary>
         /// The suffix type codes
         /// </summary>
         protected readonly TypeCodeTable SuffixTypeCodes = new TypeCodeTable();
-        /// <summary>
         /// The prefixes
         /// </summary>
         protected StringList Prefixes = new StringList();
-        /// <summary>
         /// The suffixes
         /// </summary>
         protected StringList Suffixes = new StringList();
-        /// <summary>
         /// The _prefixes firsts
         /// </summary>
         CharHashSet _prefixesFirsts; //first chars of all prefixes, for fast prefix detection
-        /// <summary>
         /// The _suffixes firsts
         /// </summary>
         CharHashSet _suffixesFirsts; //first chars of all suffixes, for fast suffix detection
@@ -235,7 +200,6 @@ namespace DarlCompiler.Parsing
 
 
         #region overrides: Init, TryMatch
-        /// <summary>
         /// Initializes the specified grammar data.
         /// </summary>
         /// <param name="grammarData">The grammar data.</param>
@@ -255,7 +219,6 @@ namespace DarlCompiler.Parsing
                 _suffixesFirsts.Add(sfx[0]);
         }
 
-        /// <summary>
         /// Gets the firsts.
         /// </summary>
         /// <returns>IList&lt;System.String&gt;.</returns>
@@ -264,7 +227,6 @@ namespace DarlCompiler.Parsing
             return Prefixes;
         }
 
-        /// <summary>
         /// Tries the match.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -319,7 +281,6 @@ namespace DarlCompiler.Parsing
             return token;
         }
 
-        /// <summary>
         /// Creates the token.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -335,7 +296,6 @@ namespace DarlCompiler.Parsing
             return token;
         }
 
-        /// <summary>
         /// Initializes the details.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -346,7 +306,6 @@ namespace DarlCompiler.Parsing
             details.PartialContinues = (context.VsLineScanState.Value != 0);
         }
 
-        /// <summary>
         /// Quicks the parse.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -357,7 +316,6 @@ namespace DarlCompiler.Parsing
             return null;
         }
 
-        /// <summary>
         /// Reads the prefix.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -386,7 +344,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Reads the body.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -397,7 +354,6 @@ namespace DarlCompiler.Parsing
             return false;
         }
 
-        /// <summary>
         /// Reads the suffix.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -423,7 +379,6 @@ namespace DarlCompiler.Parsing
             }//foreach
         }
 
-        /// <summary>
         /// Converts the value.
         /// </summary>
         /// <param name="details">The details.</param>
@@ -438,7 +393,6 @@ namespace DarlCompiler.Parsing
         #endregion
 
         #region utils: GetDefaultEscapes
-        /// <summary>
         /// Gets the default escapes.
         /// </summary>
         /// <returns>EscapeTable.</returns>

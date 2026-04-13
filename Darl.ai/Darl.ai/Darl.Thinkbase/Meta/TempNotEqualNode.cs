@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
@@ -7,7 +6,6 @@ namespace Darl.Thinkbase.Meta
 {
     public class TempNotEqualNode : UnaryDarlMetaNode
     {
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -25,7 +23,6 @@ namespace Darl.Thinkbase.Meta
             return res;
         }
 
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -19,13 +18,11 @@ using DarlCompiler.Parsing;
 
 namespace DarlCompiler.Ast
 {
-    /// <summary>
     /// Class AstExtensions.
     /// </summary>
     public static class AstExtensions
     {
 
-        /// <summary>
         /// Gets the mapped child nodes.
         /// </summary>
         /// <param name="node">The node.</param>

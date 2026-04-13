@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Lineage.Bot.Stores;
@@ -53,7 +52,6 @@ namespace Darl.Lineage.Bot
         };
 
         public static readonly string accessRolesKey = "access_roles";
-        /// <summary>
         /// Respond to a request
         /// </summary>
         /// <param name="model"></param>
@@ -67,7 +65,6 @@ namespace Darl.Lineage.Bot
             return resp.Count > 0 ? resp[0].response.Value : "";
         }
 
-        /// <summary>
         /// Respond to a request with test data
         /// </summary>
         /// <param name="model"></param>
@@ -191,7 +188,6 @@ namespace Darl.Lineage.Bot
         }
 
 
-        /// <summary>
         /// match of single word or known phrase to command
         /// </summary>
         /// <param name="value">string</param>
@@ -242,7 +238,6 @@ namespace Darl.Lineage.Bot
             return sb.ToString();
         }
 
-        /// <summary>
         /// Compares the framework against all the annotation rules and either reports any missing i/o or deletes any defective rules.
         /// </summary>
         /// <param name="model">The model to work on</param>
@@ -301,7 +296,6 @@ namespace Darl.Lineage.Bot
             return $"{skeleton.Substring(0, start)}\r\n{formObj.ToDarl()}{skeleton.Substring(end)}";
         }
 
-        /// <summary>
         /// Reconcile changes in code and produce a canonical result.
         /// </summary>
         /// <param name="currentModel">The model</param>
@@ -438,7 +432,6 @@ namespace Darl.Lineage.Bot
             return diff;
         }
 
-        /// <summary>
         /// create a phrase in the model
         /// </summary>
         /// <param name="currentModel">the model</param>
@@ -478,7 +471,6 @@ namespace Darl.Lineage.Bot
             return lmn;
         }
 
-        /// <summary>
         /// Delete a phrase
         /// </summary>
         /// <param name="currentModel"></param>
@@ -490,7 +482,6 @@ namespace Darl.Lineage.Bot
             LineageMatchNode.comp.multiMatch = false;
         }
 
-        /// <summary>
         /// Separate this phrase from neighbours, giving separate, copied attribute.
         /// </summary>
         /// <param name="currentModel"></param>
@@ -534,7 +525,6 @@ namespace Darl.Lineage.Bot
             LineageMatchNode.comp.multiMatch = false;
         }
 
-        /// <summary>
         /// Merges a new phrase with an existing phrase, giving the same response
         /// </summary>
         /// <param name="currentModel">The model to work on</param>
@@ -550,7 +540,6 @@ namespace Darl.Lineage.Bot
                 np.annotation = existing.annotation;
         }
 
-        /// <summary>
         /// Instantiate the stores specified in the model
         /// </summary>
         /// <param name="model">The model</param>
@@ -604,7 +593,6 @@ namespace Darl.Lineage.Bot
         }
 
 
-        /// <summary>
         /// copies over any matching data in bot user data to the rule set values
         /// </summary>
         /// <param name="format">The rule set format</param>
@@ -652,7 +640,6 @@ namespace Darl.Lineage.Bot
             }
         }
 
-        /// <summary>
         /// extract part of s1 that is not in s2
         /// </summary>
         /// <param name="s1"></param>
@@ -691,7 +678,6 @@ namespace Darl.Lineage.Bot
             return sb.ToString();
         }
 
-        /// <summary>
         /// extract any responses and calls from an existing darl fragment
         /// </summary>
         /// <param name="currentModel"></param>
@@ -730,7 +716,6 @@ namespace Darl.Lineage.Bot
             return bf;
         }
 
-        /// <summary>
         /// Find the best match in the existing tree and expand the path to match the text.
         /// </summary>
         /// <param name="text">a text string to match</param>

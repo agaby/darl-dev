@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -11,12 +10,10 @@ namespace Darl.Thinkbase.Meta
 {
     public class IODefinitionNode : DarlMetaNode
     {
-        /// <summary>
         /// Sets defined for this IO
         /// </summary>
         public Dictionary<string, DarlResult> sets = new Dictionary<string, DarlResult>();
 
-        /// <summary>
         /// Categories defined for this IO
         /// </summary>
         public List<string> categories = new List<string>();
@@ -33,12 +30,10 @@ namespace Darl.Thinkbase.Meta
 
 
 
-        /// <summary>
         /// Name of the I/O
         /// </summary>
         public string name { get; set; }
 
-        /// <summary>
         /// Contains the crisp ind of each sample as categorized
         /// </summary>
         /// <remarks>
@@ -48,7 +43,6 @@ namespace Darl.Thinkbase.Meta
         /// </remarks>
         public List<int> learningSource = new List<int>();
 
-        /// <summary>
         /// Calculate the information in this input/output. 
         /// </summary>
         /// <param name="indices">indices to data to consider in this calculation.</param>
@@ -85,7 +79,6 @@ namespace Darl.Thinkbase.Meta
             return result * -1.0;
         }
 
-        /// <summary>
         /// Calculates the membership during machine learning
         /// </summary>
         /// <param name="index">The index.</param>
@@ -96,7 +89,6 @@ namespace Darl.Thinkbase.Meta
             return 0.0;
         }
 
-        /// <summary>
         /// Calculates set membership during machine learning
         /// </summary>
         /// <param name="index">The index of the value</param>
@@ -122,7 +114,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// Extract the last parameter as a lineage if present
         /// </summary>
         /// <param name="context"></param>
@@ -172,7 +163,6 @@ namespace Darl.Thinkbase.Meta
             return 0.0;
         }
 
-        /// <summary>
         /// Writes out a single "is" term and asociated input and set/category/vocab
         /// </summary>
         /// <param name="middle">Receives text</param>

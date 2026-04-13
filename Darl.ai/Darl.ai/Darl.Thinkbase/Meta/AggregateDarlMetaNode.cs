@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -8,7 +7,6 @@ namespace Darl.Thinkbase.Meta
 {
     public abstract class AggregateDarlMetaNode : MultipleDarlMetaNode
     {
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>

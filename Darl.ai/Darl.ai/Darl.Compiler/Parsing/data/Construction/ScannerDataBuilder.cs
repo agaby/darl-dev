@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -19,31 +18,25 @@ using System.Collections.Generic;
 
 namespace DarlCompiler.Parsing.Construction
 {
-    /// <summary>
     /// Class ScannerDataBuilder.
     /// </summary>
     internal class ScannerDataBuilder
     {
-        /// <summary>
         /// The _language
         /// </summary>
         readonly LanguageData _language;
 
-        /// <summary>
         /// The _grammar
         /// </summary>
         readonly Grammar _grammar;
 
-        /// <summary>
         /// The _grammar data
         /// </summary>
         readonly GrammarData _grammarData;
-        /// <summary>
         /// The _data
         /// </summary>
         ScannerData _data;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ScannerDataBuilder"/> class.
         /// </summary>
         /// <param name="language">The language.</param>
@@ -54,7 +47,6 @@ namespace DarlCompiler.Parsing.Construction
             _grammarData = language.GrammarData;
         }
 
-        /// <summary>
         /// Builds this instance.
         /// </summary>
         internal void Build()
@@ -65,7 +57,6 @@ namespace DarlCompiler.Parsing.Construction
             BuildTerminalsLookupTable();
         }
 
-        /// <summary>
         /// Initializes the multiline terminals list.
         /// </summary>
         private void InitMultilineTerminalsList()
@@ -81,7 +72,6 @@ namespace DarlCompiler.Parsing.Construction
             }
         }
 
-        /// <summary>
         /// Processes the non grammar terminals.
         /// </summary>
         private void ProcessNonGrammarTerminals()
@@ -105,7 +95,6 @@ namespace DarlCompiler.Parsing.Construction
             }
         }
 
-        /// <summary>
         /// Builds the terminals lookup table.
         /// </summary>
         private void BuildTerminalsLookupTable()
@@ -144,7 +133,6 @@ namespace DarlCompiler.Parsing.Construction
 
         }
 
-        /// <summary>
         /// Adds the terminal to lookup.
         /// </summary>
         /// <param name="_lookup">The _lookup.</param>
@@ -171,7 +159,6 @@ namespace DarlCompiler.Parsing.Construction
             }
         }
 
-        /// <summary>
         /// Adds the terminal to lookup by first character.
         /// </summary>
         /// <param name="_lookup">The _lookup.</param>

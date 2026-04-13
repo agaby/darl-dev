@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -29,77 +28,61 @@ namespace DarlCompiler.Parsing
     // Note: switches are returned in token.Details field. Unlike in StringLiteral, we don't need to unescape the escaped chars,
     // (this is the job of regex engine), we only need to correctly recognize the end of expression
 
-    /// <summary>
     /// Enum RegexTermOptions
     /// </summary>
     [Flags]
     public enum RegexTermOptions
     {
-        /// <summary>
         /// The none
         /// </summary>
         None = 0,
-        /// <summary>
         /// The allow letter after
         /// </summary>
         AllowLetterAfter = 0x01, //if not set (default) then any following letter (after legal switches) is reported as invalid switch
-        /// <summary>
         /// The create reg ex object
         /// </summary>
         CreateRegExObject = 0x02,  //if set, token.Value contains Regex object; otherwise, it contains a pattern (string)
-        /// <summary>
         /// The unique switches
         /// </summary>
         UniqueSwitches = 0x04,    //require unique switches
 
-        /// <summary>
         /// The default
         /// </summary>
         Default = CreateRegExObject | UniqueSwitches,
     }
 
-    /// <summary>
     /// Class RegexLiteral.
     /// </summary>
     public class RegexLiteral : Terminal
     {
-        /// <summary>
         /// Class RegexSwitchTable.
         /// </summary>
         [Serializable]
         public class RegexSwitchTable : Dictionary<char, RegexOptions> { }
 
-        /// <summary>
         /// The start symbol
         /// </summary>
         public Char StartSymbol = '/';
-        /// <summary>
         /// The end symbol
         /// </summary>
         public Char EndSymbol = '/';
-        /// <summary>
         /// The escape symbol
         /// </summary>
         public Char EscapeSymbol = '\\';
-        /// <summary>
         /// The switches
         /// </summary>
         public RegexSwitchTable Switches = new RegexSwitchTable();
-        /// <summary>
         /// The default options
         /// </summary>
         public RegexOptions DefaultOptions = RegexOptions.None;
-        /// <summary>
         /// The options
         /// </summary>
         public RegexTermOptions Options = RegexTermOptions.Default;
 
-        /// <summary>
         /// The _stop chars
         /// </summary>
         private char[] _stopChars;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="BnfTerm" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -112,7 +95,6 @@ namespace DarlCompiler.Parsing
             base.SetFlag(TermFlags.IsLiteral);
         }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="RegexLiteral"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -126,7 +108,6 @@ namespace DarlCompiler.Parsing
             EscapeSymbol = escapeSymbol;
         }
 
-        /// <summary>
         /// Initializes the specified grammar data.
         /// </summary>
         /// <param name="grammarData">The grammar data.</param>
@@ -135,7 +116,6 @@ namespace DarlCompiler.Parsing
             base.Init(grammarData);
             _stopChars = new char[] { EndSymbol, '\r', '\n' };
         }
-        /// <summary>
         /// Gets the firsts.
         /// </summary>
         /// <returns>IList&lt;System.String&gt;.</returns>
@@ -146,7 +126,6 @@ namespace DarlCompiler.Parsing
             return result;
         }
 
-        /// <summary>
         /// Tries the match.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -201,7 +180,6 @@ namespace DarlCompiler.Parsing
             return token;
         }
 
-        /// <summary>
         /// Checks the escaped.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -219,7 +197,6 @@ namespace DarlCompiler.Parsing
             source.PreviewPosition = savePos;
             return escaped;
         }
-        /// <summary>
         /// Reads the switch.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -234,7 +211,6 @@ namespace DarlCompiler.Parsing
             return result;
         }
 
-        /// <summary>
         /// Determines whether the specified option is set.
         /// </summary>
         /// <param name="option">The option.</param>

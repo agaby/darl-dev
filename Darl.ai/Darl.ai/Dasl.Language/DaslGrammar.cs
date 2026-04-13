@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -20,14 +19,12 @@ using DarlLanguage;
 
 namespace DaslLanguage
 {
-    /// <summary>
     /// Extends the DARL grammar functionality
     /// </summary>
     [Language("Dasl", "1.0", "Dasl language, Copyright(c) Dr Andy's IP Ltd 2015")]
     public class DaslGrammar : DarlGrammar
     {
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="DaslGrammar" /> class.
         /// </summary>
         public DaslGrammar() : base()

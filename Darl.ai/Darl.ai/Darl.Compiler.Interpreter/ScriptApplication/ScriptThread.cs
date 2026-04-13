@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -24,35 +23,28 @@ using System.Text;
 
 namespace DarlCompiler.Interpreter
 {
-    /// <summary>
     /// Represents a running thread in script application.
     /// </summary>
     public sealed class ScriptThread : IBindingSource
     {
-        /// <summary>
         /// The application
         /// </summary>
         public readonly ScriptApp App;
-        /// <summary>
         /// The runtime
         /// </summary>
         public readonly LanguageRuntime Runtime;
 
-        /// <summary>
         /// The current scope
         /// </summary>
         public Scope CurrentScope;
-        /// <summary>
         /// The current node
         /// </summary>
         public AstNode CurrentNode;
 
         // Tail call parameters
-        /// <summary>
         /// The tail
         /// </summary>
         public ICallTarget Tail;
-        /// <summary>
         /// The tail arguments
         /// </summary>
         public object[] TailArgs;
@@ -60,7 +52,6 @@ namespace DarlCompiler.Interpreter
         public Stack<(DarlMetaNode, double)> ExecutionStack = new();
         public int currentExecutionStackDepth { get; set; } = 0;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ScriptThread"/> class.
         /// </summary>
         /// <param name="app">The application.</param>
@@ -73,7 +64,6 @@ namespace DarlCompiler.Interpreter
 
 
 
-        /// <summary>
         /// Pushes the scope.
         /// </summary>
         /// <param name="scopeInfo">The scope information.</param>
@@ -85,7 +75,6 @@ namespace DarlCompiler.Interpreter
 
 
 
-        /// <summary>
         /// Pushes the closure scope.
         /// </summary>
         /// <param name="scopeInfo">The scope information.</param>
@@ -96,7 +85,6 @@ namespace DarlCompiler.Interpreter
             CurrentScope = new Scope(scopeInfo, CurrentScope, closureParent, parameters);
         }
 
-        /// <summary>
         /// Pops the scope.
         /// </summary>
         public void PopScope()
@@ -104,7 +92,6 @@ namespace DarlCompiler.Interpreter
             CurrentScope = CurrentScope.Caller;
         }
 
-        /// <summary>
         /// Binds the specified symbol.
         /// </summary>
         /// <param name="symbol">The symbol.</param>
@@ -138,7 +125,6 @@ namespace DarlCompiler.Interpreter
         }
 
         #region Exception handling
-        /// <summary>
         /// Handles the error.
         /// </summary>
         /// <param name="exception">The exception.</param>
@@ -153,7 +139,6 @@ namespace DarlCompiler.Interpreter
         }
 
         // Throws ScriptException exception.
-        /// <summary>
         /// Throws the script error.
         /// </summary>
         /// <param name="message">The message.</param>
@@ -168,7 +153,6 @@ namespace DarlCompiler.Interpreter
             throw new ScriptException(message, null, loc, stack);
         }
 
-        /// <summary>
         /// Gets the stack trace.
         /// </summary>
         /// <returns>ScriptStackTrace.</returns>
@@ -177,7 +161,6 @@ namespace DarlCompiler.Interpreter
             return new ScriptStackTrace();
         }
 
-        /// <summary>
         /// Gets the current location.
         /// </summary>
         /// <returns>SourceLocation.</returns>
@@ -191,7 +174,6 @@ namespace DarlCompiler.Interpreter
 
         #region IBindingSource Members
 
-        /// <summary>
         /// Binds the specified request.
         /// </summary>
         /// <param name="request">The request.</param>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -18,14 +17,12 @@
 namespace DarlCompiler.Interpreter
 {
 
-    /// <summary>
     /// Class LanguageRuntime.
     /// </summary>
     public partial class LanguageRuntime : IBindingSource
     {
 
         //Binds to local variables, enclosing scopes, module scopes/globals and built-ins
-        /// <summary>
         /// Binds the specified request.
         /// </summary>
         /// <param name="request">The request.</param>
@@ -45,7 +42,6 @@ namespace DarlCompiler.Interpreter
             }
         }
 
-        /// <summary>
         /// Binds the symbol for write.
         /// </summary>
         /// <param name="request">The request.</param>
@@ -91,7 +87,6 @@ namespace DarlCompiler.Interpreter
             return null;
         }
 
-        /// <summary>
         /// Binds the symbol for read.
         /// </summary>
         /// <param name="request">The request.</param>
@@ -126,7 +121,6 @@ namespace DarlCompiler.Interpreter
         }
 
         //Binds symbol to a public member exported by a module.
-        /// <summary>
         /// Binds the symbol.
         /// </summary>
         /// <param name="request">The request.</param>

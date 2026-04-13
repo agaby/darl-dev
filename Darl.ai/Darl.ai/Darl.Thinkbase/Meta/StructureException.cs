@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System;
@@ -6,7 +5,6 @@ using System.Runtime.Serialization;
 
 namespace Darl.Thinkbase.Meta
 {
-    /// <summary>
     /// Indicates a design fault discovered in the knowledge graph
     /// </summary>
     public class StructureException : Exception

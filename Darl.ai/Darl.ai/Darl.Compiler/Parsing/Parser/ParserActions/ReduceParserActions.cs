@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -20,17 +19,14 @@ using Darl.ai;
 namespace DarlCompiler.Parsing
 {
 
-    /// <summary>
     /// Base class for more specific reduce actions.
     /// </summary>
     public partial class ReduceParserAction : ParserAction
     {
-        /// <summary>
         /// The production
         /// </summary>
         public readonly Production Production;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ReduceParserAction"/> class.
         /// </summary>
         /// <param name="production">The production.</param>
@@ -38,7 +34,6 @@ namespace DarlCompiler.Parsing
         {
             Production = production;
         }
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -47,7 +42,6 @@ namespace DarlCompiler.Parsing
             return string.Format(Resources.LabelActionReduce, Production.ToStringQuoted());
         }
 
-        /// <summary>
         /// Factory method for creating a proper type of reduce parser action.
         /// </summary>
         /// <param name="production">A Production to reduce.</param>
@@ -68,7 +62,6 @@ namespace DarlCompiler.Parsing
                 return new ReduceParserAction(production);
         }
 
-        /// <summary>
         /// Executes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -80,7 +73,6 @@ namespace DarlCompiler.Parsing
             context.CurrentParserInput = savedParserInput;
         }
 
-        /// <summary>
         /// Gets the result node.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -100,7 +92,6 @@ namespace DarlCompiler.Parsing
             return newNode;
         }
         //Completes reduce: pops child nodes from the stack and pushes result node into the stack
-        /// <summary>
         /// Completes the reduce.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -141,7 +132,6 @@ namespace DarlCompiler.Parsing
         // where BinOp is an OR-combination of operators. 
         // During parsing, when 'expr, BinOp, expr' is on the top of the stack, 
         // and incoming symbol is operator, we need to use precedence rule for deciding on the action. 
-        /// <summary>
         /// Inherits the precedence.
         /// </summary>
         /// <param name="node">The node.</param>
@@ -159,18 +149,15 @@ namespace DarlCompiler.Parsing
 
     }
 
-    /// <summary>
     /// Reduces non-terminal marked as Transient by MarkTransient method.
     /// </summary>
     public class ReduceTransientParserAction : ReduceParserAction
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="ReduceTransientParserAction"/> class.
         /// </summary>
         /// <param name="production">The production.</param>
         public ReduceTransientParserAction(Production production) : base(production) { }
 
-        /// <summary>
         /// Gets the result node.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -192,19 +179,16 @@ namespace DarlCompiler.Parsing
         }
     }
 
-    /// <summary>
     /// Reduces list created by MakePlusRule or MakeListRule methods.
     /// </summary>
     public class ReduceListBuilderParserAction : ReduceParserAction
     {
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ReduceListBuilderParserAction"/> class.
         /// </summary>
         /// <param name="production">The production.</param>
         public ReduceListBuilderParserAction(Production production) : base(production) { }
 
-        /// <summary>
         /// Gets the result node.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -224,18 +208,15 @@ namespace DarlCompiler.Parsing
     }
 
     //List container is an artificial non-terminal created by MakeStarRule method; the actual list is a direct child. 
-    /// <summary>
     /// Class ReduceListContainerParserAction.
     /// </summary>
     public class ReduceListContainerParserAction : ReduceParserAction
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="ReduceListContainerParserAction"/> class.
         /// </summary>
         /// <param name="production">The production.</param>
         public ReduceListContainerParserAction(Production production) : base(production) { }
 
-        /// <summary>
         /// Gets the result node.
         /// </summary>
         /// <param name="context">The context.</param>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -13,34 +12,27 @@ namespace Darl.Thinkbase.Meta
 {
     public class OutputDefinitionNode : IOSequenceDefinitionNode
     {
-        /// <summary>
         /// Enumerates the possible output types
         /// </summary>
         public enum OutputTypes
         {
-            /// <summary>
             /// is numeric
             /// </summary>
             numeric_output,
-            /// <summary>
             /// is categorical
             /// </summary>
             categorical_output,
-            /// <summary>
             /// is textual
             /// </summary>
             textual_output,
-            /// <summary>
             /// is temporal
             /// </summary>
             temporal_output,
-            /// <summary>
             /// Is network
             /// </summary>
             network_output
         };
 
-        /// <summary>
         /// Gets the type of the output.
         /// </summary>
         /// <value>
@@ -50,7 +42,6 @@ namespace Darl.Thinkbase.Meta
 
 
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="OutputDefinitionNode"/> class.
         /// </summary>
         public OutputDefinitionNode()
@@ -62,7 +53,6 @@ namespace Darl.Thinkbase.Meta
 
 
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -114,7 +104,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>
@@ -214,7 +203,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// get a table of the partitions found in the list of indices, derived from a decision node
         /// ignoring minor results. the 2nd element is the confidence.
         /// </summary>
@@ -279,7 +267,6 @@ namespace Darl.Thinkbase.Meta
             return newMap;
         }
 
-        /// <summary>
         /// Calculates the membership.
         /// </summary>
         /// <param name="index">The index.</param>

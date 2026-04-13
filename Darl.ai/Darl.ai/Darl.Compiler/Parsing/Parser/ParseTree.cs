@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -29,59 +28,46 @@ namespace DarlCompiler.Parsing
       The ParseTreeNode also works as a stack element in the parser stack, so it has the State property to carry 
       the pushed parser state while it is in the stack. 
     */
-    /// <summary>
     /// Class ParseTreeNode.
     /// </summary>
     public class ParseTreeNode
     {
-        /// <summary>
         /// The ast node
         /// </summary>
         public object AstNode;
-        /// <summary>
         /// The token
         /// </summary>
         public Token Token;
-        /// <summary>
         /// The term
         /// </summary>
         public BnfTerm Term;
-        /// <summary>
         /// The precedence
         /// </summary>
         public int Precedence;
-        /// <summary>
         /// The associativity
         /// </summary>
         public Associativity Associativity;
-        /// <summary>
         /// The span
         /// </summary>
         public SourceSpan Span;
         //Making ChildNodes property (not field) following request by Matt K, Bill H
-        /// <summary>
         /// Gets the child nodes.
         /// </summary>
         /// <value>The child nodes.</value>
         public ParseTreeNodeList ChildNodes { get; private set; }
-        /// <summary>
         /// The is error
         /// </summary>
         public bool IsError;
-        /// <summary>
         /// The state
         /// </summary>
         internal ParserState State;      //used by parser to store current state when node is pushed into the parser stack
-        /// <summary>
         /// The tag
         /// </summary>
         public object Tag; //for use by custom parsers, Darl does not use it
-        /// <summary>
         /// The comments
         /// </summary>
         public TokenList Comments; //Comments preceding this node
 
-        /// <summary>
         /// Prevents a default instance of the <see cref="ParseTreeNode"/> class from being created.
         /// </summary>
         private ParseTreeNode()
@@ -89,7 +75,6 @@ namespace DarlCompiler.Parsing
             ChildNodes = new ParseTreeNodeList();
         }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ParseTreeNode"/> class.
         /// </summary>
         /// <param name="token">The token.</param>
@@ -104,7 +89,6 @@ namespace DarlCompiler.Parsing
             IsError = token.IsError();
         }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ParseTreeNode"/> class.
         /// </summary>
         /// <param name="initialState">The initial state.</param>
@@ -114,7 +98,6 @@ namespace DarlCompiler.Parsing
             State = initialState;
         }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ParseTreeNode"/> class.
         /// </summary>
         /// <param name="term">The term.</param>
@@ -126,7 +109,6 @@ namespace DarlCompiler.Parsing
             Span = span;
         }
 
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -139,7 +121,6 @@ namespace DarlCompiler.Parsing
         }
 
 
-        /// <summary>
         /// Finds the token and get text.
         /// </summary>
         /// <returns>System.String.</returns>
@@ -148,7 +129,6 @@ namespace DarlCompiler.Parsing
             var tkn = FindToken();
             return tkn == null ? null : tkn.Text;
         }
-        /// <summary>
         /// Finds the token.
         /// </summary>
         /// <returns>Token.</returns>
@@ -156,7 +136,6 @@ namespace DarlCompiler.Parsing
         {
             return FindFirstChildTokenRec(this);
         }
-        /// <summary>
         /// Finds the first child token record.
         /// </summary>
         /// <param name="node">The node.</param>
@@ -172,7 +151,6 @@ namespace DarlCompiler.Parsing
             return null;
         }
 
-        /// <summary>
         /// Returns true if the node is punctuation or it is transient with empty child list.
         /// </summary>
         /// <returns>True if parser can safely ignore this node.</returns>
@@ -185,7 +163,6 @@ namespace DarlCompiler.Parsing
             return false;
         }
 
-        /// <summary>
         /// Determines whether this instance is operator.
         /// </summary>
         /// <returns><c>true</c> if this instance is operator; otherwise, <c>false</c>.</returns>
@@ -196,78 +173,61 @@ namespace DarlCompiler.Parsing
 
     }
 
-    /// <summary>
     /// Class ParseTreeNodeList.
     /// </summary>
     public class ParseTreeNodeList : List<ParseTreeNode> { }
 
-    /// <summary>
     /// Enum ParseTreeStatus
     /// </summary>
     public enum ParseTreeStatus
     {
-        /// <summary>
         /// The parsing
         /// </summary>
         Parsing,
-        /// <summary>
         /// The partial
         /// </summary>
         Partial,
-        /// <summary>
         /// The parsed
         /// </summary>
         Parsed,
-        /// <summary>
         /// The error
         /// </summary>
         Error,
     }
 
-    /// <summary>
     /// Class ParseTree.
     /// </summary>
     public class ParseTree
     {
-        /// <summary>
         /// Gets the status.
         /// </summary>
         /// <value>The status.</value>
         public ParseTreeStatus Status { get; internal set; }
-        /// <summary>
         /// The source text
         /// </summary>
         public readonly string SourceText;
-        /// <summary>
         /// The file name
         /// </summary>
         public readonly string FileName;
-        /// <summary>
         /// The tokens
         /// </summary>
         public readonly TokenList Tokens = new TokenList();
-        /// <summary>
         /// The open braces
         /// </summary>
         public readonly TokenList OpenBraces = new TokenList();
-        /// <summary>
         /// The root
         /// </summary>
         public ParseTreeNode Root;
-        /// <summary>
         /// The parser messages
         /// </summary>
         public readonly LogMessageList ParserMessages = new LogMessageList();
-        /// <summary>
         /// The parse time milliseconds
         /// </summary>
         public long ParseTimeMilliseconds;
-        /// <summary>
         /// The tag
         /// </summary>
         public object Tag; //custom data object, use it anyway you want
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ParseTree"/> class.
         /// </summary>
         /// <param name="sourceText">The source text.</param>
@@ -279,7 +239,6 @@ namespace DarlCompiler.Parsing
             Status = ParseTreeStatus.Parsing;
         }
 
-        /// <summary>
         /// Determines whether this instance has errors.
         /// </summary>
         /// <returns><c>true</c> if this instance has errors; otherwise, <c>false</c>.</returns>

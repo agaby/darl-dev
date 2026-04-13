@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Chronic;
@@ -103,7 +102,6 @@ namespace Darl.GraphQL.Models.Connectivity
 
 
 
-        /// <summary>
         /// Create a graph connection
         /// </summary>
         /// <param name="userId">The user</param>
@@ -158,7 +156,6 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        /// <summary>
         /// Create a graph object
         /// </summary>
         /// <param name="userId">The user</param>
@@ -279,7 +276,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return false;
         }
 
-        /// <summary>
         /// Add the ontology elements for this object
         /// </summary>
         /// <param name="gremlinClient"></param>
@@ -302,7 +298,6 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        /// <summary>
         /// Add the ontology elements for this connection
         /// </summary>
         /// <param name="gremlinClient"></param>
@@ -331,7 +326,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return res.Any();
         }
 
-        /// <summary>
         /// Recursively add an object to an ontology and all its parents
         /// </summary>
         /// <param name="gremlinClient"></param>
@@ -365,7 +359,6 @@ namespace Darl.GraphQL.Models.Connectivity
             }           
         }
 
-        /// <summary>
         /// Delete a connection
         /// </summary>
         /// <param name="userId">The user's id</param>
@@ -380,7 +373,6 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        /// <summary>
         /// Delete an object
         /// </summary>
         /// <param name="userId">The user's id</param>
@@ -395,7 +387,6 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        /// <summary>
         /// Get a graph object by the id
         /// </summary>
         /// <param name="userId">The user's id</param>
@@ -424,7 +415,6 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        /// <summary>
         /// Get a connection based on the node ids and the lineage
         /// </summary>
         /// <param name="userId"></param>
@@ -529,7 +519,6 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        /// <summary>
         /// Get graph objects with an exact name match
         /// </summary>
         /// <param name="userId">The user's id</param>
@@ -688,7 +677,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return gc;
         }
 
-        /// <summary>
         /// Get graph objects with a fuzzy name match
         /// </summary>
         /// <param name="userId">The user's id</param>
@@ -704,7 +692,6 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        /// <summary>
         /// Update a graph connection
         /// </summary>
         /// <param name="userId">The user's id</param>
@@ -749,7 +736,6 @@ namespace Darl.GraphQL.Models.Connectivity
             }
         }
 
-        /// <summary>
         /// Update a graph object
         /// </summary>
         /// <param name="userId">The user's id</param>
@@ -1164,7 +1150,6 @@ namespace Darl.GraphQL.Models.Connectivity
             throw new NotImplementedException();
         }
 
-        /// <summary>
         /// Find a vertex matching name(s) or the closest match with similarity > 0.7
         /// </summary>
         /// <param name="gremlinClient">The client</param>
@@ -1423,7 +1408,6 @@ namespace Darl.GraphQL.Models.Connectivity
 
         }
 
-        /// <summary>
         /// Update connections and weights within a knowledge graph based on associations
         /// </summary>
         /// <param name="userId"></param>

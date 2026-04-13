@@ -1,16 +1,13 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements the subtraction of a pair of temporal values
     /// </summary>
     public class TemporalMinusNode : BinaryDarlNode
     {
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -26,7 +23,6 @@ namespace DarlLanguage.Processing
             return res1 - res2; //n.b ordered Temporal - period, not period - temporal
         }
 
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>

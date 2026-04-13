@@ -1,17 +1,14 @@
-/// <summary>
 /// </summary>
 
 ﻿using System;
 
 namespace Darl.Thinkbase.Meta
 {
-    /// <summary>
     /// Represents a numeric interval
     /// </summary>
     [Serializable]
     public class Interval
     {
-        /// <summary>
         /// constructor	
         /// </summary>
         public Interval()
@@ -19,7 +16,6 @@ namespace Darl.Thinkbase.Meta
             lower = 0.0;
             upper = 0.0;
         }
-        /// <summary>
         /// constructs a singleton
         /// </summary>
         /// <param name="Value">A crisp value</param>
@@ -28,7 +24,6 @@ namespace Darl.Thinkbase.Meta
             lower = Value;
             upper = Value;
         }
-        /// <summary>
         /// constructs an interval
         /// </summary>
         /// <param name="low">lower bound</param>
@@ -42,15 +37,12 @@ namespace Darl.Thinkbase.Meta
                 throw new MetaRuleException("Confidence Interval Error: Lower bound greater than upper bound");
             }
         }
-        /// <summary>
         /// lower bound
         /// </summary>
         public double lower;
-        /// <summary>
         /// upper bound
         /// </summary>
         public double upper;
-        /// <summary>
         /// returns true if interval contains point
         /// </summary>
         /// <param name="Value">point</param>
@@ -59,7 +51,6 @@ namespace Darl.Thinkbase.Meta
         {
             return Value >= lower && Value <= upper;
         }
-        /// <summary>
         /// unary minus operator
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -70,7 +61,6 @@ namespace Darl.Thinkbase.Meta
         {
             return new Interval(-opnd1.upper, -opnd1.lower);
         }
-        /// <summary>
         /// binary plus operator with singleton
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -82,7 +72,6 @@ namespace Darl.Thinkbase.Meta
         {
             return new Interval(opnd1.lower + opnd2, opnd1.upper + opnd2);
         }
-        /// <summary>
         /// binary plus between two intervals
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -94,7 +83,6 @@ namespace Darl.Thinkbase.Meta
         {
             return new Interval(opnd1.lower + opnd2.lower, opnd1.upper + opnd2.upper);
         }
-        /// <summary>
         /// subtract a singleton from an interval
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -106,7 +94,6 @@ namespace Darl.Thinkbase.Meta
         {
             return new Interval(opnd1.lower - opnd2, opnd1.upper - opnd2);
         }
-        /// <summary>
         /// binary minus between two intervals
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -118,7 +105,6 @@ namespace Darl.Thinkbase.Meta
         {
             return new Interval(opnd1.lower - opnd2.upper, opnd1.upper - opnd2.lower);
         }
-        /// <summary>
         /// Multiply an interval by a singleton
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -131,7 +117,6 @@ namespace Darl.Thinkbase.Meta
             return new Interval(opnd2 * ((opnd2 >= 0) ? opnd1.lower : opnd1.upper),
                 opnd2 * ((opnd2 >= 0) ? opnd1.upper : opnd1.lower));
         }
-        /// <summary>
         /// multiply an interval by an interval
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -149,7 +134,6 @@ namespace Darl.Thinkbase.Meta
             return new Interval(min4(tmp1, tmp2, tmp3, tmp4),
                 max4(tmp1, tmp2, tmp3, tmp4));
         }
-        /// <summary>
         /// divide an interval by a singleton
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -161,7 +145,6 @@ namespace Darl.Thinkbase.Meta
         {
             return opnd1 * (1 / opnd2);
         }
-        /// <summary>
         /// divide an interval by an interval
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -173,7 +156,6 @@ namespace Darl.Thinkbase.Meta
         {
             return opnd1 * (1 / opnd2);
         }
-        /// <summary>
         /// add a singleton to an interval
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -185,7 +167,6 @@ namespace Darl.Thinkbase.Meta
         {
             return opnd2 + opnd1;
         }
-        /// <summary>
         /// subtract an interval from a singleton
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -197,7 +178,6 @@ namespace Darl.Thinkbase.Meta
         {
             return -opnd2 + opnd1;
         }
-        /// <summary>
         /// multiply a singleton by an interval
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -209,7 +189,6 @@ namespace Darl.Thinkbase.Meta
         {
             return opnd2 * opnd1;
         }
-        /// <summary>
         /// divide a singleton by an interval
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -226,7 +205,6 @@ namespace Darl.Thinkbase.Meta
             }
             return opnd1 * new Interval(1 / opnd2.upper, 1 / opnd2.lower);
         }
-        /// <summary>
         /// find the minimum of two intervals
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -240,7 +218,6 @@ namespace Darl.Thinkbase.Meta
                 (opnd1.upper <= opnd2.upper) ? opnd1.upper : opnd2.upper);
 
         }
-        /// <summary>
         /// find the maximum of two intervals
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -253,7 +230,6 @@ namespace Darl.Thinkbase.Meta
             return new Interval((opnd1.lower >= opnd2.lower) ? opnd1.lower : opnd2.lower,
                 (opnd1.upper >= opnd2.upper) ? opnd1.upper : opnd2.upper);
         }
-        /// <summary>
         /// find the power of two intervals
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -266,7 +242,6 @@ namespace Darl.Thinkbase.Meta
             return new Interval(min4(Math.Pow(opnd1.lower, opnd2.lower), Math.Pow(opnd1.lower, opnd2.upper), Math.Pow(opnd1.upper, opnd2.lower), Math.Pow(opnd1.upper, opnd2.upper)),
                                 max4(Math.Pow(opnd1.lower, opnd2.lower), Math.Pow(opnd1.lower, opnd2.upper), Math.Pow(opnd1.upper, opnd2.lower), Math.Pow(opnd1.upper, opnd2.upper)));
         }
-        /// <summary>
         /// find the sine of an interval
         /// </summary>
         /// <param name="opnd">The opnd.</param>
@@ -296,7 +271,6 @@ namespace Darl.Thinkbase.Meta
 
             return new Interval(lower, upper);
         }
-        /// <summary>
         /// find the cosine of an interval
         /// </summary>
         /// <param name="opnd">the operand</param>
@@ -323,7 +297,6 @@ namespace Darl.Thinkbase.Meta
 
             return new Interval(lower, upper);
         }
-        /// <summary>
         /// helper function
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -336,7 +309,6 @@ namespace Darl.Thinkbase.Meta
             return (Math.Abs(opnd1.lower - opnd2.lower) +
                 Math.Abs(opnd1.upper - opnd2.upper));
         }
-        /// <summary>
         /// find the largest of 4 doubles
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -353,7 +325,6 @@ namespace Darl.Thinkbase.Meta
             if (opnd4 > max) max = opnd4;
             return max;
         }
-        /// <summary>
         /// find the smallest of 4 doubles
         /// </summary>
         /// <param name="opnd1">The opnd1.</param>
@@ -370,7 +341,6 @@ namespace Darl.Thinkbase.Meta
             if (opnd4 < min) min = opnd4;
             return min;
         }
-        /// <summary>
         /// look for identical equality
         /// </summary>
         /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
@@ -388,7 +358,6 @@ namespace Darl.Thinkbase.Meta
             }
             return false;
         }
-        /// <summary>
         /// true if interval represents a single point
         /// </summary>
         /// <returns>true if singleton</returns>
@@ -396,7 +365,6 @@ namespace Darl.Thinkbase.Meta
         {
             return lower == upper;
         }
-        /// <summary>
         /// represent the interval as a string
         /// </summary>
         /// <returns>The string</returns>
@@ -406,7 +374,6 @@ namespace Darl.Thinkbase.Meta
                 return "singleton: " + lower.ToString("#.###");
             return "lower: " + lower.ToString("#.###") + " upper: " + upper.ToString("#.###");
         }
-        /// <summary>
         /// gets a hash code
         /// </summary>
         /// <returns>
@@ -417,7 +384,6 @@ namespace Darl.Thinkbase.Meta
             return base.GetHashCode();
         }
 
-        /// <summary>
         /// determines if two intervals overlap
         /// </summary>
         /// <param name="int1">First interval</param>
@@ -435,7 +401,6 @@ namespace Darl.Thinkbase.Meta
             return overlap;
         }
 
-        /// <summary>
         /// Compares two intervals using the method of Dorohonceanu and Marin
         /// </summary>
         /// <param name="a">A.</param>
@@ -463,7 +428,6 @@ namespace Darl.Thinkbase.Meta
             }
             return alpha;
         }
-        /// <summary>
         /// the numeric length of the interval
         /// </summary>
         public double length
@@ -474,7 +438,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// returns the mid point of the interval
         /// </summary>
         /// <returns>The value</returns>
@@ -483,7 +446,6 @@ namespace Darl.Thinkbase.Meta
             return (upper + lower) / 2.0;
         }
 
-        /// <summary>
         /// returns the minimum bounding interval containing two intervals
         /// </summary>
         /// <param name="int1">The int1.</param>

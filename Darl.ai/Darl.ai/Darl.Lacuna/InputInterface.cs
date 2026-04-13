@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 using System;
@@ -6,7 +5,6 @@ using System.Collections;
 
 namespace Darl.Lacuna
 {
-    /// <summary>
     /// Used to convert values to and from the doubles used by Differential Evolution
     /// </summary>
     internal class InputInterface
@@ -38,7 +36,6 @@ namespace Darl.Lacuna
             }
 
         }
-        /// <summary>
         /// Adds a category
         /// </summary>
         /// <param name="category"></param>

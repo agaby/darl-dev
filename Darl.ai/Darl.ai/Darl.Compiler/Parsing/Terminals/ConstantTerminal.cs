@@ -7,14 +7,13 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="ConstantTerminal.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
 using System;
 using System.Collections.Generic;
 
-/// <summary>
 /// The Parsing namespace.
 /// </summary>
 namespace DarlCompiler.Parsing
@@ -22,21 +21,17 @@ namespace DarlCompiler.Parsing
     //This terminal allows to declare a set of constants in the input language
     // It should be used when constant symbols do not look like normal identifiers; e.g. in Scheme, #t, #f are true/false
     // constants, and they don't fit into Scheme identifier pattern.
-    /// <summary>
     /// Class ConstantsTable.
     /// </summary>
     [Serializable]
     public class ConstantsTable : Dictionary<string, object> { }
-    /// <summary>
     /// Class ConstantTerminal.
     /// </summary>
     public class ConstantTerminal : Terminal
     {
-        /// <summary>
         /// The constants
         /// </summary>
         public readonly ConstantsTable Constants = new ConstantsTable();
-        /// <summary>
         /// Initializes a new instance of the <see cref="ConstantTerminal"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -50,7 +45,6 @@ namespace DarlCompiler.Parsing
             this.Priority = TerminalPriority.High; //constants have priority over normal identifiers
         }
 
-        /// <summary>
         /// Adds the specified lexeme.
         /// </summary>
         /// <param name="lexeme">The lexeme.</param>
@@ -60,7 +54,6 @@ namespace DarlCompiler.Parsing
             this.Constants[lexeme] = value;
         }
 
-        /// <summary>
         /// Initializes the specified grammar data.
         /// </summary>
         /// <param name="grammarData">The grammar data.</param>
@@ -71,7 +64,6 @@ namespace DarlCompiler.Parsing
                 this.EditorInfo = new TokenEditorInfo(TokenType.Unknown, TokenColor.Text, TokenTriggers.None);
         }
 
-        /// <summary>
         /// Tries the match.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -96,7 +88,6 @@ namespace DarlCompiler.Parsing
             return null;
         }
 
-        /// <summary>
         /// Gets the firsts.
         /// </summary>
         /// <returns>IList&lt;System.String&gt;.</returns>

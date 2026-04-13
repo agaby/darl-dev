@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Interpreter;
@@ -8,7 +7,6 @@ namespace DarlLanguage.Processing
 {
     public class IOSequenceDefinitionNode : IODefinitionNode, IComparable<IOSequenceDefinitionNode>
     {
-        /// <summary>
         /// Gets or sets the sequence.
         /// </summary>
         /// <value>
@@ -16,7 +14,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public int sequence { get; set; }
 
-        /// <summary>
         /// Gets or sets the result.
         /// </summary>
         /// <value>
@@ -38,7 +35,6 @@ namespace DarlLanguage.Processing
 
         protected Binding _accessor;
 
-        /// <summary>
         /// Gets the fuzzy results.
         /// </summary>
         /// <value>
@@ -46,7 +42,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public DarlResult fuzzyResults { get; internal set; }
 
-        /// <summary>
         /// Gets the confidence.
         /// </summary>
         /// <value>
@@ -54,7 +49,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public double confidence { get; internal set; }
 
-        /// <summary>
         /// Gets the value.
         /// </summary>
         /// <value>
@@ -62,7 +56,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public virtual object Value { get; internal set; } = new DarlResult(0.0, true);
 
-        /// <summary>
         /// Compares the current object with another object of the same type.
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>

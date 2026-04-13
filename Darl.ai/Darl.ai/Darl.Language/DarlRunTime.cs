@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Licensing;
@@ -16,26 +15,21 @@ using System.Xml.XPath;
 
 namespace DarlLanguage
 {
-    /// <summary>
     /// Methods operating on DARL code
     /// </summary>
     public class DarlRunTime
     {
 
-        /// <summary>
         /// The DARL grammar object
         /// </summary>
         protected DarlGrammar grammar;
-        /// <summary>
         /// The language data
         /// </summary>
         protected LanguageData language;
-        /// <summary>
         /// The DARL parser
         /// </summary>
         protected Parser parser;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="DarlRunTime"/> class.
         /// </summary>
         public DarlRunTime()
@@ -47,7 +41,6 @@ namespace DarlLanguage
             parser = new Parser(language);
         }
 
-        /// <summary>
         /// Evaluate a source file with a set of values
         /// </summary>
         /// <param name="inputs">a set of input values</param>
@@ -61,7 +54,6 @@ namespace DarlLanguage
         }
 
 
-        /// <summary>
         /// Evaluate an existing tree.
         /// </summary>
         /// <param name="parseTree">The tree to evaluate</param>
@@ -75,7 +67,6 @@ namespace DarlLanguage
             return inputs;
         }
 
-        /// <summary>
         /// Create a tree to be used for repeated evaluations.
         /// </summary>
         /// <param name="source">The DARL source</param>
@@ -97,7 +88,6 @@ namespace DarlLanguage
             return parseTree;
         }
 
-        /// <summary>
         /// Create tree for editing purposes
         /// </summary>
         /// <remarks>Allows errors</remarks>
@@ -124,7 +114,6 @@ namespace DarlLanguage
 
 
 
-        /// <summary>
         /// Calculates the saliences.
         /// </summary>
         /// <param name="currentState">Current state of the  inputs and outputs</param>
@@ -138,7 +127,6 @@ namespace DarlLanguage
             return root.CalculateSaliences(currentState);
         }
 
-        /// <summary>
         /// Fill in a rule definition using Supervised learning
         /// </summary>
         /// <param name="rulesource">the source rules</param>
@@ -260,7 +248,6 @@ namespace DarlLanguage
             return newRuleSource;
         }
 
-        /// <summary>
         /// Async supervised mining
         /// </summary>
         /// <param name="rulesource">ruleset skeleton</param>
@@ -730,7 +717,6 @@ namespace DarlLanguage
             //now create set definitions.
             FindSetBoundaries(sets, inp, values);
         }
-        /// <summary>
         /// Find set boundaries by sorting the input values and dividing the range of non-null values
         /// </summary>
         /// <param name="desiredSets">Choices are 3,5,7 and 9;</param>
@@ -962,7 +948,6 @@ namespace DarlLanguage
             }
         }
 
-        /// <summary>
         /// Gets the input names.
         /// </summary>
         /// <param name="tree">The tree.</param>
@@ -973,7 +958,6 @@ namespace DarlLanguage
             return new List<string>(root.inputs.Keys);
         }
 
-        /// <summary>
         /// Gets the output names.
         /// </summary>
         /// <param name="tree">The tree.</param>
@@ -984,7 +968,6 @@ namespace DarlLanguage
             return new List<string>(root.outputs.Keys);
         }
 
-        /// <summary>
         /// Clears inputs of an existing tree so it can be re-used
         /// </summary>
         /// <param name="tree">The tree</param>
@@ -1007,7 +990,6 @@ namespace DarlLanguage
 
     }
 
-    /// <summary>
     /// Set of data and parameters derived from the source data and the rule set for machine learning
     /// </summary>
     public class PreparedLearningSet

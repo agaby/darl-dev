@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 using Darl.GraphQL.Container.Ui.Playground.Internal;
@@ -10,7 +9,6 @@ using System.Threading.Tasks;
 namespace Darl.GraphQL.Container.Ui.Playground
 {
 
-    /// <summary>
     /// A middleware for Playground
     /// </summary>
     public class PlaygroundMiddleware
@@ -18,17 +16,14 @@ namespace Darl.GraphQL.Container.Ui.Playground
 
         private readonly GraphQLPlaygroundOptions settings;
 
-        /// <summary>
         /// The Next Middleware
         /// </summary>
         private readonly RequestDelegate nextMiddleware;
 
-        /// <summary>
         /// The page model used to render Playground
         /// </summary>
         private PlaygroundPageModel? _pageModel;
 
-        /// <summary>
         /// Create a new PlaygroundMiddleware
         /// </summary>
         /// <param name="nextMiddleware">The Next Middleware</param>
@@ -39,7 +34,6 @@ namespace Darl.GraphQL.Container.Ui.Playground
             this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
-        /// <summary>
         /// Try to execute the logic of the middleware
         /// </summary>
         /// <param name="httpContext">The HttpContext</param>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -9,7 +8,6 @@ namespace DarlLanguage.Processing
 {
     public class StoreDefinitionNode : DarlNode
     {
-        /// <summary>
         /// Gets the name of the string.
         /// </summary>
         /// <value>
@@ -19,12 +17,10 @@ namespace DarlLanguage.Processing
 
         public ILocalStore storeInterface { get; set; }
 
-        /// <summary>
         /// store address combinations in use as outputs of rules for salience calcs
         /// </summary>
         public HashSet<string> storeOutputs { get; set; } = new HashSet<string>();
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -36,7 +32,6 @@ namespace DarlLanguage.Processing
             name = nodes[0].Token.Text;
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>

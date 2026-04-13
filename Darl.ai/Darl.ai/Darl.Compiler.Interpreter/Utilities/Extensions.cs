@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -17,13 +16,11 @@
 using DarlCompiler.Interpreter.Ast;
 namespace DarlCompiler.Interpreter
 {
-    /// <summary>
     /// Class InterpreterEnumExtensions.
     /// </summary>
     public static class InterpreterEnumExtensions
     {
 
-        /// <summary>
         /// Determines whether the specified flag is set.
         /// </summary>
         /// <param name="enumValue">The enum value.</param>
@@ -33,7 +30,6 @@ namespace DarlCompiler.Interpreter
         {
             return (enumValue & flag) != 0;
         }
-        /// <summary>
         /// Determines whether the specified flag is set.
         /// </summary>
         /// <param name="enumValue">The enum value.</param>

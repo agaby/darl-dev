@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -18,7 +17,6 @@ using DarlCompiler.Interpreter.Ast;
 
 namespace DarlCompiler.Interpreter
 {
-    /// <summary>
     /// Delegate SpecialForm
     /// </summary>
     /// <param name="thread">The thread.</param>
@@ -26,12 +24,10 @@ namespace DarlCompiler.Interpreter
     /// <returns>System.Object.</returns>
     public delegate object SpecialForm(ScriptThread thread, AstNode[] childNodes);
 
-    /// <summary>
     /// Class SpecialFormsLibrary.
     /// </summary>
     public static class SpecialFormsLibrary
     {
-        /// <summary>
         /// Iifs the specified thread.
         /// </summary>
         /// <param name="thread">The thread.</param>

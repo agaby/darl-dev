@@ -1,16 +1,13 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements a fuzzy number.
     /// </summary>
     public class FuzzytupleNode : MultipleDarlNode
     {
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -44,7 +41,6 @@ namespace DarlLanguage.Processing
             return res2;
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>
@@ -57,7 +53,6 @@ namespace DarlLanguage.Processing
                 return "fuzzytuple( ";
             }
         }
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>
@@ -71,7 +66,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Gets the postamble.
         /// </summary>
         /// <value>

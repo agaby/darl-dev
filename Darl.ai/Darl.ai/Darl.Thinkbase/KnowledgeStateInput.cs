@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System;
@@ -6,26 +5,21 @@ using System.Collections.Generic;
 
 namespace Darl.Thinkbase
 {
-    /// <summary>
     /// version used for external creation of a KnowledgeState
     /// </summary>
     public class KnowledgeStateInput
     {
-        /// <summary>
         /// the KG it applies to
         /// </summary>
         public string knowledgeGraphName { get; set; }
 
-        /// <summary>
         /// The individual the state relates to, a Guid
         /// </summary>
         public string subjectId { get; set; }
-        /// <summary>
         /// if true the Knowledge state is not stored, but does trigger any subscriptions.
         /// </summary>
         public bool transient { get; set; } = false;
 
-        /// <summary>
         /// The data,
         /// organized as GraphObject.Id against the graphAttributes to apply.
         /// </summary>

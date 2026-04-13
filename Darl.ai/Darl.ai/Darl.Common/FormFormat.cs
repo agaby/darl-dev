@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -22,14 +21,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DarlCommon
 {
-    /// <summary>
     /// Contains formatting information for a Darl Form
     /// </summary>
     [Serializable]
     public class FormFormat
     {
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="FormFormat" /> class.
         /// </summary>
         public FormFormat()
@@ -40,7 +37,6 @@ namespace DarlCommon
             OutputFormatList = new List<OutputFormat>();
         }
 
-        /// <summary>
         /// Gets or sets the default questions.
         /// </summary>
         /// <value>The default questions.</value>
@@ -50,20 +46,17 @@ namespace DarlCommon
         [Required]
         public int DefaultQuestions { get; set; } = 1;
 
-        /// <summary>
         /// Gets or sets a value indicating whether this <see cref="FormFormat"/> is edited.
         /// </summary>
         /// <value><c>true</c> if edited; otherwise, <c>false</c>.</value>
         [ReadOnly(true)]
         public bool Edited { get; set; }
-        /// <summary>
         /// Gets or sets the input format list.
         /// </summary>
         /// <value>The input format list.</value>
         [Display(Name = "Inputs", Description = "Formatting for all the inputs in the rule set")]
         [Required]
         public List<InputFormat> InputFormatList { get; set; }
-        /// <summary>
         /// Gets or sets the output format list.
         /// </summary>
         /// <value>The output format list.</value>

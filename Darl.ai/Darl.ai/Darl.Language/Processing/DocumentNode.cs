@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Interpreter;
@@ -12,7 +11,6 @@ namespace DarlLanguage.Processing
     public class DocumentNode : BinaryDarlNode
     {
         public static string insertEscapeString { get; set; } = "%%";
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -47,7 +45,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>

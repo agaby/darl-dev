@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Forms;
@@ -37,7 +36,6 @@ namespace Darl.Lineage.Bot
         public ITrigger Trigger { get => trigger; set => trigger = value; }
 
 
-        /// <summary>
         /// perform a single pass through the rule set
         /// </summary>
         /// <param name="values"></param>

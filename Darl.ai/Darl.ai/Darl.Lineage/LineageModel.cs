@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Licensing;
@@ -14,36 +13,30 @@ using System.Text;
 
 namespace Darl.Lineage
 {
-    /// <summary>
     /// holds a single bot personality
     /// </summary>
     [ProtoContract]
     public class LineageModel
     {
-        /// <summary>
         /// holds the text/lineage to darl associations
         /// </summary>
         [ProtoMember(1)]
         public LineageMatchTree tree { get; set; } = null;
 
-        /// <summary>
         /// holds implicit knowledge as key value pairs
         /// </summary>
         [ProtoMember(2)]
         public Dictionary<string, string> modelSettings = new Dictionary<string, string>(); //{ { "name", "{\"name\": \"name\", \"unknown\": false, \"weight\": 1.0,\"approximate\": false,\"dataType\": \"textual\", \"value\": \"DarlBot\"}" },{"copyright","{\"name\": \"copyright\",\"unknown\": false,\"weight\": 1.0,\"approximate\": false,\"dataType\": \"textual\",\"value\": \"(c) 2017 Dr Andy's IP\"}" }, {"version","{\"name\": \"version\",\"unknown\": false,\"weight\": 1.0,\"approximate\": false,\"dataType\": \"textual\",\"value\": \"1.0.0\"}" } };
 
-        /// <summary>
         /// holds the outer ruke set shell used to assemble a rule set from fragments
         /// </summary>
         [ProtoMember(3)]
         public string ruleSkeleton { get; set; } = "ruleset botRuleset \r\n{\r\ninput textual name;\r\ninput textual copyright;\r\ninput textual version;\r\ninput textual user_name;\r\noutput textual response;\r\noutput textual redirect;\r\n\r\n/*%% rule_insertion_point %%*/\r\n}";
 
-        /// <summary>
         /// holds presentation formatting information for inputs and outputs
         /// </summary>
         [ProtoMember(4)]
         public string form { get; set; } = "{\"InputFormatList\": [ {\"Name\": \"user_name\",\"InType\": \"textual\",\"Categories\": null,\"NumericMax\": 0,\"NumericMin\": 0,\"Regex\": \"\"}],\"OutputFormatList\": [{\"Name\": \"response\",\"OutputType\": \"textual\",\"displayType\": \"Text\"},{ \"Name\": \"redirect\", \"OutputType\": \"textual\",\"displayType\": \"Redirect\"}]}";
-        /// <summary>
         /// holds a multilingual set of texts that can be used in conversations.
         /// </summary>
         [ProtoMember(5)]
@@ -58,7 +51,6 @@ namespace Darl.Lineage
                 throw new RuleException("license not set or invalid");
         }
 
-        /// <summary>
         /// Find a list of actual or default matches
         /// </summary>
         /// <param name="text">The text to match</param>
@@ -72,7 +64,6 @@ namespace Darl.Lineage
             return matches;
         }
 
-        /// <summary>
         /// Create a model from a stream
         /// </summary>
         /// <param name="stream">The stream</param>
@@ -87,7 +78,6 @@ namespace Darl.Lineage
             return lm;
         }
 
-        /// <summary>
         /// Load just the tree of a model
         /// </summary>
         /// <param name="stream">The tree, streamed</param>
@@ -99,7 +89,6 @@ namespace Darl.Lineage
             return lm;
         }
 
-        /// <summary>
         /// Save a model to a stream
         /// </summary>
         /// <param name="stream">The stream</param>
@@ -109,7 +98,6 @@ namespace Darl.Lineage
             //            stream.Close();
         }
 
-        /// <summary>
         /// Save the tree part of a model
         /// </summary>
         /// <param name="stream">The stream for the tree</param>
@@ -118,7 +106,6 @@ namespace Darl.Lineage
             Serializer.Serialize<LineageMatchTree>(stream, this.tree);
         }
 
-        /// <summary>
         /// Emit a tree as text
         /// </summary>
         /// <param name="sb"></param>
@@ -127,7 +114,6 @@ namespace Darl.Lineage
             tree.ReadTree(sb);
         }
 
-        /// <summary>
         /// Add descriptions where needed
         /// </summary>
         public void AddDescriptions()
@@ -135,7 +121,6 @@ namespace Darl.Lineage
             tree.AddDescriptions();
         }
 
-        /// <summary>
         /// Check and combine tree elements. 
         /// </summary>
         /// <returns>A report</returns>
@@ -147,7 +132,6 @@ namespace Darl.Lineage
             return sb.ToString();
         }
 
-        /// <summary>
         /// Increment the version in the model settings
         /// </summary>
         public void IncrementVersion()
@@ -190,7 +174,6 @@ namespace Darl.Lineage
             }
         }
 
-        /// <summary>
         /// Find the best prototype match
         /// </summary>
         /// <remarks>A piece of text is presented that does not match the tree contents. 

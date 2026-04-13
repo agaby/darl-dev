@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -8,14 +7,12 @@ using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Holds the confidence associated with a rule
     /// </summary>
     public class ConfidenceNode : DarlNode
     {
         public double weight = 1.0;
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -28,7 +25,6 @@ namespace DarlLanguage.Processing
                 weight = Convert.ToDouble(treeNode.ChildNodes[0].Token.Value);
         }
 
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -43,7 +39,6 @@ namespace DarlLanguage.Processing
             return Task.FromResult<object>(conf);
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>

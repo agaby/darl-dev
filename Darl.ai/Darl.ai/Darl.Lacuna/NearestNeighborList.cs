@@ -1,11 +1,9 @@
-/// <summary>
 /// </summary>
 
 using System;
 
 namespace Darl.Lacuna
 {
-    /// <summary>
     /// 
     /// </summary>
     internal class NearestNeighborList

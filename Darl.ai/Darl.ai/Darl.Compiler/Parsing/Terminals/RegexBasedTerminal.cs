@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="RegexBasedTerminal.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -17,12 +17,10 @@ using System.Text.RegularExpressions;
 namespace DarlCompiler.Parsing
 {
 
-    /// <summary>
     /// Class RegexBasedTerminal.
     /// </summary>
     public class RegexBasedTerminal : Terminal
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="RegexBasedTerminal"/> class.
         /// </summary>
         /// <param name="pattern">The pattern.</param>
@@ -34,7 +32,6 @@ namespace DarlCompiler.Parsing
             if (prefixes != null)
                 Prefixes.AddRange(prefixes);
         }
-        /// <summary>
         /// Initializes a new instance of the <see cref="RegexBasedTerminal"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -49,30 +46,25 @@ namespace DarlCompiler.Parsing
         }
 
         #region public properties
-        /// <summary>
         /// The pattern
         /// </summary>
         public readonly string Pattern;
-        /// <summary>
         /// The prefixes
         /// </summary>
         public readonly StringList Prefixes = new StringList();
 
-        /// <summary>
         /// Gets the expression.
         /// </summary>
         /// <value>The expression.</value>
         public Regex Expression
         {
             get { return _expression; }
-            /// <summary>
             /// The _expression
             /// </summary>
         }
         Regex _expression;
         #endregion
 
-        /// <summary>
         /// Initializes the specified grammar data.
         /// </summary>
         /// <param name="grammarData">The grammar data.</param>
@@ -86,7 +78,6 @@ namespace DarlCompiler.Parsing
                 this.EditorInfo = new TokenEditorInfo(TokenType.Unknown, TokenColor.Text, TokenTriggers.None);
         }
 
-        /// <summary>
         /// Gets the firsts.
         /// </summary>
         /// <returns>IList&lt;System.String&gt;.</returns>
@@ -95,7 +86,6 @@ namespace DarlCompiler.Parsing
             return Prefixes;
         }
 
-        /// <summary>
         /// Tries the match.
         /// </summary>
         /// <param name="context">The context.</param>

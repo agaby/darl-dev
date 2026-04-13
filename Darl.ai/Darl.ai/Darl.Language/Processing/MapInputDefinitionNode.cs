@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -7,26 +6,22 @@ using DarlCompiler.Parsing;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements a map input definition
     /// </summary>
     public class MapInputDefinitionNode : DarlNode
     {
-        /// <summary>
         /// Gets the name of the input.
         /// </summary>
         /// <value>
         /// The name of the input.
         /// </value>
         public string Name { get; set; }
-        /// <summary>
         /// Gets the path of the input.
         /// </summary>
         /// <value>
         /// The path of the input.
         /// </value>
         public string Path { get; private set; }
-        /// <summary>
         /// Gets the salience.
         /// </summary>
         /// <value>
@@ -34,7 +29,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public double Salience { get; internal set; }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -48,7 +42,6 @@ namespace DarlLanguage.Processing
                 Path = (string)nodes[1].Token.Value;
         }
 
-        /// <summary>
         /// Walks the saliences.
         /// </summary>
         /// <param name="saliency">The incoming saliency.</param>
@@ -60,7 +53,6 @@ namespace DarlLanguage.Processing
             Salience += saliency;
         }
 
-        /// <summary>
         /// prototype input for GP
         /// </summary>
         public InputDefinitionNode inputPrototype { get; set; }

@@ -1,11 +1,9 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Collections.Generic;
 
 namespace Darl.Lineage.Bot.Stores
 {
-    /// <summary>
     /// Veneer over IBotDataBag to avoid Darl_standard dependency on the Microsoft bot library
     /// </summary>
     public interface IBotDataInterface

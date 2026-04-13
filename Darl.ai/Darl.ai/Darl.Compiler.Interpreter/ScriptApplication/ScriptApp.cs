@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -28,111 +27,87 @@ using System.Threading.Tasks;
 namespace DarlCompiler.Interpreter
 {
 
-    /// <summary>
     /// Enum AppStatus
     /// </summary>
     public enum AppStatus
     {
-        /// <summary>
         /// The ready
         /// </summary>
         Ready,
-        /// <summary>
         /// The evaluating
         /// </summary>
         Evaluating,
-        /// <summary>
         /// The waiting more input
         /// </summary>
         WaitingMoreInput, //command line only
-        /// <summary>
         /// The syntax error
         /// </summary>
         SyntaxError,
-        /// <summary>
         /// The runtime error
         /// </summary>
         RuntimeError,
-        /// <summary>
         /// The crash
         /// </summary>
         Crash, //interpreter crash
-        /// <summary>
         /// The aborted
         /// </summary>
         Aborted
     }
 
-    /// <summary>
     /// Represents a running instance of a script application.
     /// </summary>
     public sealed class ScriptApp
     {
-        /// <summary>
         /// The language
         /// </summary>
         public readonly LanguageData Language;
-        /// <summary>
         /// The runtime
         /// </summary>
         public readonly LanguageRuntime Runtime;
-        /// <summary>
         /// Gets the parser.
         /// </summary>
         /// <value>The parser.</value>
         public Parser Parser { get; private set; }
 
-        /// <summary>
         /// The data map
         /// </summary>
         public AppDataMap DataMap;
 
-        /// <summary>
         /// The static scopes
         /// </summary>
         public Scope[] StaticScopes;
-        /// <summary>
         /// The main scope
         /// </summary>
         public Scope MainScope;
-        /// <summary>
         /// Gets the globals.
         /// </summary>
         /// <value>The globals.</value>
         public IDictionary<string, object> Globals { get; private set; }
-        /// <summary>
         /// The imported assemblies
         /// </summary>
         private readonly IList<Assembly> ImportedAssemblies = new List<Assembly>();
 
-        /// <summary>
         /// The output buffer
         /// </summary>
         public StringBuilder OutputBuffer = new StringBuilder();
-        /// <summary>
         /// The _lock object
         /// </summary>
         private readonly object _lockObject = new object();
 
         // Current mode/status variables
-        /// <summary>
         /// The status
         /// </summary>
         public AppStatus Status;
-        /// <summary>
         /// The evaluation time
         /// </summary>
         public long EvaluationTime;
-        /// <summary>
         /// The last exception
         /// </summary>
         public Exception LastException;
-        /// <summary>
         /// The rethrow exceptions
         /// </summary>
         public bool RethrowExceptions = true;
 
-        /// <summary>
         /// Gets the last script.
         /// </summary>
         /// <value>The last script.</value>
@@ -140,7 +115,6 @@ namespace DarlCompiler.Interpreter
 
 
         #region Constructors
-        /// <summary>
         /// Initializes a new instance of the <see cref="ScriptApp"/> class.
         /// </summary>
         /// <param name="language">The language.</param>
@@ -153,7 +127,6 @@ namespace DarlCompiler.Interpreter
             Init();
         }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ScriptApp"/> class.
         /// </summary>
         /// <param name="runtime">The runtime.</param>
@@ -165,7 +138,6 @@ namespace DarlCompiler.Interpreter
             Init();
         }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="ScriptApp"/> class.
         /// </summary>
         /// <param name="dataMap">The data map.</param>
@@ -175,7 +147,6 @@ namespace DarlCompiler.Interpreter
             Init();
         }
 
-        /// <summary>
         /// Initializes this instance.
         /// </summary>
         [SecuritySafeCritical]
@@ -191,7 +162,6 @@ namespace DarlCompiler.Interpreter
 
         #endregion
 
-        /// <summary>
         /// Gets the parser messages.
         /// </summary>
         /// <returns>LogMessageList.</returns>
@@ -200,7 +170,6 @@ namespace DarlCompiler.Interpreter
             return Parser.Context.CurrentParseTree.ParserMessages;
         }
         // Utilities
-        /// <summary>
         /// Gets the import assemblies.
         /// </summary>
         /// <returns>IEnumerable&lt;Assembly&gt;.</returns>
@@ -210,7 +179,6 @@ namespace DarlCompiler.Interpreter
             return AppDomain.CurrentDomain.GetAssemblies();
         }
 
-        /// <summary>
         /// Gets or sets the parser mode.
         /// </summary>
         /// <value>The parser mode.</value>
@@ -226,7 +194,6 @@ namespace DarlCompiler.Interpreter
         // and all later script executions should be performed only in the context of the same app (or at least by an App with the same DataMap).
         // The reason is because the first execution sets up a data-binding fields, like slots, scopes, etc, which are bound to ScopeInfo objects, 
         // which in turn is part of DataMap.
-        /// <summary>
         /// Evaluates the specified parsed script.
         /// </summary>
         /// <param name="parsedScript">The parsed script.</param>
@@ -244,8 +211,6 @@ namespace DarlCompiler.Interpreter
         }
 
 
-        //Actual implementation
-        /// <summary>
         /// Evaluates the parsed script.
         /// </summary>
         /// <returns>System.Object.</returns>
@@ -297,11 +262,9 @@ namespace DarlCompiler.Interpreter
 
         #region Output writing
         #region ConsoleWrite event
-        /// <summary>
         /// Occurs when [console write].
         /// </summary>
         public event EventHandler<ConsoleWriteEventArgs> ConsoleWrite;
-        /// <summary>
         /// Called when [console write].
         /// </summary>
         /// <param name="text">The text.</param>
@@ -317,7 +280,6 @@ namespace DarlCompiler.Interpreter
 
 
 
-        /// <summary>
         /// Writes the specified text.
         /// </summary>
         /// <param name="text">The text.</param>
@@ -329,7 +291,6 @@ namespace DarlCompiler.Interpreter
                 OutputBuffer.Append(text);
             }
         }
-        /// <summary>
         /// Writes the line.
         /// </summary>
         /// <param name="text">The text.</param>
@@ -342,7 +303,6 @@ namespace DarlCompiler.Interpreter
             }
         }
 
-        /// <summary>
         /// Clears the output buffer.
         /// </summary>
         public void ClearOutputBuffer()
@@ -353,7 +313,6 @@ namespace DarlCompiler.Interpreter
             }
         }
 
-        /// <summary>
         /// Gets the output.
         /// </summary>
         /// <returns>System.String.</returns>

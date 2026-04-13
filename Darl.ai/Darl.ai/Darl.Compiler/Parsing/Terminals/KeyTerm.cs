@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="KeyTerm.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -18,31 +18,26 @@ using System.Collections.Generic;
 namespace DarlCompiler.Parsing
 {
 
-    /// <summary>
     /// Class KeyTermTable.
     /// </summary>
     [Serializable]
     public class KeyTermTable : Dictionary<string, KeyTerm>
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="KeyTermTable"/> class.
         /// </summary>
         /// <param name="comparer">The comparer.</param>
         public KeyTermTable(StringComparer comparer) : base(100, comparer) { }
     }
-    /// <summary>
     /// Class KeyTermList.
     /// </summary>
     public class KeyTermList : List<KeyTerm> { }
 
     //Keyterm is a keyword or a special symbol used in grammar rules, for example: begin, end, while, =, *, etc.
     // So "key" comes from the Keyword. 
-    /// <summary>
     /// Class KeyTerm.
     /// </summary>
     public class KeyTerm : Terminal
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="KeyTerm"/> class.
         /// </summary>
         /// <param name="text">The text.</param>
@@ -54,20 +49,17 @@ namespace DarlCompiler.Parsing
             this.Flags |= TermFlags.NoAstNode;
         }
 
-        /// <summary>
         /// Gets the text.
         /// </summary>
         /// <value>The text.</value>
         public string Text { get; private set; }
 
         //Normally false, meaning keywords (symbols in grammar consisting of letters) cannot be followed by a letter or digit
-        /// <summary>
         /// The allow alpha after keyword
         /// </summary>
         public bool AllowAlphaAfterKeyword = false;
 
         #region overrides: TryMatch, Init, GetPrefixes(), ToString() 
-        /// <summary>
         /// Initializes the specified grammar data.
         /// </summary>
         /// <param name="grammarData">The grammar data.</param>
@@ -107,7 +99,6 @@ namespace DarlCompiler.Parsing
             this.EditorInfo = new TokenEditorInfo(tknType, color, triggers);
         }
 
-        /// <summary>
         /// Tries the match.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -128,7 +119,6 @@ namespace DarlCompiler.Parsing
             return token;
         }
 
-        /// <summary>
         /// Gets the firsts.
         /// </summary>
         /// <returns>IList&lt;System.String&gt;.</returns>
@@ -136,7 +126,6 @@ namespace DarlCompiler.Parsing
         {
             return new string[] { Text };
         }
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
@@ -145,7 +134,6 @@ namespace DarlCompiler.Parsing
             if (Name != Text) return Name;
             return Text;
         }
-        /// <summary>
         /// Tokens to string.
         /// </summary>
         /// <param name="token">The token.</param>
@@ -158,7 +146,6 @@ namespace DarlCompiler.Parsing
         }
         #endregion
 
-        /// <summary>
         /// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
         /// </summary>
         /// <param name="obj">The object to compare with the current object.</param>
@@ -169,7 +156,6 @@ namespace DarlCompiler.Parsing
             return base.Equals(obj);
         }
 
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>

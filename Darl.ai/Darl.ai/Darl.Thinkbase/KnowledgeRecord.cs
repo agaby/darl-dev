@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -8,12 +7,10 @@ using System.Linq;
 
 namespace Darl.Thinkbase
 {
-    /// <summary>
     /// A knowledgeState constrained to contain data for only one parent Object
     /// </summary>
     public class KnowledgeRecord : KnowledgeState
     {
-        /// <summary>
         /// Find the parent node and connections
         /// </summary>
         /// <param name="model"></param>

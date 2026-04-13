@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -17,13 +16,11 @@
 
 namespace DarlCompiler.Parsing
 {
-    /// <summary>
     /// Class ParsingEnumExtensions.
     /// </summary>
     public static class ParsingEnumExtensions
     {
 
-        /// <summary>
         /// Determines whether the specified flag is set.
         /// </summary>
         /// <param name="flags">The flags.</param>
@@ -33,7 +30,6 @@ namespace DarlCompiler.Parsing
         {
             return (flags & flag) != 0;
         }
-        /// <summary>
         /// Determines whether the specified flag is set.
         /// </summary>
         /// <param name="flags">The flags.</param>
@@ -43,7 +39,6 @@ namespace DarlCompiler.Parsing
         {
             return (flags & flag) != 0;
         }
-        /// <summary>
         /// Determines whether the specified option is set.
         /// </summary>
         /// <param name="options">The options.</param>
@@ -53,7 +48,6 @@ namespace DarlCompiler.Parsing
         {
             return (options & option) != 0;
         }
-        /// <summary>
         /// Determines whether the specified option is set.
         /// </summary>
         /// <param name="options">The options.</param>
@@ -63,7 +57,6 @@ namespace DarlCompiler.Parsing
         {
             return (options & option) != 0;
         }
-        /// <summary>
         /// Determines whether the specified flag is set.
         /// </summary>
         /// <param name="flags">The flags.</param>

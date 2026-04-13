@@ -1,16 +1,13 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements the subtraction of a pair of numeric values
     /// </summary>
     public class MinusNode : BinaryDarlNode
     {
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -26,7 +23,6 @@ namespace DarlLanguage.Processing
             return res1 - res2;
         }
 
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>

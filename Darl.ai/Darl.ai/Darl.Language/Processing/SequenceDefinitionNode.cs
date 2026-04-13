@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -8,13 +7,11 @@ using System.Text;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Placeholder for concept matching extension
     /// </summary>
     public class SequenceDefinitionNode : DarlNode
     {
 
-        /// <summary>
         /// Gets the value of the constant.
         /// </summary>
         /// <value>
@@ -22,7 +19,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public List<List<string>> Value { get; private set; }
 
-        /// <summary>
         /// Gets the name of the constant.
         /// </summary>
         /// <value>
@@ -31,7 +27,6 @@ namespace DarlLanguage.Processing
         public string name { get; private set; }
 
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -74,7 +69,6 @@ namespace DarlLanguage.Processing
             return sb.ToString();
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>

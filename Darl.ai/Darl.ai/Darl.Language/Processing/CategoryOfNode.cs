@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
@@ -9,7 +8,6 @@ namespace DarlLanguage.Processing
     {
 
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -11,7 +10,6 @@ namespace Darl.Thinkbase.Meta
     public class DurationOfNode : UnaryDarlMetaNode
     {
 
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -77,7 +75,6 @@ namespace Darl.Thinkbase.Meta
         }
 
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>
@@ -98,7 +95,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// Handles fuzzy dateTimes up to degree 4
         /// </summary>
         /// <param name="existence"></param>

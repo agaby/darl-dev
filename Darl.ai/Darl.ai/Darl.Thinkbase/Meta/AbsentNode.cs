@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -9,7 +8,6 @@ namespace Darl.Thinkbase.Meta
 {
     public class AbsentNode : DarlMetaNode
     {
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -19,7 +17,6 @@ namespace Darl.Thinkbase.Meta
             base.Init(context, treeNode);
         }
 
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -34,7 +31,6 @@ namespace Darl.Thinkbase.Meta
             return res;
         }
 
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>

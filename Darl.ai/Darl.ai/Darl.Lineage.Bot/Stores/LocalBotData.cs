@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System;
@@ -6,7 +5,6 @@ using System.Collections.Generic;
 
 namespace Darl.Lineage.Bot.Stores
 {
-    /// <summary>
     /// Implements a local ephemeral store of botdata for testing
     /// </summary>
     public class LocalBotData : IBotDataInterface

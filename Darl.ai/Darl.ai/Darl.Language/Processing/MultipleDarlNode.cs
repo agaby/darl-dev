@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -7,17 +6,14 @@ using System.Collections.Generic;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements a node with multiple children
     /// </summary>
     public class MultipleDarlNode : DarlNode
     {
-        /// <summary>
         /// The list of arguments
         /// </summary>
         protected List<DarlNode> arguments = new List<DarlNode>();
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -35,7 +31,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Establishes dependencies and initializes constants
         /// </summary>
         /// <param name="dependencies">list of dependencies discovered</param>
@@ -47,7 +42,6 @@ namespace DarlLanguage.Processing
                 node.WalkDependencies(dependencies, currentOutput, context);
         }
 
-        /// <summary>
         /// Walks the saliences.
         /// </summary>
         /// <param name="saliency">The incoming saliency.</param>

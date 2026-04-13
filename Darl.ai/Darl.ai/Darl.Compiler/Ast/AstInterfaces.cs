@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -22,17 +21,14 @@ namespace DarlCompiler.Ast
 {
     // Grammar Explorer uses this interface to discover and display the AST tree after parsing the input
     // (Grammar Explorer additionally uses ToString method of the node to get the text representation of the node)
-    /// <summary>
     /// Interface IBrowsableAstNode
     /// </summary>
     public interface IBrowsableAstNode
     {
-        /// <summary>
         /// Gets the position.
         /// </summary>
         /// <value>The position.</value>
         int Position { get; }
-        /// <summary>
         /// Gets the child nodes.
         /// </summary>
         /// <returns>IEnumerable.</returns>
@@ -40,12 +36,10 @@ namespace DarlCompiler.Ast
     }
 
 
-    /// <summary>
     /// Interface IAstNodeInit
     /// </summary>
     public interface IAstNodeInit
     {
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>

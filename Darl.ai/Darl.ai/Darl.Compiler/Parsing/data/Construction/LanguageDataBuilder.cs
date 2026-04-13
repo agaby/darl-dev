@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -19,23 +18,19 @@ using System.Diagnostics;
 
 namespace DarlCompiler.Parsing.Construction
 {
-    /// <summary>
     /// Class LanguageDataBuilder.
     /// </summary>
     internal class LanguageDataBuilder
     {
 
-        /// <summary>
         /// The language
         /// </summary>
         internal LanguageData Language;
 
-        /// <summary>
         /// The _grammar
         /// </summary>
         readonly Grammar _grammar;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="LanguageDataBuilder"/> class.
         /// </summary>
         /// <param name="language">The language.</param>
@@ -45,7 +40,6 @@ namespace DarlCompiler.Parsing.Construction
             _grammar = Language.Grammar;
         }
 
-        /// <summary>
         /// Builds this instance.
         /// </summary>
         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
@@ -84,7 +78,6 @@ namespace DarlCompiler.Parsing.Construction
         }
 
         #region Language Data Validation
-        /// <summary>
         /// Validates this instance.
         /// </summary>
         private void Validate()

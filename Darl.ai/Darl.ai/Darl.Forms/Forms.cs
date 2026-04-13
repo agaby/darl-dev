@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Lineage.Bot;
@@ -279,7 +278,6 @@ namespace Darl.Forms
             return text; //changed from string.empty 28/10/16
         }
 
-        /// <summary>
         /// Read in answers from an object format
         /// </summary>
         /// <param name="result">The result.</param>
@@ -323,7 +321,6 @@ namespace Darl.Forms
             }
         }
 
-        /// <summary>
         /// Read in answers from a dictionary format
         /// </summary>
         /// <param name="results">dictionary of results</param>
@@ -338,7 +335,6 @@ namespace Darl.Forms
             }
         }
 
-        /// <summary>
         /// Loads an individual answer
         /// </summary>
         /// <param name="data"></param>
@@ -362,7 +358,6 @@ namespace Darl.Forms
                 }
             }
         }
-        /// <summary>
         /// Removes the most recent data received by the questionnaire, thus unwinding.
         /// </summary>
         private void Unwind(QuestionCache cache)
@@ -391,7 +386,6 @@ namespace Darl.Forms
             cache.currentIteration = Math.Max(0, maxIter - 1);
         }
 
-        /// <summary>
         /// During a questionnaire determines if data exists that can be unwound
         /// </summary>
         /// <returns></returns>

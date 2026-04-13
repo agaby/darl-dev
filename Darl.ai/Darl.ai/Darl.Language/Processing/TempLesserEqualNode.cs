@@ -1,16 +1,13 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements the comparison for equality or lesser of two temporal nodes
     /// </summary>
     public class TempLesserEqualNode : UnaryDarlNode
     {
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -24,7 +21,6 @@ namespace DarlLanguage.Processing
             return ((DarlResult)thread.CurrentScope.Parameters[0]) <= res2;
         }
 
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>

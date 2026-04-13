@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCommon;
@@ -151,7 +150,6 @@ namespace Darl.Lineage.Tests
 
         }
 
-        /// <summary>
         /// Illuminates strange case where the "phrase "is john" is recognized as a two word phrase with the same synsets as "is"
         /// </summary>
         [TestMethod]

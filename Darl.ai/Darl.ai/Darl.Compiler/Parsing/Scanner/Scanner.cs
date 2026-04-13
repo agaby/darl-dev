@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="Scanner.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -20,28 +20,23 @@ namespace DarlCompiler.Parsing
     //Scanner class. The Scanner's function is to transform a stream of characters into aggregates/words or lexemes, 
     // like identifier, number, literal, etc. 
 
-    /// <summary>
     /// Class Scanner.
     /// </summary>
     public class Scanner
     {
         #region Properties and Fields: Data, _source
-        /// <summary>
         /// The data
         /// </summary>
         public readonly ScannerData Data;
-        /// <summary>
         /// The parser
         /// </summary>
         public readonly Parser Parser;
 
-        /// <summary>
         /// The _grammar
         /// </summary>
         readonly Grammar _grammar;
         //buffered tokens can come from expanding a multi-token, when Terminal.TryMatch() returns several tokens packed into one token
 
-        /// <summary>
         /// Gets the context.
         /// </summary>
         /// <value>The context.</value>
@@ -51,7 +46,6 @@ namespace DarlCompiler.Parsing
         }
         #endregion
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="Scanner"/> class.
         /// </summary>
         /// <param name="parser">The parser.</param>
@@ -72,14 +66,12 @@ namespace DarlCompiler.Parsing
             Context.FilteredTokens = tokenStream.GetEnumerator();
         }
 
-        /// <summary>
         /// Resets this instance.
         /// </summary>
         internal void Reset()
         {
         }
 
-        /// <summary>
         /// Gets the token.
         /// </summary>
         /// <returns>Token.</returns>
@@ -97,7 +89,6 @@ namespace DarlCompiler.Parsing
 
         //This is iterator method, so it returns immediately when called directly
         // returns unfiltered, "raw" token stream
-        /// <summary>
         /// Gets the unfiltered tokens.
         /// </summary>
         /// <returns>IEnumerable&lt;Token&gt;.</returns>
@@ -116,7 +107,6 @@ namespace DarlCompiler.Parsing
         }// method
 
         #region Scanning tokens
-        /// <summary>
         /// Nexts the token.
         /// </summary>
         private void NextToken()
@@ -142,7 +132,6 @@ namespace DarlCompiler.Parsing
         }
 
         //Scans the source text and constructs a new token
-        /// <summary>
         /// Scans the token.
         /// </summary>
         private void ScanToken()
@@ -168,7 +157,6 @@ namespace DarlCompiler.Parsing
             Recover();
         }
 
-        /// <summary>
         /// Matches the non grammar terminals.
         /// </summary>
         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
@@ -202,7 +190,6 @@ namespace DarlCompiler.Parsing
             return false;
         }
 
-        /// <summary>
         /// Needs the line start token.
         /// </summary>
         /// <param name="forLocation">For location.</param>
@@ -213,7 +200,6 @@ namespace DarlCompiler.Parsing
                 forLocation.Line > Context.PreviousLineStart.Line;
         }
 
-        /// <summary>
         /// Matches the regular terminals.
         /// </summary>
         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
@@ -248,7 +234,6 @@ namespace DarlCompiler.Parsing
         // Likely this will produce some token which is invalid for current parser state (for ex, identifier where a number 
         // is expected); in this case the parser will report an error as "Error: expected number".
         // if this matching fails, the scanner will produce an error as "unexpected character."
-        /// <summary>
         /// Matches all terminals.
         /// </summary>
         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
@@ -263,7 +248,6 @@ namespace DarlCompiler.Parsing
         }
 
         //If token is MultiToken then push all its child tokens into _bufferdTokens and return the first token in buffer
-        /// <summary>
         /// Unpacks the multi token.
         /// </summary>
         private void UnpackMultiToken()
@@ -275,7 +259,6 @@ namespace DarlCompiler.Parsing
             Context.CurrentToken = Context.BufferedTokens.Pop();
         }
 
-        /// <summary>
         /// Computes the current terminals.
         /// </summary>
         private void ComputeCurrentTerminals()
@@ -304,7 +287,6 @@ namespace DarlCompiler.Parsing
 
         }
 
-        /// <summary>
         /// Matches the terminals.
         /// </summary>
         private void MatchTerminals()
@@ -338,7 +320,6 @@ namespace DarlCompiler.Parsing
         //Use this method for VS integration; VS language package requires scanner that returns tokens one-by-one. 
         // Start and End positions required by this scanner may be derived from Token : 
         //   start=token.Location.Position; end=start + token.Length;
-        /// <summary>
         /// Vses the read token.
         /// </summary>
         /// <param name="state">The state.</param>
@@ -360,7 +341,6 @@ namespace DarlCompiler.Parsing
                 return null;
             return Context.CurrentToken;
         }
-        /// <summary>
         /// Vses the set source.
         /// </summary>
         /// <param name="text">The text.</param>
@@ -375,7 +355,6 @@ namespace DarlCompiler.Parsing
 
         #region Error recovery
         //Simply skip until whitespace or delimiter character
-        /// <summary>
         /// Recovers this instance.
         /// </summary>
         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
@@ -404,13 +383,11 @@ namespace DarlCompiler.Parsing
         //  the scanner "rolls back" to original position - either by directly restoring the position, or moving the preview
         //  tokens into _bufferedTokens list, so that they will read again by parser in normal mode.
         // See c# grammar sample for an example of using preview methods
-        /// <summary>
         /// The _preview start location
         /// </summary>
         SourceLocation _previewStartLocation;
 
         //Switches Scanner into preview mode
-        /// <summary>
         /// Begins the preview.
         /// </summary>
         public void BeginPreview()
@@ -421,7 +398,6 @@ namespace DarlCompiler.Parsing
         }
 
         //Ends preview mode
-        /// <summary>
         /// Ends the preview.
         /// </summary>
         /// <param name="keepPreviewTokens">if set to <c>true</c> [keep preview tokens].</param>

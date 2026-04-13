@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCommon;
@@ -76,7 +75,6 @@ namespace Darl.Lineage
             return compMatches;
         }
 
-        /// <summary>
         /// Navigates the tree for display purposes
         /// </summary>
         /// <param name="path">'/' delimited path</param>
@@ -117,7 +115,6 @@ namespace Darl.Lineage
             changed = true;
         }
 
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="parent">Address of the parent for move/copy</param>
@@ -189,7 +186,6 @@ namespace Darl.Lineage
             changed = true;
         }
 
-        /// <summary>
         /// return a list of paths to tree matches for the string supplied
         /// </summary>
         /// <param name="str"></param>
@@ -210,7 +206,6 @@ namespace Darl.Lineage
             return res;
         }
 
-        /// <summary>
         /// Return the sequence of nodes in a path
         /// </summary>
         /// <param name="path">the path</param>

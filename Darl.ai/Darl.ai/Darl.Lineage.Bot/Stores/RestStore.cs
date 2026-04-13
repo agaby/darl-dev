@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlLanguage.Processing;
@@ -13,7 +12,6 @@ namespace Darl.Lineage.Bot.Stores
 {
     public class RestStore : ILocalStore
     {
-        /// <summary>
         /// Look up data on the internet with json responses
         /// </summary>
         /// <param name="address">A sequence of parameters.</param>

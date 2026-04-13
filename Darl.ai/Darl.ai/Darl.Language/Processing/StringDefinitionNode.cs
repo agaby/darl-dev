@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -6,12 +5,10 @@ using DarlCompiler.Parsing;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Impliments a string definition
     /// </summary>
     public class StringDefinitionNode : DarlNode
     {
-        /// <summary>
         /// Gets the value of the string.
         /// </summary>
         /// <value>
@@ -19,7 +16,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public string Value { get; private set; }
 
-        /// <summary>
         /// Gets the name of the string.
         /// </summary>
         /// <value>
@@ -27,7 +23,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public string name { get; private set; }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -40,7 +35,6 @@ namespace DarlLanguage.Processing
             name = nodes[0].Token.Text;
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>

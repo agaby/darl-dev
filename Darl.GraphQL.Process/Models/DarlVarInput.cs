@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -12,24 +11,20 @@ namespace Darl.GraphQL.Models.Models
     //a version of darlvar that does not have dictionaries
     public class DarlVarInput
     {
-        /// <summary>
         /// Gets or sets the name.
         /// </summary>
         /// <value>The name.</value>
         public string name { get; set; }
 
-        /// <summary>
         /// This result is unknown if true.
         /// </summary>
         /// <value><c>true</c> if unknown; otherwise, <c>false</c>.</value>
         public bool unknown { get; set; } = false;
-        /// <summary>
         /// The confidence placed in this result
         /// </summary>
         /// <value>The weight.</value>
         public double weight { get; set; } = 1.0;
 
-        /// <summary>
         /// The array containing the up to 4 values representing the fuzzy number.
         /// </summary>
         /// <value>The values.</value>
@@ -42,7 +37,6 @@ namespace Darl.GraphQL.Models.Models
         /// The values must be ordered in ascending value, but it is permissible for two or more to hold the same value.</remarks>
         public List<double> values { get; set; }
 
-        /// <summary>
         /// list of categories, each indexed against a truth value.
         /// </summary>
         /// <value>The categories.</value>
@@ -51,7 +45,6 @@ namespace Darl.GraphQL.Models.Models
 
         public List<DarlTime> times { get; set; }
 
-        /// <summary>
         /// Indicates approximation has taken place in calculating the values.
         /// </summary>
         /// <value><c>true</c> if approximate; otherwise, <c>false</c>.</value>
@@ -60,19 +53,16 @@ namespace Darl.GraphQL.Models.Models
 //        public bool approximate { get; set; } = false;
 
 
-        /// <summary>
         /// Gets or sets the type of the data.
         /// </summary>
         /// <value>The type of the data.</value>
         public DataType dataType { get; set; }
 
-        /// <summary>
         /// Gets or sets the sequence.
         /// </summary>
         /// <value>The sequence.</value>
         public List<List<string>> sequence { get; set; }
 
-        /// <summary>
         /// Single central or most confident value, expressed as a string.
         /// </summary>
         /// <value>The value.</value>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -12,7 +11,6 @@ namespace Darl.Thinkbase.Meta
 {
     public class RuleNode : DarlMetaNode
     {
-        /// <summary>
         /// Gets the rule output or store sink.
         /// </summary>
         /// <value>
@@ -20,7 +18,6 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public DarlMetaNode ruleOutput { get; protected set; }
 
-        /// <summary>
         /// Gets the conditions.
         /// </summary>
         /// <value>
@@ -28,7 +25,6 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public DarlMetaNode conditions { get; protected set; }
 
-        /// <summary>
         /// Gets the RHS.
         /// </summary>
         /// <value>
@@ -36,7 +32,6 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public DarlMetaNode rhs { get; set; }
 
-        /// <summary>
         /// Gets the confidence node.
         /// </summary>
         /// <value>
@@ -49,7 +44,6 @@ namespace Darl.Thinkbase.Meta
 
         public bool IsUnknown { get; internal set; }
 
-        /// <summary>
         /// Gets the rule output or store sink.
         /// </summary>
         /// <value>
@@ -58,7 +52,6 @@ namespace Darl.Thinkbase.Meta
 
 
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -90,7 +83,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// Establishes dependencies and initializes constants
         /// </summary>
         /// <param name="dependencies">list of dependencies discovered</param>
@@ -130,7 +122,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>
@@ -144,7 +135,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// Gets the midamble.
         /// </summary>
         /// <value>
@@ -169,7 +159,6 @@ namespace Darl.Thinkbase.Meta
             }
         }
 
-        /// <summary>
         /// Gets the postamble.
         /// </summary>
         /// <value>
@@ -222,7 +211,6 @@ namespace Darl.Thinkbase.Meta
             return r;
         }
 
-        /// <summary>
         /// Walks the saliences.
         /// </summary>
         /// <param name="saliency">The incoming saliency.</param>

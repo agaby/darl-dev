@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿namespace Darl.Thinkbase
@@ -11,7 +10,6 @@
 
         IGraphModel model { get; internal set; }
 
-        /// <summary>
         /// Builds or rebuilds the GraphModel from the data source
         /// </summary>
         void Convert();

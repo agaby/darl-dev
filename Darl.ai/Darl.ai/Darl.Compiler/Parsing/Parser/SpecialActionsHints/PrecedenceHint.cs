@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -21,7 +20,6 @@ using System.Linq;
 namespace DarlCompiler.Parsing
 {
 
-    /// <summary>
     /// A hint to use precedence.
     /// </summary>
     /// <remarks>Not used directly in grammars; injected automatically by system in states having conflicts on operator symbols.
@@ -30,7 +28,6 @@ namespace DarlCompiler.Parsing
     /// for a conflicting input.</remarks>
     public class PrecedenceHint : GrammarHint
     {
-        /// <summary>
         /// Gives a chance to a custom code in hint to interfere in parser automaton construction.
         /// </summary>
         /// <param name="language">The LanguageData instance.</param>

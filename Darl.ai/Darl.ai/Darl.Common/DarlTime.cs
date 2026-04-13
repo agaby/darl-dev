@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using ProtoBuf;
@@ -150,7 +149,6 @@ namespace Darl.Common
             }
         }
 
-        /// <summary>
         /// Get the year -ve = bc
         /// </summary>
         public int year
@@ -161,7 +159,6 @@ namespace Darl.Common
             }
         }
 
-        /// <summary>
         /// get the season. Winter = 0;
         /// </summary>
         public int season

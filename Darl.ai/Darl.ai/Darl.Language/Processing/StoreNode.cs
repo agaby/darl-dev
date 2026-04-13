@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -14,7 +13,6 @@ namespace DarlLanguage.Processing
     public class StoreNode : IOSequenceDefinitionNode
     {
         public enum StoreType { sink, source }
-        /// <summary>
         /// The left side
         /// </summary>
         public DarlIdentifierNode Left { get; private set; }
@@ -28,7 +26,6 @@ namespace DarlLanguage.Processing
 
         int writeIndex = 0;
 
-        /// <summary>
         /// Data direction
         /// </summary>
         public StoreType storeType { get; set; } = StoreType.source;
@@ -86,7 +83,6 @@ namespace DarlLanguage.Processing
         private DarlResult _value = new DarlResult(true, 0.0, true); //bug here for non numeric comparisons
 
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -101,7 +97,6 @@ namespace DarlLanguage.Processing
                 arguments.Add((DarlNode)AddChild("-", node));
             }
         }
-        /// <summary>
         /// return the local name
         /// </summary>
         /// <returns></returns>
@@ -110,7 +105,6 @@ namespace DarlLanguage.Processing
             return $"{Left.GetName()}.{string.Join("_", arguments.Select(x => x.GetName()))}";
         }
 
-        /// <summary>
         /// return the global name
         /// </summary>
         /// <returns></returns>

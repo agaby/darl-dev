@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -10,7 +9,6 @@ namespace DarlLanguage.Processing
     public class OtherwiseNode : RuleNode
     {
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>

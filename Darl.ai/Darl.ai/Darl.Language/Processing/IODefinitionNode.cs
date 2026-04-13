@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System;
@@ -6,17 +5,14 @@ using System.Collections.Generic;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Common IO items
     /// </summary>
     public class IODefinitionNode : DarlNode
     {
-        /// <summary>
         /// Sets defined for this IO
         /// </summary>
         public Dictionary<string, DarlResult> sets = new Dictionary<string, DarlResult>();
 
-        /// <summary>
         /// Categories defined for this IO
         /// </summary>
         public List<string> categories = new List<string>();
@@ -24,12 +20,10 @@ namespace DarlLanguage.Processing
         public Dictionary<string, bool> catsAsIdentifiers = new Dictionary<string, bool>();
 
 
-        /// <summary>
         /// Name of the I/O
         /// </summary>
         public string name { get; protected set; }
 
-        /// <summary>
         /// Contains the crisp ind of each sample as categorized
         /// </summary>
         /// <remarks>
@@ -39,7 +33,6 @@ namespace DarlLanguage.Processing
         /// </remarks>
         public List<int> learningSource = new List<int>();
 
-        /// <summary>
         /// Calculate the information in this input/output. 
         /// </summary>
         /// <param name="indices">indices to data to consider in this calculation.</param>
@@ -76,7 +69,6 @@ namespace DarlLanguage.Processing
             return result * -1.0;
         }
 
-        /// <summary>
         /// Calculates the membership during machine learning
         /// </summary>
         /// <param name="index">The index.</param>
@@ -87,7 +79,6 @@ namespace DarlLanguage.Processing
             return 0.0;
         }
 
-        /// <summary>
         /// Calculates set membership during machine learning
         /// </summary>
         /// <param name="index">The index of the value</param>

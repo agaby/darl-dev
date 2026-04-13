@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -16,15 +15,12 @@ namespace Darl.Thinkbase.Meta
     public class DarlMetaRunTime : IDarlMetaRunTime
     {
 
-        /// <summary>
         /// The DARL grammar object
         /// </summary>
         protected DarlMetaGrammar grammar;
-        /// <summary>
         /// The language data
         /// </summary>
         protected LanguageData language;
-        /// <summary>
         /// The DARL parser
         /// </summary>
         protected Parser parser;
@@ -43,7 +39,6 @@ namespace Darl.Thinkbase.Meta
             grammar.now = now;
         }
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="DarlRunTime"/> class.
         /// </summary>
         public DarlMetaRunTime(IConfiguration config, IMetaStructureHandler structure)
@@ -55,7 +50,6 @@ namespace Darl.Thinkbase.Meta
             SetLicense(config[licenseLocation]);
         }
 
-        /// <summary>
         /// Create a tree to be used for repeated evaluations.
         /// </summary>
         /// <param name="source">The DARL Meta source</param>
@@ -79,7 +73,6 @@ namespace Darl.Thinkbase.Meta
             return parseTree;
         }
 
-        /// <summary>
         /// Create tree for editing purposes
         /// </summary>
         /// <remarks>Allows errors</remarks>
@@ -91,7 +84,6 @@ namespace Darl.Thinkbase.Meta
             return parser.Parse(source);
         }
 
-        /// <summary>
         /// First pass determines list of dependencies
         /// </summary>
         /// <param name="tree"></param>
@@ -102,7 +94,6 @@ namespace Darl.Thinkbase.Meta
             return (tree.Root.AstNode as MetaRootNode).dependentGraphObjects.ToList();
         }
 
-        /// <summary>
         /// Calculates the saliences.
         /// </summary>
         /// <param name="currentState">Current state of the  inputs and outputs</param>
@@ -121,7 +112,6 @@ namespace Darl.Thinkbase.Meta
         }
 
 
-        /// <summary>
         /// Extension method converting a parse tree back to formatted source code
         /// </summary>
         /// <param name="parseTree">The tree to convert</param>
@@ -134,7 +124,6 @@ namespace Darl.Thinkbase.Meta
         }
 
 
-        /// <summary>
         /// Recursively builds a string from the tree of nodes
         /// </summary>
         /// <param name="node">The current parent node</param>
@@ -165,7 +154,6 @@ namespace Darl.Thinkbase.Meta
 
 
 
-        /// <summary>
         /// Evaluate an existing tree on a given node updating the knowledge state
         /// </summary>
         /// <param name="parseTree">The tree to evaluate</param>

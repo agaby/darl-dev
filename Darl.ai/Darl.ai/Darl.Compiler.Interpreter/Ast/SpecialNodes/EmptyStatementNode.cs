@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -18,7 +17,6 @@
 namespace DarlCompiler.Interpreter.Ast
 {
     //A statement that does nothing, like "pass" command in Python.
-    /// <summary>
     /// Class EmptyStatementNode.
     /// </summary>
     public class EmptyStatementNode : AstNode

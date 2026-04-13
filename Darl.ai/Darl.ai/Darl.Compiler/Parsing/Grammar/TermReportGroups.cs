@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -28,43 +27,34 @@ namespace DarlCompiler.Parsing
     // Finally, Operator group allows you to specify group name for all operator symbols without listing operators -
     // Darl will collect all operator symbols registered with RegisterOperator method automatically. 
 
-    /// <summary>
     /// Enum TermReportGroupType
     /// </summary>
     public enum TermReportGroupType
     {
-        /// <summary>
         /// The normal
         /// </summary>
         Normal,
-        /// <summary>
         /// The do not report
         /// </summary>
         DoNotReport,
-        /// <summary>
         /// The operator
         /// </summary>
         Operator
     }
-    /// <summary>
     /// Class TermReportGroup.
     /// </summary>
     public class TermReportGroup
     {
-        /// <summary>
         /// The alias
         /// </summary>
         public string Alias;
-        /// <summary>
         /// The group type
         /// </summary>
         public TermReportGroupType GroupType;
-        /// <summary>
         /// The terminals
         /// </summary>
         public TerminalSet Terminals = new TerminalSet();
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="TermReportGroup"/> class.
         /// </summary>
         /// <param name="alias">The alias.</param>
@@ -80,7 +70,6 @@ namespace DarlCompiler.Parsing
 
     }
 
-    /// <summary>
     /// Class TermReportGroupList.
     /// </summary>
     public class TermReportGroupList : List<TermReportGroup> { }

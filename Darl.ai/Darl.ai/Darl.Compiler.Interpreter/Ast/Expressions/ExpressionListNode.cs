@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -22,13 +21,11 @@ namespace DarlCompiler.Interpreter.Ast
 {
 
     //A node representing expression list - for example, list of argument expressions in function call
-    /// <summary>
     /// Class ExpressionListNode.
     /// </summary>
     public class ExpressionListNode : AstNode
     {
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -43,7 +40,6 @@ namespace DarlCompiler.Interpreter.Ast
             AsString = "Expression list";
         }
 
-        /// <summary>
         /// Does the evaluate.
         /// </summary>
         /// <param name="thread">The thread.</param>

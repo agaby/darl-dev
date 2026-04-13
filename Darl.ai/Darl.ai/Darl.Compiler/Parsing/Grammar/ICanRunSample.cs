@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -19,12 +18,10 @@ using System.Threading.Tasks;
 namespace DarlCompiler.Parsing
 {
     // Should be implemented by Grammar class to be able to run samples in Grammar Explorer.
-    /// <summary>
     /// Interface ICanRunSample
     /// </summary>
     public interface ICanRunSample
     {
-        /// <summary>
         /// Runs the sample.
         /// </summary>
         /// <param name="args">The arguments.</param>
@@ -32,24 +29,19 @@ namespace DarlCompiler.Parsing
         Task<string> RunSample(RunSampleArgs args);
     }
 
-    /// <summary>
     /// Class RunSampleArgs.
     /// </summary>
     public class RunSampleArgs
     {
-        /// <summary>
         /// The language
         /// </summary>
         public LanguageData Language;
-        /// <summary>
         /// The sample
         /// </summary>
         public string Sample;
-        /// <summary>
         /// The parsed sample
         /// </summary>
         public ParseTree ParsedSample;
-        /// <summary>
         /// Initializes a new instance of the <see cref="RunSampleArgs"/> class.
         /// </summary>
         /// <param name="language">The language.</param>

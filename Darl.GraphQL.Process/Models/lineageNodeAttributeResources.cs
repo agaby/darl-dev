@@ -1,11 +1,9 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Collections.Generic;
 
 namespace Darl.GraphQL.Models.Models
 {
-    /// <summary>
     /// Contains the resources that are needed to edit or create a lineageNodeAttribute
     /// </summary>
     public class LineageNodeAttributeResources

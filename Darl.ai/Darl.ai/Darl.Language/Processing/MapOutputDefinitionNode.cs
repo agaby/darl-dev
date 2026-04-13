@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -6,19 +5,16 @@ using DarlCompiler.Parsing;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements a map output definition
     /// </summary>
     public class MapOutputDefinitionNode : DarlNode
     {
-        /// <summary>
         /// Gets the name of the output.
         /// </summary>
         /// <value>
         /// The name of the output.
         /// </value>
         public string Name { get; set; }
-        /// <summary>
         /// Gets the path of the output.
         /// </summary>
         /// <value>
@@ -26,7 +22,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public string Path { get; private set; }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -40,7 +35,6 @@ namespace DarlLanguage.Processing
                 Path = (string)nodes[1].Token.Value;
         }
 
-        /// <summary>
         /// prototype output for GP
         /// </summary>
         public OutputDefinitionNode outputPrototype { get; set; }

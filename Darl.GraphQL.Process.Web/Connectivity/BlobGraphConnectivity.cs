@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Azure.Storage.Blobs;

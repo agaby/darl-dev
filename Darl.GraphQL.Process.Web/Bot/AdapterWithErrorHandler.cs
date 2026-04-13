@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Microsoft.Bot.Builder.Integration.AspNet.Core;

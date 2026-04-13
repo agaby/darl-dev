@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="ParsingContext.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -20,71 +20,56 @@ using System.Runtime.InteropServices;
 namespace DarlCompiler.Parsing
 {
 
-    /// <summary>
     /// Enum ParseOptions
     /// </summary>
     [Flags]
     public enum ParseOptions
     {
-        /// <summary>
         /// The reserved
         /// </summary>
         Reserved = 0x01,
-        /// <summary>
         /// The analyze code
         /// </summary>
         AnalyzeCode = 0x10,   //run code analysis; effective only in Module mode
     }
 
-    /// <summary>
     /// Enum ParseMode
     /// </summary>
     public enum ParseMode
     {
-        /// <summary>
         /// The file
         /// </summary>
         File,       //default, continuous input file
-        /// <summary>
         /// The vs line scan
         /// </summary>
         VsLineScan,   // line-by-line scanning in VS integration for syntax highlighting
-        /// <summary>
         /// The command line
         /// </summary>
         CommandLine, //line-by-line from console
     }
 
-    /// <summary>
     /// Enum ParserStatus
     /// </summary>
     public enum ParserStatus
     {
-        /// <summary>
         /// The initialize
         /// </summary>
         Init, //initial state
-        /// <summary>
         /// The parsing
         /// </summary>
         Parsing,
-        /// <summary>
         /// The previewing
         /// </summary>
         Previewing, //previewing tokens
-        /// <summary>
         /// The recovering
         /// </summary>
         Recovering, //recovering from error
-        /// <summary>
         /// The accepted
         /// </summary>
         Accepted,
-        /// <summary>
         /// The accepted partial
         /// </summary>
         AcceptedPartial,
-        /// <summary>
         /// The error
         /// </summary>
         Error,
@@ -92,148 +77,117 @@ namespace DarlCompiler.Parsing
 
     // The purpose of this class is to provide a container for information shared 
     // between parser, scanner and token filters.
-    /// <summary>
     /// Class ParsingContext.
     /// </summary>
     public partial class ParsingContext
     {
-        /// <summary>
         /// The parser
         /// </summary>
         public readonly Parser Parser;
-        /// <summary>
         /// The language
         /// </summary>
         public readonly LanguageData Language;
 
         //Parser settings
-        /// <summary>
         /// The options
         /// </summary>
         public ParseOptions Options;
-        /// <summary>
         /// The tracing enabled
         /// </summary>
         public bool TracingEnabled;
-        /// <summary>
         /// The mode
         /// </summary>
         public ParseMode Mode = ParseMode.File;
-        /// <summary>
         /// The maximum errors
         /// </summary>
         public int MaxErrors = 20; //maximum error count to report
-        /// <summary>
         /// The culture
         /// </summary>
         public CultureInfo Culture; //defaults to Grammar.DefaultCulture, might be changed by app code
 
         #region properties and fields
         //Parser fields
-        /// <summary>
         /// Gets the current parse tree.
         /// </summary>
         /// <value>The current parse tree.</value>
         public ParseTree CurrentParseTree { get; internal set; }
-        /// <summary>
         /// The open braces
         /// </summary>
         public readonly TokenStack OpenBraces = new TokenStack();
-        /// <summary>
         /// The parser trace
         /// </summary>
         public ParserTrace ParserTrace = new ParserTrace();
-        /// <summary>
         /// The parser stack
         /// </summary>
         public readonly ParserStack ParserStack = new ParserStack();
 
-        /// <summary>
         /// Gets the state of the current parser.
         /// </summary>
         /// <value>The state of the current parser.</value>
         public ParserState CurrentParserState { get; internal set; }
-        /// <summary>
         /// Gets the current parser input.
         /// </summary>
         /// <value>The current parser input.</value>
         public ParseTreeNode CurrentParserInput { get; internal set; }
-        /// <summary>
         /// The current token
         /// </summary>
         public Token CurrentToken; //The token just scanned by Scanner
-        /// <summary>
         /// The current comment tokens
         /// </summary>
         public TokenList CurrentCommentTokens = new TokenList(); //accumulated comment tokens
-        /// <summary>
         /// The previous token
         /// </summary>
         public Token PreviousToken;
-        /// <summary>
         /// The previous line start
         /// </summary>
         public SourceLocation PreviousLineStart; //Location of last line start
 
         //list for terminals - for current parser state and current input char
-        /// <summary>
         /// The current terminals
         /// </summary>
         public TerminalList CurrentTerminals = new TerminalList();
 
-        /// <summary>
         /// The source
         /// </summary>
         public ISourceStream Source;
 
         //Internal fields
-        /// <summary>
         /// The token filters
         /// </summary>
         internal TokenFilterList TokenFilters = new TokenFilterList();
-        /// <summary>
         /// The buffered tokens
         /// </summary>
         internal TokenStack BufferedTokens = new TokenStack();
-        /// <summary>
         /// The filtered tokens
         /// </summary>
         internal IEnumerator<Token> FilteredTokens; //stream of tokens after filter
-        /// <summary>
         /// The preview tokens
         /// </summary>
         internal TokenStack PreviewTokens = new TokenStack();
-        /// <summary>
         /// The shared parsing event arguments
         /// </summary>
         internal ParsingEventArgs SharedParsingEventArgs;
-        /// <summary>
         /// The shared validate token event arguments
         /// </summary>
         internal ValidateTokenEventArgs SharedValidateTokenEventArgs;
 
-        /// <summary>
         /// The vs line scan state
         /// </summary>
         public VsScannerStateMap VsLineScanState; //State variable used in line scanning mode for VS integration
 
-        /// <summary>
         /// Gets the status.
         /// </summary>
         /// <value>The status.</value>
         public ParserStatus Status { get; internal set; }
-        /// <summary>
         /// The has errors
         /// </summary>
         public bool HasErrors; //error flag, once set remains set
 
         //values dictionary to use by custom language implementations to save some temporary values during parsing
-        /// <summary>
         /// The values
         /// </summary>
         public readonly Dictionary<string, object> Values = new Dictionary<string, object>();
 
-        /// <summary>
         /// The tab width
         /// </summary>
         public int TabWidth = 8;
@@ -242,7 +196,6 @@ namespace DarlCompiler.Parsing
 
 
         #region constructors
-        /// <summary>
         /// Initializes a new instance of the <see cref="ParsingContext"/> class.
         /// </summary>
         /// <param name="parser">The parser.</param>
@@ -261,12 +214,10 @@ namespace DarlCompiler.Parsing
 
 
         #region Events: TokenCreated
-        /// <summary>
         /// Occurs when [token created].
         /// </summary>
         public event EventHandler<ParsingEventArgs> TokenCreated;
 
-        /// <summary>
         /// Called when [token created].
         /// </summary>
         internal void OnTokenCreated()
@@ -278,7 +229,6 @@ namespace DarlCompiler.Parsing
 
         #region Error handling and tracing
 
-        /// <summary>
         /// Creates the error token.
         /// </summary>
         /// <param name="message">The message.</param>
@@ -291,7 +241,6 @@ namespace DarlCompiler.Parsing
             return Source.CreateToken(Language.Grammar.SyntaxError, message);
         }
 
-        /// <summary>
         /// Adds the parser error.
         /// </summary>
         /// <param name="message">The message.</param>
@@ -302,7 +251,6 @@ namespace DarlCompiler.Parsing
             HasErrors = true;
             AddParserMessage(ErrorLevel.Error, location, message, args);
         }
-        /// <summary>
         /// Adds the parser message.
         /// </summary>
         /// <param name="level">The level.</param>
@@ -320,7 +268,6 @@ namespace DarlCompiler.Parsing
                 AddTrace(true, message);
         }
 
-        /// <summary>
         /// Adds the trace.
         /// </summary>
         /// <param name="message">The message.</param>
@@ -329,7 +276,6 @@ namespace DarlCompiler.Parsing
         {
             AddTrace(false, message, args);
         }
-        /// <summary>
         /// Adds the trace.
         /// </summary>
         /// <param name="asError">if set to <c>true</c> [as error].</param>
@@ -361,7 +307,6 @@ namespace DarlCompiler.Parsing
         // is "double-effort" when two threads start computing the same set around the same time, and the last one to finish would 
         // leave its result in the state field. 
         #endregion
-        /// <summary>
         /// Computes the state of the grouped expected set for.
         /// </summary>
         /// <param name="grammar">The grammar.</param>
@@ -396,7 +341,6 @@ namespace DarlCompiler.Parsing
 
         #endregion
 
-        /// <summary>
         /// Resets this instance.
         /// </summary>
         internal void Reset()
@@ -421,7 +365,6 @@ namespace DarlCompiler.Parsing
                 filter.Reset();
         }
 
-        /// <summary>
         /// Sets the source location.
         /// </summary>
         /// <param name="location">The location.</param>
@@ -432,7 +375,6 @@ namespace DarlCompiler.Parsing
             Source.Location = location;
         }
 
-        /// <summary>
         /// Computes the stack range span.
         /// </summary>
         /// <param name="nodeCount">The node count.</param>
@@ -448,7 +390,6 @@ namespace DarlCompiler.Parsing
 
 
         #region Expected term set computations
-        /// <summary>
         /// Gets the expected term set.
         /// </summary>
         /// <returns>StringSet.</returns>
@@ -467,7 +408,6 @@ namespace DarlCompiler.Parsing
             return expectedSet;
         }
 
-        /// <summary>
         /// Filters the braces in expected set.
         /// </summary>
         /// <param name="stateExpectedSet">The state expected set.</param>
@@ -508,28 +448,23 @@ namespace DarlCompiler.Parsing
     // this state to non-zero value; this value identifies this terminal as the one who will continue scanning when
     // it resumes, and the terminal's internal state when there may be several types of multi-line tokens for one terminal.
     // For ex., there maybe several types of string literal like in Python. 
-    /// <summary>
     /// Struct VsScannerStateMap
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
     public struct VsScannerStateMap
     {
-        /// <summary>
         /// The value
         /// </summary>
         [FieldOffset(0)]
         public int Value;
-        /// <summary>
         /// The terminal index
         /// </summary>
         [FieldOffset(0)]
         public byte TerminalIndex;   //1-based index of active multiline term in MultilineTerminals
-        /// <summary>
         /// The token sub type
         /// </summary>
         [FieldOffset(1)]
         public byte TokenSubType;         //terminal subtype (used in StringLiteral to identify string kind)
-        /// <summary>
         /// The terminal flags
         /// </summary>
         [FieldOffset(2)]

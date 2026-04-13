@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 using System;
@@ -6,7 +5,6 @@ using System.Collections.Generic;
 
 namespace Darl.Lacuna
 {
-    /// <summary>
     /// Must be implemented by objects that can be sorted by KDTrees.
     /// </summary>
     /// <remarks>KDTrees can be generated for arrays of doubles or objects 
@@ -14,13 +12,11 @@ namespace Darl.Lacuna
     /// Implement this interface in any object you wish to store on KDTrees.</remarks>
     public interface ITreeReferenceable
     {
-        /// <summary>
         /// get the reference value
         /// </summary>
         /// <returns>the reference value</returns>
         double GetValue();
     }
-    /// <summary>
     /// Data structure used to efficiently find near-neighbouring points for numeric vectors from a database of other points
     /// </summary>
     /// <remarks>Finds either the 'n' nearest vectors to a given vector in Euclidean space, or all the neighbours within a given Euclidean distance from a vector.
@@ -28,23 +24,19 @@ namespace Darl.Lacuna
     [Serializable]
     public class KDTree
     {
-        /// <summary>
         /// number of dimensions
         /// </summary>
         private readonly int dimensions;
 
-        /// <summary>
         /// root of KD-tree
         /// </summary>
         private KDNode root;
 
-        /// <summary>
         /// count of nodes
         /// </summary>
         private int m_count;
         internal int duplicates = 0;
 
-        /// <summary>
         /// Constructor
         /// </summary>
         private KDTree()
@@ -52,7 +44,6 @@ namespace Darl.Lacuna
             dimensions = 0;
             root = null;
         }
-        /// <summary>
         /// Create a tree from parameters
         /// </summary>
         /// <param name="inputMatrix">Matrix of data points</param>
@@ -69,7 +60,6 @@ namespace Darl.Lacuna
                 this.Insert(val, n);
             }
         }
-        /// <summary>
         /// Alternate constructor for creating trees of objects 
         /// implementing the <see cref="ITreeReferenceable"/> interface.
         /// </summary>
@@ -88,7 +78,6 @@ namespace Darl.Lacuna
             }
         }
 
-        /// <summary>
         /// Insert a node in a KD-tree.  	
         /// </summary>
         /// <remarks>
@@ -120,7 +109,6 @@ namespace Darl.Lacuna
             m_count++;
         }
 
-        /// <summary>
         /// Look for 'n' neighbour objects to a given point. Neighbours may be duplicates.
         /// </summary>
         /// <param name="inputVector">vector of objects to find neighbours of.</param>
@@ -134,7 +122,6 @@ namespace Darl.Lacuna
             Search(newInputVector, neighbourCount, ref distances);
         }
 
-        /// <summary>
         /// Look for 'n' neighbour objects to a given point. Neighbours may be duplicates.
         /// </summary>
         /// <param name="inputVector">vector of doubles to find neighbours of.</param>
@@ -186,7 +173,6 @@ namespace Darl.Lacuna
         }
 
 
-        /// <summary>
         /// Look for 'n' neighbours to a given point. Each neighbour must be unique..
         /// </summary>
         /// <param name="inputVector">vector to find neighbours of</param>
@@ -223,7 +209,6 @@ namespace Darl.Lacuna
             }
             distances.Sort();
         }
-        /// <summary>
         /// Look for 'n' neighbour objects to a given point. Each neighbour must be unique..
         /// </summary>
         /// <param name="inputVector">vector of objects to find neighbours of</param>
@@ -238,7 +223,6 @@ namespace Darl.Lacuna
         }
 
 
-        /// <summary>
         /// find the neighbours within a distance of a point
         /// </summary>
         /// <remarks>Note that the distance array contains the squares of the distances found.</remarks>
@@ -268,7 +252,6 @@ namespace Darl.Lacuna
             distances.Sort();
             neighbourCount = distances.Count;
         }
-        /// <summary>
         /// find the neighbour objects within a distance of a point
         /// </summary>
         /// <remarks>Note that the distance array contains the squares of the distances found.</remarks>
@@ -285,7 +268,6 @@ namespace Darl.Lacuna
             SearchByDistance(newInputVector, maxDistance, out neighbourCount, ref distances, maxNeighbourCount);
         }
 
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="lowk"></param>
@@ -307,12 +289,10 @@ namespace Darl.Lacuna
         }
 
     }
-    /// <summary>
     /// Represents data about a point in the source data.
     /// </summary>
     public class KDTreePoint : IComparable
     {
-        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="Index">index into the source data</param>
@@ -322,7 +302,6 @@ namespace Darl.Lacuna
             _index = Index;
             _distSquared = DistSquared;
         }
-        /// <summary>
         /// Squared distance of this point from the search pattern
         /// </summary>
         public double distSquared
@@ -333,7 +312,6 @@ namespace Darl.Lacuna
             }
         }
         private readonly double _distSquared;
-        /// <summary>
         /// index into the source data
         /// </summary>
         public object index
@@ -346,7 +324,6 @@ namespace Darl.Lacuna
         private readonly object _index;
 
         #region IComparable Members
-        /// <summary>
         /// Compares one KDTReePoint to another based on distance.
         /// </summary>
         /// <param name="obj"></param>

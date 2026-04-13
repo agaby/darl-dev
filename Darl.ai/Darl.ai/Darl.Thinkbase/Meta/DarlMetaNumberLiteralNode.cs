@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -9,12 +8,10 @@ namespace Darl.Thinkbase.Meta
 {
     public class DarlMetaNumberLiteralNode : DarlMetaNode
     {
-        /// <summary>
         /// The fixed result
         /// </summary>
         public DarlResult FixedResult;
 
-        /// <summary>
         /// Determines whether this instance is a constant.
         /// </summary>
         /// <returns>True if a constant</returns>
@@ -23,7 +20,6 @@ namespace Darl.Thinkbase.Meta
             return true;
         }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -39,7 +35,6 @@ namespace Darl.Thinkbase.Meta
                 FixedResult = new DarlResult("", (string)treeNode.Token.Value, DarlResult.DataType.textual);
         }
 
-        /// <summary>
         /// Does the evaluate.
         /// </summary>
         /// <param name="thread">The thread.</param>

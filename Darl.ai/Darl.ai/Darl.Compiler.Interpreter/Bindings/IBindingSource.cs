@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -20,12 +19,10 @@ using System.Collections.Generic;
 namespace DarlCompiler.Interpreter
 {
 
-    /// <summary>
     /// Interface IBindingSource
     /// </summary>
     public interface IBindingSource
     {
-        /// <summary>
         /// Binds the specified request.
         /// </summary>
         /// <param name="request">The request.</param>
@@ -33,20 +30,17 @@ namespace DarlCompiler.Interpreter
         Binding Bind(BindingRequest request);
     }
 
-    /// <summary>
     /// Class BindingSourceList.
     /// </summary>
     public class BindingSourceList : List<IBindingSource>
     {
     }
 
-    /// <summary>
     /// Class BindingSourceTable.
     /// </summary>
     [Serializable]
     public class BindingSourceTable : Dictionary<string, IBindingSource>, IBindingSource
     {
-        /// <summary>
         /// Initializes a new instance of the <see cref="BindingSourceTable"/> class.
         /// </summary>
         /// <param name="caseSensitive">if set to <c>true</c> [case sensitive].</param>
@@ -55,7 +49,6 @@ namespace DarlCompiler.Interpreter
         {
         }
         //IBindingSource Members
-        /// <summary>
         /// Binds the specified request.
         /// </summary>
         /// <param name="request">The request.</param>
@@ -70,7 +63,6 @@ namespace DarlCompiler.Interpreter
     }
 
     // This class will be used to define extensions for BindingSourceTable
-    /// <summary>
     /// Class BindingSourceTableExtensions.
     /// </summary>
     public static partial class BindingSourceTableExtensions

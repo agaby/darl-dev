@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -12,49 +11,40 @@ using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements a set of rules
     /// </summary>
     public class RuleRootNode : DarlNode
     {
 
-        /// <summary>
         /// The outputs
         /// </summary>
         public Dictionary<string, IOSequenceDefinitionNode> outputs = new Dictionary<string, IOSequenceDefinitionNode>();
 
-        /// <summary>
         /// The inputs
         /// </summary>
         public Dictionary<string, InputDefinitionNode> inputs = new Dictionary<string, InputDefinitionNode>();
 
-        /// <summary>
         /// The strings
         /// </summary>
         public Dictionary<string, StringDefinitionNode> strings = new Dictionary<string, StringDefinitionNode>();
 
-        /// <summary>
         /// The constants
         /// </summary>
         public Dictionary<string, ConstantDefinitionNode> constants = new Dictionary<string, ConstantDefinitionNode>();
 
-        /// <summary>
         /// The periods
         /// </summary>
         public Dictionary<string, DurationDefinitionNode> durations = new Dictionary<string, DurationDefinitionNode>();
 
 
-        /// <summary>
         /// The sequences
         /// </summary>
         public Dictionary<string, SequenceDefinitionNode> sequences = new Dictionary<string, SequenceDefinitionNode>();
 
-        /// <summary>
         /// The stores
         /// </summary>
         public Dictionary<string, StoreDefinitionNode> stores = new Dictionary<string, StoreDefinitionNode>();
 
-        /// <summary>
         /// The rules
         /// </summary>
         public Dictionary<string, List<RuleNode>> rules = new Dictionary<string, List<RuleNode>>();
@@ -62,7 +52,6 @@ namespace DarlLanguage.Processing
 
         public Dictionary<string, StoreNode> storeInputs = new Dictionary<string, StoreNode>();
 
-        /// <summary>
         /// Gets or sets the ruleset name.
         /// </summary>
         /// <value>
@@ -70,12 +59,10 @@ namespace DarlLanguage.Processing
         /// </value>
         public string ruleset { get; set; }
 
-        /// <summary>
         /// The ordered outputs in execution order
         /// </summary>
         List<IOSequenceDefinitionNode> orderedOutputs;
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -182,7 +169,6 @@ namespace DarlLanguage.Processing
             orderedOutputs.Sort();
         }
 
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -326,7 +312,6 @@ namespace DarlLanguage.Processing
             return DarlResult.DataType.numeric;
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>
@@ -383,7 +368,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Walks the saliences.
         /// </summary>
         /// <param name="saliency">The incoming saliency.</param>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Lineage;
@@ -15,7 +14,6 @@ using System.Text;
 namespace Darl.Thinkbase
 {
 
-    /// <summary>
     /// Supply default behavior for KGs in the absence of rulesets
     /// </summary>
     public class MetaStructureHandler : IMetaStructureHandler
@@ -58,7 +56,6 @@ namespace Darl.Thinkbase
 
         public ConcurrentDictionary<string, string> CommonLineages { get; } = new ConcurrentDictionary<string, string>();
 
-        /// <summary>
         /// preload DarlMetaRuntime with these lineages to include the root set.
         /// </summary>
         public Dictionary<string, LineageDefinitionNode> PreloadLineages { get; } = new Dictionary<string, LineageDefinitionNode>();
@@ -280,7 +277,6 @@ namespace Darl.Thinkbase
             return p.value;
         }
 
-        /// <summary>
         /// Perform the same processing as a standardized ruleset
         /// </summary>
         /// <param name="model"></param>
@@ -333,7 +329,6 @@ namespace Darl.Thinkbase
             }
         }
 
-        /// <summary>
         /// When no completion rule is defined on a non-leaf node do this
         /// </summary>
         /// <param name="model"></param>

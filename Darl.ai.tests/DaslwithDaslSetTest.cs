@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCommon;
@@ -12,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace Darl_standard_core.test
 {
-    /// <summary>
     /// Summary description for DaslwithDaslSetTest
     /// </summary>
     [TestClass]
@@ -27,7 +25,6 @@ namespace Darl_standard_core.test
 
         private TestContext testContextInstance;
 
-        /// <summary>
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
         ///</summary>

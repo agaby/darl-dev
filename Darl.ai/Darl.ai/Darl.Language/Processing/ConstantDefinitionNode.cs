@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -7,12 +6,10 @@ using System;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements a Constant definition
     /// </summary>
     public class ConstantDefinitionNode : DarlNode
     {
-        /// <summary>
         /// Gets the value of the constant.
         /// </summary>
         /// <value>
@@ -20,7 +17,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public double Value { get; private set; }
 
-        /// <summary>
         /// Gets the name of the constant.
         /// </summary>
         /// <value>
@@ -29,7 +25,6 @@ namespace DarlLanguage.Processing
         public string name { get; private set; }
 
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -42,7 +37,6 @@ namespace DarlLanguage.Processing
             name = nodes[0].Token.Text;
         }
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>

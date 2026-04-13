@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCommon;
@@ -9,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace Darl.Lineage.Bot.Stores
 {
-    /// <summary>
     /// This class implements calls to other rule sets from within a Darl Rule set using a store.
     /// </summary>
     /// <remarks>Think about a fail-safe that empties the stack on a time out, failure, etc.</remarks>
@@ -30,7 +28,6 @@ namespace Darl.Lineage.Bot.Stores
         public IRuleFormInterface ruleFormSource;
 
 
-        /// <summary>
         /// returns a description of the addressed rule set.
         /// </summary>
         /// <param name="address"></param>
@@ -41,7 +38,6 @@ namespace Darl.Lineage.Bot.Stores
             return new DarlResult("", await ruleFormSource.GetDetails(comp), DarlResult.DataType.textual);
         }
 
-        /// <summary>
         /// Loads a new rule set by name and pushes on to stack.
         /// </summary>
         /// <param name="address">optional ruleset category</param>

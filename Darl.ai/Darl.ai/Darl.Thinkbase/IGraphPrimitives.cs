@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Collections.Generic;
@@ -7,7 +6,6 @@ using System.Threading.Tasks;
 namespace Darl.Thinkbase
 {
 
-    /// <summary>
     /// Back end processes that communicate with a graph database or in memory representation
     /// </summary>
     public interface IGraphPrimitives

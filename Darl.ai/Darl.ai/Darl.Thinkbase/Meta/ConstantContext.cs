@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -8,7 +7,6 @@ namespace Darl.Thinkbase.Meta
 {
     public class ConstantContext
     {
-        /// <summary>
         /// Gets or sets the outputs.
         /// </summary>
         /// <value>
@@ -16,7 +14,6 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public Dictionary<string, IOSequenceDefinitionNode> outputs { get; set; }
 
-        /// <summary>
         /// Gets or sets the inputs.
         /// </summary>
         /// <value>
@@ -24,7 +21,6 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public Dictionary<string, InputDefinitionNode> inputs { get; set; }
 
-        /// <summary>
         /// Gets or sets the strings.
         /// </summary>
         /// <value>
@@ -32,7 +28,6 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public Dictionary<string, StringDefinitionNode> strings { get; set; }
 
-        /// <summary>
         /// Gets or sets the constants.
         /// </summary>
         /// <value>
@@ -40,7 +35,6 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public Dictionary<string, ConstantDefinitionNode> constants { get; set; }
 
-        /// <summary>
         /// Gets or sets the periods.
         /// </summary>
         /// <value>
@@ -48,13 +42,11 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public Dictionary<string, DurationDefinitionNode> durations { get; set; }
 
-        /// <summary>
         /// Gets or sets the lineages
         /// </summary>
         public Dictionary<string, LineageDefinitionNode> lineages { get; set; }
 
 
-        /// <summary>
         /// Gets or sets the stores.
         /// </summary>
         /// <value>
@@ -62,7 +54,6 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public Dictionary<string, StoreNode> storeInputs { get; set; }
 
-        /// <summary>
         /// Gets or sets the store addresses used as outputs.
         /// </summary>
         /// <value>
@@ -71,7 +62,6 @@ namespace Darl.Thinkbase.Meta
         public Dictionary<string, StoreNode> storeOutputs { get; set; }
 
 
-        /// <summary>
         /// Gets or sets the store definitions.
         /// </summary>
         /// <value>
@@ -80,7 +70,6 @@ namespace Darl.Thinkbase.Meta
         public Dictionary<string, StoreDefinitionNode> stores { get; set; }
 
 
-        /// <summary>
         /// The IO for a set or category on  the other side of the nearest "is" statement.
         /// </summary>
         public string controllingIO { get; set; }

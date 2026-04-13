@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿namespace Darl.Thinkbase.Meta

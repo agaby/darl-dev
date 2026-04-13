@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlLanguage.Processing;
@@ -13,7 +12,6 @@ namespace Darl.Language
         static readonly double excitationThreshold = 0.5;
         public static double minimumSupport = 0.005;
         public static double minimumConfidence = 0.3;
-        /// <summary>
         /// Pre-process the input data to create a sparse array
         /// </summary>
         /// <remarks>In order to avoid re-evaluation and to speed up the processing of the apriori algorithm
@@ -71,7 +69,6 @@ namespace Darl.Language
             }
             sparseArray.Sort(CompareSparseArrays);
         }
-        /// <summary>
         /// This creates the prefix tree from the sparseArray
         /// </summary>
         internal void CreatePrefixTree()
@@ -157,7 +154,6 @@ namespace Darl.Language
         }
 
 
-        /// <summary>
         /// Create the outputs
         /// </summary>
         /// <remarks>Since this is unsupervised learning, we need to create outputs. 
@@ -303,7 +299,6 @@ namespace Darl.Language
             parent = null;
             children = new Dictionary<int, AssociationNode>();
         }
-        /// <summary>
         /// Recursive procedure to populate 
         /// </summary>
         /// <param name="points"></param>
@@ -356,7 +351,6 @@ namespace Darl.Language
             result += postamble;
             return result;
         }
-        /// <summary>
         /// Delete any parts of the tree with insufficient support or confidence
         /// </summary>
         /// <param name="minimumSupport"></param>
@@ -373,7 +367,6 @@ namespace Darl.Language
             foreach (AssociationNode node in deletionList)
                 children.Remove(node.columnIndex);
         }
-        /// <summary>
         /// Collect nodes by predictee
         /// </summary>
         /// <param name="groups"></param>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -8,13 +7,11 @@ using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
 {
-    /// <summary>
     /// Extracts a time value representing the existence of the referenced node or attribute.
     /// </summary>
     public class ExistenceNode : UnaryDarlMetaNode
     {
 
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -96,7 +93,6 @@ namespace Darl.Thinkbase.Meta
         }
 
 
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>

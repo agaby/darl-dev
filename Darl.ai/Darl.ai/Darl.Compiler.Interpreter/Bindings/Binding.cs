@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -24,29 +23,23 @@ namespace DarlCompiler.Interpreter
     // a slot in local or module-level Scope. Binding to internal variables is supported by SlotBinding class. 
     // Alternatively a symbol can be bound to external CLR entity in imported namespace - class, function, property, etc.
     // Binding is produced by Runtime.Bind method and allows read/write operations through GetValueRef and SetValueRef methods. 
-    /// <summary>
     /// Class Binding.
     /// </summary>
     public class Binding
     {
-        /// <summary>
         /// The target information
         /// </summary>
         public readonly BindingTargetInfo TargetInfo;
-        /// <summary>
         /// The get value reference
         /// </summary>
         public EvaluateMethod GetValueRef;     // ref to Getter method implementation
-        /// <summary>
         /// The set value reference
         /// </summary>
         public ValueSetterMethod SetValueRef;  // ref to Setter method implementation
-        /// <summary>
         /// Gets or sets a value indicating whether this instance is constant.
         /// </summary>
         /// <value><c>true</c> if this instance is constant; otherwise, <c>false</c>.</value>
         public bool IsConstant { get; protected set; }
-        /// <summary>
         /// Initializes a new instance of the <see cref="Binding"/> class.
         /// </summary>
         /// <param name="targetInfo">The target information.</param>
@@ -54,7 +47,6 @@ namespace DarlCompiler.Interpreter
         {
             TargetInfo = targetInfo;
         }
-        /// <summary>
         /// Initializes a new instance of the <see cref="Binding"/> class.
         /// </summary>
         /// <param name="symbol">The symbol.</param>
@@ -63,7 +55,6 @@ namespace DarlCompiler.Interpreter
         {
             TargetInfo = new BindingTargetInfo(symbol, targetType);
         }
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>

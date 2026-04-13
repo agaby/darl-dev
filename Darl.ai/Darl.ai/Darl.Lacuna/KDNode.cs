@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 using System;
@@ -6,7 +5,6 @@ using System.Collections.Generic;
 
 namespace Darl.Lacuna
 {
-    /// <summary>
     /// 
     /// </summary>
     internal class KDNode

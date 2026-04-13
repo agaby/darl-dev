@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCommon;
@@ -6,7 +5,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Darl.GraphQL.Models.Models
 {
-    /// <summary>
     /// TriggerView with all elements nullable for selective updating
     /// </summary>
     public class TriggerViewInput

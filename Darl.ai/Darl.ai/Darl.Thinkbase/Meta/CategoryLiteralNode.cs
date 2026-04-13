@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -11,7 +10,6 @@ namespace Darl.Thinkbase.Meta
     {
         string category { get; set; }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -22,7 +20,6 @@ namespace Darl.Thinkbase.Meta
             category = (string)treeNode.Token.Value;
         }
 
-        /// <summary>
         /// Does the evaluate.
         /// </summary>
         /// <param name="thread">The thread.</param>

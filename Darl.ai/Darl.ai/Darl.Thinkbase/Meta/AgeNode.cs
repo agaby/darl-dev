@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Interpreter;
@@ -6,7 +5,6 @@ using System.Threading.Tasks;
 
 namespace Darl.Thinkbase.Meta
 {
-    /// <summary>
     /// returns the age of the temporal input relative to the current time.
     /// requires one parameter, a variable or function  returning a temporal value.
     /// </summary>

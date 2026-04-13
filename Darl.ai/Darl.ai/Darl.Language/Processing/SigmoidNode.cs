@@ -1,16 +1,13 @@
-/// <summary>
 /// </summary>
 
 ﻿using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements a sigmoid function including fuzzy arithmetic.
     /// </summary>
     public class SigmoidNode : UnaryDarlNode
     {
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -34,7 +31,6 @@ namespace DarlLanguage.Processing
         }
 
 
-        /// <summary>
         /// Gets the postamble.
         /// </summary>
         /// <value>

@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -20,13 +19,11 @@ using Darl.ai;
 namespace DarlCompiler.Parsing
 {
     // Make sure we ALWAYS have output parse tree, even if it is messed up
-    /// <summary>
     /// Class ErrorRecoveryParserAction.
     /// </summary>
     public class ErrorRecoveryParserAction : ParserAction
     {
 
-        /// <summary>
         /// Executes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -54,7 +51,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Tries the recover from error.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -105,7 +101,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Finds the error shift action in stack.
         /// </summary>
         /// <param name="context">The context.</param>

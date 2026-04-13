@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -9,12 +8,10 @@ using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Implements a set definition.
     /// </summary>
     public class SetDefinitionNode : DarlNode
     {
-        /// <summary>
         /// Gets or sets the set as a <see cref="DarlResult"/>.
         /// </summary>
         /// <value>
@@ -22,7 +19,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public DarlResult Set { get; set; }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -69,7 +65,6 @@ namespace DarlLanguage.Processing
             return Convert.ToDouble(val);
         }
 
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>

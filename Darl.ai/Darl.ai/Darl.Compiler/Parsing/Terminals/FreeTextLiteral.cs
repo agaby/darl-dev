@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -25,75 +24,59 @@ namespace DarlCompiler.Parsing
     // Sometimes language definition includes tokens that have no specific format, but are just "all text until some terminator character(s)";
     // FreeTextTerminal allows easy implementation of such language element.
 
-    /// <summary>
     /// Enum FreeTextOptions
     /// </summary>
     [Flags]
     public enum FreeTextOptions
     {
-        /// <summary>
         /// The none
         /// </summary>
         None = 0x0,
-        /// <summary>
         /// The consume terminator
         /// </summary>
         ConsumeTerminator = 0x01, //move source pointer beyond terminator (so token "consumes" it from input), but don't include it in token text
-        /// <summary>
         /// The include terminator
         /// </summary>
         IncludeTerminator = 0x02, // include terminator into token text/value
-        /// <summary>
         /// The allow EOF
         /// </summary>
         AllowEof = 0x04, // treat EOF as legitimate terminator
-        /// <summary>
         /// The allow empty
         /// </summary>
         AllowEmpty = 0x08,
     }
 
-    /// <summary>
     /// Class FreeTextLiteral.
     /// </summary>
     public class FreeTextLiteral : Terminal
     {
-        /// <summary>
         /// The terminators
         /// </summary>
         public StringSet Terminators = new StringSet();
-        /// <summary>
         /// The firsts
         /// </summary>
         public StringSet Firsts = new StringSet();
-        /// <summary>
         /// The escapes
         /// </summary>
         public StringDictionary Escapes = new StringDictionary();
-        /// <summary>
         /// The free text options
         /// </summary>
         public FreeTextOptions FreeTextOptions;
-        /// <summary>
         /// The _stop chars
         /// </summary>
         private char[] _stopChars;
-        /// <summary>
         /// The _is simple
         /// </summary>
         bool _isSimple; //True if we have a single Terminator and no escapes
-        /// <summary>
         /// The _single terminator
         /// </summary>
         string _singleTerminator;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="FreeTextLiteral"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="terminators">The terminators.</param>
         public FreeTextLiteral(string name, params string[] terminators) : this(name, FreeTextOptions.None, terminators) { }
-        /// <summary>
         /// Initializes a new instance of the <see cref="FreeTextLiteral"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -108,7 +91,6 @@ namespace DarlCompiler.Parsing
             base.SetFlag(TermFlags.NoAstNode); //ane 12/05/18
         }
 
-        /// <summary>
         /// Gets the firsts.
         /// </summary>
         /// <returns>IList&lt;System.String&gt;.</returns>
@@ -118,7 +100,6 @@ namespace DarlCompiler.Parsing
             result.AddRange(Firsts);
             return result;
         }
-        /// <summary>
         /// Initializes the specified grammar data.
         /// </summary>
         /// <param name="grammarData">The grammar data.</param>
@@ -139,7 +120,6 @@ namespace DarlCompiler.Parsing
             _stopChars = stopChars.ToArray();
         }
 
-        /// <summary>
         /// Tries the match.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -152,7 +132,6 @@ namespace DarlCompiler.Parsing
             return _isSimple ? TryMatchContentSimple(context, source) : TryMatchContentExtended(context, source);
         }
 
-        /// <summary>
         /// Tries the match prefixes.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -171,7 +150,6 @@ namespace DarlCompiler.Parsing
             return false;
         }
 
-        /// <summary>
         /// Tries the match content simple.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -198,7 +176,6 @@ namespace DarlCompiler.Parsing
             return source.CreateToken(this.OutputTerminal, tokenText);
         }
 
-        /// <summary>
         /// Tries the match content extended.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -240,7 +217,6 @@ namespace DarlCompiler.Parsing
             return source.CreateToken(this.OutputTerminal, text);
         }
 
-        /// <summary>
         /// Checks the escape.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -260,7 +236,6 @@ namespace DarlCompiler.Parsing
             return false;
         }
 
-        /// <summary>
         /// Checks the terminators.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -280,7 +255,6 @@ namespace DarlCompiler.Parsing
             return false;
         }
 
-        /// <summary>
         /// Determines whether the specified option is set.
         /// </summary>
         /// <param name="option">The option.</param>

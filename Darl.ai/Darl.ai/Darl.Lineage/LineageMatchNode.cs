@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCommon;
@@ -10,7 +9,6 @@ using System.Text;
 
 namespace Darl.Lineage
 {
-    /// <summary>
     /// Alternative implementation that uses much less space.
     /// </summary>
     [ProtoContract()]
@@ -26,13 +24,11 @@ namespace Darl.Lineage
         [ProtoMember(2)]
         public SortedList<string, LineageMatchNode> children { get; set; } = new SortedList<string, LineageMatchNode>(comp);
 
-        /// <summary>
         /// all the pieces of darl code and implications associated with the sequence
         /// </summary>
         [ProtoMember(3)]
         public LineageAnnotationNode annotation { get; set; }
 
-        /// <summary>
         /// Build the execution tree from the edit tree.
         /// This has two jobs, to expand each child where more than one text or lineage is present, and to collect LineageAnnotationNodes
         /// The resulting graph is minimized for execution and is a DAG, but will in general not be a tree.
@@ -206,7 +202,6 @@ namespace Darl.Lineage
             }
         }
 
-        /// <summary>
         /// Find the sequence of nodes for a path
         /// </summary>
         /// <param name="tokens">elements of the path</param>
@@ -264,7 +259,6 @@ namespace Darl.Lineage
                 child.AddDescriptions();
         }
 
-        /// <summary>
         /// Add a new node to the tree recursively
         /// </summary>
         /// <param name="tokens"></param>
@@ -313,7 +307,6 @@ namespace Darl.Lineage
             return new LineageElement() { lineage = text, type = LineageType.literal };
         }
 
-        /// <summary>
         /// copy copyroot and it's children onto the end of the tokens path.
         /// </summary>
         /// <param name="tokens"></param>
@@ -370,7 +363,6 @@ namespace Darl.Lineage
             }
         }
 
-        /// <summary>
         /// check validity of special symbols in a rename
         /// </summary>
         /// <param name="newName"></param>
@@ -395,7 +387,6 @@ namespace Darl.Lineage
             }
         }
 
-        /// <summary>
         /// looks for specific label in value
         /// </summary>
         /// <param name="name"></param>
@@ -414,7 +405,6 @@ namespace Darl.Lineage
             return name;
         }
 
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="tokens"></param>

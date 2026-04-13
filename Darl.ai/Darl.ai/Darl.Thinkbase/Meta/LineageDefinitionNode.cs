@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Lineage;
@@ -9,7 +8,6 @@ namespace Darl.Thinkbase.Meta
 {
     public class LineageDefinitionNode : DarlMetaNode
     {
-        /// <summary>
         /// Gets the value of the string.
         /// </summary>
         /// <value>
@@ -17,7 +15,6 @@ namespace Darl.Thinkbase.Meta
         /// </value>
         public string Value { get; set; }
 
-        /// <summary>
         /// Gets the name of the string.
         /// </summary>
         /// <value>
@@ -27,7 +24,6 @@ namespace Darl.Thinkbase.Meta
 
         public string typeword { get; set; }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -54,7 +50,6 @@ namespace Darl.Thinkbase.Meta
                 }
             }
         }
-        /// <summary>
         /// Gets the preamble.
         /// </summary>
         /// <value>

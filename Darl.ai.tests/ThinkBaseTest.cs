@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -133,7 +132,6 @@ namespace Darl_standard_core.test
             Assert.IsFalse(tree.HasErrors());
         }
 
-        /// <summary>
         /// Test the three meta operators all any and count
         /// </summary>
         /// <returns></returns>
@@ -589,7 +587,6 @@ namespace Darl_standard_core.test
             Assert.AreEqual(2, res.Item2.response.values.Count);
         }
 
-        /// <summary>
         /// tests for a bug in recognizing category literals
         /// </summary>
         /// <returns></returns>

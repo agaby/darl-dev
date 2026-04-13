@@ -7,7 +7,7 @@
 // Last Modified On : 08-25-2015
 // ***********************************************************************
 // <copyright file="CodeOutlineFilter.cs" company="Dr Andy's IP LLC">
-//     Copyright ©  2015
+//     Copyright   2015
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -17,104 +17,82 @@ using System.Collections.Generic;
 
 namespace DarlCompiler.Parsing
 {
-    /// <summary>
     /// Enum OutlineOptions
     /// </summary>
     [Flags]
     public enum OutlineOptions
     {
-        /// <summary>
         /// The none
         /// </summary>
         None = 0,
-        /// <summary>
         /// The produce indents
         /// </summary>
         ProduceIndents = 0x01,
-        /// <summary>
         /// The check braces
         /// </summary>
         CheckBraces = 0x02,
-        /// <summary>
         /// The check operator
         /// </summary>
         CheckOperator = 0x04, //to implement, auto line joining if line ends with operator 
     }
 
-    /// <summary>
     /// Class CodeOutlineFilter.
     /// </summary>
     public class CodeOutlineFilter : TokenFilter
     {
 
-        /// <summary>
         /// The options
         /// </summary>
         public readonly OutlineOptions Options;
-        /// <summary>
         /// The continuation terminal
         /// </summary>
         public readonly KeyTerm ContinuationTerminal; //Terminal
 
-        /// <summary>
         /// The _grammar data
         /// </summary>
         readonly GrammarData _grammarData;
 
-        /// <summary>
         /// The _grammar
         /// </summary>
         readonly Grammar _grammar;
-        /// <summary>
         /// The _context
         /// </summary>
         ParsingContext _context;
 
-        /// <summary>
         /// The _produce indents
         /// </summary>
         readonly bool _produceIndents;
 
-        /// <summary>
         /// The _check braces
         /// </summary>
         readonly bool _checkBraces, _checkOperator;
 
-        /// <summary>
         /// The indents
         /// </summary>
         public Stack<int> Indents = new Stack<int>();
-        /// <summary>
         /// The current token
         /// </summary>
         public Token CurrentToken;
-        /// <summary>
         /// The previous token
         /// </summary>
         public Token PreviousToken;
-        /// <summary>
         /// The previous token location
         /// </summary>
         public SourceLocation PreviousTokenLocation;
-        /// <summary>
         /// The output tokens
         /// </summary>
         public TokenStack OutputTokens = new TokenStack();
-        /// <summary>
         /// The _is continuation
         /// </summary>
         bool _isContinuation, _prevIsContinuation;
-        /// <summary>
         /// The _is operator
         /// </summary>
         bool _isOperator, _prevIsOperator;
-        /// <summary>
         /// The _double EOF
         /// </summary>
         bool _doubleEof;
 
         #region constructor
-        /// <summary>
         /// Initializes a new instance of the <see cref="CodeOutlineFilter"/> class.
         /// </summary>
         /// <param name="grammarData">The grammar data.</param>
@@ -138,7 +116,6 @@ namespace DarlCompiler.Parsing
         }
         #endregion
 
-        /// <summary>
         /// Resets this instance.
         /// </summary>
         public override void Reset()
@@ -152,7 +129,6 @@ namespace DarlCompiler.Parsing
             PreviousTokenLocation = new SourceLocation();
         }
 
-        /// <summary>
         /// Options the is set.
         /// </summary>
         /// <param name="option">The option.</param>
@@ -162,7 +138,6 @@ namespace DarlCompiler.Parsing
             return (Options & option) != 0;
         }
 
-        /// <summary>
         /// Begins the filtering.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -179,7 +154,6 @@ namespace DarlCompiler.Parsing
             }//foreach
         }
 
-        /// <summary>
         /// Processes the token.
         /// </summary>
         /// <param name="token">The token.</param>
@@ -245,7 +219,6 @@ namespace DarlCompiler.Parsing
 
         }
 
-        /// <summary>
         /// Sets the current token.
         /// </summary>
         /// <param name="token">The token.</param>
@@ -274,7 +247,6 @@ namespace DarlCompiler.Parsing
         // Note that tokens will be popped from the OutputTokens stack and sent to parser in the reverse order compared to 
         // the order we pushed them into OutputTokens stack. We have Eof already in stack; we first push dedents, then Eos
         // They will come out to parser in the following order: Eos, Dedents, Eof.
-        /// <summary>
         /// Processes the EOF token.
         /// </summary>
         private void ProcessEofToken()
@@ -306,7 +278,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Pushes the dedents.
         /// </summary>
         /// <param name="untilPosition">The until position.</param>
@@ -319,7 +290,6 @@ namespace DarlCompiler.Parsing
             }
         }
 
-        /// <summary>
         /// Computes the eos location.
         /// </summary>
         /// <returns>SourceLocation.</returns>
@@ -333,7 +303,6 @@ namespace DarlCompiler.Parsing
             return new SourceLocation(loc.Position + len, loc.Line, loc.Column + len);
         }
 
-        /// <summary>
         /// Pushes the outline token.
         /// </summary>
         /// <param name="term">The term.</param>

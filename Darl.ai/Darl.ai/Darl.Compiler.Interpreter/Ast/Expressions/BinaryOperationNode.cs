@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿// ***********************************************************************
@@ -21,42 +20,33 @@ using System.Threading.Tasks;
 
 namespace DarlCompiler.Interpreter.Ast
 {
-    /// <summary>
     /// Class BinaryOperationNode.
     /// </summary>
     public class BinaryOperationNode : AstNode
     {
-        /// <summary>
         /// The left
         /// </summary>
         public AstNode Left, Right;
-        /// <summary>
         /// The op symbol
         /// </summary>
         public string OpSymbol;
-        /// <summary>
         /// The op
         /// </summary>
         public ExpressionType Op;
-        /// <summary>
         /// The _last used
         /// </summary>
         private OperatorImplementation _lastUsed;
-        /// <summary>
         /// The _const value
         /// </summary>
         private object _constValue;
-        /// <summary>
         /// The _failure count
         /// </summary>
         private int _failureCount;
 
-        /// <summary>
         /// Initializes a new instance of the <see cref="BinaryOperationNode"/> class.
         /// </summary>
         public BinaryOperationNode() { }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -77,7 +67,6 @@ namespace DarlCompiler.Interpreter.Ast
             AsString = Op + "(operator)";
         }
 
-        /// <summary>
         /// Does the evaluate.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -111,7 +100,6 @@ namespace DarlCompiler.Interpreter.Ast
             return Task.FromResult<object>(result);
         }
 
-        /// <summary>
         /// Evaluates the and also.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -122,7 +110,6 @@ namespace DarlCompiler.Interpreter.Ast
             if (!thread.Runtime.IsTrue(leftValue)) return leftValue; //if false return immediately
             return await Right.Evaluate(thread);
         }
-        /// <summary>
         /// Evaluates the or else.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -134,7 +121,6 @@ namespace DarlCompiler.Interpreter.Ast
             return await Right.Evaluate(thread);
         }
 
-        /// <summary>
         /// Evaluates the fast.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -168,7 +154,6 @@ namespace DarlCompiler.Interpreter.Ast
             return result;
         }
 
-        /// <summary>
         /// Defaults the evaluate implementation.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -183,7 +168,6 @@ namespace DarlCompiler.Interpreter.Ast
             return result;
         }
 
-        /// <summary>
         /// Evaluates the constant.
         /// </summary>
         /// <param name="thread">The thread.</param>
@@ -193,7 +177,6 @@ namespace DarlCompiler.Interpreter.Ast
             return Task.FromResult<object>(_constValue);
         }
 
-        /// <summary>
         /// Determines whether this instance is constant.
         /// </summary>
         /// <returns><c>true</c> if this instance is constant; otherwise, <c>false</c>.</returns>
@@ -202,7 +185,6 @@ namespace DarlCompiler.Interpreter.Ast
             if (_isConstant) return true;
             _isConstant = Left.IsConstant() && Right.IsConstant();
             return _isConstant;
-            /// <summary>
             /// The _is constant
             /// </summary>
         }

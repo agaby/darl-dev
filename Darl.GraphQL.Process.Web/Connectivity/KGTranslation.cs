@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -35,7 +34,6 @@ using System.Xml;
 
 namespace Darl.GraphQL.Models.Connectivity
 {
-    /// <summary>
     /// Transforms between GraphQL processes and KGs
     /// </summary>
     public class KGTranslation : IKGTranslation
@@ -933,7 +931,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return string.Empty;
         }
 
-        /// <summary>
         /// create a Noda version of the graph and generate a trial 3D layout.
         /// </summary>
         /// <param name="userId"></param>
@@ -990,7 +987,6 @@ namespace Darl.GraphQL.Models.Connectivity
             return res;
         }
 
-        /// <summary>
         /// Choose which of the properties to display
         /// </summary>
         /// <param name="tNode">the object</param>

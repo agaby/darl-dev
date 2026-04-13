@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Lineage;
@@ -10,7 +9,6 @@ using System.Linq;
 
 namespace Darl.SoftMatch
 {
-    /// <summary>
     /// Implements the SoftMatch algorithm using a topological sort
     /// </summary>
     /// <remarks>Answers the question: Given  a set of short texts with unique indexes, what is the index of the text most similar in meaning to this text?</remarks>
@@ -23,7 +21,6 @@ namespace Darl.SoftMatch
         [ProtoMember(2)]
         public Dictionary<string, List<string>> properNouns { get; set; } = new Dictionary<string, List<string>>();
 
-        /// <summary>
         /// Create a local text repository as a concept reverse lookup
         /// </summary>
         /// <param name="data"></param>
@@ -60,7 +57,6 @@ namespace Darl.SoftMatch
             }
         }
 
-        /// <summary>
         /// Find the nearest paraphrase of the given text using the concept reverse lookup
         /// </summary>
         /// <param name="example"></param>
@@ -289,7 +285,6 @@ namespace Darl.SoftMatch
 
         }
 
-        /// <summary>
         /// Create a weighting that favours unusual concepts
         /// </summary>
         /// <param name="count"></param>

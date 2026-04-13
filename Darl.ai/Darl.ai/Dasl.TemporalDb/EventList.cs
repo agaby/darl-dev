@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using Darl.Common;
@@ -11,14 +10,12 @@ using System.Linq;
 
 namespace Dasl.TemporalDb
 {
-    /// <summary>
     /// A simple temporal database.
     /// </summary>
     public class EventList
     {
         protected List<DaslState> _events { get; set; } = new List<DaslState>();
 
-        /// <summary>
         /// Gets or sets the events.
         /// </summary>
         /// <value>
@@ -26,7 +23,6 @@ namespace Dasl.TemporalDb
         /// </value>
         public List<DaslState> events { get { return _events; } set { _events = value; sorted = false; } }
 
-        /// <summary>
         /// The sample time to use to create a simulation, analysis or prediction
         /// </summary>
         /// <remarks>Default is 1 second.</remarks>
@@ -36,7 +32,6 @@ namespace Dasl.TemporalDb
 
         private static readonly string tstamptext = "timestamp";
 
-        /// <summary>
         /// Gets the start of the stored series.
         /// </summary>
         /// <value>
@@ -53,7 +48,6 @@ namespace Dasl.TemporalDb
             }
         }
 
-        /// <summary>
         /// Gets the end of the stored series.
         /// </summary>
         /// <value>
@@ -70,7 +64,6 @@ namespace Dasl.TemporalDb
             }
         }
 
-        /// <summary>
         /// Gets or sets a value indicating whether this <see cref="EventList" /> is sorted.
         /// </summary>
         /// <value>
@@ -87,7 +80,6 @@ namespace Dasl.TemporalDb
                 sorted = true;
             }
         }
-        /// <summary>
         /// Samples the data at the interval chosen and returns the data in a format required by Dasl.
         /// </summary>
         /// <returns>A multivariate time series with equally spaced samples </returns>
@@ -148,7 +140,6 @@ namespace Dasl.TemporalDb
             return list;
         }
 
-        /// <summary>
         /// finds the Value of the series at the time given,
         /// </summary>
         /// <remarks>random access</remarks>
@@ -182,7 +173,6 @@ namespace Dasl.TemporalDb
             }
             return Value;
         }
-        /// <summary>
         /// finds the Value of the series at the time given,
         /// </summary>
         /// <remarks>Should be called after GetValue, starts search at previous location</remarks>

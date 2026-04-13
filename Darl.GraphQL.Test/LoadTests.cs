@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 using Darl.GraphQL.Models.Connectivity;
@@ -189,7 +188,6 @@ namespace Darl.GraphQL.Test
             await cosmos.UpdateCollateral(userId, "bot_help.md", File.ReadAllText(@"C:\Users\Andrew\Downloads\bot_help.md"));
         }
 
-        /// <summary>
         /// Copy reference collateral to admin account
         /// </summary>
         /// <returns></returns>

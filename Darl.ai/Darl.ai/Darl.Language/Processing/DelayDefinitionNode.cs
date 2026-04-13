@@ -1,4 +1,3 @@
-/// <summary>
 /// </summary>
 
 ﻿using DarlCompiler.Ast;
@@ -10,19 +9,16 @@ using System.Threading.Tasks;
 
 namespace DarlLanguage.Processing
 {
-    /// <summary>
     /// Defines a delay
     /// </summary>
     public class DelayDefinitionNode : DarlNode
     {
-        /// <summary>
         /// Gets the sourcename.
         /// </summary>
         /// <value>
         /// The sourcename.
         /// </value>
         public string sourcename { get; private set; }
-        /// <summary>
         /// Gets the destname.
         /// </summary>
         /// <value>
@@ -33,7 +29,6 @@ namespace DarlLanguage.Processing
         private int writeIndex = 0;
 
 
-        /// <summary>
         /// Gets the dest ruleset.
         /// </summary>
         /// <value>
@@ -41,7 +36,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public string destRuleset { get; private set; }
 
-        /// <summary>
         /// Gets the composed name
         /// </summary>
         /// <value>
@@ -58,7 +52,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Gets the schedule.
         /// </summary>
         /// <value>
@@ -67,7 +60,6 @@ namespace DarlLanguage.Processing
         public DarlResult schedule { get; private set; }
 
 
-        /// <summary>
         /// Gets or sets the history.
         /// </summary>
         /// <value>
@@ -75,7 +67,6 @@ namespace DarlLanguage.Processing
         /// </value>
         public List<List<DarlResult>> History { get; set; }
 
-        /// <summary>
         /// Initializes the specified context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -111,7 +102,6 @@ namespace DarlLanguage.Processing
             }
         }
 
-        /// <summary>
         /// Does the evaluation.
         /// </summary>
         /// <param name="thread">The thread.</param>
